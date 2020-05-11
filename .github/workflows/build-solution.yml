@@ -8,8 +8,15 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Setup MSBuild.exe
-        uses: warrenbuckley/Setup-MSBuild@v1
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+
+      - name: Restore NuGet Packages
+        working-directory: src
+        run: nuget restore AasxPackageExplorer.sln
 
       - name: MSBuild
         working-directory: src
