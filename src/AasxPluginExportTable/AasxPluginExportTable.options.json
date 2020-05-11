@@ -1,0 +1,117 @@
+﻿{
+  "Presets": [
+    {
+      "Name": "Submodel template spec - 2 rows",
+      "Format": 2,
+      "Rows": 2,
+      "Cols": 4,
+      "Header": [
+        "%frame=1% %font=bold% %fg=#ffffff%",
+        "",
+        "",
+        "",
+        "",
+        "%bg=#2e74b5%",
+        "[SME type]",
+        "semanticId = [idType]value",
+        "[valueType]",
+        "card.",
+        "%bg=#002060%",
+        "idShort",
+        "Description@en",
+        "example",
+        ""
+      ],
+      "Elements": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "%font=italic%",
+        "%SME.elementName%",
+        "[%SME.semanticId[0].idType%]%SME.semanticId[0].value%",
+        "%Property.valueType%",
+        "1",
+        "%bg=#e0e0e0%",
+        "%SME.idShort%",
+        "%CD.definition@en%",
+        "%SME.value%",
+        ""
+      ]
+    },
+    {
+      "Name": "Submodel template spec - 1 rows",
+      "Format": 2,
+      "Rows": 1,
+      "Cols": 4,
+      "Header": [
+        "%frame=2% %bg=#002060% %font=bold% %fg=#ffffff%",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "[SME type]\r\nidShort",
+        "semanticId = [idType]value\r\nDescription@en",
+        "[valueType]\r\nexample",
+        "card."
+      ],
+      "Elements": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "[%SME.elementName%]\r\n%SME.idShort%",
+        "[%SME.semanticId[0].idType%]%SME.semanticId[0].value%\r\n%CD.preferredName@en% %CD.definition@en% %SME.description@en%",
+        "[%Property.valueType%]\r\n%SME.value%",
+        "%SME.multiplicity%"
+      ]
+    },
+    {
+      "Name": "AAS in practice",
+      "Format": 3,
+      "Rows": 1,
+      "Cols": 7,
+      "ReplaceFailedMatches": true,
+      "Header": [
+        "%frame=1% %bg=LightGray% %font=bold%",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "preferredName",
+        "parent",
+        "semanticId",
+        "idShort",
+        "definition",
+        "value",
+        "Qualifier"
+      ],
+      "Elements": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "%indent% %CD.anyName%",
+        "%SME.parent%",
+        "%SME.semanticId[0].value%",
+        "%SME.idShort%",
+        "%CD.definition@en%",
+        "%SME.value%",
+        "%SME.qualifiers%"
+      ]
+    }
+  ]
+}

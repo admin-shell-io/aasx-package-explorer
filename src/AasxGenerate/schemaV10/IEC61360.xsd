@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.admin-shell.io/IEC61360/1/0"
+	xmlns:IEC61360="http://www.admin-shell.io/IEC61360/1/0"
+	xmlns:aas_common="http://www.admin-shell.io/aas_common/1/0" xmlns:aas="http://www.admin-shell.io/aas/1/0" xmlns:Q1="aas">
+	<xsd:import schemaLocation="AAS.xsd"
+		namespace="http://www.admin-shell.io/aas/1/0">
+	</xsd:import>
+
+	<xsd:complexType name="dataSpecificationIEC61630_t">
+		<xsd:sequence>
+			<xsd:element ref="IEC61360:preferredName" maxOccurs="1"
+				minOccurs="1">
+			</xsd:element>
+			<xsd:element ref="IEC61360:shortName" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:unit" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:unitId" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:valueFormat" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:sourceOfDefinition" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:symbol" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:dataType" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:definition" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:valueList" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+			<xsd:element ref="IEC61360:code" maxOccurs="1"
+				minOccurs="0">
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+
+
+	<xsd:complexType name="valueList_t"></xsd:complexType>
+
+	<xsd:complexType name="code_t"></xsd:complexType>
+
+	<xsd:element name="preferredName" type="aas:langStrings_t"></xsd:element>
+
+	<xsd:element name="shortName" type="xsd:string"></xsd:element>
+
+	<xsd:element name="unit" type="xsd:string"></xsd:element>
+
+	<xsd:element name="unitId" type="aas:reference_t"></xsd:element>
+
+	<xsd:element name="valueFormat" type="xsd:string"></xsd:element>
+
+	<xsd:element name="sourceOfDefinition"
+		type="aas:langStrings_t">
+	</xsd:element>
+
+	<xsd:element name="symbol" type="xsd:string"></xsd:element>
+
+	<xsd:element name="dataType" type="xsd:string"></xsd:element>
+
+	<xsd:element name="definition" type="aas:langStrings_t"></xsd:element>
+
+	<xsd:element name="valueType" type="IEC61360:valueList_t"></xsd:element>
+
+	<xsd:element name="code" type="IEC61360:code_t"></xsd:element>
+
+	<xsd:element name="valueList" type="IEC61360:valueList_t"></xsd:element>
+</xsd:schema>

@@ -1,0 +1,268 @@
+{
+  "assetAdministrationShells": [
+    {
+      "identification": {
+        "id": "www.admin-shell.io/aas-sample/1.0",
+        "idType": "URI"
+      },
+      "asset": {
+        "keys": [
+          {
+            "type": "Asset",
+            "idType": "URI",
+            "value": "http://pk.festo.com/3S7PLFDRS35",
+            "local": true,
+            "index": 0
+          }
+        ]
+      },
+      "submodels": [
+        {
+          "keys": [
+            {
+              "type": "Submodel",
+              "idType": "URI",
+              "value": "http://www.zvei.de/demo/submodel/12345679",
+              "local": true,
+              "index": 0
+            }
+          ]
+        }
+      ],
+      "views": [
+        {
+          "idShort": "SampleView",
+          "containedElements": [
+            {
+              "keys": [
+                {
+                  "type": "Property",
+                  "idType": "IdShort",
+                  "value": "rotationSpeed",
+                  "local": true,
+                  "index": 0
+                }
+              ]
+            }
+          ],
+          "modelType": {
+            "name": "View"
+          }
+        }
+      ],
+      "administration": {
+        "version": "1",
+        "revision": "0"
+      },
+      "modelType": {
+        "name": "AssetAdministationShell"
+      },
+      "conceptDictionaries": [
+        {
+          "conceptDescriptions": [
+            {
+              "keys": [
+                {
+                  "type": "ConceptDescription",
+                  "idType": "URI",
+                  "value": "www.festo.com/dic/08111234",
+                  "local": true,
+                  "index": 0
+                }
+              ]
+            },
+            {
+              "keys": [
+                {
+                  "type": "ConceptDescription",
+                  "idType": "IRDI",
+                  "value": "0173-1#02-BAA120#007",
+                  "local": true,
+                  "index": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "submodels": [
+    {
+      "identification": {
+        "id": "http://www.zvei.de/demo/submodel/12345679",
+        "idType": "URI"
+      },
+      "kind": "Instance",
+      "semanticId": {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "idType": "URI",
+            "value": "http://www.zvei.de/demo/submodelDefinitions/87654346",
+            "local": false,
+            "index": 0
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "idShort": "rotationSpeed",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "double"
+            }
+          },
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "idType": "URI",
+                "value": "www.festo.com/dic/08111234",
+                "local": true,
+                "index": 0
+              }
+            ]
+          },
+          "category": "VARIABLE"
+        },
+        {
+          "idShort": "NMAX",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "double"
+            }
+          },
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "idType": "IRDI",
+                "value": "0173-1#02-BAA120#007",
+                "local": true,
+                "index": 0
+              }
+            ]
+          },
+          "category": "PARAMETER"
+        }
+      ],
+      "modelType": {
+        "name": "Submodel"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "idShort": "3S7PLFDRS35",
+      "identification": {
+        "id": "http://pk.festo.com/3S7PLFDRS35",
+        "idType": "URI"
+      },
+      "kind": "Instance",
+      "descriptions": [
+        {
+          "language": "EN",
+          "text": "Festo Controller"
+        }
+      ],
+      "modelType": {
+        "name": "Asset"
+      }
+    }
+  ],
+  "conceptDescriptions": [
+    {
+      "embeddedDataSpecifications": [
+        {
+          "hasDataSpecification": {
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "idType": "URI",
+                "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+                "local": false,
+                "index": 0
+              }
+            ]
+          },
+          "dataSpecificationContent": {
+            "preferredName": {
+              "language": "EN",
+              "text": "Rotation Speed"
+            },
+            "shortName": "N",
+            "unitId": {
+              "keys": [
+                {
+                  "type": "GlobalReference",
+                  "idType": "IRDI",
+                  "value": "0173-1#05-AAA650#002",
+                  "local": false,
+                  "index": 0
+                }
+              ]
+            },
+            "valueFormat": "NR1..5"
+          }
+        }
+      ],
+      "identification": {
+        "id": "www.festo.com/dic/08111234",
+        "idType": "URI"
+      },
+      "modelType": {
+        "name": "ConceptDescription"
+      }
+    },
+    {
+      "embeddedDataSpecifications": [
+        {
+          "hasDataSpecification": {
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "idType": "URI",
+                "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+                "local": false,
+                "index": 0
+              }
+            ]
+          },
+          "dataSpecificationContent": {
+            "preferredName": {
+              "language": "EN",
+              "text": "max rotation speed"
+            },
+            "shortName": "NMax",
+            "unitId": {
+              "keys": [
+                {
+                  "type": "GlobalReference",
+                  "idType": "IRDI",
+                  "value": "0173-1#05-AAA650#002",
+                  "local": false,
+                  "index": 0
+                }
+              ]
+            },
+            "valueFormat": "NR1..5"
+          }
+        }
+      ],
+      "identification": {
+        "id": "0173-1#02-BAA120#007",
+        "idType": "IRDI"
+      },
+      "modelType": {
+        "name": "ConceptDescription"
+      }
+    }
+  ]
+}

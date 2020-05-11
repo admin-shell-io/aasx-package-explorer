@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This file is NOT compatible with Silverlight-->
+<Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+  <Canvas Width="1000" Height="1000">
+    <Canvas.Resources/>
+    <Canvas >
+      <Canvas.RenderTransform>
+        <MatrixTransform Matrix="1.1380846 0 0 1.339726 -34.555369 -20.675908"/>
+      </Canvas.RenderTransform>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="93.961311" Canvas.Top="87.233032" Width="186.24474" Height="268.46088" Name="rect4138" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="375.84525" Canvas.Top="85.555153" Width="186.24474" Height="268.46088" Name="rect4140" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="659.40704" Canvas.Top="85.555153" Width="186.24474" Height="268.46088" Name="rect4142" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="92.283432" Canvas.Top="429.52066" Width="186.24474" Height="268.46088" Name="rect4144" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="374.16736" Canvas.Top="427.84277" Width="186.24474" Height="268.46088" Name="rect4146" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+      <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="657.72919" Canvas.Top="427.84277" Width="186.24474" Height="268.46088" Name="rect4148" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+    </Canvas>
+  </Canvas>
+</Viewbox>

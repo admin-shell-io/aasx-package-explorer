@@ -1,0 +1,187 @@
+﻿TODO:
+-----
+
+* check CamelCasing for e.g. IdSHort
+
+Helper / 1090
+
+Old notes
+---------
+
+- AAS.idShort mandatory
+- Identification.idType URI -> IRI
+- Key.idType URI -> IRI
+- Key.idType idShort -> IdShort
+
+- Joerg: changed ordering to (according V20 PDF)
+
+	<complexType name="submodelElementCollection_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+				  <element name="value" type="aas:submodelElements_t"/>
+				  <element name="ordered" type="boolean"/>
+				  <element name="allowDuplicates" type="boolean"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="property_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+				  <element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
+				  <element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
+				  <element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+- Joerg: Qualifier collection:
+  For me, the XSD seems wrong. 
+  I read the spec PDF as follows:
+  <qualifier>
+      <qualifier>
+	      <type/>
+		  <valueType/>
+		  <value/>
+		  <valueId/>
+	  </qualifier>
+  </qualifier>
+
+  The XSD seems to say:
+  <qualifier>
+    <qualifiers>
+      <qualifier>
+	      <type/>
+		  <valueType/>
+		  <value/>
+		  <valueId/>
+	  </qualifier>
+    </qualifiers> 
+  </qualifier>
+
+- Directions In/Out/InOut
+
+- OperationVariable no more a SME -> has only value!
+
+- Joerg: For me, the XSD for OperationVariable contains an (unexpected) additional level
+  <inputVariable>
+      <operationVariables>
+	       <operationVariables>
+		       <..>
+
+  I've changed it (and also the sequence):
+
+- LangStr in ConceptDescription now (totally correct) in "http://www.admin-shell.io/IEC61360/2/0"
+
+- CD.shortName is now a LangStr
+
+- Joerg: IMHO shall IEC61360.dataType also allow NULL, means not yet decided
+
+	<simpleType name="dataTypeIEC61360_t">
+		<restriction base="string">
+			<enumeration value=""/>
+			<enumeration value="BOOLEAN"/>
+			<enumeration value="DATE"/>
+			<enumeration value="RATIONAL"/>
+			<enumeration value="RATIONAL_MEASURE"/>
+			<enumeration value="REAL_COUNT"/>
+			<enumeration value="REAL_CURRENCY"/>
+			<enumeration value="REAL_MEASURE"/>
+			<enumeration value="STRING"/>
+			<enumeration value="STRING_TRANSLATABLE"/>
+			<enumeration value="TIME"/>
+			<enumeration value="TIME_STAMP"/>
+			<enumeration value="URL"/>
+		</restriction>
+	</simpleType>
+
+- MultiLanguageProperty, Range added (TODO: Visual editing)
+
+- Joerg: XSD reordered accroding to PDF:
+
+	<complexType name="range_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+				  <element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
+				  <element maxOccurs="1" minOccurs="0" name="min" type="aas:valueDataType_t"/>
+				  <element maxOccurs="1" minOccurs="0" name="max" type="aas:valueDataType_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+- BasicEvent (but not abstract Event), Entity added
+
+- Note: IMHO it is not sufficient, to have only one BOM. It would be more manageable, if each "engineering discipline"
+  could manage its own BOM submodel with specific Submodel SemanticId 
+
+- Asset.billOfMaterialRef added [0..1]
+
+- Joerg: order? cardinalities?
+
+	<complexType name="entity_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0" name="statements" type="aas:submodelElement_t"/>
+					<element name="entityType">
+								<simpleType>
+									<restriction base="aas:entityType_t">
+										<enumeration value="CoManagedEntity"/>
+										<enumeration value="SelfManagedEntity"/>
+									</restriction>
+								</simpleType>
+							</element>
+					<element maxOccurs="1" minOccurs="0" name="assetRef" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+- Joerg: collection of SMEs structurally differs between Entity and Submodel/ SMEC
+
+  In Submodel / SMEC :
+  <submodelElements> | <value>
+	<submodelElement>
+		<Property>
+
+  In Entity
+  <statements>
+	<Property>
+
+  I've changed AAS.xsd for Entity, that the same behaviour is used as for Submodel / SMEC
+
+  	<complexType name="entity_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<!--
+					<element maxOccurs="unbounded" minOccurs="0" name="statements" type="aas:submodelElement_t"/>
+					-->
+					<element name="statements" type="aas:submodelElements_t"/>
+					<element name="entityType">
+								<simpleType>
+									<restriction base="aas:entityType_t">
+										<enumeration value="CoManagedEntity"/>
+										<enumeration value="SelfManagedEntity"/>
+									</restriction>
+								</simpleType>
+							</element>
+					<element maxOccurs="1" minOccurs="0" name="assetRef" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+- split Kind in AssetKind and ModelingKind
+
+- renmame options "TemplateIdSubmodelType" into "TemplateIdSubmodelTemplate"
+  => command line option "-id-sm-type" into "-id-sm-template"
+
+- TODO: check, if JSON has Qualifiers. Right now, nothing seems to be in the schema ?!
+
+- TODO: SMEC 2 x boolean flags

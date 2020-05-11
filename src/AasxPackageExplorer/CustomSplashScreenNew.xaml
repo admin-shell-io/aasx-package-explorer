@@ -1,0 +1,67 @@
+﻿<Window x:Class="AasxPackageExplorer.CustomSplashScreenNew"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AasxPackageExplorer"
+        mc:Ignorable="d"
+        Title="CustomSplashScreenNew" Width="650" Height="350" Background="White" WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Image_MouseDown">
+
+    <!-- -->    
+    
+<!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
+The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+
+    <Grid>
+
+        <Border Margin="4" BorderBrush="{DynamicResource DarkestAccentColor}" BorderThickness="2" Padding="4">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+        
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="18" FontWeight="Bold">AASX Package Explorer</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" FontSize="12" FontWeight="Bold" Margin="0,4,0,0">Copyright (c) 2018-2020 Festo AG &amp; Co.</TextBlock>
+                <DockPanel Grid.Column="1" Grid.Row="2" Margin="0,4,0,0">
+                    <TextBlock FontSize="12" FontWeight="Bold" Margin="0,0,4,0">Authors:</TextBlock>
+                    <TextBlock x:Name="TextBlockAuthors" FontSize="12" FontWeight="Bold" TextWrapping="Wrap">Michael Hoffmeister</TextBlock>
+                </DockPanel>
+
+                <ScrollViewer  Grid.Column="1" Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="TextBlockLicenses" FontSize="9" TextWrapping="Wrap" Margin="0,8,0,0" VerticalAlignment="Top">
+                    This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0).  <LineBreak/>
+                    The browser functionality is under the cefSharp. <LineBreak/>
+                    The JSON serialization is under the MIT (Newtonsoft.JSON). <LineBreak/>
+                    The QR code generation is under the MIT license (QRcoder). <LineBreak/>
+                    The Dot Matrix Code generation is under Apache license v.2 (ZXing.Net). <LineBreak/>
+                </TextBlock>
+                </ScrollViewer>
+
+                <StackPanel Grid.RowSpan="4" Orientation="Vertical">
+                    <Viewbox Stretch="Uniform" Width="200">
+                        <Image Grid.Row="0" Source="/AasxPackageExplorer;component/icon-set/Icon_AASX_256x256_W.bmp"/>
+                    </Viewbox>
+                    <TextBlock x:Name="TextBlockVersion">Unknown version</TextBlock>
+                    <TextBlock x:Name="TextBlockBuildDate">Unknown build date!</TextBlock>
+                </StackPanel>
+                
+            </Grid>
+
+        </Border>
+
+    </Grid>
+</Window>

@@ -1,0 +1,1142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CAEXFile FileName="AssetAdministrationShellLib.aml" SchemaVersion="2.15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CAEX_ClassModel_V2.15.xsd">
+  <AdditionalInformation AutomationMLVersion="2.0" />
+  <AdditionalInformation DocumentVersions="Recommendations">
+    <Document DocumentIdentifier="AR AAS" Version="1.0.0" />
+  </AdditionalInformation>
+  <AdditionalInformation>
+    <WriterHeader>
+      <WriterName>AutomationML Editor</WriterName>
+      <WriterID>916578CA-FE0D-474E-A4FC-9E1719892369</WriterID>
+      <WriterVendor>AutomationML e.V.</WriterVendor>
+      <WriterVendorURL>www.AutomationML.org</WriterVendorURL>
+      <WriterVersion>5.2.7.0</WriterVersion>
+      <WriterRelease>5.2.7.0</WriterRelease>
+      <LastWritingDateTime>2019-11-12T09:42:53.6809451</LastWritingDateTime>
+      <WriterProjectTitle>Application Recommendation Asset Administration Shell</WriterProjectTitle>
+      <WriterProjectID>AR AAS</WriterProjectID>
+    </WriterHeader>
+  </AdditionalInformation>
+  <InterfaceClassLib Name="AutomationMLInterfaceClassLib">
+    <Description>Standard Automation Markup Language Interface Class Library - Part 1 Content extended with Part 3 and Part 4 Content</Description>
+    <Version>2.2.2</Version>
+    <InterfaceClass Name="AutomationMLBaseInterface">
+      <InterfaceClass Name="Order" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="Direction" AttributeDataType="xs:string" />
+      </InterfaceClass>
+      <InterfaceClass Name="PortConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="InterlockingConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="PPRConnector" RefBaseClassPath="AutomationMLBaseInterface" />
+      <InterfaceClass Name="ExternalDataConnector" RefBaseClassPath="AutomationMLBaseInterface">
+        <Attribute Name="refURI" AttributeDataType="xs:anyURI">
+          <Description>The attribute refURI is an URI that can represent an absolute or relative path to an L document. An added fragment (with #) references inside the document</Description>
+        </Attribute>
+        <InterfaceClass Name="COLLADAInterface" RefBaseClassPath="ExternalDataConnector">
+          <Attribute Name="refType" AttributeDataType="xs:string" />
+          <Attribute Name="target" AttributeDataType="xs:token" />
+        </InterfaceClass>
+        <InterfaceClass Name="PLCopenXMLInterface" RefBaseClassPath="ExternalDataConnector">
+          <InterfaceClass Name="LogicInterface" RefBaseClassPath="PLCopenXMLInterface">
+            <InterfaceClass Name="SequencingLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="BehaviourLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="SequencingBehaviourLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+            <InterfaceClass Name="InterlockingLogicInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/LogicInterface" />
+          </InterfaceClass>
+          <InterfaceClass Name="LogicElementInterface" RefBaseClassPath="PLCopenXMLInterface" />
+          <InterfaceClass Name="VariableInterface" RefBaseClassPath="PLCopenXMLInterface">
+            <InterfaceClass Name="InterlockingVariableInterface" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector/PLCopenXMLInterface/VariableInterface">
+              <Attribute Name="SafeConditionEquals" AttributeDataType="xs:boolean">
+                <DefaultValue>true</DefaultValue>
+              </Attribute>
+            </InterfaceClass>
+          </InterfaceClass>
+        </InterfaceClass>
+      </InterfaceClass>
+      <InterfaceClass Name="Communication" RefBaseClassPath="AutomationMLBaseInterface">
+        <InterfaceClass Name="SignalInterface" RefBaseClassPath="Communication" />
+      </InterfaceClass>
+      <InterfaceClass Name="AttachmentInterface" RefBaseClassPath="AutomationMLBaseInterface" />
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="AutomationMLBPRInterfaceClassLib">
+    <Version>1.0.0</Version>
+    <InterfaceClass Name="ExternalDataReference" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/ExternalDataConnector" ID="{320f7f3a-6df8-4ccd-af35-a4367b37eb7a}">
+      <Attribute Name="MIMEType" AttributeDataType="xs:string">
+        <Description>Mime type of the content of the File.</Description>
+      </Attribute>
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <InterfaceClassLib Name="AssetAdministrationShellInterfaceClassLib"><Description>Interface Class Library according to Details of the Asset Administration Shell V2.0.</Description>
+    <Version>1.0.0</Version>
+    <InterfaceClass Name="FileDataReference" RefBaseClassPath="AutomationMLBPRInterfaceClassLib/ExternalDataReference">
+      <Description>A FileDataReference represents the address to a File. FileDataReference is derived from the AutomationML Interface Class ExternalDataReference that is defined in AutomationML BPR_005E_ExternalDataReference_v1.0.0_2:The interface class “ExternalDataReference” shall be used in order to reference external documents out of the scope of AutomationML.</Description>
+    </InterfaceClass>
+    <InterfaceClass Name="ReferableReference" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface">
+      <Description>Reference to any other referable element of the same of any other AAS or a reference to an external object or entity. For local references inside the same Asset Administration Shell an InternalLink between two objects with this interface "ReferableReference" shall be set. In this case the attribute value has to be empty. For references between different Asset Administration Shells or external objects or entities the attribute value shall be used and no InternalLink shall be set.</Description>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable element of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:ReferenceElement/value" />
+      </Attribute>
+    </InterfaceClass>
+  </InterfaceClassLib>
+  <RoleClassLib Name="AutomationMLBaseRoleClassLib">
+    <Description>Automation Markup Language Base Role Class Library - Part 1 Content extended with Part 3 and Part 4 Content</Description>
+    <Version>2.2.2</Version>
+    <RoleClass Name="AutomationMLBaseRole">
+      <RoleClass Name="Group" RefBaseClassPath="AutomationMLBaseRole">
+        <Attribute Name="AssociatedFacet" AttributeDataType="xs:string" />
+        <RoleClass Name="InterlockingSourceGroup" RefBaseClassPath="Group" />
+        <RoleClass Name="InterlockingTargetGroup" RefBaseClassPath="Group" />
+      </RoleClass>
+      <RoleClass Name="Facet" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Port" RefBaseClassPath="AutomationMLBaseRole">
+        <Attribute Name="Direction" AttributeDataType="xs:string" />
+        <Attribute Name="Cardinality">
+          <Attribute Name="MinOccur" AttributeDataType="xs:unsignedInt" />
+          <Attribute Name="MaxOccur" AttributeDataType="xs:unsignedInt" />
+        </Attribute>
+        <Attribute Name="Category" AttributeDataType="xs:string" />
+        <ExternalInterface Name="ConnectionPoint" ID="9942bd9c-c19d-44e4-a197-11b9edf264e7" RefBaseClassPath="AutomationMLInterfaceClassLib/AutomationMLBaseInterface/PortConnector" />
+      </RoleClass>
+      <RoleClass Name="Resource" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Product" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Process" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Structure" RefBaseClassPath="AutomationMLBaseRole">
+        <RoleClass Name="ProductStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ProcessStructure" RefBaseClassPath="Structure" />
+        <RoleClass Name="ResourceStructure" RefBaseClassPath="Structure" />
+      </RoleClass>
+      <RoleClass Name="PropertySet" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="Frame" RefBaseClassPath="AutomationMLBaseRole" />
+      <RoleClass Name="LogicObject" RefBaseClassPath="AutomationMLBaseRole" />
+    </RoleClass>
+  </RoleClassLib>
+  <RoleClassLib Name="AutomationMLBPRRoleClassLib">
+    <Version>1.0.0</Version>
+    <RoleClass Name="ExternalData" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole" />
+  </RoleClassLib>
+  <RoleClassLib Name="AssetAdministrationShellRoleClassLib"><Description>Role Class Library according to Details of the Asset Administration Shell V2.0.</Description>
+    <Version>1.0.0</Version>
+    <RoleClass Name="AssetAdministrationShell" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An Asset Administration Shell.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="derivedFrom" AttributeDataType="xs:string">
+        <Description>The derivedFrom attribute is used to establish a relationship between two Asset Administration Shells that are derived from each other. </Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:AssetAdministrationShell/derivedFrom" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Asset" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An Asset describes meta data of an asset that is represented by an AAS. The asset may either represent an asset type or an asset instance. The asset has a globally unique identifier plus – if needed – additional domain specific (proprietary) identifiers.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either type or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Asset/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Submodel" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A Submodel defines a specific aspect of the asset represented by the AAS. A submodel is used to structure the virtual representation and technical functionality of an Administration Shell into distinguishable parts. Each submodel refers to a well-defined domain or subject matter. Submodels can become standardized and thus become submodels types. Submodels can have different life-cycles.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="SubmodelElementCollection" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A submodel element collection is a set or list of submodel elements. </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="allowDuplicates" AttributeDataType="xs:boolean">
+        <Description>If allowDuplicates=true, then it is allowed that the collection contains the same element several times.</Description>
+        <DefaultValue>false</DefaultValue>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/allowDuplicates" />
+      </Attribute>
+      <Attribute Name="ordered" AttributeDataType="xs:boolean">
+        <Description>If ordered=false, then the elements in the property collection are not ordered. If ordered=true then the elements in the collection are ordered. Default = false. Note: An ordered submodel element collection is typically implemented as an indexed array.</Description>
+        <DefaultValue>false</DefaultValue>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/ordered" />
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>Submodel element contained in the collection.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:SubmodulElementCollection/value" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Blob" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A BLOB is a data element that represents a file that is contained with its source code in the value attribute.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="mimeType" AttributeDataType="xs:string">
+        <Description>Mime type of the content of the BLOB. The mime type states which file extension the file has. Valid values are e.g. “application/json”, “application/xls”, ”image/jpg”. The allowed values are defined as in RFC2046.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Blob/mimeType" />
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>The value of the BLOB instance of a blob data element. Note: In contrast to the file property the file content is stored directly as value in the Blob data element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Blob/value" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Capability" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A capability is the implementation-independent description of the potential of an asset to achieve a certain effect in the physical or virtual world.  </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="File" RefBaseClassPath="AutomationMLBPRRoleClassLib/ExternalData">
+      <Description>A role class for a File that a data element that represents an address to a file. It is derived from the AutomationML role class ExternalData that is an role type for a document type and the base class for all document type roles. It describes different document types. ExternalData is defined in AutomationML BPR_005E_ExternalDataReference_v1.0.0_2.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="FileDataReference" ID="c7a2932e-7f90-46d3-be64-0408a927c89d" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/FileDataReference">
+        <Attribute Name="refURI" AttributeDataType="xs:anyURI">
+          <Description>The attribute refURI is an URI that can represent an absolute or relative path to an L document. An added fragment (with #) references inside the document</Description>
+        </Attribute>
+        <Attribute Name="MIMEType" AttributeDataType="xs:string">
+          <Description>Mime type of the content of the File.</Description>
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="Property" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A property is a data element that has a single value.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="value" AttributeDataType="xs:string">
+        <Description>The value of the property instance. </Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Property/value" />
+      </Attribute>
+      <Attribute Name="valueId" AttributeDataType="xs:string">
+        <Description>Reference to the global unique id if a coded value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Property/valueId" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ReferenceElement" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A reference element is a data element that defines a logical reference to another element within the same or another AAS or a reference to an external object or entity.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="ReferableReference" ID="cedd4784-8dd9-4b0d-bb16-59a82ab845da" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+          <RefSemantic CorrespondingAttributePath="AAS:ReferenceElement/value" />
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="RelationshipElement" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A relationship element is used to define a relationship between two referable elements.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+      <ExternalInterface Name="first" ID="6382c562-f165-488c-94c6-52fe0b27bb6a" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        </Attribute>
+      </ExternalInterface>
+      <ExternalInterface Name="second" ID="f05eccaf-f1f7-4c0c-8502-ba5372640814" RefBaseClassPath="AssetAdministrationShellInterfaceClassLib/ReferableReference">
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>Reference to any other referable element of any other AAS or a reference to an external object or entity. Note: For references to any other referable elment of the same AAS InternalLinks are used and this attribute value shall be empty.</Description>
+        </Attribute>
+      </ExternalInterface>
+    </RoleClass>
+    <RoleClass Name="AnnotatedRelationshipElement" RefBaseClassPath="AssetAdministrationShellRoleClassLib/RelationshipElement">
+      <Description>An annotated relationship element is an relationship element that can be annotated with additional data elements.</Description>
+      <Attribute Name="annotation" AttributeDataType="xs:string">
+        <Description>Annotations that hold for the relationships between the two elements.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:AnnotatedRelationshipElement/annotation" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="Operation" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>An operation is a submodel element with input and output variables.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="kind" AttributeDataType="xs:string">
+        <Description>Kind of the element: either template or instance.</Description>
+        <DefaultValue>Instance</DefaultValue>
+        <Value>Instance</Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasKind/kind" />
+        <Constraint Name="">
+          <NominalScaledType>
+            <RequiredValue>Instance</RequiredValue>
+            <RequiredValue>Type</RequiredValue>
+          </NominalScaledType>
+        </Constraint>
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+      <Attribute Name="qualifier:[TYPE]=[VALUE]" AttributeDataType="xs:string">
+        <Description>A qualifier is a type-value-pair that makes additional statements w.r.t. the value of the element. [TYPE] is the value of the attribute type and [VALUE] is the value of the attribute value.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Qualifiable/qualifier" />
+        <Attribute Name="type" AttributeDataType="xs:string">
+          <Description>The type describes the type of the qualifier that is applied to the element.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/type" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The qualifier value is the value of the qualifier. Constraint AASd-006: if both, the value and the valueId are present then the value needs to be identical to the value of the referenced coded value in valueId.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>Reference to the global unqiue id of a coded value.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Qualifier/valueId" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="OperationInputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableIn entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+    <RoleClass Name="OperationOutputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableOut entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+     <RoleClass Name="OperationInoutputVariables" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>The list of AAS OperationVariableOut entities. In AML, the corresponding InternalElement with this role is a child of the InternalElement with the Operation role.</Description>
+    </RoleClass>
+    <RoleClass Name="View" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole/Group">
+      <Description>A view is a collection of referable elements w.r.t. to a specific viewpoint of one or more stakeholders.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" />
+        <Attribute Name="aml-lang=DE" />
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="semanticId" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages. This attribute has the name of the label and has a value with the label written in the default language. The individual languages are modelled as child attributes. The names of the child attributes are the prefix “aml-lang=” with the expression of the language in compliance with RFC5646. At it, the values of the child attributes are the labels within the respective language.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:HasSemantics/semanticId" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ConceptDictionary" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>A dictionary contains elements that can be reused.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="ConceptDescription" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Explanation: The semantics of a property or other elements that may have a semantic description is defined by a concept description. The description of the concept should follow a standardized schema (realized as data specification template).</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string" />
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string" />
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="dataSpecification" AttributeDataType="xs:string">
+        <Description>Global reference to the data specification template used by the element.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:HasDataSpecification/dataSpecification" />
+      </Attribute>
+      <Attribute Name="isCaseOf" AttributeDataType="xs:string">
+        <Description>Global reference to an external definition the concept is compatible to or was derived from.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:ConceptDescription/isCaseOf" />
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="DataSpecification" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Description Role class of an element that has a data specification template. A template defines the additional attributes an element may or shall have.</Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+    </RoleClass>
+    <RoleClass Name="DataSpecificationContent" RefBaseClassPath="AutomationMLBaseRoleClassLib/AutomationMLBaseRole">
+      <Description>Content of the data specification template.</Description>
+    </RoleClass>
+  </RoleClassLib>
+  <SystemUnitClassLib Name="AssetAdministrationShellDataSpecificationTemplates">
+    <Version>0</Version>
+    <SystemUnitClass Name="DataSpecificationIEC61360Template" ID="572c0568-4019-40ec-bfc4-a3a82dc6eed4">
+      <Description>An AAS Data Specification template for IEC61369. A template consists of the DataSpecificationContent containing the additional attributes to be added to the element instance that references the data specification template and meta information about the template itself (this is why DataSpecification inherits from Identifiable). In UML these are two separated classes. </Description>
+      <Attribute Name="idShort" AttributeDataType="xs:string">
+        <Description>Identifying string of the element within its name space. Constraint AASd-001: In case of a referable element not being an identifiable element this id is mandatory and used for referring to the element in its name space. Constraint AASd-002: idShort shall only feature letters, digits, underscore ("_"); starting mandatory with a letter. Constraint AASd-003: idShort shall be matched case-insensitive. Note: In case of an identifiable element idShort is optional but recommended to be defined. It can be used for unique reference in its name space and thus allows better usability and a more performant implementation. In this case it is similar to the “BrowserPath” in OPC UA.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/idShort" />
+      </Attribute>
+      <Attribute Name="category" AttributeDataType="xs:string">
+        <Description>The category is a value that gives further meta information w.r.t. to the class of the element. It affects the expected existence of attributes and the applicability of constraints.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/category" />
+      </Attribute>
+      <Attribute Name="description" AttributeDataType="xs:string">
+        <Description>Description or comments on the element. The description can be provided in several languages.</Description>
+        <Value></Value>
+        <RefSemantic CorrespondingAttributePath="AAS:Referable/description" />
+        <Attribute Name="aml-lang=EN" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+        <Attribute Name="aml-lang=DE" AttributeDataType="xs:string">
+          <Value></Value>
+        </Attribute>
+      </Attribute>
+      <Attribute Name="identification">
+        <Description>Abstract attribute class for identification. Has the subattributes id and idType.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/identification" />
+        <Attribute Name="id" AttributeDataType="xs:string">
+          <Description>Identifier of the element. Its type is defined in idType. Id is a subproperty of identification.</Description>
+          <Value>http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/id" />
+        </Attribute>
+        <Attribute Name="idType" AttributeDataType="xs:string">
+          <Description>Type of the Identifier, e.g. URI, IRDI etc. The supported Identifier types are defined in the enumeration “IdentifierType”. IdType is a subproperty of identification.</Description>
+          <Value>URI</Value>
+          <RefSemantic CorrespondingAttributePath="AAS:Identifier/idType" />
+        </Attribute>
+      </Attribute>
+      <Attribute Name="administration">
+        <Description>Abstract attribute for administration. Has the subattributes revision and version.</Description>
+        <RefSemantic CorrespondingAttributePath="AAS:Identifiable/administration" />
+        <Attribute Name="revision" AttributeDataType="xs:string">
+          <Description>Revision of the element. Constraint AASd-005: A revision requires a version. This means, if there is no version there is no revision neither. Revision is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/revision" />
+        </Attribute>
+        <Attribute Name="version" AttributeDataType="xs:string">
+          <Description>Version of the element. Version is a subproperty of administration.</Description>
+          <Value></Value>
+          <RefSemantic CorrespondingAttributePath="AAS:AdministrativeInformation/version" />
+        </Attribute>
+      </Attribute>
+      <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecification" />
+      <SystemUnitClass Name="DataSpecificationIEC61360" ID="8c019d8e-7ddd-4283-aa63-1747021c3d1b">
+        <Description>The content of an AAS Data Specification template for IEC61360.</Description>
+        <Attribute Name="preferredName" AttributeDataType="xs:string">
+          <Description>Identifies the attribute hierarchy for preferredName in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/preferredName" />
+        </Attribute>
+        <Attribute Name="shortName" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for shortName in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/shortName" />
+        </Attribute>
+        <Attribute Name="unit" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for unit in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/unit" />
+        </Attribute>
+        <Attribute Name="unitId" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for unitId in above attribute hierarchy in its string serialization.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/unitId" />
+        </Attribute>
+        <Attribute Name="sourceOfDefinition" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for sourceOfDefinition in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/sourceOfDefinition" />
+        </Attribute>
+        <Attribute Name="symbol" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for symbol in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/symbol" />
+        </Attribute>
+        <Attribute Name="dataType" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for dataType in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/dataType" />
+        </Attribute>
+        <Attribute Name="definition" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for definition in above attribute hierachy. Subordinate attributes are designated by the country code information (see aml-lang literal).</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/definition" />
+        </Attribute>
+        <Attribute Name="valueFormat" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for valueFormat in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueFormat" />
+        </Attribute>
+        <Attribute Name="valueList" AttributeDataType="xs:string">
+          <Description>Identifies the attribute for valueList in above attribute hierarchy.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueList" />
+        </Attribute>
+        <Attribute Name="value" AttributeDataType="xs:string">
+          <Description>The attribute value.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/value" />
+        </Attribute>
+        <Attribute Name="valueId" AttributeDataType="xs:string">
+          <Description>The id for the value.</Description>
+          <RefSemantic CorrespondingAttributePath="IEC:DataSpecificationIEC61360/valueId" />
+        </Attribute>
+        <SupportedRoleClass RefRoleClassPath="AssetAdministrationShellRoleClassLib/DataSpecificationContent" />
+      </SystemUnitClass>
+    </SystemUnitClass>
+  </SystemUnitClassLib>
+</CAEXFile>

@@ -1,0 +1,823 @@
+﻿{
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "HSU",
+      "FormTitle": "Identification Submodel of the HSU",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Identification Submodel of the HSU",
+        "FormInfo": "This Submodel is required in order to describe the Asset towards the ZVEI Icebreaker for the Administration Shell.",
+        "PresetIdShort": "Identification",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+          "type": "Submodel",
+          "local": false,
+          "value": "https://www.hsu-hh.de/aut/aas/identification",
+          "index": 0,
+          "idType": "IRI"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerName",
+            "PresetIdShort": "ManufacturerName",
+            "FormUrl": "https://github.com/admin-shell/aasx-package-explorer/blob/master/miscellaneous/sample-form-url.md#manufacturer",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO677#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerId",
+            "PresetIdShort": "ManufacturerId{0:00}",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAY812#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "OneToMany",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerIdProvider",
+            "PresetIdShort": "ManufacturerIdProvider",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAP796#004",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerTypId",
+            "FormInfo": "Example: type code, which is listed in the manufacturer's catalogue.",
+            "PresetIdShort": "ManufacturerTypId",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO676#003",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerTypName",
+            "FormInfo": "Example: short definition of the product function in the manufacturer's catalogue.",
+            "PresetIdShort": "ManufacturerTypName",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAW338#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerTypDescription",
+            "FormInfo": "Example: (longer) explanation of the product function in the manufacturer's catalogue.",
+            "PresetIdShort": "ManufacturerTypDescription",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAU734#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "langString"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierName",
+            "FormInfo": "If not supplied by the manufacurer, the trading company, supplier or distributer of the asset.",
+            "FormUrl": "https://github.com/admin-shell/aasx-package-explorer/blob/master/miscellaneous/sample-form-url.md#supplier",
+            "PresetIdShort": "SupplierName",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO735#003",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierId",
+            "PresetIdShort": "SupplierId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAY813#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierIdProvider",
+            "PresetIdShort": "SupplierIdProvider",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/7183_0272_7091_7264",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierTypId",
+            "FormInfo": "If different, type id in the suppliers ordering system.",
+            "PresetIdShort": "SupplierTypId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO736#004",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierTypName",
+            "FormInfo": "If different, the definiton of the asset in the suppliers catalogue.",
+            "PresetIdShort": "SupplierTypName",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAM551#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SupplierTypDescription",
+            "PresetIdShort": "SupplierTypDescription",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAU730#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "langString"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "TypClass",
+            "FormInfo": "Classification of the product/ asset in an external classification system, e.g. eCl@ss.",
+            "PresetIdShort": "TypClass",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAU731#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ClassificationSystem",
+            "FormInfo": "Identification of the identification system itself.",
+            "PresetIdShort": "ClassificationSystem",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/4135_0272_7091_2192",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": "eclass"
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SecondaryKeyTyp",
+            "PresetIdShort": "SecondaryKeyTyp",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/3175_0272_7091_0469",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormFile",
+            "FormTitle": "TypThumbnail",
+            "PresetIdShort": "TypThumbnail",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/4401_1272_7091_3437",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "presetMimeType": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "AssetId",
+            "FormInfo": "Asset ID, as provided on the asset itself.",
+            "PresetIdShort": "AssetId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/7373_4082_7091_2893",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "anyURI"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "InstanceId",
+            "PresetIdShort": "InstanceId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/9544_4082_7091_8596",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ChargeId",
+            "FormInfo": "Designation or number of the batch or charge",
+            "PresetIdShort": "ChargeId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAQ196#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SecondaryKeyInstance",
+            "PresetIdShort": "SecondaryKeyInstance",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/3195_4082_7091_9039",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturingDate",
+            "FormInfo": "Date in the form YYYY-MM-DD",
+            "PresetIdShort": "ManufacturingDate",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAR972#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "date"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "DeviceRevision",
+            "PresetIdShort": "DeviceRevision",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/4370_5082_7091_1975",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SoftwareRevision",
+            "PresetIdShort": "SoftwareRevision",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/2190_5082_7091_3557",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "HardwareRevision",
+            "PresetIdShort": "HardwareRevision",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/3401_5082_7091_6886",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormFile",
+            "FormTitle": "QrCode",
+            "PresetIdShort": "QrCode",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/3121_5082_7091_1060",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "presetMimeType": ""
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "ContactInfo",
+            "PresetIdShort": "ContactInfo{0:00}",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://www.hsu-hh.de/aut/aas/contactinfo",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": 3,
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Name",
+                "PresetIdShort": "Name",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO735#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Role",
+                "PresetIdShort": "Role",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/role",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": "Manufacturer"
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "PhysicalAddress",
+                "PresetIdShort": "PhysicalAddress",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/physicaladdress",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "CountryCode",
+                    "FormInfo": "2-3 digit code according ISO 3166",
+                    "PresetIdShort": "CountryCode",
+                    "PresetCategory": "PARAMETER",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO730#001",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": "DE"
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "Street",
+                    "PresetIdShort": "Street",
+                    "PresetCategory": "PARAMETER",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://www.hsu-hh.de/aut/aas/street",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "langString"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "PostalCode",
+                    "PresetIdShort": "PostalCode",
+                    "PresetCategory": "PARAMETER",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://www.hsu-hh.de/aut/aas/postalcode",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "City",
+                    "PresetIdShort": "City",
+                    "PresetCategory": "PARAMETER",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://www.hsu-hh.de/aut/aas/city",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "StateCounty",
+                    "PresetIdShort": "StateCounty",
+                    "PresetCategory": "PARAMETER",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://www.hsu-hh.de/aut/aas/statecounty",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  }
+                ]
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Email",
+                "PresetIdShort": "Email",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/email",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "URL",
+                "PresetIdShort": "URL",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO694#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "anyURI"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Phone",
+                "PresetIdShort": "Phone",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/phone",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Fax",
+                "PresetIdShort": "Fax",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/fax",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormFile",
+            "FormTitle": "CompanyLogo",
+            "PresetIdShort": "CompanyLogo",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/5232_8082_7091_1138",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "presetMimeType": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "URL",
+            "PresetIdShort": "URL",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO694#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "anyURI"
+            ],
+            "presetValue": ""
+          }
+        ]
+      }
+    }
+  ]
+}
