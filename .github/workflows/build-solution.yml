@@ -20,4 +20,8 @@ jobs:
 
       - name: MSBuild
         working-directory: src
-        run: msbuild
+        run: |
+          msbuild
+            AasxPackageExplorer.sln
+            -t:build
+            /p:PackageLocation="packages"
