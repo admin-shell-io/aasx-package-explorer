@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="AasxPackageExplorer.DiplayVisualAasxElements"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxPackageExplorer"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+
+<!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
+The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+
+    <Grid>
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="tv1" Background="#FFE0E0E0" SelectedItemChanged="tv1_SelectedItemChanged" RequestBringIntoView="tv1_RequestBringIntoView">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Members}">
+                    <Grid  Margin="2" Width="2000" Height="24">
+                        <Rectangle Fill="{Binding Background}" Stroke="{Binding Border}" StrokeThickness="1"/>
+                        <StackPanel Margin="2" VerticalAlignment="Center" Orientation="Horizontal">
+                            <Border Background="{Binding TagBg}" CornerRadius="2" Width="30" Height="18">
+                                <Viewbox Width="28" Stretch="Uniform">
+                                    <TextBlock TextAlignment="Center" Text="{Binding TagString}" FontWeight="Bold" Foreground="{Binding TagFg}"/>
+                                </Viewbox>
+                            </Border>
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding Caption}" FontWeight="Bold" Foreground="Black"/>
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding Info}" FontWeight="Bold" Foreground="#f555"/>
+                        </StackPanel>
+                    </Grid>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <EventSetter Event="RequestBringIntoView" Handler="tv1_RequestBringIntoView"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <!-- MIHO1 -->
+                    <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                      Color="{DynamicResource FocusErrorColor}" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"
+                      Color="Black" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
+                      Color="{DynamicResource FocusErrorColor}" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"
+                      Color="Black" />
+            </TreeView.Resources>
+        </TreeView>
+    </Grid>
+</UserControl>

@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="AasxPluginTechnicalData.TechDataFooterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxPluginTechnicalData"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="600">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="80"/>
+        </Grid.ColumnDefinitions>
+
+        <!--
+        <StackPanel Grid.Column="0" Grid.Row="0" x:Name="StackPanelTexts" Orientation="Vertical">
+            <TextBox FontFamily="Arial" FontSize="12" FontWeight="Regular" BorderThickness="0" Text="Very long xsaxsa jxsax asx asx" HorizontalAlignment="Left" TextWrapping="Wrap"/>
+        </StackPanel>
+        -->
+        
+        <TextBox x:Name="TextBoxValidDate" Grid.Column="1" Grid.Row="0" FontFamily="Arial" FontSize="12" FontWeight="Regular" BorderThickness="0" Text="12.04.2020" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="2,2,2,0"/>
+
+        <ItemsControl x:Name="ItemsControlStatements" Grid.Column="0" Grid.Row="0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Path=.}" FontFamily="Arial" FontSize="12" FontWeight="Regular" BorderThickness="0" TextWrapping="Wrap" Margin="2,2,2,0"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
+    </Grid>
+</UserControl>

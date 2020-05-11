@@ -1,0 +1,4993 @@
+﻿{
+  /* Nameplate */
+  "SM_Nameplate": {
+    "hasDataSpecification": null,
+    "semanticId": {
+      "keys": [
+        {
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://www.hsu-hh.de/aut/aas/nameplate",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": null,
+    "identification": {
+      "idType": "IRI",
+      "id": "www.company.com/ids/sm/4343_5072_7091_3242"
+    },
+    "administration": null,
+    "idShort": "Nameplate",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Instance",
+    "descriptions": null
+  },
+  "CD_ManufacturerName": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO677#002"
+    },
+    "administration": null,
+    "idShort": "ManufacturerName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Herstellername"
+                },
+                {
+                  "language": "EN",
+                  "text": "Manufacturer Name"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Manufacturer Name"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+                },
+                {
+                  "language": "EN",
+                  "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ManufacturerProductDesignation": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAW338#001"
+    },
+    "administration": null,
+    "idShort": "ManufacturerProductDesignation",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Manufacturer product designation"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerproduktbezeichnung"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ManufacturerTypName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING_TRANSLATABLE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
+                },
+                {
+                  "language": "EN",
+                  "text": "Short description of the product (short text)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_PhysicalAddress": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/physicaladdress"
+    },
+    "administration": null,
+    "idShort": "PhysicalAddress",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "PhysicalAddress"
+                },
+                {
+                  "language": "DE",
+                  "text": "Physische Adresse"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "PhysicalAddress"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Sammlung für reale physische Adresse"
+                },
+                {
+                  "language": "EN",
+                  "text": "Collection for real physical address"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CountryCode": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO730#001"
+    },
+    "administration": {
+      "version": "",
+      "revision": ""
+    },
+    "idShort": "CountryCode",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Landeskennung"
+                },
+                {
+                  "language": "EN",
+                  "text": "Country code"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Country code"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Vereinbartes Merkmal zur eindeutigen Identifizierung eines Landes"
+                },
+                {
+                  "language": "EN",
+                  "text": "agreed upon symbol for unambiguous identification of a country"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Street": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO128#001"
+    },
+    "administration": null,
+    "idShort": "Street",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Strasse"
+                },
+                {
+                  "language": "EN",
+                  "text": "Street"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Street"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Name der Strasse und Hausnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "Street name and house number"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Zip": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO129#002"
+    },
+    "administration": null,
+    "idShort": "Zip",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Zip"
+                },
+                {
+                  "language": "DE",
+                  "text": "Postleitzahl"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "PostalCode"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "ZIP code of address"
+                },
+                {
+                  "language": "DE",
+                  "text": "Postleitzahl der Anschrift"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CityTown": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO132#001"
+    },
+    "administration": null,
+    "idShort": "CityTown",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Ort"
+                },
+                {
+                  "language": "EN",
+                  "text": "City/town"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "City/town"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Town or city of the company"
+                },
+                {
+                  "language": "DE",
+                  "text": "Ortsangabe"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_StateCounty": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO133#002"
+    },
+    "administration": null,
+    "idShort": "StateCounty",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "state/county"
+                },
+                {
+                  "language": "DE",
+                  "text": "Bundesland"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "StateCounty"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Bundesland"
+                },
+                {
+                  "language": "EN",
+                  "text": "state/county"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ManufacturerProductFamily": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAU731#001"
+    },
+    "administration": null,
+    "idShort": "ManufacturerProductFamily",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Manufacturer product family"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerproduktfamilie"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "TypClass"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "2. Ebene einer 3 stufigen herstellerspezifischen Produkthierarchie"
+                },
+                {
+                  "language": "EN",
+                  "text": "2nd level of a 3 level manufacturer specific product hierarchy"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SerialNumber": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAM556#002"
+    },
+    "administration": null,
+    "idShort": "SerialNumber",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Serial number"
+                },
+                {
+                  "language": "DE",
+                  "text": "Seriennummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "InstanceId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "eindeutige Zahlen- und Buchstabenkombination mit der das Gerät nach seiner Herstellung identifiziert ist"
+                },
+                {
+                  "language": "EN",
+                  "text": "unique combination of numbers and letters used to identify the device once it has been manufactured"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_BatchNumber": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAQ196#001"
+    },
+    "administration": null,
+    "idShort": "BatchNumber",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Batch number"
+                },
+                {
+                  "language": "DE",
+                  "text": "Chargen-Nummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ChargeId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Eine vom Hersteller eines Stoffes vergebene Nummer zur Identifikation einer Charge"
+                },
+                {
+                  "language": "EN",
+                  "text": "Number assigned by the manufacturer of a material to identify the manufacturer's batch"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ProductCountryOfOrigin": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO841#001"
+    },
+    "administration": null,
+    "idShort": "ProductCountryOfOrigin",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Produkt Ursprungsland"
+                },
+                {
+                  "language": "EN",
+                  "text": "Product country of origin"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "CountryOfOrigin"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Land in dem das Produkt hergestellt wurde (Hersteller Land)"
+                },
+                {
+                  "language": "EN",
+                  "text": "Country in which the product is manufactured (manufacturer country)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_YearOfConstruction": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAP906#001"
+    },
+    "administration": null,
+    "idShort": "YearOfConstruction",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Year of construction"
+                },
+                {
+                  "language": "DE",
+                  "text": "Baujahr"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "YearOfConstruction"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Jahreszahl als Datumsangabe für die Fertigstellung des Objektes"
+                },
+                {
+                  "language": "EN",
+                  "text": "Year as completion date of object"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ProductMarking": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/productmarking"
+    },
+    "administration": null,
+    "idShort": "ProductMarking",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Produktkennzeichnung"
+                },
+                {
+                  "language": "EN",
+                  "text": "Product Marking"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ProductMarking"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Sammlungsdatei für Produktkennzeichnung"
+                },
+                {
+                  "language": "EN",
+                  "text": "Collection file for product marking"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CEQualificationPresent": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-BAF053#008"
+    },
+    "administration": null,
+    "idShort": "CEQualificationPresent",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "CE-Kennzeichnung vorhanden"
+                },
+                {
+                  "language": "EN",
+                  "text": "CE- qualification present"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "CEMarkingPresent"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "BOOLEAN",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "whether CE- qualification is present"
+                },
+                {
+                  "language": "DE",
+                  "text": "Angabe, ob CE-Kennzeichnung vorhanden ist"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_File": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAD005#008"
+    },
+    "administration": null,
+    "idShort": "File",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Enthaltene Doku. Datei"
+                },
+                {
+                  "language": "EN",
+                  "text": "Embedded Doc. file"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "File"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
+                },
+                {
+                  "language": "EN",
+                  "text": "Reference/ BLOB to embedded documentation file."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CRUUSLabelingPresent": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAR528#005"
+    },
+    "administration": null,
+    "idShort": "CRUUSLabelingPresent",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": " Kennzeichnung (RCM) vorhanden"
+                },
+                {
+                  "language": "EN",
+                  "text": "RCM labeling present"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "CRUUSLabelingPresent"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "BOOLEAN",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "indication whether the product is equipped with a specified RCM labeling"
+                },
+                {
+                  "language": "DE",
+                  "text": "Angabe, ob das Produkt mit einer spezifizierten RCM-Kennzeichnung ausgestattet ist"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+
+  /* Identification */
+
+  "SM_Identification": {
+    "hasDataSpecification": null,
+    "semanticId": {
+      "keys": [
+        {
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://www.hsu-hh.de/aut/aas/identification",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": null,
+    "identification": {
+      "idType": "IRI",
+      "id": "www.company.com/ids/sm/6563_5072_7091_4267"
+    },
+    "administration": null,
+    "idShort": "Identification",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Instance",
+    "descriptions": null
+  },
+  "CD_GLNOfManufacturer": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAY812#001"
+    },
+    "administration": null,
+    "idShort": "GLNOfManufacturer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "GLN of manufacturer"
+                },
+                {
+                  "language": "DE",
+                  "text": "GLN des Herstellers"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "GLN of manufacturer"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "international eindeutige Nummer für den Geräte- oder Produkthersteller sowie für den Standort"
+                },
+                {
+                  "language": "EN",
+                  "text": "internationally unique identification number for the manufacturer of the device or the product and for the physical location"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SupplierOfTheIdentifier": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAP796#004"
+    },
+    "administration": null,
+    "idShort": "SupplierOfTheIdentifier",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Supplier of the identifier"
+                },
+                {
+                  "language": "DE",
+                  "text": "Anbieter der Identifikationsnummer für Hersteller"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Supplier of the identifier"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING_TRANSLATABLE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
+                },
+                {
+                  "language": "DE",
+                  "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_MAN_PROD_NUM": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO676#003"
+    },
+    "administration": null,
+    "idShort": "MAN_PROD_NUM",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "product article number of manufacturer"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerartikelnummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "MAN_PROD_NUM"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING_TRANSLATABLE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "eindeutiger Bestellschlüssel des Herstellers"
+                },
+                {
+                  "language": "EN",
+                  "text": "unique product identifier of the manufacturer"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "EN",
+        "text": "product article number of manufacturer"
+      }
+    ]
+  },
+  "CD_ManufacturerProductDescription": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAU734#001"
+    },
+    "administration": null,
+    "idShort": "ManufacturerProductDescription",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Manufacturer product description"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerproduktbeschreibung"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Manufacturer product description"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
+                },
+                {
+                  "language": "EN",
+                  "text": "Description of the product, it's technical features and implementation if needed (long text)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_NameOfSupplier": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO735#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": ""
+    },
+    "idShort": "NameOfSupplier",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "name of supplier"
+                },
+                {
+                  "language": "DE",
+                  "text": "Lieferantenname"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "name of supplier"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Name des Lieferanten, welcher dem Kunden ein Produkt oder eine Dienstleistung bereitstellt"
+                },
+                {
+                  "language": "EN",
+                  "text": "name of supplier which provides the customer with a product or a service"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_GLNOfSupplier": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAY813#001"
+    },
+    "administration": null,
+    "idShort": "GLNOfSupplier",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "GLN of supplier"
+                },
+                {
+                  "language": "DE",
+                  "text": "GLN des Lieferanten"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "GLN of supplier"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "international eindeutige Nummer für den Geräte- oder Produktlieferanten sowie für den Standort"
+                },
+                {
+                  "language": "EN",
+                  "text": "internationally unique identification number for the supplier of the device or the product and for the physical location"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SupplierIdProvider": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/supplieridprovider"
+    },
+    "administration": null,
+    "idShort": "SupplierIdProvider",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "SupplierIdProvider"
+                },
+                {
+                  "language": "DE",
+                  "text": "Anbieter der Identifikationsnummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SupplierIdProvider"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING_TRANSLATABLE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SUP_PROD_NUM": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO736#004"
+    },
+    "administration": null,
+    "idShort": "SUP_PROD_NUM",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "product article number of supplier"
+                },
+                {
+                  "language": "DE",
+                  "text": "Lieferantenartikelnummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "product article number of supplier"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "eindeutiger Bestellschlüssel des Lieferanten"
+                },
+                {
+                  "language": "EN",
+                  "text": "unique product order identifier of the supplier"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SupplierProductDesignation": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAM551#002"
+    },
+    "administration": null,
+    "idShort": "SupplierProductDesignation",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Supplier product designation"
+                },
+                {
+                  "language": "DE",
+                  "text": "Lieferantenproduktbezeichnung"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SupplierTypName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING_TRANSLATABLE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
+                },
+                {
+                  "language": "EN",
+                  "text": "Short description of the product (short text)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SupplierProductDescription": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAU730#001"
+    },
+    "administration": null,
+    "idShort": "SupplierProductDescription",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Supplier product description"
+                },
+                {
+                  "language": "DE",
+                  "text": "Lieferantenproduktbeschreibung"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Supplier product description"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
+                },
+                {
+                  "language": "EN",
+                  "text": "Description of the product, it's technical features and implementation if needed (long text)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ClassificationSystem": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO715#002"
+    },
+    "administration": null,
+    "idShort": "ClassificationSystem",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "classification system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Klassifizierungssystem"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ClassificationSystem"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Klassifizierungssystem"
+                },
+                {
+                  "language": "EN",
+                  "text": "Classification System"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SecondaryKeyTyp": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/secondarykeytyp"
+    },
+    "administration": null,
+    "idShort": "SecondaryKeyTyp",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "SecondaryKeyTyp"
+                },
+                {
+                  "language": "DE",
+                  "text": "Typnummer des IT Systems"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SecondaryKeyTyp"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Führende technische ID im IT System des Typs"
+                },
+                {
+                  "language": "EN",
+                  "text": "SecondaryKeyTyp"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_TypThumbnail": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/thumbnail"
+    },
+    "administration": null,
+    "idShort": "TypThumbnail",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "TypThumbnail"
+                },
+                {
+                  "language": "DE",
+                  "text": "Vorschaubild"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "TypThumbnail"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Darstellung des Produkttyps in kleinem Format"
+                },
+                {
+                  "language": "EN",
+                  "text": "Small picture of the product type"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_AssetId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/assetid"
+    },
+    "administration": null,
+    "idShort": "AssetId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "AssetId"
+                },
+                {
+                  "language": "DE",
+                  "text": "Asset ID"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "AssetId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Global eindeutige ID eines Asset, die machienenlesbar oder durch Menschen lesbar ist."
+                },
+                {
+                  "language": "EN",
+                  "text": "Global unique ID of an asset, which can be read by both human and machine."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SecondaryKeyInstance": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/secondarykeyinstance"
+    },
+    "administration": null,
+    "idShort": "SecondaryKeyInstance",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "SecondaryKeyInstance"
+                },
+                {
+                  "language": "DE",
+                  "text": "Instanznummer des IT Systems"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SecondaryKeyInstance"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Führende technische ID im IT System der Instanz"
+                },
+                {
+                  "language": "EN",
+                  "text": "SecondaryKeyInstance"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DateOfManufacture": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAR972#002"
+    },
+    "administration": null,
+    "idShort": "DateOfManufacture",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Date of manufacture"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellungsdatum"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Date of manufacture"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "DATE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Datum, ab der der Herstellungs- und/oder Entstehungsprozess abgeschlossen ist bzw. ab dem eine Dienstleistung vollständig erbracht ist"
+                },
+                {
+                  "language": "EN",
+                  "text": "Date from which the production and / or development process is completed or from which a service is provided completely"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DeviceRevision": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/devicerevision"
+    },
+    "administration": null,
+    "idShort": "DeviceRevision",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "DeviceRevision"
+                },
+                {
+                  "language": "DE",
+                  "text": "DeviceRevision"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DeviceRevision"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "DeviceRevision"
+                },
+                {
+                  "language": "EN",
+                  "text": "DeviceRevision"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_SoftwareRevision": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/softwarerevision"
+    },
+    "administration": null,
+    "idShort": "SoftwareRevision",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "SoftwareRevision"
+                },
+                {
+                  "language": "EN",
+                  "text": "SoftwareRevision"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SoftwareRevision"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "SoftwareRevision"
+                },
+                {
+                  "language": "EN",
+                  "text": "SoftwareRevision"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_HardwareRevision": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/hardwarerevision"
+    },
+    "administration": null,
+    "idShort": "HardwareRevision",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "HardwareRevision"
+                },
+                {
+                  "language": "EN",
+                  "text": "HardwareRevision"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "HardwareRevision"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "HardwareRevision"
+                },
+                {
+                  "language": "EN",
+                  "text": "HardwareRevision"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_QrCode": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/qrcode"
+    },
+    "administration": null,
+    "idShort": "QrCode",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "QrCode"
+                },
+                {
+                  "language": "EN",
+                  "text": "QrCode"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "QrCode"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "In dem QRCode ist die URL, die die Instanz des Assets genau beschreibt, hinterlegt."
+                },
+                {
+                  "language": "EN",
+                  "text": "QrCode"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_OrganisationContactInfo": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/contactinfo"
+    },
+    "administration": null,
+    "idShort": "OrganisationContactInfo",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Contact Info"
+                },
+                {
+                  "language": "DE",
+                  "text": "Kontakt Info"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "OrganisationContactInfo"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Sammlung für die allgemeinen Kontaktdaten"
+                },
+                {
+                  "language": "EN",
+                  "text": "Collection for general contact data"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ContactInfo_Role": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/role"
+    },
+    "administration": null,
+    "idShort": "ContactInfo_Role",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Rolle"
+                },
+                {
+                  "language": "EN",
+                  "text": "Role"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Role"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Angabe zur Spezifizierung der Rolle, die die Organisation aus ContactInfo einnimmt"
+                },
+                {
+                  "language": "EN",
+                  "text": "Information to specify the role which the organisation of ContactInfo plays"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Email": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/email"
+    },
+    "administration": null,
+    "idShort": "Email",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Emailadresse"
+                },
+                {
+                  "language": "EN",
+                  "text": "Email address"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Email"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Emailadresse"
+                },
+                {
+                  "language": "EN",
+                  "text": "Email address"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_URL": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO694#001"
+    },
+    "administration": null,
+    "idShort": "URL",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Internetadresse"
+                },
+                {
+                  "language": "EN",
+                  "text": "Internet address"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "URL"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "stated as link to a home page. The home page is the starting page or table of contents of a web site with offerings. It usually has the name index.htm or index.html"
+                },
+                {
+                  "language": "DE",
+                  "text": "Angabe als Link, um in eine Homepage zu gelangen. die Homepage ist die Start- beziehungsweise die Inhaltsseite eines Web-Angebots. Meistens trägt sie den Namen index.htm oder index.html"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_PhoneNumber": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO136#002"
+    },
+    "administration": null,
+    "idShort": "PhoneNumber",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Telefonnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "telephone number"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Phone"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "vollständige Telefonnummer unter der ein Geschäftspartner erreichbar ist"
+                },
+                {
+                  "language": "EN",
+                  "text": "complete telephone number to be called to reach a business partner"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Fax": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/fax"
+    },
+    "administration": null,
+    "idShort": "Fax",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Fax"
+                },
+                {
+                  "language": "EN",
+                  "text": "Fax"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Fax"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Faxnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "Fax number"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "local": true,
+            "value": "0173-1#02-AAO136#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_CompanyLogo": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://www.hsu-hh.de/aut/aas/companylogo"
+    },
+    "administration": null,
+    "idShort": "CompanyLogo",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Firmenlogo"
+                },
+                {
+                  "language": "EN",
+                  "text": "CompanyLogo"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "CompanyLogo"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Firmenlogo"
+                },
+                {
+                  "language": "EN",
+                  "text": "CompanyLogo"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+
+  /* DOCUMENTATION */
+
+  "SM_Document": {
+    "hasDataSpecification": null,
+    "semanticId": {
+      "keys": [
+        {
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://www.hsu-hh.de/aut/aas/document",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": null,
+    "identification": {
+      "idType": "IRI",
+      "id": "www.company.com/ids/sm/2543_5072_7091_2660"
+    },
+    "administration": null,
+    "idShort": "Document",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Instance",
+    "descriptions": null
+  },
+  "CD_DocumentationItem": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAD001#001"
+    },
+    "administration": null,
+    "idShort": "DocumentationItem",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumentationsgruppe"
+                },
+                {
+                  "language": "EN",
+                  "text": "Documentation item"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentationItem"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Gruppe von Merkmalen, die Zugriff gibt auf eine Dokumentation für ein Asset, beispielhaft struktuiert nach VDI 2770."
+                },
+                {
+                  "language": "EN",
+                  "text": "Collection of properties, which gives access to documentation of an asset, structured exemplary-wise according to VDI 2770."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentType": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentType"
+    },
+    "administration": null,
+    "idShort": "DocumentType",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumententyp"
+                },
+                {
+                  "language": "EN",
+                  "text": "Document Type"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentType"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Festlegung des Typs des Dokuments im Sinne der DIN EN 82045-1: a) Single (Einzeldokument) b) Aggregate (Sammeldokument) c) DocumentSet (Dokumentensatz) d) CompoundDoc (Mischdokument)"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_DomainId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentId/DomainId"
+    },
+    "administration": null,
+    "idShort": "VDI2770_DomainId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Domain-Nummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "DomainId"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DomainId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Kennung oder Kennzeichen einer Domäne, in der eine DocumentId eineindeutig ist."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_IdType": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentId/IdType"
+    },
+    "administration": null,
+    "idShort": "VDI2770_IdType",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Nummerntyp"
+                },
+                {
+                  "language": "EN",
+                  "text": "IdType"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "IdType"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Besitzt ein Dokument mehrere Identifikationsnummern, muss mithilfe dieser Eigenschaft die führende ID angegeben werden. Der Wert „Primary“ ist für diese ID zu setzen."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentId"
+    },
+    "administration": null,
+    "idShort": "DocumentId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "DocumentId"
+                },
+                {
+                  "language": "DE",
+                  "text": "Dokumenten-Nummer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Die Dokument ID stellt eine eindeutige Identifizierung des Dokuments innerhalb einer Domäne sicher."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentDomainId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentIdDomain/DocumentDomainId"
+    },
+    "administration": null,
+    "idShort": "DocumentDomainId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "DocumentDomainId"
+                },
+                {
+                  "language": "EN",
+                  "text": "DocumentDomainId"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentDomainId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Kennung oder Kennzeichen einer Domäne"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Role": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Party/Role"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Role",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Rolle"
+                },
+                {
+                  "language": "EN",
+                  "text": "Role"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Role"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste: Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_OrganisationId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Party/Organisation/OrganisationId"
+    },
+    "administration": null,
+    "idShort": "VDI2770_OrganisationId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Organisation ID"
+                },
+                {
+                  "language": "EN",
+                  "text": "Organisation ID"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "OrganisationId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "eindeutige ID für die Organisation"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_OrganisationName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Party/Organisation/OrganisationName"
+    },
+    "administration": null,
+    "idShort": "VDI2770_OrganisationName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "OrganisationName"
+                },
+                {
+                  "language": "EN",
+                  "text": "OrganisationName"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "OrganisationName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "gebräuchliche Bezeichnung für die Organisation"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_OrganisationOfficialName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Party/Organisation/OrganisationOfficialName"
+    },
+    "administration": null,
+    "idShort": "VDI2770_OrganisationOfficialName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Offizieller Name der Organisation"
+                },
+                {
+                  "language": "EN",
+                  "text": "Organisation Official Name"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "OrganisationOfficialName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "offizieller Name der Organisation"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Description": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Description"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Description",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Beschreibung"
+                },
+                {
+                  "language": "EN",
+                  "text": "Description"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Description"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Beschreibung für die nächste übergeordnete Collection"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentPartId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentPartId"
+    },
+    "administration": null,
+    "idShort": "DocumentPartId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumenten-Teilnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "DocumentPartId"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentPartId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Ist das Dokument ein zusammengesetztes Dokument, können mithilfe dieser Eigenschaft eindeutige Dokumententeile IDs eingetragen werden, um das Dokument von den anderen Dokumenten zu unterscheiden."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentClassification_ClassId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentClassification/ClassId"
+    },
+    "administration": null,
+    "idShort": "DocumentClassification_ClassId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumentkategorie"
+                },
+                {
+                  "language": "EN",
+                  "text": "Document category"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocCategory"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumentkategorie nach VDI 2770:2018/10"
+                },
+                {
+                  "language": "EN",
+                  "text": "Document category after VDI 2770:2018/10"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_ClassName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentClassification/ClassName"
+    },
+    "administration": null,
+    "idShort": "VDI2770_ClassName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Klassenname"
+                },
+                {
+                  "language": "EN",
+                  "text": "Class Name"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ClassName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Liste von sprachabhängigen Namen zur ClassId. Für die Klassennamen nach VDI 2770 müssen die Werte aus Tabelle 1 in Abschnitt 8.5 angewendet werden."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_ClassificationSystem": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentClassification/ClassificationSystem"
+    },
+    "administration": null,
+    "idShort": "VDI2770_ClassificationSystem",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Klassifizierungssystem"
+                },
+                {
+                  "language": "EN",
+                  "text": "classification system"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ClassificationSystem"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss „VDI2770:2018“ verwenden werden."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentVersionId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersionId"
+    },
+    "administration": null,
+    "idShort": "DocumentVersionId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dokumenten-Versionsnummer"
+                },
+                {
+                  "language": "EN",
+                  "text": "DocumentVersionId"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "DocumentVersionId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Identifikationsnummer zur Dokumenten-version. Verweist ein Document (siehe Anhang C1.1, Eigenschaft DocumentVersion) auf diese Dokumentenversion, muss die Kombination aus DocumentId und DocumentVersionId eindeutig sein."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DocumentVersion_LanguageCode": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/LanguageCode"
+    },
+    "administration": null,
+    "idShort": "DocumentVersion_LanguageCode",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Sprachenschlüssel"
+                },
+                {
+                  "language": "EN",
+                  "text": "LanguageCode"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "LanguageCode"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Angabe eines Sprachcodes gemäss ISO 639-1 oder -2"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Title": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Description/Title"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Title",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Titel"
+                },
+                {
+                  "language": "EN",
+                  "text": "Title"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "VDI2770_Title"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "sprachabhängiger Titel des Dokuments"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Summary": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Description/Summary"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Summary",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Zusammenfassung"
+                },
+                {
+                  "language": "EN",
+                  "text": "Summary"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Summary"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Keywords": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/Description/Keywords"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Keywords",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Schlagwörter"
+                },
+                {
+                  "language": "EN",
+                  "text": "Keywords"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Keywords"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "sprachabhängige, durch Komma getrennte Liste von Schlagwörtern"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_StatusValue": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/LifeCycleStatus/StatusValue"
+    },
+    "administration": null,
+    "idShort": "VDI2770_StatusValue",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Statuswert"
+                },
+                {
+                  "language": "EN",
+                  "text": "StatusValue"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "StatusValue"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden. InReview (in Prüfung), Released (freigegeben)"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_SetDate": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/LifeCycleStatus/SetDate"
+    },
+    "administration": null,
+    "idShort": "VDI2770_SetDate",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Erstellungsdatum"
+                },
+                {
+                  "language": "EN",
+                  "text": "Set Date"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "SetDate"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe DIN ISO 8601)."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Purpose": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/LifeCycleStatus/Purpose"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Purpose",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Zweck"
+                },
+                {
+                  "language": "EN",
+                  "text": "Purpose"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Purpose"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Hier kann ein Zweck zum Meilenstein angegeben werden, z. B. „zur Weiterleitung an den Kunden“."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_BasedOnProcedure": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/LifeCycleStatus/BasedOnProcedure"
+    },
+    "administration": null,
+    "idShort": "VDI2770_BasedOnProcedure",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Prozedur"
+                },
+                {
+                  "language": "EN",
+                  "text": "Procedure"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "BasedOnProcedure"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "textueller Bezug auf ein Verfahren, das der Festlegung dieses Status zugrunde liegt"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_Comments": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/LifeCycleStatus/Comments"
+    },
+    "administration": null,
+    "idShort": "VDI2770_Comments",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Kommentar"
+                },
+                {
+                  "language": "EN",
+                  "text": "Comments"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Comments"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "textuelle Bemerkungen und Anmerkungen zum Status"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_ReferencedObject_Type": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/ReferencedObject/ReferencedObjectType"
+    },
+    "administration": null,
+    "idShort": "VDI2770_ReferencedObject_Type",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Typ"
+                },
+                {
+                  "language": "EN",
+                  "text": "Type"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "Type"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Für Type des Objekts muss immer Product angegeben werden."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_ReferencedObject_RefType": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/ReferencedObject/RefType"
+    },
+    "administration": null,
+    "idShort": "VDI2770_ReferencedObject_RefType",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "RefType"
+                },
+                {
+                  "language": "EN",
+                  "text": "RefType"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "RefType"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Angabe einer Typisierung zur Kennung des technischen Objekts. Folgende Werte sind möglich, ProductId (Produktnummer), SerialId (Seriennummer)"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_ReferencedObject_ObjectId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/ReferencedObject/ObjectId"
+    },
+    "administration": null,
+    "idShort": "VDI2770_ReferencedObject_ObjectId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "ObjectId"
+                },
+                {
+                  "language": "EN",
+                  "text": "ObjectId"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "ObjectId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Angabe der Identifikationsnummer zum Objekt"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_FileId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/StoredDocumentRepresentation/DigitalFile/FileId"
+    },
+    "administration": null,
+    "idShort": "VDI2770_FileId",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "ID der Datei"
+                },
+                {
+                  "language": "EN",
+                  "text": "File ID"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "FileId"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "eindeutige ID für die Datei"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_FileName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/StoredDocumentRepresentation/DigitalFile/FileName"
+    },
+    "administration": null,
+    "idShort": "VDI2770_FileName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Dateiname"
+                },
+                {
+                  "language": "EN",
+                  "text": "File name"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "FileName"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Name der Datei inkl. einer Dateiendung (sofern vorhanden) Es ist nicht notwendig, einen Pfad für die Datei anzugeben."
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_VDI2770_FileFormat": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document/DocumentVersion/StoredDocumentRepresentation/DigitalFile/FileFormat"
+    },
+    "administration": null,
+    "idShort": "VDI2770_FileFormat",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Datei Format"
+                },
+                {
+                  "language": "EN",
+                  "text": "File format"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "FileFormat"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Angabe eines Media Typs gemäß der Liste der IANA"
+                },
+                {
+                  "language": "EN",
+                  "text": "TBD"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_DigitalFile": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAD005#008"
+    },
+    "administration": null,
+    "idShort": "File",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Enthaltene Doku. Datei"
+                },
+                {
+                  "language": "EN",
+                  "text": "Embedded Doc. file"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN?",
+                  "text": "File"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "",
+            "definition": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
+                },
+                {
+                  "language": "EN",
+                  "text": "Reference/ BLOB to embedded documentation file."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  }
+}

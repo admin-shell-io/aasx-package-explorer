@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="AasxIntegrationBase.AasForms.FormListOfDifferentControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxIntegrationBase.AasForms"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="500" Loaded="UserControl_Loaded">
+    <StackPanel x:Name="OutPanel" Orientation="Vertical" Background="#e8e8e8">
+
+        <StackPanel.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <!-- <ResourceDictionary Source="Resources\Graphics.xaml"/> -->
+                    <ResourceDictionary Source="pack://application:,,,/AasxIntegrationBaseWpf;component/Resources/Graphics.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </StackPanel.Resources>
+
+        <!-- Toolbar -->
+        <WrapPanel x:Name="StackPanelToolbar" Margin="4" Background="White" Visibility="Visible" HorizontalAlignment="Right">
+            
+        </WrapPanel>
+        <Grid x:Name="GridToolbar" Margin="4" Background="White" Visibility="Visible">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="2"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="2"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Content="Form tools" Margin="0" Padding="0" VerticalContentAlignment="Center"/>
+            <Button x:Name="ButtonFormSmaller" Grid.Row="1" Grid.Column="6" Content="{StaticResource ResourceKey=FormSmaller}" Height="20" Margin="2" Click="Button_Click"/>
+
+        </Grid>
+
+        <!-- SUBMODEL / SMEC-->
+        <Grid x:Name="GridHeader" Margin="4" Background="White" Visibility="Visible">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="26"/>
+                <ColumnDefinition Width="2"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="TextBlockHeaderFormTitle" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="Submodel" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="DarkBlue"/>
+            <Button x:Name="ButtonInstanceCollapse" Grid.Row="1" Grid.Column="4" Content="&#x25bc;" Margin="2" Click="Button_Click"/>
+            
+            <TextBlock x:Name="TextBlockHeaderFormInfo" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontSize="10" FontWeight="Light" Margin="2,0,2,2" Text="Quite a long informative text" TextWrapping="Wrap" Foreground="DarkBlue"/>
+        </Grid>
+
+        <!-- SMEC
+        <Grid x:Name="GridSMEC" Margin="2" Background="White" Visibility="Visible">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2"/>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="6"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2"/>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="2"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="TextBlockSmecFormTitle" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="SubmodelElementCollection" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="DarkBlue"/>
+            <TextBlock x:Name="TextBlockSmecFormInfo" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontSize="10" FontWeight="Light" Margin="2,0,2,2" Text="Quite a long informative text" TextWrapping="Wrap" Foreground="DarkBlue"/>
+        </Grid>
+         -->
+
+        <!-- LIST OF ELEMENTS -->
+        <StackPanel x:Name="StackPanelElements" Orientation="Vertical" Visibility="Visible">
+        </StackPanel>
+    </StackPanel>
+</UserControl>

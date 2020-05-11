@@ -1,0 +1,21 @@
+﻿-twopass 
+-width 900
+-height 600
+-logo SpecPI40_t.png 
+-eclass .\eclass\ 
+-aasxrepo ..\..\..\..\..\Sample_AAS\aasxrepo-new.json 
+-qualifiers qualifier-presets.json 
+-backupdir .\backup
+-rem -arg -rem "17a"
+-rem "final"
+-dll ..\..\..\..\AasxIntegrationEmptySample\bin\Debug\AasxIntegrationEmptySample.dll
+-p -single-nodeids -p -single-keys -p -ns -p 2 -p -ns -p 3
+-dll ..\..\..\..\..\AasxUaNetServerDevelop\Net46AasxServerPlugin\bin\Debug\Net46AasxServerPlugin.dll
+-dll ..\..\..\..\..\AasxRestrictedPlugins\AasxPluginOpcUaClient\bin\Debug\AasxPluginOpcUaClient.dll
+-dll ..\..\..\..\AasxPluginBomStructure\bin\Debug\AasxPluginBomStructure.dll
+-rem Festo-USB-stick-sample-admin-shell-rest.aasx
+..\..\..\..\AasxGenerate\bin\Debug\sample.xml
+-rem test-aml-export2.aasx
+-rem ..\..\..\..\..\Sample_AAS\Example_AAS_ServoDCMotor.aasx
+-rem ..\..\..\..\..\Sample_AAS\Example_AAS_ForTesting_v07_with_reuse_submodel.aasx
+-write-json options.json

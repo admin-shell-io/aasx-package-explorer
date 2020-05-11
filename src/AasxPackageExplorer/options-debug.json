@@ -1,0 +1,212 @@
+{
+  /* "AasxToLoad" :  "sample-techdata.aasx", */
+  "AasxToLoad": "..\\..\\..\\..\\AasxGenerate\\bin\\Debug\\sample.aasx",
+  /* "AasxToLoad": "sample-hsu.aasx", */
+  /* "AasxToLoad": "MTPsample.aasx", */
+  "WindowLeft": -1,
+  "WindowTop": -1,
+  "WindowWidth": 900,
+  "WindowHeight": 600,
+  "WindowMaximized": false,
+  "TemplateIdAas": "www.example.com/ids/aas/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdAsset": "www.example.com/ids/asset/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelInstance": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
+  "EclassDir": ".\\eclass\\",
+  "LogoFile": "SpecPI40_t.png",
+  "QualifiersFile": "qualifier-presets.json",
+  "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
+  "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
+  "UseFlyovers": true,
+  "SplashTime": 1000,
+  "InternalBrowser": false,
+  "EclassTwoPass": true,
+  "BackupDir": ".\\backup",
+  "BackupFiles": 10,
+  "RestServerHost": "localhost",
+  "RestServerPort": "1111",
+  "WriteAllOptionsFN": null,
+  "IndirectLoadSave": true,
+  "AccentColors": {},
+  "Remarks": [
+    "-arg",
+    "\"17a\"",
+    "\"final\"",
+    "Festo-USB-stick-sample-admin-shell-rest.aasx",
+    "test-aml-export2.aasx",
+    "..\\..\\..\\..\\..\\Sample_AAS\\Example_AAS_ServoDCMotor.aasx",
+    "..\\..\\..\\..\\..\\Sample_AAS\\Example_AAS_ForTesting_v07_with_reuse_submodel.aasx"
+  ],
+  "PluginDll": [
+    {
+      "Path": "..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
+      "Args": [],
+      "Options": null
+    },
+    {
+      /* "Path": "..\\..\\..\\..\\..\\AasxUaNetServerDevelop\\Net46AasxServerPlugin\\bin\\Debug\\Net46AasxServerPlugin.dll", */
+      "Path": "..\\..\\..\\..\\..\\AasxRestrictedPlugins\\AasxPluginUaNetServer\\bin\\Debug\\AasxPluginUaNetServer.dll",
+      "Args": [
+        "-single-nodeids",
+        "-single-keys",
+        "-ns",
+        "2",
+        "-ns",
+        "3"
+      ],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxRestrictedPlugins\\AasxPluginOpcUaClient\\bin\\Debug\\AasxPluginOpcUaClient.dll",
+      "Args": [],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxMtpPlugin\\AasxPluginMtpViewer\\bin\\Debug\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+      "Args": [],
+      "Options": {
+        "Records": [
+          {
+            "AllowSubmodelSemanticId": [
+              {
+                "type": "Submodel",
+                "local": false,
+                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+      "Args": [],
+      "Options": {
+        "Records": [
+          {
+            "AllowSubmodelSemanticId": [
+              {
+                "type": "Submodel",
+                "local": false,
+                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
+      "Args": []
+    }
+  ],
+  "SecureConnectPresets": [
+    {
+      "Name": "Internet Demo",
+      "Protocol": {
+        "Value": "Azure",
+        "Choices": [
+          "Unprotected",
+          "OpenID Connect",
+          "Azure"
+        ]
+      },
+      "AuthorizationServer": {
+        "Value": "http://auth1.phoenix.com",
+        "Choices": [
+          "http://auth2.phoenix.com",
+          "http://auth1.phoenix.com",
+          "http://auth3.phoenix.com"
+        ]
+      },
+      "AasServer": {
+        "Value": "http://aas2.phoenix.com",
+        "Choices": [
+          "http://aas3.phoenix.com",
+          "http://aas2.phoenix.com",
+          "http://aas1.phoenix.com"
+        ]
+      },
+      "CertificateFile": {
+        "Value": "wieso.txt",
+        "Choices": [
+          "C:\\FILE1.TXT",
+          "C:\\FILE2.TXT",
+          "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+        ]
+      },
+      "Password": {
+        "Value": "sescret",
+        "Choices": [
+          "geheim",
+          "hidden",
+          "Pand0ra"
+        ]
+      }
+    },
+    {
+      "Name": "Only Intranet",
+      "Protocol": {
+        "Value": "Unprotected",
+        "Choices": [
+          "Unprotected",
+          "OpenID Connect",
+          "Azure"
+        ]
+      },
+      "AuthorizationServer": {
+        "Value": "http://auth3.phoenix.com",
+        "Choices": [
+          "http://auth2.phoenix.com",
+          "http://auth1.phoenix.com",
+          "http://auth3.phoenix.com"
+        ]
+      },
+      "AasServer": {
+        "Value": "http://aas1.phoenix.com",
+        "Choices": [
+          "http://aas3.phoenix.com",
+          "http://aas2.phoenix.com",
+          "http://aas1.phoenix.com"
+        ]
+      },
+      "CertificateFile": {
+        "Value": "wieso22.txt",
+        "Choices": [
+          "C:\\FILE1.TXT",
+          "C:\\FILE2.TXT",
+          "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+        ]
+      }
+    }
+  ]
+}

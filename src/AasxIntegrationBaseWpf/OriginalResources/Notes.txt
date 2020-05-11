@@ -1,0 +1,7 @@
+﻿The files in this directory are source to the Resources used in this assembly.
+They are only contained in the directory, not in the VS solutions.
+
+For WPF/ XAML parts: Originally .SVG edited with Inkscape, then exported to 
+XAML. Manual deletion of the { Name="xx" } parts and insertion into Graphics.xaml
+
+(c) by Michael Hoffmeister
