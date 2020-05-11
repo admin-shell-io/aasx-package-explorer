@@ -12,7 +12,7 @@ https://github.com/admin-shell-io/aasx-package-explorer/raw/master/screenshot.pn
 
 If you want to request new features or report bugs, please 
 [create an issue](
-https://github.com/admin-shell-io/aasx-package-explorer/issues/new). 
+https://github.com/admin-shell-io/aasx-package-explorer/issues/new/choose). 
 
 If you want to contribute, see [CONTRIBUTING.md](
 https://github.com/admin-shell-io/aasx-package-explorer/blob/master/CONTRIBUTING.md
