@@ -1,0 +1,5 @@
+packages/
+*/bin/
+*/obj/
+**/BuildDate.txt
+Microsoft.Net.Compilers.2.10.0/
