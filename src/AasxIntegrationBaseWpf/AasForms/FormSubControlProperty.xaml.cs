@@ -199,7 +199,7 @@ namespace AasxIntegrationBase.AasForms
 
         }
 
-        private void ComboBox_TextChanged(object sender3, TextChangedEventArgs e3) 
+        private void ComboBox_TextChanged(object sender3, TextChangedEventArgs e3)
         {
             // save data context
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
@@ -211,5 +211,5 @@ namespace AasxIntegrationBase.AasForms
             dc.prop.value = ComboBoxValue.Text;
         }
 
-}
+    }
 }

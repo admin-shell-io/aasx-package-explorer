@@ -29,7 +29,7 @@ namespace AasxPackageExplorer
     public class BrowserContainer
     {
 
-#region Members
+        #region Members
         //=============
 
 #if WITHCEF
@@ -51,8 +51,10 @@ namespace AasxPackageExplorer
         private FakeBrowser theFallbackBrowser = null;
         private string fallbackBrowserHandlesFiles = ".jpeg .jpg .png .bmp";
 
-        public UIElement BrowserControl {
-            get {
+        public UIElement BrowserControl
+        {
+            get
+            {
                 if (theOnscreenBrowser != null)
                     return theOnscreenBrowser;
                 return theFallbackBrowser;
@@ -63,7 +65,8 @@ namespace AasxPackageExplorer
         public double ZoomLevel
         {
             get { return cachedZoomLevel; }
-            set {
+            set
+            {
                 // cache
                 cachedZoomLevel = value;
 
@@ -89,10 +92,10 @@ namespace AasxPackageExplorer
         private bool useAlwaysInternalBrowser = false;
         private bool useOffscreen = false;
 
-        
 
-#endregion
-#region Constructors
+
+        #endregion
+        #region Constructors
         //==================
 
         public void Start(string startUrl, bool useAlwaysInternalBrowser, bool useOffscreen = false)
@@ -183,11 +186,11 @@ namespace AasxPackageExplorer
 #endif
         }
 
-#endregion
-#region Functions to the outside
+        #endregion
+        #region Functions to the outside
         //==============================
 
-        public bool CanHandleFileNameExtension (string fn)
+        public bool CanHandleFileNameExtension(string fn)
         {
             // prepare extension
             var ext = System.IO.Path.GetExtension(fn.ToLower());

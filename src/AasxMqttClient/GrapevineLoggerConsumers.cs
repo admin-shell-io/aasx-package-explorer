@@ -33,7 +33,7 @@ namespace AasxMqttClient
         public void Error(string message) { if (this.level >= LogLevel.Error) this.Append("ERR: {0}", message); }
         public void Error(object obj) { if (this.level >= LogLevel.Error) this.Append("ERR: {0}", obj); }
         public void Fatal(string message) { if (this.level >= LogLevel.Fatal) this.Append("FTL: {0}", message); }
-        public void Fatal(object obj) { if (this.level >= LogLevel.Fatal ) this.Append("FTL: {0}", obj); }
+        public void Fatal(object obj) { if (this.level >= LogLevel.Fatal) this.Append("FTL: {0}", obj); }
         public void Fatal(string message, Exception ex) { if (this.level >= LogLevel.Fatal) this.Append("FTL: Exception when {0}: {1}", message, ex.ToString()); }
         public void Info(string message, Exception ex) { if (this.level >= LogLevel.Info) this.Append("INF: Exception when {0}: {1}", message, ex.ToString()); }
         public void Info(string message) { if (this.level >= LogLevel.Info) this.Append("INF: {0}", message); }
@@ -69,8 +69,9 @@ namespace AasxMqttClient
 
         public override void Append(string msg, params object[] args)
         {
-            lock (list) {
-                list.Add(string.Format(msg, args)); 
+            lock (list)
+            {
+                list.Add(string.Format(msg, args));
             }
         }
 

@@ -193,7 +193,8 @@ namespace AasxPackageExplorer
             }
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            if (helper.SafeguardAccess(stack, repo, asset.hasDataSpecification, "HasDataSpecification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, asset.hasDataSpecification, "HasDataSpecification:", "Create data element!", v =>
+            {
                 asset.hasDataSpecification = new AdminShell.HasDataSpecification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -238,7 +239,8 @@ namespace AasxPackageExplorer
                     "Identification id shall not be empty. You could use the 'Generate' button in order to generate a worldwide unique id. The template of this id could be set by commandline arguments." )
 
             });
-            if (helper.SafeguardAccess(stack, repo, asset.identification, "identification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, asset.identification, "identification:", "Create data element!", v =>
+            {
                 asset.identification = new AdminShell.Identification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -246,7 +248,8 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(stack, "idType", asset, ref asset.identification.idType, null, repo, v => { asset.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
                 helper.AddKeyValueRef(stack, "id", asset, ref asset.identification.id, null, repo, v => { asset.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitles: new string[] { "Generate", "Input" }, auxButtonLambda: (i) => {
+                    auxButtonTitles: new string[] { "Generate", "Input" }, auxButtonLambda: (i) =>
+                    {
                         if (i is int && (int)i == 0)
                         {
                             asset.identification.idType = AdminShell.Identification.IRI;
@@ -277,7 +280,8 @@ namespace AasxPackageExplorer
                 new HintCheck( () => { return asset.administration.version.Trim() == "" || asset.administration.revision.Trim() == ""; },
                     "Admistrative information fields should not be empty.", severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(stack, repo, asset.administration, "administration:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, asset.administration, "administration:", "Create data element!", v =>
+            {
                 asset.administration = new AdminShell.Administration();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -296,7 +300,8 @@ namespace AasxPackageExplorer
                 new HintCheck( () => { return asset.kind.kind.Trim().ToLower() != "instance"; },
                     "Check for kind setting. 'Instance' is the usual choice.", severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(stack, repo, asset.kind, "kind:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, asset.kind, "kind:", "Create data element!", v =>
+            {
                 asset.kind = new AdminShell.AssetKind();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             })) helper.AddKeyValueRef(stack, "kind", asset.kind, ref asset.kind.kind, null, repo, v => { asset.kind.kind = v as string; return new ModifyRepo.LambdaActionNone(); }, new string[] { "Template", "Instance" });
@@ -588,13 +593,15 @@ namespace AasxPackageExplorer
                 var g = helper.AddSmallGrid(5, 3, new string[] { "#", "*", "#" });
                 helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "Source path: ");
                 repo.RegisterControl(helper.AddSmallTextBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), text: PackageSourcePath),
-                        (o) => {
+                        (o) =>
+                        {
                             if (o is string)
                                 PackageSourcePath = o as string;
                             return new ModifyRepo.LambdaActionNone();
                         });
                 repo.RegisterControl(helper.AddSmallButtonTo(g, 0, 2, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Select"),
-                        (o) => {
+                        (o) =>
+                        {
                             var dlg = new Microsoft.Win32.OpenFileDialog();
                             var res = dlg.ShowDialog();
                             if (res == true)
@@ -607,26 +614,30 @@ namespace AasxPackageExplorer
                         });
                 helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "Target filename: ");
                 repo.RegisterControl(helper.AddSmallTextBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), text: PackageTargetFn),
-                        (o) => {
+                        (o) =>
+                        {
                             if (o is string)
                                 PackageTargetFn = o as string;
                             return new ModifyRepo.LambdaActionNone();
                         });
                 helper.AddSmallLabelTo(g, 2, 0, padding: new Thickness(2, 0, 0, 0), content: "Target path: ");
                 repo.RegisterControl(helper.AddSmallTextBoxTo(g, 2, 1, margin: new Thickness(2, 2, 2, 2), text: PackageTargetDir),
-                        (o) => {
+                        (o) =>
+                        {
                             if (o is string)
                                 PackageTargetDir = o as string;
                             return new ModifyRepo.LambdaActionNone();
                         });
                 repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 3, 1, margin: new Thickness(2, 2, 2, 2), content: "Embed as thumbnail (only one file per package!)", isChecked: PackageEmbedAsThumbnail),
-                        (o) => {
+                        (o) =>
+                        {
                             if (o is bool)
                                 PackageEmbedAsThumbnail = (bool)o;
                             return new ModifyRepo.LambdaActionNone();
                         });
                 repo.RegisterControl(helper.AddSmallButtonTo(g, 4, 1, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add file to package"),
-                        (o) => {
+                        (o) =>
+                        {
                             try
                             {
                                 var ptd = PackageTargetDir;
@@ -767,7 +778,7 @@ namespace AasxPackageExplorer
                             if ((int)buttonNdx == 1)
                             {
                                 submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelTemplate);
-                                submodel.kind = AdminShell.ModelingKind.CreateAsTemplate(); 
+                                submodel.kind = AdminShell.ModelingKind.CreateAsTemplate();
                             }
                             else
                                 submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance);
@@ -898,7 +909,8 @@ namespace AasxPackageExplorer
             }
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            if (helper.SafeguardAccess(stack, repo, aas.hasDataSpecification, "HasDataSpecification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, aas.hasDataSpecification, "HasDataSpecification:", "Create data element!", v =>
+            {
                 aas.hasDataSpecification = new AdminShell.HasDataSpecification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -941,7 +953,8 @@ namespace AasxPackageExplorer
                     "Identification id shall not be empty. You could use the 'Generate' button in order to generate a worldwide unique id. The template of this id could be set by commandline arguments." )
 
             });
-            if (helper.SafeguardAccess(stack, repo, aas.identification, "identification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, aas.identification, "identification:", "Create data element!", v =>
+            {
                 aas.identification = new AdminShell.Identification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -949,7 +962,8 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(stack, "idType", aas.identification, ref aas.identification.idType, null, repo, v => { aas.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
                 helper.AddKeyValueRef(stack, "id", aas.identification, ref aas.identification.id, null, repo, v => { aas.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitle: "Generate", auxButtonLambda: v => {
+                    auxButtonTitle: "Generate", auxButtonLambda: v =>
+                    {
                         aas.identification.idType = AdminShell.Identification.IRI;
                         aas.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas);
                         return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: aas);
@@ -962,7 +976,8 @@ namespace AasxPackageExplorer
                 new HintCheck( () => { return aas.administration.version.Trim() == "" || aas.administration.revision.Trim() == ""; },
                     "Admistrative information fields should not be empty.", severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(stack, repo, aas.administration, "administration:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, aas.administration, "administration:", "Create data element!", v =>
+            {
                 aas.administration = new AdminShell.Administration();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -1412,14 +1427,16 @@ namespace AasxPackageExplorer
                     "Identification id shall not be empty. You could use the 'Generate' button in order to generate a worldwide unique id. The template of this id could be set by commandline arguments." )
 
             });
-            if (helper.SafeguardAccess(stack, repo, cd.identification, "identification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, cd.identification, "identification:", "Create data element!", v =>
+            {
                 cd.identification = new AdminShell.Identification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
             {
                 helper.AddKeyValueRef(stack, "idType", cd.identification, ref cd.identification.idType, null, repo, v => { cd.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames,
-                    auxButtonTitles: new string[] { "Generate", "Rename" }, auxButtonLambda: (i) => {
+                    auxButtonTitles: new string[] { "Generate", "Rename" }, auxButtonLambda: (i) =>
+                    {
                         if (i is int && (int)i == 0)
                         {
                             cd.identification.idType = AdminShell.Identification.IRI;
@@ -1465,7 +1482,8 @@ namespace AasxPackageExplorer
                 new HintCheck( () => { return cd.administration.version.Trim() == "" || cd.administration.revision.Trim() == ""; },
                     "Admistrative information fields should not be empty.", severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(stack, repo, cd.administration, "administration:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, cd.administration, "administration:", "Create data element!", v =>
+            {
                 cd.administration = new AdminShell.Administration();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -1475,7 +1493,8 @@ namespace AasxPackageExplorer
             }
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
-            if (helper.SafeguardAccess(stack, repo, cd.IsCaseOf, "isCaseOf:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, cd.IsCaseOf, "isCaseOf:", "Create data element!", v =>
+            {
                 cd.IsCaseOf = new List<AdminShell.Reference>();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -1654,7 +1673,7 @@ namespace AasxPackageExplorer
                                 "Please check, if you can provide a source of definition for the concepts. This could be an informal link to a document, glossary item etc.")
                         });
                         helper.AddKeyValueRef(stack, "sourceOfDefinition", dsiec, ref dsiec.sourceOfDefinition, null, repo, v => { dsiec.sourceOfDefinition = v as string; return new ModifyRepo.LambdaActionNone(); });
-                        
+
                         helper.AddHintBubble(stack, hintMode, new HintCheck[] {
                             new HintCheck( () => { return dsiec.symbol == null || dsiec.symbol.Trim().Length < 1; },
                                 "Please check, if you can provide formulaic character for the concept.", severityLevel: HintCheck.Severity.Notice)
@@ -1737,8 +1756,8 @@ namespace AasxPackageExplorer
                                 if ((int)buttonNdx == 2)
                                     en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection;
                                 if ((int)buttonNdx == 3)
-                                    en = helper.SelectAdequateEnum("Select SubmodelElement to create ..", 
-                                        excludeValues: new AdminShell.SubmodelElementWrapper.AdequateElementEnum[] { AdminShell.SubmodelElementWrapper.AdequateElementEnum.Operation } );
+                                    en = helper.SelectAdequateEnum("Select SubmodelElement to create ..",
+                                        excludeValues: new AdminShell.SubmodelElementWrapper.AdequateElementEnum[] { AdminShell.SubmodelElementWrapper.AdequateElementEnum.Operation });
 
                                 // ok?
                                 if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
@@ -1812,7 +1831,7 @@ namespace AasxPackageExplorer
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(package, env, parentContainer, ov.value, null, editMode, repo, substack, levelColors, hintMode);
                 }
-            }            
+            }
         }
 
 
@@ -1854,10 +1873,10 @@ namespace AasxPackageExplorer
 
                 // entities helper
                 if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
-                    helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env, 
+                    helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
                         "SubmodelElement:", nextFocus: wrapper?.submodelElement);
                 if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection && wrapper != null)
-                    helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value, wrapper, env, 
+                    helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value, wrapper, env,
                         "SubmodelElement:", nextFocus: wrapper?.submodelElement);
 
                 // refactor?
@@ -1917,7 +1936,7 @@ namespace AasxPackageExplorer
                             {
                                 if (helper.flyoutProvider != null)
                                     helper.flyoutProvider.MessageBoxFlyoutShow("No (valid) information in copy/paste buffer.", "Copy & Paste", MessageBoxButton.OK, MessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone(); 
+                                return new ModifyRepo.LambdaActionNone();
                             }
 
                             // user feedback
@@ -2603,7 +2622,7 @@ namespace AasxPackageExplorer
                 }))
                 {
                     helper.AddKeyListKeys(stack, "first", p.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); } );
+                        jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); });
                 }
 
                 helper.AddHintBubble(stack, hintMode, new HintCheck[] {
@@ -2757,7 +2776,8 @@ namespace AasxPackageExplorer
                 new HintCheck(() => { return view.description.langString.Count < 2; },
                     "Consider having description in multiple langauges.", severityLevel: HintCheck.Severity.Notice)
             });
-            if (helper.SafeguardAccess(stack, repo, view.description, "description:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, view.description, "description:", "Create data element!", v =>
+            {
                 view.description = new AdminShell.Description();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             })) helper.AddKeyListLangStr(stack, "description", view.description.langString, repo);
@@ -2769,7 +2789,8 @@ namespace AasxPackageExplorer
                     "Check if you want to add a semantic reference to an external repository. Only by adding this, a computer can distinguish, for what the view is really meant for.", severityLevel: HintCheck.Severity.Notice )
             });
             helper.AddGroup(stack, "Semantic ID", levelColors[1][0], levelColors[1][1]);
-            if (helper.SafeguardAccess(stack, repo, view.semanticId, "semanticId:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, view.semanticId, "semanticId:", "Create data element!", v =>
+            {
                 view.semanticId = new AdminShell.SemanticId();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             })) helper.AddKeyListKeys(stack, "semanticId", view.semanticId.Keys, repo);
@@ -2779,7 +2800,8 @@ namespace AasxPackageExplorer
                 new HintCheck( () => { return view.hasDataSpecification == null || view.hasDataSpecification.reference == null || view.hasDataSpecification.reference.Count<1; },
                     "Check if you want to add a data specification link to a global, external ressource. Only by adding this, a human can understand, for what the view is really meant for.", severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(stack, repo, view.hasDataSpecification, "HasDataSpecification:", "Create data element!", v => {
+            if (helper.SafeguardAccess(stack, repo, view.hasDataSpecification, "HasDataSpecification:", "Create data element!", v =>
+            {
                 view.hasDataSpecification = new AdminShell.HasDataSpecification();
                 return new ModifyRepo.LambdaActionRedrawEntity();
             }))
@@ -2861,10 +2883,10 @@ namespace AasxPackageExplorer
         }
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
-            AdminShellPackageEnv package, 
-            VisualElementGeneric entity, 
-            bool editMode, bool hintMode = false, 
-            AdminShellPackageEnv[] auxPackages = null, 
+            AdminShellPackageEnv package,
+            VisualElementGeneric entity,
+            bool editMode, bool hintMode = false,
+            AdminShellPackageEnv[] auxPackages = null,
             IFlyoutProvider flyoutProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
@@ -2887,7 +2909,7 @@ namespace AasxPackageExplorer
                 new Brush[] { (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"], Brushes.White },
                 new Brush[] { (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"], Brushes.Black },
                 new Brush[] { (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"], Brushes.Black }
-            };            
+            };
 
             // hint mode disable, when not edit
 

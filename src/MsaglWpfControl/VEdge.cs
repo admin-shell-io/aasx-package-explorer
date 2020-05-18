@@ -53,14 +53,18 @@ using MPoint = Microsoft.Msagl.Core.Geometry.Point;
 using MPolyline = Microsoft.Msagl.Core.Geometry.Curves.Polyline;
 using MRectangle = Microsoft.Msagl.Core.Geometry.Rectangle;
 
-namespace Microsoft.Msagl.WpfGraphControl {
-    internal class VEdge : IViewerEdge, IInvalidatable {
-        
+namespace Microsoft.Msagl.WpfGraphControl
+{
+    internal class VEdge : IViewerEdge, IInvalidatable
+    {
+
         internal WFrameworkElement LabelFrameworkElement;
 
-        public VEdge(MEdge edge, WFrameworkElement labelFrameworkElement) {
+        public VEdge(MEdge edge, WFrameworkElement labelFrameworkElement)
+        {
             Edge = edge;
-            CurvePath = new WPath {
+            CurvePath = new WPath
+            {
                 Data = GetICurveWpfGeometry(edge.GeometryEdge.Curve),
                 Tag = this
             };
@@ -68,33 +72,40 @@ namespace Microsoft.Msagl.WpfGraphControl {
             EdgeAttrClone = edge.Attr.Clone();
 
             if (edge.Attr.ArrowAtSource)
-                SourceArrowHeadPath = new WPath {
+                SourceArrowHeadPath = new WPath
+                {
                     Data = DefiningSourceArrowHead(),
                     Tag = this
                 };
             if (edge.Attr.ArrowAtTarget)
-                TargetArrowHeadPath = new WPath {
+                TargetArrowHeadPath = new WPath
+                {
                     Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness),
                     Tag = this
                 };
 
             SetPathStroke();
 
-            if (labelFrameworkElement != null) {
+            if (labelFrameworkElement != null)
+            {
                 LabelFrameworkElement = labelFrameworkElement;
                 Common.PositionFrameworkElement(LabelFrameworkElement, edge.Label.Center, 1);
             }
             edge.Attr.VisualsChanged += (a, b) => Invalidate();
 
-            edge.IsVisibleChanged += obj => {
-                foreach (var frameworkElement in FrameworkElements) {
+            edge.IsVisibleChanged += obj =>
+            {
+                foreach (var frameworkElement in FrameworkElements)
+                {
                     frameworkElement.Visibility = edge.IsVisible ? Visibility.Visible : Visibility.Hidden;
                 }
             };
         }
 
-        internal IEnumerable<WFrameworkElement> FrameworkElements {
-            get {
+        internal IEnumerable<WFrameworkElement> FrameworkElements
+        {
+            get
+            {
                 if (SourceArrowHeadPath != null)
                     yield return this.SourceArrowHeadPath;
                 if (TargetArrowHeadPath != null)
@@ -112,90 +123,109 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
 
         internal EdgeAttr EdgeAttrClone { get; set; }
-            
-        internal static WGeometry DefiningTargetArrowHead(EdgeGeometry edgeGeometry, double thickness) {
-            if (edgeGeometry.TargetArrowhead == null || edgeGeometry.Curve==null)
+
+        internal static WGeometry DefiningTargetArrowHead(EdgeGeometry edgeGeometry, double thickness)
+        {
+            if (edgeGeometry.TargetArrowhead == null || edgeGeometry.Curve == null)
                 return null;
             var streamGeometry = new WStreamGeometry();
-            using (WStreamGeometryContext context = streamGeometry.Open()) {
+            using (WStreamGeometryContext context = streamGeometry.Open())
+            {
                 AddArrow(context, edgeGeometry.Curve.End,
                          edgeGeometry.TargetArrowhead.TipPosition, thickness);
                 return streamGeometry;
             }
         }
 
-        WGeometry DefiningSourceArrowHead() {
+        WGeometry DefiningSourceArrowHead()
+        {
             var streamGeometry = new WStreamGeometry();
-            using (WStreamGeometryContext context = streamGeometry.Open()) {
+            using (WStreamGeometryContext context = streamGeometry.Open())
+            {
                 AddArrow(context, Edge.GeometryEdge.Curve.Start, Edge.GeometryEdge.EdgeGeometry.SourceArrowhead.TipPosition, PathStrokeThickness);
                 return streamGeometry;
             }
         }
 
-    
-        double PathStrokeThickness { get {
-            return PathStrokeThicknessFunc != null ? PathStrokeThicknessFunc() : this.Edge.Attr.LineWidth;
-        } }
+
+        double PathStrokeThickness
+        {
+            get
+            {
+                return PathStrokeThicknessFunc != null ? PathStrokeThicknessFunc() : this.Edge.Attr.LineWidth;
+            }
+        }
 
         internal WPath CurvePath { get; set; }
         internal WPath SourceArrowHeadPath { get; set; }
         internal WPath TargetArrowHeadPath { get; set; }
 
-        static internal WGeometry GetICurveWpfGeometry(ICurve curve) {
+        static internal WGeometry GetICurveWpfGeometry(ICurve curve)
+        {
             var streamGeometry = new WStreamGeometry();
-            using (WStreamGeometryContext context = streamGeometry.Open()) {
+            using (WStreamGeometryContext context = streamGeometry.Open())
+            {
                 FillStreamGeometryContext(context, curve);
                 return streamGeometry;
             }
         }
 
-        static void FillStreamGeometryContext(WStreamGeometryContext context, ICurve curve) {
+        static void FillStreamGeometryContext(WStreamGeometryContext context, ICurve curve)
+        {
             if (curve == null)
                 return;
             FillContextForICurve(context, curve);
         }
 
-        static internal void FillContextForICurve(WStreamGeometryContext context,ICurve iCurve) {
-            
-            context.BeginFigure(Common.WpfPoint(iCurve.Start),false,false);
+        static internal void FillContextForICurve(WStreamGeometryContext context, ICurve iCurve)
+        {
+
+            context.BeginFigure(Common.WpfPoint(iCurve.Start), false, false);
 
             var c = iCurve as Curve;
-            if(c != null)
-                FillContexForCurve(context,c);
-            else {
+            if (c != null)
+                FillContexForCurve(context, c);
+            else
+            {
                 var cubicBezierSeg = iCurve as CubicBezierSegment;
-                if(cubicBezierSeg != null)
-                    context.BezierTo(Common.WpfPoint(cubicBezierSeg.B(1)),Common.WpfPoint(cubicBezierSeg.B(2)),
-                                     Common.WpfPoint(cubicBezierSeg.B(3)),true,false);
-                else {
+                if (cubicBezierSeg != null)
+                    context.BezierTo(Common.WpfPoint(cubicBezierSeg.B(1)), Common.WpfPoint(cubicBezierSeg.B(2)),
+                                     Common.WpfPoint(cubicBezierSeg.B(3)), true, false);
+                else
+                {
                     var ls = iCurve as MLineSegment;
-                    if(ls != null)
-                        context.LineTo(Common.WpfPoint(ls.End),true,false);
-                    else {
+                    if (ls != null)
+                        context.LineTo(Common.WpfPoint(ls.End), true, false);
+                    else
+                    {
                         var rr = iCurve as RoundedRect;
-                        if(rr != null)
-                            FillContexForCurve(context,rr.Curve);
-                        else {
+                        if (rr != null)
+                            FillContexForCurve(context, rr.Curve);
+                        else
+                        {
                             var poly = iCurve as MPolyline;
                             if (poly != null)
                                 FillContexForPolyline(context, poly);
                             else
                             {
                                 var ellipse = iCurve as MEllipse;
-                                if (ellipse != null) {
+                                if (ellipse != null)
+                                {
                                     //       context.LineTo(Common.WpfPoint(ellipse.End),true,false);
                                     double sweepAngle = EllipseSweepAngle(ellipse);
                                     bool largeArc = Math.Abs(sweepAngle) >= Math.PI;
                                     MRectangle box = ellipse.FullBox();
                                     context.ArcTo(Common.WpfPoint(ellipse.End),
-                                                  new WSize(box.Width/2, box.Height/2),
+                                                  new WSize(box.Width / 2, box.Height / 2),
                                                   sweepAngle,
                                                   largeArc,
                                                   sweepAngle < 0
                                                       ? WSweepDirection.Counterclockwise
                                                       : WSweepDirection.Clockwise,
                                                   true, true);
-                                } else {
+                                }
+                                else
+                                {
                                     throw new NotImplementedException();
                                 }
                             }
@@ -205,60 +235,72 @@ namespace Microsoft.Msagl.WpfGraphControl {
             }
         }
 
-        static void FillContexForPolyline(WStreamGeometryContext context,MPolyline poly) {
-            for(PolylinePoint pp = poly.StartPoint.Next;pp != null;pp = pp.Next)
-                context.LineTo(Common.WpfPoint(pp.Point),true,false);
+        static void FillContexForPolyline(WStreamGeometryContext context, MPolyline poly)
+        {
+            for (PolylinePoint pp = poly.StartPoint.Next; pp != null; pp = pp.Next)
+                context.LineTo(Common.WpfPoint(pp.Point), true, false);
         }
 
-        static void FillContexForCurve(WStreamGeometryContext context,Curve c) {
-            foreach(ICurve seg in c.Segments) {
+        static void FillContexForCurve(WStreamGeometryContext context, Curve c)
+        {
+            foreach (ICurve seg in c.Segments)
+            {
                 var bezSeg = seg as CubicBezierSegment;
-                if(bezSeg != null) {
+                if (bezSeg != null)
+                {
                     context.BezierTo(Common.WpfPoint(bezSeg.B(1)),
-                                     Common.WpfPoint(bezSeg.B(2)),Common.WpfPoint(bezSeg.B(3)),true,false);
-                } else {
+                                     Common.WpfPoint(bezSeg.B(2)), Common.WpfPoint(bezSeg.B(3)), true, false);
+                }
+                else
+                {
                     var ls = seg as MLineSegment;
-                    if(ls != null)
-                        context.LineTo(Common.WpfPoint(ls.End),true,false);
-                    else {
+                    if (ls != null)
+                        context.LineTo(Common.WpfPoint(ls.End), true, false);
+                    else
+                    {
                         var ellipse = seg as MEllipse;
-                        if(ellipse != null) {
+                        if (ellipse != null)
+                        {
                             //       context.LineTo(Common.WpfPoint(ellipse.End),true,false);
                             double sweepAngle = EllipseSweepAngle(ellipse);
                             bool largeArc = Math.Abs(sweepAngle) >= Math.PI;
                             MRectangle box = ellipse.FullBox();
                             context.ArcTo(Common.WpfPoint(ellipse.End),
-                                          new WSize(box.Width / 2,box.Height / 2),
+                                          new WSize(box.Width / 2, box.Height / 2),
                                           sweepAngle,
                                           largeArc,
                                           sweepAngle < 0
                                               ? WSweepDirection.Counterclockwise
                                               : WSweepDirection.Clockwise,
-                                          true,true);
-                        } else
+                                          true, true);
+                        }
+                        else
                             throw new NotImplementedException();
                     }
                 }
             }
         }
 
-        public static double EllipseSweepAngle(MEllipse ellipse) {
+        public static double EllipseSweepAngle(MEllipse ellipse)
+        {
             double sweepAngle = ellipse.ParEnd - ellipse.ParStart;
             return ellipse.OrientedCounterclockwise() ? sweepAngle : -sweepAngle;
         }
 
 
-        static void AddArrow(WStreamGeometryContext context,MPoint start,MPoint end, double thickness) {
-            
-            if(thickness > 1) {
+        static void AddArrow(WStreamGeometryContext context, MPoint start, MPoint end, double thickness)
+        {
+
+            if (thickness > 1)
+            {
                 MPoint dir = end - start;
                 MPoint h = dir;
                 double dl = dir.Length;
-                if(dl < 0.001)
+                if (dl < 0.001)
                     return;
                 dir /= dl;
 
-                var s = new MPoint(-dir.Y,dir.X);
+                var s = new MPoint(-dir.Y, dir.X);
                 double w = 0.5 * thickness;
                 MPoint s0 = w * s;
 
@@ -267,12 +309,14 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
                 double rad = w / HalfArrowAngleCos;
 
-                context.BeginFigure(Common.WpfPoint(start + s),true,true);
-                context.LineTo(Common.WpfPoint(start - s),true,false);
-                context.LineTo(Common.WpfPoint(end - s0),true,false);
-                context.ArcTo(Common.WpfPoint(end + s0),new WSize(rad,rad),
-                              Math.PI - ArrowAngle,false,WSweepDirection.Clockwise,true,false);
-            } else {
+                context.BeginFigure(Common.WpfPoint(start + s), true, true);
+                context.LineTo(Common.WpfPoint(start - s), true, false);
+                context.LineTo(Common.WpfPoint(end - s0), true, false);
+                context.ArcTo(Common.WpfPoint(end + s0), new WSize(rad, rad),
+                              Math.PI - ArrowAngle, false, WSweepDirection.Clockwise, true, false);
+            }
+            else
+            {
                 MPoint dir = end - start;
                 double dl = dir.Length;
                 //take into account the widths
@@ -282,9 +326,9 @@ namespace Microsoft.Msagl.WpfGraphControl {
                 dir = dir.Rotate(Math.PI / 2);
                 MPoint s = dir * HalfArrowAngleTan;
 
-                context.BeginFigure(Common.WpfPoint(start + s),true,true);
-                context.LineTo(Common.WpfPoint(end),true,true);
-                context.LineTo(Common.WpfPoint(start - s),true,true);
+                context.BeginFigure(Common.WpfPoint(start + s), true, true);
+                context.LineTo(Common.WpfPoint(end), true, true);
+                context.LineTo(Common.WpfPoint(start - s), true, true);
             }
         }
 
@@ -294,7 +338,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         #region Implementation of IViewerObject
 
-        public DrawingObject DrawingObject {
+        public DrawingObject DrawingObject
+        {
             get { return Edge; }
         }
 
@@ -315,12 +360,14 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         #endregion
 
-        internal void Invalidate(WFrameworkElement fe, Rail rail, byte edgeTransparency) {
+        internal void Invalidate(WFrameworkElement fe, Rail rail, byte edgeTransparency)
+        {
             var path = fe as WPath;
             if (path != null)
                 SetPathStrokeToRailPath(rail, path, edgeTransparency);
         }
-        public void Invalidate() {
+        public void Invalidate()
+        {
             var vis = Edge.IsVisible ? Visibility.Visible : Visibility.Hidden;
             foreach (var fe in FrameworkElements) fe.Visibility = vis;
             if (vis == Visibility.Hidden)
@@ -332,40 +379,50 @@ namespace Microsoft.Msagl.WpfGraphControl {
                 TargetArrowHeadPath.Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness);
             SetPathStroke();
             if (VLabel != null)
-                ((IInvalidatable) VLabel).Invalidate();
+                ((IInvalidatable)VLabel).Invalidate();
         }
 
-        void SetPathStroke() {
+        void SetPathStroke()
+        {
             SetPathStrokeToPath(CurvePath);
-            if (SourceArrowHeadPath != null) {
+            if (SourceArrowHeadPath != null)
+            {
                 SourceArrowHeadPath.Stroke = SourceArrowHeadPath.Fill = Common.BrushFromMsaglColor(Edge.Attr.Color);
                 SourceArrowHeadPath.StrokeThickness = PathStrokeThickness;
             }
-            if (TargetArrowHeadPath != null) {
+            if (TargetArrowHeadPath != null)
+            {
                 TargetArrowHeadPath.Stroke = TargetArrowHeadPath.Fill = Common.BrushFromMsaglColor(Edge.Attr.Color);
                 TargetArrowHeadPath.StrokeThickness = PathStrokeThickness;
             }
         }
 
-        void SetPathStrokeToRailPath(Rail rail, WPath path, byte transparency) {
-            
+        void SetPathStrokeToRailPath(Rail rail, WPath path, byte transparency)
+        {
+
             path.Stroke = SetStrokeColorForRail(transparency, rail);
             path.StrokeThickness = PathStrokeThickness;
 
-            foreach (var style in Edge.Attr.Styles) {
-                if (style == Drawing.Style.Dotted) {
-                    path.StrokeDashArray = new WDoubleCollection {1, 1};
-                } else if (style == Drawing.Style.Dashed) {
+            foreach (var style in Edge.Attr.Styles)
+            {
+                if (style == Drawing.Style.Dotted)
+                {
+                    path.StrokeDashArray = new WDoubleCollection { 1, 1 };
+                }
+                else if (style == Drawing.Style.Dashed)
+                {
                     var f = DashSize();
-                    path.StrokeDashArray = new WDoubleCollection {f, f};
+                    path.StrokeDashArray = new WDoubleCollection { f, f };
                     //CurvePath.StrokeDashOffset = f;
                 }
             }
         }
 
-        WBrush SetStrokeColorForRail(byte transparency, Rail rail) {
+        WBrush SetStrokeColorForRail(byte transparency, Rail rail)
+        {
             return rail.IsHighlighted == false
-                       ? new WSolidColorBrush(new WColor {
+                       ? new WSolidColorBrush(new WColor
+                       {
                            A = transparency,
                            R = Edge.Attr.Color.R,
                            G = Edge.Attr.Color.G,
@@ -374,29 +431,36 @@ namespace Microsoft.Msagl.WpfGraphControl {
                        : WBrushes.Red;
         }
 
-        void SetPathStrokeToPath(WPath path) {
+        void SetPathStrokeToPath(WPath path)
+        {
             path.Stroke = Common.BrushFromMsaglColor(Edge.Attr.Color);
             path.StrokeThickness = PathStrokeThickness;
 
-            foreach (var style in Edge.Attr.Styles) {
-                if (style == Drawing.Style.Dotted) {
-                    path.StrokeDashArray = new WDoubleCollection {1, 1};
-                } else if (style == Drawing.Style.Dashed) {
+            foreach (var style in Edge.Attr.Styles)
+            {
+                if (style == Drawing.Style.Dotted)
+                {
+                    path.StrokeDashArray = new WDoubleCollection { 1, 1 };
+                }
+                else if (style == Drawing.Style.Dashed)
+                {
                     var f = DashSize();
-                    path.StrokeDashArray = new WDoubleCollection {f, f};
+                    path.StrokeDashArray = new WDoubleCollection { f, f };
                     //CurvePath.StrokeDashOffset = f;
                 }
             }
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return Edge.ToString();
         }
 
         internal static double _dashSize = 0.05; //inches
         internal Func<double> PathStrokeThicknessFunc;
 
-        public VEdge(MEdge edge, LgLayoutSettings lgSettings) {
+        public VEdge(MEdge edge, LgLayoutSettings lgSettings)
+        {
             Edge = edge;
             EdgeAttrClone = edge.Attr.Clone();
         }
@@ -408,8 +472,9 @@ namespace Microsoft.Msagl.WpfGraphControl {
             return dashSizeInPoints / w;
         }
 
-        internal void RemoveItselfFromCanvas(WCanvas graphCanvas) {
-            if(CurvePath!=null)
+        internal void RemoveItselfFromCanvas(WCanvas graphCanvas)
+        {
+            if (CurvePath != null)
                 graphCanvas.Children.Remove(CurvePath);
 
             if (SourceArrowHeadPath != null)
@@ -418,21 +483,25 @@ namespace Microsoft.Msagl.WpfGraphControl {
             if (TargetArrowHeadPath != null)
                 graphCanvas.Children.Remove(TargetArrowHeadPath);
 
-            if(VLabel!=null)
-                graphCanvas.Children.Remove(VLabel.FrameworkElement );
+            if (VLabel != null)
+                graphCanvas.Children.Remove(VLabel.FrameworkElement);
 
         }
 
-        public WFrameworkElement CreateFrameworkElementForRail(Rail rail, byte edgeTransparency) {
+        public WFrameworkElement CreateFrameworkElementForRail(Rail rail, byte edgeTransparency)
+        {
             var iCurve = rail.Geometry as ICurve;
             WPath fe;
-            if (iCurve != null) {
-                fe = (WPath)CreateFrameworkElementForRailCurve(rail, iCurve, edgeTransparency);                
+            if (iCurve != null)
+            {
+                fe = (WPath)CreateFrameworkElementForRailCurve(rail, iCurve, edgeTransparency);
             }
-            else {
+            else
+            {
                 var arrowhead = rail.Geometry as Arrowhead;
-                if (arrowhead != null) {
-                    fe = (WPath)CreateFrameworkElementForRailArrowhead(rail, arrowhead, rail.CurveAttachmentPoint, edgeTransparency);                    
+                if (arrowhead != null)
+                {
+                    fe = (WPath)CreateFrameworkElementForRailArrowhead(rail, arrowhead, rail.CurveAttachmentPoint, edgeTransparency);
                 }
                 else
                     throw new InvalidOperationException();
@@ -441,32 +510,35 @@ namespace Microsoft.Msagl.WpfGraphControl {
             return fe;
         }
 
-        WFrameworkElement CreateFrameworkElementForRailArrowhead(Rail rail, Arrowhead arrowhead, MPoint curveAttachmentPoint, byte edgeTransparency) {
+        WFrameworkElement CreateFrameworkElementForRailArrowhead(Rail rail, Arrowhead arrowhead, MPoint curveAttachmentPoint, byte edgeTransparency)
+        {
             var streamGeometry = new WStreamGeometry();
 
-            using (WStreamGeometryContext context = streamGeometry.Open()) {
+            using (WStreamGeometryContext context = streamGeometry.Open())
+            {
                 AddArrow(context, curveAttachmentPoint, arrowhead.TipPosition,
                          PathStrokeThickness);
 
             }
 
-            var path=new WPath
+            var path = new WPath
             {
                 Data = streamGeometry,
                 Tag = this
             };
 
-            SetPathStrokeToRailPath(rail, path,edgeTransparency);
+            SetPathStrokeToRailPath(rail, path, edgeTransparency);
             return path;
         }
 
-        WFrameworkElement CreateFrameworkElementForRailCurve(Rail rail, ICurve iCurve, byte transparency) {
+        WFrameworkElement CreateFrameworkElementForRailCurve(Rail rail, ICurve iCurve, byte transparency)
+        {
             var path = new WPath
             {
                 Data = GetICurveWpfGeometry(iCurve),
             };
             SetPathStrokeToRailPath(rail, path, transparency);
-           
+
             return path;
         }
     }

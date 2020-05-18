@@ -187,9 +187,9 @@ namespace AasxIntegrationBase
         public static StoredPrintColors DarkPrintColors = new StoredPrintColors()
         {
             BrushError = new SolidColorBrush(Color.FromRgb(255, 0, 0)),
-            BrushRed = new SolidColorBrush(Color.FromRgb(192,0,0)),
-            BrushBlue = new SolidColorBrush(Color.FromRgb(0,109,165)),
-            BrushLink = new SolidColorBrush(Color.FromRgb(5,14,187))
+            BrushRed = new SolidColorBrush(Color.FromRgb(192, 0, 0)),
+            BrushBlue = new SolidColorBrush(Color.FromRgb(0, 109, 165)),
+            BrushLink = new SolidColorBrush(Color.FromRgb(5, 14, 187))
         };
 
         public static void StoredPrintToRichTextBox(RichTextBox rtb, StoredPrint sp, StoredPrintColors colors, bool isExternalError = false, RoutedEventHandler linkClickHandler = null)

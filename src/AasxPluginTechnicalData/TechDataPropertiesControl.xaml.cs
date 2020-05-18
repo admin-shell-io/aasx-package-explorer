@@ -43,7 +43,7 @@ namespace AasxPluginTechnicalData
             }
         }
 
-        private TableCell NewTableCellPara (string runText, string cellStyleName = null, string paraStyleName = null, int columnSpan = 1, Nullable<Thickness> padding = null)
+        private TableCell NewTableCellPara(string runText, string cellStyleName = null, string paraStyleName = null, int columnSpan = 1, Nullable<Thickness> padding = null)
         {
             var run = new Run("" + runText);
             var para = new Paragraph(run);
@@ -82,7 +82,7 @@ namespace AasxPluginTechnicalData
                     ;
 
                     // Main Section
-                    var cell = NewTableCellPara("" + sme.idShort, null, "ParaStyleSectionMain", columnSpan: 3, padding: new Thickness( 5 * depth, 0,0,0) );
+                    var cell = NewTableCellPara("" + sme.idShort, null, "ParaStyleSectionMain", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -178,7 +178,7 @@ namespace AasxPluginTechnicalData
         {
             // access
             if (package == null || theDefs == null || sm == null)
-                return null ;
+                return null;
 
             // section Properties
             var smcProps = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_TechnicalProperties.GetSingleKey());

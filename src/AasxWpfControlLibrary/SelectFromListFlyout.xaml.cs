@@ -62,7 +62,7 @@ namespace AasxPackageExplorer
         //
         // Outer
         //
-        
+
         public void ControlStart()
         {
         }
@@ -90,7 +90,7 @@ namespace AasxPackageExplorer
         private bool PrepareResult()
         {
             var i = ListBoxPresets.SelectedIndex;
-            if (this.ListOfItems != null &&  i >= 0 && i < this.ListOfItems.Count)
+            if (this.ListOfItems != null && i >= 0 && i < this.ListOfItems.Count)
             {
                 this.ResultIndex = i;
                 this.ResultItem = this.ListOfItems[i];

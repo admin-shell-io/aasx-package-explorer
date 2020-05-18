@@ -472,7 +472,7 @@ namespace AasxAmlImExport
                 foreach (var el in doc.XDocument.Elements())
                     if (el.Attribute("ID") != null)
                         idDict.Add((string) el.Attribute("ID"), el);
-                */                               
+                */
 
                 // begin new (temporary) objects
                 var view = new AdminShell.View();
@@ -614,7 +614,7 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private void TryPopulateReferenceAttribute (SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target, int targetId = 0)
+            private void TryPopulateReferenceAttribute(SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target, int targetId = 0)
             {
                 // now used
                 var ei = FindExternalInterfaceByNameAndBaseClassPath(ie.ExternalInterface, ifName, ifClassPath);
@@ -627,7 +627,7 @@ namespace AasxAmlImExport
                         "" + ie.ID + ":" + "ReferableReference",
                         new MultiTuple2<int, Action<InternalLinkType, int>>(
                             targetId,
-                            (il,ti) =>
+                            (il, ti) =>
                             {
                                 // trivial
                                 if (il == null || ti != targetId)
@@ -960,7 +960,7 @@ namespace AasxAmlImExport
                         if (x != null)
                             mirrorTarget = x;
                     }
-                   
+
                     //
                     // AAS
                     //
@@ -1343,7 +1343,7 @@ namespace AasxAmlImExport
                             // look for direct descendants = Data Specifcations
                             if (ie.InternalElement != null)
                                 foreach (var ie2 in ie.InternalElement)
-                                    if (ie2.RefBaseSystemUnitPath != null && ie2.RefBaseSystemUnitPath.Trim() ==  AmlConst.Classes.DataSpecificationContent61360)
+                                    if (ie2.RefBaseSystemUnitPath != null && ie2.RefBaseSystemUnitPath.Trim() == AmlConst.Classes.DataSpecificationContent61360)
                                     {
                                         // (inner) Data Spec
                                         var ds61360 = TryParseDataSpecificationContentIEC61360(ie2.Attribute);
@@ -1357,7 +1357,7 @@ namespace AasxAmlImExport
                                             var hds = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)
                                                 eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(ParseAmlReference(hds));
-                                            
+
                                             // make 61360 data
                                             eds.dataSpecificationContent = new AdminShell.DataSpecificationContent();
                                             eds.dataSpecificationContent.dataSpecificationIEC61360 = ds61360;
@@ -1386,7 +1386,7 @@ namespace AasxAmlImExport
                 {
                     // start
                     Debug(indentation, "Consulting IE name {0} for internal links", ie.Name);
-                                        
+
                     // find some links?
                     if (ie.InternalLink != null)
                         foreach (var il in ie.InternalLink)

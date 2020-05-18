@@ -19,5 +19,5 @@ namespace AasxPluginWebBrowser
             var opt = new WebBrowserOptions();
             return opt;
         }
-    }        
+    }
 }

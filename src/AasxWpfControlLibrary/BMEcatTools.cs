@@ -25,7 +25,7 @@ namespace AasxPackageExplorer
 
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
-        public static void ImportBMEcatToSubModel (string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
+        public static void ImportBMEcatToSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File
@@ -55,7 +55,7 @@ namespace AasxPackageExplorer
             // BMEcat
             String FT_ID = "";
             String FT_NAME = "";
-            String[] FVALUE = new string[] { "", "", "", "", "", "", "", "", "", ""};
+            String[] FVALUE = new string[] { "", "", "", "", "", "", "", "", "", "" };
             int i_FVALUE = 0;
             String FUNIT = "";
             String FID = "";
@@ -66,7 +66,7 @@ namespace AasxPackageExplorer
             Boolean is_FUNIT = false;
             Boolean is_FID = false;
             Boolean is_FPARENT_ID = false;
-            String [] Stack_FID = new string [10];
+            String[] Stack_FID = new string[10];
             int StackPointer_FID = 0;
             // AML OPC
             String node = "";
@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
             Boolean is_attribute = false;
             Boolean is_attribute_label = false;
             Boolean is_attribute_value = false;
-            AdminShell.SubmodelElementCollection [] propGroup = new AdminShell.SubmodelElementCollection [10];
+            AdminShell.SubmodelElementCollection[] propGroup = new AdminShell.SubmodelElementCollection[10];
 
             // GWIS XML Publication
             if (isPublication)
@@ -317,7 +317,7 @@ namespace AasxPackageExplorer
                                 Boolean is_AXIS1D = (i_FVALUE == 6);
                                 int k;
 
-                                for (k=0; k < i_FVALUE; k++)
+                                for (k = 0; k < i_FVALUE; k++)
                                     sw.WriteLine(FT_ID + " | " + FT_NAME + " | " + FVALUE[k] + " | " + FUNIT + " | " + FID + " | " + FPARENT_ID);
 
                                 if (FT_ID != "" && FT_NAME != "") // korrekter Eintrag
@@ -427,7 +427,7 @@ namespace AasxPackageExplorer
                                                     StackPointer_FID = j + 1;
                                                     Stack_FID[StackPointer_FID] = FID;
                                                     propGroup[StackPointer_FID] = AdminShell.SubmodelElementCollection.CreateNew(FT_NAME);
-                                                    propGroup[StackPointer_FID-1].Add(propGroup[StackPointer_FID]);
+                                                    propGroup[StackPointer_FID - 1].Add(propGroup[StackPointer_FID]);
                                                     StackPointer_FID++; // nächste Ebene
                                                     break;
                                                 }

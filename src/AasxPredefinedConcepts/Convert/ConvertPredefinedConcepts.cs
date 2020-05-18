@@ -13,7 +13,7 @@ namespace AasxPredefinedConcepts.Convert
         public string OfferDisplay = "";
 
         public ConvertOfferBase() { }
-        public ConvertOfferBase(ConvertProviderBase provider, string offerDisp) { this.Provider = provider; this.OfferDisplay = offerDisp;  }
+        public ConvertOfferBase(ConvertProviderBase provider, string offerDisp) { this.Provider = provider; this.OfferDisplay = offerDisp; }
     }
 
     public class ConvertProviderBase

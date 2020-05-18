@@ -60,10 +60,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // logger.Log("ActivatePlugin() called with action = {0}", action);
-                        
+
             if (action == "server-stop")
                 AASMqttServer.MqttSeverStopAsync().Wait();
-                // this.stop = true;
+            // this.stop = true;
 
             if (action == "MQTTServer-start")
             {

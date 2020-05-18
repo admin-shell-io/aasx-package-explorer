@@ -67,7 +67,7 @@ namespace AasxIntegrationBase
                 this.loggingAction(string.Format(msg, args));
                 return;
             }
-            
+
             // no, locally 
             lock (list)
             {

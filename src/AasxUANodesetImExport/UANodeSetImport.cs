@@ -105,12 +105,14 @@ namespace AasxUANodesetImExport
                         else if (node.BrowseName == "1:AssetRef")
                         {
                             aas.assetRef = createAssetRef(node);
-                        }else if(node.BrowseName == "1:Identification" && getTypeDefinition(node) == "1:AASIdentifierType")
+                        }
+                        else if (node.BrowseName == "1:Identification" && getTypeDefinition(node) == "1:AASIdentifierType")
                         {
                             aas.identification = createIdentification(node);
                         }
 
-                    }else if(_ref.ReferenceType == "HasProperty")
+                    }
+                    else if (_ref.ReferenceType == "HasProperty")
                     {
                         var node = findNode(_ref.Value);
                         if (node.BrowseName == "1:idShort")
@@ -698,7 +700,7 @@ namespace AasxUANodesetImExport
             Identification iden = new Identification();
 
             desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName = new LangStringSetIEC61360("EN?", makePretty(name));
-                
+
 
             foreach (Reference _ref in node.References)
             {

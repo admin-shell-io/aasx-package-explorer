@@ -37,11 +37,11 @@ namespace AasxRestServerLibrary
     /// </summary>
     public class AasxHttpHandleIdentification : AasxHttpHandle
     {
-        private static int counter = 1; 
+        private static int counter = 1;
 
         public AdminShell.Identification identification = null;
 
-        public AasxHttpHandleIdentification (AdminShell.Identification src, string keyPreset = null)
+        public AasxHttpHandleIdentification(AdminShell.Identification src, string keyPreset = null)
         {
             if (keyPreset == null)
                 this.Key = $"@ID{counter++:00000000}";

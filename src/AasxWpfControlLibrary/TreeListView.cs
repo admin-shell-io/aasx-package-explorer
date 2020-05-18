@@ -53,7 +53,7 @@ namespace AasxPackageExplorer
         {
             get { return (GridViewColumnCollection)GetValue(ColumnsProperty); }
             set { SetValue(ColumnsProperty, value); }
-        }        
+        }
 
         /// <summary>
         /// Gets or sets whether columns in a TreeListView can be
@@ -82,7 +82,8 @@ namespace AasxPackageExplorer
     /// <summary>
     /// Represents a control that can switch states in order to expand a node of a TreeListView.
     /// </summary>
-    public class TreeListViewExpander : ToggleButton {
+    public class TreeListViewExpander : ToggleButton
+    {
 
         public TreeListViewExpander() : base()
         {
@@ -94,7 +95,7 @@ namespace AasxPackageExplorer
             base.OnChecked(e);
             this.Content = "+";
         }
-    
+
 
     }
 

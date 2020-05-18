@@ -94,7 +94,7 @@ namespace AasxPredefinedConcepts
                 var r = JsonConvert.DeserializeObject<T>(entry.contents);
                 return r;
             }
-            catch 
+            catch
             {
                 return null;
             }

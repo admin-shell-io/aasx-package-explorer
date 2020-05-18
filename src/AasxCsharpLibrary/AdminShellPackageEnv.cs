@@ -32,7 +32,7 @@ namespace AdminShellNS
         public LocationType location = LocationType.InPackage;
         public SpecialHandlingType specialHandling = SpecialHandlingType.None;
 
-        public AdminShellPackageSupplementaryFile(Uri uri, string sourceLocalPath = null, LocationType location = LocationType.InPackage, 
+        public AdminShellPackageSupplementaryFile(Uri uri, string sourceLocalPath = null, LocationType location = LocationType.InPackage,
             SpecialHandlingType specialHandling = SpecialHandlingType.None, SourceGetByteChunk sourceGetBytesDel = null, string useMimeType = null)
         {
             this.uri = uri;
@@ -438,7 +438,7 @@ namespace AdminShellNS
                     Package package = null;
                     if (useMemoryStream != null)
                     {
-                        package = Package.Open(useMemoryStream, (writeFreshly) ? FileMode.Create : FileMode.OpenOrCreate);                        
+                        package = Package.Open(useMemoryStream, (writeFreshly) ? FileMode.Create : FileMode.OpenOrCreate);
                     }
                     else
                     {
@@ -586,7 +586,7 @@ namespace AdminShellNS
                     foreach (var psfAdd in pendingFilesToAdd)
                     {
                         // make sure ..
-                        if ( (psfAdd.sourceLocalPath == null && psfAdd.sourceGetBytesDel == null) || psfAdd.location != AdminShellPackageSupplementaryFile.LocationType.AddPending)
+                        if ((psfAdd.sourceLocalPath == null && psfAdd.sourceGetBytesDel == null) || psfAdd.location != AdminShellPackageSupplementaryFile.LocationType.AddPending)
                             continue;
 
                         // normal file?
@@ -650,7 +650,7 @@ namespace AdminShellNS
                                 {
                                     var bytes = psfAdd.sourceGetBytesDel();
                                     if (bytes != null)
-                                        s.Write(bytes, 0, bytes.Length);                                    
+                                        s.Write(bytes, 0, bytes.Length);
                                 }
                             }
                         }
@@ -755,7 +755,7 @@ namespace AdminShellNS
             catch { }
         }
 
-        public bool IsLocalFile (string uriString)
+        public bool IsLocalFile(string uriString)
         {
             // access
             if (this.openPackage == null)
@@ -960,7 +960,7 @@ namespace AdminShellNS
 
             sourcePath = sourcePath?.Trim();
             targetPath = targetPath.Trim();
-            
+
             // add record
             pendingFilesToAdd.Add(
                 new AdminShellPackageSupplementaryFile(

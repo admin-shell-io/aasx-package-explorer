@@ -65,7 +65,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
             res.Add(new AasxPluginActionDescriptionBase("get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));            
+            res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
             res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension", "When called, fill given WPF panel with control for graph display."));
             return res.ToArray();
         }

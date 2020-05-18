@@ -28,7 +28,7 @@ namespace AasxPluginDocumentShelf
     /// <summary>
     /// Interaktionslogik für ShelfControl.xaml
     /// </summary>
-    public partial class ShelfControl : UserControl 
+    public partial class ShelfControl : UserControl
     {
         #region Members
         //=============
@@ -83,7 +83,7 @@ namespace AasxPluginDocumentShelf
         #region Init of component
         //=======================
 
-        public void ResetCountryRadioButton (RadioButton radio, CountryFlag.CountryCode code)
+        public void ResetCountryRadioButton(RadioButton radio, CountryFlag.CountryCode code)
         {
             if (radio != null && radio.Content != null && radio.Content is WrapPanel)
             {
@@ -245,7 +245,7 @@ namespace AasxPluginDocumentShelf
                                     {
                                         File.Delete(fn);
                                     }
-                                    catch { }                            
+                                    catch { }
 
                             // remember in the cache
                             if (referableHashToCachedBitmap != null && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
@@ -258,9 +258,9 @@ namespace AasxPluginDocumentShelf
 
         public void Start(
             LogInstance log,
-            AdminShellPackageEnv thePackage, 
-            AdminShell.Submodel theSubmodel, 
-            AasxPluginDocumentShelf.DocumentShelfOptions theOptions, 
+            AdminShellPackageEnv thePackage,
+            AdminShell.Submodel theSubmodel,
+            AasxPluginDocumentShelf.DocumentShelfOptions theOptions,
             PluginEventStack eventStack)
         {
             this.Log = log;
@@ -272,8 +272,8 @@ namespace AasxPluginDocumentShelf
 
         public static ShelfControl FillWithWpfControls(
             LogInstance log,
-            object opackage, object osm, 
-            AasxPluginDocumentShelf.DocumentShelfOptions options, 
+            object opackage, object osm,
+            AasxPluginDocumentShelf.DocumentShelfOptions options,
             PluginEventStack eventStack,
             object masterDockPanel)
         {
@@ -305,9 +305,9 @@ namespace AasxPluginDocumentShelf
         }
 
 
-#endregion
+        #endregion
 
-#region REDRAW of contents
+        #region REDRAW of contents
 
         private void TheViewModel_ViewModelChanged(AasxUtilities.WpfViewModelBase obj)
         {
@@ -315,12 +315,12 @@ namespace AasxPluginDocumentShelf
             ParseSubmodelToListItems(this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass, theViewModel.TheSelectedLanguage, theViewModel.TheSelectedListType);
         }
 
-        private bool CheckIfPackageFile (string fn)
+        private bool CheckIfPackageFile(string fn)
         {
             return fn.StartsWith(@"/");
         }
 
-        private bool CheckIfConvertableFile (string fn)
+        private bool CheckIfConvertableFile(string fn)
         {
             var ext = System.IO.Path.GetExtension(fn.ToLower());
             if (ext == "")
@@ -370,7 +370,7 @@ namespace AasxPluginDocumentShelf
                 // what defaultLanguage
                 string defaultLang = null;
                 if (theViewModel != null && theViewModel.TheSelectedLanguage > ViewModel.LanguageSelection.All)
-                    defaultLang = ViewModel.LanguageSelectionToISO639String[(int) theViewModel.TheSelectedLanguage];
+                    defaultLang = ViewModel.LanguageSelectionToISO639String[(int)theViewModel.TheSelectedLanguage];
 
                 // set a new list
                 var its = new List<DocumentEntity>();
@@ -620,7 +620,8 @@ namespace AasxPluginDocumentShelf
                     if (!inputFn.ToLower().Trim().StartsWith("http://")
                             && !inputFn.ToLower().Trim().StartsWith("https://"))
                         inputFn = thePackage.MakePackageFileAvailableAsTempFile(inputFn);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Log.Error(ex, "Making local file available");
                 }
@@ -636,7 +637,7 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-#endregion
+        #endregion
 
         protected FormDescSubmodelElementCollection currentFormDescription = null;
         protected FormInstanceSubmodelElementCollection currentFormInst = null;
@@ -676,7 +677,7 @@ namespace AasxPluginDocumentShelf
             if (sender == ButtonAddUpdateDoc)
             {
                 // add
-                if (this.currentFormInst != null  && this.currentFormDescription != null
+                if (this.currentFormInst != null && this.currentFormDescription != null
                     && thePackage != null
                     && theOptions != null && theOptions.SemIdDocument != null
                     && theSubmodel != null)
@@ -692,7 +693,7 @@ namespace AasxPluginDocumentShelf
                     {
                         currentElements = new AdminShell.SubmodelElementWrapperCollection();
                     }
-                    
+
                     // create a sequence of SMEs
                     AdminShell.SubmodelElementWrapperCollection smwc = null;
                     try

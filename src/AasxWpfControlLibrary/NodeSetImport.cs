@@ -152,7 +152,7 @@ namespace AasxPackageExplorer
 
                         if (i_propGroup > 0)
                         {
-                            propGroup[i_propGroup-1].Add(p);
+                            propGroup[i_propGroup - 1].Add(p);
                         }
                         else
                         {
