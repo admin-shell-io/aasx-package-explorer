@@ -9,19 +9,26 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          vs-version: 15
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.2
+
+      - name: Install Microsoft .NET Compilers
+        working-directory: src
+        run: nuget install Microsoft.NET.Compilers -Version 2.10.0
+
+      - name: Install .NET core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
 
       - name: Restore NuGet Packages
         working-directory: src
         run: nuget restore AasxPackageExplorer.sln
 
-      - name: MSBuild
+      - name: Run MSBuild
         working-directory: src
-        run: |
-          msbuild
-            AasxPackageExplorer.sln
-            -t:build
-            /p:PackageLocation="packages"
+        run: msbuild /p:Configuration=Debug /p:Platform=x64
