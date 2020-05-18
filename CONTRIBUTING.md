@@ -44,3 +44,51 @@ gives you the list like this one:
 Listing tracked patterns
     *.png (.gitattributes)
 ```
+
+# Building the Solution
+
+We provide PowerShell scripts to help you install the dependencies and build 
+the solution from the command line.
+
+First, change to the `src/` directory. All the subsequent scripts will be 
+invoked from there.
+
+We separated *development* dependencies, which are installed for many different
+solutions (such as Visual Studio Build tools) and *solution* dependencies
+which are specific to this particular solution.
+
+To install the development dependencies (for example, on a virtual machine), 
+run:
+
+```powershell
+.\InstallDevDependencies.ps1
+```
+
+To install the solution dependencies, invoke:
+
+```powershell
+.\InstallBuildDependencies.ps1
+```
+
+Now you are all set to build the solution:
+
+```powershell
+.\BuildSolution.ps1
+```
+
+## Pre-merge Checks
+
+We still assume the current directory is `src/`. Besides scripts for building,
+we provide scripts to run pre-merge checks on your local machine.
+
+To inspect the code with Resharper CodeInspect, run:
+
+```powershell
+.\Resharp.ps1
+```
+
+and to format the code with `dotnet-format`:
+
+```powershell
+.\FormatCode.ps1
+```
