@@ -49,6 +49,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="VEdge.cs" />
