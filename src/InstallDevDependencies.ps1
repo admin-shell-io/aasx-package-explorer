@@ -3,50 +3,14 @@
 # The dependencies include, for example, Git, Visual Studio 2017 Build Tools and nuget.
 
 if(!$PSScriptRoot) {
-    $defaultInstallationDir = Join-Path (Get-Location).path "installation"
+    $installationDir = Join-Path (Get-Location).path "installation"
 } else {
-    $defualtInstallationDir = Join-Path $PSScriptRoot "installation"
+    $installationDir = Join-Path $PSScriptRoot "installation-dev-dependencies"
 }
-
-param ($installationDir=$defaultInstallationDir)
 
 Write-Host "Installation directory is: $installationDir"
 
-
 New-Item -ItemType Directory -Force -Path $installationDir
-
-Write-Host "Downloading Git to: $installationDir"
-Invoke-WebRequest `
-    https://github.com/git-for-windows/git/releases/download/v2.26.2.windows.1/Git-2.26.2-64-bit.exe `
-    -OutFile $installationDir\Git-2.26.2-64-bit.exe
-
-Write-Host "Installing Git ..."
-$gitDir="C:\Program Files\Git"
-@"
-[Setup]
-Lang=default
-Dir=$gitDir
-Group=Git
-NoIcons=0
-SetupType=default
-Components=icons,ext\reg\shellhere,assoc,assoc_sh
-Tasks=
-PathOption=Cmd
-SSHOption=OpenSSH
-CRLFOption=CRLFAlways
-BashTerminalOption=ConHost
-PerformanceTweaksFSCache=Enabled
-UseCredentialManager=Enabled
-EnableSymlinks=Disabled
-EnableBuiltinDifftool=Disabled
-"@ | Set-Content -Path $installationDir\git-config.inf
-& "$installationDir\Git-2.26.2-64-bit.exe" /VERYSILENT /LOADINF="$installationDir\git-config.inf"
-
-Write-Host "Adding Git to system path ..."
- [System.Environment]::SetEnvironmentVariable(`
-    "Path", `
-    [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) + `
-    ";$gitDir\cmd")
 
 $url = 'https://aka.ms/vs/15/release/vs_buildtools.exe'
 Write-Host "Downloading Visual Studio 2017 build tools from $url to: $installationDir"
