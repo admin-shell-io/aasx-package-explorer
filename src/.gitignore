@@ -3,3 +3,5 @@ packages/
 */obj/
 **/BuildDate.txt
 Microsoft.Net.Compilers.2.10.0/
+installation/
+resharper-code-inspection.xml
