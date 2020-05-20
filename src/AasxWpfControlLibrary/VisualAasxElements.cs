@@ -796,9 +796,9 @@ namespace AasxPackageExplorer
         public AasxIntegrationBase.AasxPluginResultVisualExtension theExt = null;
 
         public VisualElementPluginExtension(
-            VisualElementGeneric parent, 
-            TreeViewLineCache cache, 
-            AdminShellPackageEnv package, 
+            VisualElementGeneric parent,
+            TreeViewLineCache cache,
+            AdminShellPackageEnv package,
             AdminShell.Referable referable,
             Plugins.PluginInstance plugin,
             AasxIntegrationBase.AasxPluginResultVisualExtension ext)
@@ -909,7 +909,7 @@ namespace AasxPackageExplorer
                             pluginsToCheck.Add(lpi);
                     }
                     catch { }
-            }
+                }
 
             // many operytions -> make it bulletproof
             try

@@ -19,7 +19,7 @@ namespace AasxIntegrationBase.AasForms
     {
         // Members
 
-        protected static int maxRowsBound = 9999; 
+        protected static int maxRowsBound = 9999;
         protected int minRows = 0;
         protected int maxRows = 0;
         protected bool showButtonsMinus = false;
@@ -271,7 +271,7 @@ namespace AasxIntegrationBase.AasForms
             // update display to create rows
             UpdateDisplay();
         }
-        
+
         private void ButtonInstancePlusMinus_Click(object sender, RoutedEventArgs e)
         {
             // need data context of the UC in the right shape
@@ -294,7 +294,8 @@ namespace AasxIntegrationBase.AasForms
 
                 // try to set focus, AFTER controls have been realized
                 // see: https://stackoverflow.com/questions/567216/is-there-a-all-children-loaded-event-in-wpf
-                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => {                    
+                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+                {
                     // show newly created item
                     foreach (var i in inst.SubInstances)
                     {

@@ -26,14 +26,14 @@ MQTTnet Copyright (c) 2016-2019 Christian Kratky
 namespace AasxMqttClient
 {
     public class MqttClient
-    {        
+    {
         public MqttClient()
         {
-             
+
         }
 
         public static async Task StartAsync(AdminShellPackageEnv package, GrapevineLoggerSuper logger = null)
-        {                      
+        {
             // Create TCP based options using the builder.
             var options = new MqttClientOptionsBuilder()
                 .WithClientId("AASXPackageXplorer MQTT Client")
@@ -43,11 +43,11 @@ namespace AasxMqttClient
             //create MQTT Client and Connect using options above
             IMqttClient mqttClient = new MqttFactory().CreateMqttClient();
             await mqttClient.ConnectAsync(options);
-            if(mqttClient.IsConnected == true)
+            if (mqttClient.IsConnected == true)
                 logger.Info("### CONNECTED WITH SERVER ###");
 
             //publish AAS to AAS Topic
-            foreach(AdminShell.AdministrationShell aas in package.AasEnv.AdministrationShells)
+            foreach (AdminShell.AdministrationShell aas in package.AasEnv.AdministrationShells)
             {
                 logger.Info("Publish AAS");
                 var message = new MqttApplicationMessageBuilder()
@@ -73,7 +73,7 @@ namespace AasxMqttClient
 
                     await mqttClient.PublishAsync(message2);
                 }
-            }    
-        }      
+            }
+        }
     }
 }

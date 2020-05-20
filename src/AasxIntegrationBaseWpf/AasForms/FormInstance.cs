@@ -177,8 +177,8 @@ namespace AasxIntegrationBase.AasForms
     }
 
     public class FormInstanceListOfDifferent : List<FormDescInstancesPair>
-    {      
-        public FormDescInstancesPair FindDesc (FormDescBase searchDesc)
+    {
+        public FormDescInstancesPair FindDesc(FormDescBase searchDesc)
         {
             if (searchDesc == null)
                 return null;
@@ -238,7 +238,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescBase workingDesc = null;
         public UserControl subControl = null;
 
-        public IFormInstanceParent GetInstanceParent() { return parentForm;  }
+        public IFormInstanceParent GetInstanceParent() { return parentForm; }
 
         /// <summary>
         /// These instances are sub-ordinate instances to this instance.
@@ -686,7 +686,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormInstanceProperty : FormInstanceSubmodelElement
     {
         public FormInstanceProperty(
-            FormInstanceListOfSame parentInstance, FormDescProperty parentDesc, 
+            FormInstanceListOfSame parentInstance, FormDescProperty parentDesc,
             AdminShell.SubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
@@ -783,7 +783,7 @@ namespace AasxIntegrationBase.AasForms
     {
 
         public FormInstanceMultiLangProp(
-            FormInstanceListOfSame parentInstance, FormDescMultiLangProp parentDesc, 
+            FormInstanceListOfSame parentInstance, FormDescMultiLangProp parentDesc,
             AdminShell.SubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
@@ -792,7 +792,7 @@ namespace AasxIntegrationBase.AasForms
 
             // initialize Referable
             var mlp = new AdminShell.MultiLanguageProperty();
-            this.sme = mlp; 
+            this.sme = mlp;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
@@ -891,7 +891,7 @@ namespace AasxIntegrationBase.AasForms
         public string FileToLoad = null;
 
         public FormInstanceFile(
-            FormInstanceListOfSame parentInstance, FormDescFile parentDesc, 
+            FormInstanceListOfSame parentInstance, FormDescFile parentDesc,
             AdminShell.SubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description

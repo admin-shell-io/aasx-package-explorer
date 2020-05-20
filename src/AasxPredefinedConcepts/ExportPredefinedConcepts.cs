@@ -31,7 +31,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string,AdminShell.ConceptDescription>();
+                var usedCds = new Dictionary<string, AdminShell.ConceptDescription>();
                 foreach (var sme in sm?.submodelElements?.FindAll<AdminShell.SubmodelElement>())
                 {
                     // for SME, try to lookup CD

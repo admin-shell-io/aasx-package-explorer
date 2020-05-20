@@ -117,7 +117,7 @@ namespace AasxPackageExplorer
                         this.Resources[resNames[i]] = Options.Curr.AccentColors[3 + i];
                 }
             }
-            
+
             // show splash (required for licenses of open source)
             var splash = new CustomSplashScreenNew();
             splash.Show();

@@ -108,12 +108,12 @@ namespace AasxUANodesetImExport
                     refs.Add(CreateReference("HasComponent", CreateDerivedFrom(shell.derivedFrom.Keys)));
                 }
 
-                if(shell.idShort != null)
+                if (shell.idShort != null)
                 {
                     refs.Add(CreateReference("HasProperty", CreateProperty(shell.idShort, "PropertyType", "idShort", "String")));
                 }
 
-                if(shell.identification != null)
+                if (shell.identification != null)
                 {
                     refs.Add(CreateReference("HasComponent", CreateIdentifiableIdentification(shell.identification.id, shell.identification.idType)));
                 }

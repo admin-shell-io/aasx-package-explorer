@@ -39,7 +39,7 @@ namespace AasxPackageExplorer
         public bool Result = false;
 
         private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
-        
+
         public TextBoxFlyout(string caption, MessageBoxImage image, DialogueOptions options = DialogueOptions.None, double? maxWidth = null)
         {
             InitializeComponent();
@@ -71,7 +71,7 @@ namespace AasxPackageExplorer
             this.TextBoxText.Text = "";
             this.TextBoxText.Focus();
             this.TextBoxText.Select(0, 999);
-            FocusManager.SetFocusedElement(this, this.TextBoxText);            
+            FocusManager.SetFocusedElement(this, this.TextBoxText);
         }
 
         //

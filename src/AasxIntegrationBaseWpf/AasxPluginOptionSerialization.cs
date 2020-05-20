@@ -133,7 +133,7 @@ namespace AasxIntegrationBase
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
-                    SerializationBinder = new DisplayNameSerializationBinder(new Type[] { typeof(FormDescListOfElement), typeof(FormDescProperty) } ),
+                    SerializationBinder = new DisplayNameSerializationBinder(new Type[] { typeof(FormDescListOfElement), typeof(FormDescProperty) }),
                     NullValueHandling = NullValueHandling.Ignore,
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     TypeNameHandling = TypeNameHandling.Auto,

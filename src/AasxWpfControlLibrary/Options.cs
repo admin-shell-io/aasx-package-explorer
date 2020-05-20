@@ -90,7 +90,7 @@ namespace AasxPackageExplorer
         /// The current (used) licenses of the application. Use of Options as singleton.
         /// </summary>
         [JsonIgnore]
-        public string PrefLicenseShort = "This software is licensed under the Eclipse Public License 2.0 (EPL-2.0)." + Environment.NewLine +       
+        public string PrefLicenseShort = "This software is licensed under the Eclipse Public License 2.0 (EPL-2.0)." + Environment.NewLine +
                 "The browser functionality is licensed under the cefSharp license." + Environment.NewLine +
                 "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
                 "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
@@ -330,7 +330,8 @@ namespace AasxPackageExplorer
 
             public PluginDllInfo() { }
 
-            public PluginDllInfo(string path, string[] args = null) {
+            public PluginDllInfo(string path, string[] args = null)
+            {
                 this.Path = path;
                 if (args != null)
                     this.Args = args;
@@ -382,7 +383,7 @@ namespace AasxPackageExplorer
         /// <param name="args"></param>
         public void ParseArgs(string[] args)
         {
-            for (int index=0; index<args.Length; index++)
+            for (int index = 0; index < args.Length; index++)
             {
                 var arg = args[index].Trim().ToLower();
                 var morearg = (args.Length - 1) - index;
@@ -441,7 +442,7 @@ namespace AasxPackageExplorer
                 }
 
                 // options
-                if (arg == "-left" && morearg>0)
+                if (arg == "-left" && morearg > 0)
                 {
                     int i;
                     if (Int32.TryParse(args[index + 1], out i))
@@ -632,14 +633,15 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void TryReadOptionsFile (string fn)
+        public void TryReadOptionsFile(string fn)
         {
             try
             {
                 var optionsTxt = File.ReadAllText(fn);
                 var options = optionsTxt.Split(new char[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 ParseArgs(options);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Error(ex, "Reading options file: " + fn);
             }
@@ -647,9 +649,9 @@ namespace AasxPackageExplorer
 
         #region // IdTemplates
 
-        private Random MyRnd = new Random(); 
+        private Random MyRnd = new Random();
 
-        public string GenerateIdAccordingTemplate (string tpl)
+        public string GenerateIdAccordingTemplate(string tpl)
         {
             // generate a deterministic decimal digit string
             var decimals = String.Format("{0:ffffyyMMddHHmmss}", DateTime.UtcNow);
@@ -663,7 +665,7 @@ namespace AasxPackageExplorer
             // make an alphanumeric string out of this
             string alphamals = "";
             var dii = decii;
-            while (dii>=1)
+            while (dii >= 1)
             {
                 var m = dii % 26;
                 alphamals += Convert.ToChar(65 + m);
@@ -671,7 +673,7 @@ namespace AasxPackageExplorer
             }
 
             // now, "salt" the strings
-            for (int i=0; i<32; i++)
+            for (int i = 0; i < 32; i++)
             {
                 var c = Convert.ToChar(48 + MyRnd.Next(10));
                 decimals += c;
@@ -681,7 +683,7 @@ namespace AasxPackageExplorer
 
             // now, can just use the template
             var id = "";
-            for (int i=0; i<tpl.Length; i++)
+            for (int i = 0; i < tpl.Length; i++)
             {
                 if (tpl[i] == 'D' && decimals.Length > 0)
                 {

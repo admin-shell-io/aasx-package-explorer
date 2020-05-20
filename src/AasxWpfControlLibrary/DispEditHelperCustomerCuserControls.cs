@@ -8,5 +8,5 @@ using System.Windows.Media;
 
 namespace AasxWpfControlLibrary
 {
-    
+
 }

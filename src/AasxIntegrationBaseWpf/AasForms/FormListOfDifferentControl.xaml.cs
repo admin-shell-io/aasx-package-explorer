@@ -102,12 +102,12 @@ namespace AasxIntegrationBase.AasForms
                 foreach (var ld in lod)
                     if (ld.instances != null && ld.instances.subControl != null && ld.instances.subControl is FormListOfSameControl)
                         (ld.instances.subControl as FormListOfSameControl).SetProperty(property, value);
-                    /*
-                    if (ld.instances != null && ld.instances.SubInstances != null)
-                        foreach (var si in ld.instances.SubInstances)
-                            if (si != null && si is IFormListControl)
-                                (si as IFormListControl).SetProperty(property, value);
-                    */
+            /*
+            if (ld.instances != null && ld.instances.SubInstances != null)
+                foreach (var si in ld.instances.SubInstances)
+                    if (si != null && si is IFormListControl)
+                        (si as IFormListControl).SetProperty(property, value);
+            */
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace AasxIntegrationBase.AasForms
                 lod = dc.smInst.PairInstances;
             if (dc.smecInst != null)
                 lod = dc.smecInst.PairInstances;
-            if (lod != null && lod.Count > 0 && lod[0].instances != null 
+            if (lod != null && lod.Count > 0 && lod[0].instances != null
                 && lod[0].instances.SubInstances != null && lod[0].instances.SubInstances.Count > 0)
             {
                 var sc00 = lod[0].instances.SubInstances[0].subControl;

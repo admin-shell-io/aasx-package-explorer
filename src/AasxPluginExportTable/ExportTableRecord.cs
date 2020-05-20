@@ -30,7 +30,7 @@ namespace AasxPluginExportTable
             this.sm = sm;
             this.sme = sme;
             this.cd = cd;
-        }        
+        }
     }
 
     public class ExportTableAasEntitiesList : List<ExportTableAasEntitiesItem>
@@ -46,7 +46,7 @@ namespace AasxPluginExportTable
 
         public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
         public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
-        
+
         // 
         // Members
         //
@@ -71,7 +71,7 @@ namespace AasxPluginExportTable
 
         public bool IsValid()
         {
-            return Rows >= 1 && Cols >= 1 
+            return Rows >= 1 && Cols >= 1
                 && Header != null && Header.Count >= RealRows * RealCols
                 && Elements != null && Elements.Count >= RealRows * RealCols;
         }
@@ -129,7 +129,7 @@ namespace AasxPluginExportTable
             public CellRecord(string text)
             {
                 this.Text = text;
-            }            
+            }
         }
 
         public CellRecord GetHeaderCell(int row, int col)
@@ -268,7 +268,7 @@ namespace AasxPluginExportTable
                 if (ifi.identification != null)
                 {
                     //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", "[" + ifi.identification.idType +"]" + ifi.identification.id);
+                    rep(head + "identification", "[" + ifi.identification.idType + "]" + ifi.identification.id);
                     rep(head + "identification.idType", "" + ifi.identification.idType);
                     rep(head + "identification.id", "" + ifi.identification.id);
                 }
@@ -484,7 +484,7 @@ namespace AasxPluginExportTable
                                 rep(head + "anyName", "" + anyName);
                         }
                     }
-                }                
+                }
             }
 
             // see: https://codereview.stackexchange.com/questions/119519/regex-to-first-match-then-replace-found-matches
@@ -498,7 +498,7 @@ namespace AasxPluginExportTable
             }
 
             public void ProcessCellRecord(CellRecord cr)
-            {                
+            {
                 if (Record == null || regexReplacements == null || regexCommands == null)
                     return;
 
@@ -522,7 +522,7 @@ namespace AasxPluginExportTable
                         continue;
 
                     // OK, found a placeholder-tag to replace
-                    var tag = ""  + match.Groups[1].Value?.Trim().ToLower();
+                    var tag = "" + match.Groups[1].Value?.Trim().ToLower();
 
                     if (this.repDict.ContainsKey(tag))
                     {
@@ -582,7 +582,7 @@ namespace AasxPluginExportTable
                     // in any case, replace the wohl match!
                     // input = Replace(input, match.Index, match.Length, "");
                 }
-                
+
             }
         }
 
@@ -895,7 +895,7 @@ namespace AasxPluginExportTable
             // see: https://stackoverflow.com/questions/17675526/how-can-i-modify-the-foreground-and-background-color-of-an-openxml-tablecell/17677892
 
             if (cr.HorizAlign != null)
-            { 
+            {
                 ParagraphProperties pp = new ParagraphProperties();
 
                 if (cr.HorizAlign == "left")
@@ -926,7 +926,8 @@ namespace AasxPluginExportTable
                         var bgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Bg);
                         var bgs = (new ColorConverter()).ConvertToString(bgc).Substring(3);
 
-                        tcp.Append(new DocumentFormat.OpenXml.Wordprocessing.Shading() {
+                        tcp.Append(new DocumentFormat.OpenXml.Wordprocessing.Shading()
+                        {
                             Color = "auto",
                             Fill = bgs,
                             Val = ShadingPatternValues.Clear
@@ -947,7 +948,7 @@ namespace AasxPluginExportTable
                 run.AppendChild(new Text(l));
             }
 
-            if (cr.Fg != null || cr.Font !=  null)
+            if (cr.Fg != null || cr.Font != null)
             {
                 try
                 {

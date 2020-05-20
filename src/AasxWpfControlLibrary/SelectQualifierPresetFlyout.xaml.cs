@@ -69,7 +69,8 @@ namespace AasxPackageExplorer
 
                 var init = File.ReadAllText(presetFn);
                 ThePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Error(ex, $"While loading qualifier preset file ({presetFn})");
             }
@@ -78,7 +79,7 @@ namespace AasxPackageExplorer
         //
         // Outer
         //
-        
+
         public void ControlStart()
         {
         }
@@ -102,7 +103,7 @@ namespace AasxPackageExplorer
         private bool PrepareResult()
         {
             var i = ListBoxPresets.SelectedIndex;
-            if (ThePresets != null &&  i >= 0 && i < ThePresets.Count)
+            if (ThePresets != null && i >= 0 && i < ThePresets.Count)
             {
                 this.ResultQualifier = ThePresets[i].qualifier;
                 return true;

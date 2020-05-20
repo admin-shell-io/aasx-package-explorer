@@ -163,7 +163,7 @@ namespace AasxIntegrationBase.AasForms
             this.SubmodelElements = other.SubmodelElements;
         }
 
-        
+
         // Dynamic behaviour 
         //==================
 
@@ -175,7 +175,7 @@ namespace AasxIntegrationBase.AasForms
                 SubmodelElements = new FormDescListOfElement();
             SubmodelElements.Add(elem);
         }
-    
+
         /// <summary>
         /// Generates a Submodel with default elements based on the description.
         /// Needs to get a unique Identification.
@@ -296,7 +296,7 @@ namespace AasxIntegrationBase.AasForms
         public virtual FormDescSubmodelElement Clone()
         {
             return new FormDescSubmodelElement(this);
-        }        
+        }
 
         /// <summary>
         /// Build a new instance, based on the description data
@@ -304,9 +304,9 @@ namespace AasxIntegrationBase.AasForms
         public virtual FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return null;
-        }        
+        }
 
-        public void InitSme (AdminShell.SubmodelElement sme)
+        public void InitSme(AdminShell.SubmodelElement sme)
         {
             // is a Referable
             this.InitReferable(sme);
@@ -360,7 +360,7 @@ namespace AasxIntegrationBase.AasForms
         {
             return new FormInstanceSubmodelElementCollection(parentInstance, this, source);
         }
-        
+
         // Member management
         //==================
 
@@ -423,7 +423,7 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescProperty() { }
 
-        public FormDescProperty(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, 
+        public FormDescProperty(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null, string presetValue = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
@@ -455,7 +455,7 @@ namespace AasxIntegrationBase.AasForms
         public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return new FormInstanceProperty(parentInstance, this, source);
-        }        
+        }
 
         public AdminShell.Property GenerateDefault()
         {

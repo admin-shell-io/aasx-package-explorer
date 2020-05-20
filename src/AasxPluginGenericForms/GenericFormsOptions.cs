@@ -63,7 +63,7 @@ namespace AasxPluginGenericForms
             opt.Records.Add(rec);
 
             rec.FormSubmodel = new FormDescSubmodel(
-                "Submodel Root", 
+                "Submodel Root",
                 new AdminShell.Key("Submodel", false, "IRI", "www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");

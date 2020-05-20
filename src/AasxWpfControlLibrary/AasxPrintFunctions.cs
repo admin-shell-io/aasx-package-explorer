@@ -245,7 +245,7 @@ namespace AasxPackageExplorer
             return true;
         }
 
-        
+
 
     }
 }
