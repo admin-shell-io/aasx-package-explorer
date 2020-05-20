@@ -172,16 +172,14 @@ namespace AdminShellNS
                for (int ii = 0; ii < iri.Length; ii++) {
                     if (j >= id.Length)
                          iri[ii] = (char) ('0' + getrandom.Next(0,9));
-                    else
-                         if (iri[ii] == '#')
-                         {
-                              iri[ii] = id[j];
-                              j++;
-                         }
+                    else if (iri[ii] == '#')
+                    {
+            	         iri[ii] = id[j];
+                         j++;
+                    }
                }
                // thats it
                return iri.ToString();
           }
      }
-
 }
