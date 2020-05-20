@@ -29,13 +29,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using WPoint = System.Windows.Point;
 using WDispatcherTimer = System.Windows.Threading.DispatcherTimer;
-namespace Microsoft.Msagl.WpfGraphControl {
-    internal class ClickCounter {
+namespace Microsoft.Msagl.WpfGraphControl
+{
+    internal class ClickCounter
+    {
         readonly Func<WPoint> mousePosition;
         internal object ClickedObject;
         internal bool IsRunning { get; private set; }
 
-        internal ClickCounter(Func<WPoint> mousePosition) {
+        internal ClickCounter(Func<WPoint> mousePosition)
+        {
             this.mousePosition = mousePosition;
             clickTimer.Tick += TimeTick;
             clickTimer.Interval = TimeSpan.FromMilliseconds(500);
@@ -47,8 +50,10 @@ namespace Microsoft.Msagl.WpfGraphControl {
         readonly WDispatcherTimer clickTimer = new WDispatcherTimer();
         internal WPoint LastDownClickPosition;
 
-        internal void AddMouseDown(object objectUnderMouseCursor) {
-            if (!IsRunning) {
+        internal void AddMouseDown(object objectUnderMouseCursor)
+        {
+            if (!IsRunning)
+            {
                 DownCount = 0;
                 UpCount = 0;
                 clickTimer.Start();
@@ -60,10 +65,13 @@ namespace Microsoft.Msagl.WpfGraphControl {
             DownCount++;
         }
 
-        internal void AddMouseUp() {
+        internal void AddMouseUp()
+        {
             const double minDistanceForClickDownAndUp = 0.1;
-            if (IsRunning) {
-                if ((mousePosition() - LastDownClickPosition).Length > minDistanceForClickDownAndUp) {
+            if (IsRunning)
+            {
+                if ((mousePosition() - LastDownClickPosition).Length > minDistanceForClickDownAndUp)
+                {
                     //it is not a click
                     UpCount = 0;
                     DownCount = 0;
@@ -76,7 +84,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
         }
 
 
-        void TimeTick(object sender, EventArgs e) {
+        void TimeTick(object sender, EventArgs e)
+        {
             clickTimer.Stop();
             IsRunning = false;
             OnElapsed();
@@ -84,7 +93,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         public event EventHandler<EventArgs> Elapsed;
 
-        protected virtual void OnElapsed() {
+        protected virtual void OnElapsed()
+        {
             EventHandler<EventArgs> handler = Elapsed;
             if (handler != null)
                 handler(this, EventArgs.Empty);

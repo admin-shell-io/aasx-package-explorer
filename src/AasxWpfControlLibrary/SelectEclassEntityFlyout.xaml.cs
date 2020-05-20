@@ -155,12 +155,14 @@ namespace AasxPackageExplorer
             var a = e.Argument as BackgroundWorkerArgs;
 
             if (a.jobData != null && a.jobType == 1)
-                EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) => {
+                EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) =>
+                {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                 });
 
             if (a.jobData != null && a.jobType == 2)
-                EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) => {
+                EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) =>
+                {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                 });
 
@@ -268,14 +270,14 @@ namespace AasxPackageExplorer
                 {
                     var input = new List<EclassUtils.SearchItem>();
                     input.Add(si);
-                    foreach (   EclassUtils.SearchItem di in EntityList.Items)
+                    foreach (EclassUtils.SearchItem di in EntityList.Items)
                         if (di != null && di.Entity == si.Entity && di.IRDI == si.IRDI && si != di)
                             input.Add(di);
 
                     // own function
                     this.ResultCD = EclassUtils.GenerateConceptDescription(input, si.IRDI);
                 }
-            } 
+            }
             else
             {
                 if (si.Entity == "prop" && si.ContentNode != null)

@@ -268,7 +268,7 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
-        public TextBox AddSmallTextBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "", 
+        public TextBox AddSmallTextBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "",
             Brush foreground = null, Brush background = null, Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
             var tb = new TextBox();
@@ -287,7 +287,7 @@ namespace AasxPackageExplorer
             return (tb);
         }
 
-        public ComboBox AddSmallComboBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "", Brush foreground = null, Brush background = null, 
+        public ComboBox AddSmallComboBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "", Brush foreground = null, Brush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
@@ -344,7 +344,7 @@ namespace AasxPackageExplorer
             return (but);
         }
 
-        public CheckBox AddSmallCheckBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), 
+        public CheckBox AddSmallCheckBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
@@ -406,7 +406,7 @@ namespace AasxPackageExplorer
         public TextBlock AddSmallLabelTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
         {
             var lab = new SelectableTextBlock();
-            
+
             lab.Margin = margin;
             lab.Padding = padding;
             if (foreground != null)
@@ -493,7 +493,7 @@ namespace AasxPackageExplorer
             if (auxButtonToolTips != null)
                 intButtonToolTips.AddRange(auxButtonToolTips);
 
-            var auxButton = repo != null && intButtonTitles.Count>0 && auxButtonLambda != null;
+            var auxButton = repo != null && intButtonTitles.Count > 0 && auxButtonLambda != null;
 
             // Grid
             var g = new Grid();
@@ -506,12 +506,12 @@ namespace AasxPackageExplorer
             g.ColumnDefinitions.Add(gc2);
 
             if (auxButton)
-                for (int i=0; i<intButtonTitles.Count; i++)
-                    {
-                        var gc3 = new ColumnDefinition();
-                        gc3.Width = new GridLength(1.0, GridUnitType.Auto);
-                        g.ColumnDefinitions.Add(gc3);
-                    }
+                for (int i = 0; i < intButtonTitles.Count; i++)
+                {
+                    var gc3 = new ColumnDefinition();
+                    gc3.Width = new GridLength(1.0, GridUnitType.Auto);
+                    g.ColumnDefinitions.Add(gc3);
+                }
 
             // Label for key
             AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: "" + key + ":");
@@ -563,7 +563,7 @@ namespace AasxPackageExplorer
                         {
                             return auxButtonLambda(closureI); // exchange o with i !!
                         };
-                    var b = repo.RegisterControl(AddSmallButtonTo(g, 0, 2+i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: intButtonTitles[i]),
+                    var b = repo.RegisterControl(AddSmallButtonTo(g, 0, 2 + i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: intButtonTitles[i]),
                         lmb) as Button;
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
@@ -699,7 +699,8 @@ namespace AasxPackageExplorer
                 b.Padding = new Thickness(5, 0, 5, 0);
                 wp.Children.Add(b);
                 repo.RegisterControl(b,
-                    (o) => {
+                    (o) =>
+                    {
                         return action(currentI); // button # as argument!
                     });
             }
@@ -816,7 +817,8 @@ namespace AasxPackageExplorer
 
                         // button [-]
                         repo.RegisterControl(AddSmallButtonTo(g, 0 + i + rowOfs, 3, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "-"),
-                            (o) => {
+                            (o) =>
+                            {
                                 langStr.RemoveAt(currentI);
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                             });
@@ -946,10 +948,10 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyListKeys(
-            StackPanel view, string key, 
-            AdminShell.KeyList keys, 
-            ModifyRepo repo = null, 
-            AdminShellPackageEnv package = null,              
+            StackPanel view, string key,
+            AdminShell.KeyList keys,
+            ModifyRepo repo = null,
+            AdminShellPackageEnv package = null,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
@@ -1018,7 +1020,7 @@ namespace AasxPackageExplorer
             if (addPresetNames != null && addPresetKeys != null && addPresetNames.Length == addPresetKeys.Length)
                 presetNo = addPresetNames.Length;
 
-            
+
             if (repo == null)
             {
                 // possibly [Jump] button??
@@ -1028,7 +1030,7 @@ namespace AasxPackageExplorer
             {
                 // populate [+], [Select], [eCl@ss], [Copy] buttons
                 var colDescs = new List<string>(new string[] { "*", "#", "#", "#", "#" });
-                for (int i=0; i<presetNo; i++)
+                for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
 
                 var g2 = AddSmallGrid(1, 5 + presetNo, colDescs.ToArray());
@@ -1039,7 +1041,8 @@ namespace AasxPackageExplorer
 
                 if (addEclassIrdi)
                     repo.RegisterControl(AddSmallButtonTo(g2, 0, 1, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add eCl@ss IRDI"),
-                        (o) => {
+                        (o) =>
+                        {
                             string resIRDI = null;
                             AdminShell.ConceptDescription resCD = null;
                             if (this.SmartSelectEclassEntity(SelectEclassEntityFlyout.SelectMode.IRDI, ref resIRDI, ref resCD))
@@ -1054,7 +1057,8 @@ namespace AasxPackageExplorer
 
                 if (addExistingEntities != null && package != null)
                     repo.RegisterControl(AddSmallButtonTo(g2, 0, 2, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add existing"),
-                        (o) => {
+                        (o) =>
+                        {
                             var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities);
                             if (k2 != null)
                             {
@@ -1067,7 +1071,8 @@ namespace AasxPackageExplorer
                         });
 
                 repo.RegisterControl(AddSmallButtonTo(g2, 0, 3, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add blank"),
-                    (o) => {
+                    (o) =>
+                    {
                         var k = new AdminShell.Key();
                         keys.Add(k);
                         if (takeOverLambdaAction != null)
@@ -1077,17 +1082,18 @@ namespace AasxPackageExplorer
                     });
 
                 repo.RegisterControl(AddSmallButtonTo(g2, 0, 4, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Clipboard"),
-                    (o) => {
+                    (o) =>
+                    {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
                         Clipboard.SetText(st);
                         Log.Info("Keys written to clipboard.");
                         return new ModifyRepo.LambdaActionNone();
                     });
 
-                for (int i=0; i<presetNo;i++)
+                for (int i = 0; i < presetNo; i++)
                 {
                     var closureKey = addPresetKeys[i];
-                    repo.RegisterControl(AddSmallButtonTo(g2, 0, 5+i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "" + addPresetNames[i]),
+                    repo.RegisterControl(AddSmallButtonTo(g2, 0, 5 + i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "" + addPresetNames[i]),
                         (o) =>
                         {
                             keys.Add(closureKey);
@@ -1177,7 +1183,8 @@ namespace AasxPackageExplorer
 
                         // button [-]
                         repo.RegisterControl(AddSmallButtonTo(g, 0 + i + rowOfs, 5, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "-"),
-                            (o) => {
+                            (o) =>
+                            {
                                 keys.RemoveAt(currentI);
                                 if (takeOverLambdaAction != null)
                                     return takeOverLambdaAction;
@@ -1246,7 +1253,7 @@ namespace AasxPackageExplorer
                 return;
             int ndx = list.IndexOf(existing);
             if (ndx < 0 || ndx >= list.Count - 1)
-                return;            
+                return;
             list.Insert(ndx, entity);
         }
 
@@ -1333,7 +1340,8 @@ namespace AasxPackageExplorer
                 var qual = qualifiers[i];
                 var substack = AddSubStackPanel(stack, "     "); // just a bit spacing to the left
 
-                AddGroup(substack, $"Qualifier {1+i}", levelColors[2][0], levelColors[2][1], repo, auxButtonTitle: "Delete", auxButtonLambda: (o) => {
+                AddGroup(substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo, auxButtonTitle: "Delete", auxButtonLambda: (o) =>
+                {
                     qualifiers.Remove(qual);
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 });
@@ -1372,7 +1380,7 @@ namespace AasxPackageExplorer
         // Identify eCl@ss properties to be imported
         //
 
-        public void IdentifyTargetsForEclassImportOfCDs (AdminShell.AdministrationShellEnv env, List<AdminShell.SubmodelElement> elems, ref List<AdminShell.SubmodelElement> targets)
+        public void IdentifyTargetsForEclassImportOfCDs(AdminShell.AdministrationShellEnv env, List<AdminShell.SubmodelElement> elems, ref List<AdminShell.SubmodelElement> targets)
         {
             if (env == null || targets == null || elems == null)
                 return;
@@ -1408,7 +1416,7 @@ namespace AasxPackageExplorer
         }
         */
 
-        public bool ImportEclassCDsForTargets (AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
+        public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
             if (this.flyoutProvider == null || env == null || targets == null)
@@ -1422,8 +1430,8 @@ namespace AasxPackageExplorer
                     jobData.searchIRDIs.Add(t.semanticId[0].value.ToLower().Trim());
             // still valid?
             if (jobData.searchIRDIs.Count < 1)
-                return false ;
-            
+                return false;
+
             // make a progress flyout
             var uc = new ProgressBarFlyout("Import ConceptDescriptions from eCl@ss", "Preparing ...", MessageBoxImage.Information);
             uc.Progress = 0.0;
@@ -1443,14 +1451,15 @@ namespace AasxPackageExplorer
 
                 // longrunnig task for searching IRDIs ..
                 uc.Info = "Collecting eCl@ss Data ..";
-                EclassUtils.SearchForIRDIinEclassFiles(jobData, (frac) => {
+                EclassUtils.SearchForIRDIinEclassFiles(jobData, (frac) =>
+                {
                     uc.Progress = frac;
                 });
 
                 // apply to targets
                 uc.Info = "Adding missing ConceptDescriptions ..";
                 uc.Progress = 0.0;
-                for (int i=0; i<targets.Count; i++)
+                for (int i = 0; i < targets.Count; i++)
                 {
                     // progress
                     uc.Progress = (1.0 / targets.Count) * i;
@@ -1556,7 +1565,7 @@ namespace AasxPackageExplorer
             }
             if (highestSev == HintCheck.Severity.Notice)
             {
-                bubble.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]; 
+                bubble.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"];
                 bubble.Foreground = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
             }
             view.Children.Add(bubble);

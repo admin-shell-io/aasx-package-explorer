@@ -11,7 +11,7 @@ namespace AasxIntegrationBase
 {
     public class AasxPluginOptionsBase
     {
-        public virtual void Merge (AasxPluginOptionsBase options)
+        public virtual void Merge(AasxPluginOptionsBase options)
         {
         }
 
@@ -59,7 +59,7 @@ namespace AasxIntegrationBase
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }
-                catch { ; }
+                catch {; }
         }
     }
 }

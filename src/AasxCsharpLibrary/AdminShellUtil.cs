@@ -186,7 +186,7 @@ namespace AdminShellNS
             }
         }
 
-        public static void CheckSearchable(SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject, 
+        public static void CheckSearchable(SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
             MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
         {
             // try get a speaking name

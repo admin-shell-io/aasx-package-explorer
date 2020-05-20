@@ -49,7 +49,8 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-            } catch { return DataFileType.Invalid; };
+            }
+            catch { return DataFileType.Invalid; };
             return res;
         }
 
@@ -256,7 +257,7 @@ namespace AasxPackageExplorer
             if (a.eclassFiles == null || a.eclassFiles.Count < 1)
                 return;
             if (a.searchIRDIs == null || a.searchIRDIs.Count < 1)
-                return;            
+                return;
 
             double progressPerFile = 1.0 / a.eclassFiles.Count;
 
@@ -296,7 +297,7 @@ namespace AasxPackageExplorer
                                     if (node.Name == "ontoml:property")
                                     {
                                         var id = GetAttributeByName(node, "id");
-                                        if (id != null &&  a.searchIRDIs.Contains(id.Trim().ToLower()))
+                                        if (id != null && a.searchIRDIs.Contains(id.Trim().ToLower()))
                                         {
                                             var sItem = CreateSearchItemFromPropertyNode(node, "prop");
                                             if (sItem != null)
@@ -490,7 +491,7 @@ namespace AasxPackageExplorer
                 if (node == null)
                     continue;
 
-                XmlNode n1;                
+                XmlNode n1;
 
                 // first is significant
                 if (i == 0)

@@ -24,9 +24,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 namespace opctest
 {
     class Program
-    {        
+    {
 
-        public static AdminShell.Submodel CreateSubmodelCad (InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv) {
+        public static AdminShell.Submodel CreateSubmodelCad(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
+        {
 
             // CONCEPTS
             var cdGroup = AdminShell.ConceptDescription.CreateNew("IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
@@ -64,7 +65,8 @@ namespace opctest
 
             // for each cad file in prefs
             int ndx = 0;
-            foreach (var fr in prefs.filerecs) {
+            foreach (var fr in prefs.filerecs)
+            {
 
                 if (fr.submodel != "cad")
                     continue;
@@ -81,7 +83,7 @@ namespace opctest
                 var propFile = AdminShell.File.CreateNew("File", "PARAMETER", AdminShell.Key.GetFromRef(cdFile.GetReference()));
                 propGroup.Add(propFile);
                 propFile.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
-                propFile.value = "" + fr.targetdir.Trim() + System.IO.Path.GetFileName(fr.fn) ;
+                propFile.value = "" + fr.targetdir.Trim() + System.IO.Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
                 var propType = AdminShell.ReferenceElement.CreateNew("FileFormat", "PARAMETER", AdminShell.Key.GetFromRef(cdFormat.GetReference()));
@@ -432,8 +434,8 @@ namespace opctest
                         // LANGUAGE
                         cd = preDefs.CD_VDI2770_Language;
                         var lngs = args[4].Split(',');
-                        for (int i=0; i<lngs.Length; i++)
-                            using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName() + $"{i+1:00}", "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        for (int i = 0; i < lngs.Length; i++)
+                            using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName() + $"{i + 1:00}", "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
                                 p.valueType = "string";
@@ -563,7 +565,7 @@ namespace opctest
 
                 ndx++;
                 // (idx, args, fn, url, targetdir)
-                lambda(ndx, fr.args.ToArray(), fr.fn, null, fr.targetdir);             
+                lambda(ndx, fr.args.ToArray(), fr.fn, null, fr.targetdir);
             }
 
             // for each url one group
@@ -593,7 +595,8 @@ namespace opctest
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew("Submodel", false, "IRI", "http://example.com/id/type/submodel/datasheet/1/1"));
 
             // CONCEPT: Manufacturer
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAO677#001")) {
+            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAO677#001"))
+            {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new string[] { "DE", "TBD", "EN", "Manufacturer name" },
@@ -601,7 +604,7 @@ namespace opctest
                     definition: new string[] { "DE", "TBD",
                     "EN", "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation" }
                 );
-                
+
                 var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "string";
@@ -681,7 +684,7 @@ namespace opctest
                 // as designed
                 var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
-                p.AddQualifier("life cycle qual", "SPEC", 
+                p.AddQualifier("life cycle qual", "SPEC",
                     AdminShell.KeyList.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
                     AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF579"));
                 p.valueType = "double";
@@ -736,10 +739,10 @@ namespace opctest
             sub1.idShort = "VariousItems";
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew(
-                type:   "Submodel", 
-                local:  false, 
-                idType: "IRI", 
-                value:  "http://example.com/id/type/submodel/various/1/1"));
+                type: "Submodel",
+                local: false,
+                idType: "IRI",
+                value: "http://example.com/id/type/submodel/various/1/1"));
 
 #if notyet
 
@@ -890,7 +893,7 @@ namespace opctest
 
             // CONCEPT: electrical plan
 
-            AdminShell.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2 ;
+            AdminShell.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
@@ -1044,7 +1047,7 @@ namespace opctest
                     definition: new string[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
-            }            
+            }
 
             // ENTITIES
 
@@ -1098,32 +1101,32 @@ namespace opctest
             // CONCEPT: SetMode 
             var theOp = new AdminShell.Operation();
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          
-                id: "0173-1#02-AAS999#001"))                             
+                idType: AdminShell.Identification.IRDI,
+                id: "0173-1#02-AAS999#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new string[] {
-                        "DE", "Setze Energiespare-Modus",    
-                        "EN", "Set energy saving mode" },   
-                    shortName: "SetMode",                               
+                        "DE", "Setze Energiespare-Modus",
+                        "EN", "Set energy saving mode" },
+                    shortName: "SetMode",
                     definition: new string[] { "DE", "Setze Energiemodus 1..4",
                     "EN", "Set energy saving mode 1..4" }
                 );
 
                 theOp.idShort = "setmode";
                 sub1.Add(theOp);
-            }                                                           
+            }
 
             // CONCEPT: Mode
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          
-                id: "0173-1#02-AAX777#002"))                             
+                idType: AdminShell.Identification.IRDI,
+                id: "0173-1#02-AAX777#002"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new string[] {
-                        "DE", "Energiesparemodus-Vorgabe",    
+                        "DE", "Energiesparemodus-Vorgabe",
                         "EN", "Preset of energy saving mode" },
                     shortName: "mode",
                     valueFormat: "INT",
@@ -1137,8 +1140,8 @@ namespace opctest
                 var ovp = new AdminShell.OperationVariable(p);
 
                 theOp.inputVariable.Add(ovp);
-                p.valueType = "int";                                 
-            }                                                          
+                p.valueType = "int";
+            }
 
             // Nice
             return sub1;
@@ -1167,7 +1170,7 @@ namespace opctest
                     CreateStochasticViewOnSubmodelsRecurse(vw, submodel, sme2wrap.submodelElement);
         }
 
-        public static AdminShell.View CreateStochasticViewOnSubmodels (AdminShell.Submodel[] sms, string idShort)
+        public static AdminShell.View CreateStochasticViewOnSubmodels(AdminShell.Submodel[] sms, string idShort)
         {
             // create
             var vw = new AdminShell.View();
@@ -1189,26 +1192,30 @@ namespace opctest
             return vw;
         }
 
-        public class InputFilePrefs {
+        public class InputFilePrefs
+        {
 
-            public class FileRec {
+            public class FileRec
+            {
                 public string fn = "";
                 public string submodel = "";
                 public string targetdir = "";
-                public List<string> args = new List<string>() ;
+                public List<string> args = new List<string>();
             }
 
-            public List<FileRec> filerecs = new List<FileRec>() ;
+            public List<FileRec> filerecs = new List<FileRec>();
 
-            public class WebRec {
+            public class WebRec
+            {
                 public string url = "";
                 public string submodel = "";
-                public List<string> args = new List<string>() ;
+                public List<string> args = new List<string>();
             }
 
-            public List<WebRec> webrecs = new List<WebRec>() ;
+            public List<WebRec> webrecs = new List<WebRec>();
 
-            public FileRec FindFileRecFn(string thefn) {
+            public FileRec FindFileRecFn(string thefn)
+            {
                 foreach (var pr in filerecs)
                     if (thefn.ToLower().Trim() == pr.fn.ToLower().Trim())
                         return pr;
@@ -1216,18 +1223,23 @@ namespace opctest
             }
         }
 
-        public static void Test4() {
+        public static void Test4()
+        {
 
             // MAKE or LOAD prefs
             InputFilePrefs prefs = new InputFilePrefs();
             var preffn = "prefs.json";
-            try {                
-                if (File.Exists(preffn)) {
+            try
+            {
+                if (File.Exists(preffn))
+                {
                     Log.WriteLine(2, "Opening {0} for reading preferences ..", preffn);
                     var init = File.ReadAllText(preffn);
-                    Log.WriteLine(2, "Parsing preferences ..") ;
+                    Log.WriteLine(2, "Parsing preferences ..");
                     prefs = JsonConvert.DeserializeObject<InputFilePrefs>(init);
-                } else {
+                }
+                else
+                {
                     Log.WriteLine(2, "Using built-in preferences ..");
                     var init = @"{ 'filerecs' : [
                             { 'fn' : 'data\\thumb-usb.jpeg',                        'submodel' : 'thumb',   'targetdir' : '/',                      'args' : [ ] },
@@ -1250,20 +1262,25 @@ namespace opctest
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Controllore CECC',                     'it',   '2013-05a'  ] },
                         ] }";
                     Log.WriteLine(3, "Dump of built-in preferences: {0}", init);
-                    Log.WriteLine(2, "Parsing preferences ..") ;
+                    Log.WriteLine(2, "Parsing preferences ..");
                     prefs = JsonConvert.DeserializeObject<InputFilePrefs>(init);
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Console.Error.Write("While parsing preferences: " + ex.Message);
                 Environment.Exit(-1);
             }
 
             // REPOSITORY
             var repo = new AdminShellNS.IriIdentifierRepository();
-            try {
+            try
+            {
                 if (!repo.Load("iri-repository.xml"))
                     repo.InitRepository("iri-repository.xml");
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Console.Error.Write("While accessing IRI repository: " + ex.Message);
                 Environment.Exit(-1);
             }
@@ -1313,7 +1330,7 @@ namespace opctest
                 aas1.submodelRefs.Add(subCad.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subDocu.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subDatasheet.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subEng.GetReference() as AdminShell.SubmodelRef) ;
+                aas1.submodelRefs.Add(subEng.GetReference() as AdminShell.SubmodelRef);
                 aas1.AddView(view1);
 
                 if (true)
@@ -1328,8 +1345,10 @@ namespace opctest
                 Environment.Exit(-1);
             }
 
-            if (true) {
-                try {
+            if (true)
+            {
+                try
+                {
                     //
                     // Test serialize
                     // this generates a "sample.xml" is addition to the package below .. for direct usag, e.g.
@@ -1344,7 +1363,9 @@ namespace opctest
                         nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
                         serializer.Serialize(s, aasenv1, nss);
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Console.Error.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
@@ -1449,7 +1470,7 @@ namespace opctest
                     Console.Error.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
-            }            
+            }
         }
 
         public static AdminShellPackageEnv GeneratePackage(string preffn = "*")
@@ -1655,7 +1676,8 @@ namespace opctest
 
         }
 
-        public static void TestSerialize(AdminShellPackageEnv package) {
+        public static void TestSerialize(AdminShellPackageEnv package)
+        {
 
             var aasenv1 = package.AasEnv;
 
@@ -1744,7 +1766,7 @@ namespace opctest
                 package3.Close();
             }
 
-        }       
+        }
 
         static void Main(string[] args)
         {
@@ -1773,7 +1795,7 @@ namespace opctest
                     Console.Error.WriteLine("While testing: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
-        }
+            }
 
             AdminShellPackageEnv package = null;
             var ai = 0;
@@ -1805,9 +1827,10 @@ namespace opctest
                         try
                         {
                             // execute
-                            var fn = args[ai+1].Trim();
+                            var fn = args[ai + 1].Trim();
                             Console.Error.WriteLine("Loading package {0} ..", fn);
-                            if (fn.EndsWith(".aml")) {
+                            if (fn.EndsWith(".aml"))
+                            {
                                 package = new AdminShellPackageEnv();
                                 AasxAmlImExport.AmlImport.ImportInto(package, fn);
                             }
@@ -1823,7 +1846,7 @@ namespace opctest
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine("While loading package {0}: {1} at {2}", args[ai+1], ex.Message, ex.StackTrace);
+                            Console.Error.WriteLine("While loading package {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
 

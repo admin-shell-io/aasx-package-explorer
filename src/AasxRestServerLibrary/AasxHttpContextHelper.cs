@@ -68,7 +68,7 @@ namespace AasxRestServerLibrary
             return m;
         }
 
-        public List<AasxHttpHandleIdentification> CreateHandlesFromQueryString (System.Collections.Specialized.NameValueCollection queryStrings)
+        public List<AasxHttpHandleIdentification> CreateHandlesFromQueryString(System.Collections.Specialized.NameValueCollection queryStrings)
         {
             // start
             var res = new List<AasxHttpHandleIdentification>();
@@ -88,7 +88,7 @@ namespace AasxRestServerLibrary
                         if (vl.Length == 2)
                         {
                             var id = new AdminShell.Identification(vl[0], vl[1]);
-                            var h = new AasxHttpHandleIdentification(id, "@"+k);
+                            var h = new AasxHttpHandleIdentification(id, "@" + k);
                             res.Add(h);
                         }
                     }
@@ -181,7 +181,7 @@ namespace AasxRestServerLibrary
                 {
                     if (smref.Matches(handleId.identification))
                         return smref;
-                } 
+                }
                 else
                 {
                     var sm = this.Package.AasEnv.FindSubmodel(smref);
@@ -274,7 +274,7 @@ namespace AasxRestServerLibrary
             public AdminShell.SubmodelElementWrapper wrapper = null;
             public AdminShell.Referable parent = null;
 
-            public FindSubmodelElementResult (AdminShell.Referable elem = null, AdminShell.SubmodelElementWrapper wrapper = null, AdminShell.Referable parent = null)
+            public FindSubmodelElementResult(AdminShell.Referable elem = null, AdminShell.SubmodelElementWrapper wrapper = null, AdminShell.Referable parent = null)
             {
                 this.elem = elem;
                 this.wrapper = wrapper;
@@ -341,7 +341,7 @@ namespace AasxRestServerLibrary
         {
             var settings = new JsonSerializerSettings();
             if (contractResolver != null)
-                settings.ContractResolver = contractResolver; 
+                settings.ContractResolver = contractResolver;
             var json = JsonConvert.SerializeObject(obj, Formatting.Indented, settings);
             var buffer = context.Request.ContentEncoding.GetBytes(json);
             var length = buffer.Length;
@@ -602,7 +602,7 @@ namespace AasxRestServerLibrary
                         res.Add(o);
                     }
             }
-                        
+
             // return as JSON
             SendJsonResponse(context, res);
         }
@@ -962,7 +962,7 @@ namespace AasxRestServerLibrary
             }
 
             // return as JSON
-            var cr = new AdminShellConverters.AdaptiveFilterContractResolver( deep: deep, complete: complete);
+            var cr = new AdminShellConverters.AdaptiveFilterContractResolver(deep: deep, complete: complete);
             SendJsonResponse(context, sme, cr);
         }
 
@@ -1372,7 +1372,8 @@ namespace AasxRestServerLibrary
             try
             {
                 ids = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AdminShell.Identification>>(context.Request.Payload);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;

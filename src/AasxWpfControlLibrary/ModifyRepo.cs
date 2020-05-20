@@ -129,7 +129,8 @@ namespace AasxPackageExplorer
                     if (it.takeOverLambda != null)
                         WishForOutsideAction.Add(it.takeOverLambda);
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Error(ex, "While in user callback (modify repo lambda)");
             }
@@ -175,7 +176,8 @@ namespace AasxPackageExplorer
                             WishForOutsideAction.Add(action);
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Error(ex, "While in user callback (modify repo lambda)");
             }

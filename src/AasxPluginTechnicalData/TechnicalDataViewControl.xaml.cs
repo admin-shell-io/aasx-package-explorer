@@ -106,7 +106,7 @@ namespace AasxPluginTechnicalData
                 visual.Arrange(new Rect(0, 0, width, height));
             }
 
-            RenderTargetBitmap retVal = new RenderTargetBitmap(2*width, 2*height, 2*DPI, 2*DPI, PixelFormats.Pbgra32);
+            RenderTargetBitmap retVal = new RenderTargetBitmap(2 * width, 2 * height, 2 * DPI, 2 * DPI, PixelFormats.Pbgra32);
 
             DrawingVisual dv = new DrawingVisual();
             using (DrawingContext ctx = dv.RenderOpen())

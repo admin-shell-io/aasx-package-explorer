@@ -172,7 +172,7 @@ namespace AasxPackageExplorer
                     {
                         Log.Error("Cannot create instance from class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
-                    }                    
+                    }
 
                     // create plugin
                     var pi = PluginInstance.CreateNew(index, asm, tp, ob, pluginDll[index].Args);
@@ -184,7 +184,7 @@ namespace AasxPackageExplorer
 
                     // init plug-in
                     var singleArg = new object[] { pluginDll[index].Args };
-                    pi.BasicInvokeMethod("InitPlugin", singleArg);                    
+                    pi.BasicInvokeMethod("InitPlugin", singleArg);
 
                     // adding
                     Log.Info(".. adding plugin {0}", pi.name);
@@ -301,7 +301,7 @@ namespace AasxPackageExplorer
             // OK
             return res;
         }
-        
+
         /// <summary>
         /// Takes the <c>opt</c> and tries to write them to the associated plugin.
         /// </summary>
@@ -344,7 +344,7 @@ namespace AasxPackageExplorer
             {
                 try
                 {
-                    for (int i=0; i<999; i++)
+                    for (int i = 0; i < 999; i++)
                     {
                         var x = pi.CheckForLogMessage();
                         if (x == null)
@@ -368,7 +368,7 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch (Exception ex) { ; }
+                catch (Exception ex) {; }
             }
         }
 

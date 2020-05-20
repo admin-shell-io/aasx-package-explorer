@@ -96,7 +96,7 @@ namespace AasxPluginDocumentShelf
             var data = this.DataContext as DocumentEntity;
             if (e.ClickCount == 2 && data != null)
                 data.RaiseDoubleClick();
-                
+
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)

@@ -15,7 +15,7 @@ namespace AasxPluginDocumentShelf
 
     public class DocumentShelfOptions : AasxIntegrationBase.AasxPluginOptionsBase
     {
-        
+
 
         //
         // Option fields
@@ -120,14 +120,14 @@ namespace AasxPluginDocumentShelf
             descDoc.Add(new FormDescProperty(
                 "IsPrimary", FormMultiplicity.One, opt.SemIdIsPrimaryDocumentId, "IsPrimary",
                 "True, if primary document id for the document."));
-            
+
             var descDocClass = new FormDescProperty(
                 "ClassId", FormMultiplicity.One, opt.SemIdDocumentClassId, "ClassId",
                 "VDI2770 ClassId of the document.");
 
             var cbList = new List<string>();
             var vlList = new List<string>();
-            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[]) Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
+            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
             // for (int i = 1; i < Vdi2770ClassIdMapping.Length / 2; i++)
             {
                 //cbList.Add("" + Vdi2770ClassIdMapping[2 * i + 0] + " - " + Vdi2770ClassIdMapping[2 * i + 1]);
@@ -217,7 +217,7 @@ namespace AasxPluginDocumentShelf
 
             descDocVer.Add(new FormDescProperty(
                 "OrganizationOfficialName", FormMultiplicity.One, opt.SemIdOrganizationOfficialName, "OrganizationOfficialName",
-                "Official name for the organisation (which might be longer or include legal information)."));         
+                "Official name for the organisation (which might be longer or include legal information)."));
 
             return descDoc;
         }

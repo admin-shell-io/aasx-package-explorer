@@ -46,7 +46,7 @@ namespace AasxPackageExplorer
         public static bool GenerateRepositoryFromFileNames(string[] inputFns, string outputFn)
         {
             var res = true;
-            
+
             // new repo
             var repo = new AasxFileRepository();
 

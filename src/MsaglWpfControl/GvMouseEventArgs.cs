@@ -33,48 +33,59 @@ using WMouseButtonState = System.Windows.Input.MouseButtonState;
 using WMouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using Microsoft.Msagl.Drawing;
 
-namespace Microsoft.Msagl.WpfGraphControl {
-    internal class GvMouseEventArgs : MsaglMouseEventArgs {
+namespace Microsoft.Msagl.WpfGraphControl
+{
+    internal class GvMouseEventArgs : MsaglMouseEventArgs
+    {
         WMouseEventArgs args;
         WPoint position;
 
-        internal GvMouseEventArgs(WMouseEventArgs argsPar, GraphViewer graphScrollerP) {
+        internal GvMouseEventArgs(WMouseEventArgs argsPar, GraphViewer graphScrollerP)
+        {
             args = argsPar;
             position = args.GetPosition((WIInputElement)graphScrollerP.GraphCanvas.Parent);
         }
 
-        public override bool LeftButtonIsPressed {
+        public override bool LeftButtonIsPressed
+        {
             get { return args.LeftButton == WMouseButtonState.Pressed; }
         }
 
 
-        public override bool MiddleButtonIsPressed {
+        public override bool MiddleButtonIsPressed
+        {
             get { return args.MiddleButton == WMouseButtonState.Pressed; }
         }
 
-        public override bool RightButtonIsPressed {
+        public override bool RightButtonIsPressed
+        {
             get { return args.RightButton == WMouseButtonState.Pressed; }
         }
 
 
-        public override bool Handled {
+        public override bool Handled
+        {
             get { return args.Handled; }
             set { args.Handled = value; }
         }
 
-        public override int X {
+        public override int X
+        {
             get { return (int)position.X; }
         }
 
-        public override int Y {
+        public override int Y
+        {
             get { return (int)position.Y; }
         }
 
         /// <summary>
         ///     number of clicks
         /// </summary>
-        public override int Clicks {
-            get {
+        public override int Clicks
+        {
+            get
+            {
                 var e = args as WMouseButtonEventArgs;
                 return e != null ? e.ClickCount : 0;
             }

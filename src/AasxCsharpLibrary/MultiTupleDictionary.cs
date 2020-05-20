@@ -18,7 +18,7 @@ namespace AasxUtils
         }
     }
 
-    public class MultiTuple2<T,U> : MultiTupleBase
+    public class MultiTuple2<T, U> : MultiTupleBase
     {
         public T one;
         public U two;

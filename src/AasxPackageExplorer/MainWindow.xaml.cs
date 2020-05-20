@@ -51,8 +51,8 @@ namespace AasxPackageExplorer
 
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
 
-#endregion
-#region Init Component
+        #endregion
+        #region Init Component
         //====================
 
         public MainWindow()
@@ -60,8 +60,8 @@ namespace AasxPackageExplorer
             InitializeComponent();
         }
 
-#endregion
-#region Utility functions
+        #endregion
+        #region Utility functions
         //=======================
 
         public static string WpfStringAddWrapChars(string str)
@@ -355,12 +355,12 @@ namespace AasxPackageExplorer
 
         }
 
-#endregion
-#region Callbacks
+        #endregion
+        #region Callbacks
         //===============
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {          
+        {
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
@@ -376,7 +376,8 @@ namespace AasxPackageExplorer
                     var bi = new BitmapImage(new Uri(fullfn, UriKind.RelativeOrAbsolute));
                     this.LogoImage.Source = bi;
                     this.LogoImage.UpdateLayout();
-                } catch { }
+                }
+                catch { }
 
             // adding the CEF Browser conditionally
             theContentBrowser.Start(Options.Curr.ContentHome, Options.Curr.InternalBrowser);
@@ -387,8 +388,8 @@ namespace AasxPackageExplorer
 #endif
 
             // window size?
-            if (Options.Curr.WindowLeft > 0) this.Left =Options.Curr.WindowLeft;
-            if (Options.Curr.WindowTop > 0) this.Top =Options.Curr.WindowTop;
+            if (Options.Curr.WindowLeft > 0) this.Left = Options.Curr.WindowLeft;
+            if (Options.Curr.WindowTop > 0) this.Top = Options.Curr.WindowTop;
             if (Options.Curr.WindowWidth > 0) this.Width = Options.Curr.WindowWidth;
             if (Options.Curr.WindowHeight > 0) this.Height = Options.Curr.WindowHeight;
             if (Options.Curr.WindowMaximized)
@@ -440,7 +441,7 @@ namespace AasxPackageExplorer
             // add to "normal" event quoue
             DispEditEntityPanel.AddWishForOutsideAction(
                 new ModifyRepo.LambdaActionRedrawAllElements(
-                    nextFocus: resultItem.businessObject, 
+                    nextFocus: resultItem.businessObject,
                     highlightField: new DispEditHighlight.HighlightFieldInfo(resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
                     onlyReFocus: true));
         }
@@ -705,7 +706,7 @@ namespace AasxPackageExplorer
             MainTimer_HandleLogMessages();
             MainTimer_HandleEntityPanel();
             MainTimer_HandlePlugins();
-        }    
+        }
 
         private void ButtonHistory_ObjectRequested(object sender, VisualElementGeneric ve)
         {
@@ -881,7 +882,7 @@ namespace AasxPackageExplorer
                     MainSpaceGrid.ColumnDefinitions[4].Width = new GridLength(this.ActualWidth / 3);
                 }
             }
-        }        
+        }
 
         private void ShowContent_Click(object sender, RoutedEventArgs e)
         {
@@ -920,7 +921,7 @@ namespace AasxPackageExplorer
                 if (this.currentEntityForUpdate != null && this.currentEntityForUpdate is VisualElementSubmodelElement)
                 {
                     var viselem = this.currentEntityForUpdate as VisualElementSubmodelElement;
-                    if (viselem != null && viselem.theEnv != null 
+                    if (viselem != null && viselem.theEnv != null
                         && viselem.theContainer != null && viselem.theContainer is AdminShell.Submodel
                         && viselem.theWrapper != null && viselem.theWrapper.submodelElement != null && viselem.theWrapper.submodelElement is AdminShell.Property)
                     {
@@ -960,7 +961,7 @@ namespace AasxPackageExplorer
 
         private void mainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if ( (e.Key == Key.OemPlus || e.Key == Key.Add) && Keyboard.Modifiers == ModifierKeys.Control)
+            if ((e.Key == Key.OemPlus || e.Key == Key.Add) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel += 0.25;
@@ -978,8 +979,8 @@ namespace AasxPackageExplorer
             }
         }
 
-#endregion
-#region Modal Flyovers
+        #endregion
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -1143,8 +1144,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -1206,7 +1207,8 @@ namespace AasxPackageExplorer
                     isDragging = true;
 
                     // fail safe
-                    try { 
+                    try
+                    {
                         // hastily prepare temp file ..
                         var tempfile = thePackageEnv.MakePackageFileAvailableAsTempFile(this.showContentPackageUri);
 
@@ -1235,7 +1237,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

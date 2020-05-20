@@ -27,7 +27,7 @@ namespace AasxPluginGenericForms
     /// <summary>
     /// Interaktionslogik für ShelfControl.xaml
     /// </summary>
-    public partial class GenericFormsControl : UserControl 
+    public partial class GenericFormsControl : UserControl
     {
         #region Members
         //=============
@@ -74,9 +74,9 @@ namespace AasxPluginGenericForms
 
         public void Start(
             LogInstance log,
-            AdminShellPackageEnv thePackage, 
-            AdminShell.Submodel theSubmodel, 
-            AasxPluginGenericForms.GenericFormOptions theOptions, 
+            AdminShellPackageEnv thePackage,
+            AdminShell.Submodel theSubmodel,
+            AasxPluginGenericForms.GenericFormOptions theOptions,
             PluginEventStack eventStack)
         {
             this.Log = log;
@@ -89,7 +89,7 @@ namespace AasxPluginGenericForms
         public static GenericFormsControl FillWithWpfControls(
             LogInstance log,
             object opackage, object osm,
-            AasxPluginGenericForms.GenericFormOptions options, 
+            AasxPluginGenericForms.GenericFormOptions options,
             PluginEventStack eventStack,
             object masterDockPanel)
         {
@@ -132,7 +132,7 @@ namespace AasxPluginGenericForms
         protected bool formInUpdateMode = false;
         protected AdminShell.SubmodelElementWrapperCollection updateSourceElements = null;
 
-        protected GenericFormsOptionsRecord currentFormRecord = null ;
+        protected GenericFormsOptionsRecord currentFormRecord = null;
         protected FormInstanceSubmodel currentFormInst = null;
 
         private void DisplaySubmodel()
@@ -155,16 +155,16 @@ namespace AasxPluginGenericForms
 
             // check form
             if (currentFormRecord.FormSubmodel == null || currentFormRecord.FormSubmodel.SubmodelElements == null)
-                return;            
+                return;
 
             // initialize form
             formInUpdateMode = true;
-            updateSourceElements = theSubmodel.submodelElements ;
+            updateSourceElements = theSubmodel.submodelElements;
 
             // take over existing data
             this.currentFormInst = new FormInstanceSubmodel(currentFormRecord.FormSubmodel);
             this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
-            this.currentFormInst.outerEventStack = theEventStack;            
+            this.currentFormInst.outerEventStack = theEventStack;
 
             // bring it to the panel
             var elementsCntl = new FormListOfDifferentControl();

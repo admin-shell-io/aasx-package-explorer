@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
         public bool Result = false;
 
         private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
-        
+
         public ProgressBarFlyout(string caption, string info, MessageBoxImage image)
         {
             InitializeComponent();
@@ -108,6 +108,6 @@ namespace AasxPackageExplorer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
         }
-        
+
     }
 }

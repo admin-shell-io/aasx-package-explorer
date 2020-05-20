@@ -60,7 +60,7 @@ namespace AasxRestServerLibrary
 
         // interface
 
-        public bool IsValid() { return this.uri != null ; } // assume validity
+        public bool IsValid() { return this.uri != null; } // assume validity
         public bool IsConnected() { return true; } // always, as there is no open connection by principle
         public string GetInfo() { return uri.ToString(); }
 
@@ -188,7 +188,7 @@ namespace AasxRestServerLibrary
                 throw new Exception($"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
 
             // return respose.GetContent();
-            var json=respose.GetContent();
+            var json = respose.GetContent();
             var parsed = JObject.Parse(json);
             var value = parsed.SelectToken("value").Value<string>();
             return value;

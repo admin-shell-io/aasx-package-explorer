@@ -92,7 +92,7 @@ namespace AasxPackageExplorer
 
         public SecureConnectFlyout()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         public void LoadPresets(Newtonsoft.Json.Linq.JToken jtoken)
@@ -182,14 +182,14 @@ namespace AasxPackageExplorer
                 return;
 
             // define a lambda
-            Action<ComboBox,SecureConnectPresetField> lambda = (cb, pf) =>
-            {
-                cb.Items.Clear();
-                if (pf.Choices != null)
-                    foreach (var c in pf.Choices)
-                        cb.Items.Add("" + c);
-                cb.Text = "" + pf.Value;
-            };
+            Action<ComboBox, SecureConnectPresetField> lambda = (cb, pf) =>
+             {
+                 cb.Items.Clear();
+                 if (pf.Choices != null)
+                     foreach (var c in pf.Choices)
+                         cb.Items.Add("" + c);
+                 cb.Text = "" + pf.Value;
+             };
 
             // 5 cb's
             lambda(ComboBoxProtocol, p.Protocol);

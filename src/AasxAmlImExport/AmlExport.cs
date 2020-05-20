@@ -175,11 +175,11 @@ namespace AasxAmlImExport
             var semstr = "";
             foreach (var k in refid.Keys)
             {
-                if (semstr !="")
+                if (semstr != "")
                     semstr += ",";
                 semstr += String.Format("({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
             }
-                
+
             return semstr;
         }
 
@@ -382,7 +382,8 @@ namespace AasxAmlImExport
                                 if (targetReferable != null && internalLinksToCreate != null)
                                 {
                                     internalLinksToCreate.Add(new AmlInternalLinkEntity(extIf, smer, targetReferable, "ReferableReference", "ReferableReference",
-                                        (x) => {
+                                        (x) =>
+                                        {
                                             if (x != null && x is InternalElementType)
                                             {
                                                 var x2 = x.ExternalInterface.Append("ReferableReference");
@@ -412,7 +413,7 @@ namespace AasxAmlImExport
 
                         if (amlStyleAttributes)
                         {
-                            for (int i=0; i<2; i++)
+                            for (int i = 0; i < 2; i++)
                             {
                                 // get first, second
                                 var theRef = (new AdminShell.Reference[] { smer.first, smer.second })[i];
@@ -434,7 +435,8 @@ namespace AasxAmlImExport
                                         if (targetReferable != null && internalLinksToCreate != null)
                                         {
                                             internalLinksToCreate.Add(new AmlInternalLinkEntity(extIf, smer, targetReferable, theName, "ReferableReference",
-                                                (x) => {
+                                                (x) =>
+                                                {
                                                     if (x != null && x is InternalElementType)
                                                     {
                                                         var x2 = x.ExternalInterface.Append("ReferableReference");
@@ -456,7 +458,7 @@ namespace AasxAmlImExport
                         // recurse
                         var smec = sme as AdminShell.SubmodelElementCollection;
 
-                        AppendAttributeNameAndRole(ie.Attribute, "ordered", AmlConst.Attributes.SMEC_ordered, smec.ordered ? "true" : "false", attributeDataType: "xs:boolean" );
+                        AppendAttributeNameAndRole(ie.Attribute, "ordered", AmlConst.Attributes.SMEC_ordered, smec.ordered ? "true" : "false", attributeDataType: "xs:boolean");
                         AppendAttributeNameAndRole(ie.Attribute, "allowDuplicates", AmlConst.Attributes.SMEC_allowDuplicates, smec.allowDuplicates ? "true" : "false", attributeDataType: "xs:boolean");
 
                         ExportListOfSme(matcher, internalLinksToCreate, ie, env, smec.value);
@@ -492,10 +494,10 @@ namespace AasxAmlImExport
         }
 
         private static void ExportSubmodelIntoElement(
-            AasAmlMatcher matcher, List<AmlInternalLinkEntity> internalLinksToCreate, 
-            SystemUnitClassType parent, 
-            AdminShell.AdministrationShellEnv env, 
-            AdminShell.Submodel sm, 
+            AasAmlMatcher matcher, List<AmlInternalLinkEntity> internalLinksToCreate,
+            SystemUnitClassType parent,
+            AdminShell.AdministrationShellEnv env,
+            AdminShell.Submodel sm,
             bool tryUseCompactProperties = false,
             bool exportShallow = false)
         {
@@ -522,10 +524,10 @@ namespace AasxAmlImExport
         }
 
         private static InternalElementType ExportSubmodel(
-            AasAmlMatcher matcher, 
-            List<AmlInternalLinkEntity> internalLinksToCreate, InternalElementSequence ieseq, 
-            AdminShell.AdministrationShellEnv env, 
-            AdminShell.Submodel sm, 
+            AasAmlMatcher matcher,
+            List<AmlInternalLinkEntity> internalLinksToCreate, InternalElementSequence ieseq,
+            AdminShell.AdministrationShellEnv env,
+            AdminShell.Submodel sm,
             bool tryUseCompactProperties = false,
             bool exportShallow = false)
         {
@@ -725,7 +727,7 @@ namespace AasxAmlImExport
                         {
                             // just convert it to an mirror element
                             ieSubDup.RefBaseSystemUnitPath = "" + targetAml.ID;
-                        } 
+                        }
                     }
                 }
 
@@ -751,7 +753,7 @@ namespace AasxAmlImExport
         /// Sets attributes to outer and inner element (optional) of an ConceptDescription.
         /// If aseqInnner == null, "embeddedDataSpec"-approach will be used
         /// </summary>
-        private static void SetAttributesForConceptDescription (AttributeSequence aseqOuter, AttributeSequence aseqInner, AdminShell.ConceptDescription cd, ref string name)
+        private static void SetAttributesForConceptDescription(AttributeSequence aseqOuter, AttributeSequence aseqInner, AdminShell.ConceptDescription cd, ref string name)
         {
             // check
             if (aseqOuter == null || cd == null)
@@ -804,7 +806,7 @@ namespace AasxAmlImExport
                         }
                     }
                 }
-            } 
+            }
             else
             {
                 // we will use an 2nd IE to have the attributes of the data spcec content
@@ -813,7 +815,7 @@ namespace AasxAmlImExport
 
             // set attributes of 61360
             if (source61360 != null && dest61360 != null)
-            { 
+            {
                 // better name?
                 if (source61360.shortName != null && source61360.shortName.Count > 0)
                     name = source61360.shortName.GetDefaultStr();
@@ -1058,7 +1060,7 @@ namespace AasxAmlImExport
 
             // after establishing the entities, there will be linking
             var matcher = new AasAmlMatcher();
-           
+
             // over all AAS
             foreach (var aas in package.AasEnv.AdministrationShells)
             {
@@ -1070,7 +1072,7 @@ namespace AasxAmlImExport
             ExportConceptDescriptionsWithExtraContentToIHT(cdhier, package.AasEnv);
 
             // now, do links
-            SetMatcherLinks(matcher);            
+            SetMatcherLinks(matcher);
 
             // save and return
             doc.SaveToFile(amlfn, prettyPrint: true);
