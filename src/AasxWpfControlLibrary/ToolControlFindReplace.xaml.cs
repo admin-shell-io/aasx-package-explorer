@@ -143,7 +143,7 @@ namespace AasxPackageExplorer
             {
                 CurrentResultIndex = 0;
                 var sri = TheSearchResults.foundResults[0];
-                SetFindInfo(1 + CurrentResultIndex, TheSearchResults.foundResults.Count, sri); 
+                SetFindInfo(1 + CurrentResultIndex, TheSearchResults.foundResults.Count, sri);
                 ResultSelected(sri);
             }
             else
@@ -160,7 +160,7 @@ namespace AasxPackageExplorer
         {
             if (ComboBoxToolsFindText == null || TheSearchOptions == null)
                 return;
-          
+
             if (e.Key == Key.Enter)
             {
                 e.Handled = true;

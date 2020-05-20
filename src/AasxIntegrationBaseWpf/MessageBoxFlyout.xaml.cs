@@ -35,7 +35,7 @@ namespace AasxIntegrationBase
         public MessageBoxResult Result = MessageBoxResult.None;
 
         private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
-        
+
         public MessageBoxFlyout(string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
         {
             InitializeComponent();

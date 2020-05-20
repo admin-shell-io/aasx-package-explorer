@@ -703,11 +703,11 @@ namespace AdminShellNS
                 for (int i = 0; i < this.Count; i++)
                     same = same && this.keys[i].Matches(other.keys[i], matchMode);
 
-                    //same = same
-                    //    && this.keys[i].type.Trim().ToLower() == other.keys[i].type.Trim().ToLower()
-                    //    && this.keys[i].local == other.keys[i].local
-                    //    && this.keys[i].idType.Trim().ToLower() == other.keys[i].idType.Trim().ToLower()
-                    //    && this.keys[i].value.Trim().ToLower() == other.keys[i].value.Trim().ToLower();
+                //same = same
+                //    && this.keys[i].type.Trim().ToLower() == other.keys[i].type.Trim().ToLower()
+                //    && this.keys[i].local == other.keys[i].local
+                //    && this.keys[i].idType.Trim().ToLower() == other.keys[i].idType.Trim().ToLower()
+                //    && this.keys[i].value.Trim().ToLower() == other.keys[i].value.Trim().ToLower();
 
                 return same;
             }
@@ -779,7 +779,7 @@ namespace AdminShellNS
 #endif
 
             public AssetRef(Reference r)
-                : base (r)
+                : base(r)
             {
             }
 
@@ -1094,7 +1094,7 @@ namespace AdminShellNS
                     if (ls.lang.Trim().ToLower() == defaultLang)
                         res = ls.str;
                 if (res == null && this.Count > 0)
-                        res = this[0].str;
+                    res = this[0].str;
 
                 // found?
                 return res;
@@ -1521,7 +1521,7 @@ namespace AdminShellNS
                 }
             }
 
-            public List<ObjectFieldInfo> RecursivelyFindFields (object o, Type countAttribute, Type skipAttribute)
+            public List<ObjectFieldInfo> RecursivelyFindFields(object o, Type countAttribute, Type skipAttribute)
             {
                 // access
                 var res = new List<ObjectFieldInfo>();
@@ -3582,12 +3582,12 @@ namespace AdminShellNS
                 var res = "" + type;
                 if (res == "")
                     res += "" + semanticId?.ToString(format, delimiter);
-                
+
                 if (value != null)
                     res += " = " + value;
                 else if (valueId != null)
-                        res += " = " + valueId?.ToString(format, delimiter);
-                
+                    res += " = " + valueId?.ToString(format, delimiter);
+
                 return res;
             }
 
@@ -3606,7 +3606,7 @@ namespace AdminShellNS
             /// <summary>
             /// Add qualifier. If null, do nothing
             /// </summary>
-            public new void Add (Qualifier q)
+            public new void Add(Qualifier q)
             {
                 if (q == null)
                     return;
@@ -3640,7 +3640,7 @@ namespace AdminShellNS
                 {
                     if (res != "")
                         res += delimiter;
-                    res += q.ToString(format, referencesDelimiter);                    
+                    res += q.ToString(format, referencesDelimiter);
                 }
                 return res;
             }
@@ -3931,7 +3931,7 @@ namespace AdminShellNS
             }
 
             public static AdequateElementEnum GetAdequateEnum(string adequateName)
-            {                
+            {
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
                     if (Enum.GetName(typeof(AdequateElementEnum), en).Trim().ToLower() == adequateName.Trim().ToLower())
                         return en;
@@ -4139,7 +4139,7 @@ namespace AdminShellNS
 
             // typecasting wrapper into specific type
 
-            public T GetAs<T>() where T : SubmodelElement 
+            public T GetAs<T>() where T : SubmodelElement
             {
                 var x = (this.submodelElement) as T;
                 return x;
@@ -4195,8 +4195,8 @@ namespace AdminShellNS
                         var op = current as Operation;
                         for (int i = 0; i < 2; i++)
                             foreach (var x in Operation.GetWrappers(op[i]).FindAll<T>(match))
-                                yield return x;                        
-                    }                    
+                                yield return x;
+                    }
                 }
             }
 
@@ -4395,8 +4395,8 @@ namespace AdminShellNS
 
             // a little more business logic
 
-            public T CreateSMEForCD<T>(ConceptDescription cd, string category = null, string idShort = null, 
-                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement,new()
+            public T CreateSMEForCD<T>(ConceptDescription cd, string category = null, string idShort = null,
+                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
             {
                 // access
                 if (cd == null)
@@ -4431,7 +4431,7 @@ namespace AdminShellNS
                 return sme;
             }
 
-            public T CreateSMEForIdShort<T>(string idShort, string category = null, 
+            public T CreateSMEForIdShort<T>(string idShort, string category = null,
                 string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
             {
                 // access
@@ -4822,7 +4822,7 @@ namespace AdminShellNS
 
             public DataElement(SubmodelElement src) : base(src) { }
 
-            public DataElement(DataElement src): base(src) { }
+            public DataElement(DataElement src) : base(src) { }
 
 #if UseAasxCompatibilityModels
             public DataElement(AasxCompatibilityModels.AdminShellV10.DataElement src)
@@ -5299,7 +5299,7 @@ namespace AdminShellNS
 
             public RelationshipElement() { }
 
-            public RelationshipElement(SubmodelElement src) : base(src) { }           
+            public RelationshipElement(SubmodelElement src) : base(src) { }
 
             public RelationshipElement(RelationshipElement src)
                 : base(src)
@@ -5401,7 +5401,7 @@ namespace AdminShellNS
                     this.annotation = new SubmodelElementWrapperCollection(src.annotation);
             }
 
-            public static new AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null, 
+            public static new AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
                 Reference first = null, Reference second = null)
             {
                 var x = new AnnotatedRelationshipElement();
@@ -5451,7 +5451,7 @@ namespace AdminShellNS
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
             // public List<SubmodelElementWrapper> value = new List<SubmodelElementWrapper>();
-            public SubmodelElementWrapperCollection value = new SubmodelElementWrapperCollection() ;
+            public SubmodelElementWrapperCollection value = new SubmodelElementWrapperCollection();
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "value")]
@@ -5469,7 +5469,7 @@ namespace AdminShellNS
                 {
                     if (value != null)
                     {
-                            this.value = new SubmodelElementWrapperCollection();
+                        this.value = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
                             var smew = new SubmodelElementWrapper();
@@ -5582,7 +5582,7 @@ namespace AdminShellNS
             }
         }
 
-        public class OperationVariable 
+        public class OperationVariable
         {
             public enum Direction { In, Out, InOut };
 
@@ -5604,13 +5604,13 @@ namespace AdminShellNS
                 //this.kind = new Kind("Type");
             }
 
-            public OperationVariable(OperationVariable src, bool shallowCopy = false)                
+            public OperationVariable(OperationVariable src, bool shallowCopy = false)
             {
                 this.value = new SubmodelElementWrapper(src.value.submodelElement, shallowCopy);
             }
 
 #if UseAasxCompatibilityModels
-            public OperationVariable(AasxCompatibilityModels.AdminShellV10.OperationVariable src, bool shallowCopy = false)                
+            public OperationVariable(AasxCompatibilityModels.AdminShellV10.OperationVariable src, bool shallowCopy = false)
             {
                 this.value = new SubmodelElementWrapper(src.value.submodelElement, shallowCopy);
             }
@@ -5983,5 +5983,5 @@ namespace AdminShellNS
 
     }
 
-#endregion
+    #endregion
 }

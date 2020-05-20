@@ -10,7 +10,7 @@ namespace AasxIntegrationBase.AasForms
 {
     public class AasFormUtils
     {
-        static private void RecurseExportAsTemplate(AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels, 
+        static private void RecurseExportAsTemplate(AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
             AdminShell.AdministrationShellEnv env = null, AdminShell.ListOfConceptDescriptions cds = null)
         {
             // access
@@ -62,7 +62,7 @@ namespace AasxIntegrationBase.AasForms
                         q = qs?.FindType("Multiplicity");
                         if (q != null)
                         {
-                            foreach (var m in (FormMultiplicity[]) Enum.GetValues(typeof(FormMultiplicity)))
+                            foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
                                 if (("" + q.value) == Enum.GetName(typeof(FormMultiplicity), m))
                                     tsme.Multiplicity = m;
                         }

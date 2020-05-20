@@ -362,7 +362,7 @@ namespace AasxPackageExplorer
             AdminShellPackageEnv envToload = null;
             worker.DoWork += (s1, e1) =>
             {
-                for (int i=0; i<15; i++)
+                for (int i = 0; i < 15; i++)
                 {
                     var sb = new StringBuilder();
                     for (double j = 0; j < 1; j += 0.0025)
@@ -535,7 +535,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
-		public void CommandBinding_ServerRest()
+        public void CommandBinding_ServerRest()
         {
             // make a logger
             var logger = new AasxRestServerLibrary.GrapevineLoggerToListOfStrings();
@@ -786,7 +786,8 @@ namespace AasxPackageExplorer
             this.FlyoutLoggingStart();
 
             uc.ControlCloseWarnTime = 10000;
-            uc.ControlWillBeClosed += () => {
+            uc.ControlWillBeClosed += () =>
+            {
                 uc.LogMessage("Initiating closing (wait at max 10sec) ..");
                 pi.InvokeAction(stopName);
             };
@@ -805,7 +806,7 @@ namespace AasxPackageExplorer
                         totalArgs.AddRange(pi.args);
                     if (additionalArgs != null)
                         totalArgs.AddRange(additionalArgs);
-                    
+
                     // invoke
                     pi.InvokeAction(actionName, this.thePackageEnv, totalArgs.ToArray());
 
@@ -1146,7 +1147,7 @@ namespace AasxPackageExplorer
             }
 
             {
-               var aas = thePackageEnv.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = thePackageEnv.AasEnv.FindAASwithSubmodel(obj.identification);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1280,7 +1281,7 @@ namespace AasxPackageExplorer
                                 return;
                             }
 
-							// find OPC plug-in
+                            // find OPC plug-in
                             var pi = Plugins.FindPluginInstance("AasxPluginOpcUaClient");
                             if (pi == null || !pi.HasAction("create-client") || !pi.HasAction("read-sme-value"))
                             {
@@ -1290,7 +1291,7 @@ namespace AasxPackageExplorer
 
                             // create client
                             var resClient = pi.InvokeAction("create-client", URL, autoAccept, stopTimeout, Username, Password) as AasxPluginResultBaseObject;
-							if (resClient == null || resClient.obj == null)
+                            if (resClient == null || resClient.obj == null)
                             {
                                 Log.Error("Plug-in 'AasxPluginOpcUaClient' cannot create client access!");
                                 return;
@@ -1303,7 +1304,7 @@ namespace AasxPackageExplorer
                             {
                                 if (ve1.theSubmodel.submodelElements[i].submodelElement is AdminShell.Property)
                                 {
-									// access data
+                                    // access data
                                     var p = ve1.theSubmodel.submodelElements[i].submodelElement as AdminShell.Property;
                                     nodeName = Path + p.idShort;
 
@@ -1311,12 +1312,12 @@ namespace AasxPackageExplorer
                                     // value = client.ReadSubmodelElementValue(nodeName, Namespace);
                                     var resValue = pi.InvokeAction("read-sme-value", resClient.obj, nodeName, Namespace) as AasxPluginResultBaseObject;
 
-									// set?
+                                    // set?
                                     if (resValue != null && resValue.obj != null && resValue.obj is string)
                                     {
                                         value = (string)resValue.obj;
                                         p.Set(p.valueType, value);
-                                    }                                    
+                                    }
                                 }
                                 i++;
                             }
@@ -1326,7 +1327,8 @@ namespace AasxPackageExplorer
                         RedrawElementView();
                     }
 
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Log.Error(ex, "executing OPC UA client");
                 }
@@ -1418,9 +1420,9 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     CommandBinding_ExecutePluginServer(
-                        "Net46AasxServerPlugin", 
-                        "server-start", 
-                        "server-stop", 
+                        "Net46AasxServerPlugin",
+                        "server-start",
+                        "server-stop",
                         "Export Nodeset2 via OPC UA Server...",
                         new string[] { "-export-nodeset", dlg.FileName }
                         );
@@ -1440,7 +1442,7 @@ namespace AasxPackageExplorer
             var ve = DisplayElements.SelectedItem;
 
             // allow only some elements
-            if (!(ve is VisualElementConceptDescription 
+            if (!(ve is VisualElementConceptDescription
                 || ve is VisualElementSubmodelElement
                 || ve is VisualElementAdminShell
                 || ve is VisualElementAsset
@@ -1470,7 +1472,8 @@ namespace AasxPackageExplorer
             {
                 Clipboard.SetText(jsonStr);
                 Log.Info("Copied selected element to clipboard.");
-            } else
+            }
+            else
                 Log.Info("No JSON text could be generated for selected element.");
         }
 
@@ -1872,10 +1875,11 @@ namespace AasxPackageExplorer
                     // redisplay
                     // add to "normal" event quoue
                     DispEditEntityPanel.AddWishForOutsideAction(new ModifyRepo.LambdaActionRedrawAllElements(smref));
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Log.Error(ex, "when adding Submodel to AAS");
-                }                
+                }
             }
         }
 

@@ -102,7 +102,7 @@ namespace AasxPackageExplorer
                 args.jobType = 1;
 
                 worker.RunWorkerAsync(args);
-            }         
+            }
         }
 
         private void SearchFor_KeyUp(object sender, KeyEventArgs e)
@@ -121,12 +121,14 @@ namespace AasxPackageExplorer
             var a = e.Argument as BackgroundWorkerArgs;
 
             if (a.jobData != null && a.jobType == 1)
-                EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) => {
+                EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) =>
+                {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                 });
 
             if (a.jobData != null && a.jobType == 2)
-                EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) => {
+                EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) =>
+                {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                 });
 

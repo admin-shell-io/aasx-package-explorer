@@ -25,9 +25,9 @@ namespace AasxRestConsoleServer
             {
                 var x = args[i].Trim().ToLower();
 
-               // real option?
-               if (i < args.Length-1)
-               {
+                // real option?
+                if (i < args.Length - 1)
+                {
                     if (x == "-host")
                     {
                         host = args[i + 1];

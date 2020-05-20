@@ -19,5 +19,5 @@ namespace AasxPluginExportTable
             var opt = new ExportTableOptions();
             return opt;
         }
-    }        
+    }
 }

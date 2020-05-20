@@ -32,7 +32,7 @@ namespace AasxPluginBomStructure
 
         private Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node> referableToNode = new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
         private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation = new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
-        private AdminShell.AdministrationShellEnv env ;
+        private AdminShell.AdministrationShellEnv env;
         private int maxNodeId = 1;
 
         private AasReferenceStore refStore = null;
@@ -62,7 +62,7 @@ namespace AasxPluginBomStructure
             return new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(c.A, c.R, c.G, c.B));
         }
 
-        public static Canvas GenerateLegendPart (int type, int column)
+        public static Canvas GenerateLegendPart(int type, int column)
         {
             Canvas c = null;
             // 1 = Symbol
@@ -266,7 +266,7 @@ namespace AasxPluginBomStructure
                 // have a possible split point, but try to improve it ..
                 int newPos = -1;
                 int newDist = int.MaxValue;
-                for (int ppos = pos-hyst; ppos < pos+hyst; ppos++)
+                for (int ppos = pos - hyst; ppos < pos + hyst; ppos++)
                 {
                     if (ppos < text.Length && !Char.IsLetterOrDigit(text[ppos]))
                     {
@@ -358,7 +358,7 @@ namespace AasxPluginBomStructure
                             }
 
                             // format it
-                            labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);                            
+                            labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
 
                             // now add
                             var x1 = this.FindReferableByReference(rel.first);
@@ -373,7 +373,7 @@ namespace AasxPluginBomStructure
                             e.UserData = rel;
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
-                            e.Attr.LineWidth = 1;                            
+                            e.Attr.LineWidth = 1;
                         }
                         catch { }
                     }
@@ -407,7 +407,8 @@ namespace AasxPluginBomStructure
                     if (pass == 3 && parentRef != null)
                     {
                         // get nodes
-                        try {
+                        try
+                        {
                             if (!referableToNode.ContainsKey(parentRef) || !referableToNode.ContainsKey(prop))
                                 continue;
 
@@ -420,7 +421,8 @@ namespace AasxPluginBomStructure
                             e.Attr.Color = PropertyBorderColor;
                             e.Attr.LineWidth = 2;
                             e.Attr.Weight = 10;
-                        } catch { ; }                        
+                        }
+                        catch {; }
                     }
                 }
 
@@ -458,7 +460,7 @@ namespace AasxPluginBomStructure
                             // another node
                             var node2 = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
                             node2.UserData = sme.assetRef;
-                            node2.LabelText = WrapOnMaxColumn("" + sme.assetRef.ToString(), WrapMaxColumn) ;
+                            node2.LabelText = WrapOnMaxColumn("" + sme.assetRef.ToString(), WrapMaxColumn);
                             node2.Label.FontSize = 6;
                             node2.Attr.Color = AssetBorderColor;
                             node2.Attr.FillColor = AssetFillColor;
@@ -660,7 +662,7 @@ namespace AasxPluginBomStructure
                         if (us is AdminShell.Referable)
                         {
                             // make event
-                            var refs = new List<AdminShell.Key>();                            
+                            var refs = new List<AdminShell.Key>();
                             (us as AdminShell.Referable).CollectReferencesByParent(refs);
 
                             // ok?
@@ -672,7 +674,7 @@ namespace AasxPluginBomStructure
                             }
                         }
 
-                        if (us is AdminShell.Reference )
+                        if (us is AdminShell.Reference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
                             evt.targetReference = (us as AdminShell.Reference);

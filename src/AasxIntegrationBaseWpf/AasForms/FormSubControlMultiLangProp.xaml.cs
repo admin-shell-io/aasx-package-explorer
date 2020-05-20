@@ -56,7 +56,7 @@ namespace AasxIntegrationBase.AasForms
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
             if (dc == null)
                 return;
-           
+
             // then update
             UpdateDisplay();
 

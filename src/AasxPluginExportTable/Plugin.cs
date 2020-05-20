@@ -31,7 +31,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" :  string.Join(", ", args));
+            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
             options = AasxPluginExportTable.ExportTableOptions.CreateDefault();
@@ -106,7 +106,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
-            if (action == "export-submodel" && args != null && args.Length >= 3 
+            if (action == "export-submodel" && args != null && args.Length >= 3
                 && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv && args[2] is AdminShell.Submodel)
             {
                 // flyout provider
@@ -116,8 +116,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var env = args[1] as AdminShell.AdministrationShellEnv;
                 var sm = args[2] as AdminShell.Submodel;
                 if (env == null || sm == null)
-                    return null; 
-                
+                    return null;
+
                 // the Submodel elements need to have parents
                 sm.SetAllParents();
 
@@ -140,7 +140,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
                 }
                 catch { }
-                dlg.Title = "Select text file to be exported";                
+                dlg.Title = "Select text file to be exported";
 
                 if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
                 {
@@ -190,7 +190,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         catch
                         {
                             success = false;
-                        }                        
+                        }
 
                         if (!success)
                             fop.MessageBoxFlyoutShow("Some error occured while exporting the table. Please refer to the log messages.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -254,11 +254,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             // pass 2: go for recursion AFTER?
             if (broadSearch)
-            { 
-            if (coll != null)
-                foreach (var ci in coll.EnumerateChildren())                    
-                    if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                        ExportTable_EnumerateSubmodel(list, env, broadSearch, 1 + depth, sm, ci.submodelElement);
+            {
+                if (coll != null)
+                    foreach (var ci in coll.EnumerateChildren())
+                        if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
+                            ExportTable_EnumerateSubmodel(list, env, broadSearch, 1 + depth, sm, ci.submodelElement);
             }
         }
 

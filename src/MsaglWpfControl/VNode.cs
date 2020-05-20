@@ -36,8 +36,10 @@ using MPoint = Microsoft.Msagl.Core.Geometry.Point;
 using MPolyline = Microsoft.Msagl.Core.Geometry.Curves.Polyline;
 using MShape = Microsoft.Msagl.Drawing.Shape;
 
-namespace Microsoft.Msagl.WpfGraphControl {
-    public class VNode : IViewerNode, IInvalidatable {
+namespace Microsoft.Msagl.WpfGraphControl
+{
+    public class VNode : IViewerNode, IInvalidatable
+    {
         internal WPath BoundaryPath;
         internal WFrameworkElement FrameworkElementOfNodeForLabel;
         readonly Func<MEdge, VEdge> _funcFromDrawingEdgeToVEdge;
@@ -48,13 +50,16 @@ namespace Microsoft.Msagl.WpfGraphControl {
         WPath _collapseSymbolPath;
         readonly WBrush _collapseSymbolPathInactive = WBrushes.Silver;
 
-        internal int ZIndex {
-            get {
+        internal int ZIndex
+        {
+            get
+            {
                 var geomNode = Node.GeometryNode;
                 if (geomNode == null)
                     return 0;
                 int ret = 0;
-                do {
+                do
+                {
                     if (geomNode.ClusterParents == null)
                         return ret;
                     geomNode = geomNode.ClusterParents.FirstOrDefault();
@@ -66,9 +71,11 @@ namespace Microsoft.Msagl.WpfGraphControl {
             }
         }
 
-        public MNode Node {
+        public MNode Node
+        {
             get { return _node; }
-            private set {
+            private set
+            {
                 _node = value;
                 _subgraph = _node as Subgraph;
             }
@@ -76,7 +83,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
 
         internal VNode(MNode node, WFrameworkElement frameworkElementOfNodeForLabelOfLabel,
-            Func<MEdge, VEdge> funcFromDrawingEdgeToVEdge, Func<double> pathStrokeThicknessFunc) {
+            Func<MEdge, VEdge> funcFromDrawingEdgeToVEdge, Func<double> pathStrokeThicknessFunc)
+        {
             PathStrokeThicknessFunc = pathStrokeThicknessFunc;
             Node = node;
             FrameworkElementOfNodeForLabel = frameworkElementOfNodeForLabelOfLabel;
@@ -84,25 +92,31 @@ namespace Microsoft.Msagl.WpfGraphControl {
             _funcFromDrawingEdgeToVEdge = funcFromDrawingEdgeToVEdge;
 
             CreateNodeBoundaryPath();
-            if (FrameworkElementOfNodeForLabel != null) {
+            if (FrameworkElementOfNodeForLabel != null)
+            {
                 FrameworkElementOfNodeForLabel.Tag = this; //get a backpointer to the VNode
                 Common.PositionFrameworkElement(FrameworkElementOfNodeForLabel, node.GeometryNode.Center, 1);
                 WPanel.SetZIndex(FrameworkElementOfNodeForLabel, WPanel.GetZIndex(BoundaryPath) + 1);
             }
             SetupSubgraphDrawing();
             Node.Attr.VisualsChanged += (a, b) => Invalidate();
-            Node.IsVisibleChanged += obj => {
-                foreach (var frameworkElement in FrameworkElements) {
+            Node.IsVisibleChanged += obj =>
+            {
+                foreach (var frameworkElement in FrameworkElements)
+                {
                     frameworkElement.Visibility = Node.IsVisible ? WVisibility.Visible : WVisibility.Hidden;
                 }
             };
         }
 
-        internal IEnumerable<WFrameworkElement> FrameworkElements {
-            get {
+        internal IEnumerable<WFrameworkElement> FrameworkElements
+        {
+            get
+            {
                 if (FrameworkElementOfNodeForLabel != null) yield return FrameworkElementOfNodeForLabel;
                 if (BoundaryPath != null) yield return BoundaryPath;
-                if (_collapseButtonBorder != null) {
+                if (_collapseButtonBorder != null)
+                {
                     yield return _collapseButtonBorder;
                     yield return _topMarginRect;
                     yield return _collapseSymbolPath;
@@ -110,16 +124,19 @@ namespace Microsoft.Msagl.WpfGraphControl {
             }
         }
 
-        void SetupSubgraphDrawing() {
+        void SetupSubgraphDrawing()
+        {
             if (_subgraph == null) return;
 
             SetupTopMarginBorder();
             SetupCollapseSymbol();
         }
 
-        void SetupTopMarginBorder() {
+        void SetupTopMarginBorder()
+        {
             var cluster = (Cluster)_subgraph.GeometryObject;
-            _topMarginRect = new WRectangle {
+            _topMarginRect = new WRectangle
+            {
                 Fill = WBrushes.Transparent,
                 Width = Node.Width,
                 Height = cluster.RectangularBoundary.TopMargin
@@ -128,17 +145,20 @@ namespace Microsoft.Msagl.WpfGraphControl {
             SetZIndexAndMouseInteractionsForTopMarginRect();
         }
 
-        void PositionTopMarginBorder(Cluster cluster) {
+        void PositionTopMarginBorder(Cluster cluster)
+        {
             var box = cluster.BoundaryCurve.BoundingBox;
 
             Common.PositionFrameworkElement(_topMarginRect,
                 box.LeftTop + new MPoint(_topMarginRect.Width / 2, -_topMarginRect.Height / 2), 1);
         }
 
-        void SetZIndexAndMouseInteractionsForTopMarginRect() {
+        void SetZIndexAndMouseInteractionsForTopMarginRect()
+        {
             _topMarginRect.MouseEnter +=
                 (
-                    (a, b) => {
+                    (a, b) =>
+                    {
                         _collapseButtonBorder.Background =
                             Common.BrushFromMsaglColor(_subgraph.CollapseButtonColorActive);
                         _collapseSymbolPath.Stroke = WBrushes.Black;
@@ -146,17 +166,20 @@ namespace Microsoft.Msagl.WpfGraphControl {
                     );
 
             _topMarginRect.MouseLeave +=
-                (a, b) => {
+                (a, b) =>
+                {
                     _collapseButtonBorder.Background = Common.BrushFromMsaglColor(_subgraph.CollapseButtonColorInactive);
                     _collapseSymbolPath.Stroke = WBrushes.Silver;
                 };
             WPanel.SetZIndex(_topMarginRect, int.MaxValue);
         }
 
-        void SetupCollapseSymbol() {
+        void SetupCollapseSymbol()
+        {
             var collapseBorderSize = GetCollapseBorderSymbolSize();
             Debug.Assert(collapseBorderSize > 0);
-            _collapseButtonBorder = new WBorder {
+            _collapseButtonBorder = new WBorder
+            {
                 Background = Common.BrushFromMsaglColor(_subgraph.CollapseButtonColorInactive),
                 Width = collapseBorderSize,
                 Height = collapseBorderSize,
@@ -170,7 +193,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
             Common.PositionFrameworkElement(_collapseButtonBorder, collapseButtonCenter, 1);
 
             double w = collapseBorderSize * 0.4;
-            _collapseSymbolPath = new WPath {
+            _collapseSymbolPath = new WPath
+            {
                 Data = CreateCollapseSymbolPath(collapseButtonCenter + new MPoint(0, -w / 2), w),
                 Stroke = _collapseSymbolPathInactive,
                 StrokeThickness = 1
@@ -185,17 +209,20 @@ namespace Microsoft.Msagl.WpfGraphControl {
         /// </summary>
         public event Action<IViewerNode> IsCollapsedChanged;
 
-        void InvokeIsCollapsedChanged() {
+        void InvokeIsCollapsedChanged()
+        {
             if (IsCollapsedChanged != null)
                 IsCollapsedChanged(this);
         }
 
 
 
-        void TopMarginRectMouseLeftButtonDown(object sender, WMouseButtonEventArgs e) {
+        void TopMarginRectMouseLeftButtonDown(object sender, WMouseButtonEventArgs e)
+        {
             var pos = e.GetPosition(_collapseButtonBorder);
             if (pos.X <= _collapseButtonBorder.Width && pos.Y <= _collapseButtonBorder.Height && pos.X >= 0 &&
-                pos.Y >= 0) {
+                pos.Y >= 0)
+            {
                 e.Handled = true;
                 var cluster = (Cluster)_subgraph.GeometryNode;
                 cluster.IsCollapsed = !cluster.IsCollapsed;
@@ -203,12 +230,14 @@ namespace Microsoft.Msagl.WpfGraphControl {
             }
         }
 
-        double GetCollapseBorderSymbolSize() {
+        double GetCollapseBorderSymbolSize()
+        {
             return ((Cluster)_subgraph.GeometryNode).RectangularBoundary.TopMargin -
                    PathStrokeThickness / 2 - 0.5;
         }
 
-        MPoint GetCollapseButtonCenter(double collapseBorderSize) {
+        MPoint GetCollapseButtonCenter(double collapseBorderSize)
+        {
             var box = _subgraph.GeometryNode.BoundaryCurve.BoundingBox;
             //cannot trust subgraph.GeometryNode.BoundingBox for a cluster
             double offsetFromBoundaryPath = PathStrokeThickness / 2 + 0.5;
@@ -234,7 +263,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
                 }
         */
 
-        WGeometry CreateCollapseSymbolPath(MPoint center, double width) {
+        WGeometry CreateCollapseSymbolPath(MPoint center, double width)
+        {
             var pathGeometry = new WPathGeometry();
             var pathFigure = new WPathFigure { StartPoint = Common.WpfPoint(center + new MPoint(-width, width)) };
 
@@ -246,8 +276,10 @@ namespace Microsoft.Msagl.WpfGraphControl {
             return pathGeometry;
         }
 
-        internal void CreateNodeBoundaryPath() {
-            if (FrameworkElementOfNodeForLabel != null) {
+        internal void CreateNodeBoundaryPath()
+        {
+            if (FrameworkElementOfNodeForLabel != null)
+            {
                 // FrameworkElementOfNode.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 var center = Node.GeometryNode.Center;
                 var margin = 2 * Node.Attr.LabelMargin;
@@ -261,7 +293,8 @@ namespace Microsoft.Msagl.WpfGraphControl {
             BoundaryPath = new WPath { Data = CreatePathFromNodeBoundary(), Tag = this };
             WPanel.SetZIndex(BoundaryPath, ZIndex);
             SetFillAndStroke();
-            if (Node.Label != null) {
+            if (Node.Label != null)
+            {
                 BoundaryPath.ToolTip = Node.LabelText;
                 if (FrameworkElementOfNodeForLabel != null)
                     FrameworkElementOfNodeForLabel.ToolTip = Node.LabelText;
@@ -270,15 +303,18 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         internal Func<double> PathStrokeThicknessFunc;
 
-        double PathStrokeThickness {
+        double PathStrokeThickness
+        {
             get { return PathStrokeThicknessFunc != null ? PathStrokeThicknessFunc() : Node.Attr.LineWidth; }
         }
 
-        byte GetTransparency(byte t) {
+        byte GetTransparency(byte t)
+        {
             return t;
         }
 
-        void SetFillAndStroke() {
+        void SetFillAndStroke()
+        {
             byte trasparency = GetTransparency(Node.Attr.Color.A);
             BoundaryPath.Stroke =
                 Common.BrushFromMsaglColor(new Drawing.Color(trasparency, Node.Attr.Color.R, Node.Attr.Color.G,
@@ -287,18 +323,21 @@ namespace Microsoft.Msagl.WpfGraphControl {
             BoundaryPath.StrokeThickness = PathStrokeThickness;
 
             var textBlock = FrameworkElementOfNodeForLabel as WTextBlock;
-            if (textBlock != null) {
+            if (textBlock != null)
+            {
                 var col = Node.Label.FontColor;
                 textBlock.Foreground =
                     Common.BrushFromMsaglColor(new Drawing.Color(GetTransparency(col.A), col.R, col.G, col.B));
             }
         }
 
-        void SetBoundaryFill() {
+        void SetBoundaryFill()
+        {
             BoundaryPath.Fill = Common.BrushFromMsaglColor(Node.Attr.FillColor);
         }
 
-        WGeometry DoubleCircle() {
+        WGeometry DoubleCircle()
+        {
             var box = Node.BoundingBox;
             double w = box.Width;
             double h = box.Height;
@@ -311,9 +350,11 @@ namespace Microsoft.Msagl.WpfGraphControl {
             return pathGeometry;
         }
 
-        WGeometry CreatePathFromNodeBoundary() {
+        WGeometry CreatePathFromNodeBoundary()
+        {
             WGeometry geometry;
-            switch (Node.Attr.Shape) {
+            switch (Node.Attr.Shape)
+            {
                 case MShape.Box:
                 case MShape.House:
                 case MShape.InvHouse:
@@ -337,32 +378,40 @@ namespace Microsoft.Msagl.WpfGraphControl {
             return geometry;
         }
 
-        WGeometry CreateGeometryFromMsaglCurve(ICurve iCurve) {
+        WGeometry CreateGeometryFromMsaglCurve(ICurve iCurve)
+        {
             var pathGeometry = new WPathGeometry();
-            var pathFigure = new WPathFigure {
+            var pathFigure = new WPathFigure
+            {
                 IsClosed = true,
                 IsFilled = true,
                 StartPoint = Common.WpfPoint(iCurve.Start)
             };
 
             var curve = iCurve as Curve;
-            if (curve != null) {
+            if (curve != null)
+            {
                 AddCurve(pathFigure, curve);
             }
-            else {
+            else
+            {
                 var rect = iCurve as RoundedRect;
                 if (rect != null)
                     AddCurve(pathFigure, rect.Curve);
-                else {
+                else
+                {
                     var ellipse = iCurve as MEllipse;
-                    if (ellipse != null) {
+                    if (ellipse != null)
+                    {
                         return new WEllipseGeometry(Common.WpfPoint(ellipse.Center), ellipse.AxisA.Length,
                             ellipse.AxisB.Length);
                     }
                     var poly = iCurve as MPolyline;
-                    if (poly != null) {
+                    if (poly != null)
+                    {
                         var p = poly.StartPoint.Next;
-                        do {
+                        do
+                        {
                             pathFigure.Segments.Add(new WLineSegment(Common.WpfPoint(p.Point),
                                 true));
 
@@ -379,12 +428,15 @@ namespace Microsoft.Msagl.WpfGraphControl {
         }
 
 
-        static void AddCurve(WPathFigure pathFigure, Curve curve) {
-            foreach (ICurve seg in curve.Segments) {
+        static void AddCurve(WPathFigure pathFigure, Curve curve)
+        {
+            foreach (ICurve seg in curve.Segments)
+            {
                 var ls = seg as MLineSegment;
                 if (ls != null)
                     pathFigure.Segments.Add(new WLineSegment(Common.WpfPoint(ls.End), true));
-                else {
+                else
+                {
                     var ellipse = seg as MEllipse;
                     if (ellipse != null)
                         pathFigure.Segments.Add(new WArcSegment(Common.WpfPoint(ellipse.End),
@@ -398,14 +450,16 @@ namespace Microsoft.Msagl.WpfGraphControl {
             }
         }
 
-        WGeometry GetEllipseGeometry() {
+        WGeometry GetEllipseGeometry()
+        {
             return new WEllipseGeometry(Common.WpfPoint(Node.BoundingBox.Center), Node.BoundingBox.Width / 2,
                 Node.BoundingBox.Height / 2);
         }
 
         #region Implementation of IViewerObject
 
-        public DrawingObject DrawingObject {
+        public DrawingObject DrawingObject
+        {
             get { return Node; }
         }
 
@@ -414,16 +468,21 @@ namespace Microsoft.Msagl.WpfGraphControl {
         /// <summary>
         /// Implements a property of an interface IEditViewer
         /// </summary>
-        public bool MarkedForDragging {
-            get {
+        public bool MarkedForDragging
+        {
+            get
+            {
                 return markedForDragging;
             }
-            set {
+            set
+            {
                 markedForDragging = value;
-                if (value) {
+                if (value)
+                {
                     MarkedForDraggingEvent?.Invoke(this, null);
                 }
-                else {
+                else
+                {
                     UnmarkedForDraggingEvent?.Invoke(this, null);
                 }
             }
@@ -434,19 +493,24 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         #endregion
 
-        public IEnumerable<IViewerEdge> InEdges {
+        public IEnumerable<IViewerEdge> InEdges
+        {
             get { return Node.InEdges.Select(e => _funcFromDrawingEdgeToVEdge(e)); }
         }
 
-        public IEnumerable<IViewerEdge> OutEdges {
+        public IEnumerable<IViewerEdge> OutEdges
+        {
             get { return Node.OutEdges.Select(e => _funcFromDrawingEdgeToVEdge(e)); }
         }
 
-        public IEnumerable<IViewerEdge> SelfEdges {
+        public IEnumerable<IViewerEdge> SelfEdges
+        {
             get { return Node.SelfEdges.Select(e => _funcFromDrawingEdgeToVEdge(e)); }
         }
-        public void Invalidate() {
-            if (!Node.IsVisible) {
+        public void Invalidate()
+        {
+            if (!Node.IsVisible)
+            {
                 foreach (var fe in FrameworkElements)
                     fe.Visibility = WVisibility.Hidden;
                 return;
@@ -476,11 +540,13 @@ namespace Microsoft.Msagl.WpfGraphControl {
 
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return Node.Id;
         }
 
-        internal void DetouchFromCanvas(WCanvas graphCanvas) {
+        internal void DetouchFromCanvas(WCanvas graphCanvas)
+        {
             if (BoundaryPath != null)
                 graphCanvas.Children.Remove(BoundaryPath);
             if (FrameworkElementOfNodeForLabel != null)

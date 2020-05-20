@@ -53,7 +53,7 @@ namespace AasxPackageExplorer
         public void Push(VisualElementGeneric ve)
         {
             // add, only if not already there
-            if (history.Count < 1 || history[history.Count -1 ] != ve)
+            if (history.Count < 1 || history[history.Count - 1] != ve)
                 history.Add(ve);
 
             // is enabled

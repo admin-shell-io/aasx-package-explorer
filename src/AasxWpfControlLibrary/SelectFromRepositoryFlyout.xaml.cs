@@ -44,7 +44,7 @@ namespace AasxPackageExplorer
         //
         // Outer
         //
-        
+
         public void ControlStart()
         {
         }
@@ -53,7 +53,7 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile (string fn = null)
+        public bool LoadAasxRepoFile(string fn = null)
         {
             try
             {
@@ -97,7 +97,8 @@ namespace AasxPackageExplorer
                     }
                 }
 
-            } catch 
+            }
+            catch
             {
                 this.TheAasxRepo = null;
                 return false;

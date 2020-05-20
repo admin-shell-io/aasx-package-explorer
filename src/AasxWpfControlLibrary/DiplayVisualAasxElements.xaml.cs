@@ -63,7 +63,8 @@ namespace AasxPackageExplorer
 
                 // Do processing of the child visual object.
                 var tvi = childVisual as TreeViewItem;
-                if (tvi != null && tvi.DataContext != null && tvi.DataContext == dataObject) {
+                if (tvi != null && tvi.DataContext != null && tvi.DataContext == dataObject)
+                {
                     tvi.BringIntoView();
                     tvi.IsSelected = true;
                     tvi.Focus();
@@ -82,12 +83,12 @@ namespace AasxPackageExplorer
             // VisualTreeHelper.GetChild(tv1, )
             displayedTreeViewLines[0].IsSelected = false;
             EnumVisual(tv1, dataObject);
-/*
-            TreeViewItem tvItem = (TreeViewItem)tv1
-                          .ItemContainerGenerator
-                          .ContainerFromItem(dataObject);
-            tvItem.Focus();
-*/
+            /*
+                        TreeViewItem tvItem = (TreeViewItem)tv1
+                                      .ItemContainerGenerator
+                                      .ContainerFromItem(dataObject);
+                        tvItem.Focus();
+            */
             tv1.UpdateLayout();
         }
 
@@ -95,7 +96,7 @@ namespace AasxPackageExplorer
         /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
         /// times rebuilt via <code>RebuildAasxElements</code>.
         /// </summary>
-        public void ActivateElementStateCache ()
+        public void ActivateElementStateCache()
         {
             this.treeViewLineCache = new TreeViewLineCache();
         }
@@ -183,12 +184,12 @@ namespace AasxPackageExplorer
         #endregion
 
         #region Elememt view drawing / handling
-        
+
         //
         // Element View Drawing
         //
 
-        private VisualElementGeneric SearchInListOfVisualElements (VisualElementGeneric tvl, object dataObject)
+        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject)
         {
             if (tvl == null || dataObject == null)
                 return null;
@@ -207,7 +208,8 @@ namespace AasxPackageExplorer
                 return tvl;
 
             // recursion
-            foreach (var mem in tvl.Members) { 
+            foreach (var mem in tvl.Members)
+            {
                 var x = SearchInListOfVisualElements(mem, dataObject);
                 if (x != null)
                     return x;
@@ -303,7 +305,7 @@ namespace AasxPackageExplorer
                 if (mdo != null && mdo is AdminShell.Referable)
                 {
                     var mdoen = (mdo as AdminShell.Referable).GetElementName().Trim().ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen) >= 0;                        
+                    isIn = fullFilterElementName.IndexOf(mdoen) >= 0;
                 }
                 if (mdo != null && mdo is AdminShell.Reference)
                 {
@@ -322,8 +324,8 @@ namespace AasxPackageExplorer
         }
 
         public void RebuildAasxElements(
-            AdminShell.AdministrationShellEnv env = null, 
-            AdminShellPackageEnv package = null, 
+            AdminShell.AdministrationShellEnv env = null,
+            AdminShellPackageEnv package = null,
             AdminShellPackageEnv[] auxPackages = null, bool editMode = false, string filterElementName = null)
         {
             // clear tree

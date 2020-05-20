@@ -325,7 +325,7 @@ namespace AasxIntegrationBase
             appendToFileWriter.Flush();
         }
         */
-        
+
 
         private void InternalPrint(int color, string msg, params object[] args)
         {

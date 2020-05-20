@@ -10,7 +10,7 @@ namespace AasxGlobalLogging
     /// Static class, wrapping log instance, to have a logging via Singleton.
     /// (no need to have Log instance in every single class)
     /// </summary>
-    public class Log 
+    public class Log
     {
         private static AasxIntegrationBase.LogInstance logInstance = new AasxIntegrationBase.LogInstance();
 

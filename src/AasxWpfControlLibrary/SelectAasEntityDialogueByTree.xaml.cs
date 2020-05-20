@@ -37,9 +37,9 @@ namespace AasxPackageExplorer
         public VisualElementGeneric ResultVisualElement = null;
 
         public SelectAasEntityDialogueByTree(
-            AdminShell.AdministrationShellEnv env, 
-            string filter = null, 
-            AdminShellPackageEnv package = null, 
+            AdminShell.AdministrationShellEnv env,
+            string filter = null,
+            AdminShellPackageEnv package = null,
             AdminShellPackageEnv[] auxPackages = null)
         {
             InitializeComponent();
@@ -81,7 +81,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private bool PrepareResult ()
+        private bool PrepareResult()
         {
             // access
             if (DisplayElements == null || DisplayElements.SelectedItem == null)
@@ -154,7 +154,7 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
-                this.DialogResult = true; 
+                this.DialogResult = true;
         }
 
         private string ApplyFullFilterString(string filter)
@@ -165,7 +165,7 @@ namespace AasxPackageExplorer
             if (res != null && res.Trim().ToLower() == "submodelelement")
                 foreach (var s in AdminShell.Key.SubmodelElements)
                     res += " " + s + " ";
-            return " " + res + " " ;
+            return " " + res + " ";
         }
 
         private void FilterFor(string filter)

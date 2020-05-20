@@ -25,7 +25,7 @@ namespace AasxPredefinedConcepts.Convert
 
             var sm = currentReferable as AdminShell.Submodel;
             if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_VDI2770_Documentation.GetSemanticKey()))
-                res.Add(new ConvertOfferDocumentationSg2ToHsu(this, $"Convert Submodel '{""+sm?.idShort}' for Documentation SG2 to HSU"));
+                res.Add(new ConvertOfferDocumentationSg2ToHsu(this, $"Convert Submodel '{"" + sm?.idShort}' for Documentation SG2 to HSU"));
 
             return res;
         }

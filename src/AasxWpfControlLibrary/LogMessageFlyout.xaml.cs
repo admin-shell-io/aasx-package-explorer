@@ -145,7 +145,7 @@ namespace AasxPackageExplorer
         /// Registers an error pattern, based on a regex, which is applied to each incoming log message
         /// </summary>
         /// <param name="regstr"></param>
-        public void AddPatternError (Regex pattern)
+        public void AddPatternError(Regex pattern)
         {
             if (pattern == null)
                 return;
@@ -230,6 +230,6 @@ namespace AasxPackageExplorer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
         }
-        
+
     }
 }
