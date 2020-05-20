@@ -5341,6 +5341,87 @@ namespace AdminShellNS
             }
         }
 
+        public class AnnotatedRelationshipElement : RelationshipElement
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+
+            // members
+
+            // from this very class     
+
+            [JsonIgnore]
+            [SkipForHash] // do NOT count children!
+            public SubmodelElementWrapperCollection annotation = null;
+
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "annotation")]
+            public SubmodelElement[] JsonAnotation
+            {
+                get
+                {
+                    var res = new List<SubmodelElement>();
+                    if (annotation != null)
+                        foreach (var smew in annotation)
+                            res.Add(smew.submodelElement);
+                    return res.ToArray();
+                }
+                set
+                {
+                    if (value != null)
+                    {
+                        this.annotation = new SubmodelElementWrapperCollection();
+                        foreach (var x in value)
+                        {
+                            var smew = new SubmodelElementWrapper();
+                            smew.submodelElement = x;
+                            this.annotation.Add(smew);
+                        }
+                    }
+                }
+            }
+
+            // constructors
+
+            public AnnotatedRelationshipElement() { }
+
+            public AnnotatedRelationshipElement(SubmodelElement src) : base(src) { }
+
+            public AnnotatedRelationshipElement(AnnotatedRelationshipElement src)
+                : base(src)
+            {
+                if (src.first != null)
+                    this.first = new Reference(src.first);
+                if (src.second != null)
+                    this.second = new Reference(src.second);
+                if (src.annotation != null)
+                    this.annotation = new SubmodelElementWrapperCollection(src.annotation);
+            }
+
+            public static new AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null, 
+                Reference first = null, Reference second = null)
+            {
+                var x = new AnnotatedRelationshipElement();
+                x.CreateNewLogic(idShort, category, semanticIdKey);
+                x.first = first;
+                x.second = second;
+                return (x);
+            }
+
+            public new void Set(Reference first = null, Reference second = null)
+            {
+                this.first = first;
+                this.second = second;
+            }
+
+            public override string GetElementName()
+            {
+                return "AnnotatedRelationshipElement";
+            }
+        }
+
         public class Capability : SubmodelElement
         {
             public Capability() { }
