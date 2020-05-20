@@ -3582,11 +3582,12 @@ namespace AdminShellNS
                 var res = "" + type;
                 if (res == "")
                     res += "" + semanticId?.ToString(format, delimiter);
+                
                 if (value != null)
                     res += " = " + value;
-                else
-                    if (valueId != null)
+                else if (valueId != null)
                         res += " = " + valueId?.ToString(format, delimiter);
+                
                 return res;
             }
 
