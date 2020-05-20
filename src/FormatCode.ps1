@@ -8,10 +8,14 @@
     [Environment]::SetEnvironmentVariable(
         "DOTNET_ROOT",
         $dotnetRoot)
+} else {
+    $dotnetRoot= $env:DOTNET_ROOT
 }
+
+$env:Path += ";$dotnetRoot" 
 
 $dotnetFormatPath=Join-Path $env:UserProfile ".dotnet\tools\dotnet-format.exe"
 
 cd $PSScriptRoot
 
-& $dotnetFormatPath
+dotnet format
