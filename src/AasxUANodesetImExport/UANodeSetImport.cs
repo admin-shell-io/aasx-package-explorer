@@ -135,11 +135,10 @@ namespace AasxUANodesetImExport
             {
                 return InformationModel.Items.First(x => x.BrowseName == "1:AASAssetAdministrationShell");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-
+                return null;
             }
-            return null;
         }
 
         private static Identification GetIdentification(UANode submodel)
@@ -248,7 +247,6 @@ namespace AasxUANodesetImExport
                                           MessageBoxButton.OK);
                 throw ex;
             }
-            return new UANode();
         }
 
         private static string getTypeDefinition(UANode node)
