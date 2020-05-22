@@ -773,6 +773,7 @@ namespace AasxPackageExplorer
                 head = Regex.Replace(head, @"^(\s+)\|", "", RegexOptions.Multiline);
 
                 // test
+#pragma warning disable 0162
                 if (false)
                 {
                     Log.Info(0, StoredPrint.ColorBlue, "This is blue");
@@ -780,6 +781,7 @@ namespace AasxPackageExplorer
                     Log.Error("This is an error!");
                     Log.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
                 }
+#pragma warning restore 0162
 
                 // create window
 

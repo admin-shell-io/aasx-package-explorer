@@ -368,7 +368,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch (Exception ex) {; }
+                catch (Exception)
+                {
+                    // Do nothing
+                }
             }
         }
 
