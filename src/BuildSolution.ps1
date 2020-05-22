@@ -14,7 +14,7 @@ $ids = 'Community', 'Professional', 'Enterprise', 'BuildTools' | foreach { 'Micr
 $instance = & $vswherePath -latest -products $ids -requires Microsoft.Component.MSBuild -format json `
     | Convertfrom-Json `
     | Select-Object -first 1
-$msbuildPath = Join-Path $instance.installationPath 'MSBuild\15.0\Bin\MSBuild.exe' 
+$msbuildPath = Join-Path $instance.installationPath 'MSBuild\Current\Bin\MSBuild.exe' 
 if (!(Test-Path $msbuildPath)) {
     throw "Could not find MSBuild. Expected at: $msbuildPath"
 }

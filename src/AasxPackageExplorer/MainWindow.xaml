@@ -24,6 +24,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <RoutedUICommand x:Key="Save" Text="Save" />
         <RoutedUICommand x:Key="SaveAs" Text="SaveAs" />
         <RoutedUICommand x:Key="Close" Text="Close" />
+        <RoutedUICommand x:Key="Sign" Text="Sign" />
+        <RoutedUICommand x:Key="Validate" Text="Validate" />
+        <RoutedUICommand x:Key="Encrypt" Text="Encrypt" />
+        <RoutedUICommand x:Key="Decrypt" Text="Decrypt" />
         <RoutedUICommand x:Key="OpenAux" Text="OpenAux" />
         <RoutedUICommand x:Key="CloseAux" Text="CloseAux" />
         <RoutedUICommand x:Key="ConnectSecure" Text="ConnectSecure" />
@@ -155,6 +159,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <CommandBinding Command="{StaticResource Save}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SaveAs}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Close}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource Sign}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource Validate}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource Encrypt}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource Decrypt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Exit}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpenAux}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CloseAux}" Executed="CommandBinding_Executed"/>
@@ -240,6 +248,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                         <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{StaticResource Save}"/>
                         <MenuItem Header="_Save as .." Command="{StaticResource SaveAs}"/>
                         <MenuItem Header="_Close .." Command="{StaticResource Close}"/>
+                        <MenuItem Header="_Sign .." Command="{StaticResource Sign}"/>
+                        <MenuItem Header="_Validate .." Command="{StaticResource Validate}"/>
+                        <MenuItem Header="_Encrypt .." Command="{StaticResource Encrypt}"/>
+                        <MenuItem Header="_Decrypt .." Command="{StaticResource Decrypt}"/>
                         <Separator/>
                         <MenuItem Header="Open Au_xiliary AAS .." InputGestureText="Ctrl+X" Command="{StaticResource OpenAux}"/>
                         <MenuItem Header="Close Auxiliary AAS" Command="{StaticResource CloseAux}"/>
