@@ -116,7 +116,6 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Display a message, which is for information only        
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args);
 
         /// <summary>
@@ -127,7 +126,6 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Display a message, which is for derrors      
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args);
 
         /// <summary>
@@ -386,7 +384,6 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Display a message, which is for information only        
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         public void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args)
         {
             var p = new StoredPrint(StoredPrint.ColorBlack, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri);
@@ -407,7 +404,6 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Display a message, which is for derrors      
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         public void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args)
         {
             var p = new StoredPrint(StoredPrint.ColorRed, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri, isError: true);
@@ -421,14 +417,17 @@ namespace AasxIntegrationBase
         /// </summary>
         public void Error(Exception ex, string where)
         {
+            if (ex == null)
+                return;
+
             var s = String.Format("Error {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
                 ((ex.InnerException != null) ? ex.InnerException.Message : ""),
                 AdminShellNS.AdminShellUtil.ShortLocation(ex));
+
             var p = new StoredPrint(StoredPrint.ColorRed, s, isError: true);
-            if (ex != null)
-                p.stackTrace = ex.StackTrace;
+            p.stackTrace = ex.StackTrace;
             NumberErrors++;
             Append(p);
         }

@@ -23,7 +23,7 @@ namespace AasxPackageExplorer
     /// <summary>
     /// This class holds all loaded plug-ins. It implements a singleton.
     /// </summary>
-    public class Plugins
+    public static class Plugins
     {
         public class PluginInstance
         {
@@ -58,13 +58,17 @@ namespace AasxPackageExplorer
 
             public AasxPluginActionDescriptionBase[] ListActions()
             {
+                // ReSharper disable RedundantExplicitParamsArrayCreation
                 var res = this.BasicInvokeMethod("ListActions", new object[] { }) as AasxPluginActionDescriptionBase[];
+                // ReSharper enable RedundantExplicitParamsArrayCreation
                 return res;
             }
 
             public string GetName()
             {
+                // ReSharper disable RedundantExplicitParamsArrayCreation
                 return (string)this.BasicInvokeMethod("GetPluginName", new object[] { });
+                // ReSharper enable RedundantExplicitParamsArrayCreation
             }
 
             public static PluginInstance CreateNew(int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
@@ -94,7 +98,9 @@ namespace AasxPackageExplorer
 
             public object CheckForLogMessage()
             {
-                return (object)this.BasicInvokeMethod("CheckForLogMessage", new object[] { });
+                // ReSharper disable RedundantExplicitParamsArrayCreation
+                return this.BasicInvokeMethod("CheckForLogMessage", new object[] { });
+                // ReSharper enable RedundantExplicitParamsArrayCreation
             }
 
             public object InvokeAction(string name, params object[] args)
@@ -153,11 +159,6 @@ namespace AasxPackageExplorer
                     // Note: use LoadFrom instead of LoadFile, insane:
                     // https://stackoverflow.com/questions/36075829/assembly-loadfile-look-dependencies-in-location-of-executeable
                     var asm = Assembly.LoadFrom(fullfn);
-                    if (asm == null)
-                    {
-                        Log.Error("Cannot load .dll = {0}", pluginDll[index]);
-                        continue;
-                    }
 
                     var tp = asm.GetType("AasxIntegrationBase.AasxPlugin");
                     if (tp == null)
@@ -206,6 +207,7 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pi in LoadedPlugins.Values)
             {
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var x = pi.InvokeAction("get-licenses") as AasxPluginResultLicense;
@@ -216,6 +218,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
             // OK
@@ -307,7 +310,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public static void TrGetDefaultOptionsForPlugins(OptionsInformation opt)
         {
-            var res = TryForAllLoadedPlugins(opt, "Trying get json options from Plugins", (dllinfo, lpi) =>
+            TryForAllLoadedPlugins(opt, "Trying get json options from Plugins", (dllinfo, lpi) =>
             {
                 var popt = lpi.InvokeAction("get-json-options") as AasxPluginResultBaseObject;
                 if (popt != null && popt.obj != null && popt.obj is string)
@@ -322,7 +325,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public static void TrySetOptionsForPlugins(OptionsInformation opt)
         {
-            var res = TryForAllLoadedPlugins(opt, "Trying set json options to plugins", (dllinfo, lpi) =>
+            TryForAllLoadedPlugins(opt, "Trying set json options to plugins", (dllinfo, lpi) =>
             {
                 if (dllinfo.Options != null)
                 {
@@ -342,6 +345,7 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pi in LoadedPlugins.Values)
             {
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     for (int i = 0; i < 999; i++)
@@ -368,7 +372,8 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch (Exception ex) {; }
+                catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
         }
 

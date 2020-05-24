@@ -17,6 +17,9 @@ The JSON serialization is under the MIT license (see https://github.com/JamesNK/
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
 
+// TODO: check again
+// ReSharper disable VirtualMemberCallInConstructor
+
 namespace AasxPackageExplorer
 {
     public class TreeViewLineCache
@@ -829,7 +832,7 @@ namespace AasxPackageExplorer
             // to be checked: only one virtual entity per submodel?
 
             // need to check Parent, shall be a SubmodelRef!
-            var mdoParent = this?.Parent?.GetMainDataObject();
+            var mdoParent = this.Parent?.GetMainDataObject();
             if (mdoParent == null)
                 return null;
             var st = String.Format("MDO:VisualElementPluginExtension:{0:X08}:{1:X08}", thePlugin.GetHashCode(), mdoParent.GetHashCode());
@@ -851,7 +854,7 @@ namespace AasxPackageExplorer
     // Generators
     //
 
-    public class Generators
+    public static class Generators
     {
         public static void GenerateVisualElementsFromShellEnvAddElements(TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent, AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
@@ -863,10 +866,12 @@ namespace AasxPackageExplorer
                 foreach (var elcc in elc.value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, elcc);
 
+            // ReSharper disable ExpressionIsAlwaysNull
             var ele = el.submodelElement as AdminShell.Entity;
             if (ele != null && ele.statements != null)
-                foreach (var eles in ele.statements)
+                foreach (var eles in ele.statements)                    
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, eles);
+            // ReSharper enable ExpressionIsAlwaysNull
 
             var elo = el.submodelElement as AdminShell.Operation;
             if (elo != null)
@@ -902,13 +907,15 @@ namespace AasxPackageExplorer
             if (Plugins.LoadedPlugins != null)
                 foreach (var lpi in Plugins.LoadedPlugins.Values)
                 {
+                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var x = lpi.InvokeAction("get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
-                        if (x != null && (bool)x.obj == true)
+                        if (x != null && (bool)x.obj)
                             pluginsToCheck.Add(lpi);
                     }
                     catch { }
+                    // ReSharper enable EmptyGeneralCatchClause
                 }
 
             // many operytions -> make it bulletproof
@@ -978,6 +985,7 @@ namespace AasxPackageExplorer
                             // check for visual extensions
                             foreach (var lpi in pluginsToCheck)
                             {
+                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     var ext = lpi.InvokeAction("call-check-visual-extension", sm) as AasxIntegrationBase.AasxPluginResultVisualExtension;
@@ -988,6 +996,7 @@ namespace AasxPackageExplorer
                                     }
                                 }
                                 catch { }
+                                // ReSharper enable EmptyGeneralCatchClause
                             }
 
                             // recursively into the submodel elements
@@ -1038,33 +1047,7 @@ namespace AasxPackageExplorer
                         tiCDs.Members.Add(tiCD);
                     }
 
-                    if (false)
-                    {
-#pragma warning disable 0162
-                        // show only orphan Submodels
-                        var orphanSubmodels = new List<AdminShell.Submodel>();
-                        foreach (var sm in env.Submodels)
-                            if (!referencedSubmodels.Contains(sm))
-                                orphanSubmodels.Add(sm);
-                        if (orphanSubmodels.Count > 0)
-                        {
-                            // head
-                            var tiOrphans = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.OrphanSubmodels);
-                            tiOrphans.SetIsExpandedIfNotTouched(expandMode > 0);
-                            tiEnv.Members.Add(tiOrphans);
-
-                            // over orphans
-                            // TODO: do not add SubmodelElements?
-                            foreach (var orphan in orphanSubmodels)
-                            {
-                                var tiSm = new VisualElementSubmodel(tiOrphans, cache, env, orphan);
-                                tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
-                                tiOrphans.Members.Add(tiSm);
-                            }
-                        }
-#pragma warning restore 0162
-                    }
-                    else
+                    // alternative code deleted
                     {
                         // head
                         var tiAllSubmodels = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);

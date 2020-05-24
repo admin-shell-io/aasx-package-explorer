@@ -19,6 +19,8 @@ The JSON serialization is under the MIT license (see https://github.com/JamesNK/
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
 
+// ReSharper disable All .. as this is legacy code!
+
 #if UseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels
@@ -54,9 +56,10 @@ namespace AasxCompatibilityModels
         public static bool HasWhitespace(string src)
         {
             if (src == null)
-                throw new ArgumentNullException("src");
+                throw new ArgumentNullException(nameof(src));
             for (var i = 0; i < src.Length; i++)
-                if (char.IsWhiteSpace(src[i]))
+            foreach (var c in src)
+                if (char.IsWhiteSpace(c))
                     return true;
             return false;
         }
@@ -64,10 +67,10 @@ namespace AasxCompatibilityModels
         public static bool ComplyIdShort(string src)
         {
             if (src == null)
-                throw new ArgumentNullException("src");
+                throw new ArgumentNullException(nameof(src));
             var res = true;
-            for (var i = 0; i < src.Length; i++)
-                if (!Char.IsLetterOrDigit(src[i]) && src[i] != '_')
+            foreach (var c in src)
+                if (!Char.IsLetterOrDigit(c) && c != '_')
                     res = false;
             if (src.Length > 0 && !Char.IsLetter(src[0]))
                 res = false;
@@ -91,7 +94,7 @@ namespace AasxCompatibilityModels
                 if (currLine >= lines.Length)
                     return "";
                 // access current line
-                var p = lines[currLine].IndexOf(" in ");
+                var p = lines[currLine].IndexOf(" in ", StringComparison.Ordinal);
                 if (p < 0)
                 {
                     // advance to next oldest line
@@ -99,7 +102,7 @@ namespace AasxCompatibilityModels
                     continue;
                 }
                 // search last "\" or "/", to get only filename portion and position
-                p = lines[currLine].LastIndexOfAny(new char[] { '\\', '/' });
+                p = lines[currLine].LastIndexOfAny(new [] { '\\', '/' });
                 if (p < 0)
                 {
                     // advance to next oldest line
@@ -2726,7 +2729,7 @@ namespace AasxCompatibilityModels
                 var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
                 if (semanticId != null)
-                    AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
+                    info = AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
                 return Tuple.Create(caption, info);
             }
 

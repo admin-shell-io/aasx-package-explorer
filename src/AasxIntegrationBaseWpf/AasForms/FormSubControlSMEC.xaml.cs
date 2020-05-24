@@ -70,12 +70,14 @@ namespace AasxIntegrationBase.AasForms
             // own properties
 
             // pass on
+            // ReSharper disable SuspiciousTypeConversion.Global
             if (dc.instance.PairInstances != null)
                 foreach (var pf in dc.instance.PairInstances)
                     if (pf != null && pf.instances != null && pf.instances.SubInstances != null)
                         foreach (var si in pf.instances.SubInstances)
                             if (si != null && si is IFormListControl)
                                 (si as IFormListControl).SetProperty(property, value);
+            // ReSharper enable SuspiciousTypeConversion.Global
         }
 
         /// <summary>

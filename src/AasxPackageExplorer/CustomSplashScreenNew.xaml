@@ -51,9 +51,9 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                 </TextBlock>
                 </ScrollViewer>
 
-                <StackPanel Grid.RowSpan="4" Orientation="Vertical">
+                <StackPanel Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Orientation="Vertical">
                     <Viewbox Stretch="Uniform" Width="200">
-                        <Image Grid.Row="0" Source="/AasxPackageExplorer;component/icon-set/Icon_AASX_256x256_W.bmp"/>
+                        <Image Source="/AasxPackageExplorer;component/icon-set/Icon_AASX_256x256_W.bmp"/>
                     </Viewbox>
                     <TextBlock x:Name="TextBlockVersion">Unknown version</TextBlock>
                     <TextBlock x:Name="TextBlockBuildDate">Unknown build date!</TextBlock>

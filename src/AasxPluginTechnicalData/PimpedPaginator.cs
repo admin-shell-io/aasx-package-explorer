@@ -83,7 +83,9 @@ namespace Tetra.Framework.WPF
             if (definition.RepeatTableHeaders)
             {
                 // Find table header
+                // ReSharper disable NotAccessedVariable
                 ContainerVisual table;
+                // ReSharper enable NotAccessedVariable
                 if (PageStartsWithTable(originalPage, out table) && currentHeader != null)
                 {
                     // The page starts with a table and a table header was
@@ -91,7 +93,7 @@ namespace Tetra.Framework.WPF
                     // was started on the previous page, so we'll repeat the
                     // table header.
                     Rect headerBounds = VisualTreeHelper.GetDescendantBounds(currentHeader);
-                    Vector offset = VisualTreeHelper.GetOffset(currentHeader);
+                    // Vector offset = VisualTreeHelper.GetOffset(currentHeader);
                     ContainerVisual tableHeaderVisual = new ContainerVisual();
 
                     // Translate the header to be at the top of the page
@@ -125,8 +127,9 @@ namespace Tetra.Framework.WPF
 
                 // Check if there is a table on the bottom of the page.
                 // If it's there, its header should be repeated
-                ContainerVisual newTable, newHeader;
-                if (PageEndsWithTable(originalPage, out newTable, out newHeader))
+                // ReSharper disable UnusedVariable
+                if (PageEndsWithTable(originalPage, out ContainerVisual newTable, out ContainerVisual newHeader))
+                // ReSharper enable UnusedVariable
                 {
                     // "lock" only once the header
                     if (currentHeader == null)
@@ -212,8 +215,6 @@ namespace Tetra.Framework.WPF
         /// Therefore, this method will only check the last child of an element
         /// unless this is a ContainerVisual
         /// </remarks>
-        /// <param name="originalPage"></param>
-        /// <returns></returns>
         private bool PageEndsWithTable(DependencyObject element, out ContainerVisual tableVisual, out ContainerVisual headerVisual)
         {
             tableVisual = null;
@@ -252,10 +253,6 @@ namespace Tetra.Framework.WPF
         /// Checks if the page starts with a table which presumably has wrapped
         /// from the previous page.
         /// </summary>
-        /// <param name="element"></param>
-        /// <param name="tableVisual"></param>
-        /// <param name="headerVisual"></param>
-        /// <returns></returns>
         private bool PageStartsWithTable(DependencyObject element, out ContainerVisual tableVisual)
         {
             tableVisual = null;

@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// TODO: License
+// TODO Fraunhofer IOSB: Check ReSharper
+
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantCast
+
 namespace AasxUANodesetImExport
 {
 

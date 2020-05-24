@@ -24,7 +24,7 @@ The Dot Matrix Code (DMC, ZXing.Net) generation is under Apache license v.2 (see
 
 namespace AasxPackageExplorer
 {
-    public class AasxPrintFunctions
+    public static class AasxPrintFunctions
     {
         private static void Print(Visual v)
         {
@@ -43,6 +43,8 @@ namespace AasxPackageExplorer
                 System.Printing.PrintCapabilities capabilities = pd.PrintQueue.GetPrintCapabilities(pd.PrintTicket);
 
                 //get scale of the print wrt to screen of WPF visual
+                if (capabilities.PageImageableArea == null)
+                    return;
                 double scale = Math.Min(capabilities.PageImageableArea.ExtentWidth / e.ActualWidth, capabilities.PageImageableArea.ExtentHeight /
                                e.ActualHeight);
 
@@ -182,7 +184,6 @@ namespace AasxPackageExplorer
 
         public static bool PrintRepositoryCodeSheet(string repofn, string title = "Asset repository")
         {
-            AasxFileRepository TheAasxRepo = null;
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try
             {
@@ -190,12 +191,11 @@ namespace AasxPackageExplorer
                 if (!File.Exists(repofn))
                     return false;
                 var init = File.ReadAllText(repofn);
-                TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
+                var TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
 
                 // all assets
-                for (int i = 0; i < TheAasxRepo.filemaps.Count; i++)
+                foreach (var fmi in TheAasxRepo.filemaps)                
                 {
-                    var fmi = TheAasxRepo.filemaps[i];
                     var csi = new CodeSheetItem();
                     csi.id = fmi.assetId;
                     csi.code = fmi.code;

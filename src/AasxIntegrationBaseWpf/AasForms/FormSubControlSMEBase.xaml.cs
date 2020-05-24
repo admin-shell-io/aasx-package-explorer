@@ -43,7 +43,7 @@ namespace AasxIntegrationBase.AasForms
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceSubmodelElement;
                 dc.desc = dc.instance?.desc as FormDescSubmodelElement;
-                dc.sme = dc.instance?.sme as AdminShell.SubmodelElement;
+                dc.sme = dc.instance?.sme;
 
                 if (dc.instance == null || dc.desc == null || dc.sme == null)
                     return null;
@@ -67,7 +67,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
-            if (dc?.desc == null || dc?.sme == null)
+            if (dc?.desc == null || dc.sme == null)
                 return;
 
             // eval visibilities
@@ -175,8 +175,8 @@ namespace AasxIntegrationBase.AasForms
                         var lsToDel = ls;
                         bt.Click += (object sender3, RoutedEventArgs e3) =>
                         {
-                            if (dc?.sme?.description?.langString != null)
-                                if (dc.sme.description.langString.Contains(lsToDel) == true)
+                            if (dc.sme?.description?.langString != null)
+                                if (dc.sme.description.langString.Contains(lsToDel))
                                 {
                                     dc.instance.Touch();
                                     dc.sme.description.langString.Remove(lsToDel);

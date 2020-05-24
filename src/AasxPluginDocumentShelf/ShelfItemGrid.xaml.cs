@@ -60,7 +60,7 @@ namespace AasxPluginDocumentShelf
                     {
                         var codeStr = cc.Trim().ToUpper();
                         foreach (var ev in (CountryFlag.CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
-                            if (Enum.GetName(typeof(CountryFlag.CountryCode), ev).Trim().ToUpper() == codeStr)
+                            if (Enum.GetName(typeof(CountryFlag.CountryCode), ev)?.Trim().ToUpper() == codeStr)
                             {
                                 /*
                                 var cf = new CountryFlag.CountryFlag();
@@ -103,7 +103,7 @@ namespace AasxPluginDocumentShelf
         {
             var menuItem = sender as MenuItem;
             var data = this.DataContext as DocumentEntity;
-            if (menuItem != null && (menuItem.Header as string) != null)
+            if (data != null && menuItem != null && (menuItem.Header as string) != null)
                 data.RaiseMenuClick(menuItem.Header as string);
         }
 

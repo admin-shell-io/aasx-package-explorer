@@ -28,6 +28,8 @@ The Grapevine REST server framework is under Apache license v.2 (see http://www.
 /* Please notice: the API and REST routes implemented in this version of the source code are not specified and standardised by the
 specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s). */
 
+// ReSharper disable ClassNeverInstantiated.Global .. motivation: unsure what happens to reflection, when making class static ..
+
 namespace AasxRestServerLibrary
 {
     public class AasxRestServer
@@ -193,7 +195,7 @@ namespace AasxRestServerLibrary
             public IHttpContext GetSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
-                if (m.Success && m.Groups.Count >= 6 && m.Groups[5].Captures != null && m.Groups[5].Captures.Count >= 1)
+                if (m.Success && m.Groups.Count >= 6 && m.Groups[5].Captures.Count >= 1)
                 {
                     var aasid = m.Groups[1].ToString();
                     var smid = m.Groups[3].ToString();
@@ -243,7 +245,7 @@ namespace AasxRestServerLibrary
             public IHttpContext PostSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
-                if (m.Success && m.Groups.Count >= 6 && m.Groups[5].Captures != null && m.Groups[5].Captures.Count >= 1)
+                if (m.Success && m.Groups.Count >= 6 && m.Groups[5].Captures.Count >= 1)
                 {
                     var aasid = m.Groups[1].ToString();
                     var smid = m.Groups[3].ToString();
@@ -269,9 +271,8 @@ namespace AasxRestServerLibrary
                     var aasid = m.Groups[1].ToString();
                     var smid = m.Groups[3].ToString();
                     var elemids = new List<string>();
-                    if (m.Groups[5].Captures != null)
-                        for (int i = 0; i < m.Groups[5].Captures.Count; i++)
-                            elemids.Add(m.Groups[5].Captures[i].ToString());
+                    for (int i = 0; i < m.Groups[5].Captures.Count; i++)
+                        elemids.Add(m.Groups[5].Captures[i].ToString());
 
                     helper.EvalPutSubmodelElementContents(context, aasid, smid, elemids.ToArray());
                 }
@@ -287,9 +288,8 @@ namespace AasxRestServerLibrary
                     var aasid = m.Groups[1].ToString();
                     var smid = m.Groups[3].ToString();
                     var elemids = new List<string>();
-                    if (m.Groups[5].Captures != null)
-                        for (int i = 0; i < m.Groups[5].Captures.Count; i++)
-                            elemids.Add(m.Groups[5].Captures[i].ToString());
+                    for (int i = 0; i < m.Groups[5].Captures.Count; i++)
+                        elemids.Add(m.Groups[5].Captures[i].ToString());
 
                     helper.EvalDeleteSubmodelElementContents(context, aasid, smid, elemids.ToArray());
                 }
@@ -378,6 +378,7 @@ namespace AasxRestServerLibrary
 
         public static void Stop()
         {
+            // ReSharper disable EmptyGeneralCatchClause
             if (startedRestServer != null)
                 try
                 {
@@ -385,6 +386,7 @@ namespace AasxRestServerLibrary
                     startedRestServer = null;
                 }
                 catch { }
+            // ReSharper enable EmptyGeneralCatchClause
         }
     }
 }

@@ -79,9 +79,11 @@ namespace AasxPackageExplorer
         #endregion
     }
 
+    // ReSharper disable ClassNeverInstantiated.Global .. used by XAML
+
     /// <summary>
     /// Represents a control that can switch states in order to expand a node of a TreeListView.
-    /// </summary>
+    /// </summary>   
     public class TreeListViewExpander : ToggleButton
     {
 
@@ -99,6 +101,8 @@ namespace AasxPackageExplorer
 
     }
 
+    // ReSharper enable ClassNeverInstantiated.Global
+
     /// <summary>
     /// Represents a convert that can calculate the indentation of any element in a class derived from TreeView.
     /// </summary>
@@ -113,6 +117,8 @@ namespace AasxPackageExplorer
             //If the value is null, don't return anything
             if (value == null) return null;
             //Convert the item to a double
+            // ReSharper disable UseIsOperator.1
+            // ReSharper disable UseMethodIsInstanceOfType
             if (targetType == typeof(double) && typeof(DependencyObject).IsAssignableFrom(value.GetType()))
             {
                 //Cast the item as a DependencyObject
@@ -128,6 +134,8 @@ namespace AasxPackageExplorer
                 //Return the indentation as a double
                 return Indentation * Level;
             }
+            // ReSharper enable UseIsOperator.1
+            // ReSharper enable UseMethodIsInstanceOfType
             //Type conversion is not supported
             throw new NotSupportedException(
                 string.Format("Cannot convert from <{0}> to <{1}> using <TreeListViewConverter>.",

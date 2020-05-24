@@ -10,7 +10,7 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    public class BMEcatTools
+    public static class BMEcatTools
     {
         static string[] IRDIs_AXIS1D = new string[] {
                                     "0173-1#02-AAM656#002", "0173-1#02-AAM655#002", "0173-1#02-AAN501#002",
@@ -69,8 +69,7 @@ namespace AasxPackageExplorer
             String[] Stack_FID = new string[10];
             int StackPointer_FID = 0;
             // AML OPC
-            String node = "";
-            String rString = "";
+            // String node = "";
             /*
             Boolean externalInterface = false;
             Boolean is_value = false;
@@ -111,7 +110,7 @@ namespace AasxPackageExplorer
                                 is_attribute_label = true;
                             if (reader.Name == "value")
                                 is_attribute_value = true;
-                            node = reader.Name;
+                            // node = reader.Name;
                             break;
                         case XmlNodeType.Text: //Display the text in each element.
                             if (is_technical_data && is_attribute_list && is_attribute && is_attribute_label)
@@ -119,12 +118,12 @@ namespace AasxPackageExplorer
                                 attribute_label_id = reader.Value;
                                 is_attribute_label = false;
                             }
-                            if (is_technical_data && is_attribute_list && is_attribute && is_attribute_value == true)
+                            if (is_technical_data && is_attribute_list && is_attribute && is_attribute_value)
                             {
                                 attribute_value = reader.Value;
                                 is_attribute_value = false;
                             }
-                            if (is_technical_data && is_attribute_list && is_subheadline == true)
+                            if (is_technical_data && is_attribute_list && is_subheadline)
                             {
                                 subheadline = reader.Value;
                             }
@@ -147,11 +146,11 @@ namespace AasxPackageExplorer
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
-                                            preferredNames: new string[] { "EN", attribute_label_id },
+                                            preferredNames: new [] { "EN", attribute_label_id },
                                             shortName: attribute_label_id,
                                             unit: "string",
                                             valueFormat: "STRING",
-                                            definition: new string[] { "EN", attribute_label_id }
+                                            definition: new [] { "EN", attribute_label_id }
                                         );
 
                                         var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
@@ -199,7 +198,7 @@ namespace AasxPackageExplorer
                                 is_FT_NAME = true;
                             if (reader.Name == "FVALUE")
                             {
-                                rString = reader.GetAttribute("lang");
+                                var rString = reader.GetAttribute("lang");
                                 if (rString == null || rString == "" || rString == "eng") // only no language or English values
                                     is_FVALUE = true;
                             }
@@ -232,7 +231,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                             */
-                            node = reader.Name;
+                            // node = reader.Name;
                             break;
                         case XmlNodeType.Text: //Display the text in each element.
                             // AML OPC
@@ -254,37 +253,37 @@ namespace AasxPackageExplorer
                             }
                             */
                             // BMEcat
-                            if (is_FT_ID == true)
+                            if (is_FT_ID)
                             {
                                 FT_ID = reader.Value;
                                 is_FT_ID = false;
                             }
-                            if (is_FT_NAME == true)
+                            if (is_FT_NAME)
                             {
                                 FT_NAME = reader.Value;
                                 is_FT_NAME = false;
                             }
-                            if (is_FVALUE == true)
+                            if (is_FVALUE)
                             {
                                 FVALUE[i_FVALUE++] = reader.Value;
                                 is_FVALUE = false;
                             }
-                            if (is_FUNIT == true)
+                            if (is_FUNIT)
                             {
                                 FUNIT = reader.Value;
                                 is_FUNIT = false;
                             }
-                            if (is_FUNIT == true)
+                            if (is_FUNIT)
                             {
                                 FUNIT = reader.Value;
                                 is_FUNIT = false;
                             }
-                            if (is_FID == true)
+                            if (is_FID)
                             {
                                 FID = reader.Value;
                                 is_FID = false;
                             }
-                            if (is_FPARENT_ID == true)
+                            if (is_FPARENT_ID)
                             {
                                 FPARENT_ID = reader.Value;
                                 is_FPARENT_ID = false;
@@ -377,12 +376,11 @@ namespace AasxPackageExplorer
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
-                                                    preferredNames: new string[] { "DE", extendedname, "EN", extendedname },
+                                                    preferredNames: new [] { "DE", extendedname, "EN", extendedname },
                                                     shortName: extendedname,
                                                     unit: FUNIT,
                                                     valueFormat: "REAL_MEASURE",
-                                                    definition: new string[] { "DE", extendedname,
-                                                                                "EN", extendedname }
+                                                    definition: new [] { "DE", extendedname, "EN", extendedname }
                                                 );
 
                                                 var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));

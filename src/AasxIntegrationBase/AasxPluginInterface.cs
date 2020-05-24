@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
+
 namespace AasxIntegrationBase
 {
     public class AasxPluginActionDescriptionBase
@@ -56,10 +59,12 @@ namespace AasxIntegrationBase
         public bool preferInternalDisplay = false;
     }
 
+    /* was intended to let the main program render a PDF file to bitmap
     public class AasxPluginResultEventOffscreenRenderFile : AasxPluginResultEventBase
     {
         public string fn = null;
     }
+    */
 
     public class AasxPluginResultEventRedrawAllElements : AasxPluginResultEventBase
     {

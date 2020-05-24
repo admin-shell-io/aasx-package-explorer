@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AdminShellNS
 {
-    public class AdminShellConverters
+    public static class AdminShellConverters
     {
         /// <summary>
         /// This converter is used for reading JSON files; it claims to be responsible for "SubmodelElements" (the base class)
@@ -61,21 +61,22 @@ namespace AdminShellNS
                 if (jObject.ContainsKey(UpperClassProperty))
                 {
                     var j2 = jObject[UpperClassProperty];
-                    foreach (var c in j2.Children())
-                    {
-                        var cprop = c as Newtonsoft.Json.Linq.JProperty;
-                        if (cprop == null)
-                            continue;
-                        if (cprop.Name == LowerClassProperty && cprop.Value != null && cprop.Value.Type.ToString() == "String")
+                    if (j2 != null)
+                        foreach (var c in j2.Children())
                         {
-                            var cpval = cprop.Value.ToObject<string>();
-                            if (cpval == null)
+                            var cprop = c as Newtonsoft.Json.Linq.JProperty;
+                            if (cprop == null)
                                 continue;
-                            var o = AdminShell.SubmodelElementWrapper.CreateAdequateType(cpval);
-                            if (o != null)
-                                target = o;
+                            if (cprop.Name == LowerClassProperty && cprop.Value.Type.ToString() == "String")
+                            {
+                                var cpval = cprop.Value.ToObject<string>();
+                                if (cpval == null)
+                                    continue;
+                                var o = AdminShell.SubmodelElementWrapper.CreateAdequateType(cpval);
+                                if (o != null)
+                                    target = o;
+                            }
                         }
-                    }
                 }
 
                 // Populate the object properties

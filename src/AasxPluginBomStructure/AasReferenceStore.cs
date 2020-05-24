@@ -53,21 +53,25 @@ namespace AasxPluginBomStructure
             {
                 foreach (var k in r.Keys)
                 {
-                    var bs = System.Text.Encoding.UTF8.GetBytes((string)k.type.Trim().ToLower());
+                    var bs = System.Text.Encoding.UTF8.GetBytes(k.type.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes((string)k.idType.Trim().ToLower());
+                    bs = System.Text.Encoding.UTF8.GetBytes(k.idType.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes((string)k.value.Trim().ToLower());
+                    bs = System.Text.Encoding.UTF8.GetBytes(k.value.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
                 }
 
                 dataBytes = mems.ToArray();
             }
 
+            // ReSharper disable ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable HeuristicUnreachableCode
             if (dataBytes == null)
                 return 0;
+            // ReSharper enable ConditionIsAlwaysTrueOrFalse
+            // ReSharper enable HeuristicUnreachableCode
 
             uint sum = 0;
             foreach (var b in dataBytes)

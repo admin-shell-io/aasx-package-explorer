@@ -12,7 +12,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 namespace SimpleLog
 {
 
-    public class Log
+    public static class Log
     {
 
         public static int verbosity = 2;

@@ -53,11 +53,11 @@ namespace AasxIntegrationBase.AasForms
 
                 var directLoE = dataContext as FormDescListOfElement;
 
-                if (dc.smInst != null && dc.smInst.desc != null && dc.smInst.desc is FormDescSubmodel)
-                    dc.listOfElements = (dc.smInst.desc as FormDescSubmodel).SubmodelElements;
+                if (dc.smInst != null && dc.smInst.desc != null && dc.smInst.desc is FormDescSubmodel fdsm)
+                    dc.listOfElements = fdsm.SubmodelElements;
 
-                if (dc.smecInst != null && dc.smecInst.desc != null && dc.smecInst.desc is FormDescSubmodelElementCollection)
-                    dc.listOfElements = (dc.smecInst.desc as FormDescSubmodelElementCollection).value;
+                if (dc.smecInst != null && dc.smecInst.desc != null && dc.smecInst.desc is FormDescSubmodelElementCollection fdsmc)
+                    dc.listOfElements = fdsmc.value;
 
                 if (directLoE != null)
                     dc.listOfElements = directLoE;
@@ -100,14 +100,8 @@ namespace AasxIntegrationBase.AasForms
                 lod = dc.smecInst.PairInstances;
             if (lod != null && lod.Count > 0)
                 foreach (var ld in lod)
-                    if (ld.instances != null && ld.instances.subControl != null && ld.instances.subControl is FormListOfSameControl)
-                        (ld.instances.subControl as FormListOfSameControl).SetProperty(property, value);
-            /*
-            if (ld.instances != null && ld.instances.SubInstances != null)
-                foreach (var si in ld.instances.SubInstances)
-                    if (si != null && si is IFormListControl)
-                        (si as IFormListControl).SetProperty(property, value);
-            */
+                    if (ld.instances != null && ld.instances.subControl != null && ld.instances.subControl is FormListOfSameControl flsc)
+                        flsc.SetProperty(property, value);
         }
 
         /// <summary>

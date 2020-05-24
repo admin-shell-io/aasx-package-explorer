@@ -40,6 +40,38 @@ namespace AasxPackageExplorer
     /// </summary>
     public partial class MainWindow : Window, IFlyoutProvider
     {
+        private string lastFnForInitialDirectory = null;
+
+        public void RememberForInitialDirectory(string fn)
+        {
+            this.lastFnForInitialDirectory = fn;
+        }
+
+        public string DetermineInitialDirectory(string existingFn = null)
+        {
+            // ReSharper disable EmptyGeneralCatchClause
+            string res = null;
+
+            if (existingFn != null)
+                try
+                {
+                    res = System.IO.Path.GetDirectoryName(existingFn);
+                }
+                catch { }
+
+            // may be can used last?
+            if (res == null && lastFnForInitialDirectory != null)
+                try
+                {
+                    res = System.IO.Path.GetDirectoryName(lastFnForInitialDirectory);
+                }
+                catch { }
+
+            // ReSharper enable EmptyGeneralCatchClause
+            return res;
+        }
+
+
         private void CommandBinding_GeneralDispatch(string cmd)
         {
             if (cmd == "new")
@@ -67,17 +99,14 @@ namespace AasxPackageExplorer
             if (cmd == "open" || cmd == "openaux")
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-                }
-                catch { }
+                dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     if (cmd == "open")
                         UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(dlg.FileName), dlg.FileName, onlyAuxiliary: false);
                     if (cmd == "openaux")
@@ -111,11 +140,7 @@ namespace AasxPackageExplorer
             if (cmd == "saveas")
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-                }
-                catch { }
+                dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
                 dlg.FileName = thePackageEnv.Filename;
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
@@ -131,6 +156,7 @@ namespace AasxPackageExplorer
                         if (dlg.FilterIndex == 2)
                             prefFmt = AdminShellPackageEnv.PreferredFormat.Json;
                         // save
+                        RememberForInitialDirectory(dlg.FileName);
                         thePackageEnv.SaveAs(dlg.FileName, prefFmt: prefFmt);
                         // backup
                         if (Options.Curr.BackupDir != null)
@@ -207,8 +233,8 @@ namespace AasxPackageExplorer
             {
                 // try to remember current selected data object
                 object currMdo = null;
-                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementGeneric)
-                    currMdo = (DisplayElements.SelectedItem as VisualElementGeneric).GetMainDataObject();
+                if (DisplayElements.SelectedItem != null)
+                    currMdo = DisplayElements.SelectedItem.GetMainDataObject();
 
                 // edit mode affects the total element view
                 RedrawAllAasxElements();
@@ -221,7 +247,6 @@ namespace AasxPackageExplorer
 
             if (cmd == "test")
             {
-                ;
             }
 
             if (cmd == "queryrepo")
@@ -392,7 +417,6 @@ namespace AasxPackageExplorer
             // commit Package
             if (envToload != null)
             {
-                ;
             }
 
             // done
@@ -424,11 +448,7 @@ namespace AasxPackageExplorer
         {
             // get the input files
             var inputDlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                inputDlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            inputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             inputDlg.Title = "Multi-select AASX package files to be in repository";
             inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
             inputDlg.Multiselect = true;
@@ -437,18 +457,18 @@ namespace AasxPackageExplorer
             var res = inputDlg.ShowDialog();
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
 
-            if (res != true || inputDlg.FileNames == null || inputDlg.FileNames.Length < 1)
+            if (res != true || inputDlg.FileNames.Length < 1)
                 return;
 
+            RememberForInitialDirectory(inputDlg.FileName);
+
             // get the output file
+            var exFn = System.AppDomain.CurrentDomain.BaseDirectory;
+            if (inputDlg.FileNames.Length > 0)
+                exFn = inputDlg.FileNames[0];
+
             var outputDlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                outputDlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-                if (inputDlg.FileNames.Length > 0)
-                    outputDlg.InitialDirectory = System.IO.Path.GetDirectoryName(inputDlg.FileNames[0]);
-            }
-            catch { }
+            outputDlg.InitialDirectory = DetermineInitialDirectory(exFn);
             outputDlg.Title = "Select AASX repository to be generated";
             outputDlg.FileName = "new-aasx-repo.json";
             outputDlg.DefaultExt = "*.json";
@@ -460,6 +480,8 @@ namespace AasxPackageExplorer
 
             if (res != true)
                 return;
+
+            RememberForInitialDirectory(outputDlg.FileName);
 
             // ok
             try
@@ -475,11 +497,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_PrintRepo()
         {
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select AASX repository to be printed";
             dlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
 
@@ -490,6 +508,7 @@ namespace AasxPackageExplorer
             {
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     AasxPrintFunctions.PrintRepositoryCodeSheet(dlg.FileName);
                 }
             }
@@ -522,7 +541,7 @@ namespace AasxPackageExplorer
 
             try
             {
-                if (asset != null && asset.identification != null)
+                if (asset.identification != null)
                 {
                     AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
                 }
@@ -649,11 +668,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
             dlg.Filter = "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -661,6 +676,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
+                    RememberForInitialDirectory(dlg.FileName);
                     BMEcatTools.ImportBMEcatToSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     // redisplay
                     RedrawAllAasxElements();
@@ -690,11 +706,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
             dlg.Filter = "CSV files (*.CSV)|*.csv|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -702,6 +714,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
+                    RememberForInitialDirectory(dlg.FileName);
                     CSVTools.ImportCSVtoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     // redisplay
                     RedrawAllAasxElements();
@@ -731,11 +744,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
             dlg.Filter = "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -743,6 +752,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // do it
+                    RememberForInitialDirectory(dlg.FileName);
                     OpcUaTools.ImportNodeSetToSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     // redisplay
                     RedrawAllAasxElements();
@@ -831,6 +841,7 @@ namespace AasxPackageExplorer
             // modal dialogue
             this.StartFlyoverModal(uc, closingAction: () =>
             {
+#if FALSE
                 if (false && worker.IsBusy)
                     try
                     {
@@ -838,6 +849,7 @@ namespace AasxPackageExplorer
                         worker.Dispose();
                     }
                     catch { }
+#endif
             });
         }
 
@@ -859,19 +871,14 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            /*
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-            }
-            catch { }
-            */
+            dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
             if (res == true)
             {
+                RememberForInitialDirectory(dlg.FileName);
                 using (var s = new StreamWriter(dlg.FileName))
                 {
                     // var settings = new JsonSerializerSettings();
@@ -900,14 +907,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            /*
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-                
-            }
-            catch { }
-            */
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
@@ -922,6 +922,7 @@ namespace AasxPackageExplorer
 
                 try
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     using (StreamReader file = System.IO.File.OpenText(dlg.FileName))
                     {
                         JsonSerializer serializer = new JsonSerializer();
@@ -1040,33 +1041,27 @@ namespace AasxPackageExplorer
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(PUTURL);
                 // theOnlineConnection = client;
-                string result = client.PutSubmodel(json);
+                client.PutSubmodel(json);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, $"Connecting to REST server {PUTURL}");
             }
 
-            return;
-
+#if FALSE
             // ok!
 #pragma warning disable 0162
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            /*
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(thePackageEnv.Filename);
-            }
-            catch { }
-            */
+            dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
             if (res == true)
             {
+                RememberForInitialDirectory(dlg.FileName);
                 using (var s = new StreamWriter(dlg.FileName))
                 {
                     // var settings = new JsonSerializerSettings();
@@ -1076,6 +1071,7 @@ namespace AasxPackageExplorer
             }
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
 #pragma warning restore 0162
+#endif
         }
 
         static string GETURL = "http://???:51310";
@@ -1233,12 +1229,11 @@ namespace AasxPackageExplorer
                             string Path = "";
 
                             int i = 0;
-                            string nodeName = "";
-                            string value = "";
+                            
 
                             while (i < 5 && i < count) // URL, Username, Password, Namespace, Path
                             {
-                                var p = ve1.theSubmodel.qualifiers[i] as AdminShell.Qualifier;
+                                var p = ve1.theSubmodel.qualifiers[i];
 
                                 switch (i)
                                 {
@@ -1290,7 +1285,9 @@ namespace AasxPackageExplorer
                             }
 
                             // create client
+                            // ReSharper disable ConditionIsAlwaysTrueOrFalse
                             var resClient = pi.InvokeAction("create-client", URL, autoAccept, stopTimeout, Username, Password) as AasxPluginResultBaseObject;
+                            // ReSharper enable ConditionIsAlwaysTrueOrFalse
                             if (resClient == null || resClient.obj == null)
                             {
                                 Log.Error("Plug-in 'AasxPluginOpcUaClient' cannot create client access!");
@@ -1306,7 +1303,7 @@ namespace AasxPackageExplorer
                                 {
                                     // access data
                                     var p = ve1.theSubmodel.submodelElements[i].submodelElement as AdminShell.Property;
-                                    nodeName = Path + p.idShort;
+                                    var nodeName = "" + Path + p?.idShort;
 
                                     // do read() via plug-in
                                     // value = client.ReadSubmodelElementValue(nodeName, Namespace);
@@ -1315,8 +1312,8 @@ namespace AasxPackageExplorer
                                     // set?
                                     if (resValue != null && resValue.obj != null && resValue.obj is string)
                                     {
-                                        value = (string)resValue.obj;
-                                        p.Set(p.valueType, value);
+                                        var value = (string)resValue.obj;
+                                        p?.Set(p.valueType, value);
                                     }
                                 }
                                 i++;
@@ -1339,11 +1336,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ImportAML()
         {
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select AML file to be imported";
             dlg.Filter = "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*";
 
@@ -1354,6 +1347,7 @@ namespace AasxPackageExplorer
             {
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     AasxAmlImExport.AmlImport.ImportInto(this.thePackageEnv, dlg.FileName);
                     this.RestartUIafterNewPackage();
                 }
@@ -1370,11 +1364,7 @@ namespace AasxPackageExplorer
         {
             // get the output file
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select AML file to be exported";
             dlg.FileName = "new.aml";
             dlg.DefaultExt = "*.aml";
@@ -1387,6 +1377,7 @@ namespace AasxPackageExplorer
             {
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     AasxAmlImExport.AmlExport.ExportTo(this.thePackageEnv, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
                 }
             }
@@ -1402,11 +1393,7 @@ namespace AasxPackageExplorer
         {
             // get the output file
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select Nodeset2.XML file to be exported";
             dlg.FileName = "new.xml";
             dlg.DefaultExt = "*.xml";
@@ -1419,12 +1406,13 @@ namespace AasxPackageExplorer
             {
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     CommandBinding_ExecutePluginServer(
                         "Net46AasxServerPlugin",
                         "server-start",
                         "server-stop",
                         "Export Nodeset2 via OPC UA Server...",
-                        new string[] { "-export-nodeset", dlg.FileName }
+                        new [] { "-export-nodeset", dlg.FileName }
                         );
                 }
             }
@@ -1498,11 +1486,7 @@ namespace AasxPackageExplorer
 
             // get the output file
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select options file for GenericForms to be exported";
             dlg.FileName = "new.add-options.json";
             dlg.DefaultExt = "*.add-options.json";
@@ -1516,6 +1500,7 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     Log.Info("Exporting add-options file to GenericForm: {0}", dlg.FileName);
+                    RememberForInitialDirectory(dlg.FileName);
                     // AasxIntegrationBase.AasForms.AasFormUtils.ExportAsTemplate(this.thePackageEnv, dlg.FileName);
                     // AasxIntegrationBase.AasForms.AasFormUtils.ExportAsTemplate(ve1.theSubmodel, dlg.FileName);
                     AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(ve1.theEnv, ve1.theSubmodel, dlg.FileName);
@@ -1550,11 +1535,7 @@ namespace AasxPackageExplorer
 
             // get the output file
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            try
-            {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch { }
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.Title = "Select text file for PredefinedConcepts to be exported";
             dlg.FileName = "new.txt";
             dlg.DefaultExt = "*.txt";
@@ -1567,6 +1548,7 @@ namespace AasxPackageExplorer
             {
                 if (res == true)
                 {
+                    RememberForInitialDirectory(dlg.FileName);
                     Log.Info("Exporting text snippets for PredefinedConcepts: {0}", dlg.FileName);
                     AasxPredefinedConcepts.ExportPredefinedConcepts.Export(thePackageEnv.AasEnv, ve1.theSubmodel, dlg.FileName);
                 }
@@ -1833,8 +1815,8 @@ namespace AasxPackageExplorer
             {
                 // get result arguments
                 var TagTuple = uc.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
-                var lpi = TagTuple.Item1;
-                var smname = TagTuple.Item2;
+                var lpi = TagTuple?.Item1;
+                var smname = TagTuple?.Item2;
                 if (lpi == null || smname == null || smname.Length < 1)
                 {
                     MessageBoxFlyoutShow("Error accessing plugins. Aborting.", "New Submodel from plugins", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1913,16 +1895,18 @@ namespace AasxPackageExplorer
         public void CommandBinding_ImportOPCUANodeSet()
         {
             //choose File to import to
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
             dlg.FileName = "Document"; // Default file name
             dlg.DefaultExt = ".xml"; // Default file extension
             dlg.Filter = "XML File (.xml)|*.xml|Text documents (.txt)|*.txt"; // Filter files by extension
 
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            Nullable<bool> result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
 
             if (result == true)
             {
+                RememberForInitialDirectory(dlg.FileName);
                 UANodeSet InformationModel = UANodeSetExport.getInformationModel(dlg.FileName);
                 thePackageEnv = UANodeSetImport.Import(InformationModel);
                 RestartUIafterNewPackage();
@@ -1936,37 +1920,42 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportOPCUANodeSet()
         {
             string filename = "i4AASCS.xml";
-            string workingDirectory = Environment.CurrentDirectory;
+            string workingDirectory = "" + Environment.CurrentDirectory;
 
+            // ReSharper disable PossibleNullReferenceException
             if (File.Exists(Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName), filename)))
+            // ReSharper enable PossibleNullReferenceException
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch { }
+                dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
                 dlg.Title = "Select AML file to be exported";
                 dlg.FileName = "new.xml";
                 dlg.DefaultExt = "*.xml";
                 dlg.Filter = "XML File (.xml)|*.xml|Text documents (.txt)|*.txt";
 
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                var res = dlg.ShowDialog(this);
+                var res = true == dlg.ShowDialog(this);
+                if (!res)
+                    return;
+
+                RememberForInitialDirectory(dlg.FileName);
 
                 UANodeSet InformationModel = null;
 
+                // ReSharper disable PossibleNullReferenceException
                 InformationModel = UANodeSetExport.getInformationModel(Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName), filename));
+                // ReSharper enable PossibleNullReferenceException
+
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
                 foreach (AdminShellV20.Asset ass in thePackageEnv.AasEnv.Assets)
                 {
-                    string id = UANodeSetExport.CreateAAS(ass.idShort, thePackageEnv.AasEnv);
+                    UANodeSetExport.CreateAAS(ass.idShort, thePackageEnv.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();
 
-                XmlSerializer xsSubmit = new XmlSerializer(typeof(UANodeSet));
+                // XmlSerializer xsSubmit = new XmlSerializer(typeof(UANodeSet));
 
                 using (var writer = new System.IO.StreamWriter(dlg.FileName))
                 {
@@ -1978,12 +1967,10 @@ namespace AasxPackageExplorer
             }
             else
             {
-                MessageBoxResult result = MessageBox.Show("Mapping Types could not be found.",
-                                          "Error",
-                                          MessageBoxButton.OK);
+                MessageBox.Show("Mapping Types could not be found.",
+                                "Error",
+                                MessageBoxButton.OK);
             }
-
-
         }
     }
 }

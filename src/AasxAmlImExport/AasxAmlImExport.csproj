@@ -57,6 +57,10 @@
       <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
       <Name>AasxCsharpLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj">
+      <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
+      <Name>AasxIntegrationBase</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

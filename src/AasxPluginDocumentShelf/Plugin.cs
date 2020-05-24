@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -15,6 +16,7 @@ The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     {
         private LogInstance Log = new LogInstance();
@@ -148,14 +150,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var cve = new AasxPluginResultBaseObject();
                 cve.strType = "True";
-                cve.obj = (Boolean)true;
+                cve.obj = true;
                 return cve;
             }
 
             if (action == "fill-panel-visual-extension" /* && this.bomControl != null */)
             {
                 // arguments
-                if (args.Length < 3)
+                if (args == null || args.Length < 3)
                 {
                     return null;
                 }

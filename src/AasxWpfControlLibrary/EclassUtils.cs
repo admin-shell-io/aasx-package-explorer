@@ -16,7 +16,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
 namespace AasxPackageExplorer
 {
-    public class EclassUtils
+    public static class EclassUtils
     {
         // Determine eCl@ss files types
         //
@@ -165,14 +165,14 @@ namespace AasxPackageExplorer
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
+
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
                     using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
-                        XmlReaderSettings settings;
-
-                        settings = new XmlReaderSettings();
+                        var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
 
                         int numElems = 0;
@@ -243,6 +243,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
         }
 
@@ -272,14 +273,14 @@ namespace AasxPackageExplorer
                     continue;
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
+
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
                     using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
-                        XmlReaderSettings settings;
-
-                        settings = new XmlReaderSettings();
+                        var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
 
                         int numElems = 0;
@@ -337,7 +338,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 catch { }
-
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
             // 2st pass: search all unit files only for unit-IRDIs
@@ -349,14 +350,14 @@ namespace AasxPackageExplorer
                     continue;
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
+
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
                     using (FileStream fileSteam = File.OpenRead(a.eclassFiles[fileNdx].fn))
                     {
-                        XmlReaderSettings settings;
-
-                        settings = new XmlReaderSettings();
+                        var settings = new XmlReaderSettings();
                         settings.ConformanceLevel = ConformanceLevel.Document;
 
                         int numElems = 0;
@@ -407,7 +408,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 catch { }
-
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
         }
@@ -420,6 +421,8 @@ namespace AasxPackageExplorer
 
         public static string GetAttributeByName(XmlNode node, string aname)
         {
+            if (node?.Attributes == null || aname == null)
+                return null;
             string res = null;
             foreach (XmlAttribute a in node.Attributes)
                 if (a.Name == aname)
@@ -430,6 +433,8 @@ namespace AasxPackageExplorer
         public static List<XmlNode> GetChildNodesByName(XmlNode node, string aname)
         {
             List<XmlNode> res = new List<XmlNode>();
+            if (node?.ChildNodes == null || aname == null)
+                return res;
             if (node.HasChildNodes)
                 foreach (var x in node.ChildNodes)
                     if (x is XmlNode && (x as XmlNode).Name == aname)
@@ -457,14 +462,15 @@ namespace AasxPackageExplorer
             if (n1 != null)
             {
                 var nl = n1.SelectNodes(childChildName);
-                foreach (XmlNode ni in nl)
-                    if (ni.Attributes != null && ni.Attributes[langCodeAttrib] != null)
-                    {
-                        var ls = new AdminShell.LangStr();
-                        ls.lang = ni.Attributes["language_code"].InnerText;
-                        ls.str = ni.InnerText;
-                        action(ls);
-                    }
+                if (nl != null)
+                    foreach (XmlNode ni in nl)
+                        if (ni.Attributes != null && ni.Attributes[langCodeAttrib] != null)
+                        {
+                            var ls = new AdminShell.LangStr();
+                            ls.lang = ni.Attributes["language_code"].InnerText;
+                            ls.str = ni.InnerText;
+                            action(ls);
+                        }
             }
         }
 
@@ -491,8 +497,6 @@ namespace AasxPackageExplorer
                 if (node == null)
                     continue;
 
-                XmlNode n1;
-
                 // first is significant
                 if (i == 0)
                 {
@@ -505,7 +509,7 @@ namespace AasxPackageExplorer
 
                     // administration
                     res.administration = new AdminShell.Administration();
-                    n1 = node.SelectSingleNode("revision");
+                    var n1 = node.SelectSingleNode("revision");
                     if (n1 != null)
                         res.administration.revision = "" + n1.InnerText;
 
@@ -543,12 +547,10 @@ namespace AasxPackageExplorer
                                 if (xi.IRDI.ToLower().Trim() == urefIrdi.ToLower().Trim() && xi.ContentNode != null)
                                 {
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
-                                        if (xiun is XmlNode)
+                                        if (xiun != null)
                                         {
                                             ds.unitId = AdminShell.UnitId.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, urefIrdi.Trim());
-                                            var un = (xiun as XmlNode).InnerText;
-                                            if (un != null)
-                                                ds.unit = un.Trim();
+                                            ds.unit = xiun.InnerText.Trim();
                                         }
                                 }
                         }
@@ -592,6 +594,7 @@ namespace AasxPackageExplorer
             // Phase 2: fix some shortcomings
             //
 
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
@@ -607,7 +610,7 @@ namespace AasxPackageExplorer
                             // ok
                             found = true;
                             // Array of words
-                            var words = pn.str.Split(new char[] { ' ', '\t', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+                            var words = pn.str.Split(new [] { ' ', '\t', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
                             var sn = "";
                             foreach (var w in words)
                             {
@@ -625,6 +628,7 @@ namespace AasxPackageExplorer
                 }
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
 
             // ok
             return res;

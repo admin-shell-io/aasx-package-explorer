@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -10,6 +11,7 @@ This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see ht
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();

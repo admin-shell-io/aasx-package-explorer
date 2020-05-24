@@ -27,7 +27,7 @@
         <ItemsControl x:Name="ItemsControlStatements" Grid.Column="0" Grid.Row="0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Path=.}" FontFamily="Arial" FontSize="12" FontWeight="Regular" BorderThickness="0" TextWrapping="Wrap" Margin="2,2,2,0"/>
+                    <TextBox Text="{Binding Path=.}" FontFamily="Arial" FontSize="12" FontWeight="Regular" BorderThickness="0" TextWrapping="Wrap" Margin="2,2,2,0"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
 

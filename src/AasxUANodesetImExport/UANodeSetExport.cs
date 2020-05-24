@@ -10,9 +10,20 @@ using System.Windows;
 using System.Xml.Serialization;
 using static AdminShellNS.AdminShellV20;
 
+// TODO: License
+// TODO Fraunhofer IOSB: Check ReSharper
+
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantCast
+// ReSharper disable RedundantCast
+// ReSharper disable PossibleIntendedRethrow
+// ReSharper disable SimplifyConditionalTernaryExpression
+// ReSharper disable UnusedVariable
+
+
 namespace AasxUANodesetImExport
 {
-    public class UANodeSetExport
+    public static class UANodeSetExport
     {
         //consists of every single node that will be created
         public static List<UANode> root = new List<UANode>();

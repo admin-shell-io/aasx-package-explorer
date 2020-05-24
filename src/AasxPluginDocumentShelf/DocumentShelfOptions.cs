@@ -203,13 +203,13 @@ namespace AasxPluginDocumentShelf
                 "StatusValue", FormMultiplicity.One, opt.SemIdStatusValue, "StatusValue",
                 "Each document version represents a point in time in the document life cycle. This status value refers to the milestones in the document life cycle. The following two statuses should be used for the application of this guideline: InReview (under review), Released (released).");
             descDocVer.Add(descStatus);
-            descStatus.comboBoxChoices = new string[] { "InReview", "Released" };
+            descStatus.comboBoxChoices = new [] { "InReview", "Released" };
 
             var descRole = new FormDescProperty(
                 "Role", FormMultiplicity.One, opt.SemIdRole, "Role",
                 "Define a role for the organisation according to the following selection list.");
             descDocVer.Add(descRole);
-            descRole.comboBoxChoices = new string[] { "Author", "Customer", "Supplier", "Manufacturer", "Responsible" };
+            descRole.comboBoxChoices = new [] { "Author", "Customer", "Supplier", "Manufacturer", "Responsible" };
 
             descDocVer.Add(new FormDescProperty(
                 "OrganizationName", FormMultiplicity.One, opt.SemIdOrganizationName, "OrganizationName",

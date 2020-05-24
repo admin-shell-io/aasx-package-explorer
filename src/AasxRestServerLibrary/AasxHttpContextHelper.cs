@@ -44,7 +44,7 @@ namespace AasxRestServerLibrary
 
         public bool PathEndsWith(string path, string tag)
         {
-            return path.Trim().ToLower().TrimEnd(new char[] { '/' }).EndsWith(tag);
+            return path.Trim().ToLower().TrimEnd('/').EndsWith(tag);
         }
 
         public bool PathEndsWith(IHttpContext context, string tag)
@@ -78,6 +78,7 @@ namespace AasxRestServerLibrary
             // over all query strings
             foreach (var kr in queryStrings.AllKeys)
             {
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var k = kr.Trim().ToLower();
@@ -94,6 +95,7 @@ namespace AasxRestServerLibrary
                     }
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
             // done
@@ -118,7 +120,7 @@ namespace AasxRestServerLibrary
 
             // try make a Regex wonder, again
             var m = Regex.Match(query, @"(\s*([^&]+)(&|))+");
-            if (m.Success && m.Groups.Count >= 3 && m.Groups[2].Captures != null)
+            if (m.Success && m.Groups.Count >= 3)
                 foreach (var cp in m.Groups[2].Captures)
                 {
                     var m2 = Regex.Match(cp.ToString(), @"\s*(\w+)\s*=\s*([^,]+),(.+)$");
@@ -423,7 +425,7 @@ namespace AasxRestServerLibrary
             AdminShell.AdministrationShellEnv copyenv = null;
             try
             {
-                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new AdminShell.AdministrationShell[] { aas }));
+                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new [] { aas }));
             }
             catch (Exception ex)
             {
@@ -451,8 +453,7 @@ namespace AasxRestServerLibrary
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot serialize and send aas envioronment: {ex.Message}.");
-                return;
+                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot serialize and send aas envioronment: {ex.Message}.");            
             }
         }
 
@@ -484,7 +485,7 @@ namespace AasxRestServerLibrary
             }
 
             // return as FILE
-            SendStreamResponse(context, thumbStream, Path.GetFileName(thumbUri.ToString() ?? ""));
+            SendStreamResponse(context, thumbStream, Path.GetFileName(thumbUri?.ToString() ?? ""));
             thumbStream.Close();
         }
 
@@ -522,7 +523,7 @@ namespace AasxRestServerLibrary
                 context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
-            context.Server.Logger.Debug($"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and id {aas.identification?.ToString() ?? "--"}");
+            context.Server.Logger.Debug($"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and id {aas.identification.ToString() }");
             var existingAas = this.Package.AasEnv.FindAAS(aas.identification);
             if (existingAas != null)
                 this.Package.AasEnv.AdministrationShells.Remove(existingAas);
@@ -746,7 +747,7 @@ namespace AasxRestServerLibrary
             }
 
             // add Submodel
-            context.Server.Logger.Debug($"Adding Submodel with idShort {submodel.idShort ?? "--"} and id {submodel.identification?.ToString() ?? "--"}");
+            context.Server.Logger.Debug($"Adding Submodel with idShort {submodel.idShort ?? "--"} and id {submodel.identification?.ToString() }");
             var existingSm = this.Package.AasEnv.FindSubmodel(submodel.identification);
             if (existingSm != null)
                 this.Package.AasEnv.Submodels.Remove(existingSm);
@@ -866,7 +867,7 @@ namespace AasxRestServerLibrary
                     path += p.idShort + "/";
 
                 // SubnmodelElement general
-                row.idShorts = path + sme.idShort ?? "(-)";
+                row.idShorts = path + (sme.idShort ?? "(-)");
                 row.typeName = sme.GetElementName();
                 if (sme.semanticId == null || sme.semanticId.Keys == null)
                 { }
@@ -1011,10 +1012,9 @@ namespace AasxRestServerLibrary
             }
 
             // a little bit of demo
-            double dblval = 0.0;
             string strval = smep.value;
             if (smep.HasQualifierOfType("DEMO") != null && smep.value != null && smep.valueType != null && smep.valueType.Trim().ToLower() == "double"
-                && double.TryParse(smep.value, NumberStyles.Any, CultureInfo.InvariantCulture, out dblval))
+                && double.TryParse(smep.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dblval))
             {
                 dblval += Math.Sin((0.001 * DateTime.UtcNow.Millisecond) * 6.28);
                 strval = dblval.ToString(CultureInfo.InvariantCulture);
@@ -1088,9 +1088,9 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (sme.idShort == null)
+            if (sme?.idShort == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"idShort of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"entity or idShort of entity is (null); PUT cannot be performed.");
                 return;
             }
 
@@ -1128,9 +1128,8 @@ namespace AasxRestServerLibrary
                     return;
                 }
 
-                if (parent.elem != null && parent.elem is AdminShell.SubmodelElementCollection)
+                if (parent.elem != null && parent.elem is AdminShell.SubmodelElementCollection parentsmc)
                 {
-                    var parentsmc = parent.elem as AdminShell.SubmodelElementCollection;
                     var existsmw = parentsmc.FindFirstIdShort(sme.idShort);
                     if (existsmw != null)
                     {
@@ -1183,9 +1182,8 @@ namespace AasxRestServerLibrary
                 deleted = true;
             }
 
-            if (fse.parent is AdminShell.SubmodelElementCollection)
+            if (fse.parent is AdminShell.SubmodelElementCollection smc)
             {
-                var smc = fse.parent as AdminShell.SubmodelElementCollection;
                 context.Server.Logger.Debug($"Deleting specified SubmodelElement {elinfo} from SubmodelElementCollection {smc.idShort}.");
                 smc.value.Remove(fse.wrapper);
                 deleted = true;
@@ -1287,7 +1285,7 @@ namespace AasxRestServerLibrary
 
             // create a new, filtered AasEnv
             // (this is expensive, but delivers us with a list of CDs which are in relation to the respective AAS)
-            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new AdminShell.AdministrationShell[] { aas }));
+            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new [] { aas }));
 
             // get all CDs and describe them
             foreach (var cd in copyenv.ConceptDescriptions)
@@ -1463,7 +1461,7 @@ namespace AasxRestServerLibrary
             }
 
             // add Submodel
-            context.Server.Logger.Debug($"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and id {cd.identification?.ToString() ?? "--"}");
+            context.Server.Logger.Debug($"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and id {cd.identification.ToString() }");
             var existingCd = this.Package.AasEnv.FindConceptDescription(cd.identification);
             if (existingCd != null)
                 this.Package.AasEnv.ConceptDescriptions.Remove(existingCd);

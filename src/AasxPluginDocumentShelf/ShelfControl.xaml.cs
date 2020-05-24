@@ -23,6 +23,8 @@ using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
 using AasxPredefinedConcepts;
 
+// ReSharper disable InconsistentlySynchronizedField .. checks and everything looks fine .. maybe .Count() is already treated as synchronized action?
+
 namespace AasxPluginDocumentShelf
 {
     /// <summary>
@@ -85,9 +87,8 @@ namespace AasxPluginDocumentShelf
 
         public void ResetCountryRadioButton(RadioButton radio, CountryFlag.CountryCode code)
         {
-            if (radio != null && radio.Content != null && radio.Content is WrapPanel)
+            if (radio != null && radio.Content != null && radio.Content is WrapPanel wrap)
             {
-                var wrap = radio.Content as WrapPanel;
                 wrap.Children.Clear();
                 var cf = new CountryFlag.CountryFlag();
                 cf.Code = code;
@@ -114,7 +115,7 @@ namespace AasxPluginDocumentShelf
             this.theViewModel.ViewModelChanged += TheViewModel_ViewModelChanged;
 
             var entities = new List<DocumentEntity>();
-            entities.Add(new DocumentEntity("Titel", "Orga", "cdskcnsdkjcnkjsckjsdjn", new string[] { "de", "GB" }));
+            entities.Add(new DocumentEntity("Titel", "Orga", "cdskcnsdkjcnkjsckjsdjn", new [] { "de", "GB" }));
             ScrollMainContent.ItemsSource = entities;
 
             // a bit hacky: explicetly load CountryFlag.dll
@@ -162,6 +163,7 @@ namespace AasxPluginDocumentShelf
                     theDocEntitiesToPreview.RemoveAt(0);
                 }
 
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     // temp input
@@ -175,7 +177,7 @@ namespace AasxPluginDocumentShelf
                     string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
 
                     // remember these for later deletion
-                    ent.DeleteFilesAfterLoading = new string[] { inputFn, outputFn };
+                    ent.DeleteFilesAfterLoading = new [] { inputFn, outputFn };
 
                     // start process
                     string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
@@ -197,7 +199,7 @@ namespace AasxPluginDocumentShelf
                         }
 
                         // take over data?
-                        if (lambdaEntity != null && lambdaEntity.ImgContainer != null)
+                        if (lambdaEntity.ImgContainer != null)
                         {
                             // trigger display image
                             lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
@@ -212,48 +214,50 @@ namespace AasxPluginDocumentShelf
                     }
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
             // over all items in order to check, if a prepared image shall be display
-            if (this.ScrollMainContent != null && this.ScrollMainContent.Items != null)
-                foreach (var x in this.ScrollMainContent.Items)
+            foreach (var x in this.ScrollMainContent.Items)
+            {
+                var de = x as DocumentEntity;
+                if (de == null)
+                    continue;
+
+                if (de.ImageReadyToBeLoaded != null)
                 {
-                    var de = x as DocumentEntity;
-                    if (de == null)
-                        continue;
+                    // never again
+                    var tempFn = de.ImageReadyToBeLoaded;
+                    de.ImageReadyToBeLoaded = null;
 
-                    if (de.ImageReadyToBeLoaded != null)
+                    // try load
+                    // ReSharper disable EmptyGeneralCatchClause
+                    try
                     {
-                        // never again
-                        var tempFn = de.ImageReadyToBeLoaded;
-                        de.ImageReadyToBeLoaded = null;
+                        // convert here, as the tick-Thread in STA / UI thread
+                        var bi = new BitmapImage(new Uri(tempFn, UriKind.RelativeOrAbsolute));
+                        var img = new Image();
+                        img.Source = bi;
+                        de.ImgContainer.Child = img;
 
-                        // try load
-                        try
-                        {
-                            // convert here, as the tick-Thread in STA / UI thread
-                            var bi = new BitmapImage(new Uri(tempFn, UriKind.RelativeOrAbsolute));
-                            var img = new Image();
-                            img.Source = bi;
-                            de.ImgContainer.Child = img;
+                        // now delete the associated files file!
+                        if (de.DeleteFilesAfterLoading != null)
+                            foreach (var fn in de.DeleteFilesAfterLoading)
+                                // it is quite likely (e.g. http:// files) that the delete fails!
+                                try
+                                {
+                                    File.Delete(fn);
+                                }
+                                catch { }
 
-                            // now delete the associated files file!
-                            if (de.DeleteFilesAfterLoading != null)
-                                foreach (var fn in de.DeleteFilesAfterLoading)
-                                    // it is quite likely (e.g. http:// files) that the delete fails!
-                                    try
-                                    {
-                                        File.Delete(fn);
-                                    }
-                                    catch { }
-
-                            // remember in the cache
-                            if (referableHashToCachedBitmap != null && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
-                                referableHashToCachedBitmap[de.ReferableHash] = bi;
-                        }
-                        catch { }
+                        // remember in the cache
+                        if (referableHashToCachedBitmap != null && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
+                            referableHashToCachedBitmap[de.ReferableHash] = bi;
                     }
+                    catch { }
+                    // ReSharper enable EmptyGeneralCatchClause
                 }
+            }
         }
 
         public void Start(
@@ -409,7 +413,7 @@ namespace AasxPluginDocumentShelf
 
                             // class infos
                             var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdDocumentClassId)?.value;
-                            var className = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdDocumentClassName)?.value;
+                            // var className = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdDocumentClassName)?.value;
 
                             // collect country codes
                             var countryCodesStr = new List<string>();
@@ -474,7 +478,7 @@ namespace AasxPluginDocumentShelf
                             if (referableHashToCachedBitmap != null && referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
                             {
                                 var img = new Image();
-                                img.Source = referableHashToCachedBitmap[ent.ReferableHash] as BitmapImage;
+                                img.Source = referableHashToCachedBitmap[ent.ReferableHash];
                                 ent.ImgContainer.Child = img;
                             }
                             else
@@ -564,43 +568,45 @@ namespace AasxPluginDocumentShelf
                 foreach (var smcDoc in theSubmodel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(theOptions?.SemIdDocument))
                     if (smcDoc?.value == e.SourceElementsDocument)
                     {
-                        // identify as well the DocumentVersion
-                        var allVers = e.SourceElementsDocument.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(theOptions?.SemIdDocumentVersion);
-                        if (allVers != null)
-                            foreach (var smcVer in allVers)
-                                if (smcVer?.value == e.SourceElementsDocumentVersion)
-                                {
-                                    // access
-                                    if (smcVer == null || smcVer.value == null || smcDoc == null || smcDoc.value == null)
-                                        continue;
+                        // identify as well the DocumentVersion         
+                        // (convert to List() because of Count() below)
+                        var allVers = e.SourceElementsDocument.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(theOptions?.SemIdDocumentVersion).ToList();
+                        foreach (var smcVer in allVers)
+                            if (smcVer?.value == e.SourceElementsDocumentVersion)
+                            {
+                                // access
+                                if (smcVer == null || smcVer.value == null || smcDoc == null || smcDoc.value == null)
+                                    continue;
 
-                                    // ask back .. the old-fashioned way!
-                                    if (MessageBoxResult.Yes != MessageBox.Show("Delete Document?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                                        return;
-
-                                    // confirmed! -> delete
-                                    if (allVers == null || allVers.Count() < 2)
-                                        // remove the whole document!
-                                        theSubmodel.submodelElements.Remove(smcDoc);
-                                    else
-                                        // remove only the document version
-                                        e.SourceElementsDocument.Remove(smcVer);
-
-                                    // switch back to docs
-                                    // change back
-                                    OuterTabControl.SelectedItem = TabPanelList;
-
-                                    // re-display
-                                    ParseSubmodelToListItems(this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass, theViewModel.TheSelectedLanguage, theViewModel.TheSelectedListType);
-
-                                    // re-display also in Explorer
-                                    var evt = new AasxPluginResultEventRedrawAllElements();
-                                    if (theEventStack != null)
-                                        theEventStack.PushEvent(evt);
-
-                                    // OK
+                                // ask back .. the old-fashioned way!
+                                if (MessageBoxResult.Yes != MessageBox.Show("Delete Document?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning))
                                     return;
-                                }
+
+                                // confirmed! -> delete
+                                if (allVers.Count < 2)
+                                    // remove the whole document!
+                                    theSubmodel.submodelElements.Remove(smcDoc);
+                                else
+                                    // remove only the document version
+                                    e.SourceElementsDocument.Remove(smcVer);
+
+                                // switch back to docs
+                                // change back
+                                OuterTabControl.SelectedItem = TabPanelList;
+
+                                // re-display
+                                ParseSubmodelToListItems(this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass, theViewModel.TheSelectedLanguage, theViewModel.TheSelectedListType);
+
+                                // re-display also in Explorer
+                                var evt = new AasxPluginResultEventRedrawAllElements();
+                                if (theEventStack != null)
+                                    theEventStack.PushEvent(evt);
+
+                                // OK
+                                return;
+                            }
+
+                        // ReSharper enable PossibleMultipleEnumeration
                     }
             }
         }
@@ -695,11 +701,10 @@ namespace AasxPluginDocumentShelf
                     }
 
                     // create a sequence of SMEs
-                    AdminShell.SubmodelElementWrapperCollection smwc = null;
+                    // AdminShell.SubmodelElementWrapperCollection smwc = null;
                     try
                     {
-                        smwc = this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
-
+                        /* smwc = */ this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
                     }
                     catch (Exception ex)
                     {

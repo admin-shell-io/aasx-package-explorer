@@ -28,21 +28,6 @@ namespace AasxPluginTechnicalData
             InitializeComponent();
         }
 
-        public class PropertiesRecord
-        {
-            public string System { get; set; }
-            public string Version { get; set; }
-            public string ClassTxt { get; set; }
-
-            public PropertiesRecord() { }
-            public PropertiesRecord(string system, string version, string classTxt)
-            {
-                this.System = system;
-                this.Version = version;
-                this.ClassTxt = classTxt;
-            }
-        }
-
         private TableCell NewTableCellPara(string runText, string cellStyleName = null, string paraStyleName = null, int columnSpan = 1, Nullable<Thickness> padding = null)
         {
             var run = new Run("" + runText);
@@ -74,7 +59,7 @@ namespace AasxPluginTechnicalData
                 // access
                 if (smw?.submodelElement == null)
                     continue;
-                var sme = smw?.submodelElement;
+                var sme = smw.submodelElement;
 
                 if (sme is AdminShell.SubmodelElementCollection && true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
                 {
@@ -169,9 +154,6 @@ namespace AasxPluginTechnicalData
 
             // finalize current row group??
             ;
-
-            // ok
-            return;
         }
 
         public FlowDocument CreateFlowDocument(AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShell.Submodel sm)
@@ -211,6 +193,7 @@ namespace AasxPluginTechnicalData
             TableAddPropertyRows_Recurse(theDefs, defaultLang, package, table, smcProps.value);
 
             // dummy cells
+#if FALSE
             int dummyCells = 0;
             if (dummyCells > 0)
             {
@@ -229,6 +212,7 @@ namespace AasxPluginTechnicalData
                     tr.Cells.Add(NewTableCellPara("" + Math.Sqrt(1.0 * i), "CellStylePropertyOther", "ParaStyleProperty"));
                 }
             }
+#endif
 
             // ok
             return doc;

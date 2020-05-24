@@ -118,15 +118,12 @@ namespace AasxPackageExplorer
             //
             // Referable
             //
-            if (siMdo is AdminShell.Referable)
+            if (siMdo is AdminShell.Referable dataRef)
             {
-                var dataRef = siMdo as AdminShell.Referable;
-                if (dataRef == null)
-                    return false;
                 // check if a valuable item was selected
                 var elemname = dataRef.GetElementName();
                 var fullFilter = ApplyFullFilterString(theFilter);
-                if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ") >= 0))
+                if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
                     return false;
                 // ok, prepare list of keys
                 this.ResultKeys = new AdminShell.KeyList();
@@ -146,7 +143,8 @@ namespace AasxPackageExplorer
                     {
                         // a Identifiable will terminate the list of keys
                         var data = de.GetMainDataObject() as AdminShell.Identifiable;
-                        this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(data.GetElementName(), true, data.identification.idType, data.identification.id));
+                        if (data != null)
+                            this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(data.GetElementName(), true, data.identification.idType, data.identification.id));
                         break;
                     }
                     else
@@ -154,7 +152,8 @@ namespace AasxPackageExplorer
                     {
                         // add a key and go up ..
                         var data = de.GetMainDataObject() as AdminShell.Referable;
-                        this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(data.GetElementName(), true, "IdShort", data.idShort));
+                        if (data != null)
+                            this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(data.GetElementName(), true, "IdShort", data.idShort));
                     }
                     else
                     // uups!
@@ -168,14 +167,10 @@ namespace AasxPackageExplorer
             // 
             // other special cases
             //
-            if (siMdo is AdminShell.SubmodelRef && (theFilter == null || ApplyFullFilterString(theFilter).ToLower().IndexOf("submodelref ") >= 0))
+            if (siMdo is AdminShell.SubmodelRef smref && (theFilter == null || ApplyFullFilterString(theFilter).ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0))
             {
-                var dataRef = siMdo as AdminShell.SubmodelRef;
-                if (dataRef == null)
-                    return false;
-
                 this.ResultKeys = new AdminShell.KeyList();
-                this.ResultKeys.AddRange(dataRef.Keys);
+                this.ResultKeys.AddRange(smref.Keys);
                 return true;
             }
 
@@ -186,7 +181,7 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
 
         private string ApplyFullFilterString(string filter)
@@ -194,7 +189,7 @@ namespace AasxPackageExplorer
             if (filter == null)
                 return null;
             var res = filter;
-            if (res != null && res.Trim().ToLower() == "submodelelement")
+            if (res.Trim().ToLower() == "submodelelement")
                 foreach (var s in AdminShell.Key.SubmodelElements)
                     res += " " + s + " ";
             return " " + res + " ";
@@ -209,13 +204,13 @@ namespace AasxPackageExplorer
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.ResultKeys = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
     }
 }

@@ -15,6 +15,8 @@ using ClosedXML.Excel;
 using System.Windows.Media;
 using AasxIntegrationBase.AasForms;
 
+// ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
+
 namespace AasxPluginExportTable
 {
     public class ExportTableAasEntitiesItem
@@ -197,7 +199,7 @@ namespace AasxPluginExportTable
             {
                 if (ls == null)
                     return;
-                rep(head + "@" + "" + ls?.lang, "" + ls?.str);
+                rep(head + "@" + "" + ls.lang, "" + ls.str);
             }
 
             private void repListOfLangStr(string head, List<AdminShell.LangStr> lss)
@@ -247,7 +249,7 @@ namespace AasxPluginExportTable
 
                 // try find
                 string multiStr = null;
-                var q = qualifiers?.FindType("Multiplicity");
+                var q = qualifiers.FindType("Multiplicity");
                 if (q != null)
                 {
                     foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
@@ -292,15 +294,18 @@ namespace AasxPluginExportTable
                 for (int ki = 0; ki < rid.Keys.Count; ki++)
                 {
                     var k = rid.Keys[ki];
-                    // in nice form
-                    //-9- {Reference}[0..n]
-                    rep(head + refName + $"[{ki}]", "" + k?.ToString(1));
-                    // but also in separate parts
-                    //-9- {Reference}[0..n].{type, local, idType, value}
-                    rep(head + refName + $"[{ki}].type", "" + k.type);
-                    rep(head + refName + $"[{ki}].local", (k == null || !k.local) ? "no-local" : "local");
-                    rep(head + refName + $"[{ki}].idType", "" + k.idType);
-                    rep(head + refName + $"[{ki}].value", "" + k.value);
+                    if (k != null)
+                    {
+                        // in nice form
+                        //-9- {Reference}[0..n]
+                        rep(head + refName + $"[{ki}]", "" + k.ToString(1));
+                        // but also in separate parts
+                        //-9- {Reference}[0..n].{type, local, idType, value}
+                        rep(head + refName + $"[{ki}].type", "" + k.type);
+                        rep(head + refName + $"[{ki}].local", (!k.local) ? "no-local" : "local");
+                        rep(head + refName + $"[{ki}].idType", "" + k.idType);
+                        rep(head + refName + $"[{ki}].value", "" + k.value);
+                    }
                 }
             }
 
@@ -522,7 +527,7 @@ namespace AasxPluginExportTable
                         continue;
 
                     // OK, found a placeholder-tag to replace
-                    var tag = "" + match.Groups[1].Value?.Trim().ToLower();
+                    var tag = "" + match.Groups[1].Value.Trim().ToLower();
 
                     if (this.repDict.ContainsKey(tag))
                     {
@@ -688,6 +693,10 @@ namespace AasxPluginExportTable
 
         private void ExportExcel_AppendTableCell(IXLWorksheet ws, CellRecord cr, int ri, int ci)
         {
+            // access
+            if (ws == null || cr == null)
+                return;
+
             // basic cell
             var cell = ws.Cell(ri, ci);
 
@@ -717,22 +726,30 @@ namespace AasxPluginExportTable
             // colors
             if (cr.Bg != null)
             {
+                // ReSharper disable EmptyGeneralCatchClause
+                // ReSharper disable PossibleNullReferenceException
                 try
                 {
                     var bgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Bg);
                     cell.Style.Fill.BackgroundColor = XLColor.FromArgb(bgc.A, bgc.R, bgc.G, bgc.B);
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
+                // ReSharper enable PossibleNullReferenceException
             }
 
             if (cr.Fg != null)
             {
+                // ReSharper disable EmptyGeneralCatchClause
+                // ReSharper disable PossibleNullReferenceException
                 try
                 {
                     var fgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Fg);
                     cell.Style.Font.FontColor = XLColor.FromArgb(fgc.A, fgc.R, fgc.G, fgc.B);
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
+                // ReSharper enable PossibleNullReferenceException
             }
 
             // font?
@@ -921,6 +938,8 @@ namespace AasxPluginExportTable
 
                 if (cr.Bg != null)
                 {
+                    // ReSharper disable EmptyGeneralCatchClause
+                    // ReSharper disable PossibleNullReferenceException
                     try
                     {
                         var bgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Bg);
@@ -934,13 +953,15 @@ namespace AasxPluginExportTable
                         });
                     }
                     catch { }
+                    // ReSharper enable EmptyGeneralCatchClause
+                    // ReSharper enable PossibleNullReferenceException
                 }
             }
 
             // var run = new Run(new Text(cr.Text));
             // make a run with multiple breaks
             var run = new Run();
-            var lines = cr.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = cr.Text.Split(new [] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var l in lines)
             {
                 if (run.ChildElements != null && run.ChildElements.Count > 0)
@@ -950,6 +971,7 @@ namespace AasxPluginExportTable
 
             if (cr.Fg != null || cr.Font != null)
             {
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var rp = new RunProperties();
@@ -974,6 +996,7 @@ namespace AasxPluginExportTable
                     run.RunProperties = rp;
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
 
             para.Append(run);
