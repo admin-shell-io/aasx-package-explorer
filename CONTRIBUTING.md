@@ -73,7 +73,7 @@ To install the solution dependencies, invoke:
 Now you are all set to build the solution:
 
 ```powershell
-.\BuildSolution.ps1
+.\Build.ps1
 ```
 
 ## Pre-merge Checks
@@ -81,13 +81,13 @@ Now you are all set to build the solution:
 We still assume the current directory is `src/`. Besides scripts for building,
 we provide scripts to run pre-merge checks on your local machine.
 
-To inspect the code with Resharper CodeInspect, run:
+To run all the checks, run:
 
 ```powershell
-.\Resharp.ps1
+.\Check.ps1
 ```
 
-and to format the code with `dotnet-format`:
+To format the code in-place with `dotnet-format`, invoke:
 
 ```powershell
 .\FormatCode.ps1

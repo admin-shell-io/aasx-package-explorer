@@ -1,21 +1,13 @@
-﻿if(!(Test-Path env:DOTNET_ROOT)) {
-    $dotnetRoot = Join-Path $env:LOCALAPPDATA "Microsoft\dotnet"
-    if(!(Test-Path $dotnetRoot)) {
-        throw "Expected dotnet root to exist, but it does not: $dotnetRoot"
-    }
+﻿# This script formats the code in-place.
 
-    Write-Host "Setting DOTNET_ROOT environment variable to: $dotnetRoot"
-    [Environment]::SetEnvironmentVariable(
-        "DOTNET_ROOT",
-        $dotnetRoot)
-} else {
-    $dotnetRoot= $env:DOTNET_ROOT
-}
+$ErrorActionPreference = "Stop"
 
-$env:Path += ";$dotnetRoot" 
+Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
+    AssertDotnet, `
+    AssertDotnetFormatVersion
 
-$dotnetFormatPath=Join-Path $env:UserProfile ".dotnet\tools\dotnet-format.exe"
+AssertDotnet
+AssertDotnetFormatVersion
 
 cd $PSScriptRoot
-
 dotnet format
