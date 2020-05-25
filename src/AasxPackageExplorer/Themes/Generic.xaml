@@ -1,8 +1,10 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AAsxWpfControlLibrary">
+    xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AasxWpfControlLibrary">
 
+    <!-- ReSharper disable Xaml.PathError -->
+    
     <!--Converter for Indentation of items-->
     <local:TreeListViewConverter x:Key="TreeListViewConverter"/>
 

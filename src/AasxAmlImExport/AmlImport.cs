@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AasxUtils;
 using AdminShellNS;
 using Aml.Engine.CAEX;
+using AasxIntegrationBase;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -18,7 +19,7 @@ The AutomationML.Engine is under the MIT license. (see https://raw.githubusercon
 
 namespace AasxAmlImExport
 {
-    public class AmlImport
+    public static class AmlImport
     {
         public static string PrintSemantic(CAEXSequence<RefSemanticType> sem)
         {
@@ -104,8 +105,8 @@ namespace AasxAmlImExport
                     return null;
 
                 // a reference could carry multiple Keys, delimited by ","
-                var refstrs = refstr.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                if (refstrs == null || refstr.Length < 1)
+                var refstrs = refstr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                if (refstr.Length < 1)
                     return null;
 
                 // build a Reference
@@ -175,8 +176,8 @@ namespace AasxAmlImExport
 
                 // Remark: SystemUnitClassType is suitable for SysUnitClasses and InternalElements
 
-                if (ie is InternalElementType)
-                    if (CheckForRole((ie as InternalElementType).RoleRequirements, classPath))
+                if (ie is InternalElementType iet)
+                    if (CheckForRole(iet.RoleRequirements, classPath))
                         return true;
 
                 return
@@ -237,8 +238,7 @@ namespace AasxAmlImExport
                     return null;
 
                 // primary stuff
-                var res = new AdminShell.ListOfLangStr();
-                res.Add(new AdminShell.LangStr("Default", aroot.Value));
+                var res = new AdminShell.ListOfLangStr { new AdminShell.LangStr("Default", aroot.Value) };
 
                 // assume the language-specific attributes being directly sub-ordinated
                 if (aroot.Attribute != null)
@@ -259,8 +259,7 @@ namespace AasxAmlImExport
                 if (ls == null)
                     return null;
 
-                var res = new AdminShell.Description();
-                res.langString = ls;
+                var res = new AdminShell.Description() { langString = ls };
                 return res;
             }
 
@@ -284,11 +283,13 @@ namespace AasxAmlImExport
                         {
 
                             // create
-                            var q = new AdminShell.Qualifier();
-                            q.type = qt;
-                            q.value = qv;
-                            q.semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(sid)?.Keys);
-                            q.valueId = ParseAmlReference(qvid);
+                            var q = new AdminShell.Qualifier()
+                            {
+                                type = qt,
+                                value = qv,
+                                semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(sid)?.Keys),
+                                valueId = ParseAmlReference(qvid)
+                            };
 
                             // add
                             if (res == null)
@@ -327,8 +328,6 @@ namespace AasxAmlImExport
                 foreach (var a in aseq)
                     if (CheckAttributeFoRefSemantic(a, correspondingAttributePath))
                     {
-                        if (list == null)
-                            list = new List<T>();
                         var item = lambda(a.Value);
                         list.Add(item);
                     }
@@ -337,11 +336,11 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(AdminShell.Referable parent, AdminShell.SubmodelElement se)
             {
-                if (parent is AdminShell.Submodel)
-                    (parent as AdminShell.Submodel).Add(se);
+                if (parent is AdminShell.Submodel psm)
+                    psm.Add(se);
 
-                if (parent is AdminShell.SubmodelElementCollection)
-                    (parent as AdminShell.SubmodelElementCollection).Add(se);
+                if (parent is AdminShell.SubmodelElementCollection psmc)
+                    psmc.Add(se);
             }
 
             private AdminShell.AdministrationShell TryParseAasFromIe(SystemUnitClassType ie)
@@ -502,7 +501,7 @@ namespace AasxAmlImExport
                     // check for direct descendents to be "Mirror-Elements"
                     if (ie.InternalElement != null)
                         foreach (var mie in ie.InternalElement)
-                            if (mie.RefBaseSystemUnitPath != null && mie.RefBaseSystemUnitPath != "")
+                            if (mie.RefBaseSystemUnitPath.HasContent())
                             {
                                 // candidate .. try identify target
                                 var el = FindInternalElementByID(mie.RefBaseSystemUnitPath);
@@ -510,9 +509,7 @@ namespace AasxAmlImExport
                                 {
                                     // for the View's contain element references, all targets of the references shall exists.
                                     // This is not already the case, therefore store the AML IE / View Information for later parsing
-
                                     this.latePopoulationViews.Add(new MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>(ie, view, el));
-                                    ;
                                 }
                             }
 
@@ -647,12 +644,12 @@ namespace AasxAmlImExport
                                 var theref = new AdminShell.Reference();
                                 aasref.CollectReferencesByParent(theref.Keys);
                                 // nooooooooooow, set this
-                                if (targetId == 1 && target is AdminShell.ReferenceElement)
-                                    (target as AdminShell.ReferenceElement).value = theref;
-                                if (targetId == 2 && target is AdminShell.RelationshipElement)
-                                    (target as AdminShell.RelationshipElement).first = theref;
-                                if (targetId == 3 && target is AdminShell.RelationshipElement)
-                                    (target as AdminShell.RelationshipElement).second = theref;
+                                if (targetId == 1 && target is AdminShell.ReferenceElement tre)
+                                    tre.value = theref;
+                                if (targetId == 2 && target is AdminShell.RelationshipElement trse)
+                                    trse.first = theref;
+                                if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
+                                    tre2.second = theref;
                             })
                         );
 
@@ -661,12 +658,12 @@ namespace AasxAmlImExport
                     var value = FindAttributeValueByRefSemantic(ei.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                     if (value != null)
                     {
-                        if (targetId == 1 && target is AdminShell.ReferenceElement)
-                            (target as AdminShell.ReferenceElement).value = ParseAmlReference(value);
-                        if (targetId == 2 && target is AdminShell.RelationshipElement)
-                            (target as AdminShell.RelationshipElement).first = ParseAmlReference(value);
-                        if (targetId == 3 && target is AdminShell.RelationshipElement)
-                            (target as AdminShell.RelationshipElement).second = ParseAmlReference(value);
+                        if (targetId == 1 && target is AdminShell.ReferenceElement tre)
+                            tre.value = ParseAmlReference(value);
+                        if (targetId == 2 && target is AdminShell.RelationshipElement trse)
+                            trse.first = ParseAmlReference(value);
+                        if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
+                            tre2.second = ParseAmlReference(value);
                     }
                 }
             }
@@ -706,9 +703,8 @@ namespace AasxAmlImExport
                         sme.hasDataSpecification = ds;
 
                     // and also special attributes for each adequate type
-                    if (sme is AdminShell.Property)
+                    if (sme is AdminShell.Property p)
                     {
-                        var p = sme as AdminShell.Property;
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_Value);
                         var valueAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_Value);
                         var valueId = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_ValueId);
@@ -720,9 +716,8 @@ namespace AasxAmlImExport
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
 
-                    if (sme is AdminShell.Blob)
+                    if (sme is AdminShell.Blob smeb)
                     {
-                        var smeb = sme as AdminShell.Blob;
                         var mimeType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Blob_MimeType);
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Blob_Value);
                         if (mimeType != null)
@@ -731,9 +726,8 @@ namespace AasxAmlImExport
                             smeb.value = value;
                     }
 
-                    if (sme is AdminShell.File)
+                    if (sme is AdminShell.File smef)
                     {
-                        var smef = sme as AdminShell.File;
                         var mimeType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.File_MimeType);
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.File_Value);
                         if (mimeType != null)
@@ -742,10 +736,8 @@ namespace AasxAmlImExport
                             smef.value = value;
                     }
 
-                    if (sme is AdminShell.ReferenceElement)
+                    if (sme is AdminShell.ReferenceElement smer)
                     {
-                        var smer = sme as AdminShell.ReferenceElement;
-
                         if (aasStyleAttributes)
                         {
                             // not used anymore!
@@ -761,10 +753,8 @@ namespace AasxAmlImExport
                         }
                     }
 
-                    if (sme is AdminShell.RelationshipElement)
+                    if (sme is AdminShell.RelationshipElement smere)
                     {
-                        var smer = sme as AdminShell.RelationshipElement;
-
                         if (aasStyleAttributes)
                         {
                             // not used anymore!
@@ -772,16 +762,16 @@ namespace AasxAmlImExport
                             var second = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.RelationshipElement_Second);
                             if (first != null && second != null)
                             {
-                                smer.first = ParseAmlReference(first);
-                                smer.second = ParseAmlReference(second);
+                                smere.first = ParseAmlReference(first);
+                                smere.second = ParseAmlReference(second);
                             }
                         }
 
                         if (amlStyleAttributes)
                         {
                             // now the default
-                            TryPopulateReferenceAttribute(ie, "first", AmlConst.Interfaces.ReferableReference, smer, 2);
-                            TryPopulateReferenceAttribute(ie, "second", AmlConst.Interfaces.ReferableReference, smer, 3);
+                            TryPopulateReferenceAttribute(ie, "first", AmlConst.Interfaces.ReferableReference, smere, 2);
+                            TryPopulateReferenceAttribute(ie, "second", AmlConst.Interfaces.ReferableReference, smere, 3);
                         }
                     }
 
@@ -1102,12 +1092,14 @@ namespace AasxAmlImExport
                                 // create a Property
                                 Debug(indentation, "  found ATTR {0}. Adding as property.", a.Name);
 
-                                var p = new AdminShell.Property();
-                                p.idShort = a.Name;
-                                p.value = a.Value;
-                                p.valueType = ParseAmlDataType(a.AttributeDataType);
-                                p.qualifiers = TryParseQualifiersFromAttributes(a.Attribute);
-                                p.hasDataSpecification = TryParseDataSpecificationFromAttributes(ie.Attribute);
+                                var p = new AdminShell.Property()
+                                {
+                                    idShort = a.Name,
+                                    value = a.Value,
+                                    valueType = ParseAmlDataType(a.AttributeDataType),
+                                    qualifiers = TryParseQualifiersFromAttributes(a.Attribute),
+                                    hasDataSpecification = TryParseDataSpecificationFromAttributes(ie.Attribute)
+                                };
 
                                 // gather information
                                 var semid = FindAttributeValueByRefSemantic(a.Attribute, AmlConst.Attributes.SemanticId);
@@ -1124,7 +1116,7 @@ namespace AasxAmlImExport
                     //
                     for (int i = 0; i < 2; i++)
                         if (currentAas != null && currentSubmodel != null && currentOperation != null &&
-                            CheckForRoleClassOrRoleRequirements(ie, (new string[] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
+                            CheckForRoleClassOrRoleRequirements(ie, (new[] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
                         {
                             Debug(indentation, "  List of OPERATION VARIABLE detected. Switching direction to {0}..", i);
 
@@ -1172,8 +1164,10 @@ namespace AasxAmlImExport
                                     // add
                                     var wrapper = new AdminShell.SubmodelElementWrapper();
                                     wrapper.submodelElement = sme;
-                                    var opv = new AdminShell.OperationVariable();
-                                    opv.value = wrapper;
+                                    var opv = new AdminShell.OperationVariable()
+                                    {
+                                        value = wrapper
+                                    };
                                     currentOperation[currentOperationDir].Add(opv);
                                 }
                             }
@@ -1265,8 +1259,8 @@ namespace AasxAmlImExport
                     // recurse into childs, which are SUC
                     ParseSystemUnits(suc.SystemUnitClass, currentAas, currentSubmodel, currentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
                     // switch recursion into InternalElements
-                    if (suc is SystemUnitClassType)
-                        ParseInternalElementsForAasEntities(null, (suc as SystemUnitClassType).InternalElement, currentAas, currentSubmodel, currentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
+                    if (suc is SystemUnitClassType suct)
+                        ParseInternalElementsForAasEntities(null, suct.InternalElement, currentAas, currentSubmodel, currentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
                 }
 
             }
@@ -1359,15 +1353,17 @@ namespace AasxAmlImExport
                                                 eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(ParseAmlReference(hds));
 
                                             // make 61360 data
-                                            eds.dataSpecificationContent = new AdminShell.DataSpecificationContent();
-                                            eds.dataSpecificationContent.dataSpecificationIEC61360 = ds61360;
+                                            eds.dataSpecificationContent = new AdminShell.DataSpecificationContent()
+                                            {
+                                                dataSpecificationIEC61360 = ds61360
+                                            };
                                         }
                                     }
                         }
                     }
 
                     // recurse into childs
-                    ParseIEsForInternalLinks(insthier, ie.InternalElement, indentation + 1);
+                    ParseIEsForInternalLinks(ie.InternalElement, indentation + 1);
                 }
 
             }
@@ -1376,7 +1372,6 @@ namespace AasxAmlImExport
             /// Go recursively through internal elements to consult internal links
             /// </summary>
             public void ParseIEsForInternalLinks(
-                InstanceHierarchyType insthier,
                 InternalElementSequence ieseq,
                 int indentation = 0)
             {
@@ -1395,7 +1390,7 @@ namespace AasxAmlImExport
                             if (il == null)
                                 continue;
                             // try find registered sides
-                            foreach (var side in new string[] { il.RefPartnerSideA, il.RefPartnerSideB })
+                            foreach (var side in new[] { il.RefPartnerSideA, il.RefPartnerSideB })
                             {
                                 var items = this.registerForInternalLinks[side];
                                 if (items != null)
@@ -1405,7 +1400,7 @@ namespace AasxAmlImExport
                         }
 
                     // recurse into childs
-                    ParseIEsForInternalLinks(insthier, ie.InternalElement, indentation + 1);
+                    ParseIEsForInternalLinks(ie.InternalElement, indentation + 1);
                 }
 
             }
@@ -1488,7 +1483,7 @@ namespace AasxAmlImExport
             // the different parse stages might have reegistered actions to be source or destination of AML internal links
             // find all internal links and assess them ..
             foreach (var x in doc.CAEXFile.InstanceHierarchy)
-                parser.ParseIEsForInternalLinks(x, x.InternalElement);
+                parser.ParseIEsForInternalLinks(x.InternalElement);
         }
     }
 }

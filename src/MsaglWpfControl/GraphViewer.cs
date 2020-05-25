@@ -116,7 +116,11 @@ namespace Microsoft.Msagl.WpfGraphControl
         protected WEllipse TargetPortCircle { get; set; }
 
         WPoint _objectUnderMouseDetectionLocation;
+
+        [JetBrains.Annotations.UsedImplicitly]
         public event EventHandler LayoutStarted;
+
+        [JetBrains.Annotations.UsedImplicitly]
         public event EventHandler LayoutComplete;
 
         /*
@@ -126,7 +130,8 @@ namespace Microsoft.Msagl.WpfGraphControl
         /// <summary>
         /// if set to true will layout in a task
         /// </summary>
-        public bool RunLayoutAsync;
+        [JetBrains.Annotations.UsedImplicitly]
+        public bool RunLayoutAsync = false;
 
         readonly WCanvas _graphCanvas = new WCanvas();
         Graph _drawingGraph;
@@ -239,9 +244,9 @@ namespace Microsoft.Msagl.WpfGraphControl
             if (lgSettings != null)
             {
                 var lgEi = lgSettings.GeometryEdgesToLgEdgeInfos[vEdge.Edge.GeometryEdge];
-                lgEi.SlidingZoomLevel = lgEi.SlidingZoomLevel != 0 ? 0 : double.PositiveInfinity;
+                lgEi.SlidingZoomLevel = Math.Abs(lgEi.SlidingZoomLevel) > 0.0001 ? 0 : double.PositiveInfinity;
 
-                ViewChangeEvent(null, null);
+                ViewChangeEvent?.Invoke(null, null);
             }
         }
 
@@ -732,7 +737,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             get
             {
-                if (_dpiX == 0)
+                if (Math.Abs(_dpiX) <= 0.0001)
                     GetDpi();
                 return _dpiX;
             }
@@ -762,7 +767,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             get
             {
-                if (_dpiX == 0)
+                if (Math.Abs(_dpiY) <= 0.0001)
                     GetDpi();
                 return _dpiY;
             }
@@ -844,7 +849,9 @@ namespace Microsoft.Msagl.WpfGraphControl
             new Dictionary<DrawingObject, Func<DrawingObject, WFrameworkElement>>();
 
         readonly ClickCounter clickCounter;
-        public string MsaglFileToSave;
+
+        [JetBrains.Annotations.UsedImplicitly]
+        public string MsaglFileToSave = null;
 
         double GetBorderPathThickness()
         {
@@ -1152,8 +1159,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
             foreach (var node in _drawingGraph.Nodes.Concat(_drawingGraph.RootSubgraph.AllSubgraphsDepthFirstExcludingSelf()))
             {
-                IViewerObject o;
-                if (drawingObjectsToIViewerObjects.TryGetValue(node, out o))
+                if (drawingObjectsToIViewerObjects.TryGetValue(node, out IViewerObject o))
                 {
                     ((VNode)o).Invalidate();
                 }
@@ -1259,7 +1265,7 @@ namespace Microsoft.Msagl.WpfGraphControl
                 var geomGraph = GeomGraph;
                 if (_drawingGraph == null || geomGraph == null ||
 
-                    geomGraph.Width == 0 || geomGraph.Height == 0)
+                    Math.Abs(geomGraph.Width) < 0.0001 || Math.Abs(geomGraph.Height) < 0.0001)
                     return 1;
 
                 var size = _graphCanvas.RenderSize;
@@ -1315,8 +1321,7 @@ namespace Microsoft.Msagl.WpfGraphControl
                 if (lgSettings != null)
                     return CreateEdgeForLgCase(lgSettings, edge);
 
-                WFrameworkElement labelTextBox;
-                drawingObjectsToFrameworkElements.TryGetValue(edge, out labelTextBox);
+                drawingObjectsToFrameworkElements.TryGetValue(edge, out WFrameworkElement labelTextBox);
                 var vEdge = new VEdge(edge, labelTextBox);
 
                 var zIndex = ZIndexOfEdge(edge);
@@ -1352,8 +1357,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         void SetVEdgeLabel(MDrawingEdge edge, VEdge vEdge, int zIndex)
         {
-            WFrameworkElement frameworkElementForEdgeLabel;
-            if (!drawingObjectsToFrameworkElements.TryGetValue(edge, out frameworkElementForEdgeLabel))
+            if (!drawingObjectsToFrameworkElements.TryGetValue(edge, out WFrameworkElement frameworkElementForEdgeLabel))
             {
                 drawingObjectsToFrameworkElements[edge] =
                     frameworkElementForEdgeLabel = CreateTextBlockForDrawingObj(edge);
@@ -1398,8 +1402,7 @@ namespace Microsoft.Msagl.WpfGraphControl
                 if (drawingObjectsToIViewerObjects.ContainsKey(node))
                     return (IViewerNode)drawingObjectsToIViewerObjects[node];
 
-                WFrameworkElement feOfLabel;
-                if (!drawingObjectsToFrameworkElements.TryGetValue(node, out feOfLabel))
+                if (!drawingObjectsToFrameworkElements.TryGetValue(node, out WFrameworkElement feOfLabel))
                     feOfLabel = CreateAndRegisterFrameworkElementOfDrawingNode(node);
 
                 var vn = new VNode(node, feOfLabel,
@@ -1524,8 +1527,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             double width, height;
 
-            WFrameworkElement fe;
-            if (drawingObjectsToFrameworkElements.TryGetValue(subgraph, out fe))
+            if (drawingObjectsToFrameworkElements.TryGetValue(subgraph, out WFrameworkElement fe))
             {
 
                 width = fe.Width + 2 * subgraph.Attr.LabelMargin + subgraph.DiameterOfOpenCollapseButton;
@@ -1586,8 +1588,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             double width, height;
 
-            WFrameworkElement fe;
-            if (drawingObjectsToFrameworkElements.TryGetValue(node, out fe))
+            if (drawingObjectsToFrameworkElements.TryGetValue(node, out WFrameworkElement fe))
             {
                 width = fe.Width + 2 * node.Attr.LabelMargin;
                 height = fe.Height + 2 * node.Attr.LabelMargin;
@@ -1709,8 +1710,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         WFrameworkElement CreateTextBlockForDrawingObj(DrawingObject drawingObj)
         {
-            Func<DrawingObject, WFrameworkElement> registeredCreator;
-            if (registeredCreators.TryGetValue(drawingObj, out registeredCreator))
+            if (registeredCreators.TryGetValue(drawingObj, out Func<DrawingObject, WFrameworkElement> registeredCreator))
                 return registeredCreator(drawingObj);
             if (drawingObj is Subgraph)
                 return null; //todo: add Label support later

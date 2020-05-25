@@ -23,10 +23,12 @@
     <Grid Loaded="Grid_Loaded">
         <Grid x:Name="GridItem">
             <Grid.Resources>
+                <!-- ReSharper disable Xaml.RedundantResource -->
                 <ContextMenu x:Key="ContextMenuItem">
                     <MenuItem Header="Edit" Icon="{StaticResource ResourceKey=IconPencil}" Click="MenuItem_Click"/>
                     <MenuItem Header="Delete" Icon="{StaticResource ResourceKey=IconDelete}" Click="MenuItem_Click"/>
                 </ContextMenu>
+                <!-- ReSharper enable Xaml.RedundantResource -->
             </Grid.Resources>
             
             <Grid.RowDefinitions>

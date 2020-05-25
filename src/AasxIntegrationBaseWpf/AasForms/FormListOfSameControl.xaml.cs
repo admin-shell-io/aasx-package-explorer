@@ -48,9 +48,12 @@ namespace AasxIntegrationBase.AasForms
             var inst = this.DataContext as FormInstanceListOfSame;
             if (inst == null || inst.SubInstances == null || inst.SubInstances.Count < 1)
                 return;
+
+            // ReSharper disable SuspiciousTypeConversion.Global
             foreach (var si in inst.SubInstances)
                 if (si != null && si is IFormListControl)
                     (si as IFormListControl).SetProperty(property, value);
+            // ReSharper enable SuspiciousTypeConversion.Global
         }
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace AasxIntegrationBase.AasForms
             GridInner.RowDefinitions.Clear();
             int ri = 0;
             foreach (var si in inst.SubInstances)
-                if (si?.subControl != null && si.subControl is UserControl)
+                if (si?.subControl != null)
                 // StackPanelInner.Children.Add(si.subControl as UserControl);
                 {
                     // row
@@ -147,7 +150,7 @@ namespace AasxIntegrationBase.AasForms
                     GridInner.RowDefinitions.Add(rd);
 
                     // have the control itself
-                    var sc = si.subControl as UserControl;
+                    var sc = si.subControl;
 
                     Grid.SetRow(sc, ri);
                     Grid.SetColumn(sc, 0);
@@ -157,12 +160,11 @@ namespace AasxIntegrationBase.AasForms
                     {
 
                         // make a button like the "-"
-                        var src = ButtonInstancePlus;
                         var bt = CreateButtonLike(ButtonInstancePlus, content: "&#10134;");
                         bt.VerticalAlignment = VerticalAlignment.Top;
                         bt.Content = "\u2796";  // "&#10134;";
 
-                        if (inst?.workingDesc != null && inst.workingDesc is FormDescSubmodelElementCollection)
+                        if (inst.workingDesc != null && inst.workingDesc is FormDescSubmodelElementCollection)
                             bt.Margin = new Thickness(bt.Margin.Left, bt.Margin.Top + 6, bt.Margin.Right, bt.Margin.Bottom);
 
                         bt.SetBinding(Button.WidthProperty, CreateBindingWithElementName("ActualWidth", "ButtonInstancePlus"));
@@ -178,11 +180,13 @@ namespace AasxIntegrationBase.AasForms
                             if (inst.SubInstances.Count > this.minRows)
                             {
                                 // carefully delete
+                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     masterInst.SubInstances.Remove(subInst);
                                 }
                                 catch { }
+                                // ReSharper enable EmptyGeneralCatchClause
 
                                 // redraw
                                 UpdateDisplay();

@@ -7,9 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+// TODO: License
+// TODO Fraunhofer IOSB: Check ReSharper
+
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantCast
+// ReSharper disable RedundantCast
+// ReSharper disable PossibleIntendedRethrow
+// ReSharper disable SimplifyConditionalTernaryExpression
+// ReSharper disable UnusedVariable
+// ReSharper disable PossibleNullReferenceException
+// ReSharper disable CSharpWarnings::CS0162
+
 namespace AasxUANodesetImExport
 {
-    public class UANodeSetImport
+    public static class UANodeSetImport
     {
         public static AdminShellNS.AdminShellPackageEnv thePackageEnv;
         private static UANodeSet InformationModel;
@@ -40,7 +52,7 @@ namespace AasxUANodesetImExport
 
             //Initialize everything needed
             AdminShell.AdministrationShellEnv env = thePackageEnv.AasEnv;
-            var asset = new AdminShell.Asset();
+            // var asset = new AdminShell.Asset();
             var aas = new AdminShell.AdministrationShell();
             aas.views = new Views();
             aas.views.views = new List<View>();
@@ -131,14 +143,14 @@ namespace AasxUANodesetImExport
         private static UANode getRoot()
         {
             //the root node will always have the BrowseName AASAssetAdministrationShell
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 return InformationModel.Items.First(x => x.BrowseName == "1:AASAssetAdministrationShell");
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            catch { }
+            // ReSharper enable EmptyGeneralCatchClause
+            return null;
         }
 
         private static Identification GetIdentification(UANode submodel)

@@ -31,11 +31,15 @@ namespace AasxPackageExplorer
     // Data model
     //
 
+    // ReSharper disable ClassNeverInstantiated.Global .. used by JSON
+
     public class QualifierPreset
     {
         public string name = "";
         public AdminShell.Qualifier qualifier = new AdminShell.Qualifier();
     }
+
+    // ReSharper enable ClassNeverInstantiated.Global
 
     /// <summary>
     /// Interaktionslogik für SelectFromRepository.xaml
@@ -116,19 +120,19 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.ResultQualifier = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         private void ListBoxPresets_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
     }
 }

@@ -17,7 +17,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
         <Grid.RowDefinitions>

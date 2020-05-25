@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {
-    static public class NativeMethods
+    public static class NativeMethods
     {
         [DllImport("GDI32.dll")]
         public static extern int GetDeviceCaps(int hdc, int nIndex);

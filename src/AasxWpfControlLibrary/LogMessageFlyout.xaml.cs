@@ -115,7 +115,7 @@ namespace AasxPackageExplorer
                 counterError++;
 
             // add to rich text box
-            AasxWpfBaseUtils.StoredPrintToRichTextBox(this.TextBoxMessages, sp, AasxWpfBaseUtils.BrightPrintColors, isError, new RoutedEventHandler(link_Click));
+            AasxWpfBaseUtils.StoredPrintToRichTextBox(this.TextBoxMessages, sp, AasxWpfBaseUtils.BrightPrintColors, isError, link_Click);
 
             // move scroll
             if (this.CheckBoxAutoScroll.IsChecked == true)
@@ -144,7 +144,6 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Registers an error pattern, based on a regex, which is applied to each incoming log message
         /// </summary>
-        /// <param name="regstr"></param>
         public void AddPatternError(Regex pattern)
         {
             if (pattern == null)
@@ -206,7 +205,7 @@ namespace AasxPackageExplorer
                 this.Result = false;
                 if (this.timer != null)
                     this.timer.Stop();
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
             else
             {

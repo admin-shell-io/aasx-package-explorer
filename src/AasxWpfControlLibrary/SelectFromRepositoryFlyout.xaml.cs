@@ -114,7 +114,7 @@ namespace AasxPackageExplorer
                     if (fm.link == sender)
                     {
                         this.ResultFilename = fm.fn;
-                        ControlClosed();
+                        ControlClosed?.Invoke();
                     }
         }
 
@@ -125,7 +125,7 @@ namespace AasxPackageExplorer
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             ResultFilename = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -147,7 +147,7 @@ namespace AasxPackageExplorer
                     if (aid == fm.tag.Trim().ToLower())
                     {
                         this.ResultFilename = fm.fn;
-                        ControlClosed();
+                        ControlClosed?.Invoke();
                         return;
                     }
 
@@ -157,7 +157,7 @@ namespace AasxPackageExplorer
                     if (aid == fm.assetId.Trim().ToLower())
                     {
                         this.ResultFilename = fm.fn;
-                        ControlClosed();
+                        ControlClosed?.Invoke();
                         return;
                     }
         }
@@ -177,7 +177,7 @@ namespace AasxPackageExplorer
             {
                 // quit
                 ResultFilename = null;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
         }
     }

@@ -9,6 +9,7 @@ namespace AasxUtils
     public abstract class MultiTupleBase
     { }
 
+    [JetBrains.Annotations.UsedImplicitly]
     public class MultiTuple2<T> : MultiTupleBase
     {
         public T one;
@@ -18,6 +19,7 @@ namespace AasxUtils
         }
     }
 
+    [JetBrains.Annotations.UsedImplicitly]
     public class MultiTuple2<T, U> : MultiTupleBase
     {
         public T one;
@@ -29,6 +31,7 @@ namespace AasxUtils
         }
     }
 
+    [JetBrains.Annotations.UsedImplicitly]
     public class MultiTuple3<T, U, V> : MultiTupleBase
     {
         public T one;
@@ -42,6 +45,7 @@ namespace AasxUtils
         }
     }
 
+    [JetBrains.Annotations.UsedImplicitly]
     public class MultiTupleDictionary<KEY, MT>
     {
         private Dictionary<KEY, List<MT>> dict = new Dictionary<KEY, List<MT>>();

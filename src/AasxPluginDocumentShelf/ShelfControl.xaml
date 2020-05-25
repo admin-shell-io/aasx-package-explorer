@@ -140,6 +140,8 @@
 
                 <ListView x:Name="ScrollMainContent" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Margin="0,30,0,1" Grid.RowSpan="2">
                     <ListView.Resources>
+                        <!-- ReSharper disable Xaml.RedundantResource -->
+                        
                         <DataTemplate x:Key="ItemTemplateForBar">
                             <local:ShelfItemBar/>
                         </DataTemplate>
@@ -153,6 +155,8 @@
                         <ItemsPanelTemplate x:Key="ItemsPanelForGrid">
                             <WrapPanel Orientation="Horizontal"/>
                         </ItemsPanelTemplate>
+
+                        <!-- ReSharper enable Xaml.RedundantResource -->
                     </ListView.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">

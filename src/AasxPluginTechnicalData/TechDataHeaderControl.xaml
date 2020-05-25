@@ -6,6 +6,10 @@
              xmlns:local="clr-namespace:AasxPluginTechnicalData"
              mc:Ignorable="d" 
              d:DesignHeight="180" d:DesignWidth="600">
+    
+    <!-- Not sure, if binding can be improved -->
+    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+    
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

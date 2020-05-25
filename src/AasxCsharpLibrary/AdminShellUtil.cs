@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace AdminShellNS
 {
-    public class AdminShellUtil
+    public static class AdminShellUtil
     {
         public static string EvalToNonNullString(string fmt, object o, string elseString = "")
         {
@@ -35,9 +35,9 @@ namespace AdminShellNS
         public static bool HasWhitespace(string src)
         {
             if (src == null)
-                throw new ArgumentNullException("src");
-            for (var i = 0; i < src.Length; i++)
-                if (char.IsWhiteSpace(src[i]))
+                throw new ArgumentNullException(nameof(src));
+            foreach (var s in src)
+                if (char.IsWhiteSpace(s))
                     return true;
             return false;
         }
@@ -45,10 +45,10 @@ namespace AdminShellNS
         public static bool ComplyIdShort(string src)
         {
             if (src == null)
-                throw new ArgumentNullException("src");
+                throw new ArgumentNullException(nameof(src));
             var res = true;
-            for (var i = 0; i < src.Length; i++)
-                if (!Char.IsLetterOrDigit(src[i]) && src[i] != '_')
+            foreach (var s in src)
+                if (!Char.IsLetterOrDigit(s) && s != '_')
                     res = false;
             if (src.Length > 0 && !Char.IsLetter(src[0]))
                 res = false;
@@ -72,7 +72,7 @@ namespace AdminShellNS
                 if (currLine >= lines.Length)
                     return "";
                 // access current line
-                var p = lines[currLine].IndexOf(" in ");
+                var p = lines[currLine].IndexOf(" in ", StringComparison.Ordinal);
                 if (p < 0)
                 {
                     // advance to next oldest line
@@ -80,7 +80,7 @@ namespace AdminShellNS
                     continue;
                 }
                 // search last "\" or "/", to get only filename portion and position
-                p = lines[currLine].LastIndexOfAny(new char[] { '\\', '/' });
+                p = lines[currLine].LastIndexOfAny(new[] { '\\', '/' });
                 if (p < 0)
                 {
                     // advance to next oldest line
@@ -131,11 +131,11 @@ namespace AdminShellNS
                 }
             }
 
-            var fields = objType.GetFields();
-            foreach (FieldInfo fi in fields)
-            {
-                ;
-            }
+            //var fields = objType.GetFields();
+            //foreach (FieldInfo fi in fields)
+            //{
+            //    ;
+            //}
         }
 
         public class SearchOptions
@@ -233,7 +233,7 @@ namespace AdminShellNS
             // access
             if (results == null || obj == null || options == null)
                 return;
-            string indentString = new string(' ', depth);
+            // string indentString = new string(' ', depth);
             Type objType = obj.GetType();
 
             // depth
@@ -303,7 +303,7 @@ namespace AdminShellNS
             foreach (var pi in properties)
             {
                 var gip = pi.GetIndexParameters();
-                if (gip != null && gip.Length > 0)
+                if (gip.Length > 0)
                     // no indexed properties, yet
                     continue;
 

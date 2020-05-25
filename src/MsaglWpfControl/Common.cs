@@ -9,7 +9,7 @@ using MPoint = Microsoft.Msagl.Core.Geometry.Point;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {
-    internal class Common
+    internal static class Common
     {
         internal static WPoint WpfPoint(MPoint p)
         {

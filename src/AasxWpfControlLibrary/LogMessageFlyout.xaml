@@ -54,8 +54,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
         <Grid Grid.Row="4" Grid.Column="1" >
             <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -64,6 +64,6 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             <CheckBox Grid.Row="0" Grid.Column="1" x:Name="CheckBoxAutoScroll" Foreground="White" VerticalContentAlignment="Center" Margin="5,0,0,0" >AutoScroll</CheckBox>
         </Grid>
 
-        <Border Grid.RowSpan="6" Grid.ColumnSpan="4" BorderBrush="#606060" BorderThickness="1"/>
+        <Border Grid.Row="0" Grid.RowSpan="6" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="#606060" BorderThickness="1"/>
     </Grid>
 </UserControl>

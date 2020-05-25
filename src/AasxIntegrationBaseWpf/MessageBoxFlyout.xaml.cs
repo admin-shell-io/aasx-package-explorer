@@ -119,10 +119,10 @@ namespace AasxIntegrationBase
 
         private void StackPanelButton_Click(object sender, RoutedEventArgs e)
         {
-            if (buttonToResult.ContainsKey(sender as Button))
+            if (sender is Button && buttonToResult.ContainsKey(sender as Button))
             {
                 this.Result = buttonToResult[sender as Button];
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
         }
 
@@ -133,7 +133,7 @@ namespace AasxIntegrationBase
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.Result = MessageBoxResult.None;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -148,22 +148,22 @@ namespace AasxIntegrationBase
             if (e.Key == Key.Y && buttonToResult.ContainsValue(MessageBoxResult.Yes))
             {
                 this.Result = MessageBoxResult.Yes;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
             if ((e.Key == Key.N || e.Key == Key.Escape) && buttonToResult.ContainsValue(MessageBoxResult.No))
             {
                 this.Result = MessageBoxResult.No;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
             if ((e.Key == Key.O || e.Key == Key.Return) && buttonToResult.ContainsValue(MessageBoxResult.OK))
             {
                 this.Result = MessageBoxResult.OK;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
             if ((e.Key == Key.C || e.Key == Key.Escape) && buttonToResult.ContainsValue(MessageBoxResult.Cancel))
             {
                 this.Result = MessageBoxResult.Cancel;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
         }
     }

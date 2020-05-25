@@ -29,8 +29,8 @@ namespace AdminShellNS
         public string sourceLocalPath = null;
         public SourceGetByteChunk sourceGetBytesDel = null;
 
-        public LocationType location = LocationType.InPackage;
-        public SpecialHandlingType specialHandling = SpecialHandlingType.None;
+        public LocationType location;
+        public SpecialHandlingType specialHandling;
 
         public AdminShellPackageSupplementaryFile(Uri uri, string sourceLocalPath = null, LocationType location = LocationType.InPackage,
             SpecialHandlingType specialHandling = SpecialHandlingType.None, SourceGetByteChunk sourceGetBytesDel = null, string useMimeType = null)
@@ -54,12 +54,13 @@ namespace AdminShellNS
     /// <summary>
     /// Provides (static?) helpers for serializing AAS..
     /// </summary>
-    public class AdminShellSerializationHelper
+    public static class AdminShellSerializationHelper
     {
 
         public static string TryReadXmlFirstElementNamespaceURI(Stream s)
         {
             string res = null;
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 var xr = System.Xml.XmlReader.Create(s);
@@ -81,10 +82,8 @@ namespace AdminShellNS
                 }
                 xr.Close();
             }
-            catch
-            {
-                ;
-            }
+            catch { }
+            // ReSharper enable EmptyGeneralCatchClause
 
             // return to zero pos
             s.Seek(0, SeekOrigin.Begin);
@@ -273,7 +272,7 @@ namespace AdminShellNS
                             break;
                         }
                     if (originPart == null)
-                        throw (new Exception(string.Format("Unable to find AASX origin. Aborting!")));
+                        throw (new Exception("Unable to find AASX origin. Aborting!"));
 
                     // get the specs from the package
                     PackagePart specPart = null;
@@ -284,7 +283,7 @@ namespace AdminShellNS
                         break;
                     }
                     if (specPart == null)
-                        throw (new Exception(string.Format("Unable to find AASX spec(s). Aborting!")));
+                        throw (new Exception("Unable to find AASX spec(s). Aborting!"));
 
                     // open spec part to read
                     try
@@ -392,10 +391,12 @@ namespace AdminShellNS
 
                         sw.AutoFlush = true;
 
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.NullValueHandling = NullValueHandling.Ignore;
-                        serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-                        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+                        JsonSerializer serializer = new JsonSerializer()
+                        {
+                            NullValueHandling = NullValueHandling.Ignore,
+                            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                            Formatting = Newtonsoft.Json.Formatting.Indented
+                        };
                         using (JsonWriter writer = new JsonTextWriter(sw))
                         {
                             serializer.Serialize(writer, this.aasenv);
@@ -419,6 +420,7 @@ namespace AdminShellNS
                     // fn could be changed, therefore close "old" package first
                     if (this.openPackage != null)
                     {
+                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             this.openPackage.Close();
@@ -431,6 +433,7 @@ namespace AdminShellNS
                             }
                         }
                         catch { }
+                        // ReSharper enable EmptyGeneralCatchClause
                         this.openPackage = null;
                     }
 
@@ -488,6 +491,7 @@ namespace AdminShellNS
                              || (name.StartsWith("aasenv-with-no-id")))
                         {
                             // try kill specpart
+                            // ReSharper disable EmptyGeneralCatchClause
                             try
                             {
                                 originPart.DeleteRelationship(specRel.Id);
@@ -495,6 +499,7 @@ namespace AdminShellNS
                             }
                             catch { }
                             finally { specPart = null; specRel = null; }
+                            // ReSharper enable EmptyGeneralCatchClause
                         }
                     }
 
@@ -726,6 +731,7 @@ namespace AdminShellNS
                 return;
 
             // we do it not caring on any errors
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 // get index in form
@@ -739,10 +745,10 @@ namespace AdminShellNS
                 BackupIndex += 1;
 
                 // build a filename
-                var fn = Path.Combine(backupDir, $"backup{ndx:000}.xml");
+                var bdfn = Path.Combine(backupDir, $"backup{ndx:000}.xml");
 
                 // raw save
-                using (var s = new StreamWriter(fn))
+                using (var s = new StreamWriter(bdfn))
                 {
                     var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                     var nss = new XmlSerializerNamespaces();
@@ -753,6 +759,7 @@ namespace AdminShellNS
                 }
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
         }
 
         public bool IsLocalFile(string uriString)
@@ -789,8 +796,6 @@ namespace AdminShellNS
                 if (this.openPackage == null)
                     return 0;
                 var part = this.openPackage.GetPart(new Uri(uriString, UriKind.RelativeOrAbsolute));
-                if (part == null)
-                    return 0;
                 using (var s = part.GetStream(FileMode.Open))
                 {
                     res = s.Length;
@@ -816,7 +821,7 @@ namespace AdminShellNS
                     break;
                 }
             if (thumbPart == null)
-                throw (new Exception(string.Format("Unable to find AASX thumbnail. Aborting!")));
+                throw (new Exception("Unable to find AASX thumbnail. Aborting!"));
             return thumbPart.GetStream(FileMode.Open);
         }
 
@@ -943,7 +948,7 @@ namespace AdminShellNS
             targetDir = targetDir.Replace(@"\", "/");
             targetFn = targetFn.Trim();
             if (sourcePath == "" || targetDir == "" || targetFn == "")
-                throw (new Exception(string.Format("Trying add supplementary file with empty name or path!")));
+                throw (new Exception("Trying add supplementary file with empty name or path!"));
 
             var targetPath = "" + targetDir.Trim() + targetFn.Trim();
 
@@ -977,7 +982,7 @@ namespace AdminShellNS
         public void DeleteSupplementaryFile(AdminShellPackageSupplementaryFile psf)
         {
             if (psf == null)
-                throw (new Exception(string.Format("No supplementary file given!")));
+                throw (new Exception("No supplementary file given!"));
 
             if (psf.location == AdminShellPackageSupplementaryFile.LocationType.AddPending)
             {

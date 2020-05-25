@@ -108,7 +108,7 @@ namespace AasxIntegrationBase
         }
     }
 
-    public class AasxPluginOptionSerialization
+    public static class AasxPluginOptionSerialization
     {
         public static JsonSerializerSettings GetDefaultJsonSettings(Type[] startingTypes)
         {
@@ -133,7 +133,7 @@ namespace AasxIntegrationBase
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
-                    SerializationBinder = new DisplayNameSerializationBinder(new Type[] { typeof(FormDescListOfElement), typeof(FormDescProperty) }),
+                    SerializationBinder = new DisplayNameSerializationBinder(new[] { typeof(FormDescListOfElement), typeof(FormDescProperty) }),
                     NullValueHandling = NullValueHandling.Ignore,
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     TypeNameHandling = TypeNameHandling.Auto,
@@ -146,13 +146,13 @@ namespace AasxIntegrationBase
                 }
             }
 
-            var settings2 = AasxPluginOptionSerialization.GetDefaultJsonSettings(new Type[] { typeof(FormDescBase) });
+            var settings2 = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
 
             var test2 = new AasForms.FormDescSubmodel("t", null, "xdscdsds");
             var test22 = new AasForms.FormDescProperty("t", AasForms.FormMultiplicity.One, null, "xdscdsds");
             test2.Add(test22);
 
-            var jsonTest = Newtonsoft.Json.JsonConvert.SerializeObject(test2, settings2);
+            Newtonsoft.Json.JsonConvert.SerializeObject(test2, settings2);
         }
 
     }

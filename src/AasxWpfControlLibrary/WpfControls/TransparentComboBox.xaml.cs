@@ -30,6 +30,7 @@ namespace AasxPackageExplorer
     /// <summary>
     /// Interaktionslogik für SelectFromRepository.xaml
     /// </summary>
+    [JetBrains.Annotations.UsedImplicitly]
     public partial class TransparentComboBox : UserControl
     {
         public static readonly DependencyProperty IsEditableProperty = DependencyProperty.Register(
