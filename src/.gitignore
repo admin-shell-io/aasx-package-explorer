@@ -4,4 +4,5 @@ packages/
 **/BuildDate.txt
 Microsoft.Net.Compilers.2.10.0/
 installation/
+installation-dev-dependencies/
 resharper-code-inspection.xml
