@@ -9,7 +9,8 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
     AssertDotnetFormatVersion, `
     FindMSBuild, `
-    FindInspectCode
+    FindInspectCode, `
+    FindNunit3Console
 
 ##
 # Setup
@@ -20,6 +21,7 @@ AssertDotnetFormatVersion
 
 $msbuild = FindMSBuild
 $inspectcode = FindInspectCode
+$nunit3Console = FindNunit3Console
 
 ##
 # Check
@@ -72,6 +74,18 @@ $issueCount = $inspection.SelectNodes('//Issue').Count
 if( $issueCount -ne 0 ) {
     $fails += "* There are $issueCount InspectCode issue(s). " + `
         "The issues are stored in: $PSScriptRoot\resharper-code-inspection.xml"
+}
+
+##
+# Unit tests
+##
+
+$nunitProjectPath = Join-Path $PSScriptRoot "tests.nunit" 
+Write-Host "Running the tests specified in: $nunitProjectPath"
+& $nunit3Console $nunitProjectPath
+
+if(!$?) {
+    $fails += "* Some test(s) failed. See $(Join-Path $PSScriptRoot "TestResult.xml")"
 }
 
 if($fails.Count -ne 0) {

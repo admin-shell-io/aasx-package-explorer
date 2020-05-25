@@ -1,2 +1,6 @@
 .idea
 /src/.vs
+*~
+
+# VIM
+*.swp
