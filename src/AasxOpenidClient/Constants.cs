@@ -1,4 +1,6 @@
-﻿namespace Clients
+﻿// ReSharper disable All .. as this is code from others!
+
+namespace Clients
 {
     public class Constants
     {

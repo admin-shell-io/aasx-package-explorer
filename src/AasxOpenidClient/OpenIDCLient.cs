@@ -19,6 +19,8 @@ using System.Net;
 using System.Windows.Forms;
 using System.Text;
 
+// ReSharper disable All .. as this is code from others!
+
 namespace AasxPrivateKeyJwtClient
 {
     public class OpenIDClient

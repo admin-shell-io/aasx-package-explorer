@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 
+// ReSharper disable All .. as this is code from others!
+
 namespace Clients
 {
     public static class ConsoleExtensions

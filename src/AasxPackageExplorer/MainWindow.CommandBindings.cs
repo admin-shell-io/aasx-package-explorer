@@ -197,7 +197,7 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if (false && cmd == "encrypt" && thePackageEnv != null)
+            /* if (false && cmd == "encrypt" && thePackageEnv != null)
             {
                 VisualElementSubmodelRef ve = null;
                 if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
@@ -325,7 +325,7 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-            }
+            } */
             if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && thePackageEnv != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
@@ -892,10 +892,10 @@ namespace AasxPackageExplorer
                 if (tag == "openid1" || tag == "openid2" || tag == "openid3")
                 {
                     // Initializes the variables to pass to the MessageBox.Show method.
-                    string caption = "Connect with " + tag + ".dat";
-                    string message = "";
+                    // string caption = "Connect with " + tag + ".dat";
+                    // string message = "";
 
-                    using (StreamReader sr = new StreamReader(tag + ".dat"))
+                    /* using (StreamReader sr = new StreamReader(tag + ".dat"))
                     {
                         string authServer = sr.ReadLine();
                         string dataServer = sr.ReadLine();
@@ -910,10 +910,10 @@ namespace AasxPackageExplorer
                             "certPfxPW: " + certPfxPW + "\n" +
                             "outputDir: " + outputDir + "\n" +
                             "\nConinue?";
-                    }
+                    }*/
 
-                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                    DialogResult result;
+                    // MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    // DialogResult result;
 
                     // Displays the MessageBox.
                     /*
@@ -1261,7 +1261,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel.identification == null)
+                if (submodel == null || submodel.identification == null)
                 {
                     MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1488,7 +1488,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel.identification == null)
+                if (submodel == null || submodel.identification == null)
                 {
                     MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1780,13 +1780,15 @@ namespace AasxPackageExplorer
             var jsonStr = JsonConvert.SerializeObject(mdo, Formatting.Indented, settings);
 
             // copy to clipboard
-            if (jsonStr != null)
+            if (jsonStr != null && jsonStr != "")
             {
                 System.Windows.Clipboard.SetText(jsonStr);
                 Log.Info("Copied selected element to clipboard.");
             }
             else
+            {
                 Log.Info("No JSON text could be generated for selected element.");
+            }
         }
 
         public void CommandBinding_ExportGenericForms()

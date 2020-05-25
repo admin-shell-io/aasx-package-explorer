@@ -7,6 +7,8 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
+// ReSharper disable All .. as this is code from others!
+
 namespace De.Zvei.Aasx
 {
     /// <summary>
@@ -461,7 +463,7 @@ namespace De.Zvei.Aasx
                     fileStream.CopyTo(targetPart.GetStream());
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 Console.WriteLine("Warning: The following part URI already exists and will not be created again: " + targetUri + ". Relationship will still be created.");
             }
