@@ -358,7 +358,7 @@ namespace AasxPackageExplorer
                         if (xs != null)
                         {
                             if (duplicateLog != null)
-                                duplicateLogmaster(new StoredPrint(xs));
+                                duplicateLog(new StoredPrint(xs));
                             Log.Info("[{0}] {1}", "" + pi.name, x);
                         }
 
