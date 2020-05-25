@@ -24,6 +24,10 @@ jobs:
         working-directory: src
         run: nuget install NUnit.ConsoleRunner -Version 3.11.1
 
+      - name: Install Nunit Project Loader
+        working-directory: src
+        run: nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0
+
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
