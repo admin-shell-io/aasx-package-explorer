@@ -29,6 +29,14 @@ jobs:
         working-directory: src
         run: nuget restore AasxPackageExplorer.sln
 
-      - name: Run MSBuild
+      - name: Install dotnet-format
+        run: dotnet tool install -g dotnet-format
+
+      - name: Setup ReSharper Command Line Tools
+        uses: goit/setup-resharper@v1.0.0
+        with:
+          version: '2020.1.2'	
+
+      - name: Run the check
         working-directory: src
-        run: msbuild /p:Configuration=Debug /p:Platform=x64
+        run: powershell .\Check.ps1
