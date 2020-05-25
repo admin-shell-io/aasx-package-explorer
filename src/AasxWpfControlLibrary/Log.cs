@@ -10,7 +10,7 @@ namespace AasxGlobalLogging
     /// Static class, wrapping log instance, to have a logging via Singleton.
     /// (no need to have Log instance in every single class)
     /// </summary>
-    public class Log
+    public static class Log
     {
         private static AasxIntegrationBase.LogInstance logInstance = new AasxIntegrationBase.LogInstance();
 
@@ -51,7 +51,6 @@ namespace AasxGlobalLogging
         /// <summary>
         /// Display a message, which is for information only        
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         public static void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args)
         {
             logInstance?.InfoWithHyperlink(level, msg, linkTxt, linkUri, args);
@@ -68,7 +67,6 @@ namespace AasxGlobalLogging
         /// <summary>
         /// Display a message, which is for derrors      
         /// </summary>
-        /// <param name="link">The %LINK% portion in the message will be substituded with a hyperlink</param>
         public static void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args)
         {
             logInstance?.ErrorWithHyperlink(msg, linkTxt, linkUri, args);

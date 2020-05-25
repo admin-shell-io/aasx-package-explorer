@@ -14,8 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using AdminShellNS;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -42,7 +42,8 @@ namespace AasxPackageExplorer
 
         public event EventHandler SelectedItemChanged = null;
 
-        // MIHO1
+        // Future use?
+        [JetBrains.Annotations.UsedImplicitly]
         public event EventHandler DoubleClick = null;
 
         public VisualElementGeneric SelectedItem
@@ -54,7 +55,7 @@ namespace AasxPackageExplorer
         }
 
         // Enumerate all the descendants of the visual object.
-        static public void EnumVisual(Visual myVisual, object dataObject)
+        public static void EnumVisual(Visual myVisual, object dataObject)
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(myVisual); i++)
             {
@@ -174,11 +175,11 @@ namespace AasxPackageExplorer
                 dl.CollectListOfTopLevelNodes(list);
             // contract ALL nodes
             foreach (var tl in list)
-                tl.ForAllDescendents((x) => { (x as VisualElementGeneric).IsExpanded = false; });
+                tl.ForAllDescendents((x) => { x.IsExpanded = false; });
             // expand all nodes having descendent
             foreach (var tl in list)
                 if (tl.CheckIfDescendent(node))
-                    tl.ForAllDescendents((x) => { (x as VisualElementGeneric).IsExpanded = true; });
+                    tl.ForAllDescendents((x) => { x.IsExpanded = true; });
         }
 
         #endregion
@@ -249,18 +250,18 @@ namespace AasxPackageExplorer
 
             // select
             ve.IsSelected = true;
-            if (wishExpanded == true)
+            if (wishExpanded)
             {
                 // go upward the tree in order to expand, as well
                 var sii = ve;
                 while (sii != null)
                 {
-                    sii.IsExpanded = wishExpanded == true;
+                    sii.IsExpanded = true;
                     sii = sii.Parent;
                 }
             }
             if (wishExpanded == false)
-                ve.IsExpanded = wishExpanded == true;
+                ve.IsExpanded = false;
             Woodoo(ve);
 
             // OK
@@ -305,12 +306,12 @@ namespace AasxPackageExplorer
                 if (mdo != null && mdo is AdminShell.Referable)
                 {
                     var mdoen = (mdo as AdminShell.Referable).GetElementName().Trim().ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen) >= 0;
+                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
                 if (mdo != null && mdo is AdminShell.Reference)
                 {
                     var mdoen = (mdo as AdminShell.Reference).GetElementName().Trim().ToLower();
-                    isIn = fullFilterElementName.IndexOf(mdoen) >= 0;
+                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
                 return !isIn;
             }

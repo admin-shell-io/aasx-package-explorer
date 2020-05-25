@@ -102,7 +102,7 @@ namespace AasxPackageExplorer
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.Result = false;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

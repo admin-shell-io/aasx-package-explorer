@@ -28,7 +28,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
     </Grid>
     -->
     <StackPanel Orientation="Vertical">
-        <TextBlock x:Name="innerbubble" Grid.Column="0" Grid.Row="0" Background="#D42044" Foreground="White" Text="Hello here I'm telling my story..&#x0a;sdcjndskjcnkjdsnckjn&#x0a;cdscdscsdcsd ckdslkcmds clkdskldsm lkcm kldsm clksd mclksdmclksmdclkmsdklcms dlkcmdslkcm dsklcm lkdscm lksdc mlkdsm clkds mclkdsm clkdsm clkdsm clks mdklcm sdlkcm dslkmckldsm clkdsm cklsdm cklsdmclksdmclkmds lkcms dlkcmsdlkmcldskm clksdmclksdm cklsdm cklsmd clkmsd kclms dlkcm dslkmc ldsk mcklsd mclks dmlkcd m" FontSize="12" Padding="2,2,2,0" TextWrapping="Wrap"/>
-        <Path x:Name="outerbubble" Grid.Column="0" Grid.Row="1" Data="M0,0 h200 v3 h-180 l-5,5 l-5,-5 h-10 z" Fill="#D42044" Stretch="Fill" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" StrokeThickness="1.5"/>
+        <TextBlock x:Name="innerbubble" Background="#D42044" Foreground="White" Text="Hello here I'm telling my story..&#x0a;sdcjndskjcnkjdsnckjn&#x0a;cdscdscsdcsd ckdslkcmds clkdskldsm lkcm kldsm clksd mclksdmclksmdclkmsdklcms dlkcmdslkcm dsklcm lkdscm lksdc mlkdsm clkds mclkdsm clkdsm clkdsm clks mdklcm sdlkcm dslkmckldsm clkdsm cklsdm cklsdmclksdmclkmds lkcms dlkcmsdlkmcldskm clksdmclksdm cklsdm cklsmd clkmsd kclms dlkcm dslkmc ldsk mcklsd mclks dmlkcd m" FontSize="12" Padding="2,2,2,0" TextWrapping="Wrap"/>
+        <Path x:Name="outerbubble" Data="M0,0 h200 v3 h-180 l-5,5 l-5,-5 h-10 z" Fill="#D42044" Stretch="Fill" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" StrokeThickness="1.5"/>
     </StackPanel>
 </UserControl>

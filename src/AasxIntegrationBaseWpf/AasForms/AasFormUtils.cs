@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace AasxIntegrationBase.AasForms
 {
-    public class AasFormUtils
+    public static class AasFormUtils
     {
-        static private void RecurseExportAsTemplate(AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
+        private static void RecurseExportAsTemplate(AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
             AdminShell.AdministrationShellEnv env = null, AdminShell.ListOfConceptDescriptions cds = null)
         {
             // access
@@ -140,7 +140,7 @@ namespace AasxIntegrationBase.AasForms
                 }
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new Type[] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
             File.WriteAllText(fn, json);
@@ -166,7 +166,7 @@ namespace AasxIntegrationBase.AasForms
             RecurseExportAsTemplate(sm.submodelElements, tsm.SubmodelElements);
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new Type[] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
             File.WriteAllText(fn, json);
@@ -211,12 +211,12 @@ namespace AasxIntegrationBase.AasForms
             var rec = new ExportAsGenericFormsOptions_OptionsRecord();
 
             rec.FormTag = "TBD";
-            var q = sm?.qualifiers?.FindType("FormTag");
+            var q = sm.qualifiers?.FindType("FormTag");
             if (q != null)
                 rec.FormTag = "" + q.value;
 
             rec.FormTitle = "TBD/" + sm.idShort;
-            q = sm?.qualifiers?.FindType("FormTitle");
+            q = sm.qualifiers?.FindType("FormTitle");
             if (q != null)
                 rec.FormTitle = "" + q.value;
 
@@ -228,7 +228,7 @@ namespace AasxIntegrationBase.AasForms
             overall.Records.Add(rec);
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new Type[] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(overall, overall.GetType(), settings);
             File.WriteAllText(fn, json);

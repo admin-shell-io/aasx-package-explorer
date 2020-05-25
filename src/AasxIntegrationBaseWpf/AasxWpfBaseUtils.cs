@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace AasxIntegrationBase
 {
-    public class AasxWpfBaseUtils
+    public static class AasxWpfBaseUtils
     {
         // see: https://stackoverflow.com/questions/636383/how-can-i-find-wpf-controls-by-name-or-type
 
@@ -110,9 +110,9 @@ namespace AasxIntegrationBase
 
             // detect an constant amount of heading spaces
             var headSpaces = int.MaxValue;
-            for (int i = 0; i < lines.Count; i++)
-                if (lines[i].Trim() != "")
-                    headSpaces = Math.Min(headSpaces, CountHeadingSpaces(lines[i]));
+            foreach (var line in lines)
+                if (line.Trim() != "")
+                    headSpaces = Math.Min(headSpaces, CountHeadingSpaces(line));
 
             // multi line trim possible?
             if (headSpaces != int.MaxValue && headSpaces > 0)
@@ -146,6 +146,7 @@ namespace AasxIntegrationBase
             if (package == null || path == null)
                 return null;
 
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 var thumbStream = package.GetLocalStreamFromPackage(path);
@@ -153,20 +154,18 @@ namespace AasxIntegrationBase
                     return null;
 
                 // load image
-                if (thumbStream != null)
-                {
-                    var bi = new BitmapImage();
-                    bi.BeginInit();
-                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                    bi.StreamSource = thumbStream;
-                    bi.EndInit();
+                var bi = new BitmapImage();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.StreamSource = thumbStream;
+                bi.EndInit();
 
-                    // note: no closing required!
-                    // give this back
-                    return bi;
-                }
+                // note: no closing required!
+                // give this back
+                return bi;
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
 
             return null;
         }
@@ -236,6 +235,8 @@ namespace AasxIntegrationBase
                 // make another append!
                 var link = new Hyperlink(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
                 link.IsEnabled = true;
+
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     link.Inlines.Add("" + sp.linkTxt + Environment.NewLine);
@@ -244,6 +245,7 @@ namespace AasxIntegrationBase
                         link.Click += linkClickHandler;
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
         }
     }

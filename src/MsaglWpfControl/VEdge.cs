@@ -160,7 +160,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         internal WPath SourceArrowHeadPath { get; set; }
         internal WPath TargetArrowHeadPath { get; set; }
 
-        static internal WGeometry GetICurveWpfGeometry(ICurve curve)
+        internal static WGeometry GetICurveWpfGeometry(ICurve curve)
         {
             var streamGeometry = new WStreamGeometry();
             using (WStreamGeometryContext context = streamGeometry.Open())
@@ -177,7 +177,7 @@ namespace Microsoft.Msagl.WpfGraphControl
             FillContextForICurve(context, curve);
         }
 
-        static internal void FillContextForICurve(WStreamGeometryContext context, ICurve iCurve)
+        internal static void FillContextForICurve(WStreamGeometryContext context, ICurve iCurve)
         {
 
             context.BeginFigure(Common.WpfPoint(iCurve.Start), false, false);

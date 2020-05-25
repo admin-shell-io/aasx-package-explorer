@@ -23,10 +23,12 @@
     <Grid Loaded="Grid_Loaded">
         <Grid x:Name="GridItem">
             <Grid.Resources>
+                <!-- ReSharper disable Xaml.RedundantResource -->
                 <ContextMenu x:Key="ContextMenuItem">
                     <MenuItem Header="Edit" Icon="{StaticResource ResourceKey=IconPencil}" Click="MenuItem_Click"/>
                     <MenuItem Header="Delete" Icon="{StaticResource ResourceKey=IconDelete}" Click="MenuItem_Click"/>
                 </ContextMenu>
+                <!-- ReSharper enable Xaml.RedundantResource -->
             </Grid.Resources>
 
             <Grid.RowDefinitions>
@@ -64,7 +66,7 @@
                             <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="8" TextAlignment="Center">No preview available</TextBlock>
                         </Border>
 
-                        <StackPanel Grid.Row="1" Grid.Column="3" Margin="2" Orientation="Vertical">
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="2" Orientation="Vertical">
                             <WrapPanel x:Name="PanelCountries">
                                 <!--
                                 <cf:CountryFlag  Code="GB" Margin="2" Width="20" VerticalAlignment="Center"/>

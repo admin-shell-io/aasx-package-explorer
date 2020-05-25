@@ -140,19 +140,19 @@ namespace AasxPackageExplorer
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Return)
             {
                 this.Result = ThisToPreset();
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
             if (e.Key == Key.Escape)
             {
                 this.Result = null;
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.Result = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         //
@@ -252,12 +252,14 @@ namespace AasxPackageExplorer
                 // save
                 if (true == dlg.ShowDialog())
                 {
+                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = this.ThisToPreset();
                         pr.SaveToFile(dlg.FileName);
                     }
                     catch { }
+                    // ReSharper enable EmptyGeneralCatchClause
                 }
             }
 
@@ -272,19 +274,21 @@ namespace AasxPackageExplorer
                 // save
                 if (true == dlg.ShowDialog())
                 {
+                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = SecureConnectPreset.LoadFromFile(dlg.FileName);
                         this.ActivatePreset(pr);
                     }
                     catch { }
+                    // ReSharper enable EmptyGeneralCatchClause
                 }
             }
 
             if (sender == ButtonStart)
             {
                 this.Result = ThisToPreset();
-                ControlClosed();
+                ControlClosed?.Invoke();
             }
         }
 

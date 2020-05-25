@@ -74,7 +74,7 @@ namespace AasxPackageExplorer
         {
             this.ResultIRDI = null;
             this.ResultCD = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         //
@@ -154,13 +154,13 @@ namespace AasxPackageExplorer
             // run all background tasks here
             var a = e.Argument as BackgroundWorkerArgs;
 
-            if (a.jobData != null && a.jobType == 1)
+            if (a?.jobData != null && a.jobType == 1)
                 EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) =>
                 {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                 });
 
-            if (a.jobData != null && a.jobType == 2)
+            if (a?.jobData != null && a.jobType == 2)
                 EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) =>
                 {
                     SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
@@ -192,9 +192,9 @@ namespace AasxPackageExplorer
                 a.jobData.items.Sort(delegate (EclassUtils.SearchItem si1, EclassUtils.SearchItem si2)
                 {
                     if (si1.Entity != si2.Entity)
-                        return si1.Entity.CompareTo(si2.Entity);
+                        return String.Compare(si1.Entity, si2.Entity, StringComparison.Ordinal);
                     else
-                        return si1.IRDI.CompareTo(si2.IRDI);
+                        return String.Compare(si1.IRDI, si2.IRDI, StringComparison.Ordinal);
                 });
 
                 // re-fill into the UI list
@@ -215,15 +215,14 @@ namespace AasxPackageExplorer
 
                 // success -> auto close
                 if (this.ResultCD != null)
-                    ControlClosed();
+                    ControlClosed?.Invoke();
             }
         }
 
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (FinalizeSelection(EntityList.SelectedItem as EclassUtils.SearchItem, CheckBoxTwoPass.IsChecked == true))
-                ControlClosed();
-            return;
+                ControlClosed?.Invoke();
         }
 
         private void Tree_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -239,7 +238,7 @@ namespace AasxPackageExplorer
 
             // set
             var si = EntityList.SelectedItem as EclassUtils.SearchItem;
-            if (si.ContentNode != null)
+            if (si?.ContentNode != null)
                 EntityContent.Text = si.ContentNode.OuterXml;
             else
                 EntityContent.Text = "";

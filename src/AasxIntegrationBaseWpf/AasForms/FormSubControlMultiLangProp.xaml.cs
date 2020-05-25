@@ -148,8 +148,8 @@ namespace AasxIntegrationBase.AasForms
                     var lsToDel = ls;
                     bt.Click += (object sender3, RoutedEventArgs e3) =>
                     {
-                        if (dc?.prop?.value?.langString != null)
-                            if (dc.prop.value.langString.Contains(lsToDel) == true)
+                        if (dc.prop?.value?.langString != null)
+                            if (dc.prop.value.langString.Contains(lsToDel))
                             {
                                 dc.instance.Touch();
                                 dc.prop.value.langString.Remove(lsToDel);

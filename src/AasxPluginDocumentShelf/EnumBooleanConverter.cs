@@ -16,7 +16,7 @@ namespace AasxPluginDocumentShelf
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             string parameterString = parameter as string;
-            if (parameterString == null)
+            if (value == null || parameterString == null)
                 return DependencyProperty.UnsetValue;
 
             if (Enum.IsDefined(value.GetType(), value) == false)

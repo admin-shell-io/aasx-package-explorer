@@ -217,7 +217,8 @@ namespace AasxPluginBomStructure
             }
 
             // ok
-            c.Margin = new System.Windows.Thickness(2);
+            if (c != null)
+                c.Margin = new System.Windows.Thickness(2);
             return c;
         }
 
@@ -340,6 +341,7 @@ namespace AasxPluginBomStructure
                     // now, try to finally draw relationships
                     if (pass == 3)
                     {
+                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             // build label text
@@ -376,6 +378,7 @@ namespace AasxPluginBomStructure
                             e.Attr.LineWidth = 1;
                         }
                         catch { }
+                        // ReSharper enable EmptyGeneralCatchClause
                     }
                 }
 
@@ -407,6 +410,7 @@ namespace AasxPluginBomStructure
                     if (pass == 3 && parentRef != null)
                     {
                         // get nodes
+                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             if (!referableToNode.ContainsKey(parentRef) || !referableToNode.ContainsKey(prop))
@@ -422,7 +426,8 @@ namespace AasxPluginBomStructure
                             e.Attr.LineWidth = 2;
                             e.Attr.Weight = 10;
                         }
-                        catch {; }
+                        catch { }
+                        // ReSharper enable EmptyGeneralCatchClause
                     }
                 }
 
@@ -634,25 +639,22 @@ namespace AasxPluginBomStructure
 
         private void Viewer_ObjectUnderMouseCursorChanged(object sender, Microsoft.Msagl.Drawing.ObjectUnderMouseCursorChangedEventArgs e)
         {
-            ;
         }
 
         private void Viewer_MouseUp(object sender, Microsoft.Msagl.Drawing.MsaglMouseEventArgs e)
         {
-            ;
         }
 
         private void Viewer_MouseMove(object sender, Microsoft.Msagl.Drawing.MsaglMouseEventArgs e)
         {
-            ;
         }
 
         private void Viewer_MouseDown(object sender, Microsoft.Msagl.Drawing.MsaglMouseEventArgs e)
         {
-            ;
             if (e != null && e.Clicks > 1 && e.LeftButtonIsPressed && theViewer != null && this.eventStack != null)
             {
                 // double-click detected, can access the viewer?
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var x = theViewer.ObjectUnderMouseCursor;
@@ -683,6 +685,7 @@ namespace AasxPluginBomStructure
                     }
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
             }
         }
 
@@ -731,6 +734,8 @@ namespace AasxPluginBomStructure
             var cb = sender as ComboBox;
             if (cb == null || theGraph == null || theViewer == null)
                 return;
+
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 // try to remember preferred setting
@@ -748,6 +753,7 @@ namespace AasxPluginBomStructure
                 theViewer.Graph = theGraph;
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
         }
     }
 }

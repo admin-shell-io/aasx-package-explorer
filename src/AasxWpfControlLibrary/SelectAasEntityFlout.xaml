@@ -15,6 +15,8 @@ The JSON serialization is under the MIT license (see https://github.com/JamesNK/
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
 
+    <!-- TODO: fix -->
+    <!-- ReSharper disable Xaml.MissingGridIndex -->
 
     <UserControl.Resources>
         <ResourceDictionary Source="Themes/Generic.xaml"/>

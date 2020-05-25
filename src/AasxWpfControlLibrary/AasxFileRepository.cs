@@ -87,7 +87,7 @@ namespace AasxPackageExplorer
             // save
             using (var s = new StreamWriter(outputFn))
             {
-                var settings = new JsonSerializerSettings();
+                // var settings = new JsonSerializerSettings();
                 var json = JsonConvert.SerializeObject(repo, Formatting.Indented);
                 s.WriteLine(json);
             }

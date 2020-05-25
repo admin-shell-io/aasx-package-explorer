@@ -93,7 +93,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         public event EventHandler<EventArgs> Elapsed;
 
-        protected virtual void OnElapsed()
+        protected void OnElapsed()
         {
             EventHandler<EventArgs> handler = Elapsed;
             if (handler != null)

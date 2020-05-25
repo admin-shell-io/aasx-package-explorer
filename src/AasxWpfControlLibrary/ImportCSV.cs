@@ -11,7 +11,7 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    public class CSVTools
+    public static class CSVTools
     {
         public static void ImportCSVtoSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
@@ -20,10 +20,11 @@ namespace AasxPackageExplorer
 
             var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(inputFn);
             parser.TextFieldType = Microsoft.VisualBasic.FileIO.FieldType.Delimited;
-            parser.SetDelimiters(new string[] { ";" });
+            parser.SetDelimiters(";");
 
             string[] rows = parser.ReadFields();
-            if (rows[0] != "typeName" ||
+            if (rows == null || rows.Length < 3 ||
+                rows[0] != "typeName" ||
                 rows[1] != "idShort" ||
                 rows[2] != "value")
             {
@@ -34,6 +35,8 @@ namespace AasxPackageExplorer
             while (!parser.EndOfData)
             {
                 rows = parser.ReadFields();
+                if (rows == null || rows.Length < 1)
+                    continue;
 
                 switch (rows[0])
                 {

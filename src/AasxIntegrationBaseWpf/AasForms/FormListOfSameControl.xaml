@@ -12,6 +12,7 @@
         <Grid.Resources>
 
             <!-- Property -->
+            <!--
             <Grid x:Key="TemplateProperty" x:Shared="False">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -27,7 +28,7 @@
                 <TextBlock x:Name="TextBlockIndex" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" FontSize="8" VerticalAlignment="Top" Margin="0,0,4,0" Text="#1"/>
                 <TextBox x:Name="TextBoxValue"  Grid.Row="0" Grid.Column="1" Text="" Background="LightGray" Margin="2"/>
             </Grid>
-
+            -->
         </Grid.Resources>
 
         <Grid.RowDefinitions>

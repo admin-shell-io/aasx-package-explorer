@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AasxPredefinedConcepts
 {
-    public class ExportPredefinedConcepts
+    public static class ExportPredefinedConcepts
     {
         public static void Export(AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
         {
@@ -32,7 +32,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("===============================================================");
 
                 var usedCds = new Dictionary<string, AdminShell.ConceptDescription>();
-                foreach (var sme in sm?.submodelElements?.FindAll<AdminShell.SubmodelElement>())
+                foreach (var sme in sm.submodelElements?.FindAll<AdminShell.SubmodelElement>())
                 {
                     // for SME, try to lookup CD
                     if (sme.semanticId == null)

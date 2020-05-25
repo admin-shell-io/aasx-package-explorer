@@ -16,7 +16,7 @@ namespace AasxIntegrationBase.AasForms
     /// </summary>
     public enum FormMultiplicity { ZeroToOne = 0, One, ZeroToMany, OneToMany };
 
-    public class AasFormConstants
+    public static class AasFormConstants
     {
         public static string[] FormMultiplicityAsUmlCardinality = new string[] { "0..1", "1", "0..*", "1..*" };
     }
@@ -201,7 +201,7 @@ namespace AasxIntegrationBase.AasForms
 
 
     /// <summary>
-    /// An extension of List<FormDescSubmodelElement>, in order to unify the lists of Root & SMC
+    /// An extension of List(FormDescSubmodelElement), in order to unify the lists of Root and SMC
     /// </summary>
     [DisplayName("FormListOfElement")]
     public class FormDescListOfElement : List<FormDescSubmodelElement>
@@ -429,7 +429,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // init
             if (valueType != null)
-                this.allowedValueTypes = new string[] { valueType };
+                this.allowedValueTypes = new[] { valueType };
             if (presetValue != null)
                 this.presetValue = presetValue;
         }

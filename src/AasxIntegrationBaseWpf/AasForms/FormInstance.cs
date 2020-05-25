@@ -41,10 +41,11 @@ Submodel
  * 
  */
 
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global .. to be carefully checked later
 
 namespace AasxIntegrationBase.AasForms
 {
-    public class FormInstanceHelper
+    public static class FormInstanceHelper
     {
         /// <summary>
         /// Check if <c>smw.idShort</c>c> contains something like "{0:00}" and iterate index to make it unique
@@ -135,9 +136,10 @@ namespace AasxIntegrationBase.AasForms
         {
             get
             {
-                if (desc == null || !(desc is FormDescSubmodelElement))
+                var dse = desc as FormDescSubmodelElement;
+                if (dse == null)
                     return false;
-                var m = (desc as FormDescSubmodelElement).Multiplicity;
+                var m = dse.Multiplicity;
                 return m == FormMultiplicity.OneToMany || m == FormMultiplicity.ZeroToMany;
             }
         }
@@ -311,7 +313,7 @@ namespace AasxIntegrationBase.AasForms
         public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
         {
             // access
-            var desc = this?.workingDesc as FormDescSubmodelElement;
+            var desc = this.workingDesc as FormDescSubmodelElement;
             if (desc == null || desc.KeySemanticId == null || sourceElements == null)
                 return;
 
@@ -637,7 +639,7 @@ namespace AasxIntegrationBase.AasForms
 
             // create user control
             this.subControl = new FormSubControlSMEC();
-            (this.subControl as UserControl).DataContext = this;
+            this.subControl.DataContext = this;
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -723,7 +725,7 @@ namespace AasxIntegrationBase.AasForms
 
             // create user control
             this.subControl = new FormSubControlProperty();
-            (this.subControl as UserControl).DataContext = this;
+            this.subControl.DataContext = this;
         }
 
         /// <summary>
@@ -756,7 +758,7 @@ namespace AasxIntegrationBase.AasForms
             // access to master
             var pMasterInst = masterInst as FormInstanceProperty;
             var pMaster = pMasterInst?.sme as AdminShell.Property;
-            if (pMaster.value == null)
+            if (pMaster?.value == null)
                 return;
 
             // accues to this 
@@ -774,8 +776,8 @@ namespace AasxIntegrationBase.AasForms
             this.Touch();
 
             // refresh
-            if (this.subControl != null && this.subControl is FormSubControlProperty)
-                (this.subControl as FormSubControlProperty).UpdateDisplay();
+            if (this.subControl != null && this.subControl is FormSubControlProperty scp)
+                scp.UpdateDisplay();
         }
     }
 
@@ -806,7 +808,7 @@ namespace AasxIntegrationBase.AasForms
 
             // create user control
             this.subControl = new FormSubControlMultiLangProp();
-            (this.subControl as UserControl).DataContext = this;
+            this.subControl.DataContext = this;
         }
 
         /// <summary>
@@ -914,7 +916,7 @@ namespace AasxIntegrationBase.AasForms
 
             // create user control
             this.subControl = new FormSubControlFile();
-            (this.subControl as UserControl).DataContext = this;
+            this.subControl.DataContext = this;
         }
 
         /// <summary>

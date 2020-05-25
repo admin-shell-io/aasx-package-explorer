@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable AssignNullToNotNullAttribute .. a bit unclear, why issues here
+
 namespace AasxIntegrationBase
 {
     public class AasxPluginOptionsBase
@@ -20,7 +22,7 @@ namespace AasxIntegrationBase
             // expand assy?
             if (assy == null)
                 assy = Assembly.GetExecutingAssembly();
-            if (assy == null || pluginName == null || pluginName == "")
+            if (pluginName == null || pluginName == "")
                 return null;
 
             // build fn
@@ -44,7 +46,7 @@ namespace AasxIntegrationBase
             // expand assy?
             if (assy == null)
                 assy = Assembly.GetExecutingAssembly();
-            if (assy == null || pluginName == null || pluginName == "")
+            if (pluginName == null || pluginName == "")
                 return;
 
             // build dir name
@@ -52,6 +54,8 @@ namespace AasxIntegrationBase
 
             // search
             var files = Directory.GetFiles(baseDir, "*.add-options.json");
+
+            // ReSharper disable EmptyGeneralCatchClause
             foreach (var fn in files)
                 try
                 {
@@ -59,7 +63,8 @@ namespace AasxIntegrationBase
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }
-                catch {; }
+                catch { }
+            // ReSharper enable EmptyGeneralCatchClause
         }
     }
 }

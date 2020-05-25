@@ -45,8 +45,6 @@ namespace AasxPredefinedConcepts
 
             // Parse into root
             var root = JObject.Parse(jsonStr);
-            if (root == null)
-                return res;
 
             // decompose
             foreach (var child in root.Children())
@@ -58,14 +56,10 @@ namespace AasxPredefinedConcepts
 
                 // ok
                 var name = prop.Name;
-                var contents = prop.Value?.ToString();
+                var contents = prop.Value.ToString();
 
                 // populate
-                try
-                {
-                    res.Add(name, new LibraryEntry(name, contents));
-                }
-                catch { }
+                res.Add(name, new LibraryEntry(name, contents));
             }
 
             return res;
