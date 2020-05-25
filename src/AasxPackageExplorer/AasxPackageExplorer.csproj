@@ -116,16 +116,20 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="jose-jwt, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\jose-jwt.2.5.0\lib\net461\jose-jwt.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Annotations, Version=2020.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.2020.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -271,6 +275,10 @@
       <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
       <Name>AasxCsharpLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AasxGenerate\AasxGenerate.csproj">
+      <Project>{294fc59a-5645-412f-8216-702fb66528c1}</Project>
+      <Name>AasxGenerate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj">
       <Project>{e3ab36ea-e98a-4cc2-bc18-1d0e40eeae1a}</Project>
       <Name>AasxIntegrationBaseWpf</Name>
@@ -279,6 +287,10 @@
       <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
       <Name>AasxIntegrationBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AasxLibrary\AasxLibrary.csproj">
+      <Project>{69824ef3-30f8-4c8a-874e-9b1f5873d25e}</Project>
+      <Name>AasxLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj">
       <Project>{7dfe2ecb-37c5-4697-8d8c-050ecafcf553}</Project>
       <Name>AasxMqttClient</Name>
@@ -286,6 +298,10 @@
     <ProjectReference Include="..\AasxMqtt\AasxMqtt.csproj">
       <Project>{042305d7-db68-4d02-b08f-ed47bbcd705e}</Project>
       <Name>AasxMqtt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj">
+      <Project>{7788ac2b-7f97-4755-b343-c4196fa90198}</Project>
+      <Name>AasxOpenidClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj">
       <Project>{a8583f61-e5d8-44a0-98e3-a795578be3f0}</Project>
