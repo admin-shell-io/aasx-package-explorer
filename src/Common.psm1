@@ -126,4 +126,14 @@ function AssertDotnetFormatVersion {
     } 
 }
 
-Export-ModuleMember -Function AssertDotnet, AssertDotnetFormatVersion, FindMSBuild, FindInspectCode
+function FindNunit3Console {
+    $nunit3Console = Join-Path $PSScriptRoot ".\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe"
+    if(!(Test-Path $nunit3Console)) {
+        throw "The nunit3-console.exe could not be found at: $nunit3Console; " + `
+            "did you install or restore the dependencies of the solution?"
+    }
+
+    return $nunit3Console
+}
+
+Export-ModuleMember -Function AssertDotnet, AssertDotnetFormatVersion, FindMSBuild, FindInspectCode, FindNunit3Console

@@ -1,9 +1,24 @@
-packages/
 */bin/
 */obj/
 **/BuildDate.txt
-Microsoft.Net.Compilers.2.10.0/
 installation/
 installation-dev-dependencies/
 resharper-code-inspection.xml
 dotnet-format-report.json
+TestResult.xml
+
+# Nuget dependencies
+packages/
+Microsoft.Net.Compilers.2.10.0/
+NUnit.3.12.0/
+NUnit.Console.3.11.1/
+NUnit.ConsoleRunner.3.11.1/
+NUnit.Extension.NUnitProjectLoader.3.6.0/
+NUnit.Extension.NUnitV2Driver.3.8.0/
+NUnit.Extension.NUnitV2ResultWriter.3.6.0/
+NUnit.Extension.TeamCityEventListener.1.0.7/
+NUnit.Extension.VSProjectLoader.3.8.0/
+
+# VIM
+*.swp
+*~

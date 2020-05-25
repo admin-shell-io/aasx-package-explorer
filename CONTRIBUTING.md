@@ -92,3 +92,11 @@ To format the code in-place with `dotnet-format`, invoke:
 ```powershell
 .\FormatCode.ps1
 ```
+
+o run the unit tests:
+
+```powershell
+.\Test.ps1
+```
+
+We specify in `src\tests.nunit` hich unit tests are always run in the continous integration.
