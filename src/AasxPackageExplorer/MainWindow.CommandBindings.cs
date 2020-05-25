@@ -14,6 +14,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using System.Threading;
 
+using Newtonsoft;
 using Newtonsoft.Json;
 using AasxUANodesetImExport;
 using System.Xml.Serialization;
@@ -22,6 +23,12 @@ using AdminShellNS;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
 using System.Text;
+
+using System.Security.Cryptography.X509Certificates;
+using Jose;
+using De.Zvei.Aasx;
+using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 
 /* Copyright (c) 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
    Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>, author: Andreas Orzelski 
@@ -188,6 +195,250 @@ namespace AasxPackageExplorer
                     {
                         Log.Error(ex, "When closing AASX, an error occurred");
                     }
+            }
+
+            /* if (false && cmd == "encrypt" && thePackageEnv != null)
+            {
+                VisualElementSubmodelRef ve = null;
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                    ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                if (ve != null || ve.theSubmodel != null || ve.theEnv != null)
+                {
+                    // a submodel is selected
+                    // check if submodel includes collections "_encrypted" and "_decrypted"
+                    // over all SMEs
+                    var sm = ve.theSubmodel;
+                    int count = sm.submodelElements.Count;
+                    if (count == 2)
+                    {
+                        var sme0 = sm.submodelElements[0].submodelElement;
+                        var sme1 = sm.submodelElements[1].submodelElement;
+                        if (sme0 is AdminShell.SubmodelElementCollection
+                            && sme0.idShort == "_decrypted"
+                            && sme1 is AdminShell.SubmodelElementCollection
+                            && sme1.idShort == "_encrypted")
+                        {
+                            // select .cer for encryption
+                            var dlg2 = new Microsoft.Win32.OpenFileDialog();
+                            dlg2.Filter = ".cer files (*.cer)|*.cer";
+                            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                            var res = dlg2.ShowDialog();
+                            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                            if (res == true)
+                            {
+                                try
+                                {
+
+                                    X509Certificate2 x509 = new X509Certificate2(dlg2.FileName);
+                                    var publicKey = x509.GetRSAPublicKey();
+
+                                    string json = JsonConvert.SerializeObject(sme0, Formatting.Indented);
+                                    string jsonToken = Jose.JWT.Encode(json, publicKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+
+                                    var p = AdminShell.Property.CreateNew("EncryptedJWT");
+                                    p.value = jsonToken;
+                                    var sme = sme1 as AdminShell.SubmodelElementCollection;
+                                    sme.Add(p);
+                                }
+                                catch
+                                {
+                                    System.Windows.MessageBox.Show(this, "Can not encrypt with " + dlg2.FileName, "Encrypt Submodel", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                }
+                                RedrawAllAasxElements();
+                                RedrawElementView();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            if (false && cmd == "decrypt" && thePackageEnv != null)
+            {
+                VisualElementSubmodelRef ve = null;
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                    ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                if (ve != null || ve.theSubmodel != null || ve.theEnv != null)
+                {
+                    // a submodel is selected
+                    // check if submodel includes collections "_encrypted" and "_decrypted"
+                    // over all SMEs
+                    var sm = ve.theSubmodel;
+                    int count = sm.submodelElements.Count;
+                    if (count == 2)
+                    {
+                        var sme0 = sm.submodelElements[0].submodelElement;
+                        var sme1 = sm.submodelElements[1].submodelElement;
+                        if (sme0 is AdminShell.SubmodelElementCollection
+                            && sme0.idShort == "_encrypted"
+                            && sme1 is AdminShell.SubmodelElementCollection
+                            && sme1.idShort == "_decrypted")
+                        {
+                            // select .cer for encryption
+                            var dlg2 = new Microsoft.Win32.OpenFileDialog();
+                            dlg2.Filter = ".pfx files (*.pfx)|*.pfx";
+                            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                            var res = dlg2.ShowDialog();
+                            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                            if (res == true)
+                            {
+                                try
+                                {
+                                    var collection0 = sme0 as AdminShell.SubmodelElementCollection;
+                                    var collection1 = sme1 as AdminShell.SubmodelElementCollection;
+                                    if (collection0.value.Count == 1
+                                        && collection1.value.Count == 0)
+                                    {
+                                        if (collection0.value[0].submodelElement is AdminShell.Property &&
+                                            collection0.value[0].submodelElement.idShort == "EncryptedJWT")
+                                        {
+                                            X509Certificate2 x509 = new X509Certificate2(dlg2.FileName, "i40");
+                                            var privateKey = x509.GetRSAPrivateKey();
+
+                                            var p = collection0.value[0].submodelElement as AdminShell.Property;
+                                            string jsonToken = Jose.JWT.Decode(p.value, privateKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+
+                                            AdminShell.SubmodelElementCollection collection = null;
+
+                                            using (TextReader reader = new StringReader(jsonToken))
+                                            {
+                                                JsonSerializer serializer = new JsonSerializer();
+                                                serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                                                collection = (AdminShell.SubmodelElementCollection)serializer.Deserialize(reader, typeof(AdminShell.SubmodelElementCollection));
+                                                sm.Add(collection);
+                                                sm.submodelElements.Remove(sm.submodelElements[1]);
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Windows.MessageBox.Show(this, "Can not decrypt with " + dlg2.FileName + "\n" + ex.Message, "Decrypt Submodel", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                }
+                                RedrawAllAasxElements();
+                                RedrawElementView();
+                                return;
+                            }
+                        }
+                    }
+                }
+            } */
+            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && thePackageEnv != null)
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.Filter = "AASX package files (*.aasx)|*.aasx";
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res == true)
+                {
+                    if (cmd == "sign")
+                    {
+                        PackageHelper.SignAll(dlg.FileName);
+                    }
+                    if (cmd == "validate")
+                    {
+                        PackageHelper.Validate(dlg.FileName);
+                    }
+                    if (cmd == "encrypt")
+                    {
+                        var dlg2 = new Microsoft.Win32.OpenFileDialog();
+                        dlg2.Filter = ".cer files (*.cer)|*.cer";
+                        if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                        res = dlg2.ShowDialog();
+                        if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                        if (res == true)
+                        {
+                            try
+                            {
+                                X509Certificate2 x509 = new X509Certificate2(dlg2.FileName);
+                                var publicKey = x509.GetRSAPublicKey();
+
+                                Byte[] binaryFile = File.ReadAllBytes(dlg.FileName);
+                                string binaryBase64 = Convert.ToBase64String(binaryFile);
+
+                                string payload = "{ \"file\" : \" " + binaryBase64 + " \" }";
+
+                                string fileToken = Jose.JWT.Encode(payload, publicKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+                                Byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(fileToken);
+
+                                var dlg3 = new Microsoft.Win32.SaveFileDialog();
+                                dlg3.Filter = "AASX2 package files (*.aasx2)|*.aasx2";
+                                dlg3.FileName = dlg.FileName + "2";
+                                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                                res = dlg3.ShowDialog();
+                                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                                if (res == true)
+                                {
+                                    File.WriteAllBytes(dlg3.FileName, fileBytes);
+                                }
+                            }
+                            catch
+                            {
+                                System.Windows.MessageBox.Show(this, "Can not encrypt with " + dlg2.FileName, "Decrypt .AASX2", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            }
+                        }
+                    }
+                }
+            }
+            if ((cmd == "decrypt") && thePackageEnv != null)
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.Filter = "AASX package files (*.aasx2)|*.aasx2";
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res == true)
+                {
+                    if (cmd == "decrypt")
+                    {
+                        var dlg2 = new Microsoft.Win32.OpenFileDialog();
+                        dlg2.Filter = ".pfx files (*.pfx)|*.pfx";
+                        if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                        res = dlg2.ShowDialog();
+                        if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                        if (res == true)
+                        {
+                            try
+                            {
+                                X509Certificate2 x509 = new X509Certificate2(dlg2.FileName, "i40");
+                                var privateKey = x509.GetRSAPrivateKey();
+
+                                Byte[] binaryFile = File.ReadAllBytes(dlg.FileName);
+                                string fileString = System.Text.Encoding.UTF8.GetString(binaryFile);
+
+                                string fileString2 = Jose.JWT.Decode(fileString, privateKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+
+                                var parsed0 = JObject.Parse(fileString2);
+                                string binaryBase64_2 = parsed0.SelectToken("file").Value<string>();
+
+                                Byte[] fileBytes2 = Convert.FromBase64String(binaryBase64_2);
+
+                                var dlg4 = new Microsoft.Win32.SaveFileDialog();
+                                dlg4.Filter = "AASX package files (*.aasx)|*.aasx";
+                                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                                res = dlg4.ShowDialog();
+                                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+                                if (res == true)
+                                {
+                                    File.WriteAllBytes(dlg4.FileName, fileBytes2);
+                                }
+                            }
+                            catch
+                            {
+                                System.Windows.MessageBox.Show(this, "Can not decrypt with " + dlg2.FileName, "Decrypt .AASX2", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            }
+                        }
+                    }
+                }
             }
 
             if (cmd == "closeaux" && thePackageAux != null)
@@ -627,13 +878,86 @@ namespace AasxPackageExplorer
             });
         }
 
-        public void CommandBinding_ConnectRest()
+        public async void CommandBinding_ConnectRest()
         {
             var uc = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
             uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
+            // uc.Text = "openid1 0";
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
+                string input = uc.Text.ToLower();
+                string tag = "openid1";
+                tag = input.Substring(0, tag.Length);
+                if (tag == "openid1" || tag == "openid2" || tag == "openid3")
+                {
+                    // Initializes the variables to pass to the MessageBox.Show method.
+                    // string caption = "Connect with " + tag + ".dat";
+                    // string message = "";
+
+                    /* using (StreamReader sr = new StreamReader(tag + ".dat"))
+                    {
+                        string authServer = sr.ReadLine();
+                        string dataServer = sr.ReadLine();
+                        string certPfx = sr.ReadLine();
+                        string certPfxPW = sr.ReadLine();
+                        string outputDir = sr.ReadLine();
+
+                        message =
+                            "authServer: " + authServer + "\n" +
+                            "dataServer: " + dataServer + "\n" +
+                            "certPfx: " + certPfx + "\n" +
+                            "certPfxPW: " + certPfxPW + "\n" +
+                            "outputDir: " + outputDir + "\n" +
+                            "\nConinue?";
+                    }*/
+
+                    // MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    // DialogResult result;
+
+                    // Displays the MessageBox.
+                    /*
+                    if (tag != "openid1")
+                    {
+                        result = System.Windows.Forms.MessageBox.Show(message, caption, buttons);
+                        if (result != System.Windows.Forms.DialogResult.Yes)
+                        {
+                            // Closes the parent form.
+                            return;
+                        }
+                    }
+                    */
+
+                    string value = input.Substring(tag.Length + 1);
+                    if (thePackageEnv.IsOpen)
+                    {
+                        thePackageEnv.Close();
+                    }
+                    await AasxPrivateKeyJwtClient.OpenIDClient.Run(tag, value);
+
+                    /*
+                    if (tag != "openid1")
+                    {
+                        System.Windows.Forms.MessageBox.Show(
+                            "Client Token:\n" +
+                            AasxPrivateKeyJwtClient.OpenIDClient.clientTok + "\n" +
+                            "Client Token Cert:\n" +
+                            AasxPrivateKeyJwtClient.OpenIDClient.clientCer + "\n"
+                            , "Client", MessageBoxButtons.OK);
+
+                        System.Windows.Forms.MessageBox.Show(
+                            "Bearer Token:\n" +
+                            AasxPrivateKeyJwtClient.OpenIDClient.bearerTok + "\n"
+                            // "Bearer Token Cert:\n" +
+                            // AasxPrivateKeyJwtClient.OpenIDClient.bearerCer + "\n"
+                            , "Server", MessageBoxButtons.OK);
+                    }
+                    */
+
+                    UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx"), AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    return;
+                }
+
                 var url = uc.Text;
                 Log.Info($"Connecting to REST server {url} ..");
 
@@ -937,7 +1261,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel.identification == null)
+                if (submodel == null || submodel.identification == null)
                 {
                     MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1164,7 +1488,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel.identification == null)
+                if (submodel == null || submodel.identification == null)
                 {
                     MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1456,13 +1780,15 @@ namespace AasxPackageExplorer
             var jsonStr = JsonConvert.SerializeObject(mdo, Formatting.Indented, settings);
 
             // copy to clipboard
-            if (jsonStr != null)
+            if (jsonStr != null && jsonStr != "")
             {
-                Clipboard.SetText(jsonStr);
+                System.Windows.Clipboard.SetText(jsonStr);
                 Log.Info("Copied selected element to clipboard.");
             }
             else
+            {
                 Log.Info("No JSON text could be generated for selected element.");
+            }
         }
 
         public void CommandBinding_ExportGenericForms()
@@ -1967,9 +2293,9 @@ namespace AasxPackageExplorer
             }
             else
             {
-                MessageBox.Show("Mapping Types could not be found.",
-                                "Error",
-                                MessageBoxButton.OK);
+                System.Windows.MessageBox.Show("Mapping Types could not be found.",
+                                          "Error",
+                                          MessageBoxButton.OK);
             }
         }
     }
