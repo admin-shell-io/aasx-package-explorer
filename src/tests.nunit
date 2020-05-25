@@ -1,0 +1,6 @@
+<NUnitProject>
+  <Settings activeconfig="Debug"/>
+  <Config name="Debug">
+    <assembly path="AasxCsharpLibrary.Tests\bin\Debug\AasxCsharpLibrary.Tests.dll"/>
+  </Config>
+</NUnitProject>
