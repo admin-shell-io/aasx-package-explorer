@@ -14,6 +14,7 @@ nuget install Microsoft.NET.Compilers -Version 2.10.0
 
 Write-Host "Installing Nunit Console Runner ..."
 nuget install NUnit.ConsoleRunner -Version 3.11.1
+nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0
 
 Write-Host "Restoring packages for the solution ..."
 nuget.exe restore AasxPackageExplorer.sln
