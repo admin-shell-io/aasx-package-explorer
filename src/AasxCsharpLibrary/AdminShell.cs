@@ -241,7 +241,8 @@ namespace AdminShellNS
 
             public static Key CreateNew(string type, bool local, string idType, string value)
             {
-                var k = new Key() {
+                var k = new Key()
+                {
                     type = type,
                     local = local,
                     idType = idType,
@@ -2626,7 +2627,7 @@ namespace AdminShellNS
                 {
                     if (embeddedDataSpecification == null)
                         return null;
-                    return new [] { embeddedDataSpecification };
+                    return new[] { embeddedDataSpecification };
                 }
                 set
                 {
@@ -4434,7 +4435,8 @@ namespace AdminShellNS
                     ids = this.IterateIdShortTemplateToBeUnique(idxTemplate, maxNum);
 
                 // make a new instance
-                var sme = new T() {
+                var sme = new T()
+                {
                     idShort = ids,
                     semanticId = new SemanticId(cd.GetReference())
                 };
@@ -5224,7 +5226,7 @@ namespace AdminShellNS
             public static string[] GetPopularMimeTypes()
             {
                 return
-                    new [] {
+                    new[] {
                     System.Net.Mime.MediaTypeNames.Text.Plain,
                     System.Net.Mime.MediaTypeNames.Text.Xml,
                     System.Net.Mime.MediaTypeNames.Text.Html,

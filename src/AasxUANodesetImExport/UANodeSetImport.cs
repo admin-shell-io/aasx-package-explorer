@@ -258,7 +258,7 @@ namespace AasxUANodesetImExport
                                           "Error",
                                           MessageBoxButton.OK);
                 throw ex;
-            }            
+            }
         }
 
         private static string getTypeDefinition(UANode node)

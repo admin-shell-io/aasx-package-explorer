@@ -26,7 +26,7 @@ MQTTnet Copyright (c) 2016-2019 Christian Kratky
 namespace AasxMqttClient
 {
     public static class MqttClient
-    {        
+    {
         public static async Task StartAsync(AdminShellPackageEnv package, GrapevineLoggerSuper logger = null)
         {
             // Create TCP based options using the builder.

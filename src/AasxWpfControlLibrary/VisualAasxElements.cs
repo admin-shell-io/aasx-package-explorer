@@ -869,7 +869,7 @@ namespace AasxPackageExplorer
             // ReSharper disable ExpressionIsAlwaysNull
             var ele = el.submodelElement as AdminShell.Entity;
             if (ele != null && ele.statements != null)
-                foreach (var eles in ele.statements)                    
+                foreach (var eles in ele.statements)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 

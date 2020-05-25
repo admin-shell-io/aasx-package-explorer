@@ -425,7 +425,7 @@ namespace AasxRestServerLibrary
             AdminShell.AdministrationShellEnv copyenv = null;
             try
             {
-                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new [] { aas }));
+                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
             }
             catch (Exception ex)
             {
@@ -453,7 +453,7 @@ namespace AasxRestServerLibrary
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot serialize and send aas envioronment: {ex.Message}.");            
+                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot serialize and send aas envioronment: {ex.Message}.");
             }
         }
 
@@ -1285,7 +1285,7 @@ namespace AasxRestServerLibrary
 
             // create a new, filtered AasEnv
             // (this is expensive, but delivers us with a list of CDs which are in relation to the respective AAS)
-            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new [] { aas }));
+            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
 
             // get all CDs and describe them
             foreach (var cd in copyenv.ConceptDescriptions)

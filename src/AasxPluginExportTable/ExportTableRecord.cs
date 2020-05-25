@@ -961,7 +961,7 @@ namespace AasxPluginExportTable
             // var run = new Run(new Text(cr.Text));
             // make a run with multiple breaks
             var run = new Run();
-            var lines = cr.Text.Split(new [] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = cr.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var l in lines)
             {
                 if (run.ChildElements != null && run.ChildElements.Count > 0)

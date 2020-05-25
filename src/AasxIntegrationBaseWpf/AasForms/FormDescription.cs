@@ -429,7 +429,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // init
             if (valueType != null)
-                this.allowedValueTypes = new [] { valueType };
+                this.allowedValueTypes = new[] { valueType };
             if (presetValue != null)
                 this.presetValue = presetValue;
         }

@@ -140,7 +140,7 @@ namespace AasxIntegrationBase.AasForms
                 }
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
             File.WriteAllText(fn, json);
@@ -166,7 +166,7 @@ namespace AasxIntegrationBase.AasForms
             RecurseExportAsTemplate(sm.submodelElements, tsm.SubmodelElements);
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
             File.WriteAllText(fn, json);
@@ -228,7 +228,7 @@ namespace AasxIntegrationBase.AasForms
             overall.Records.Add(rec);
 
             // write
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(FormDescBase) });
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(overall, overall.GetType(), settings);
             File.WriteAllText(fn, json);

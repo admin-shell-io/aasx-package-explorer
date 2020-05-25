@@ -194,7 +194,7 @@ namespace AasxPackageExplorer
                 var TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
 
                 // all assets
-                foreach (var fmi in TheAasxRepo.filemaps)                
+                foreach (var fmi in TheAasxRepo.filemaps)
                 {
                     var csi = new CodeSheetItem();
                     csi.id = fmi.assetId;

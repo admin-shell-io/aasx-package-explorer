@@ -610,7 +610,7 @@ namespace AasxPackageExplorer
                             // ok
                             found = true;
                             // Array of words
-                            var words = pn.str.Split(new [] { ' ', '\t', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+                            var words = pn.str.Split(new[] { ' ', '\t', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
                             var sn = "";
                             foreach (var w in words)
                             {

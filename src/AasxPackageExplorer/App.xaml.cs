@@ -103,14 +103,14 @@ namespace AasxPackageExplorer
             // colors
             if (true)
             {
-                var resNames = new [] { "LightAccentColor", "DarkAccentColor", "DarkestAccentColor", "FocusErrorBrush" };
+                var resNames = new[] { "LightAccentColor", "DarkAccentColor", "DarkestAccentColor", "FocusErrorBrush" };
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);
                     if (x != null && x is System.Windows.Media.SolidColorBrush && Options.Curr.AccentColors.ContainsKey(i))
                         this.Resources[resNames[i]] = new System.Windows.Media.SolidColorBrush(Options.Curr.AccentColors[i]);
                 }
-                resNames = new [] { "FocusErrorColor" };
+                resNames = new[] { "FocusErrorColor" };
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);

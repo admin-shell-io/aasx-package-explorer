@@ -146,11 +146,11 @@ namespace AasxPackageExplorer
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
-                                            preferredNames: new [] { "EN", attribute_label_id },
+                                            preferredNames: new[] { "EN", attribute_label_id },
                                             shortName: attribute_label_id,
                                             unit: "string",
                                             valueFormat: "STRING",
-                                            definition: new [] { "EN", attribute_label_id }
+                                            definition: new[] { "EN", attribute_label_id }
                                         );
 
                                         var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
@@ -376,11 +376,11 @@ namespace AasxPackageExplorer
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
-                                                    preferredNames: new [] { "DE", extendedname, "EN", extendedname },
+                                                    preferredNames: new[] { "DE", extendedname, "EN", extendedname },
                                                     shortName: extendedname,
                                                     unit: FUNIT,
                                                     valueFormat: "REAL_MEASURE",
-                                                    definition: new [] { "DE", extendedname, "EN", extendedname }
+                                                    definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
                                                 var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));

@@ -139,11 +139,11 @@ namespace AasxPackageExplorer
                     {
                         env.ConceptDescriptions.Add(cd);
                         cd.SetIEC61360Spec(
-                            preferredNames: new [] { "EN", Name },
+                            preferredNames: new[] { "EN", Name },
                             shortName: Name,
                             unit: "string",
                             valueFormat: "STRING",
-                            definition: new [] { "EN", Name }
+                            definition: new[] { "EN", Name }
                         );
 
                         var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));

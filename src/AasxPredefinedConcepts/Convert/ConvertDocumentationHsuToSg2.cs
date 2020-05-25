@@ -149,13 +149,13 @@ namespace AasxPredefinedConcepts.Convert
                                 Set("string", lcs.TrimEnd(','));
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Title, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Title.GetSingleKey(), new [] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Title.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Summary, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Summary.GetSingleKey(), new [] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Summary.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Keywords, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Keywords.GetSingleKey(), new [] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Keywords.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_StatusValue, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(defsSg2.CD_VDI2770_StatusValue.GetSingleKey())?.value);

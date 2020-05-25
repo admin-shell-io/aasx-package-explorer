@@ -111,7 +111,7 @@ namespace AasxAmlImExport
                     continue;
                 AppendAttributeNameAndRole(a0.Attribute, AmlConst.Names.AmlLanguageHeader + ls.lang, role: null, val: ls.str);
             }
-           
+
         }
 
         private static void SetReferable(AttributeSequence aseq, AdminShell.Referable rf)
@@ -470,9 +470,9 @@ namespace AasxAmlImExport
                                 // internal element
                                 var oie = AppendIeNameAndRole(
                                     ie.InternalElement,
-                                    (new [] { "InputVariables", "OutputVariables" })[i],
+                                    (new[] { "InputVariables", "OutputVariables" })[i],
                                     "",
-                                    role: (new [] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]);
+                                    role: (new[] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]);
 
                                 // just a list of SMEs
                                 var lop = new List<AdminShell.SubmodelElementWrapper>();

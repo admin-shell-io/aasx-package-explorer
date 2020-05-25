@@ -115,7 +115,7 @@ namespace AasxPluginDocumentShelf
             this.theViewModel.ViewModelChanged += TheViewModel_ViewModelChanged;
 
             var entities = new List<DocumentEntity>();
-            entities.Add(new DocumentEntity("Titel", "Orga", "cdskcnsdkjcnkjsckjsdjn", new [] { "de", "GB" }));
+            entities.Add(new DocumentEntity("Titel", "Orga", "cdskcnsdkjcnkjsckjsdjn", new[] { "de", "GB" }));
             ScrollMainContent.ItemsSource = entities;
 
             // a bit hacky: explicetly load CountryFlag.dll
@@ -177,7 +177,7 @@ namespace AasxPluginDocumentShelf
                     string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
 
                     // remember these for later deletion
-                    ent.DeleteFilesAfterLoading = new [] { inputFn, outputFn };
+                    ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
 
                     // start process
                     string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
@@ -704,7 +704,8 @@ namespace AasxPluginDocumentShelf
                     // AdminShell.SubmodelElementWrapperCollection smwc = null;
                     try
                     {
-                        /* smwc = */ this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
+                        /* smwc = */
+                        this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
                     }
                     catch (Exception ex)
                     {

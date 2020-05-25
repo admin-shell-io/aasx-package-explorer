@@ -33,28 +33,28 @@ namespace opctest
             var cdGroup = AdminShell.ConceptDescription.CreateNew("IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
             aasenv.ConceptDescriptions.Add(cdGroup);
             cdGroup.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "CAD Dateieinheit", "EN", "CAD file item" },
+                preferredNames: new[] { "DE", "CAD Dateieinheit", "EN", "CAD file item" },
                 shortName: "CadItem",
                 unit: "",
-                definition: new [] { "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.", "EN", "Collection of properties, which make a file for a CAD system accessible." }
+                definition: new[] { "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.", "EN", "Collection of properties, which make a file for a CAD system accessible." }
             );
 
             var cdFile = AdminShell.ConceptDescription.CreateNew("IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Enthaltene CAD Datei", "EN", "Embedded CAD file" },
+                preferredNames: new[] { "DE", "Enthaltene CAD Datei", "EN", "Embedded CAD file" },
                 shortName: "File",
                 unit: "",
-                definition: new [] { "DE", "Verweis auf enthaltene CAD Datei.", "EN", "Reference to embedded CAD file." }
+                definition: new[] { "DE", "Verweis auf enthaltene CAD Datei.", "EN", "Reference to embedded CAD file." }
             );
 
             var cdFormat = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Filetype CAD", "EN", "Filetype CAD" },
+                preferredNames: new[] { "DE", "Filetype CAD", "EN", "Filetype CAD" },
                 shortName: "FileFormat",
                 unit: "",
-                definition: new [] { "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.", "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
+                definition: new[] { "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.", "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
             );
 
             // SUB MODEL
@@ -599,9 +599,9 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "TBD", "EN", "Manufacturer name" },
+                    preferredNames: new[] { "DE", "TBD", "EN", "Manufacturer name" },
                     shortName: "Manufacturer",
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation" }
                 );
 
@@ -616,11 +616,11 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "Breite", "EN", "Width" },
+                    preferredNames: new[] { "DE", "Breite", "EN", "Width" },
                     shortName: "Width",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new [] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung rechtwinklig zur längsten Symmetrieachse",
+                    definition: new[] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung rechtwinklig zur längsten Symmetrieachse",
                     "EN", "for objects with orientation in preferred position during use the dimension perpendicular to height/ length/depth" }
                 );
 
@@ -635,11 +635,11 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "Höhe", "EN", "Height" },
+                    preferredNames: new[] { "DE", "Höhe", "EN", "Height" },
                     shortName: "Height",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new [] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
+                    definition: new[] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
                     "EN", "for objects with orientation in preferred position during use the dimension perpendicular to diameter/length/width/depth" }
                 );
 
@@ -654,11 +654,11 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "Tiefe", "EN", "Depth" },
+                    preferredNames: new[] { "DE", "Tiefe", "EN", "Depth" },
                     shortName: "Depth",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new [] { "DE", "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
+                    definition: new[] { "DE", "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
                     "EN", "for objects with fixed orientation or in preferred utilization position, the rear , generally away from the observer expansion is described as depth" }
                 );
 
@@ -673,11 +673,11 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "Gewicht der Artikeleinzelverpackung", "EN", "Weight of the individual packaging" },
+                    preferredNames: new[] { "DE", "Gewicht der Artikeleinzelverpackung", "EN", "Weight of the individual packaging" },
                     shortName: "Weight",
                     unit: "g",
                     valueFormat: "REAL_MEASURE",
-                    definition: new [] { "DE", "Masse der Einzelverpackung eines Artikels",
+                    definition: new[] { "DE", "Masse der Einzelverpackung eines Artikels",
                     "EN", "Mass of the individual packaging of an article" }
                 );
 
@@ -716,9 +716,9 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { "DE", "Werkstoff", "EN", "Material" },
+                    preferredNames: new[] { "DE", "Werkstoff", "EN", "Material" },
                     shortName: "Material",
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, Schweißen usw. in die endgültige Form gebracht werden" }
                 );
 
@@ -832,13 +832,13 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "DE", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss 
                         "EN", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
                     shortName: "DocuName",                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "legally valid designation of the natural or judicial person..." }
                 );
 
@@ -856,13 +856,13 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "DE", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss 
                         "EN", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
                     shortName: "VoltageRange",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited voltage range..." }
                 );
 
@@ -903,13 +903,13 @@ namespace opctest
                 cdRelEPlan = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "EN", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss 
                         "DE", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
             }
@@ -922,13 +922,13 @@ namespace opctest
                 cdRelElCon = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "EN", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss 
                         "DE", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
             }
@@ -941,13 +941,13 @@ namespace opctest
                 cdContact1 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "EN", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss 
                         "DE", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
             }
@@ -960,13 +960,13 @@ namespace opctest
                 cdContact2 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "EN", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss 
                         "DE", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
             }
@@ -1038,13 +1038,13 @@ namespace opctest
                 cdIsPartOf = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "EN", "Is part of",    // wechseln Sie die Sprache bei eCl@ss 
                         "DE", "Teil von" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new [] { "DE", "TBD",
+                    definition: new[] { "DE", "TBD",
                     "EN", "very precisely limited language constructs..." }
                 );
             }
@@ -1106,11 +1106,11 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "DE", "Setze Energiespare-Modus",
                         "EN", "Set energy saving mode" },
                     shortName: "SetMode",
-                    definition: new [] { "DE", "Setze Energiemodus 1..4",
+                    definition: new[] { "DE", "Setze Energiemodus 1..4",
                     "EN", "Set energy saving mode 1..4" }
                 );
 
@@ -1125,12 +1125,12 @@ namespace opctest
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] {
+                    preferredNames: new[] {
                         "DE", "Energiesparemodus-Vorgabe",
                         "EN", "Preset of energy saving mode" },
                     shortName: "mode",
                     valueFormat: "INT",
-                    definition: new [] { "DE", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
+                    definition: new[] { "DE", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
                     "EN", "Preset in optimal case for the energy saving mode" }
                 );
 
@@ -1321,7 +1321,7 @@ namespace opctest
                 var subEng = CreateSubmodelEnergyMode(repo, aasenv1);
 
                 // VIEW1
-                var view1 = CreateStochasticViewOnSubmodels(new [] { subCad, subDocu, subDatasheet }, "View1");
+                var view1 = CreateStochasticViewOnSubmodels(new[] { subCad, subDocu, subDatasheet }, "View1");
 
                 // ADMIN SHELL            
                 Log.WriteLine(2, "Create AAS ..");
@@ -1419,7 +1419,7 @@ namespace opctest
                 {
                     JsonSerializer serializer2 = new JsonSerializer();
                     serializer2.Converters.Add(new AdminShellConverters.JsonAasxConverter());
-                    serializer2.Deserialize(file, typeof(AdminShell.AdministrationShellEnv));                    
+                    serializer2.Deserialize(file, typeof(AdminShell.AdministrationShellEnv));
                 }
             }
 
@@ -1614,7 +1614,7 @@ namespace opctest
                 var subBOM2 = CreateSubmodelBOMforAssetStructure(repo, aasenv1);
 
                 // VIEW1
-                var view1 = CreateStochasticViewOnSubmodels(new [] { subCad, subDocu, subDatasheet, subVars }, "View1");
+                var view1 = CreateStochasticViewOnSubmodels(new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
 
                 // ADMIN SHELL            
                 Log.WriteLine(2, "Create AAS ..");
@@ -1934,7 +1934,7 @@ namespace opctest
                             fil.parent = fil;
 
                             var so = new AdminShellUtil.SearchOptions();
-                            so.allowedAssemblies = new [] { typeof(AdminShell).Assembly };
+                            so.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
                             var sr = new AdminShellUtil.SearchResults();
 
                             AdminShellUtil.EnumerateSearchable(sr, /* fil */ package.AasEnv, "", 0, so);
@@ -1946,7 +1946,7 @@ namespace opctest
 
                             // next command
                             Console.Error.WriteLine("Tested.");
-                            ai += 1;                            
+                            ai += 1;
                         }
                         catch (Exception ex)
                         {

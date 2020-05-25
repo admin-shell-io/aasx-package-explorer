@@ -210,7 +210,7 @@ namespace AasxPackageExplorer
             // make UI visible settings ..
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(package, entity, editMode, hintMode,
-                (thePackageAux == null) ? null : new [] { thePackageAux }, flyoutProvider: this, hightlightField: hightlightField);
+                (thePackageAux == null) ? null : new[] { thePackageAux }, flyoutProvider: this, hightlightField: hightlightField);
 
             // panels
             var panelHeight = 48;
@@ -340,7 +340,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                             catch { }
-                        
+
                     }
                     catch
                     {
@@ -985,8 +985,8 @@ namespace AasxPackageExplorer
             }
         }
 
-#endregion
-#region Modal Flyovers
+        #endregion
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -1156,8 +1156,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -1249,7 +1249,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

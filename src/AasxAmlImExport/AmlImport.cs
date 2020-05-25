@@ -105,7 +105,7 @@ namespace AasxAmlImExport
                     return null;
 
                 // a reference could carry multiple Keys, delimited by ","
-                var refstrs = refstr.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var refstrs = refstr.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 if (refstr.Length < 1)
                     return null;
 
@@ -259,7 +259,7 @@ namespace AasxAmlImExport
                 if (ls == null)
                     return null;
 
-                var res = new AdminShell.Description() { langString = ls };                
+                var res = new AdminShell.Description() { langString = ls };
                 return res;
             }
 
@@ -283,7 +283,8 @@ namespace AasxAmlImExport
                         {
 
                             // create
-                            var q = new AdminShell.Qualifier() {
+                            var q = new AdminShell.Qualifier()
+                            {
                                 type = qt,
                                 value = qv,
                                 semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(sid)?.Keys),
@@ -1091,7 +1092,8 @@ namespace AasxAmlImExport
                                 // create a Property
                                 Debug(indentation, "  found ATTR {0}. Adding as property.", a.Name);
 
-                                var p = new AdminShell.Property() {
+                                var p = new AdminShell.Property()
+                                {
                                     idShort = a.Name,
                                     value = a.Value,
                                     valueType = ParseAmlDataType(a.AttributeDataType),
@@ -1114,7 +1116,7 @@ namespace AasxAmlImExport
                     //
                     for (int i = 0; i < 2; i++)
                         if (currentAas != null && currentSubmodel != null && currentOperation != null &&
-                            CheckForRoleClassOrRoleRequirements(ie, (new [] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
+                            CheckForRoleClassOrRoleRequirements(ie, (new[] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
                         {
                             Debug(indentation, "  List of OPERATION VARIABLE detected. Switching direction to {0}..", i);
 
@@ -1162,7 +1164,8 @@ namespace AasxAmlImExport
                                     // add
                                     var wrapper = new AdminShell.SubmodelElementWrapper();
                                     wrapper.submodelElement = sme;
-                                    var opv = new AdminShell.OperationVariable() {
+                                    var opv = new AdminShell.OperationVariable()
+                                    {
                                         value = wrapper
                                     };
                                     currentOperation[currentOperationDir].Add(opv);
@@ -1387,7 +1390,7 @@ namespace AasxAmlImExport
                             if (il == null)
                                 continue;
                             // try find registered sides
-                            foreach (var side in new [] { il.RefPartnerSideA, il.RefPartnerSideB })
+                            foreach (var side in new[] { il.RefPartnerSideA, il.RefPartnerSideB })
                             {
                                 var items = this.registerForInternalLinks[side];
                                 if (items != null)

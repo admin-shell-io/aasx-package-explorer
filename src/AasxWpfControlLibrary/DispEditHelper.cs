@@ -85,7 +85,7 @@ namespace AasxPackageExplorer
         // Members
         //
 
-        private string[] defaultLanguages = new [] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
+        private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
         public AdminShellPackageEnv package = null;
         public AdminShellPackageEnv[] auxPackages = null;
@@ -146,7 +146,7 @@ namespace AasxPackageExplorer
                     {
                         cb.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
                         cb.BorderThickness = new Thickness(3);
-                        
+
                         try
                         {
                             // see: https://stackoverflow.com/questions/37006596/borderbrush-to-combobox
@@ -168,7 +168,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        catch { }                        
+                        catch { }
 
                         cb.Focus();
                     }
@@ -435,7 +435,7 @@ namespace AasxPackageExplorer
         /// <returns>Sub-panel, to which can be added</returns>
         public StackPanel AddSubStackPanel(StackPanel view, string caption)
         {
-            var g = AddSmallGrid(1, 2, new [] { "#", "*" });
+            var g = AddSmallGrid(1, 2, new[] { "#", "*" });
             // var l = AddSmallLabelTo(g, 0, 0, content: caption);
             var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
 
@@ -713,7 +713,7 @@ namespace AasxPackageExplorer
 
         public void AddAction(StackPanel view, string key, string actionStr, ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> action = null)
         {
-            AddAction(view, key, new [] { actionStr }, repo, action);
+            AddAction(view, key, new[] { actionStr }, repo, action);
         }
 
         public void AddKeyListLangStr(StackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
@@ -1032,7 +1032,7 @@ namespace AasxPackageExplorer
             if (keys != null)
             {
                 // populate [+], [Select], [eCl@ss], [Copy] buttons
-                var colDescs = new List<string>(new [] { "*", "#", "#", "#", "#" });
+                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
 
@@ -1274,31 +1274,31 @@ namespace AasxPackageExplorer
         {
             if (nextFocus == null)
                 nextFocus = entity;
-            AddAction(stack, label, new [] { "Move up", "Move down", "Delete" }, repo, (buttonNdx) =>
-            {
-                if (buttonNdx is int)
-                {
-                    if ((int)buttonNdx == 0)
-                    {
-                        MoveElementInListUpwards<T>(list, entity);
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                    }
+            AddAction(stack, label, new[] { "Move up", "Move down", "Delete" }, repo, (buttonNdx) =>
+           {
+               if (buttonNdx is int)
+               {
+                   if ((int)buttonNdx == 0)
+                   {
+                       MoveElementInListUpwards<T>(list, entity);
+                       return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                   }
 
-                    if ((int)buttonNdx == 1)
-                    {
-                        MoveElementInListDownwards<T>(list, entity);
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                    }
+                   if ((int)buttonNdx == 1)
+                   {
+                       MoveElementInListDownwards<T>(list, entity);
+                       return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                   }
 
-                    if ((int)buttonNdx == 2)
-                        if (this.flyoutProvider != null && MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow("Delete selected entity? This operation can not be reverted!", "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                        {
-                            var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
-                        }
-                }
-                return new ModifyRepo.LambdaActionNone();
-            });
+                   if ((int)buttonNdx == 2)
+                       if (this.flyoutProvider != null && MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow("Delete selected entity? This operation can not be reverted!", "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                       {
+                           var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                       }
+               }
+               return new ModifyRepo.LambdaActionNone();
+           });
         }
 
         public void QualifierHelper(StackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
@@ -1306,36 +1306,36 @@ namespace AasxPackageExplorer
             if (editMode)
             {
                 // let the user control the number of references
-                AddAction(stack, "Qualifier entities:", new [] { "Add blank", "Add preset", "Delete last" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx is int)
-                    {
-                        if ((int)buttonNdx == 0)
-                            qualifiers.Add(new AdminShell.Qualifier());
+                AddAction(stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo, (buttonNdx) =>
+               {
+                   if (buttonNdx is int)
+                   {
+                       if ((int)buttonNdx == 0)
+                           qualifiers.Add(new AdminShell.Qualifier());
 
-                        if ((int)buttonNdx == 1)
-                        {
-                            if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
-                                return new ModifyRepo.LambdaActionNone();
-                            try
-                            {
-                                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                                var uc = new SelectQualifierPresetFlyout(fullfn);
-                                flyoutProvider.StartFlyoverModal(uc);
-                                if (uc.ResultQualifier != null)
-                                    qualifiers.Add(uc.ResultQualifier);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
-                            }
-                        }
+                       if ((int)buttonNdx == 1)
+                       {
+                           if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
+                               return new ModifyRepo.LambdaActionNone();
+                           try
+                           {
+                               var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                               var uc = new SelectQualifierPresetFlyout(fullfn);
+                               flyoutProvider.StartFlyoverModal(uc);
+                               if (uc.ResultQualifier != null)
+                                   qualifiers.Add(uc.ResultQualifier);
+                           }
+                           catch (Exception ex)
+                           {
+                               Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                           }
+                       }
 
-                        if ((int)buttonNdx == 2 && qualifiers.Count > 0)
-                            qualifiers.RemoveAt(qualifiers.Count - 1);
-                    }
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                });
+                       if ((int)buttonNdx == 2 && qualifiers.Count > 0)
+                           qualifiers.RemoveAt(qualifiers.Count - 1);
+                   }
+                   return new ModifyRepo.LambdaActionRedrawEntity();
+               });
             }
 
             for (int i = 0; i < qualifiers.Count; i++)
@@ -1349,7 +1349,7 @@ namespace AasxPackageExplorer
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 });
 
-                AddHintBubble(substack, hintMode, new [] {
+                AddHintBubble(substack, hintMode, new[] {
                         new HintCheck( () => { return (qual.semanticId == null || qual.semanticId.IsEmpty) && (qual.type == null || qual.type.Trim() == ""); },
                             "Either a semanticId or a type string specification shall be given!")
                     });
@@ -1576,7 +1576,7 @@ namespace AasxPackageExplorer
 
         public void AddHintBubble(StackPanel view, bool hintMode, HintCheck hint)
         {
-            AddHintBubble(view, hintMode, new [] { hint });
+            AddHintBubble(view, hintMode, new[] { hint });
         }
 
     }

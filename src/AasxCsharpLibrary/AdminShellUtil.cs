@@ -80,7 +80,7 @@ namespace AdminShellNS
                     continue;
                 }
                 // search last "\" or "/", to get only filename portion and position
-                p = lines[currLine].LastIndexOfAny(new [] { '\\', '/' });
+                p = lines[currLine].LastIndexOfAny(new[] { '\\', '/' });
                 if (p < 0)
                 {
                     // advance to next oldest line

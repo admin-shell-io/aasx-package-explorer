@@ -1229,7 +1229,7 @@ namespace AasxPackageExplorer
                             string Path = "";
 
                             int i = 0;
-                            
+
 
                             while (i < 5 && i < count) // URL, Username, Password, Namespace, Path
                             {
@@ -1412,7 +1412,7 @@ namespace AasxPackageExplorer
                         "server-start",
                         "server-stop",
                         "Export Nodeset2 via OPC UA Server...",
-                        new [] { "-export-nodeset", dlg.FileName }
+                        new[] { "-export-nodeset", dlg.FileName }
                         );
                 }
             }

@@ -58,9 +58,9 @@ namespace AasxCompatibilityModels
             if (src == null)
                 throw new ArgumentNullException(nameof(src));
             for (var i = 0; i < src.Length; i++)
-            foreach (var c in src)
-                if (char.IsWhiteSpace(c))
-                    return true;
+                foreach (var c in src)
+                    if (char.IsWhiteSpace(c))
+                        return true;
             return false;
         }
 
@@ -102,7 +102,7 @@ namespace AasxCompatibilityModels
                     continue;
                 }
                 // search last "\" or "/", to get only filename portion and position
-                p = lines[currLine].LastIndexOfAny(new [] { '\\', '/' });
+                p = lines[currLine].LastIndexOfAny(new[] { '\\', '/' });
                 if (p < 0)
                 {
                     // advance to next oldest line

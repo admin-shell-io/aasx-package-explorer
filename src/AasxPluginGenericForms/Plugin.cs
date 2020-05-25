@@ -41,7 +41,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             try
             {
                 // need special settings
-                var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
 
                 // base options
                 var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
@@ -113,7 +113,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
                 {
-                    var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                    var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
                     var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginGenericForms.GenericFormOptions>((args[0] as string), settings);
                     if (newOpt != null)
                         this.options = newOpt;
@@ -121,7 +121,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 if (action == "get-json-options")
                 {
-                    var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new [] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                    var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(this.options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
                     return new AasxPluginResultBaseObject("OK", json);
                 }

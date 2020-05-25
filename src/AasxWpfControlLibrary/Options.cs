@@ -638,7 +638,7 @@ namespace AasxPackageExplorer
             try
             {
                 var optionsTxt = File.ReadAllText(fn);
-                var options = optionsTxt.Split(new [] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var options = optionsTxt.Split(new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 ParseArgs(options);
             }
             catch (Exception ex)
