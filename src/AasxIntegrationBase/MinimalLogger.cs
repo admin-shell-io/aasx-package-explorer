@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable UnusedType.Global .. could be used by other solutions/ plug-ins
+
 namespace AasxIntegrationBase
 {
     public class MinimalLogger
@@ -22,16 +24,18 @@ namespace AasxIntegrationBase
         }
 
         /// <summary>
-        /// Enables or diables (loggingAction == null) the de-tour of the logmessages to an external Action<>.
+        /// Enables or diables (loggingAction == null) the de-tour of the logmessages to an external Action.
         /// </summary>
-        /// <param name="loggingAction"></param>
         public void UseLogAction(Action<string> loggingAction = null)
         {
             // off
             if (loggingAction == null)
             {
                 this.loggingAction = null;
-                list = new List<string>();
+                lock (list)
+                {
+                    list = new List<string>();
+                }
                 return;
             }
 

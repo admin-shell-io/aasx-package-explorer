@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License - v 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -42,10 +43,10 @@ namespace AasxPackageExplorer
             // If no command line args given, read options via default filename
             if (directAasx != null || e.Args.Length < 1)
             {
-                var exePath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
                 var defFn = System.IO.Path.Combine(
-                            System.IO.Path.GetDirectoryName(exePath),
-                            System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
+                            System.IO.Path.GetDirectoryName("" + exePath),
+                            System.IO.Path.GetFileNameWithoutExtension("" + exePath) + ".options.json");
 
                 Log.Info("Check {0} for default options in JSON ..", defFn);
                 if (File.Exists(defFn))
@@ -76,7 +77,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.PluginDir != null)
             {
                 var searchDir = System.IO.Path.Combine(
-                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location),
+                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location),
                     Options.Curr.PluginDir);
                 Log.Info("Searching for plug-ins in {0} ..", searchDir);
                 Plugins.TrySearchPlugins(searchDir, Options.Curr.PluginDll);
@@ -102,14 +103,14 @@ namespace AasxPackageExplorer
             // colors
             if (true)
             {
-                var resNames = new string[] { "LightAccentColor", "DarkAccentColor", "DarkestAccentColor", "FocusErrorBrush" };
+                var resNames = new[] { "LightAccentColor", "DarkAccentColor", "DarkestAccentColor", "FocusErrorBrush" };
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);
                     if (x != null && x is System.Windows.Media.SolidColorBrush && Options.Curr.AccentColors.ContainsKey(i))
                         this.Resources[resNames[i]] = new System.Windows.Media.SolidColorBrush(Options.Curr.AccentColors[i]);
                 }
-                resNames = new string[] { "FocusErrorColor" };
+                resNames = new[] { "FocusErrorColor" };
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);

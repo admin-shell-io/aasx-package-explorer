@@ -39,7 +39,6 @@ namespace AasxIntegrationBase
         /// Start UserControl as modal flyout. The UserControl has to implement
         /// the interface IFlyoutControl
         /// </summary>
-        /// <param name="uc"></param>
         void StartFlyoverModal(UserControl uc, Action closingAction = null);
 
         /// <summary>

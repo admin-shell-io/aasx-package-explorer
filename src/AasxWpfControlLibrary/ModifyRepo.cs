@@ -120,8 +120,8 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is ComboBox && it.setValueLambda != null)
-                        it.setValueLambda((string)(it.control as ComboBox).SelectedItem);
+                    if (it.control is ComboBox cb && it.setValueLambda != null)
+                        it.setValueLambda((string)cb.SelectedItem);
 
                     // contents changed
                     WishForOutsideAction.Add(new LambdaActionContentsTakeOver());
@@ -144,8 +144,8 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is CheckBox && it.setValueLambda != null)
-                        it.setValueLambda((bool)(it.control as CheckBox).IsChecked);
+                    if (it.control is CheckBox cb && it.setValueLambda != null)
+                        it.setValueLambda(cb.IsChecked == true);
 
                     // contents changed
                     WishForOutsideAction.Add(new LambdaActionContentsTakeOver());
@@ -191,10 +191,10 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is TextBox && it.setValueLambda != null)
-                        it.setValueLambda((it.control as TextBox).Text);
-                    if (it.control is ComboBox && it.setValueLambda != null)
-                        it.setValueLambda((it.control as ComboBox).Text);
+                    if (it.control is TextBox tb && it.setValueLambda != null)
+                        it.setValueLambda(tb.Text);
+                    if (it.control is ComboBox cb && it.setValueLambda != null)
+                        it.setValueLambda(cb.Text);
 
                     // contents changed
                     WishForOutsideAction.Add(new LambdaActionContentsChanged());
@@ -243,10 +243,8 @@ namespace AasxPackageExplorer
                 {
                     if (it.control != null && it.originalValue != null)
                     {
-                        if (it.control is TextBox)
-                        {
-                            (it.control as TextBox).Text = it.originalValue as string;
-                        }
+                        if (it.control is TextBox tb)
+                            tb.Text = it.originalValue as string;
                     }
 
                     // contents changed

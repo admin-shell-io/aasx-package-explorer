@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using JetBrains.Annotations;
 
 namespace AasxPluginTechnicalData
 {
@@ -30,8 +31,11 @@ namespace AasxPluginTechnicalData
 
         public class ClassificationRecord
         {
+            [JetBrains.Annotations.UsedImplicitly]
             public string System { get; set; }
+            [JetBrains.Annotations.UsedImplicitly]
             public string Version { get; set; }
+            [JetBrains.Annotations.UsedImplicitly]
             public string ClassTxt { get; set; }
 
             public ClassificationRecord() { }
@@ -45,6 +49,7 @@ namespace AasxPluginTechnicalData
 
         public class ProductImageRecord
         {
+            [JetBrains.Annotations.UsedImplicitly]
             public BitmapImage ImgData { get; set; }
 
             public ProductImageRecord() { }

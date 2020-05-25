@@ -79,7 +79,7 @@ namespace AasxIntegrationBase.AasForms
 
                     // Assuming you have one file that you care about, pass it off to whatever
                     // handling code you have defined.
-                    if (files.Length > 0)
+                    if (files != null && files.Length > 0)
                     {
                         dc.instance.Touch();
                         dc.instance.FileToLoad = files[0];

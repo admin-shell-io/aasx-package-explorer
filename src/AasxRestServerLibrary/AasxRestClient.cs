@@ -52,7 +52,9 @@ namespace AasxRestServerLibrary
             }
             else
             {
-                this.proxy = WebProxy.GetDefaultProxy();
+                var pi = WebRequest.GetSystemWebProxy();
+                // TODO: Andreas, check this. System.Net.WebProxy.GetDefaultProxy was deprecated
+                this.proxy = (WebProxy)pi;
                 if (this.proxy != null)
                     this.proxy.UseDefaultCredentials = true;
             }

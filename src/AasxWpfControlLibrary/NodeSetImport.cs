@@ -10,7 +10,7 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    public class OpcUaTools
+    public static class OpcUaTools
     {
         public static void ImportNodeSetToSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
@@ -139,11 +139,11 @@ namespace AasxPackageExplorer
                     {
                         env.ConceptDescriptions.Add(cd);
                         cd.SetIEC61360Spec(
-                            preferredNames: new string[] { "EN", Name },
+                            preferredNames: new[] { "EN", Name },
                             shortName: Name,
                             unit: "string",
                             valueFormat: "STRING",
-                            definition: new string[] { "EN", Name }
+                            definition: new[] { "EN", Name }
                         );
 
                         var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));

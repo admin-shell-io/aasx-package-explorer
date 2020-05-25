@@ -102,7 +102,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             </TextBox>
         </Grid>
 
-        <DockPanel Grid.Row="4" Grid.Column="2">
+        <DockPanel Grid.Row="3" Grid.Column="2">
             <Label Foreground="White" DockPanel.Dock="Left" VerticalContentAlignment="Center">Format:</Label>
             <ComboBox x:Name="ComboBoxFormat" MinWidth="150" Height="20" Margin="10,4,20,4" DockPanel.Dock="Left"/>
             <Button x:Name="ButtonExport" IsDefault="True" Content="Export!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="Button_Click"/>

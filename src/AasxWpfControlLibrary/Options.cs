@@ -34,14 +34,10 @@ namespace AasxPackageExplorer
     /// <summary>
     /// The Singleton for providing options.
     /// </summary>
-    public class Options
+    public static class Options
     {
         private static OptionsInformation instance = null;
         private static readonly object padlock = new object();
-
-        Options()
-        {
-        }
 
         /// <summary>
         /// The Singleton for Options
@@ -146,7 +142,7 @@ namespace AasxPackageExplorer
         /// The current version string of the application. Use of Options as singleton.
         /// </summary>
         [JsonIgnore]
-        public string PrefVersion = "1.9.8.1";
+        public string PrefVersion = "1.9.8.2";
 
         /// <summary>
         /// This file shall be loaded at start of application
@@ -311,6 +307,7 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogie
         /// </summary>
+        [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
 
         /// <summary>
@@ -325,7 +322,10 @@ namespace AasxPackageExplorer
             public string Path;
             public string[] Args;
 
+            [JetBrains.Annotations.UsedImplicitly]
             public Newtonsoft.Json.Linq.JToken Options;
+
+            [JetBrains.Annotations.UsedImplicitly]
             public Newtonsoft.Json.Linq.JToken DefaultOptions;
 
             public PluginDllInfo() { }
@@ -444,32 +444,28 @@ namespace AasxPackageExplorer
                 // options
                 if (arg == "-left" && morearg > 0)
                 {
-                    int i;
-                    if (Int32.TryParse(args[index + 1], out i))
+                    if (Int32.TryParse(args[index + 1], out int i))
                         WindowLeft = i;
                     index++;
                     continue;
                 }
                 if (arg == "-top" && morearg > 0)
                 {
-                    int i;
-                    if (Int32.TryParse(args[index + 1], out i))
+                    if (Int32.TryParse(args[index + 1], out int i))
                         WindowTop = i;
                     index++;
                     continue;
                 }
                 if (arg == "-width" && morearg > 0)
                 {
-                    int i;
-                    if (Int32.TryParse(args[index + 1], out i))
+                    if (Int32.TryParse(args[index + 1], out int i))
                         WindowWidth = i;
                     index++;
                     continue;
                 }
                 if (arg == "-height" && morearg > 0)
                 {
-                    int i;
-                    if (Int32.TryParse(args[index + 1], out i))
+                    if (Int32.TryParse(args[index + 1], out int i))
                         WindowHeight = i;
                     index++;
                     continue;
@@ -537,8 +533,7 @@ namespace AasxPackageExplorer
                 }
                 if (arg == "-splash" && morearg > 0)
                 {
-                    int i;
-                    if (Int32.TryParse(args[index + 1], out i))
+                    if (Int32.TryParse(args[index + 1], out int i))
                         SplashTime = i;
                     index++;
                     continue;
@@ -610,12 +605,17 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < 10; i++)
                         if (arg == $"-c{i:0}" && morearg > 0)
                         {
+                            // ReSharper disable EmptyGeneralCatchClause
+                            // ReSharper disable PossibleNullReferenceException
                             try
                             {
                                 var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
                                 AccentColors.Add(i, c);
                             }
                             catch { }
+                            // ReSharper enable EmptyGeneralCatchClause
+                            // ReSharper enable PossibleNullReferenceException
+
                             index++;
                             found = true;
                         }
@@ -638,7 +638,7 @@ namespace AasxPackageExplorer
             try
             {
                 var optionsTxt = File.ReadAllText(fn);
-                var options = optionsTxt.Split(new char[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var options = optionsTxt.Split(new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 ParseArgs(options);
             }
             catch (Exception ex)
@@ -657,8 +657,7 @@ namespace AasxPackageExplorer
             var decimals = String.Format("{0:ffffyyMMddHHmmss}", DateTime.UtcNow);
             decimals = new string(decimals.Reverse().ToArray());
             // convert this to an int
-            Int64 decii;
-            if (!Int64.TryParse(decimals, out decii))
+            if (!Int64.TryParse(decimals, out Int64 decii))
                 decii = MyRnd.Next(Int32.MaxValue);
             // make an hex out of this
             string hexamals = decii.ToString("X");
@@ -683,27 +682,27 @@ namespace AasxPackageExplorer
 
             // now, can just use the template
             var id = "";
-            for (int i = 0; i < tpl.Length; i++)
+            foreach (var tpli in tpl)
             {
-                if (tpl[i] == 'D' && decimals.Length > 0)
+                if (tpli == 'D' && decimals.Length > 0)
                 {
                     id += decimals[0];
                     decimals = decimals.Remove(0, 1);
                 }
                 else
-                if (tpl[i] == 'X' && hexamals.Length > 0)
+                if (tpli == 'X' && hexamals.Length > 0)
                 {
                     id += hexamals[0];
                     hexamals = hexamals.Remove(0, 1);
                 }
                 else
-                if (tpl[i] == 'A' && alphamals.Length > 0)
+                if (tpli == 'A' && alphamals.Length > 0)
                 {
                     id += alphamals[0];
                     alphamals = alphamals.Remove(0, 1);
                 }
                 else
-                    id += tpl[i];
+                    id += tpli;
             }
 
             // ok

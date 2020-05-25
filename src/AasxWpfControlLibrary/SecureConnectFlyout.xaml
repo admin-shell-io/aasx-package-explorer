@@ -96,7 +96,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
         </Grid>
 
-        <DockPanel Grid.Row="4" Grid.Column="2">
+        <DockPanel Grid.Row="3" Grid.Column="2">
             <Button x:Name="ButtonStart" IsDefault="True" Content="Start connecting" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="Button_Click"/>
         </DockPanel>
         

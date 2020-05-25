@@ -56,7 +56,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             </Grid.ColumnDefinitions>
 
             <Viewbox Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="0,0,20,0" Stretch="Fill" MaxHeight="80" VerticalAlignment="Center">
-                <Image x:Name="ImageIcon" Height="80" Source="/AasxIntegrationBaseWpf;component/Resources/msg_error.png"/>
+                <!-- Source="/AasxIntegrationBaseWpf;component/Resources/msg_error.png" -->
+                <Image x:Name="ImageIcon" Height="80" />
             </Viewbox>
             <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TextBlockTitle" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap">Title</TextBlock>
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TextBlockMessage" Margin="4" FontSize="18" Foreground="White" Background="#10ffffff" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextAlignment="Center">very long message</TextBlock>
@@ -89,7 +90,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             </StackPanel>
         </Viewbox>
 
-        <Border Grid.RowSpan="5" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
+        <Border Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
         
     </Grid>
 </UserControl>

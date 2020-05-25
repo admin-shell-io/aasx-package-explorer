@@ -77,10 +77,14 @@ namespace AasxRestServerLibrary
 
         public string Pop()
         {
-            if (list == null || list.Count < 1)
+            if (list == null)
                 return null;
+
             lock (list)
             {
+                if (list.Count < 1)
+                    return null;
+
                 var res = list[0];
                 list.RemoveAt(0);
                 return res;

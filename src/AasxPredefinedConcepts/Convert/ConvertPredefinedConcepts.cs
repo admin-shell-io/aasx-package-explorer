@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
         }
     }
 
-    public class ConvertPredefinedConcepts
+    public static class ConvertPredefinedConcepts
     {
         public static IEnumerable<ConvertProviderBase> GetAllProviders()
         {

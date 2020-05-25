@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxMqttServer;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
    Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
@@ -22,6 +23,7 @@ MQTTnet Copyright (c) 2016-2019 Christian Kratky
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
@@ -70,12 +72,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // this.stop = false;
                 Log.Info("Starting Mqtt Server...");
 
-                //var client = new MqttServer();
+                // var client = new MqttServer();
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     AASMqttServer.MqttSeverStartAsync().Wait();
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
 
 
                 // return as plain object

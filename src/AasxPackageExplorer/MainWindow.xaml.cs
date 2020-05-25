@@ -139,7 +139,7 @@ namespace AasxPackageExplorer
             ContentTakeOver.IsEnabled = false;
 
             // rebuild middle section
-            DisplayElements.RebuildAasxElements(this.thePackageEnv.AasEnv, this.thePackageEnv, null, MenuItemWorkspaceEdit.IsChecked);
+            DisplayElements.RebuildAasxElements(this.thePackageEnv?.AasEnv, this.thePackageEnv, null, MenuItemWorkspaceEdit.IsChecked);
             DisplayElements.Refresh();
 
         }
@@ -210,7 +210,7 @@ namespace AasxPackageExplorer
             // make UI visible settings ..
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(package, entity, editMode, hintMode,
-                (thePackageAux == null) ? null : new AdminShellPackageEnv[] { thePackageAux }, flyoutProvider: this, hightlightField: hightlightField);
+                (thePackageAux == null) ? null : new[] { thePackageAux }, flyoutProvider: this, hightlightField: hightlightField);
 
             // panels
             var panelHeight = 48;
@@ -255,11 +255,10 @@ namespace AasxPackageExplorer
             Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
 
             // some entities require special handling
-            if (entity is VisualElementSubmodelElement && (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File)
+            if (entity is VisualElementSubmodelElement && (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File file)
             {
-                var elem = (entity as VisualElementSubmodelElement).theWrapper.submodelElement;
                 ShowContent.IsEnabled = true;
-                this.showContentPackageUri = (elem as AdminShell.File).value;
+                this.showContentPackageUri = file.value;
                 DragSource.Foreground = Brushes.Black;
             }
 
@@ -294,9 +293,10 @@ namespace AasxPackageExplorer
 
                     // text id
                     if (asset.identification != null)
-                        this.AssetId.Text = WpfStringAddWrapChars(AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id, ""));
+                        this.AssetId.Text = WpfStringAddWrapChars(AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
 
                     // asset thumbail
+                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         // identify which stream to use..
@@ -347,6 +347,7 @@ namespace AasxPackageExplorer
                         // no error, intended behaviour, as thumbnail might not exist / be faulty in some way (not violating the spec)
                         // Log.Error(ex, "Error loading package's thumbnail");
                     }
+                    // ReSharper enable EmptyGeneralCatchClause
                 }
             }
 
@@ -397,7 +398,7 @@ namespace AasxPackageExplorer
 
             // Timer for below
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
-            MainTimer.Tick += new EventHandler(MainTimer_Tick);
+            MainTimer.Tick += MainTimer_Tick;
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
 
@@ -769,19 +770,18 @@ namespace AasxPackageExplorer
 
                 // Substitute
                 head += "\n";
-                head = head.Replace("{0}", "" + Message?.Content?.ToString());
+                head = head.Replace("{0}", "" + Message?.Content);
                 head = Regex.Replace(head, @"^(\s+)\|", "", RegexOptions.Multiline);
 
                 // test
-#pragma warning disable 0162
-                if (false)
+#if FALSE
                 {
                     Log.Info(0, StoredPrint.ColorBlue, "This is blue");
                     Log.Info(0, StoredPrint.ColorRed, "This is red");
                     Log.Error("This is an error!");
                     Log.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
                 }
-#pragma warning restore 0162
+#endif
 
                 // create window
 
@@ -808,9 +808,10 @@ namespace AasxPackageExplorer
         private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             // decode
-            if (e == null || e.Command == null || !(e.Command is RoutedUICommand))
+            var ruic = e?.Command as RoutedUICommand;
+            if (ruic == null)
                 return;
-            var cmd = (e.Command as RoutedUICommand).Text.Trim().ToLower();
+            var cmd = ruic.Text?.Trim().ToLower();
 
             // see: MainWindow.CommandBindings.cs
             this.CommandBinding_GeneralDispatch(cmd);
@@ -863,12 +864,14 @@ namespace AasxPackageExplorer
             }
 
             Log.Info("Closing ..");
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 thePackageEnv.Close();
             }
             catch (Exception)
             { }
+            // ReSharper enable EmptyGeneralCatchClause
 
             e.Cancel = false;
         }
@@ -929,15 +932,17 @@ namespace AasxPackageExplorer
                     {
                         // access a valid property
                         var p = viselem.theWrapper.submodelElement as AdminShell.Property;
+                        if (p != null)
+                        {
+                            // use online connection
+                            var x = this.theOnlineConnection.UpdatePropertyValue(viselem.theEnv, viselem.theContainer as AdminShell.Submodel, p);
+                            p.value = x;
 
-                        // use online connection
-                        var x = this.theOnlineConnection.UpdatePropertyValue(viselem.theEnv, viselem.theContainer as AdminShell.Submodel, p);
-                        p.value = x;
-
-                        var y = DisplayElements.SelectedItem;
-                        if (y != null && y is VisualElementGeneric)
-                            y.RefreshFromMainData();
-                        DisplayElements.Refresh();
+                            // refresh
+                            var y = DisplayElements.SelectedItem;
+                            y?.RefreshFromMainData();
+                            DisplayElements.Refresh();
+                        }
                     }
                 }
             }
@@ -951,8 +956,7 @@ namespace AasxPackageExplorer
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
             var x = DisplayElements.SelectedItem;
-            if (x != null && x is VisualElementGeneric)
-                x.RefreshFromMainData();
+            x?.RefreshFromMainData();
             DisplayElements.Refresh();
             ContentTakeOver.IsEnabled = false;
         }
@@ -989,12 +993,18 @@ namespace AasxPackageExplorer
 
         public void FlyoutLoggingStart()
         {
-            flyoutLogMessages = new List<StoredPrint>();
+            lock (flyoutLogMessages)
+            {
+                flyoutLogMessages = new List<StoredPrint>();
+            }
         }
 
         public void FlyoutLoggingStop()
         {
-            flyoutLogMessages = null;
+            lock (flyoutLogMessages)
+            {
+                flyoutLogMessages = null;
+            }
         }
 
         public void FlyoutLoggingPush(StoredPrint msg)
@@ -1174,7 +1184,7 @@ namespace AasxPackageExplorer
 
                 // Assuming you have one file that you care about, pass it off to whatever
                 // handling code you have defined.
-                if (files.Length > 0)
+                if (files != null && files.Length > 0)
                 {
                     string fn = files[0];
                     try
@@ -1194,7 +1204,7 @@ namespace AasxPackageExplorer
 
         private void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && (dragStartPoint.X != 0 && dragStartPoint.Y != 0)
+            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && (Math.Abs(dragStartPoint.X) < 0.001 && Math.Abs(dragStartPoint.Y) < 0.001)
                 && this.showContentPackageUri != null && this.thePackageEnv != null)
             {
                 Point position = e.GetPosition(null);

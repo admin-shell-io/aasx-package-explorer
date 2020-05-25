@@ -189,8 +189,9 @@ namespace AdminShellNS
             [JsonProperty(PropertyName = "idType")]
             public string JsonIdType
             {
-                get { return (idType == "IdShort") ? "IdShort" : idType; }
-                set { if (value == "IdShort") idType = "IdShort"; else idType = value; }
+                // adapt idShort <-> IdShort
+                get => (idType == "idShort") ? "IdShort" : idType;
+                set => idType = (value == "idShort") ? "IdShort" : value;
             }
 
             [MetaModelName("Key.value")]
@@ -223,7 +224,7 @@ namespace AdminShellNS
                 this.local = src.local;
                 this.idType = src.idType;
                 if (this.idType.Trim().ToLower() == "uri")
-                    this.idType = Identification.IRI; ;
+                    this.idType = Identification.IRI;
                 if (this.idType.Trim().ToLower() == "idshort")
                     this.idType = Identification.IdShort;
                 this.value = src.value;
@@ -240,11 +241,13 @@ namespace AdminShellNS
 
             public static Key CreateNew(string type, bool local, string idType, string value)
             {
-                var k = new Key();
-                k.type = type;
-                k.local = local;
-                k.idType = idType;
-                k.value = value;
+                var k = new Key()
+                {
+                    type = type,
+                    local = local,
+                    idType = idType,
+                    value = value
+                };
                 return (k);
             }
 
@@ -267,8 +270,8 @@ namespace AdminShellNS
                 }
 
                 // (old) default
-                var local = (this.local) ? "Local" : "not Local";
-                return $"[{this.type}, {local}, {this.idType}, {this.value}]";
+                var tlc = (this.local) ? "Local" : "not Local";
+                return $"[{this.type}, {tlc}, {this.idType}, {this.value}]";
             }
 
             public static string KeyListToString(List<Key> keys)
@@ -364,14 +367,16 @@ namespace AdminShellNS
             public static string AllElements = "All";
 
             // use this in list to designate the GlobalReference
+            // Resharper disable MemberHidesStaticFromOuterClass
             public static string GlobalReference = "GlobalReference";
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
+            // Resharper enable MemberHidesStaticFromOuterClass
 
-            public static string[] IdentifierTypeNames = new string[] { AdminShell.Identification.IdShort, "Custom", AdminShell.Identification.IRDI, AdminShell.Identification.IRI };
+            public static string[] IdentifierTypeNames = new string[] { Identification.IdShort, "Custom", Identification.IRDI, Identification.IRI };
 
             public enum IdentifierType { IdShort = 0, Custom, IRDI, IRI };
 
@@ -391,7 +396,7 @@ namespace AdminShellNS
                 return res;
             }
 
-            public bool Matches(string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {
                 //return (this.type == type || (matchMode == Key.MatchMode.Relaxed && (this.type == Key.GlobalReference || type == Key.GlobalReference)))
                 //    && (this.local == local || matchMode == Key.MatchMode.Relaxed)
@@ -410,7 +415,7 @@ namespace AdminShellNS
                 return false;
             }
 
-            public bool Matches(Key key, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(Key key, MatchMode matchMode = MatchMode.Strict)
             {
                 if (key == null)
                     return false;
@@ -492,15 +497,15 @@ namespace AdminShellNS
 
             public static KeyList CreateNew(Key k)
             {
-                var kl = new KeyList();
-                kl.Add(k);
+                var kl = new KeyList { k };
                 return kl;
             }
 
             public static KeyList CreateNew(string type, bool local, string idType, string value)
             {
-                var kl = new KeyList();
-                kl.Add(Key.CreateNew(type, local, idType, value));
+                var kl = new KeyList() {
+                    Key.CreateNew(type, local, idType, value)
+                };
                 return kl;
             }
 
@@ -633,7 +638,7 @@ namespace AdminShellNS
                 if (irdi == null)
                     return null;
                 var r = new Reference();
-                r.keys.Add(new Key(Key.GlobalReference, false, AdminShell.Identification.IRDI, irdi));
+                r.keys.Add(new Key(Key.GlobalReference, false, Identification.IRDI, irdi));
                 return r;
             }
 
@@ -806,7 +811,7 @@ namespace AdminShellNS
             public SubmodelRef(AasxCompatibilityModels.AdminShellV10.SubmodelRef src) : base(src) { }
 #endif
 
-            public static new SubmodelRef CreateNew(string type, bool local, string idType, string value)
+            public new static SubmodelRef CreateNew(string type, bool local, string idType, string value)
             {
                 var r = new SubmodelRef();
                 r.Keys.Add(Key.CreateNew(type, local, idType, value));
@@ -1197,15 +1202,13 @@ namespace AdminShellNS
 
             public static AssetKind CreateAsType()
             {
-                var res = new AssetKind();
-                res.kind = "Type";
+                var res = new AssetKind() { kind = "Type" };
                 return res;
             }
 
             public static AssetKind CreateAsInstance()
             {
-                var res = new AssetKind();
-                res.kind = "Instance";
+                var res = new AssetKind() { kind = "Instance" };
                 return res;
             }
         }
@@ -1251,15 +1254,13 @@ namespace AdminShellNS
 
             public static ModelingKind CreateAsTemplate()
             {
-                var res = new ModelingKind();
-                res.kind = "Template";
+                var res = new ModelingKind() { kind = "Template" };
                 return res;
             }
 
             public static ModelingKind CreateAsInstance()
             {
-                var res = new ModelingKind();
-                res.kind = "Instance";
+                var res = new ModelingKind() { kind = "Instance" };
                 return res;
             }
         }
@@ -1394,9 +1395,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    if (description == null)
-                        return null;
-                    return description.langString;
+                    return description?.langString;
                 }
                 set
                 {
@@ -1439,7 +1438,7 @@ namespace AdminShellNS
                     return;
                 this.idShort = src.idShort;
                 if (this.idShort == null)
-                    // cnage in V2.0 -> mandatory
+                    // change in V2.0 -> mandatory
                     this.idShort = "";
                 this.category = src.category;
                 if (src.description != null)
@@ -1470,15 +1469,18 @@ namespace AdminShellNS
                 if (this is Identifiable)
                 {
                     var idf = this as Identifiable;
-                    var k = Key.CreateNew(idf.GetElementName(), true, idf.identification.idType, idf.identification.id);
-                    refs.Insert(0, k);
+                    if (idf != null)
+                    {
+                        var k = Key.CreateNew(idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
+                        refs.Insert(0, k);
+                    }
                 }
                 else
                 {
                     var k = Key.CreateNew(this.GetElementName(), true, "IdShort", this.idShort);
                     refs.Insert(0, k);
                     // recurse upwards!
-                    if (parent != null && parent is Referable)
+                    if (parent != null)
                         (this.parent).CollectReferencesByParent(refs);
                 }
             }
@@ -1487,7 +1489,7 @@ namespace AdminShellNS
             {
                 // recurse first
                 var head = "";
-                if (!(this is Identifiable) && this.parent != null && this.parent is Referable)
+                if (!(this is Identifiable) && this.parent != null)
                     // can go up
                     head = this.parent.CollectIdShortByParent() + "/";
                 // add own
@@ -1638,10 +1640,8 @@ namespace AdminShellNS
                 var hashBytes = Referable.HashProvider.ComputeHash(dataBytes);
 
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2"));
-                }
+                foreach (var hb in hashBytes)
+                    sb.Append(hb.ToString("X2"));
                 return sb.ToString();
             }
         }
@@ -1812,10 +1812,10 @@ namespace AdminShellNS
             public static AdministrationShell CreateNew(string idType, string id, string version = null, string revision = null)
             {
                 var s = new AdministrationShell();
-                s.identification.idType = idType;
-                s.identification.id = id;
                 if (version != null)
                     s.SetAdminstration(version, revision);
+                s.identification.idType = idType;
+                s.identification.id = id;
                 return (s);
             }
 
@@ -2075,8 +2075,7 @@ namespace AdminShellNS
 
             public static View CreateNew(string idShort)
             {
-                var v = new View();
-                v.idShort = idShort;
+                var v = new View() { idShort = idShort };
                 return (v);
             }
 
@@ -2538,9 +2537,13 @@ namespace AdminShellNS
             }
         }
 
+        // ReSharper disable ClassNeverInstantiated.Global .. class is important to show potential for ISO!
+
         public class DataSpecificationISO99999
         {
         }
+
+        // ReSharper enable ClassNeverInstantiated.Global
 
         public class DataSpecificationContent
         {
@@ -2624,14 +2627,11 @@ namespace AdminShellNS
                 {
                     if (embeddedDataSpecification == null)
                         return null;
-                    return new EmbeddedDataSpecification[] { embeddedDataSpecification };
+                    return new[] { embeddedDataSpecification };
                 }
                 set
                 {
-                    if (value == null)
-                        embeddedDataSpecification = null;
-                    else
-                        embeddedDataSpecification = value[0];
+                    embeddedDataSpecification = (value == null) ? null : value[0];
                 }
             }
 
@@ -2691,10 +2691,10 @@ namespace AdminShellNS
             public static ConceptDescription CreateNew(string idType, string id, string version = null, string revision = null, string idShort = null)
             {
                 var cd = new ConceptDescription();
-                cd.identification.idType = idType;
-                cd.identification.id = id;
                 if (idShort != null)
                     cd.idShort = idShort;
+                cd.identification.idType = idType;
+                cd.identification.id = id;
                 if (version != null)
                 {
                     if (cd.administration == null)
@@ -3197,8 +3197,8 @@ namespace AdminShellNS
                     foreach (var smr in onlyForAAS.submodelRefs)
                     {
                         var sm = this.FindSubmodel(smr);
-                        if (sm != null)
-                            foreach (var x in sm?.submodelElements?.FindAll<T>(match))
+                        if (sm?.submodelElements != null)
+                            foreach (var x in sm.submodelElements.FindAll<T>(match))
                                 yield return x;
                     }
                 }
@@ -3206,8 +3206,9 @@ namespace AdminShellNS
                 {
                     if (this.Submodels != null)
                         foreach (var sm in this.Submodels)
-                            foreach (var x in sm?.submodelElements?.FindAll<T>(match))
-                                yield return x;
+                            if (sm?.submodelElements != null)
+                                foreach (var x in sm.submodelElements.FindAll<T>(match))
+                                    yield return x;
                 }
             }
 
@@ -3215,8 +3216,7 @@ namespace AdminShellNS
             {
                 if (key == null)
                     return null;
-                var l = new List<Key>();
-                l.Add(key);
+                var l = new List<Key> { key };
                 return (FindConceptDescription(l));
             }
 
@@ -3240,7 +3240,7 @@ namespace AdminShellNS
                 // recurse?
                 if (!shallowCopy && src is SubmodelElementCollection)
                     foreach (var m in (src as SubmodelElementCollection).value)
-                        CopyConceptDescriptionsFrom(srcEnv, m.submodelElement, shallowCopy);
+                        CopyConceptDescriptionsFrom(srcEnv, m.submodelElement, shallowCopy: false);
 
             }
 
@@ -3287,6 +3287,7 @@ namespace AdminShellNS
                     this.Submodels.Add(dstSub);
                 }
                 else
+                if (dstSub != null)
                 {
                     // there is already an submodel, just add members
                     if (!shallowCopy && srcSub.submodelElements != null)
@@ -3294,7 +3295,7 @@ namespace AdminShellNS
                         if (dstSub.submodelElements == null)
                             dstSub.submodelElements = new SubmodelElementWrapperCollection();
                         foreach (var smw in srcSub.submodelElements)
-                            dstSub.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy));
+                            dstSub.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy: false));
                     }
                 }
 
@@ -3362,10 +3363,12 @@ namespace AdminShellNS
             {
                 sw.AutoFlush = true;
 
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.NullValueHandling = NullValueHandling.Ignore;
-                serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-                serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+                JsonSerializer serializer = new JsonSerializer()
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    Formatting = Newtonsoft.Json.Formatting.Indented
+                };
 
                 JsonWriter writer = new JsonTextWriter(sw);
                 serializer.Serialize(writer, this);
@@ -3399,6 +3402,10 @@ namespace AdminShellNS
 
                 foreach (var w in wrappers)
                 {
+                    // access
+                    if (w == null)
+                        continue;
+
                     // include in filter ..
                     if (w.submodelElement.semanticId != null)
                     {
@@ -3408,13 +3415,13 @@ namespace AdminShellNS
                     }
 
                     // recurse?
-                    if (w.submodelElement is SubmodelElementCollection)
-                        CreateFromExistingEnvRecurseForCDs(src, (w.submodelElement as SubmodelElementCollection).value, ref filterForCD);
+                    if (w.submodelElement is SubmodelElementCollection smec)
+                        CreateFromExistingEnvRecurseForCDs(src, smec.value, ref filterForCD);
 
-                    if (w.submodelElement is Operation)
+                    if (w.submodelElement is Operation op)
                         for (int i = 0; i < 2; i++)
                         {
-                            var w2s = Operation.GetWrappers((w.submodelElement as Operation)[i]);
+                            var w2s = Operation.GetWrappers(op[i]);
                             CreateFromExistingEnvRecurseForCDs(src, w2s, ref filterForCD);
                         }
 
@@ -3577,6 +3584,8 @@ namespace AdminShellNS
                 return "Qualifier";
             }
 
+            // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
+            // ReSharper disable RedundantArgumentDefaultValue
             public string ToString(int format = 0, string delimiter = ",")
             {
                 var res = "" + type;
@@ -3595,6 +3604,8 @@ namespace AdminShellNS
             {
                 return this.ToString(0);
             }
+            // ReSharper enable MethodOverloadWithOptionalParameter
+            // ReSharper enable RedundantArgumentDefaultValue
         }
 
         /// <summary>
@@ -3633,6 +3644,8 @@ namespace AdminShellNS
                 return null;
             }
 
+            // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
+            // ReSharper disable RedundantArgumentDefaultValue
             public string ToString(int format = 0, string delimiter = ";", string referencesDelimiter = ",")
             {
                 var res = "";
@@ -3649,6 +3662,8 @@ namespace AdminShellNS
             {
                 return this.ToString(0);
             }
+            // ReSharper enable MethodOverloadWithOptionalParameter
+            // ReSharper enable RedundantArgumentDefaultValue
         }
 
         public class SubmodelElement : Referable, System.IDisposable, IGetReference
@@ -3765,10 +3780,12 @@ namespace AdminShellNS
             {
                 if (this.qualifiers == null)
                     this.qualifiers = new QualifierCollection();
-                var q = new Qualifier();
-                q.type = qualifierType;
-                q.value = qualifierValue;
-                q.valueId = qualifierValueId;
+                var q = new Qualifier()
+                {
+                    type = qualifierType,
+                    value = qualifierValue,
+                    valueId = qualifierValueId,
+                };
                 if (semanticKeys != null)
                     q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
                 this.qualifiers.Add(q);
@@ -3932,9 +3949,13 @@ namespace AdminShellNS
 
             public static AdequateElementEnum GetAdequateEnum(string adequateName)
             {
+                if (adequateName == null)
+                    return AdequateElementEnum.Unknown;
+
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
-                    if (Enum.GetName(typeof(AdequateElementEnum), en).Trim().ToLower() == adequateName.Trim().ToLower())
+                    if (Enum.GetName(typeof(AdequateElementEnum), en)?.Trim().ToLower() == adequateName.Trim().ToLower())
                         return en;
+
                 return AdequateElementEnum.Unknown;
             }
 
@@ -3953,7 +3974,6 @@ namespace AdminShellNS
             /// <summary>
             /// Introduced for JSON serialization, can create SubModelElements based on a string name
             /// </summary>
-            /// <param name="elementName">string name (standard PascalCased)</param>
             public static SubmodelElement CreateAdequateType(AdequateElementEnum ae, SubmodelElement src = null)
             {
                 if (ae == AdequateElementEnum.Property)
@@ -4089,8 +4109,7 @@ namespace AdminShellNS
 
             public static SubmodelElementWrapper CreateFor(SubmodelElement sme)
             {
-                var res = new SubmodelElementWrapper();
-                res.submodelElement = sme;
+                var res = new SubmodelElementWrapper() { submodelElement = sme };
                 return res;
             }
 
@@ -4105,33 +4124,32 @@ namespace AdminShellNS
                     return null;
 
                 // over all wrappers
-                if (wrappers != null)
-                    foreach (var smw in wrappers)
-                        if (smw.submodelElement != null && smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
+                foreach (var smw in wrappers)
+                    if (smw.submodelElement != null && smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
+                    {
+                        // match on this level. Did we find a leaf element?
+                        if ((keyIndex + 1) >= rf.Count)
+                            return smw.submodelElement;
+
+                        // dive into SMC?
+                        if (smw.submodelElement is SubmodelElementCollection smc)
                         {
-                            // match on this level. Did we find a leaf element?
-                            if ((keyIndex + 1) >= rf.Count)
-                                return smw.submodelElement;
-
-                            // dive into SMC?
-                            if (smw.submodelElement is SubmodelElementCollection)
-                            {
-                                var found = FindReferableByReference((smw.submodelElement as SubmodelElementCollection).value, rf, keyIndex + 1);
-                                if (found != null)
-                                    return found;
-                            }
-
-                            // dive into Entity statements?
-                            if (smw.submodelElement is Entity)
-                            {
-                                var found = FindReferableByReference((smw.submodelElement as Entity).statements, rf, keyIndex + 1);
-                                if (found != null)
-                                    return found;
-                            }
-
-                            // else: :-(
-                            return null;
+                            var found = FindReferableByReference(smc.value, rf, keyIndex + 1);
+                            if (found != null)
+                                return found;
                         }
+
+                        // dive into Entity statements?
+                        if (smw.submodelElement is Entity ent)
+                        {
+                            var found = FindReferableByReference(ent.statements, rf, keyIndex + 1);
+                            if (found != null)
+                                return found;
+                        }
+
+                        // else: :-(
+                        return null;
+                    }
 
                 // no?
                 return null;
@@ -4231,7 +4249,7 @@ namespace AdminShellNS
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement.semanticId != null)
                     {
-                        if (smw?.submodelElement == null)
+                        if (smw.submodelElement == null)
                             continue;
 
                         if (allowedTypes != null)
@@ -4417,9 +4435,11 @@ namespace AdminShellNS
                     ids = this.IterateIdShortTemplateToBeUnique(idxTemplate, maxNum);
 
                 // make a new instance
-                var sme = new T();
-                sme.idShort = ids;
-                sme.semanticId = new SemanticId(cd.GetReference());
+                var sme = new T()
+                {
+                    idShort = ids,
+                    semanticId = new SemanticId(cd.GetReference())
+                };
                 if (category != null)
                     sme.category = category;
 
@@ -4446,8 +4466,7 @@ namespace AdminShellNS
                     ids = this.IterateIdShortTemplateToBeUnique(idxTemplate, maxNum);
 
                 // make a new instance
-                var sme = new T();
-                sme.idShort = ids;
+                var sme = new T() { idShort = ids };
                 if (category != null)
                     sme.category = category;
 
@@ -4535,8 +4554,7 @@ namespace AdminShellNS
                         this.submodelElements = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
-                            var smew = new SubmodelElementWrapper();
-                            smew.submodelElement = x;
+                            var smew = new SubmodelElementWrapper() { submodelElement = x };
                             this.submodelElements.Add(smew);
                         }
                     }
@@ -4565,7 +4583,7 @@ namespace AdminShellNS
                     if (this.submodelElements == null)
                         this.submodelElements = new SubmodelElementWrapperCollection();
                     foreach (var smw in src.submodelElements)
-                        this.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy));
+                        this.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy: false));
                 }
             }
 
@@ -4584,16 +4602,14 @@ namespace AdminShellNS
                     if (this.submodelElements == null)
                         this.submodelElements = new SubmodelElementWrapperCollection();
                     foreach (var smw in src.submodelElements)
-                        this.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy));
+                        this.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy: false));
                 }
             }
 #endif
 
             public static Submodel CreateNew(string idType, string id, string version = null, string revision = null)
             {
-                var s = new Submodel();
-                s.identification.idType = idType;
-                s.identification.id = id;
+                var s = new Submodel() { identification = new Identification(idType, id) };
                 if (version != null)
                 {
                     if (s.administration == null)
@@ -5210,7 +5226,7 @@ namespace AdminShellNS
             public static string[] GetPopularMimeTypes()
             {
                 return
-                    new string[] {
+                    new[] {
                     System.Net.Mime.MediaTypeNames.Text.Plain,
                     System.Net.Mime.MediaTypeNames.Text.Xml,
                     System.Net.Mime.MediaTypeNames.Text.Html,
@@ -5376,8 +5392,7 @@ namespace AdminShellNS
                         this.annotation = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
-                            var smew = new SubmodelElementWrapper();
-                            smew.submodelElement = x;
+                            var smew = new SubmodelElementWrapper() { submodelElement = x };
                             this.annotation.Add(smew);
                         }
                     }
@@ -5401,7 +5416,7 @@ namespace AdminShellNS
                     this.annotation = new SubmodelElementWrapperCollection(src.annotation);
             }
 
-            public static new AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
+            public new static AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
                 Reference first = null, Reference second = null)
             {
                 var x = new AnnotatedRelationshipElement();
@@ -5472,8 +5487,7 @@ namespace AdminShellNS
                         this.value = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
-                            var smew = new SubmodelElementWrapper();
-                            smew.submodelElement = x;
+                            var smew = new SubmodelElementWrapper() { submodelElement = x };
                             this.value.Add(smew);
                         }
                     }
@@ -5823,8 +5837,7 @@ namespace AdminShellNS
                         this.statements = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
-                            var smew = new SubmodelElementWrapper();
-                            smew.submodelElement = x;
+                            var smew = new SubmodelElementWrapper() { submodelElement = x };
                             this.statements.Add(smew);
                         }
                     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace AasxPredefinedConcepts
 {
@@ -19,6 +20,7 @@ namespace AasxPredefinedConcepts
             this.theLibrary = BuildLibrary(Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiDigitalTypeplate.json");
         }
 
+        [JetBrains.Annotations.UsedImplicitly]
         public class SetOfNameplate
         {
             public AdminShell.Submodel
@@ -91,7 +93,8 @@ namespace AasxPredefinedConcepts
             }
         }
 
-        public class SetOIdentification
+        [JetBrains.Annotations.UsedImplicitly]
+        public class SetOfIdentification
         {
             public AdminShell.Submodel
                 SM_Identification;
@@ -136,7 +139,7 @@ namespace AasxPredefinedConcepts
                 CD_Fax,
                 CD_CompanyLogo;
 
-            public SetOIdentification(AasxDefinitionBase bs)
+            public SetOfIdentification(AasxDefinitionBase bs)
             {
                 this.SM_Identification = bs.RetrieveReferable<AdminShell.Submodel>("SM_Identification");
 

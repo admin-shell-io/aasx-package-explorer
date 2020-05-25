@@ -8,8 +8,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
 
+    <!-- styles declared for use in code -->
+    <!-- ReSharper disable Xaml.RedundantResource -->
+    
     <UserControl.Resources>
-
+        
         <Style x:Key="dataRowStyle" TargetType="{x:Type TableRowGroup}">
         </Style>
 

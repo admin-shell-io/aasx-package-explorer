@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AasxAmlImExport
 {
-    public class AmlConst
+    public static class AmlConst
     {
-        public class Names
+        public static class Names
         {
             public static string AmlLanguageHeader = "aml-lang=";
             public static string AmlQualifierHeader = "qualifier:";
@@ -19,7 +19,7 @@ namespace AasxAmlImExport
         }
 
 
-        public class Attributes
+        public static class Attributes
         {
             public static string Referable_IdShort = "AAS:Referable/idShort";
             public static string Referable_Category = "AAS:Referable/category";
@@ -85,7 +85,7 @@ namespace AasxAmlImExport
             public static string CD_DSC61360_Definition = "IEC:DataSpecificationIEC61360/definition";
         }
 
-        public class Roles
+        public static class Roles
         {
             public static string Qualifer = "AssetAdministrationShellRoleClassLib/Qualifier";
 
@@ -109,12 +109,12 @@ namespace AasxAmlImExport
             public static string DataSpecificationContent = "AssetAdministrationShellRoleClassLib/DataSpecificationContent";
         }
 
-        public class Classes
+        public static class Classes
         {
             public static string DataSpecificationContent61360 = "AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360";
         }
 
-        public class Interfaces
+        public static class Interfaces
         {
             public static string FileDataReference = "AssetAdministrationShellInterfaceClassLib/FileDataReference";
             public static string ReferableReference = "AssetAdministrationShellInterfaceClassLib/ReferableReference";

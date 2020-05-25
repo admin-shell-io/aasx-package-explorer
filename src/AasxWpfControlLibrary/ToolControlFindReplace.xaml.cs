@@ -45,7 +45,7 @@ namespace AasxPackageExplorer
         {
             InitializeComponent();
 
-            TheSearchOptions.allowedAssemblies = new System.Reflection.Assembly[] { typeof(AdminShell).Assembly };
+            TheSearchOptions.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
 
             // the combo box needs a special treatment in order to have it focussed ..
             ComboBoxToolsFindText.Loaded += (object sender, RoutedEventArgs e) =>

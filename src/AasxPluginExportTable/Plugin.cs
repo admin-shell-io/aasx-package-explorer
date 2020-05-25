@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using JetBrains.Annotations;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
@@ -17,6 +18,7 @@ The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
@@ -128,18 +130,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // handle the export dialogue
                 var uc = new ExportTableFlyout();
                 uc.Presets = this.options.Presets;
-                fop.StartFlyoverModal(uc);
+                fop?.StartFlyoverModal(uc);
                 if (uc.Result == null)
                     return null;
                 var job = uc.Result;
 
                 // get the output file
                 var dlg = new Microsoft.Win32.SaveFileDialog();
+                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
                 }
                 catch { }
+                // ReSharper enable EmptyGeneralCatchClause
                 dlg.Title = "Select text file to be exported";
 
                 if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
@@ -167,8 +171,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
                 }
 
-                fop.StartFlyover(new EmptyFlyout());
-                var res = dlg.ShowDialog(fop.GetWin32Window());
+                fop?.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog(fop?.GetWin32Window());
 
                 try
                 {
@@ -193,7 +197,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         }
 
                         if (!success)
-                            fop.MessageBoxFlyoutShow("Some error occured while exporting the table. Please refer to the log messages.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            fop?.MessageBoxFlyoutShow("Some error occured while exporting the table. Please refer to the log messages.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
                 }
                 catch (Exception ex)
@@ -249,7 +253,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // go directly deeper?
                     if (!broadSearch && ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                        ExportTable_EnumerateSubmodel(list, env, broadSearch, 1 + depth, sm, ci.submodelElement);
+                        ExportTable_EnumerateSubmodel(list, env, broadSearch: false, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
                 }
 
             // pass 2: go for recursion AFTER?
@@ -258,7 +262,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (coll != null)
                     foreach (var ci in coll.EnumerateChildren())
                         if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                            ExportTable_EnumerateSubmodel(list, env, broadSearch, 1 + depth, sm, ci.submodelElement);
+                            ExportTable_EnumerateSubmodel(list, env, broadSearch: true, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
             }
         }
 

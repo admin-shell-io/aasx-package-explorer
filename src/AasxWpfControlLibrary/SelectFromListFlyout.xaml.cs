@@ -104,20 +104,20 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.ResultIndex = -1;
             this.ResultItem = null;
-            ControlClosed();
+            ControlClosed?.Invoke();
         }
 
         private void ListBoxPresets_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
-                ControlClosed();
+                ControlClosed?.Invoke();
         }
     }
 }

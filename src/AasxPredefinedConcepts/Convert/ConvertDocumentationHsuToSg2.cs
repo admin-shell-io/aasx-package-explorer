@@ -25,7 +25,7 @@ namespace AasxPredefinedConcepts.Convert
 
             var sm = currentReferable as AdminShell.Submodel;
             if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_VDI2770_Documentation.GetSemanticKey()))
-                res.Add(new ConvertOfferDocumentationSg2ToHsu(this, $"Convert Submodel '{"" + sm?.idShort}' for Documentation SG2 to HSU"));
+                res.Add(new ConvertOfferDocumentationSg2ToHsu(this, $"Convert Submodel '{"" + sm.idShort}' for Documentation SG2 to HSU"));
 
             return res;
         }
@@ -56,16 +56,13 @@ namespace AasxPredefinedConcepts.Convert
             {
                 smcOldSg2.RecurseOnSubmodelElements(null, null, (state, parents, current) =>
                 {
-                    var sme = current as AdminShell.SubmodelElement;
+                    var sme = current;
                     if (sme != null && sme.semanticId != null)
                     {
                         var cd = package.AasEnv.FindConceptDescription(sme.semanticId);
                         if (cd != null)
-                            try
-                            {
+                            if (package.AasEnv.ConceptDescriptions.Contains(cd))
                                 package.AasEnv.ConceptDescriptions.Remove(cd);
-                            }
-                            catch { }
                     }
                 });
             }
@@ -152,13 +149,13 @@ namespace AasxPredefinedConcepts.Convert
                                 Set("string", lcs.TrimEnd(','));
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Title, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Title.GetSingleKey(), new Type[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Title.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Summary, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Summary.GetSingleKey(), new Type[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Summary.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_Keywords, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Keywords.GetSingleKey(), new Type[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
+                            Set("string", "" + smcVer.value.FindFirstSemanticId(defsSg2.CD_VDI2770_Keywords.GetSingleKey(), new[] { typeof(AdminShell.Property), typeof(AdminShell.MultiLanguageProperty) })?.submodelElement?.ValueAsText());
 
                         smcHsuDoc.value.CreateSMEForCD<AdminShell.Property>(defsHsu.CD_VDI2770_StatusValue, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(defsSg2.CD_VDI2770_StatusValue.GetSingleKey())?.value);

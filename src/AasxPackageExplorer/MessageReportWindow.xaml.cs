@@ -40,7 +40,7 @@ namespace AasxPackageExplorer
                 return;
 
             // add to rich text box
-            AasxWpfBaseUtils.StoredPrintToRichTextBox(this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: new RoutedEventHandler(link_Click));
+            AasxWpfBaseUtils.StoredPrintToRichTextBox(this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: link_Click);
         }
 
         protected void link_Click(object sender, RoutedEventArgs e)

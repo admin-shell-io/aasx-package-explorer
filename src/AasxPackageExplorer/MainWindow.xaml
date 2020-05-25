@@ -18,6 +18,9 @@ The JSON serialization is under the MIT license (see https://github.com/JamesNK/
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
 
+    <!-- TODO: fix again -->
+    <!-- ReSharper disable Xaml.MissingGridIndex -->
+    
     <Window.Resources>
         <RoutedUICommand x:Key="New" Text="New" />
         <RoutedUICommand x:Key="Open" Text="Open" />
@@ -324,7 +327,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
                 <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="40" VisualElementRequested="ButtonHistory_ObjectRequested"/>
 
-                <StackPanel Grid.Column="3"  HorizontalAlignment="Right" Orientation="Horizontal" Grid.ColumnSpan="2">
+                <StackPanel Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Image x:Name="LogoImage" VerticalAlignment="Stretch" Margin="2,2,4,2"/>
                 </StackPanel>
             </Grid>
@@ -388,13 +391,13 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                 <GridSplitter HorizontalAlignment="Right" 
                       VerticalAlignment="Stretch" 
                       Grid.Column="1" ResizeBehavior="PreviousAndNext"
-                      Grid.Row="0" Grid.RowSpan="3"
+                      Grid.Row="0"
                       Width="5" Background="#FFBCBCBC"/>
 
                 <GridSplitter HorizontalAlignment="Right" 
                       VerticalAlignment="Stretch" 
                       Grid.Column="3" ResizeBehavior="PreviousAndNext"
-                      Grid.Row="0" Grid.RowSpan="3"
+                      Grid.Row="0"
                       Width="5" Background="#FFBCBCBC"/>
 
                 <!--
@@ -402,10 +405,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             <Label Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Content="Yes!" VerticalAlignment="Center"/>
             -->
 
-                <Viewbox Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
+                <Viewbox Grid.Row="0" Grid.Column="0">
                     <Canvas  VerticalAlignment="Center" Width="200" Height="340" Margin="10">
-                        <Path Data="M0,10 L9.5,-0.5 189.5,-0.5 199.5,9.5 199.75063,179.81347 184.71301,179.81347 184.71303,139.68809 174.68797,129.65674 24.31203,129.65674 14.286967,139.68809 14.286735,184.82915 -0.75087814,184.82915 z" Fill="{DynamicResource DarkAccentColor}" HorizontalAlignment="Left" Height="186.25" Margin="-0.75,-0.5,0,0" Stretch="Fill" Stroke="{DynamicResource DarkestAccentColor}" VerticalAlignment="Top" Width="201.5" Grid.ColumnSpan="2" Grid.RowSpan="2" StrokeThickness="1.5"/>
-                        <Path Data="M34.499849,79.5 L24.499838,89.5 24.750674,270.54721 175.25251,270.54721 174.5,89.5 C174.5,89.5 164.49999,79.5 164.49999,79.5 L34.78413,79.748947" Fill="#FFD9D9D9" HorizontalAlignment="Left" Height="191.748" Margin="24,149.002,0,-40.75" Stretch="Fill" Stroke="#FF7F7F7F" VerticalAlignment="Top" Width="151.75" Grid.RowSpan="2" StrokeThickness="1.5"/>
+                        <Path Data="M0,10 L9.5,-0.5 189.5,-0.5 199.5,9.5 199.75063,179.81347 184.71301,179.81347 184.71303,139.68809 174.68797,129.65674 24.31203,129.65674 14.286967,139.68809 14.286735,184.82915 -0.75087814,184.82915 z" Fill="{DynamicResource DarkAccentColor}" HorizontalAlignment="Left" Height="186.25" Margin="-0.75,-0.5,0,0" Stretch="Fill" Stroke="{DynamicResource DarkestAccentColor}" VerticalAlignment="Top" Width="201.5" StrokeThickness="1.5"/>
+                        <Path Data="M34.499849,79.5 L24.499838,89.5 24.750674,270.54721 175.25251,270.54721 174.5,89.5 C174.5,89.5 164.49999,79.5 164.49999,79.5 L34.78413,79.748947" Fill="#FFD9D9D9" HorizontalAlignment="Left" Height="191.748" Margin="24,149.002,0,-40.75" Stretch="Fill" Stroke="#FF7F7F7F" VerticalAlignment="Top" Width="151.75" StrokeThickness="1.5"/>
                         <Rectangle Fill="{DynamicResource LightAccentColor}" HorizontalAlignment="Left" Height="20" Margin="10,40,0,0" Stroke="{DynamicResource DarkestAccentColor}" StrokeThickness="1.5" VerticalAlignment="Top" Width="180"/>
                         <Label Content="Submodel" HorizontalAlignment="Left" Height="25" Margin="10,37.332,0,0" VerticalAlignment="Top" Width="180" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
                         <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,70,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
@@ -413,8 +416,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                         <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,100,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
                         <Label Content="Submodel element" HorizontalAlignment="Left" Height="25" Margin="30,96.968,0,0" VerticalAlignment="Top" Width="160" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
                         <TextBlock x:Name="AasId" HorizontalAlignment="Left" Height="39" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Width="180" FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="10" Canvas.Top="8"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
-                        <TextBlock x:Name="AssetId" HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" FontSize="9" TextTrimming="CharacterEllipsis" Grid.Row="1" Canvas.Left="35" Canvas.Top="157"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
-                        <Image x:Name="AssetPic" HorizontalAlignment="Left" Height="130" Grid.Row="1" VerticalAlignment="Top" Width="130" Canvas.Left="35" Canvas.Top="200"/>
+                        <TextBlock x:Name="AssetId" HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="35" Canvas.Top="157"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
+                        <Image x:Name="AssetPic" HorizontalAlignment="Left" Height="130" VerticalAlignment="Top" Width="130" Canvas.Left="35" Canvas.Top="200"/>
                     </Canvas>
                 </Viewbox>
 
