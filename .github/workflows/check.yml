@@ -20,6 +20,10 @@ jobs:
         working-directory: src
         run: nuget install Microsoft.NET.Compilers -Version 2.10.0
 
+      - name: Install Nunit Console Runner
+        working-directory: src
+        run: nuget install NUnit.ConsoleRunner -Version 3.11.1
+
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
@@ -37,6 +41,18 @@ jobs:
         with:
           version: '2020.1.2'	
 
-      - name: Run the check
+      - name: Check format
         working-directory: src
-        run: powershell .\Check.ps1
+        run: powershell .\CheckFormat.ps1
+
+      - name: Build
+        working-directory: src
+        run: powershell .\Build.ps1
+
+      - name: Inspect code
+        working-directory: src
+        run: powershell .\InspectCode.ps1
+
+      - name: Run unit tests
+        working-directory: src
+        run: powershell .\Test.ps1
