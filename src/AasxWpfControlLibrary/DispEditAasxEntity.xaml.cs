@@ -259,8 +259,8 @@ namespace AasxPackageExplorer
                        if (i is int && (int)i == 1)
                        {
                            var uc = new TextBoxFlyout("Asset ID:", MessageBoxImage.Question, TextBoxFlyout.DialogueOptions.FilterAllControlKeys);
-                            // uc.Text = asset.identification.id ?? "";
-                            if (helper.flyoutProvider != null)
+                           // uc.Text = asset.identification.id ?? "";
+                           if (helper.flyoutProvider != null)
                            {
                                helper.flyoutProvider.StartFlyoverModal(uc);
                                if (uc.Result)
@@ -431,13 +431,13 @@ namespace AasxPackageExplorer
                                    var mdo = rve.GetMainDataObject();
                                    if (mdo != null && mdo is AdminShell.AdministrationShell sourceAAS)
                                    {
-                                        //
-                                        // copy AAS
-                                        //
-                                        try
+                                       //
+                                       // copy AAS
+                                       //
+                                       try
                                        {
-                                            // in any case, copy the Asset as well
-                                            var sourceAsset = rve.theEnv.FindAsset(sourceAAS.assetRef);
+                                           // in any case, copy the Asset as well
+                                           var sourceAsset = rve.theEnv.FindAsset(sourceAAS.assetRef);
                                            var destAsset = sourceAsset;
                                            if (copyRecursively)
                                            {
@@ -447,8 +447,8 @@ namespace AasxPackageExplorer
                                                env.Assets.Add(destAsset);
                                            }
 
-                                            // make a copy of the AAS itself
-                                            destAAS = new AdminShell.AdministrationShell(mdo as AdminShell.AdministrationShell);
+                                           // make a copy of the AAS itself
+                                           destAAS = new AdminShell.AdministrationShell(mdo as AdminShell.AdministrationShell);
                                            destAAS.assetRef = null;
                                            if (copyRecursively)
                                                destAAS.assetRef = destAsset.GetReference();
@@ -456,28 +456,28 @@ namespace AasxPackageExplorer
                                                destAAS.identification = new AdminShell.Identification(AdminShell.Identification.IRI, Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas));
                                            env.AdministrationShells.Add(destAAS);
 
-                                            // clear, copy Submodels?
-                                            destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
+                                           // clear, copy Submodels?
+                                           destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
                                            if (copyRecursively && sourceAAS.submodelRefs != null)
                                            {
                                                foreach (var smr in sourceAAS.submodelRefs)
                                                {
-                                                    // need access to source submodel
-                                                    var srcSub = rve.theEnv.FindSubmodel(smr);
+                                                   // need access to source submodel
+                                                   var srcSub = rve.theEnv.FindSubmodel(smr);
                                                    if (srcSub == null)
                                                        continue;
 
-                                                    // get hold of suppl file infos?
-                                                    if (srcSub.submodelElements != null)
+                                                   // get hold of suppl file infos?
+                                                   if (srcSub.submodelElements != null)
                                                        foreach (var f in srcSub.submodelElements.FindAll<AdminShell.File>())
                                                            if (f != null && f.value != null && f.value.StartsWith("/") && !potentialSupplFilesToCopy.ContainsKey(f.value.ToLower().Trim()))
                                                                potentialSupplFilesToCopy[f.value.ToLower().Trim()] = f.value.ToLower().Trim();
 
-                                                    // complicated new ids?
-                                                    if (!createNewIds)
+                                                   // complicated new ids?
+                                                   if (!createNewIds)
                                                    {
-                                                        // straightforward between environments
-                                                        var destSMR = env.CopySubmodelRefAndCD(rve.theEnv, smr, copySubmodel: true, copyCD: true, shallowCopy: false);
+                                                       // straightforward between environments
+                                                       var destSMR = env.CopySubmodelRefAndCD(rve.theEnv, smr, copySubmodel: true, copyCD: true, shallowCopy: false);
                                                        if (destSMR != null)
                                                        {
                                                            destAAS.submodelRefs.Add(destSMR);
@@ -485,22 +485,22 @@ namespace AasxPackageExplorer
                                                    }
                                                    else
                                                    {
-                                                        // in the same environment?
-                                                        // means: we have to generate a new submodel ref by using template mechanism
-                                                        var tid = Options.Curr.TemplateIdSubmodelInstance;
+                                                       // in the same environment?
+                                                       // means: we have to generate a new submodel ref by using template mechanism
+                                                       var tid = Options.Curr.TemplateIdSubmodelInstance;
                                                        if (srcSub.kind != null && srcSub.kind.IsTemplate)
                                                            tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                                        // create Submodel as deep copy 
-                                                        // with new id from scratch
-                                                        var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
+                                                       // create Submodel as deep copy 
+                                                       // with new id from scratch
+                                                       var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
                                                        dstSub.identification = new AdminShell.Identification(AdminShell.Identification.IRI, Options.Curr.GenerateIdAccordingTemplate(tid));
 
-                                                        // make a new ref
-                                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
+                                                       // make a new ref
+                                                       var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
 
-                                                        // formally add this to active environment and AAS
-                                                        env.Submodels.Add(dstSub);
+                                                       // formally add this to active environment and AAS
+                                                       env.Submodels.Add(dstSub);
                                                        destAAS.submodelRefs.Add(dstRef);
                                                    }
                                                }
@@ -511,19 +511,19 @@ namespace AasxPackageExplorer
                                            Log.Error(ex, $"copying AAS");
                                        }
 
-                                        //
-                                        // Copy suppl files
-                                        //
-                                        if (copySupplFiles && rve.thePackage != null && package != rve.thePackage)
+                                       //
+                                       // Copy suppl files
+                                       //
+                                       if (copySupplFiles && rve.thePackage != null && package != rve.thePackage)
                                        {
-                                            // copy conditions met
-                                            foreach (var fn in potentialSupplFilesToCopy.Values)
+                                           // copy conditions met
+                                           foreach (var fn in potentialSupplFilesToCopy.Values)
                                            {
                                                try
                                                {
-                                                    // copy ONLY if not existing in destination
-                                                    // rationale: do not potential harm the source content, even when voiding destination integrity
-                                                    if (rve.thePackage.IsLocalFile(fn) && !package.IsLocalFile(fn))
+                                                   // copy ONLY if not existing in destination
+                                                   // rationale: do not potential harm the source content, even when voiding destination integrity
+                                                   if (rve.thePackage.IsLocalFile(fn) && !package.IsLocalFile(fn))
                                                    {
                                                        var tmpFile = rve.thePackage.MakePackageFileAvailableAsTempFile(fn);
                                                        var targetDir = System.IO.Path.GetDirectoryName(fn);
@@ -538,10 +538,10 @@ namespace AasxPackageExplorer
                                            }
                                        }
 
-                                        //
-                                        // Done
-                                        //
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: destAAS, isExpanded: true);
+                                       //
+                                       // Done
+                                       //
+                                       return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: destAAS, isExpanded: true);
                                    }
                                }
                            }
@@ -750,28 +750,28 @@ namespace AasxPackageExplorer
                                "This operation is rather special. Do you want to proceed?", "Submodel sharing", MessageBoxButton.YesNo, MessageBoxImage.Warning))
                                return new ModifyRepo.LambdaActionNone();
 
-                            // select existing Submodel
-                            var ks = helper.SmartSelectAasEntityKeys(package.AasEnv, "Submodel");
+                           // select existing Submodel
+                           var ks = helper.SmartSelectAasEntityKeys(package.AasEnv, "Submodel");
                            if (ks != null)
                            {
-                                // create ref
-                                var smr = new AdminShell.SubmodelRef();
+                               // create ref
+                               var smr = new AdminShell.SubmodelRef();
                                smr.Keys.AddRange(ks);
                                aas.submodelRefs.Add(smr);
 
-                                // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
+                               // redraw
+                               return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
                            }
                        }
 
                        if ((int)buttonNdx == 1 || (int)buttonNdx == 2)
                        {
-                            // create new submodel
-                            var submodel = new AdminShell.Submodel();
+                           // create new submodel
+                           var submodel = new AdminShell.Submodel();
                            env.Submodels.Add(submodel);
 
-                            // directly create identification, as we need it!
-                            submodel.identification.idType = AdminShell.Identification.IRI;
+                           // directly create identification, as we need it!
+                           submodel.identification.idType = AdminShell.Identification.IRI;
                            if ((int)buttonNdx == 1)
                            {
                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelTemplate);
@@ -780,13 +780,13 @@ namespace AasxPackageExplorer
                            else
                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance);
 
-                            // create ref
-                            var smr = new AdminShell.SubmodelRef();
+                           // create ref
+                           var smr = new AdminShell.SubmodelRef();
                            smr.Keys.Add(new AdminShell.Key("Submodel", true, submodel.identification.idType, submodel.identification.id));
                            aas.submodelRefs.Add(smr);
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
 
                        }
 
@@ -810,11 +810,11 @@ namespace AasxPackageExplorer
                                var mdo = rve.GetMainDataObject();
                                if (mdo != null && mdo is AdminShell.SubmodelRef)
                                {
-                                    // we have 2 different use cases: (1) copy between AAS ENVs, (2) copy in one AAS ENV!
-                                    if (env != rve.theEnv)
+                                   // we have 2 different use cases: (1) copy between AAS ENVs, (2) copy in one AAS ENV!
+                                   if (env != rve.theEnv)
                                    {
-                                        // use case (1) copy between AAS ENVs
-                                        var clone = env.CopySubmodelRefAndCD(rve.theEnv, mdo as AdminShell.SubmodelRef, copySubmodel: true, copyCD: true, shallowCopy: (int)buttonNdx == 0);
+                                       // use case (1) copy between AAS ENVs
+                                       var clone = env.CopySubmodelRefAndCD(rve.theEnv, mdo as AdminShell.SubmodelRef, copySubmodel: true, copyCD: true, shallowCopy: (int)buttonNdx == 0);
                                        if (clone == null)
                                            return new ModifyRepo.LambdaActionNone();
                                        if (aas.submodelRefs == null)
@@ -824,28 +824,28 @@ namespace AasxPackageExplorer
                                    }
                                    else
                                    {
-                                        // use case (2) copy in one AAS ENV!
+                                       // use case (2) copy in one AAS ENV!
 
-                                        // need access to source submodel
-                                        var srcSub = rve.theEnv.FindSubmodel(mdo as AdminShell.SubmodelRef);
+                                       // need access to source submodel
+                                       var srcSub = rve.theEnv.FindSubmodel(mdo as AdminShell.SubmodelRef);
                                        if (srcSub == null)
                                            return new ModifyRepo.LambdaActionNone();
 
-                                        // means: we have to generate a new submodel ref by using template mechanism
-                                        var tid = Options.Curr.TemplateIdSubmodelInstance;
+                                       // means: we have to generate a new submodel ref by using template mechanism
+                                       var tid = Options.Curr.TemplateIdSubmodelInstance;
                                        if (srcSub.kind != null && srcSub.kind.IsTemplate)
                                            tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                        // create Submodel as deep copy 
-                                        // with new id from scratch
-                                        var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
+                                       // create Submodel as deep copy 
+                                       // with new id from scratch
+                                       var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
                                        dstSub.identification = new AdminShell.Identification(AdminShell.Identification.IRI, Options.Curr.GenerateIdAccordingTemplate(tid));
 
-                                        // make a new ref
-                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
+                                       // make a new ref
+                                       var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
 
-                                        // formally add this to active environment and AAS
-                                        env.Submodels.Add(dstSub);
+                                       // formally add this to active environment and AAS
+                                       env.Submodels.Add(dstSub);
                                        if (aas.submodelRefs == null)
                                            aas.submodelRefs = new List<AdminShell.SubmodelRef>();
                                        aas.submodelRefs.Add(dstRef);
@@ -1082,8 +1082,8 @@ namespace AasxPackageExplorer
                {
                    if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
                    {
-                        // which adequate type?
-                        var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
+                       // which adequate type?
+                       var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
                        if ((int)buttonNdx == 0)
                            en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
                        if ((int)buttonNdx == 1)
@@ -1093,20 +1093,20 @@ namespace AasxPackageExplorer
                        if ((int)buttonNdx == 3)
                            en = helper.SelectAdequateEnum("Select SubmodelElement to create ..");
 
-                        // ok?
-                        if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                       // ok?
+                       if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                        {
                            AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
 
-                            // add
-                            var smw = new AdminShell.SubmodelElementWrapper();
+                           // add
+                           var smw = new AdminShell.SubmodelElementWrapper();
                            smw.submodelElement = sme2;
                            if (submodel.submodelElements == null)
                                submodel.submodelElements = new AdminShellV20.SubmodelElementWrapperCollection();
                            submodel.submodelElements.Add(smw);
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
                        }
                    }
                    return new ModifyRepo.LambdaActionNone();
@@ -1153,10 +1153,10 @@ namespace AasxPackageExplorer
                    {
                        if ((int)buttonNdx == 0)
                        {
-                            // ReSharper disable RedundantCast
-                            helper.ImportEclassCDsForTargets(env, (smref != null) ? (object)smref : (object)submodel, targets);
-                            // ReSharper enable RedundantCast
-                        }
+                           // ReSharper disable RedundantCast
+                           helper.ImportEclassCDsForTargets(env, (smref != null) ? (object)smref : (object)submodel, targets);
+                           // ReSharper enable RedundantCast
+                       }
                    }
                    return new ModifyRepo.LambdaActionNone();
                });
@@ -1452,17 +1452,17 @@ namespace AasxPackageExplorer
                                {
                                    var res = false;
 
-                                    // ReSharper disable EmptyGeneralCatchClause
-                                    try
+                                   // ReSharper disable EmptyGeneralCatchClause
+                                   try
                                    {
                                        res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
                                            cd.identification,
                                            new AdminShell.Identification(cd.identification.idType, uc.Text));
                                    }
                                    catch { }
-                                    // ReSharper enable EmptyGeneralCatchClause
+                                   // ReSharper enable EmptyGeneralCatchClause
 
-                                    if (!res)
+                                   if (!res)
                                        helper.flyoutProvider.MessageBoxFlyoutShow("The renaming of the ConceptDescription or some referring elements has not performed successfully! Please review your inputs and the AAS structure for any inconsistencies.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                                    return new ModifyRepo.LambdaActionRedrawAllElements(cd);
                                }
@@ -1749,8 +1749,8 @@ namespace AasxPackageExplorer
                        {
                            if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
                            {
-                                // which adequate type?
-                                var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
+                               // which adequate type?
+                               var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
                                if ((int)buttonNdx == 0)
                                    en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
                                if ((int)buttonNdx == 1)
@@ -1761,19 +1761,19 @@ namespace AasxPackageExplorer
                                    en = helper.SelectAdequateEnum("Select SubmodelElement to create ..",
                                        excludeValues: new[] { AdminShell.SubmodelElementWrapper.AdequateElementEnum.Operation });
 
-                                // ok?
-                                if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                               // ok?
+                               if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                                {
-                                    // create
-                                    AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
+                                   // create
+                                   AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
 
-                                    // add
-                                    var smw = new AdminShell.SubmodelElementWrapper();
+                                   // add
+                                   var smw = new AdminShell.SubmodelElementWrapper();
                                    smw.submodelElement = sme2;
                                    ov.value = smw;
 
-                                    // redraw
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
+                                   // redraw
+                                   return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
                                }
                            }
                            return new ModifyRepo.LambdaActionNone();
@@ -1887,19 +1887,19 @@ namespace AasxPackageExplorer
                    {
                        if ((int)buttonNdx == 0)
                        {
-                            // which?
-                            var refactorSme = helper.SmartRefactorSme(sme);
+                           // which?
+                           var refactorSme = helper.SmartRefactorSme(sme);
                            var parMgr = (parentContainer as AdminShell.IManageSubmodelElements);
 
-                            // ok?
-                            if (refactorSme != null && parMgr != null)
+                           // ok?
+                           if (refactorSme != null && parMgr != null)
                            {
-                                // open heart surgery: change in parent container
-                                parMgr.Remove(sme);
+                               // open heart surgery: change in parent container
+                               parMgr.Remove(sme);
                                parMgr.Add(refactorSme);
 
-                                // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: refactorSme);
+                               // redraw
+                               return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: refactorSme);
                            }
                        }
                        return new ModifyRepo.LambdaActionNone();
@@ -1915,40 +1915,40 @@ namespace AasxPackageExplorer
                    {
                        if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
                        {
-                            // store info
-                            var cpb = new CopyPasteBuffer();
+                           // store info
+                           var cpb = new CopyPasteBuffer();
                            cpb.duplicate = (int)buttonNdx == 1;
                            cpb.parentContainer = parentContainer;
                            cpb.wrapper = wrapper;
                            cpb.sme = sme;
                            this.theCopyPaste = cpb;
 
-                            // user feedback
-                            Log.Info(0, StoredPrint.ColorBlue, "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme?.idShort, "" + sme?.GetElementName(),
-                               cpb.duplicate ? " Paste will duplicate." : " Paste will cut at original position.");
+                           // user feedback
+                           Log.Info(0, StoredPrint.ColorBlue, "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme?.idShort, "" + sme?.GetElementName(),
+                              cpb.duplicate ? " Paste will duplicate." : " Paste will cut at original position.");
                        }
 
                        if ((int)buttonNdx == 2 || (int)buttonNdx == 3)
                        {
-                            // access copy/paste
-                            var cpb = this.theCopyPaste;
+                           // access copy/paste
+                           var cpb = this.theCopyPaste;
 
-                            // present
-                            if (cpb == null || cpb.sme == null || cpb.wrapper == null || cpb.parentContainer == null)
+                           // present
+                           if (cpb == null || cpb.sme == null || cpb.wrapper == null || cpb.parentContainer == null)
                            {
                                if (helper.flyoutProvider != null)
                                    helper.flyoutProvider.MessageBoxFlyoutShow("No (valid) information in copy/paste buffer.", "Copy & Paste", MessageBoxButton.OK, MessageBoxImage.Information);
                                return new ModifyRepo.LambdaActionNone();
                            }
 
-                            // user feedback
-                            Log.Info("Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.", "" + cpb.sme?.idShort, "" + cpb.sme?.GetElementName());
+                           // user feedback
+                           Log.Info("Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.", "" + cpb.sme?.idShort, "" + cpb.sme?.GetElementName());
 
-                            // apply info
-                            var smw2 = new AdminShell.SubmodelElementWrapper(cpb.sme, shallowCopy: false);
+                           // apply info
+                           var smw2 = new AdminShell.SubmodelElementWrapper(cpb.sme, shallowCopy: false);
 
-                            // insertation depends on parent container
-                            if ((int)buttonNdx == 2)
+                           // insertation depends on parent container
+                           if ((int)buttonNdx == 2)
                            {
                                if (parentContainer is AdminShell.Submodel && wrapper != null)
                                    helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.Submodel).submodelElements, smw2, wrapper);
@@ -1963,20 +1963,20 @@ namespace AasxPackageExplorer
                                    helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.SubmodelElementCollection).value, smw2, wrapper);
                            }
 
-                            // may delete original
-                            if (!cpb.duplicate)
+                           // may delete original
+                           if (!cpb.duplicate)
                            {
                                if (cpb.parentContainer is AdminShell.Submodel pcsm && wrapper != null)
                                    helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(pcsm.submodelElements, cpb.wrapper, null);
                                if (cpb.parentContainer is AdminShell.SubmodelElementCollection pcsmc && wrapper != null)
                                    helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(pcsmc.value, cpb.wrapper, null);
 
-                                // the buffer is tainted
-                                this.theCopyPaste = null;
+                               // the buffer is tainted
+                               this.theCopyPaste = null;
                            }
 
-                            // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smw2.submodelElement, isExpanded: true);
+                           // try to focus
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smw2.submodelElement, isExpanded: true);
                        }
                    }
                    return new ModifyRepo.LambdaActionNone();
@@ -2005,15 +2005,15 @@ namespace AasxPackageExplorer
                    {
                        if ((int)buttonNdx == 0)
                        {
-                            // select existing CD
-                            var ks = helper.SmartSelectAasEntityKeys(package.AasEnv);
+                           // select existing CD
+                           var ks = helper.SmartSelectAasEntityKeys(package.AasEnv);
                            if (ks != null)
                            {
-                                // set the semantic id
-                                sme.semanticId = AdminShell.SemanticId.CreateFromKeys(ks);
+                               // set the semantic id
+                               sme.semanticId = AdminShell.SemanticId.CreateFromKeys(ks);
 
-                                // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                               // if empty take over shortName
+                               var cd = env.FindConceptDescription(sme.semanticId.Keys);
                                if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                {
                                    sme.idShort = "" + cd.idShort;
@@ -2021,78 +2021,78 @@ namespace AasxPackageExplorer
                                        sme.idShort = cd.GetDefaultShortName();
                                }
 
-                                // can set kind?
-                                if (parentKind != null && sme.kind == null)
+                               // can set kind?
+                               if (parentKind != null && sme.kind == null)
                                    sme.kind = new AdminShell.ModelingKind(parentKind);
                            }
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
                        }
 
                        if ((int)buttonNdx == 1)
                        {
-                            // create empty CD
-                            var cd = new AdminShell.ConceptDescription();
+                           // create empty CD
+                           var cd = new AdminShell.ConceptDescription();
 
-                            // make an ID, automatically
-                            cd.identification.idType = AdminShell.Identification.IRI;
+                           // make an ID, automatically
+                           cd.identification.idType = AdminShell.Identification.IRI;
                            cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdConceptDescription);
 
-                            // store in AAS enviroment
-                            env.ConceptDescriptions.Add(cd);
+                           // store in AAS enviroment
+                           env.ConceptDescriptions.Add(cd);
 
-                            // go over to SubmodelElement
-                            // set the semantic id
-                            sme.semanticId = AdminShell.SemanticId.CreateFromKey(new AdminShell.Key("ConceptDescription", true, cd.identification.idType, cd.identification.id));
+                           // go over to SubmodelElement
+                           // set the semantic id
+                           sme.semanticId = AdminShell.SemanticId.CreateFromKey(new AdminShell.Key("ConceptDescription", true, cd.identification.idType, cd.identification.id));
 
-                            // can set kind?
-                            if (parentKind != null && sme.kind == null)
+                           // can set kind?
+                           if (parentKind != null && sme.kind == null)
                                sme.kind = new AdminShell.ModelingKind(parentKind);
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
                        }
 
                        if ((int)buttonNdx == 2)
                        {
-                            // feature available
-                            if (Options.Curr.EclassDir == null)
+                           // feature available
+                           if (Options.Curr.EclassDir == null)
                            {
-                                // eclass dir?
-                                if (helper.flyoutProvider != null)
+                               // eclass dir?
+                               if (helper.flyoutProvider != null)
                                    helper.flyoutProvider.MessageBoxFlyoutShow("The AASX Package Explore can take over eCl@ss definition. In order to do so, the commandine parameter -eclass has" +
                                    "to refer to a folder withe eCl@ss XML files.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                                return new ModifyRepo.LambdaActionNone();
                            }
 
-                            // select
-                            string resIRDI = null;
+                           // select
+                           string resIRDI = null;
                            AdminShell.ConceptDescription resCD = null;
                            if (helper.SmartSelectEclassEntity(SelectEclassEntityFlyout.SelectMode.ConceptDescription, ref resIRDI, ref resCD))
                            {
-                                // create the concept description itself, if available, if not exactly the same is present
-                                if (resCD != null)
+                               // create the concept description itself, if available, if not exactly the same is present
+                               if (resCD != null)
                                {
                                    var newcd = resCD;
                                    if (null == env.FindConceptDescription(AdminShell.Key.CreateNew(AdminShell.Key.ConceptDescription, true, newcd.identification.idType, newcd.identification.id)))
                                        env.ConceptDescriptions.Add(newcd);
                                }
 
-                                // set the semantic key
-                                sme.semanticId = AdminShell.SemanticId.CreateFromKey(new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRDI, resIRDI));
+                               // set the semantic key
+                               sme.semanticId = AdminShell.SemanticId.CreateFromKey(new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRDI, resIRDI));
 
-                                // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                               // if empty take over shortName
+                               var cd = env.FindConceptDescription(sme.semanticId.Keys);
                                if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                    sme.idShort = cd.GetDefaultShortName();
 
-                                // can set kind?
-                                if (parentKind != null && sme.kind == null)
+                               // can set kind?
+                               if (parentKind != null && sme.kind == null)
                                    sme.kind = new AdminShell.ModelingKind(parentKind);
                            }
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
                        }
 
                    }
@@ -2139,8 +2139,8 @@ namespace AasxPackageExplorer
                {
                    if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
                    {
-                        // which adequate type?
-                        var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
+                       // which adequate type?
+                       var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
                        if ((int)buttonNdx == 0)
                            en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
                        if ((int)buttonNdx == 1)
@@ -2150,20 +2150,20 @@ namespace AasxPackageExplorer
                        if ((int)buttonNdx == 3)
                            en = helper.SelectAdequateEnum("Select SubmodelElement to create ..");
 
-                        // ok?
-                        if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                       // ok?
+                       if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                        {
-                            // create
-                            AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
+                           // create
+                           AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
 
-                            // add
-                            if (sme is AdminShell.SubmodelElementCollection smesmc)
+                           // add
+                           if (sme is AdminShell.SubmodelElementCollection smesmc)
                                smesmc.Add(sme2);
                            if (sme is AdminShell.Entity smeent)
                                smeent.Add(sme2);
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
                        }
                    }
                    return new ModifyRepo.LambdaActionNone();
@@ -2186,18 +2186,18 @@ namespace AasxPackageExplorer
                                if (mdo != null && mdo is AdminShell.SubmodelElement)
                                {
                                    var clone = env.CopySubmodelElementAndCD(rve.theEnv, mdo as AdminShell.SubmodelElement, copyCD: true, shallowCopy: (int)buttonNdx == 0);
-                                    /*
-                                     * TO BE DELETED, if SMWC works..
-                                    if (listOfSMEW == null)
-                                    {
-                                        listOfSMEW = new List<AdminShell.SubmodelElementWrapper>();
-                                        if (sme is AdminShell.SubmodelElementCollection)
-                                            (sme as AdminShell.SubmodelElementCollection).value = listOfSMEW;
-                                        if (sme is AdminShell.Entity)
-                                            (sme as AdminShell.Entity).statements = listOfSMEW;
-                                    }
-                                    listOfSMEW.Add(clone);
-                                    */
+                                   /*
+                                    * TO BE DELETED, if SMWC works..
+                                   if (listOfSMEW == null)
+                                   {
+                                       listOfSMEW = new List<AdminShell.SubmodelElementWrapper>();
+                                       if (sme is AdminShell.SubmodelElementCollection)
+                                           (sme as AdminShell.SubmodelElementCollection).value = listOfSMEW;
+                                       if (sme is AdminShell.Entity)
+                                           (sme as AdminShell.Entity).statements = listOfSMEW;
+                                   }
+                                   listOfSMEW.Add(clone);
+                                   */
                                    if (sme is AdminShell.SubmodelElementCollection smesmc)
                                        smesmc.value.Add(clone);
                                    if (sme is AdminShell.Entity smeent)
@@ -2257,8 +2257,8 @@ namespace AasxPackageExplorer
                                smo[dir] = new List<AdminShell.OperationVariable>();
                            smo[dir].Add(ov);
 
-                            // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
+                           // redraw
+                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
                        }
                        return new ModifyRepo.LambdaActionNone();
                    });
