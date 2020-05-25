@@ -108,7 +108,7 @@ namespace De.Zvei.Aasx
                 return false;
             }
 
-            if(!aasxSourceFilesPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            if (!aasxSourceFilesPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 MessageBox.Show("No trailing directory separator in \"" + aasxSourceFilesPath + "\"", "Create AASX", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -372,12 +372,12 @@ namespace De.Zvei.Aasx
             return vResult;
         }
 
-       /// <summary>
-       /// TODO
-       /// </summary>
-       /// <param name="packagePath"></param>
-       public static bool Validate(string packagePath)
-       {
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="packagePath"></param>
+        public static bool Validate(string packagePath)
+        {
             // docx procedure:
             // Verify if OPC package
             // AASX logical model
@@ -390,47 +390,47 @@ namespace De.Zvei.Aasx
 
             try
             {
-               using (Package package = Package.Open(packagePath, FileMode.Open, FileAccess.Read))
-               {
-                   // If openend, I think that the package is according to the OPC standard
-                   // TODO Is package according to the Logical model of the Admin Shell? => use AdminShell logical model to compare
-               }
+                using (Package package = Package.Open(packagePath, FileMode.Open, FileAccess.Read))
+                {
+                    // If openend, I think that the package is according to the OPC standard
+                    // TODO Is package according to the Logical model of the Admin Shell? => use AdminShell logical model to compare
+                }
 
-               // Certificates and Signature status
-               Dictionary<string, X509ChainStatusFlags> certificatesStatus;
-               var verifyResult = VerifySignatures(packagePath, out certificatesStatus);
+                // Certificates and Signature status
+                Dictionary<string, X509ChainStatusFlags> certificatesStatus;
+                var verifyResult = VerifySignatures(packagePath, out certificatesStatus);
 
-               string certRes = "";
-               foreach (var res in certificatesStatus)
-               {
-                   certRes += res.Key + ": " + res.Value.ToString() + "\n";
-               }
+                string certRes = "";
+                foreach (var res in certificatesStatus)
+                {
+                    certRes += res.Key + ": " + res.Value.ToString() + "\n";
+                }
 
-               MessageBox.Show(null, "Certificate status: \n" + certRes, "Certificates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(null, "Certificate status: \n" + certRes, "Certificates", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-               if (verifyResult == VerifyResult.Success)
-               {
-                   MessageBox.Show(null, "Package signatures verified", "Signatures", MessageBoxButtons.OK, MessageBoxIcon.Information);
-               }
-               else
-               {
-                   MessageBox.Show(null, "Error verifying signatures: " + verifyResult.ToString(), "Signatures", MessageBoxButtons.OK, MessageBoxIcon.Error);
-               }
+                if (verifyResult == VerifyResult.Success)
+                {
+                    MessageBox.Show(null, "Package signatures verified", "Signatures", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(null, "Error verifying signatures: " + verifyResult.ToString(), "Signatures", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
 
-               // If there are no signatures - OK, but must be mentioned in the result
+                // If there are no signatures - OK, but must be mentioned in the result
 
-               // TODO is package sealed? => no other signatures can be added? All files are signed (except those that could not be signed). New files (unsigned) were added
+                // TODO is package sealed? => no other signatures can be added? All files are signed (except those that could not be signed). New files (unsigned) were added
 
-               // TODO The information from the analysis -> return as an object (list of enums with the issues/warings???)
-           }
-           catch (Exception e)
-           {
-               MessageBox.Show(null, e.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-           }
+                // TODO The information from the analysis -> return as an object (list of enums with the issues/warings???)
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(null, e.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-           return true;
-       }
+            return true;
+        }
 
         /// <summary>
         /// Creates a package-level or part-level relationship and its target part (if the target part wasn't already created before). If the sourceTargetFilePath does not exist,
