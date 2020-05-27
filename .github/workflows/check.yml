@@ -17,16 +17,19 @@ jobs:
         uses: NuGet/setup-nuget@v1.0.2
 
       - name: Install Microsoft .NET Compilers
-        working-directory: src
-        run: nuget install Microsoft.NET.Compilers -Version 2.10.0
+        run: nuget install Microsoft.NET.Compilers -Version 2.10.0 -OutputDirectory tools
 
       - name: Install Nunit Console Runner
-        working-directory: src
-        run: nuget install NUnit.ConsoleRunner -Version 3.11.1
+        run: nuget install NUnit.ConsoleRunner -Version 3.11.1 -OutputDirectory tools
 
       - name: Install Nunit Project Loader
-        working-directory: src
-        run: nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0
+        run: nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0 -OutputDirectory tools
+
+      - name: Install OpenCover
+        run: nuget install OpenCover -Version 4.7.922 -OutputDirectory tools
+
+      - name: Install ReportGenerator
+        run: nuget install ReportGenerator -Version 4.6.0 -OutputDirectory tools
 
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
@@ -53,10 +56,11 @@ jobs:
         working-directory: src
         run: powershell .\Build.ps1
 
+      - name: Test
+        working-directory: src
+        run: powershell .\Test.ps1
+
       - name: Inspect code
         working-directory: src
         run: powershell .\InspectCode.ps1
 
-      - name: Run unit tests
-        working-directory: src
-        run: powershell .\Test.ps1

@@ -12,13 +12,23 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
     AssertDotnetFormatVersion, `
     FindMSBuild, `
-    FindInspectCode
-
+    FindInspectCode, `
+    CreateAndGetArtefactsDir
 
 $msbuild = FindMSBuild
 Write-Host $msbuild.GetType()
 
 Write-Host "Using MSBuild from: $msbuild"
 
+$configuration = "Debug"
+$artefactsDir = CreateAndGetArtefactsDir
+
+$outputPath = Join-Path $artefactsDir (Join-Path "build" $configuration)
+
+Write-Host "Building to: $outputPath"
+
 cd $PSScriptRoot
-& $msbuild --% /p:Configuration=Debug /p:Platform=x64 
+& $msbuild `
+    /p:OutputPath=$outputPath `
+    /p:Configuration=$configuration `
+    /p:Platform=x64
