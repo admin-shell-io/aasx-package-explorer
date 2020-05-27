@@ -6,7 +6,8 @@ $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
-    AssertDotnetFormatVersion
+    AssertDotnetFormatVersion, `
+    CreateAndGetArtefactsDir
 
 
 AssertDotnet
@@ -15,7 +16,9 @@ AssertDotnetFormatVersion
 cd $PSScriptRoot
 Write-Host "Inspecting the code format with dotnet-format..."
 
-$reportPath = Join-Path $PSScriptRoot "dotnet-format-report.json"
+$artefactsDir = CreateAndGetArtefactsDir
+
+$reportPath = Join-Path $artefactsDir "dotnet-format-report.json"
 dotnet format --dry-run --report $reportPath
 $formatReport = Get-Content $reportPath |ConvertFrom-Json
 if($formatReport.Count -ge 1) {

@@ -2,11 +2,8 @@
 # The script is expected to run only once per development machine.
 # The dependencies include, for example, Git, Visual Studio 2017 Build Tools and nuget.
 
-if(!$PSScriptRoot) {
-    $installationDir = Join-Path (Get-Location).path "installation"
-} else {
-    $installationDir = Join-Path $PSScriptRoot "installation-dev-dependencies"
-}
+
+$installationDir = Join-Path (Split-Path $PSScriptRoot -Parent) "installation-dev-dependencies"
 
 Write-Host "Installation directory is: $installationDir"
 

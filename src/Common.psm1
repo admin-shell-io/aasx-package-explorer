@@ -4,6 +4,14 @@ This module contains common functions for continuous integration.
 
 <#
 .Synopsis
+Join the path to the directory where build tools reside.
+#>
+function GetToolsDir {
+    return Join-Path (Split-Path $PSScriptRoot -Parent) "tools"
+}
+
+<#
+.Synopsis
 Search for MSBuild in the path and at expected locations using `vswhere.exe`.
 #>
 function FindMSBuild {
@@ -127,7 +135,8 @@ function AssertDotnetFormatVersion {
 }
 
 function FindNunit3Console {
-    $nunit3Console = Join-Path $PSScriptRoot ".\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe"
+    $toolsDir = GetToolsDir
+    $nunit3Console = Join-Path $toolsDir "NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe"
     if(!(Test-Path $nunit3Console)) {
         throw "The nunit3-console.exe could not be found at: $nunit3Console; " + `
             "did you install or restore the dependencies of the solution?"
@@ -136,4 +145,42 @@ function FindNunit3Console {
     return $nunit3Console
 }
 
-Export-ModuleMember -Function AssertDotnet, AssertDotnetFormatVersion, FindMSBuild, FindInspectCode, FindNunit3Console
+function FindOpenCoverConsole {
+    $toolsDir = GetToolsDir
+    $openCoverConsole = Join-Path $toolsDir "OpenCover.4.7.922\tools\OpenCover.Console.exe"
+    if(!(Test-Path $openCoverConsole)) {
+        throw "The OpenCover.Console.exe could not be found at: $openCoverConsole;" + `
+            "did you install it with nuget " + `
+            "(see $(Join-Path $PSScriptRoot "InstallBuildDependencies.ps1"))?"
+    }
+    return $openCoverConsole
+}
+
+function FindReportGenerator {
+    $toolsDir = GetToolsDir
+    $reportGenerator = Join-Path $toolsDir "ReportGenerator.4.6.0\tools\net47\ReportGenerator.exe"
+    if(!(Test-Path $reportGenerator)) {
+        throw "The ReportGenerator.exe could not be found at: $reportGenerator;" + `
+            "did you install it with nuget " + `
+            "(see $(Join-Path $PSScriptRoot "InstallBuildDependencies.ps1"))?"
+    }
+    return $reportGenerator
+}
+
+function CreateAndGetArtefactsDir {
+    $repoRoot = Split-Path $PSScriptRoot -Parent
+    $artefactsDir = Join-Path $repoRoot "artefacts"
+    New-Item -ItemType Directory -Force -Path "$artefactsDir"|Out-Null
+    return $artefactsDir
+}
+
+Export-ModuleMember -Function `
+    GetToolsDir, `
+    AssertDotnet, `
+    AssertDotnetFormatVersion, `
+    FindMSBuild, `
+    FindInspectCode, `
+    FindNunit3Console, `
+    FindOpenCoverConsole, `
+    FindReportGenerator, `
+    CreateAndGetArtefactsDir
