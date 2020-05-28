@@ -1,4 +1,10 @@
-﻿using AdminShellNS;
+﻿/* Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+   Copyright (c) 2020 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
+   Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <jan.nicolas.weskamp@iosb-ina.fraunhofer.de>, author: Jan Nicolas Weskamp
+*/
+
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.IO;
