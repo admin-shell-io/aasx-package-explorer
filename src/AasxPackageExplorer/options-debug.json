@@ -1,8 +1,9 @@
 {
   /* "AasxToLoad" :  "sample-techdata.aasx", */
-  "AasxToLoad": "..\\..\\..\\..\\AasxGenerate\\bin\\Debug\\sample.aasx",
+  /* "AasxToLoad": "..\\..\\..\\..\\AasxGenerate\\bin\\Debug\\sample.aasx", */
   /* "AasxToLoad": "sample-hsu.aasx", */
   /* "AasxToLoad": "MTPsample.aasx", */
+  "AasxToLoad": "sample-generated-modified.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,

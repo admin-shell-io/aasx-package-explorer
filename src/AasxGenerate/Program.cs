@@ -695,7 +695,8 @@ namespace opctest
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
                     AdminShell.KeyList.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
-                    AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF573"));
+                    AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF573"),
+                    "string");
                 p2.valueType = "double";
                 p2.value = "23.05";
 
@@ -825,6 +826,8 @@ namespace opctest
             }                                                           // doppelten Anfuehrungszeichen
 #endif
 
+            AdminShell.SubmodelElement sme1, sme2;
+
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
@@ -847,6 +850,7 @@ namespace opctest
                 sub1.Add(p);
                 p.value.Add("EN", "An english value.");
                 p.value.Add("DE", "Ein deutscher Wert.");
+                sme1 = p;
             }
 
             // CONCEPT: Range
@@ -871,6 +875,35 @@ namespace opctest
                 sub1.Add(p);
                 p.min = "11.5";
                 p.max = "13.8";
+                sme2 = p;
+            }
+
+            // CONCEPT: AnnotatedRelationship
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                id: "0173-1#02-XXX992#001"))                             // die ID des Merkmales bei eCl@ss
+            {
+                aasenv.ConceptDescriptions.Add(cd);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "DE", "Verbindung",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "Connection" },   // um die Sprach-Texte aufzufinden
+                    shortName: "VerConn",                                // kurzer, sprechender Name
+                    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "DE", "TBD",
+                    "EN", "very precisely defined electrical connection..." }
+                );
+
+                var ar = AdminShell.AnnotatedRelationshipElement.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
+                            AdminShell.Key.GetFromRef(cd.GetReference()));
+                sub1.Add(ar);
+                ar.first = sme1?.GetReference();
+                ar.second = sme2?.GetReference();
+
+                ar.annotations = new AdminShell.SubmodelElementWrapperCollection();
+                ar.annotations.Add(sme1);
+                ar.annotations.Add(sme2);
             }
 
 

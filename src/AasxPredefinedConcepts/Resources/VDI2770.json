@@ -57,7 +57,7 @@
             "valueFormat": null,
             "sourceOfDefinition": "[ISO 15519-1:2010]",
             "symbol": null,
-            "dataType": "ENTITY",
+            "dataType": "",
             "definition": {
               "langString": [
                 {
@@ -827,7 +827,7 @@
             "valueFormat": null,
             "sourceOfDefinition": null,
             "symbol": null,
-            "dataType": "FILE",
+            "dataType": "",
             "definition": {
               "langString": [
                 {
@@ -1328,7 +1328,7 @@
     },
     "administration": null,
     "idShort": "ReferencedObject",
-    "category": "ENTITY",
+    "category": "PARAMETER",
     "modelType": {
       "name": "ConceptDescription"
     },

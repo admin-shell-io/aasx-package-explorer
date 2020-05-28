@@ -1,0 +1,94 @@
+﻿Notes taken after publish v2.0.1.
+This was the first opportunity to try incorporate the the v2.0.1 schema in the soultion
+=======================================================================================
+
+Suspicious "minOccurs": changed from "1" -> "0"
+
+	<complexType name="langStringSet_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="langString" type="aas:langString_t"/>
+		</sequence>
+	</complexType>
+
+Qualifiers:
+
+	was:
+
+	<complexType name="qualifier_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="type" type="aas:qualifierType_t"/>
+			<element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
+			<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
+			<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
+			<group ref="aas:hasSemantics"/>
+		</sequence>
+	</complexType>
+
+	==> valueType is new!!
+	==> the ORDER is completely different than before -> might cause incompatibility with existing aasx, but most seem to load ..
+	==> set default type and valueType to "", because minOccurs requires it! This is not logical, because a not existing value does not require a valueType
+
+Entities:
+
+	- need to modify AAS SDK to ALWAYS write (at least) empty <statements>
+	- this is not ideal, because I am imaging the majority of the entities WITHOUT ANY statements
+
+		<aas:submodelElement>
+          <aas:entity>
+            <aas:idShort>AxisGroup001</aas:idShort>
+            <aas:statements />
+            <aas:entityType>CoManagedEntity</aas:entityType>
+          </aas:entity>
+        </aas:submodelElement>
+
+ConceptDescription
+
+	- requires to have at least one preferredName -> according to the spec, I think?
+
+
+CD / dataType
+
+	- there is is strong restriction on the dataTypes listed in the SPEC.
+	- in VDI2770, dataType == "ENTITY" (for whole Document) and == "FILE" for files are used. They are conflicting
+
+	solution: removed dataType == "ENTITY" / "FILE" in VDI2770
+
+langStrSet 
+
+	- requires (according to the SPEC) at least one langStr. This means, something like below is not more valid, anymore:
+
+		<IEC61360:definition />
+
+	- quite some effort to map this in software (a empty langStrSet needs to be replaced by NULL). Not sure, if I will do it.
+
+CONCLUSION
+----------
+
+I'm stopping at this stage for right now.
+
+C:\MIHO\Develop\Aasx\aasx-package-explorer\src\AasxGenerate\bin\Debug\schemaV201>..\..\..\..\..\..\tools-restricted\xmlstarlet-1.6.1\xml.exe val --xsd AAS.xsd -e ..\sample.xml
+..\sample.xml - invalid
+.\validate_samle_xml.bat : ../sample.xml:3711.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is (
+{http://www.admin-shell.io/IEC61360/2/0}langString ).
+In Zeile:1 Zeichen:1
++ .\validate_samle_xml.bat 2>&1 | more
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (../sample.xml:3...0}langString ).:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+../sample.xml:3738.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:3765.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:3791.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:3993.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4018.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4043.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4069.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4098.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4123.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4149.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4182.35: Element '{http://www.admin-shell.io/IEC61360/2/0}definition': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4198.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4254.34: Element '{http://www.admin-shell.io/IEC61360/2/0}shortName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4257.35: Element '{http://www.admin-shell.io/IEC61360/2/0}definition': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4275.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).
+../sample.xml:4276.34: Element '{http://www.admin-shell.io/IEC61360/2/0}shortName': Missing child element(s). Expected is ( {http://www.admin-shell.io/IEC61360/2/0}langString ).

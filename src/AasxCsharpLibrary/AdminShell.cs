@@ -3528,13 +3528,7 @@ namespace AdminShellNS
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
             public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
-
-            // member
-            // from hasSemantics:
-            [XmlElement(ElementName = "semanticId")]
-            // [JsonIgnore]
-            public SemanticId semanticId = null;
-
+          
             // this class
             // TODO: check, if Json has Qualifiers or not
 
@@ -3542,16 +3536,29 @@ namespace AdminShellNS
             [MetaModelName("Qualifier.type")]
             [TextSearchable]
             [CountForHash]
-            public string type = null;
-            // [JsonIgnore]
+            public string type = "";
 
+            // [JsonIgnore]
+            [MetaModelName("Qualifier.valueType")]
+            [TextSearchable]
+            [CountForHash]
+            public string valueType = "";
+
+            // [JsonIgnore]
+            [CountForHash]
+            public Reference valueId = null;
+
+            // [JsonIgnore]
             [MetaModelName("Qualifier.value")]
             [TextSearchable]
             [CountForHash]
             public string value = null;
+            
+            // Remark: due to publication of v2.0.1, the order of elements has changed!!!
+            // from hasSemantics:
+            [XmlElement(ElementName = "semanticId")]
             // [JsonIgnore]
-            [CountForHash]
-            public Reference valueId = null;
+            public SemanticId semanticId = null;
 
             // constructors
 
@@ -3776,7 +3783,7 @@ namespace AdminShellNS
                 }
             }
 
-            public void AddQualifier(string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null, Reference qualifierValueId = null)
+            public void AddQualifier(string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null, Reference qualifierValueId = null, string valueType = null)
             {
                 if (this.qualifiers == null)
                     this.qualifiers = new QualifierCollection();
@@ -3788,6 +3795,8 @@ namespace AdminShellNS
                 };
                 if (semanticKeys != null)
                     q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
+                if (valueType != null)
+                    q.valueType = valueType;
                 this.qualifiers.Add(q);
             }
 
@@ -3871,6 +3880,7 @@ namespace AdminShellNS
             [XmlElement(ElementName = "blob", Type = typeof(Blob))]
             [XmlElement(ElementName = "referenceElement", Type = typeof(ReferenceElement))]
             [XmlElement(ElementName = "relationshipElement", Type = typeof(RelationshipElement))]
+            [XmlElement(ElementName = "annotatedRelationshipElement", Type = typeof(AnnotatedRelationshipElement))]
             [XmlElement(ElementName = "capability", Type = typeof(Capability))]
             [XmlElement(ElementName = "submodelElementCollection", Type = typeof(SubmodelElementCollection))]
             [XmlElement(ElementName = "operation", Type = typeof(Operation))]
@@ -4012,57 +4022,6 @@ namespace AdminShellNS
                 return CreateAdequateType(GetAdequateEnum(elementName));
             }
 
-            /*
-            /// <summary>
-            /// Can create SubmodelElements based on a numerical index
-            /// </summary>
-            /// <param name="index">Index 0..11. On purpose, Operation is the last element!</param>
-            /// <returns>SubmodelElement</returns>
-            public static SubmodelElement CreateAdequateType(int index, SubmodelElement src = null)
-            {
-                AdminShell.SubmodelElement sme = null;
-                switch (index)
-                {
-                    case (int)AdequateElementEnum.SubmodelElementCollection:
-                        sme = new AdminShell.SubmodelElementCollection(src);
-                        break;
-                    case (int)AdequateElementEnum.Property:
-                        sme = new AdminShell.Property(src);
-                        break;
-                    case (int)AdequateElementEnum.MultiLanguageProperty:
-                        sme = new AdminShell.MultiLanguageProperty(src);
-                        break;
-                    case (int)AdequateElementEnum.Range:
-                        sme = new AdminShell.Range(src);
-                        break;
-                    case (int)AdequateElementEnum.File:
-                        sme = new AdminShell.File(src);
-                        break;
-                    case (int)AdequateElementEnum.Blob:
-                        sme = new AdminShell.Blob(src);
-                        break;
-                    case (int)AdequateElementEnum.ReferenceElement:
-                        sme = new AdminShell.ReferenceElement(src);
-                        break;
-                    case (int)AdequateElementEnum.RelationshipElement:
-                        sme = new AdminShell.RelationshipElement(src);
-                        break;
-                    case (int)AdequateElementEnum.Capability:
-                        sme = new AdminShell.Capability(src);
-                        break;
-                    case (int)AdequateElementEnum.BasicEvent:
-                        sme = new AdminShell.BasicEvent(src);
-                        break;
-                    case (int)AdequateElementEnum.Entity:
-                        sme = new AdminShell.Entity(src);
-                        break;
-                    case (int)AdequateElementEnum.Operation:
-                        sme = new AdminShell.Operation(src);
-                        break;
-                }
-                return sme;
-            }
-            */
 
             /// <summary>
             /// Can create SubmodelElements based on a given type information
@@ -5368,20 +5327,50 @@ namespace AdminShellNS
             // members
 
             // from this very class     
-
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            public SubmodelElementWrapperCollection annotation = null;
+            [XmlArray("annotations")]
+            [XmlArrayItem("dataElement")]
+            public SubmodelElementWrapperCollection annotations = null;
+
+#if WRONG
+            [JsonIgnore]
+            [XmlArray("annotations")]
+            public DataElement[] XmlAnotations
+            {
+                get
+                {
+                    var res = new List<DataElement>();
+                    if (annotations != null)
+                        foreach (var smew in annotations)
+                            if (smew.submodelElement is DataElement de)
+                                res.Add(de);
+                    return res.ToArray();
+                }
+                set
+                {
+                    if (value != null)
+                    {
+                        this.annotations = new SubmodelElementWrapperCollection();
+                        foreach (var x in value)
+                        {
+                            var smew = new SubmodelElementWrapper() { submodelElement = x };
+                            this.annotations.Add(smew);
+                        }
+                    }
+                }
+            }
+#endif
 
             [XmlIgnore]
-            [JsonProperty(PropertyName = "annotation")]
-            public SubmodelElement[] JsonAnotation
+            [JsonProperty(PropertyName = "annotations")]
+            public SubmodelElement[] JsonAnotations
             {
                 get
                 {
                     var res = new List<SubmodelElement>();
-                    if (annotation != null)
-                        foreach (var smew in annotation)
+                    if (annotations != null)
+                        foreach (var smew in annotations)
                             res.Add(smew.submodelElement);
                     return res.ToArray();
                 }
@@ -5389,11 +5378,11 @@ namespace AdminShellNS
                 {
                     if (value != null)
                     {
-                        this.annotation = new SubmodelElementWrapperCollection();
+                        this.annotations = new SubmodelElementWrapperCollection();
                         foreach (var x in value)
                         {
                             var smew = new SubmodelElementWrapper() { submodelElement = x };
-                            this.annotation.Add(smew);
+                            this.annotations.Add(smew);
                         }
                     }
                 }
@@ -5412,8 +5401,8 @@ namespace AdminShellNS
                     this.first = new Reference(src.first);
                 if (src.second != null)
                     this.second = new Reference(src.second);
-                if (src.annotation != null)
-                    this.annotation = new SubmodelElementWrapperCollection(src.annotation);
+                if (src.annotations != null)
+                    this.annotations = new SubmodelElementWrapperCollection(src.annotations);
             }
 
             public new static AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
@@ -5816,7 +5805,8 @@ namespace AdminShellNS
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
             // public List<SubmodelElementWrapper> statements = null;
-            public SubmodelElementWrapperCollection statements = null;
+            // public SubmodelElementWrapperCollection statements = null;
+            public SubmodelElementWrapperCollection statements = new SubmodelElementWrapperCollection();
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "statements")]
@@ -5996,5 +5986,5 @@ namespace AdminShellNS
 
     }
 
-    #endregion
+#endregion
 }

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aas:aasenv xmlns:aas="http://www.admin-shell.io/aas/2/0" xmlns:abac="http://www.admin-shell.io/aas/abac/2/0" xmlns:aas_common="http://www.admin-shell.io/aas_common/2/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:IEC="http://www.admin-shell.io/IEC61360/2/0" xsi:schemaLocation="http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd http://www.admin-shell.io/aas/abac/2/0 AAS_ABAC.xsd">
+	<aas:assetAdministrationShells>
+		<aas:assetAdministrationShell>
+			<aas:idShort>shell1</aas:idShort>
+			<aas:identification idType="IRI">www.admin-shell.io/aas-sample/2/0</aas:identification>
+			<aas:administration>
+				<aas:version>1</aas:version>
+				<aas:revision>0</aas:revision>
+			</aas:administration>
+			<aas:assetRef>
+				<aas:keys>
+					<aas:key type="Asset" local="false" idType="IRI">http://pk.festo.com/3s7plfdrs35</aas:key>
+				</aas:keys>
+			</aas:assetRef>
+			<aas:submodelRefs>
+				<aas:submodelRef>
+					<aas:keys>
+						<aas:key type="Submodel" local="true" idType="IRI">"http://www.zvei.de/demo/submodel/12345679"</aas:key>
+					</aas:keys>
+				</aas:submodelRef>
+			</aas:submodelRefs>
+			<aas:views>
+				<aas:view>
+					<aas:idShort>SampleView</aas:idShort>
+					<aas:containedElements>
+						<aas:containedElementRef>
+							<aas:keys>
+								<aas:key type="Submodel" local="true" idType="IRI">"http://www.zvei.de/demo/submodel/12345679"</aas:key>
+								<aas:key type="Property" local="true" idType="IdShort">rotationSpeed</aas:key>
+							</aas:keys>
+						</aas:containedElementRef>
+					</aas:containedElements>
+				</aas:view></aas:views>
+			<aas:conceptDictionaries>
+				<aas:conceptDictionary>
+					<aas:idShort>SampleDic</aas:idShort>
+					<aas:conceptDescriptionRefs>
+					<aas:conceptDescriptionRef>
+					<aas:keys>
+						<aas:key type="ConceptDescription" local="true" idType="IRI">www.festo.com/dic/08111234</aas:key>
+					</aas:keys>
+					</aas:conceptDescriptionRef>
+					<aas:conceptDescriptionRef>
+						<aas:keys>
+							<aas:key type="ConceptDescription" local="true" idType="IRDI">0173-1#02-BAA120#007</aas:key>
+						</aas:keys>
+					</aas:conceptDescriptionRef>
+					</aas:conceptDescriptionRefs>
+					</aas:conceptDictionary>
+			</aas:conceptDictionaries>
+			<aas:security>
+				<abac:accessControlPolicyPoints>
+				<abac:policyAdministrationPoint></abac:policyAdministrationPoint>
+				<abac:policyDecisionPoint><abac:externalPolicyDecisionPoint>false</abac:externalPolicyDecisionPoint></abac:policyDecisionPoint>
+				<abac:policyEnforcementPoint><abac:externalPolicyEnforcementPoint>false</abac:externalPolicyEnforcementPoint></abac:policyEnforcementPoint>
+				</abac:accessControlPolicyPoints>
+			</aas:security>
+		</aas:assetAdministrationShell>
+	</aas:assetAdministrationShells>
+	<aas:assets>
+		<aas:asset>
+			<aas:idShort>3s7plfdrs35</aas:idShort>
+			<aas:description>
+				<aas:langString lang="EN">Festo Controller</aas:langString>
+			</aas:description>
+			<aas:identification idType="IRI">http://pk.festo.com/3s7plfdrs35</aas:identification>
+			<aas:kind>Instance</aas:kind>
+		</aas:asset>
+	</aas:assets>
+	<aas:submodels>
+		<aas:submodel>
+			<aas:idShort>submodel1</aas:idShort>
+			<aas:identification idType="IRI">http://www.zvei.de/demo/submodel/12345679</aas:identification>
+			<aas:kind>Instance</aas:kind>
+			<aas:submodelElements>
+				<aas:submodelElement>
+					<aas:property>
+						<aas:idShort>rotationSpeed</aas:idShort>
+						<aas:category>VARIABLE</aas:category>
+						<aas:kind>Instance</aas:kind>
+						<aas:semanticId>
+							<aas:keys>
+								<aas:key idType="IRI" type="ConceptDescription" local="true">www.festo.com/dic/08111234</aas:key>
+							</aas:keys>
+						</aas:semanticId>
+						<aas:valueType>double</aas:valueType>
+					</aas:property>
+				</aas:submodelElement>
+				<aas:submodelElement>
+					<aas:property>
+						<aas:idShort>NMAX</aas:idShort>
+						<aas:category>PARAMETER</aas:category>
+						<aas:kind>Instance</aas:kind>
+						<aas:semanticId>
+							<aas:keys>
+								<aas:key idType="IRDI" type="GlobalReference" local="true">0173-1#02-BAA120#007</aas:key>
+							</aas:keys>
+						</aas:semanticId>
+						<aas:valueType>double</aas:valueType>
+						<aas:value>2000</aas:value>
+					</aas:property>
+				</aas:submodelElement>
+			</aas:submodelElements>
+		</aas:submodel>
+	</aas:submodels>
+	<aas:conceptDescriptions>
+		<aas:conceptDescription>
+			<aas:idShort>08111234</aas:idShort>
+			<aas:identification idType="IRI">www.festo.com/dic/08111234</aas:identification>		
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+							<IEC:preferredName>
+								<IEC:langString lang="DE">Drehzahl</IEC:langString>
+								<IEC:langString lang="EN">Rotation Speed</IEC:langString>
+							</IEC:preferredName>				
+							<IEC:shortName>
+								<IEC:langString>Drehzahl</IEC:langString>
+							</IEC:shortName>
+							<IEC:unitId>
+								<IEC:keys>
+									<IEC:key local="false" type="GlobalReference" idType="IRDI">0173-1#05-AAA650#002</IEC:key>
+								</IEC:keys>
+							</IEC:unitId>						
+							<IEC:valueFormat>NR1..5</IEC:valueFormat>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+				<aas:dataSpecification>
+						<aas:keys>
+							<aas:key idType="IRI" local="false" type="GlobalReference">www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360</aas:key>
+						</aas:keys>
+				</aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+		</aas:conceptDescription>
+		<aas:conceptDescription>
+			<aas:idShort>Drehzahl</aas:idShort>
+			<aas:identification idType="IRDI">0173-1#02-BAA120#007</aas:identification>
+			<aas:embeddedDataSpecification>
+			       <aas:dataSpecificationContent>
+			         <aas:dataSpecificationIEC61360>
+			        	<IEC:preferredName>
+			        		<IEC:langString lang="DE">maximale Drehzahl</IEC:langString>
+			        		<IEC:langString lang="EN">max rotation speed</IEC:langString>
+			        	</IEC:preferredName> 
+				         <IEC:shortName>
+				         	<IEC:langString>NMax</IEC:langString>
+				         </IEC:shortName>
+				         <IEC:unitId>
+				         	<IEC:keys>
+				         		<IEC:key type="GlobalReference" idType="IRDI" local="false">0173-1#05-AAA650#002</IEC:key>
+				         	</IEC:keys>
+				         </IEC:unitId>
+				         <IEC:valueFormat>NR1..5</IEC:valueFormat>
+			         </aas:dataSpecificationIEC61360>
+			       </aas:dataSpecificationContent>
+					<aas:dataSpecification>
+						<aas:keys>
+							<aas:key idType="IRI" type="GlobalReference" local="false">www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360</aas:key>
+						</aas:keys>
+				   </aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+		</aas:conceptDescription>
+	    <aas:conceptDescription>
+	    	<aas:idShort>CAD</aas:idShort>
+	    	<aas:identification idType="IRI">"http://smart.festo.com/id/instance/0815"</aas:identification>
+	    	<aas:embeddedDataSpecification>
+	    		<aas:dataSpecificationContent>
+	    			<aas:dataSpecificationIEC61360>
+	    				<IEC:preferredName>
+	    					<IEC:langString lang="DE">Enthaltene CAD Datei"</IEC:langString>
+	    					<IEC:langString lang="EN">"Embedded CAD File" </IEC:langString>
+	    				</IEC:preferredName>
+	    				<IEC:shortName>
+	    					<IEC:langString>File</IEC:langString>
+	    				</IEC:shortName>
+	    				<IEC:unit></IEC:unit>
+	    				<IEC:sourceOfDefinition></IEC:sourceOfDefinition>
+	    				<IEC:dataType>URL</IEC:dataType>
+	    				<IEC:definition>
+	    					<IEC:langString lang="DE">"Verweis auf enthaltene CAD Datei"</IEC:langString>
+	    					<IEC:langString lang="EN">"Reference to embedded CAD file"</IEC:langString>
+	    				</IEC:definition>
+	    			</aas:dataSpecificationIEC61360>
+	    		</aas:dataSpecificationContent>
+	    		<aas:dataSpecification>
+	    			<aas:keys>
+	    				<aas:key type="GlobalReference" local="false" idType="IRI">"www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"</aas:key>
+	    			</aas:keys>
+	    		</aas:dataSpecification>	    		
+	    	</aas:embeddedDataSpecification>   
+	    </aas:conceptDescription>
+	</aas:conceptDescriptions>
+</aas:aasenv>
