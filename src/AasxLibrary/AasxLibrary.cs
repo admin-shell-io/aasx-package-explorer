@@ -1,4 +1,6 @@
-﻿using System;
+﻿/* Copyright(c) 2020 Schneider Electric Automation GmbH <marco.mendes@se.com>, author: Marco Mendes */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
