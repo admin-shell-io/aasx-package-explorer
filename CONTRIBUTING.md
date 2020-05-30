@@ -32,10 +32,11 @@ the feature branch in your forked repository. See [this Github tuturial](
 https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork
 ) for more guidance. 
 
-We use Git Large File Support (LFS) to handle binary files. Please make sure 
-the files are tracked before you add binaries to the repository.
+We use Git Large File Support (LFS) to handle binary files. Please do not forget
+to install Git-Lfs (https://git-lfs.github.com) on your computer.
 
-Invoking:
+You need to make sure the files are tracked before you add binaries to the 
+repository. Invoking:
 ```bash
 $ git lfs track
 ```
