@@ -125,7 +125,9 @@ namespace AasxPrivateKeyJwtClient
 
         static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
         {
-            var client = new HttpClient();
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            var client = new HttpClient(handler);
 
             // var disco = await client.GetDiscoveryDocumentAsync(Constants.Authority);
             var disco = await client.GetDiscoveryDocumentAsync(authServer);
@@ -169,7 +171,9 @@ namespace AasxPrivateKeyJwtClient
         {
             // var baseAddress = Constants.SampleApi;
 
-            var client = new HttpClient
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            var client = new HttpClient(handler)
             {
                 // BaseAddress = new Uri(baseAddress)
                 BaseAddress = new Uri(dataServer)
