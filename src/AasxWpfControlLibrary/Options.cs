@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
 The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
 The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
@@ -86,7 +85,6 @@ namespace AasxPackageExplorer
         /// The current (used) licenses of the application. Use of Options as singleton.
         /// </summary>
         [JsonIgnore]
-        public string PrefLicenseShort = "This software is licensed under the Eclipse Public License 2.0 (EPL-2.0)." + Environment.NewLine +
                 "The browser functionality is licensed under the cefSharp license." + Environment.NewLine +
                 "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
                 "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
