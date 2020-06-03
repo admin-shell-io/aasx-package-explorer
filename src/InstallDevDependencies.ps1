@@ -9,8 +9,8 @@ Write-Host "Installation directory is: $installationDir"
 
 New-Item -ItemType Directory -Force -Path $installationDir
 
-$url = 'https://aka.ms/vs/15/release/vs_buildtools.exe'
-Write-Host "Downloading Visual Studio 2017 build tools from $url to: $installationDir"
+$url = 'https://aka.ms/vs/16/release/vs_buildtools.exe'
+Write-Host "Downloading Visual Studio build tools 16 from $url to: $installationDir"
 Invoke-WebRequest $url -OutFile $installationDir\vs_buildtools.exe
 
 & "$installationDir\vs_buildtools.exe" `
@@ -27,9 +27,6 @@ $ids = 'Community', 'Professional', 'Enterprise', 'BuildTools' | foreach { 'Micr
 $instance = & $vswherePath -latest -products $ids -requires Microsoft.Component.MSBuild -format json `
     | Convertfrom-json `
     | Select-Object -first 1
-$msbuildPath = Join-Path $instance.installationPath 'MSBuild\15.0\Bin\MSBuild.exe' 
-
-Write-Host "MSBuild can be found at: $msbuildPath"
 
 $nugetDir = "${Env:ProgramFiles(x86)}\nuget"
 New-Item -ItemType Directory -Force -Path $nugetDir
