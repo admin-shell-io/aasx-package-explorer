@@ -1,5 +1,0 @@
-﻿shortname ist string und nicht langString ?!
-
-^Take over notes erzeugt multiple kopien von entities????
-
-2 x eclass import auf das gleiche property --> 2 x CD
