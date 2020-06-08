@@ -297,7 +297,7 @@ namespace AasxPackageExplorer
                     var sme = AdminShell.SubmodelElementCollection.CreateNew(name, null, semanticID);
                     sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
                     sm.Add(sme);
-                    if (n.Value != "")
+                    if (n.Value != null && n.Value != "")
                     {
                         var p = AdminShell.Property.CreateNew(name, null, semanticID);
                         storeProperty(n, ref p);
@@ -349,10 +349,18 @@ namespace AasxPackageExplorer
             }
         }
 
+        // public static void storeProperty(UaNode n, ref AdminShell.SubmodelElement p)
         public static void storeProperty(UaNode n, ref AdminShell.Property p)
         {
-            p.valueType = "string";
-            p.value = n.Value;
+            if (p is AdminShell.Property)
+            {
+                (p as AdminShell.Property).valueType = "string";
+                (p as AdminShell.Property).value = n.Value;
+            }
+            if (n.UAObjectTypeName == "UAVariable")
+            {
+                p.category = "VARIABLE";
+            }
             p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
             p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANodeId", false, "OPC", n.NodeId));
             if (n.ParentNodeId != null && n.ParentNodeId != "")
