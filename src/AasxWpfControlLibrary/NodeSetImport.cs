@@ -41,9 +41,9 @@ namespace AasxPackageExplorer
 
         public UaNode()
         {
-            children = new List<UaNode> { };
-            references = new List<string> { };
-            fields = new List<field> { };
+            children = new List<UaNode>();
+            references = new List<string>();
+            fields = new List<field>();
         }
     }
 
@@ -59,12 +59,11 @@ namespace AasxPackageExplorer
             StreamWriter sw = File.CreateText(inputFn + ".log.txt");
 
             string elementName = "";
-            string lastElementName = "";
             bool tagDefinition = false;
             string referenceType = "";
 
-            roots = new List<UaNode> { };
-            nodes = new List<UaNode> { };
+            roots = new List<UaNode>();
+            nodes = new List<UaNode>();
             parentNodes = new Dictionary<string, UaNode>();
             UaNode currentNode = null;
 
@@ -214,7 +213,6 @@ namespace AasxPackageExplorer
                                     break;
                             }
                         }
-                        lastElementName = reader.Name;
                         break;
                 }
             }
@@ -224,8 +222,7 @@ namespace AasxPackageExplorer
             // scan nodes and store parent node in parentNodes value
             foreach (UaNode n in nodes)
             {
-                UaNode p = null;
-                if (parentNodes.TryGetValue(n.NodeId, out p))
+                if (parentNodes.TryGetValue(n.NodeId, out UaNode unused))
                 {
                     parentNodes[n.NodeId] = n;
                 }
@@ -236,8 +233,7 @@ namespace AasxPackageExplorer
             {
                 if (n.ParentNodeId != null && n.ParentNodeId != "")
                 {
-                    UaNode p = null;
-                    if (parentNodes.TryGetValue(n.ParentNodeId, out p))
+                    if (parentNodes.TryGetValue(n.ParentNodeId, out UaNode p))
                     {
                         n.parent = p;
                         p.children.Add(n);
@@ -246,14 +242,6 @@ namespace AasxPackageExplorer
             }
 
             // store models information
-            /*
-            ModelUri = reader.GetAttribute("ModelUri");
-            ModelUriVersion = reader.GetAttribute("Version");
-            ModelUriPublicationDate = reader.GetAttribute("PublicationDate");
-            RequiredModelUri = reader.GetAttribute("ModelUri");
-            RequiredModelUriVersion = reader.GetAttribute("Version");
-            RequiredModelUriPublicationDate = reader.GetAttribute("PublicationDate");
-            */
             var msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models");
             var msme = AdminShell.SubmodelElementCollection.CreateNew("Models", null, msemanticID);
             msme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", "Models"));
