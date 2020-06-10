@@ -901,7 +901,7 @@ namespace opctest
                 ar.first = sme1?.GetReference();
                 ar.second = sme2?.GetReference();
 
-                ar.annotations = new AdminShell.SubmodelElementWrapperCollection();
+                ar.annotations = new AdminShell.DataElementWrapperCollection();
                 ar.annotations.Add(sme1);
                 ar.annotations.Add(sme2);
             }

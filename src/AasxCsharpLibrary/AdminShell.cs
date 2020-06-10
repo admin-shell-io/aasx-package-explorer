@@ -4123,18 +4123,45 @@ namespace AdminShellNS
             }
         }
 
+        public class SubmodelElementWrapperCollection : BaseSubmodelElementWrapperCollection<SubmodelElement>
+        {
+            public SubmodelElementWrapperCollection() : base() { }
+
+            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
+                : base(other)
+            {
+            }
+        }
+
+        public class DataElementWrapperCollection : BaseSubmodelElementWrapperCollection<DataElement>
+        {
+            public DataElementWrapperCollection() : base() { }
+
+            public DataElementWrapperCollection(SubmodelElementWrapperCollection other)
+                : base(other)
+            {
+            }
+
+            public DataElementWrapperCollection(DataElementWrapperCollection other)
+                : base()
+            {
+                foreach (var wo in other)
+                    this.Add(wo);
+            }
+        }
+
         /// <summary>
         /// Provides some more functionalities for searching specific elements, e.g. in a SMEC
         /// </summary>
-        public class SubmodelElementWrapperCollection : List<SubmodelElementWrapper>
+        public class BaseSubmodelElementWrapperCollection<ELEMT> : List<SubmodelElementWrapper> where ELEMT : SubmodelElement
         {
             // no new members, as due to inheritance
 
             // constructors
 
-            public SubmodelElementWrapperCollection() : base() { }
+            public BaseSubmodelElementWrapperCollection() : base() { }
 
-            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
+            public BaseSubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
                 : base()
             {
                 if (other == null)
@@ -5331,7 +5358,7 @@ namespace AdminShellNS
             [SkipForHash] // do NOT count children!
             [XmlArray("annotations")]
             [XmlArrayItem("dataElement")]
-            public SubmodelElementWrapperCollection annotations = null;
+            public DataElementWrapperCollection annotations = null;
 
 #if WRONG
             [JsonIgnore]
@@ -5364,21 +5391,22 @@ namespace AdminShellNS
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "annotations")]
-            public SubmodelElement[] JsonAnotations
+            public DataElement[] JsonAnotations
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new List<DataElement>();
                     if (annotations != null)
                         foreach (var smew in annotations)
-                            res.Add(smew.submodelElement);
+                            if (smew.submodelElement is DataElement de)
+                            res.Add(de);
                     return res.ToArray();
                 }
                 set
                 {
                     if (value != null)
                     {
-                        this.annotations = new SubmodelElementWrapperCollection();
+                        this.annotations = new DataElementWrapperCollection();
                         foreach (var x in value)
                         {
                             var smew = new SubmodelElementWrapper() { submodelElement = x };
@@ -5402,7 +5430,7 @@ namespace AdminShellNS
                 if (src.second != null)
                     this.second = new Reference(src.second);
                 if (src.annotations != null)
-                    this.annotations = new SubmodelElementWrapperCollection(src.annotations);
+                    this.annotations = new DataElementWrapperCollection(src.annotations);
             }
 
             public new static AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
