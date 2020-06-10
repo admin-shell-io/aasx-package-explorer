@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@master
  
       - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v1.0.0
+        uses: mristin/opinionated-commit-message@v1.0.4
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.0
