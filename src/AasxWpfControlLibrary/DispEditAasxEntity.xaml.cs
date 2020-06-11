@@ -1909,7 +1909,7 @@ namespace AasxPackageExplorer
             // cut/ copy / paste
             if (parentContainer != null)
             {
-                helper.AddAction(stack, "Buffer:", new[] { "Cut", "Copy", "Paste above", "Paste below" }, repo, (buttonNdx) =>
+                helper.AddAction(stack, "Buffer:", new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo, (buttonNdx) =>
                {
                    if (buttonNdx is int)
                    {
@@ -1928,7 +1928,7 @@ namespace AasxPackageExplorer
                               cpb.duplicate ? " Paste will duplicate." : " Paste will cut at original position.");
                        }
 
-                       if ((int)buttonNdx == 2 || (int)buttonNdx == 3)
+                       if ((int)buttonNdx == 2 || (int)buttonNdx == 3 || (int)buttonNdx == 4)
                        {
                            // access copy/paste
                            var cpb = this.theCopyPaste;
@@ -1950,17 +1950,32 @@ namespace AasxPackageExplorer
                            // insertation depends on parent container
                            if ((int)buttonNdx == 2)
                            {
-                               if (parentContainer is AdminShell.Submodel && wrapper != null)
-                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.Submodel).submodelElements, smw2, wrapper);
-                               if (parentContainer is AdminShell.SubmodelElementCollection && wrapper != null)
-                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.SubmodelElementCollection).value, smw2, wrapper);
+                               if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
+                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(pcsm.submodelElements, smw2, wrapper);
+                               if (parentContainer is AdminShell.SubmodelElementCollection pcsmc && wrapper != null)
+                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(pcsmc.value, smw2, wrapper);
+                               if (parentContainer is AdminShell.Entity pcent && wrapper != null)
+                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(pcent.statements, smw2, wrapper);
+                               if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel && wrapper != null)
+                                   helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(pcarel.annotations, smw2, wrapper);
+                               // TODO: Operation mssing here?
                            }
                            if ((int)buttonNdx == 3)
                            {
-                               if (parentContainer is AdminShell.Submodel && wrapper != null)
-                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.Submodel).submodelElements, smw2, wrapper);
-                               if (parentContainer is AdminShell.SubmodelElementCollection && wrapper != null)
-                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>((parentContainer as AdminShell.SubmodelElementCollection).value, smw2, wrapper);
+                               if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
+                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(pcsm.submodelElements, smw2, wrapper);
+                               if (parentContainer is AdminShell.SubmodelElementCollection pcsmc && wrapper != null)
+                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(pcsmc.value, smw2, wrapper);
+                               if (parentContainer is AdminShell.Entity pcent && wrapper != null)
+                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(pcent.statements, smw2, wrapper);
+                               if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel && wrapper != null)
+                                   helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(pcarel.annotations, smw2, wrapper);
+                               // TODO: Operation mssing here?
+                           }
+                           if ((int)buttonNdx == 4)
+                           {
+                               if (sme is AdminShell.IEnumerateChildren smeec)
+                                   smeec.AddChild(smw2);
                            }
 
                            // may delete original

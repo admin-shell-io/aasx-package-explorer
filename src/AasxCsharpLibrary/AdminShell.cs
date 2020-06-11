@@ -1316,6 +1316,7 @@ namespace AdminShellNS
         public interface IEnumerateChildren
         {
             IEnumerable<SubmodelElementWrapper> EnumerateChildren();
+            void AddChild(SubmodelElementWrapper smw);
         }
 
         /// <summary>
@@ -4634,6 +4635,15 @@ namespace AdminShellNS
                         yield return smw;
             }
 
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.submodelElements == null)
+                    this.submodelElements = new SubmodelElementWrapperCollection();
+                this.submodelElements.Add(smw);
+            }
+
             // from IManageSubmodelElements
             public void Add(SubmodelElement sme)
             {
@@ -5390,6 +5400,15 @@ namespace AdminShellNS
                         yield return smw;
             }
 
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null || !(smw?.submodelElement is DataElement))
+                    return;
+                if (this.annotations == null)
+                    this.annotations = new DataElementWrapperCollection();
+                this.annotations.Add(smw);
+            }
+
             // further 
 
             public new void Set(Reference first = null, Reference second = null)
@@ -5472,6 +5491,15 @@ namespace AdminShellNS
                 if (this.value != null)
                     foreach (var smw in this.value)
                         yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.value == null)
+                    this.value = new SubmodelElementWrapperCollection();
+                this.value.Add(smw);
             }
 
             // constructors
@@ -5725,6 +5753,10 @@ namespace AdminShellNS
                         yield return smw?.value;
             }
 
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                // not enough information to select list of children
+            }
 
             // constructors
 
@@ -5826,6 +5858,15 @@ namespace AdminShellNS
                 if (this.statements != null)
                     foreach (var smw in this.statements)
                         yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.statements == null)
+                    this.statements = new SubmodelElementWrapperCollection();
+                this.statements.Add(smw);
             }
 
             // constructors
