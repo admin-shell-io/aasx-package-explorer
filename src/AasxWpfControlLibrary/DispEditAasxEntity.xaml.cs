@@ -2739,17 +2739,44 @@ namespace AasxPackageExplorer
                 helper.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
             else
-            if (sme is AdminShell.SubmodelElementCollection)
+            if (sme is AdminShell.SubmodelElementCollection smc)
             {
-                var p = sme as AdminShell.SubmodelElementCollection;
                 helper.AddGroup(stack, "SubmodelElementCollection", levelColors[0][0], levelColors[0][1]);
-                if (p.value != null)
-                    helper.AddKeyValue(stack, "# of values", "" + p.value.Count);
+                if (smc.value != null)
+                    helper.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else
                     helper.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
 
                 // TODO: ordered, allowDuplicates
 
+                /* non-edit mode fails
+
+                var g = helper.AddSmallGrid(2, 2, new[] { "#", "*" });
+
+                helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "ordered: ");
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), content: "(true e.g. for indexed array)", isChecked: smc.ordered),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                smc.ordered = (bool)o;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "allowDuplicates: ");
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), content: "(true for multiple same element)", isChecked: smc.allowDuplicates),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                smc.allowDuplicates = (bool)o;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                stack.Children.Add(g);
+
+                */
+
+                helper.AddCheckBox(stack, "ordered:", smc.ordered, " (true e.g. for indexed array)", (b) => { smc.ordered = b; });
+                helper.AddCheckBox(stack, "allowDuplicates:", smc.allowDuplicates, " (true, if multiple elements with same semanticId)", (b) => { smc.allowDuplicates = b; });
             }
             else
             if (sme is AdminShell.Operation)

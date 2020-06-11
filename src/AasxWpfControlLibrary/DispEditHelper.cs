@@ -94,6 +94,8 @@ namespace AasxPackageExplorer
 
         public Brush[][] levelColors = null;
 
+        public int standardFirstColWidth = 100;
+
         public bool editMode = false;
         public bool hintMode = false;
 
@@ -502,7 +504,7 @@ namespace AasxPackageExplorer
             var g = new Grid();
             g.Margin = new Thickness(0, 1, 0, 1);
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(100);
+            gc1.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new ColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
@@ -594,7 +596,7 @@ namespace AasxPackageExplorer
             g.Margin = new Thickness(0, 0, 0, 0);
 
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(100);
+            gc1.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
@@ -644,6 +646,35 @@ namespace AasxPackageExplorer
 
             // in total
             view.Children.Add(g);
+        }
+
+        public void AddCheckBox(Panel panel, string key, bool initialValue, string additionalInfo = "", Action<bool> valueChanged = null)
+        {
+            // make grid
+            var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" }, margin: new Thickness(0, 2, 0, 0));
+
+            // Column 0 = Key
+            this.AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: key);
+
+            // Column 1 = Check box or info
+            if (repo == null || valueChanged == null)
+            {
+                this.AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: initialValue ? "True" : "False");
+            }
+            else
+            {
+                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), content: additionalInfo,
+                    verticalContentAlignment: VerticalAlignment.Center, isChecked: initialValue),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                valueChanged((bool)o);
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+            }
+
+            // add
+            panel.Children.Add(g);
         }
 
         public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> action = null)
@@ -734,7 +765,7 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(100);
+            gc.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
@@ -980,7 +1011,7 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(100);
+            gc.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
