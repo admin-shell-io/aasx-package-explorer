@@ -894,11 +894,13 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Asks the user for SME element type, allowing exclusion of types.
         /// </summary>
-        public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null)
+        public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(string caption, 
+            AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null,
+            AdminShell.SubmodelElementWrapper.AdequateElementEnum[] includeValues = null)
         {
             // prepare a list
             var fol = new List<SelectFromListFlyoutItem>();
-            foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues))
+            foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues, includeValues))
                 fol.Add(new SelectFromListFlyoutItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
 
             // prompt for this list

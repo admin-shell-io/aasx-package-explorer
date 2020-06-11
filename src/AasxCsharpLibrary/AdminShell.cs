@@ -313,6 +313,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "SubmodelElement",
             "SubmodelElementCollection",
@@ -337,6 +338,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "SubmodelElement",
             "SubmodelElementCollection",
@@ -352,6 +354,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "BasicEvent",
             "Entity",
@@ -3425,6 +3428,11 @@ namespace AdminShellNS
                             CreateFromExistingEnvRecurseForCDs(src, w2s, ref filterForCD);
                         }
 
+                    if (w.submodelElement is Entity smee)
+                        CreateFromExistingEnvRecurseForCDs(src, smee.statements, ref filterForCD);
+
+                    if (w.submodelElement is AnnotatedRelationshipElement smea)
+                        CreateFromExistingEnvRecurseForCDs(src, smea.annotations, ref filterForCD);
                 }
             }
 
@@ -3892,11 +3900,17 @@ namespace AdminShellNS
             public enum AdequateElementEnum
             {
                 Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, ReferenceElement,
-                RelationshipElement, Capability, Operation, BasicEvent, Entity
+                RelationshipElement, AnnotatedRelationshipElement, Capability, Operation, BasicEvent, Entity
             }
 
+            public static AdequateElementEnum[] AdequateElementsDataElement =
+            {
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement, AdequateElementEnum.AnnotatedRelationshipElement,
+                AdequateElementEnum.Capability, AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+            };
+
             public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement",
-                "RelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+                "RelationshipElement", "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
 
@@ -3922,6 +3936,8 @@ namespace AdminShellNS
                     this.submodelElement = new ReferenceElement(src as ReferenceElement);
                 if (src is RelationshipElement)
                     this.submodelElement = new RelationshipElement(src as RelationshipElement);
+                if (src is AnnotatedRelationshipElement)
+                    this.submodelElement = new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
                 if (src is Capability)
                     this.submodelElement = new Capability(src as Capability);
                 if (src is Operation)
@@ -3969,15 +3985,23 @@ namespace AdminShellNS
                 return AdequateElementEnum.Unknown;
             }
 
-            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(AdequateElementEnum[] excludeValues = null)
+            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(AdequateElementEnum[] excludeValues = null, AdequateElementEnum[] includeValues = null)
             {
-                foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                if (includeValues != null)
                 {
-                    if (en == AdequateElementEnum.Unknown)
-                        continue;
-                    if (excludeValues != null && excludeValues.Contains(en))
-                        continue;
-                    yield return en;
+                    foreach (var en in includeValues)
+                        yield return en;
+                }
+                else
+                {
+                    foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                    {
+                        if (en == AdequateElementEnum.Unknown)
+                            continue;
+                        if (excludeValues != null && excludeValues.Contains(en))
+                            continue;
+                        yield return en;
+                    }
                 }
             }
 
@@ -4000,6 +4024,8 @@ namespace AdminShellNS
                     return new ReferenceElement(src);
                 if (ae == AdequateElementEnum.RelationshipElement)
                     return new RelationshipElement(src);
+                if (ae == AdequateElementEnum.AnnotatedRelationshipElement)
+                    return new AnnotatedRelationshipElement(src);
                 if (ae == AdequateElementEnum.Capability)
                     return new Capability(src);
                 if (ae == AdequateElementEnum.SubmodelElementCollection)
@@ -4021,7 +4047,6 @@ namespace AdminShellNS
             {
                 return CreateAdequateType(GetAdequateEnum(elementName));
             }
-
 
             /// <summary>
             /// Can create SubmodelElements based on a given type information
@@ -4046,6 +4071,7 @@ namespace AdminShellNS
                 if (submodelElement is AdminShell.File) return ("File");
                 if (submodelElement is AdminShell.Blob) return ("Blob");
                 if (submodelElement is AdminShell.ReferenceElement) return ("Ref");
+                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel"); // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
                 if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
                 if (submodelElement is AdminShell.Capability) return ("Cap");
                 if (submodelElement is AdminShell.SubmodelElementCollection) return ("Coll");
@@ -4115,12 +4141,12 @@ namespace AdminShellNS
             }
 
             // typecasting wrapper into specific type
-
             public T GetAs<T>() where T : SubmodelElement
             {
                 var x = (this.submodelElement) as T;
                 return x;
             }
+
         }
 
         public class SubmodelElementWrapperCollection : BaseSubmodelElementWrapperCollection<SubmodelElement>
@@ -4292,24 +4318,18 @@ namespace AdminShellNS
                     parents.Add(current);
 
                     // dive into?
-                    if (current is SubmodelElementCollection)
-                    {
-                        var smc = current as SubmodelElementCollection;
+                    if (current is SubmodelElementCollection smc)
                         smc.value?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
 
-                    if (current is Entity)
-                    {
-                        var ent = current as Entity;
+                    if (current is Entity ent)
                         ent.statements?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
 
-                    if (current is Operation)
-                    {
-                        var op = current as Operation;
+                    if (current is Operation op)
                         for (int i = 0; i < 2; i++)
                             Operation.GetWrappers(op[i])?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
+
+                    if (current is AnnotatedRelationshipElement arel)
+                        arel.annotations?.RecurseOnSubmodelElements(state, parents, lambda);
 
                     // remove from parents
                     parents.RemoveAt(parents.Count - 1);
@@ -4694,59 +4714,6 @@ namespace AdminShellNS
                 var ci = ToCaptionInfo();
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
             }
-
-            // Recursing
-
-            /*
-            private void RecurseOnSubmodelElementsRecurse(List<SubmodelElementWrapper> wrappers, object state, List<SubmodelElement> parents, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
-            {
-                // trivial
-                if (wrappers == null || parents == null || lambda == null)
-                    return;
-
-                // over all elements
-                foreach (var smw in wrappers)
-                {
-                    var current = smw.submodelElement;
-                    if (current == null)
-                        continue;
-
-                    // call lambda for this element
-                    lambda(state, parents, current);
-
-                    // add to parents
-                    parents.Add(current);
-
-                    // dive into?
-                    if (current is SubmodelElementCollection)
-                    {
-                        var smc = current as SubmodelElementCollection;
-                        RecurseOnSubmodelElementsRecurse(smc.value, state, parents, lambda);
-                    }
-
-                    if (current is Entity)
-                    {
-                        var ent = current as Entity;
-                        RecurseOnSubmodelElementsRecurse(ent.statements, state, parents, lambda);
-                    }
-
-                    if (current is Operation)
-                    {
-                        var op = current as Operation;
-                        for (int i = 0; i < 2; i++)
-                            RecurseOnSubmodelElementsRecurse(Operation.GetWrappers(op[i]), state, parents, lambda);
-                    }
-
-                    // remove from parents
-                    parents.RemoveAt(parents.Count - 1);
-                }
-            }
-
-            public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
-            {
-                RecurseOnSubmodelElementsRecurse(this.submodelElements, state, new List<SubmodelElement>(), lambda);
-            }
-            */
 
             public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
@@ -5344,7 +5311,7 @@ namespace AdminShellNS
             }
         }
 
-        public class AnnotatedRelationshipElement : RelationshipElement
+        public class AnnotatedRelationshipElement : RelationshipElement, IEnumerateChildren
         {
             // for JSON only
             [XmlIgnore]
@@ -5359,35 +5326,6 @@ namespace AdminShellNS
             [XmlArray("annotations")]
             [XmlArrayItem("dataElement")]
             public DataElementWrapperCollection annotations = null;
-
-#if WRONG
-            [JsonIgnore]
-            [XmlArray("annotations")]
-            public DataElement[] XmlAnotations
-            {
-                get
-                {
-                    var res = new List<DataElement>();
-                    if (annotations != null)
-                        foreach (var smew in annotations)
-                            if (smew.submodelElement is DataElement de)
-                                res.Add(de);
-                    return res.ToArray();
-                }
-                set
-                {
-                    if (value != null)
-                    {
-                        this.annotations = new SubmodelElementWrapperCollection();
-                        foreach (var x in value)
-                        {
-                            var smew = new SubmodelElementWrapper() { submodelElement = x };
-                            this.annotations.Add(smew);
-                        }
-                    }
-                }
-            }
-#endif
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "annotations")]
@@ -5442,6 +5380,17 @@ namespace AdminShellNS
                 x.second = second;
                 return (x);
             }
+
+            // enumerates its children
+
+            public IEnumerable<SubmodelElementWrapper> EnumerateChildren()
+            {
+                if (this.annotations != null)
+                    foreach (var smw in this.annotations)
+                        yield return smw;
+            }
+
+            // further 
 
             public new void Set(Reference first = null, Reference second = null)
             {

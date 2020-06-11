@@ -2229,11 +2229,9 @@ namespace AasxPackageExplorer
                });
             }
 
-            if (editMode && sme is AdminShell.Operation)
+            if (editMode && sme is AdminShell.Operation smo)
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
-
-                var smo = sme as AdminShell.Operation;
 
                 var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
 
@@ -2249,7 +2247,7 @@ namespace AasxPackageExplorer
                         "This collection of OperationVariables currently has no elements, yet. Please check, which in- and out-variables are required.", severityLevel: HintCheck.Severity.Notice)
                     });
                     helper.AddAction(substack, "OperationVariable:", new[] { "Add" }, repo, (buttonNdx) =>
-                   {
+                    {
                        if (buttonNdx is int && (int)buttonNdx == 0)
                        {
                            var ov = new AdminShell.OperationVariable();
@@ -2261,14 +2259,14 @@ namespace AasxPackageExplorer
                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
                        }
                        return new ModifyRepo.LambdaActionNone();
-                   });
+                    });
 
                     helper.AddHintBubble(substack, hintMode, new[] {
                     new HintCheck( () => { return helper.auxPackages != null;  },
                         "You have opened an auxiliary AASX package. You can copy elements from it!", severityLevel: HintCheck.Severity.Notice)
                     });
                     helper.AddAction(substack, "Copy from existing OperationVariable:", new[] { "Copy single", "Copy recursively" }, repo, (buttonNdx) =>
-                   {
+                    {
                        if (buttonNdx is int)
                        {
                            if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
@@ -2289,9 +2287,81 @@ namespace AasxPackageExplorer
                            }
                        }
                        return new ModifyRepo.LambdaActionNone();
-                   });
+                    });
 
                 }
+
+            }
+
+            if (editMode && sme is AdminShell.AnnotatedRelationshipElement are)
+            {
+                helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
+
+                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+
+                helper.AddHintBubble(substack, hintMode, new[] {
+                    new HintCheck( () => { return are.annotations == null || are.annotations.Count < 1; },
+                        "The annotations collection currently has no elements, yet. Consider add DataElements or refactor to ordinary RelationshipElement.", severityLevel: HintCheck.Severity.Notice)
+                    });
+                helper.AddAction(stack, "annotation:", new[] { "Add Property", "Add MultiLang.Prop.", "Add Range", "Add other .." }, repo, (buttonNdx) =>
+                {
+                    if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
+                    {
+                        // which adequate type?
+                        var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
+                        if ((int)buttonNdx == 0)
+                            en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
+                        if ((int)buttonNdx == 1)
+                            en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.MultiLanguageProperty;
+                        if ((int)buttonNdx == 2)
+                            en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Range;
+                        if ((int)buttonNdx == 3)
+                            en = helper.SelectAdequateEnum("Select SubmodelElement to create ..", includeValues: AdminShell.SubmodelElementWrapper.AdequateElementsDataElement);
+
+                        // ok?
+                        if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                        {
+                            // create, add
+                            AdminShell.SubmodelElement sme2 = AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
+                            if (are.annotations == null)
+                                are.annotations = new AdminShell.DataElementWrapperCollection();
+                            are.annotations.Add(sme2);
+
+                            // redraw
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
+                        }
+                    }
+                    return new ModifyRepo.LambdaActionNone();
+                });
+
+                helper.AddHintBubble(substack, hintMode, new[] {
+                    new HintCheck( () => { return helper.auxPackages != null;  },
+                        "You have opened an auxiliary AASX package. You can copy elements from it!", severityLevel: HintCheck.Severity.Notice)
+                    });
+                helper.AddAction(substack, "Copy from existing DataElement:", new[] { "Copy single" }, repo, (buttonNdx) =>
+                {
+                    if (buttonNdx is int)
+                    {
+                        if ((int)buttonNdx == 0)
+                        {
+                            var rve = helper.SmartSelectAasEntityVisualElement(package.AasEnv, "SubmodelElement", package: package, auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+                            if (rve != null)
+                            {
+                                var mdo = rve.GetMainDataObject();
+                                if (mdo != null && mdo is AdminShell.DataElement)
+                                {
+                                    var clonesmw = new AdminShell.SubmodelElementWrapper(mdo as AdminShell.DataElement, shallowCopy: true);
+                                    if (are.annotations == null)
+                                        are.annotations = new AdminShell.DataElementWrapperCollection();
+                                    are.annotations.Add(clonesmw);
+
+                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: clonesmw.submodelElement, isExpanded: true);
+                                }
+                            }
+                        }
+                    }
+                    return new ModifyRepo.LambdaActionNone();
+                });
 
             }
 
@@ -2610,36 +2680,40 @@ namespace AasxPackageExplorer
                 }
             }
             else
-            if (sme is AdminShell.RelationshipElement)
+            if (sme is AdminShell.RelationshipElement rele)
             {
-                var p = sme as AdminShell.RelationshipElement;
-                helper.AddGroup(stack, "RelationshipElement", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "" + sme.GetElementName(), levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(stack, hintMode, new[] {
-                    new HintCheck( () => { return p.first == null || p.first.IsEmpty; },
+                    new HintCheck( () => { return rele.first == null || rele.first.IsEmpty; },
                         "Please choose the first element of the relationship. In terms of a semantic triple, it would be the subject. The semantics of your reference (the predicate) shall be described by the concept referred by semanticId.", severityLevel: HintCheck.Severity.Notice)
                 });
-                if (helper.SafeguardAccess(stack, repo, p.first, "First relation:", "Create data element!", v =>
+                if (helper.SafeguardAccess(stack, repo, rele.first, "First relation:", "Create data element!", v =>
                 {
-                    p.first = new AdminShell.Reference();
+                    rele.first = new AdminShell.Reference();
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
                 {
-                    helper.AddKeyListKeys(stack, "first", p.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                    helper.AddKeyListKeys(stack, "first", rele.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
                         jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); });
                 }
 
                 helper.AddHintBubble(stack, hintMode, new[] {
-                    new HintCheck( () => { return p.second == null || p.second.IsEmpty; },
+                    new HintCheck( () => { return rele.second == null || rele.second.IsEmpty; },
                         "Please choose the second element of the relationship. In terms of a semantic triple, it would be the object. The semantics of your reference (the predicate) shall be described by the concept referred by semanticId.", severityLevel: HintCheck.Severity.Notice)
                 });
-                if (helper.SafeguardAccess(stack, repo, p.first, "Secind relation:", "Create data element!", v =>
+                if (helper.SafeguardAccess(stack, repo, rele.first, "Secind relation:", "Create data element!", v =>
                 {
-                    p.second = new AdminShell.Reference();
+                    rele.second = new AdminShell.Reference();
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
                 {
-                    helper.AddKeyListKeys(stack, "second", p.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                    helper.AddKeyListKeys(stack, "second", rele.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                }
+
+                // specifically for annotated relationship?
+                if (sme is AdminShell.AnnotatedRelationshipElement arele)
+                {
                 }
             }
             else
