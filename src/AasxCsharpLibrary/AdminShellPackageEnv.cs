@@ -352,6 +352,16 @@ namespace AdminShellNS
 
         public enum PreferredFormat { None, Xml, Json };
 
+        public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
+        {
+            var nss = new XmlSerializerNamespaces();
+            nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
+            nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
+            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/2/0");
+            nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
+            return nss;
+        }
+
         public bool SaveAs(string fn, bool writeFreshly = false, PreferredFormat prefFmt = PreferredFormat.None, MemoryStream useMemoryStream = null)
         {
             if (fn.ToLower().EndsWith(".xml"))
@@ -364,10 +374,7 @@ namespace AdminShellNS
                     {
                         // TODO: use aasenv serialzers here!
                         var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                        var nss = new XmlSerializerNamespaces();
-                        nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                        nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                        nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                        var nss = GetXmlDefaultNamespaces();
                         serializer.Serialize(s, this.aasenv, nss);
                     }
                 }
@@ -542,10 +549,7 @@ namespace AdminShellNS
                         using (var s = specPart.GetStream(FileMode.Create))
                         {
                             var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                            var nss = new XmlSerializerNamespaces();
-                            nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                            nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                            nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                            var nss = GetXmlDefaultNamespaces();
                             serializer.Serialize(s, this.aasenv, nss);
                         }
                     }

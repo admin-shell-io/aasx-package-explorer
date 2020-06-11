@@ -1395,10 +1395,7 @@ namespace opctest
                     using (var s = new StreamWriter("sample.xml"))
                     {
                         var serializer = new XmlSerializer(aasenv1.GetType());
-                        var nss = new XmlSerializerNamespaces();
-                        nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                        nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                        nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                        var nss = AdminShellPackageEnv.GetXmlDefaultNamespaces();
                         serializer.Serialize(s, aasenv1, nss);
                     }
                 }
@@ -1728,10 +1725,7 @@ namespace opctest
                     using (var s = new StreamWriter("sample.xml"))
                     {
                         var serializer = new XmlSerializer(aasenv1.GetType());
-                        var nss = new XmlSerializerNamespaces();
-                        nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                        nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                        nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                        var nss = AdminShellPackageEnv.GetXmlDefaultNamespaces();
                         serializer.Serialize(s, aasenv1, nss);
                     }
                 }
