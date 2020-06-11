@@ -2747,6 +2747,9 @@ namespace AasxPackageExplorer
                     helper.AddKeyValue(stack, "# of values", "" + p.value.Count);
                 else
                     helper.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                // TODO: ordered, allowDuplicates
+
             }
             else
             if (sme is AdminShell.Operation)
@@ -2757,6 +2760,8 @@ namespace AasxPackageExplorer
                     helper.AddKeyValue(stack, "# of input vars.", "" + p.inputVariable.Count);
                 if (p.outputVariable != null)
                     helper.AddKeyValue(stack, "# of output vars.", "" + p.outputVariable.Count);
+                if (p.inoutputVariable != null)
+                    helper.AddKeyValue(stack, "# of in/out vars.", "" + p.inoutputVariable.Count);
             }
             else
             if (sme is AdminShell.Entity)
