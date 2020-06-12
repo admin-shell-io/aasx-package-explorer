@@ -1,4 +1,4 @@
-﻿/* these items were adopted 12 JUN 2020, based on 1st draft of Y. Zhangs proposal for Submodel template */
+﻿/* these items were exported based on what Alettin Dogan provided as exemplary (from Festo) AASX */
 {
   /* Nameplate */
   "SM_Nameplate": {
@@ -2937,8 +2937,8 @@
   },
   "CD_DocumentationItem": {
     "identification": {
-      "idType": "IRI",
-      "id": "http://www.vdi.de/2770/AssetDocumentation/Document"
+      "idType": "IRDI",
+      "id": "0173-1#02-AAD001#001"
     },
     "administration": null,
     "idShort": "DocumentationItem",

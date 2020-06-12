@@ -4277,11 +4277,11 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId) where T : SubmodelElement
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement is T && smw.submodelElement.semanticId != null)
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw.submodelElement as T;
             }
 
@@ -4290,9 +4290,9 @@ namespace AdminShellNS
                 return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId) where T : SubmodelElement
+            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
             {
-                return FindAllSemanticIdAs<T>(semId)?.FirstOrDefault<T>();
+                return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
 
             // recursion
