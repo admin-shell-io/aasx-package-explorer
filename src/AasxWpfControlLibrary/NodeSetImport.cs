@@ -52,6 +52,7 @@ namespace AasxPackageExplorer
         static List<UaNode> roots;
         static List<UaNode> nodes;
         static Dictionary<string, UaNode> parentNodes;
+        static Dictionary<string, Int16> semanticIDPool;
 
         public static void ImportNodeSetToSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
@@ -65,6 +66,7 @@ namespace AasxPackageExplorer
             roots = new List<UaNode>();
             nodes = new List<UaNode>();
             parentNodes = new Dictionary<string, UaNode>();
+            semanticIDPool = new Dictionary<string, Int16>();
             UaNode currentNode = null;
 
             // global model data
@@ -152,6 +154,11 @@ namespace AasxPackageExplorer
                             case "Boolean":
                             case "Int32":
                             case "ByteString":
+                            case "uax:String":
+                            case "uax:DateTime":
+                            case "uax:Boolean":
+                            case "uax:Int32":
+                            case "uax:ByteString":
                                 currentNode.Value = reader.Value;
                                 break;
                             case "Description":
@@ -241,49 +248,66 @@ namespace AasxPackageExplorer
                 }
             }
 
+            var outerSme = AdminShell.SubmodelElementCollection.CreateNew("OuterCollection");
+            sm.Add(outerSme);
+            var innerSme = AdminShell.SubmodelElementCollection.CreateNew("InnerCollection");
+            sm.Add(innerSme);
+            var conceptSme = AdminShell.SubmodelElementCollection.CreateNew("ConceptDescriptionCollection");
+            sm.Add(conceptSme);
+
             // store models information
             var msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models");
             var msme = AdminShell.SubmodelElementCollection.CreateNew("Models", null, msemanticID);
             msme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", "Models"));
-            sm.Add(msme);
+            innerSme.Add(msme);
             // modeluri
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluri");
             var mp = AdminShell.Property.CreateNew("ModelUri", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUri;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
             // modeluriversion
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluriversion");
             mp = AdminShell.Property.CreateNew("ModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriVersion;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
             // modeluripublicationdate
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluripublicationdate");
             mp = AdminShell.Property.CreateNew("ModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriPublicationDate;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
             // requiredmodeluri
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluri");
             mp = AdminShell.Property.CreateNew("RequiredModelUri", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUri;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
             // modeluriversion
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluriversion");
             mp = AdminShell.Property.CreateNew("RequiredModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriVersion;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
             // modeluripublicationdate
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluripublicationdate");
             mp = AdminShell.Property.CreateNew("RequiredModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriPublicationDate;
             msme.Add(mp);
+            addLeaf(conceptSme, mp);
 
             // iterate through independent root trees
+            // store UADataType to UADataTypeCollection in the end
+            var semanticIDDataTypes = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "UADataTypeCollection");
+            var smeDataTypes = AdminShell.SubmodelElementCollection.CreateNew("UADataTypeCollection", null, semanticIDDataTypes);
+
             foreach (UaNode n in roots)
             {
                 String name = n.BrowseName;
@@ -292,32 +316,71 @@ namespace AasxPackageExplorer
                     name = n.SymbolicName;
                 }
                 var semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + name);
-                if (n.children != null && n.children.Count != 0)
+                if ((n.children != null && n.children.Count != 0) ||
+                    (n.fields != null && n.fields.Count != 0))
                 {
                     var sme = AdminShell.SubmodelElementCollection.CreateNew(name, null, semanticID);
                     sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
-                    sm.Add(sme);
+                    switch (n.UAObjectTypeName)
+                    {
+                        case "UADataType":
+                        case "UAObjectType":
+                            smeDataTypes.Add(sme);
+                            break;
+                        default:
+                            innerSme.Add(sme);
+                            break;
+                    }
                     if (n.Value != null && n.Value != "")
                     {
-                        var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                        storeProperty(n, ref p);
+                        // var p = AdminShell.Property.CreateNew(name, null, semanticID);
+                        // storeProperty(n, ref p);
+                        // var p = createSE(n, ModelUri + name + "/");
+                        var p = createSE(n, ModelUri);
                         sme.Add(p);
+                        addLeaf(conceptSme, p);
+                    }
+                    foreach (field f in n.fields)
+                    {
+                        sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+                        semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + name + "/" + f.name);
+                        var p = AdminShell.Property.CreateNew(f.name, null, semanticID);
+                        p.valueType = "string";
+                        p.value = f.value;
+                        sme.Add(p);
+                        addLeaf(conceptSme, p);
                     }
                     foreach (UaNode c in n.children)
                     {
-                        createSubmodelElements(c, env, sme, smref, ModelUri + name + "/");
+                        createSubmodelElements(c, env, sme, smref, ModelUri + name + "/", conceptSme);
                     }
                 }
                 else
                 {
-                    var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                    storeProperty(n, ref p);
-                    sm.Add(p);
+                    // var p = AdminShell.Property.CreateNew(name, null, semanticID);
+                    // storeProperty(n, ref p);
+                    // var p = createSE(n, ModelUri + name + "/");
+                    var se = createSE(n, ModelUri);
+                    switch (n.UAObjectTypeName)
+                    {
+                        case "UADataType":
+                        case "UAObjectType":
+                            smeDataTypes.Add(se);
+                            addLeaf(conceptSme, se);
+                            break;
+                        default:
+                            innerSme.Add(se);
+                            addLeaf(conceptSme, se);
+                            break;
+                    }
                 }
             }
+
+            // Add datatypes in the end
+            innerSme.Add(smeDataTypes);
         }
 
-        public static void createSubmodelElements(UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.SubmodelElementCollection smec, AdminShell.SubmodelRef smref, string path)
+        public static void createSubmodelElements(UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.SubmodelElementCollection smec, AdminShell.SubmodelRef smref, string path, AdminShell.SubmodelElementCollection concepts)
         {
             String name = n.BrowseName;
             if (n.SymbolicName != null && n.SymbolicName != "")
@@ -325,70 +388,122 @@ namespace AasxPackageExplorer
                 name = n.SymbolicName;
             }
             var semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", path + name);
-            if (n.children != null && n.children.Count != 0)
+            if ((n.children != null && n.children.Count != 0) ||
+                (n.fields != null && n.fields.Count != 0))
             {
                 var sme = AdminShell.SubmodelElementCollection.CreateNew(name, null, semanticID);
                 sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
                 smec.Add(sme);
                 if (n.Value != "")
                 {
-                    var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                    storeProperty(n, ref p);
+                    // var p = AdminShell.Property.CreateNew(name, null, semanticID);
+                    // storeProperty(n, ref p);
+                    var p = createSE(n, path);
                     sme.Add(p);
+                    addLeaf(concepts, p);
+                }
+                foreach (field f in n.fields)
+                {
+                    sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+                    semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", path + name + "/" + f.name);
+                    var p = AdminShell.Property.CreateNew(f.name, null, semanticID);
+                    p.valueType = "string";
+                    p.value = f.value;
+                    sme.Add(p);
+                    addLeaf(concepts, p);
                 }
                 foreach (UaNode c in n.children)
                 {
-                    createSubmodelElements(c, env, sme, smref, path + name + "/");
+                    createSubmodelElements(c, env, sme, smref, path + name + "/", concepts);
                 }
             }
             else
             {
-                var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                storeProperty(n, ref p);
-                smec.Add(p);
+                // var p = AdminShell.Property.CreateNew(name, null, semanticID);
+                // storeProperty(n, ref p);
+                var se = createSE(n, path);
+                smec.Add(se);
+                addLeaf(concepts, se);
             }
         }
 
-        // public static void storeProperty(UaNode n, ref AdminShell.SubmodelElement p)
-        public static void storeProperty(UaNode n, ref AdminShell.Property p)
+        public static AdminShell.SubmodelElement createSE(UaNode n, string path)
         {
-            if (p is AdminShell.Property)
+            AdminShell.SubmodelElement se = null;
+
+            String name = n.BrowseName;
+            if (n.SymbolicName != null && n.SymbolicName != "")
             {
-                (p as AdminShell.Property).valueType = "string";
-                (p as AdminShell.Property).value = n.Value;
+                name = n.SymbolicName;
             }
+
+            // Check that semanticID only exists once and no overlapping names
+            if (!semanticIDPool.ContainsKey(path + name))
+            {
+                semanticIDPool.Add(path + name, 0);
+            }
+            else
+            {
+                // Names are not unique
+                string[] split = n.NodeId.Split('=');
+                name += split[split.Length - 1];
+                semanticIDPool.Add(path + name, 0);
+            }
+            var semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", path + name);
+
+            switch (n.UAObjectTypeName)
+            {
+                case "UAReferenceType":
+                    se = AdminShell.RelationshipElement.CreateNew(name, null, semanticID);
+                    break;
+                default:
+                    se = AdminShell.Property.CreateNew(name, null, semanticID);
+                    (se as AdminShell.Property).valueType = "string";
+                    (se as AdminShell.Property).value = n.Value;
+                    break;
+            }
+
             if (n.UAObjectTypeName == "UAVariable")
             {
-                p.category = "VARIABLE";
+                se.category = "VARIABLE";
             }
-            p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
-            p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANodeId", false, "OPC", n.NodeId));
+
+            se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
+            se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANodeId", false, "OPC", n.NodeId));
             if (n.ParentNodeId != null && n.ParentNodeId != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAParentNodeId", false, "OPC", n.ParentNodeId));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAParentNodeId", false, "OPC", n.ParentNodeId));
             if (n.BrowseName != null && n.BrowseName != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UABrowseName", false, "OPC", n.BrowseName));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UABrowseName", false, "OPC", n.BrowseName));
             if (n.DisplayName != null && n.DisplayName != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADisplayName", false, "OPC", n.DisplayName));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADisplayName", false, "OPC", n.DisplayName));
             if (n.NameSpace != null && n.NameSpace != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANameSpace", false, "OPC", n.NameSpace));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANameSpace", false, "OPC", n.NameSpace));
             if (n.SymbolicName != null && n.SymbolicName != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UASymbolicName", false, "OPC", n.SymbolicName));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UASymbolicName", false, "OPC", n.SymbolicName));
             if (n.DataType != null && n.DataType != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADataType", false, "OPC", n.DataType));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADataType", false, "OPC", n.DataType));
             if (n.Description != null && n.Description != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADescription", false, "OPC", n.Description));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADescription", false, "OPC", n.Description));
             foreach (string s in n.references)
             {
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAReference", false, "OPC", s));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAReference", false, "OPC", s));
             }
             if (n.DefinitionName != null && n.DefinitionName != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionName", false, "OPC", n.DefinitionName));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionName", false, "OPC", n.DefinitionName));
             if (n.DefinitionNameSpace != null && n.DefinitionNameSpace != "")
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionNameSpace", false, "OPC", n.DefinitionNameSpace));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionNameSpace", false, "OPC", n.DefinitionNameSpace));
             foreach (field f in n.fields)
             {
-                p.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
             }
+
+            return se;
+        }
+
+        public static void addLeaf(AdminShell.SubmodelElementCollection concepts, AdminShell.SubmodelElement sme)
+        {
+            var se = AdminShell.Property.CreateNew(sme.idShort, null, sme.semanticId[0]);
+            concepts.Add(se);
         }
     }
 }
