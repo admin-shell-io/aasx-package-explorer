@@ -412,9 +412,12 @@ namespace AasxPackageExplorer
                     sme.Add(p);
                     addLeaf(concepts, p);
                 }
-                foreach (UaNode c in n.children)
+                if (n.children != null)
                 {
-                    createSubmodelElements(c, env, sme, smref, path + name + "/", concepts);
+                    foreach (UaNode c in n.children)
+                    {
+                        createSubmodelElements(c, env, sme, smref, path + name + "/", concepts);
+                    }
                 }
             }
             else
@@ -455,9 +458,11 @@ namespace AasxPackageExplorer
             {
                 case "UAReferenceType":
                     se = AdminShell.RelationshipElement.CreateNew(name, null, semanticID);
+                    if (se == null) return null;
                     break;
                 default:
                     se = AdminShell.Property.CreateNew(name, null, semanticID);
+                    if (se == null) return null;
                     (se as AdminShell.Property).valueType = "string";
                     (se as AdminShell.Property).value = n.Value;
                     break;
