@@ -16,6 +16,7 @@ using System.Threading;
 
 using Newtonsoft;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using AasxUANodesetImExport;
 using System.Xml.Serialization;
 
@@ -1248,7 +1249,9 @@ namespace AasxPackageExplorer
                     RememberForInitialDirectory(dlg.FileName);
                     using (StreamReader file = System.IO.File.OpenText(dlg.FileName))
                     {
+                        ITraceWriter tw = new MemoryTraceWriter();
                         JsonSerializer serializer = new JsonSerializer();
+                        serializer.TraceWriter = tw;
                         serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
                         submodel = (AdminShell.Submodel)serializer.Deserialize(file, typeof(AdminShell.Submodel));
                     }
