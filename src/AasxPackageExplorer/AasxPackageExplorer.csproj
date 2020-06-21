@@ -326,9 +326,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\splash_screen.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="icon-set\aasx.ico" />
     <None Include="icon-set\how-to.txt" />
     <None Include="icon-set\Icon_AASX_16x16_2_W.bmp" />
