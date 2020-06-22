@@ -17,6 +17,9 @@ using AasxIntegrationBase.AasForms;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
+// Disable dead code detection due to comments such as `//-9- {Referable}.kind`
+// dead-csharp off
+
 namespace AasxPluginExportTable
 {
     public class ExportTableAasEntitiesItem
@@ -681,7 +684,7 @@ namespace AasxPluginExportTable
 
             using (var f = new StreamWriter(fn))
             {
-                f.WriteLine("Not yet implemented :-(");
+                f.WriteLine("Not yet implemented");
             }
 
             return true;

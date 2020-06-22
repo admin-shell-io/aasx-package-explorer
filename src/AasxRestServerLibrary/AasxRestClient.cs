@@ -171,17 +171,12 @@ namespace AasxRestServerLibrary
                 return null;
 
             // build path         
-            // var query = BuildUriQueryString(BuildUriQueryPartId("Q1", aas), BuildUriQueryPartId("Q2", submodel));
-            // var reqpath = "/aas/@Q1/submodels/@Q2/elements/" + sme.CollectIdShortByParent() + "/property";
             var aasId = aas.idShort;
             var submodelId = submodel.idShort;
             var elementId = sme.CollectIdShortByParent();
             var reqpath = "./aas/" + aasId + "/submodels/" + submodelId + "/elements/" + elementId + "/property";
 
             // request
-            // var uribuilder = new UriBuilder(reqpath);
-            // uribuilder.Query = query;
-            // var request = new RestRequest(uribuilder.ToString());
             var request = new RestRequest(reqpath);
             if (this.proxy != null)
                 request.Proxy = this.proxy;
@@ -189,7 +184,6 @@ namespace AasxRestServerLibrary
             if (respose.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
                 throw new Exception($"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
 
-            // return respose.GetContent();
             var json = respose.GetContent();
             var parsed = JObject.Parse(json);
             var value = parsed.SelectToken("value").Value<string>();

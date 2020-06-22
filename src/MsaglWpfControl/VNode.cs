@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -246,23 +246,6 @@ namespace Microsoft.Msagl.WpfGraphControl
             return collapseButtonCenter;
         }
 
-
-        /*
-                void FlipCollapsePath() {
-                    var size = GetCollapseBorderSymbolSize();
-                    var center = GetCollapseButtonCenter(size);
-
-                    if (collapsePathFlipped) {
-                        collapsePathFlipped = false;
-                        collapseSymbolPath.RenderTransform = null;
-                    }
-                    else {
-                        collapsePathFlipped = true;
-                        collapseSymbolPath.RenderTransform = new RotateTransform(180, center.X, center.Y);
-                    }
-                }
-        */
-
         WGeometry CreateCollapseSymbolPath(MPoint center, double width)
         {
             var pathGeometry = new WPathGeometry();
@@ -280,7 +263,6 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             if (FrameworkElementOfNodeForLabel != null)
             {
-                // FrameworkElementOfNode.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 var center = Node.GeometryNode.Center;
                 var margin = 2 * Node.Attr.LabelMargin;
                 var bc = NodeBoundaryCurves.GetNodeBoundaryCurve(Node,

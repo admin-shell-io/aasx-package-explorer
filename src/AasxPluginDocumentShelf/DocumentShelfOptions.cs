@@ -128,10 +128,7 @@ namespace AasxPluginDocumentShelf
             var cbList = new List<string>();
             var vlList = new List<string>();
             foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
-            // for (int i = 1; i < Vdi2770ClassIdMapping.Length / 2; i++)
             {
-                //cbList.Add("" + Vdi2770ClassIdMapping[2 * i + 0] + " - " + Vdi2770ClassIdMapping[2 * i + 1]);
-                //vlList.Add("" + Vdi2770ClassIdMapping[2 * i + 0]);
                 if ((int)dc == 0)
                     continue;
                 cbList.Add("" + DefinitionsVDI2770.GetDocClass(dc) + " - " + DefinitionsVDI2770.GetDocClassName(dc));
@@ -149,8 +146,6 @@ namespace AasxPluginDocumentShelf
             descDocName.SlaveOfIdShort = "ClassId";
 
             descDocName.valueFromMasterValue = new Dictionary<string, string>();
-            //for (int i = 1; i < Vdi2770ClassIdMapping.Length / 2; i++)
-            //    descDocName.valueFromMasterValue.Add(Vdi2770ClassIdMapping[2 * i + 0], Vdi2770ClassIdMapping[2 * i + 1]);
             foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
                 descDocName.valueFromMasterValue.Add(DefinitionsVDI2770.GetDocClass(dc), DefinitionsVDI2770.GetDocClassName(dc));
 

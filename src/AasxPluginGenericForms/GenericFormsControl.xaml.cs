@@ -194,10 +194,8 @@ namespace AasxPluginGenericForms
                     }
 
                     // create a sequence of SMEs
-                    // AdminShell.SubmodelElementWrapperCollection smwc = null;
                     try
                     {
-                        /* smwc = */
                         this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
                     }
                     catch (Exception ex)

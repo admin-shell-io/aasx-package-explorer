@@ -128,7 +128,6 @@ namespace AasxPackageExplorer
 
             // try get files
             // see: https://stackoverflow.com/questions/9830069/searching-for-file-in-directories-recursively/9830116
-            // string[] files = Directory.GetFiles(sDir, "*.xml", SearchOption.AllDirectories);
             foreach (string tagFn in Directory.EnumerateFiles(searchDir, "*.plugin", SearchOption.AllDirectories))
             {
                 // deduce .dll name
@@ -223,44 +222,6 @@ namespace AasxPackageExplorer
             // OK
             return res;
         }
-
-        /*
-        public static void TryRetrieveOptionsForPlugins(OptionsInformation opt)
-        {
-            // access
-            if (opt == null || opt.PluginDll == null)
-                return;
-
-            // try to find matching plugins according to options
-            for (int sourceIndex=0; sourceIndex < opt.PluginDll.Count; sourceIndex++)
-            {
-                // options
-                var dllinfo = opt.PluginDll[sourceIndex];
-
-                // loaded plug in?
-                PluginInstance piFound = null;
-                foreach (var lpi in LoadedPlugins.Values)
-                    if (lpi.SourceIndex == sourceIndex)
-                        piFound = lpi;
-
-                // yes?
-                if (piFound == null)
-                    continue;
-
-                // yes!
-                try
-                {
-                    var res = piFound.InvokeAction("get-json-options") as AasxPluginResultBaseObject;
-                    if (res == null || res.obj == null || !(res.obj is string))
-                        continue;
-
-                    // yes!!
-                    dllinfo.Options = Newtonsoft.Json.Linq.JValue.Parse((res.obj as string));
-                }
-                catch { }
-            }
-        }
-        */
 
         /// <summary>
         /// Execute lambda for all loaded plugins and correlate with source plugin-dll-information. Returns a list of results of the lambda.

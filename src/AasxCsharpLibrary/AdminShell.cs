@@ -1,4 +1,4 @@
-using System.Xml;
+﻿using System.Xml;
 using System.Runtime;
 using System.ComponentModel;
 using System.Collections;
@@ -397,10 +397,6 @@ namespace AdminShellNS
 
             public bool Matches(string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {
-                //return (this.type == type || (matchMode == Key.MatchMode.Relaxed && (this.type == Key.GlobalReference || type == Key.GlobalReference)))
-                //    && (this.local == local || matchMode == Key.MatchMode.Relaxed)
-                //    && this.idType == idType && this.value == id;
-
                 if (matchMode == MatchMode.Strict)
                     return this.type == type && this.local == local && this.idType == idType && this.value == id;
 
@@ -422,68 +418,6 @@ namespace AdminShellNS
             }
 
         }
-
-        /*
-        // the whole class shall not be serialized by having it private
-        public class KeyList
-        {
-            // members
-
-            [XmlIgnore] // anyway, as it is privat
-            private List<Key> key = new List<Key>();
-
-            // getters / setters
-
-            [XmlIgnore]
-            public List<Key> Keys { get { return key; } }
-            [XmlIgnore]
-            public bool IsEmpty { get { return key == null || key.Count < 1; } }
-            [XmlIgnore]
-            public int Count { get { if (key == null) return 0; return key.Count; } }
-            [XmlIgnore]
-            public Key this[int index] { get { return key[index]; } }
-
-            // constructors / creators
-
-            public void Add(Key k)
-            {
-                key.Add(k);
-            }
-
-            public static KeyList CreateNew(Key k)
-            {
-                var kl = new KeyList();
-                kl.Add(k);
-                return kl;
-            }
-
-            public static KeyList CreateNew(string type, bool local, string idType, string value)
-            {
-                var kl = new KeyList();
-                kl.Add(Key.CreateNew(type, local, idType, value));
-                return kl;
-            }
-
-            // other
-
-            public void NumberIndices()
-            {
-                if (this.Keys == null)
-                    return;
-                for (int i = 0; i < this.Keys.Count; i++)
-                    this.Keys[i].index = i;
-            }
-
-            public string ToString(int format = 0, string delimiter = ",")
-            {
-                var res = "";
-                if (this.Keys != null)
-                    foreach (var k in this.Keys)
-                        res += k.ToString(format) + delimiter;
-                return res.TrimEnd(',');
-            }
-        }
-        */
 
         public class KeyList : List<Key>
         {
@@ -706,12 +640,6 @@ namespace AdminShellNS
                 var same = true;
                 for (int i = 0; i < this.Count; i++)
                     same = same && this.keys[i].Matches(other.keys[i], matchMode);
-
-                //same = same
-                //    && this.keys[i].type.Trim().ToLower() == other.keys[i].type.Trim().ToLower()
-                //    && this.keys[i].local == other.keys[i].local
-                //    && this.keys[i].idType.Trim().ToLower() == other.keys[i].idType.Trim().ToLower()
-                //    && this.keys[i].value.Trim().ToLower() == other.keys[i].value.Trim().ToLower();
 
                 return same;
             }
@@ -1572,10 +1500,6 @@ namespace AdminShellNS
                 // TEST
                 var xxx = RecursivelyFindFields(this, typeof(CountForHash), typeof(SkipForHash));
 
-                // use reflection
-                //var t = this.GetType();
-                //var l = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
-                //foreach (var f in l)
                 foreach (var ofi in xxx)
                 {
                     var a = ofi.fi.GetCustomAttribute<CountForHash>();
@@ -1584,17 +1508,6 @@ namespace AdminShellNS
                         // found an accountable field, get bytes
                         var o = ofi.fi.GetValue(ofi.o);
                         byte[] bs = null;
-
-                        //public static byte[] GetBytes(bool value);
-                        //public static byte[] GetBytes(char value);
-                        //public static byte[] GetBytes(double value);
-                        //public static byte[] GetBytes(float value);
-                        //public static byte[] GetBytes(int value);
-                        //public static byte[] GetBytes(long value);
-                        //public static byte[] GetBytes(short value);
-                        //public static byte[] GetBytes(uint value);
-                        //public static byte[] GetBytes(ulong value);
-                        //public static byte[] GetBytes(ushort value);
 
                         // optimize for probabilities
 
@@ -2464,7 +2377,6 @@ namespace AdminShellNS
             [TextSearchable]
             [CountForHash]
             public string dataType = "";
-            // public List<LangStr> definition = new List<LangStr>();    
             public LangStringSetIEC61360 definition = new LangStringSetIEC61360();
 
             // getter / setters 
@@ -2637,7 +2549,6 @@ namespace AdminShellNS
 
             // old
             // [XmlElement(ElementName="conceptDefinitionRef")]
-            // public Reference conceptDefinitionRef = null ;
 
             // this class
             [XmlIgnore]
@@ -3495,7 +3406,7 @@ namespace AdminShellNS
                         // take over
                         res.submodels.Add(new Submodel(sm));
 
-                        // recursion in order to find used CDs ... :-(
+                        // recursion in order to find used CDs
                         CreateFromExistingEnvRecurseForCDs(src, sm.submodelElements, ref filterForCD);
                     }
 
@@ -3711,7 +3622,6 @@ namespace AdminShellNS
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
             [JsonProperty(PropertyName = "constraints")]
-            // public List<Qualifier> qualifiers = null;
             public QualifierCollection qualifiers = null;
 
             // getter / setter
@@ -4011,58 +3921,6 @@ namespace AdminShellNS
                 return CreateAdequateType(GetAdequateEnum(elementName));
             }
 
-            /*
-            /// <summary>
-            /// Can create SubmodelElements based on a numerical index
-            /// </summary>
-            /// <param name="index">Index 0..11. On purpose, Operation is the last element!</param>
-            /// <returns>SubmodelElement</returns>
-            public static SubmodelElement CreateAdequateType(int index, SubmodelElement src = null)
-            {
-                AdminShell.SubmodelElement sme = null;
-                switch (index)
-                {
-                    case (int)AdequateElementEnum.SubmodelElementCollection:
-                        sme = new AdminShell.SubmodelElementCollection(src);
-                        break;
-                    case (int)AdequateElementEnum.Property:
-                        sme = new AdminShell.Property(src);
-                        break;
-                    case (int)AdequateElementEnum.MultiLanguageProperty:
-                        sme = new AdminShell.MultiLanguageProperty(src);
-                        break;
-                    case (int)AdequateElementEnum.Range:
-                        sme = new AdminShell.Range(src);
-                        break;
-                    case (int)AdequateElementEnum.File:
-                        sme = new AdminShell.File(src);
-                        break;
-                    case (int)AdequateElementEnum.Blob:
-                        sme = new AdminShell.Blob(src);
-                        break;
-                    case (int)AdequateElementEnum.ReferenceElement:
-                        sme = new AdminShell.ReferenceElement(src);
-                        break;
-                    case (int)AdequateElementEnum.RelationshipElement:
-                        sme = new AdminShell.RelationshipElement(src);
-                        break;
-                    case (int)AdequateElementEnum.Capability:
-                        sme = new AdminShell.Capability(src);
-                        break;
-                    case (int)AdequateElementEnum.BasicEvent:
-                        sme = new AdminShell.BasicEvent(src);
-                        break;
-                    case (int)AdequateElementEnum.Entity:
-                        sme = new AdminShell.Entity(src);
-                        break;
-                    case (int)AdequateElementEnum.Operation:
-                        sme = new AdminShell.Operation(src);
-                        break;
-                }
-                return sme;
-            }
-            */
-
             /// <summary>
             /// Can create SubmodelElements based on a given type information
             /// </summary>
@@ -4146,7 +4004,7 @@ namespace AdminShellNS
                                 return found;
                         }
 
-                        // else: :-(
+                        // else:
                         return null;
                     }
 
@@ -4530,7 +4388,6 @@ namespace AdminShellNS
 
             // from this very class     
             [JsonIgnore]
-            // public List<SubmodelElementWrapper> submodelElements = null;
             public SubmodelElementWrapperCollection submodelElements = null;
 
             [XmlIgnore]
@@ -4710,56 +4567,6 @@ namespace AdminShellNS
 
             // Recursing
 
-            /*
-            private void RecurseOnSubmodelElementsRecurse(List<SubmodelElementWrapper> wrappers, object state, List<SubmodelElement> parents, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
-            {
-                // trivial
-                if (wrappers == null || parents == null || lambda == null)
-                    return;
-
-                // over all elements
-                foreach (var smw in wrappers)
-                {
-                    var current = smw.submodelElement;
-                    if (current == null)
-                        continue;
-
-                    // call lambda for this element
-                    lambda(state, parents, current);
-
-                    // add to parents
-                    parents.Add(current);
-
-                    // dive into?
-                    if (current is SubmodelElementCollection)
-                    {
-                        var smc = current as SubmodelElementCollection;
-                        RecurseOnSubmodelElementsRecurse(smc.value, state, parents, lambda);
-                    }
-
-                    if (current is Entity)
-                    {
-                        var ent = current as Entity;
-                        RecurseOnSubmodelElementsRecurse(ent.statements, state, parents, lambda);
-                    }
-
-                    if (current is Operation)
-                    {
-                        var op = current as Operation;
-                        for (int i = 0; i < 2; i++)
-                            RecurseOnSubmodelElementsRecurse(Operation.GetWrappers(op[i]), state, parents, lambda);
-                    }
-
-                    // remove from parents
-                    parents.RemoveAt(parents.Count - 1);
-                }
-            }
-
-            public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
-            {
-                RecurseOnSubmodelElementsRecurse(this.submodelElements, state, new List<SubmodelElement>(), lambda);
-            }
-            */
 
             public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
@@ -4774,13 +4581,6 @@ namespace AdminShellNS
                     return;
 
                 se.parent = parent;
-
-                //// SMC??
-                //var smc = se as SubmodelElementCollection;
-                //if (smc != null)
-                //    foreach (var sme in smc.value)
-                //        SetParentsForSME(se, sme.submodelElement);
-
 
                 // via interface enumaration
                 if (se is IEnumerateChildren)
@@ -5464,7 +5264,6 @@ namespace AdminShellNS
             // values == SMEs
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            // public List<SubmodelElementWrapper> value = new List<SubmodelElementWrapper>();
             public SubmodelElementWrapperCollection value = new SubmodelElementWrapperCollection();
 
             [XmlIgnore]
@@ -5492,7 +5291,6 @@ namespace AdminShellNS
                     }
                 }
             }
-            // public List<SubmodelElement> JsonSubmodelElements = new List<SubmodelElement>();
 
             // constant members
             public bool ordered = false;
@@ -5614,7 +5412,6 @@ namespace AdminShellNS
 
             public OperationVariable()
             {
-                //this.kind = new Kind("Type");
             }
 
             public OperationVariable(OperationVariable src, bool shallowCopy = false)
@@ -5814,7 +5611,6 @@ namespace AdminShellNS
 
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            // public List<SubmodelElementWrapper> statements = null;
             public SubmodelElementWrapperCollection statements = null;
 
             [XmlIgnore]

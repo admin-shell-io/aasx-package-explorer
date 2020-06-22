@@ -83,12 +83,6 @@ namespace AasxPackageExplorer
             // VisualTreeHelper.GetChild(tv1, )
             displayedTreeViewLines[0].IsSelected = false;
             EnumVisual(tv1, dataObject);
-            /*
-                        TreeViewItem tvItem = (TreeViewItem)tv1
-                                      .ItemContainerGenerator
-                                      .ContainerFromItem(dataObject);
-                        tvItem.Focus();
-            */
             tv1.UpdateLayout();
         }
 
@@ -128,7 +122,6 @@ namespace AasxPackageExplorer
         private void tv1_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             base.BringIntoView();
-            // e.Handled = true;
 
             var scrollViewer = tv1.Template.FindName("_tv_scrollviewer_", tv1) as ScrollViewer;
             if (scrollViewer != null)
@@ -298,10 +291,6 @@ namespace AasxPackageExplorer
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
-                /*
-                if (mem is VisualElementSubmodelRef && fullFilterElementName.Contains("submodelref"))
-                    isIn = true;
-                */
                 if (mdo != null && mdo is AdminShell.Referable)
                 {
                     var mdoen = (mdo as AdminShell.Referable).GetElementName().Trim().ToLower();

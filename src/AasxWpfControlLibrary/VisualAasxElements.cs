@@ -612,7 +612,6 @@ namespace AasxPackageExplorer
                 // Qualifiers?
                 if (sme.qualifiers != null && sme.qualifiers.Count > 0)
                 {
-                    // this.Info += $" incl. {sme.qualifiers.Count} Qualifiers";
                     foreach (var q in sme.qualifiers)
                     {
                         var qt = q.type ?? "";
@@ -674,17 +673,9 @@ namespace AasxPackageExplorer
         {
             if (theOpVar != null)
             {
-                /*
-                SubmodelElement attributes of OpVar not used!
-                var ci = theOpVar.ToCaptionInfo();
-                this.Caption = "" + ci.Item1;
-                this.Info = ci.Item2;
-                */
-
                 if (theOpVar.value != null && theOpVar.value.submodelElement != null)
                 {
                     var ci2 = theOpVar.value.submodelElement.ToCaptionInfo();
-                    // this.Info += " = " + ci2.Item1 + " " + ci.Item2;
                     this.Caption = "" + ci2.Item1;
                     this.Info = ci2.Item2;
                 }

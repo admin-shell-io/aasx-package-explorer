@@ -333,9 +333,6 @@ namespace AasxPackageExplorer
                     }
                     if (n.Value != null && n.Value != "")
                     {
-                        // var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                        // storeProperty(n, ref p);
-                        // var p = createSE(n, ModelUri + name + "/");
                         var p = createSE(n, ModelUri);
                         sme.Add(p);
                         addLeaf(conceptSme, p);
@@ -357,9 +354,6 @@ namespace AasxPackageExplorer
                 }
                 else
                 {
-                    // var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                    // storeProperty(n, ref p);
-                    // var p = createSE(n, ModelUri + name + "/");
                     var se = createSE(n, ModelUri);
                     switch (n.UAObjectTypeName)
                     {
@@ -396,8 +390,6 @@ namespace AasxPackageExplorer
                 smec.Add(sme);
                 if (n.Value != "")
                 {
-                    // var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                    // storeProperty(n, ref p);
                     var p = createSE(n, path);
                     sme.Add(p);
                     addLeaf(concepts, p);
@@ -422,8 +414,6 @@ namespace AasxPackageExplorer
             }
             else
             {
-                // var p = AdminShell.Property.CreateNew(name, null, semanticID);
-                // storeProperty(n, ref p);
                 var se = createSE(n, path);
                 smec.Add(se);
                 addLeaf(concepts, se);

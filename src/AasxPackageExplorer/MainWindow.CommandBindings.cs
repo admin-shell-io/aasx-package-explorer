@@ -197,135 +197,6 @@ namespace AasxPackageExplorer
                     }
             }
 
-            /* if (false && cmd == "encrypt" && thePackageEnv != null)
-            {
-                VisualElementSubmodelRef ve = null;
-                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                    ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-                if (ve != null || ve.theSubmodel != null || ve.theEnv != null)
-                {
-                    // a submodel is selected
-                    // check if submodel includes collections "_encrypted" and "_decrypted"
-                    // over all SMEs
-                    var sm = ve.theSubmodel;
-                    int count = sm.submodelElements.Count;
-                    if (count == 2)
-                    {
-                        var sme0 = sm.submodelElements[0].submodelElement;
-                        var sme1 = sm.submodelElements[1].submodelElement;
-                        if (sme0 is AdminShell.SubmodelElementCollection
-                            && sme0.idShort == "_decrypted"
-                            && sme1 is AdminShell.SubmodelElementCollection
-                            && sme1.idShort == "_encrypted")
-                        {
-                            // select .cer for encryption
-                            var dlg2 = new Microsoft.Win32.OpenFileDialog();
-                            dlg2.Filter = ".cer files (*.cer)|*.cer";
-                            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                            var res = dlg2.ShowDialog();
-                            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-
-                            if (res == true)
-                            {
-                                try
-                                {
-
-                                    X509Certificate2 x509 = new X509Certificate2(dlg2.FileName);
-                                    var publicKey = x509.GetRSAPublicKey();
-
-                                    string json = JsonConvert.SerializeObject(sme0, Formatting.Indented);
-                                    string jsonToken = Jose.JWT.Encode(json, publicKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
-
-                                    var p = AdminShell.Property.CreateNew("EncryptedJWT");
-                                    p.value = jsonToken;
-                                    var sme = sme1 as AdminShell.SubmodelElementCollection;
-                                    sme.Add(p);
-                                }
-                                catch
-                                {
-                                    System.Windows.MessageBox.Show(this, "Can not encrypt with " + dlg2.FileName, "Encrypt Submodel", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                }
-                                RedrawAllAasxElements();
-                                RedrawElementView();
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-            if (false && cmd == "decrypt" && thePackageEnv != null)
-            {
-                VisualElementSubmodelRef ve = null;
-                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                    ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-                if (ve != null || ve.theSubmodel != null || ve.theEnv != null)
-                {
-                    // a submodel is selected
-                    // check if submodel includes collections "_encrypted" and "_decrypted"
-                    // over all SMEs
-                    var sm = ve.theSubmodel;
-                    int count = sm.submodelElements.Count;
-                    if (count == 2)
-                    {
-                        var sme0 = sm.submodelElements[0].submodelElement;
-                        var sme1 = sm.submodelElements[1].submodelElement;
-                        if (sme0 is AdminShell.SubmodelElementCollection
-                            && sme0.idShort == "_encrypted"
-                            && sme1 is AdminShell.SubmodelElementCollection
-                            && sme1.idShort == "_decrypted")
-                        {
-                            // select .cer for encryption
-                            var dlg2 = new Microsoft.Win32.OpenFileDialog();
-                            dlg2.Filter = ".pfx files (*.pfx)|*.pfx";
-                            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                            var res = dlg2.ShowDialog();
-                            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-
-                            if (res == true)
-                            {
-                                try
-                                {
-                                    var collection0 = sme0 as AdminShell.SubmodelElementCollection;
-                                    var collection1 = sme1 as AdminShell.SubmodelElementCollection;
-                                    if (collection0.value.Count == 1
-                                        && collection1.value.Count == 0)
-                                    {
-                                        if (collection0.value[0].submodelElement is AdminShell.Property &&
-                                            collection0.value[0].submodelElement.idShort == "EncryptedJWT")
-                                        {
-                                            X509Certificate2 x509 = new X509Certificate2(dlg2.FileName, "i40");
-                                            var privateKey = x509.GetRSAPrivateKey();
-
-                                            var p = collection0.value[0].submodelElement as AdminShell.Property;
-                                            string jsonToken = Jose.JWT.Decode(p.value, privateKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
-
-                                            AdminShell.SubmodelElementCollection collection = null;
-
-                                            using (TextReader reader = new StringReader(jsonToken))
-                                            {
-                                                JsonSerializer serializer = new JsonSerializer();
-                                                serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                                                collection = (AdminShell.SubmodelElementCollection)serializer.Deserialize(reader, typeof(AdminShell.SubmodelElementCollection));
-                                                sm.Add(collection);
-                                                sm.submodelElements.Remove(sm.submodelElements[1]);
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    System.Windows.MessageBox.Show(this, "Can not decrypt with " + dlg2.FileName + "\n" + ex.Message, "Decrypt Submodel", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                }
-                                RedrawAllAasxElements();
-                                RedrawElementView();
-                                return;
-                            }
-                        }
-                    }
-                }
-            } */
             if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && thePackageEnv != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
@@ -452,12 +323,6 @@ namespace AasxPackageExplorer
                 }
 
             if (cmd == "exit")
-                /*
-                if ((!Opt.ions.UseFlyovers && MessageBoxResult.Yes == MessageBox.Show(this, "Exit the application? Please make sure that you have saved before.", "Exit Application?", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                    ||
-                    (Opt.ions.UseFlyovers && MessageBoxResult.Yes == MessageBoxFlyoutShow("Exit the application? Please make sure that you have saved before.", "Exit Application?", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                    )
-                    */
                 System.Windows.Application.Current.Shutdown();
 
             if (cmd == "connectopcua")
@@ -823,11 +688,6 @@ namespace AasxPackageExplorer
             {
                 AasxRestServerLibrary.AasxRestServer.Start(this.thePackageEnv, Options.Curr.RestServerHost, Options.Curr.RestServerPort, logger);
             };
-            worker.RunWorkerCompleted += (s1, e1) =>
-            {
-                // in any case, close flyover
-                // CloseFlyover();
-            };
             worker.RunWorkerAsync();
 
             // modal dialogue
@@ -853,8 +713,6 @@ namespace AasxPackageExplorer
             var worker = new BackgroundWorker();
             worker.DoWork += async (s1, e1) =>
             {
-
-                //AasxRestServerLibrary.AasxRestServer.Start(this.thePackageEnv, Opt.ions.RestServerHost, Opt.ions.RestServerPort, logger);
                 try
                 {
                     await AasxMqttClient.MqttClient.StartAsync(this.thePackageEnv, logger);
@@ -864,25 +722,16 @@ namespace AasxPackageExplorer
                     logger.Error(e);
                 }
             };
-            worker.RunWorkerCompleted += (s1, e1) =>
-            {
-                // in any case, close flyover
-                // CloseFlyover();
-            };
             worker.RunWorkerAsync();
 
             // modal dialogue
-            this.StartFlyoverModal(uc, closingAction: () =>
-            {
-                //AasxRestServerLibrary.AasxRestServer.Stop();
-            });
+            this.StartFlyoverModal(uc, closingAction: () => { });
         }
 
         public async void CommandBinding_ConnectRest()
         {
             var uc = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
             uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
-            // uc.Text = "openid1 0";
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
@@ -891,68 +740,12 @@ namespace AasxPackageExplorer
                 tag = input.Substring(0, tag.Length);
                 if (tag == "openid1" || tag == "openid2" || tag == "openid3")
                 {
-                    // Initializes the variables to pass to the MessageBox.Show method.
-                    // string caption = "Connect with " + tag + ".dat";
-                    // string message = "";
-
-                    /* using (StreamReader sr = new StreamReader(tag + ".dat"))
-                    {
-                        string authServer = sr.ReadLine();
-                        string dataServer = sr.ReadLine();
-                        string certPfx = sr.ReadLine();
-                        string certPfxPW = sr.ReadLine();
-                        string outputDir = sr.ReadLine();
-
-                        message =
-                            "authServer: " + authServer + "\n" +
-                            "dataServer: " + dataServer + "\n" +
-                            "certPfx: " + certPfx + "\n" +
-                            "certPfxPW: " + certPfxPW + "\n" +
-                            "outputDir: " + outputDir + "\n" +
-                            "\nConinue?";
-                    }*/
-
-                    // MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                    // DialogResult result;
-
-                    // Displays the MessageBox.
-                    /*
-                    if (tag != "openid1")
-                    {
-                        result = System.Windows.Forms.MessageBox.Show(message, caption, buttons);
-                        if (result != System.Windows.Forms.DialogResult.Yes)
-                        {
-                            // Closes the parent form.
-                            return;
-                        }
-                    }
-                    */
-
                     string value = input.Substring(tag.Length + 1);
                     if (thePackageEnv.IsOpen)
                     {
                         thePackageEnv.Close();
                     }
                     await AasxPrivateKeyJwtClient.OpenIDClient.Run(tag, value);
-
-                    /*
-                    if (tag != "openid1")
-                    {
-                        System.Windows.Forms.MessageBox.Show(
-                            "Client Token:\n" +
-                            AasxPrivateKeyJwtClient.OpenIDClient.clientTok + "\n" +
-                            "Client Token Cert:\n" +
-                            AasxPrivateKeyJwtClient.OpenIDClient.clientCer + "\n"
-                            , "Client", MessageBoxButtons.OK);
-
-                        System.Windows.Forms.MessageBox.Show(
-                            "Bearer Token:\n" +
-                            AasxPrivateKeyJwtClient.OpenIDClient.bearerTok + "\n"
-                            // "Bearer Token Cert:\n" +
-                            // AasxPrivateKeyJwtClient.OpenIDClient.bearerCer + "\n"
-                            , "Server", MessageBoxButtons.OK);
-                    }
-                    */
 
                     UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx"), AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     return;
@@ -1111,9 +904,6 @@ namespace AasxPackageExplorer
             // make listing flyout
             var uc = new LogMessageFlyout(caption, $"Starting plug-in {pluginName}, action {actionName} ..", () =>
             {
-                // return null;
-                // TODO
-                // return pi.CheckForLogMessage();
                 return this.FlyoutLoggingPop();
             });
 
@@ -1155,7 +945,6 @@ namespace AasxPackageExplorer
             worker.RunWorkerCompleted += (s1, e1) =>
             {
                 // in any case, close flyover
-                // CloseFlyover();
                 this.FlyoutLoggingStop();
                 uc.LogMessage("Completed.");
                 uc.CloseControlExplicit();
@@ -1205,7 +994,6 @@ namespace AasxPackageExplorer
                 RememberForInitialDirectory(dlg.FileName);
                 using (var s = new StreamWriter(dlg.FileName))
                 {
-                    // var settings = new JsonSerializerSettings();
                     var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
                     s.WriteLine(json);
                 }
@@ -1321,37 +1109,6 @@ namespace AasxPackageExplorer
             PUTURL = input.Text;
             Log.Info($"Connecting to REST server {PUTURL} ..");
 
-            /*
-            int count = 0;
-            if (ve1.theSubmodel.qualifiers != null)
-                count = ve1.theSubmodel.qualifiers.Count;
-
-
-            if (count != 0)
-            {
-                while (i < count) // PUTURL, CYCLIC
-                {
-                    var p = ve1.theSubmodel.qualifiers[i] as AdminShell.Qualifier;
-
-                    if (p.qualifierType == "PUTURL")
-                    {
-                        PUTURL = p.qualifierValue;
-                    }
-                    if (p.qualifierType == "CYCLIC")
-                    {
-                        CYCLIC = p.qualifierValue;
-                    }
-
-                    i++;
-                }
-
-                if (PUTURL == "")
-                {
-                    return;
-                }
-            }
-            */
-
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
                 ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
 
@@ -1366,7 +1123,6 @@ namespace AasxPackageExplorer
             try
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(PUTURL);
-                // theOnlineConnection = client;
                 client.PutSubmodel(json);
             }
             catch (Exception ex)
@@ -1425,42 +1181,11 @@ namespace AasxPackageExplorer
             GETURL = input.Text;
             Log.Info($"Connecting to REST server {GETURL} ..");
 
-            /*
-            int count = 0;
-            if (ve1.theSubmodel.qualifiers != null)
-                count = ve1.theSubmodel.qualifiers.Count;
-
-            if (count != 0)
-            {
-                while (i < count) // GETURL, CYCLIC
-                {
-                    var p = ve1.theSubmodel.qualifiers[i] as AdminShell.Qualifier;
-
-                    if (p.qualifierType == "GETURL")
-                    {
-                        GETURL = p.qualifierValue;
-                    }
-                    if (p.qualifierType == "CYCLIC")
-                    {
-                        CYCLIC = p.qualifierValue;
-                    }
-
-                    i++;
-                }
-
-                if (GETURL == "")
-                {
-                    return;
-                }
-            }
-            */
-
             var obj = ve1.theSubmodel;
             var sm = "";
             try
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(GETURL);
-                // theOnlineConnection = client;
                 sm = client.GetSubmodel(obj.idShort);
             }
             catch (Exception ex)
@@ -1540,7 +1265,6 @@ namespace AasxPackageExplorer
                 {
 
                     // Durch das Submodel iterieren
-                    // if (ve1.theSubmodel.idShort == "OPC")
                     {
                         int count = ve1.theSubmodel.qualifiers.Count;
                         if (count != 0)
@@ -1632,7 +1356,6 @@ namespace AasxPackageExplorer
                                     var nodeName = "" + Path + p?.idShort;
 
                                     // do read() via plug-in
-                                    // value = client.ReadSubmodelElementValue(nodeName, Namespace);
                                     var resValue = pi.InvokeAction("read-sme-value", resClient.obj, nodeName, Namespace) as AasxPluginResultBaseObject;
 
                                     // set?
@@ -1829,8 +1552,6 @@ namespace AasxPackageExplorer
                 {
                     Log.Info("Exporting add-options file to GenericForm: {0}", dlg.FileName);
                     RememberForInitialDirectory(dlg.FileName);
-                    // AasxIntegrationBase.AasForms.AasFormUtils.ExportAsTemplate(this.thePackageEnv, dlg.FileName);
-                    // AasxIntegrationBase.AasForms.AasFormUtils.ExportAsTemplate(ve1.theSubmodel, dlg.FileName);
                     AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(ve1.theEnv, ve1.theSubmodel, dlg.FileName);
                 }
             }
@@ -1949,54 +1670,6 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new ModifyRepo.LambdaActionRedrawAllElements(bo));
         }
 
-        /*
-        private void CommandBinding_ExportTable_EnumerateSubmodel (ExportTableAasEntitiesList list, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelElement sme)
-        {
-            // check
-            if (list == null || env == null || sm == null)
-                return;
-
-            //
-            // Submodel or SME ??
-            //
-
-            AdminShell.IEnumerateChildren coll = null;
-            if (sme == null)
-            {
-
-                // yield SM
-                list.Add(new ExportTableAasEntitiesItem(sm: sm));
-
-                // use collection
-                coll = sm;
-            }
-            else
-            {
-                // simple check for SME collection
-                if (sme is AdminShell.IEnumerateChildren)
-                    coll = (sme as AdminShell.IEnumerateChildren);
-            }
-
-            // pass 1: process value
-            if (coll != null)
-                foreach (var ci in coll.EnumerateChildren())
-                {
-                    var sme2 = ci.submodelElement;
-                    var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
-
-                    list.Add(new ExportTableAasEntitiesItem(sm, sme2, cd));
-                }
-
-            // pass 2: go for recursion
-            if (coll != null)
-                foreach (var ci in coll.EnumerateChildren())
-                    if (ci is AdminShell.IEnumerateChildren)
-                        foreach (var child in (ci as AdminShell.IEnumerateChildren).EnumerateChildren())
-                            if (child.submodelElement != null)
-                                CommandBinding_ExportTable_EnumerateSubmodel(list, env, sm, child.submodelElement);
-        }
-        */
-
         public void CommandBinding_ExportTable()
         {
             // trivial things
@@ -2035,55 +1708,6 @@ namespace AasxPackageExplorer
 
             // try activate plugin
             pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel);
-
-
-            /*
-                        // handle the export dialogue
-                        var uc = new ExportTableFlyout();
-                        try
-                        {
-                            if (Options.Curr.ExportTablePresets != null)
-                                uc.Presets = Options.Curr.ExportTablePresets.ToObject<List<ExportTableRecord>>();
-                        }
-                        catch { }
-                        this.StartFlyoverModal(uc);
-                        if (uc.Result == null)
-                            return;
-
-                        // get the output file
-                        var dlg = new Microsoft.Win32.SaveFileDialog();
-                        try
-                        {
-                            dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
-                        }
-                        catch { }
-                        dlg.Title = "Select text file to be exported";
-                        dlg.FileName = "new.txt";
-                        dlg.DefaultExt = "*.txt";
-                        dlg.Filter = "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*";
-
-                        if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                        var res = dlg.ShowDialog(this);
-
-                        try
-                        {
-                            if (res == true)
-                            {
-                                Log.Info("Exporting table: {0}", dlg.FileName);
-                                // AasxPredefinedConcepts.ExportPredefinedConcepts.Export(thePackageEnv.AasEnv, ve1.theSubmodel, dlg.FileName);
-
-                                var list = new ExportTableAasEntitiesList();
-                                CommandBinding_ExportTable_EnumerateSubmodel(list, ve1.theEnv, ve1.theSubmodel, sme: null);
-                                uc.Result.ExportTabSeparated(dlg.FileName, list);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "When exporting table, an error occurred");
-                        }
-
-                        if (Options.Curr.UseFlyovers) this.CloseFlyover();
-            */
         }
 
         public void CommandBinding_NewSubmodelFromPlugin()
@@ -2240,8 +1864,6 @@ namespace AasxPackageExplorer
                 RestartUIafterNewPackage();
             }
 
-            //RedrawAllAasxElements();
-            //RedrawElementView();
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
@@ -2282,8 +1904,6 @@ namespace AasxPackageExplorer
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();
-
-                // XmlSerializer xsSubmit = new XmlSerializer(typeof(UANodeSet));
 
                 using (var writer = new System.IO.StreamWriter(dlg.FileName))
                 {

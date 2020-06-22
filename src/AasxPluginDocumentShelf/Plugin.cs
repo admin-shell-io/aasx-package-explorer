@@ -105,7 +105,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
             // rest follows
-            // Log.Info("ActivatePlugin() called with action = {0}", action);
 
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
@@ -153,7 +152,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
-            if (action == "fill-panel-visual-extension" /* && this.bomControl != null */)
+            if (action == "fill-panel-visual-extension")
             {
                 // arguments
                 if (args == null || args.Length < 3)

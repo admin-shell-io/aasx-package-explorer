@@ -70,33 +70,6 @@ namespace AasxAmlImExport
                 Console.WriteLine("{0}{1}", new String(' ', 2 * indentation), st);
             }
 
-            /*
-            public AdminShell.Reference ParseAmlReference(string refstr)
-            {
-                if (refstr == null)
-                    return null;
-                var m = Regex.Match(refstr.Trim(), @"^\(([^)]+)\)\s*\(([^)]+)\)\s*\[(\w+)\](.*)$");
-                if (m.Success)
-                {
-                    // get string data
-                    var ke = m.Groups[1].ToString();
-                    var local = m.Groups[2].ToString().Trim().ToLower();
-                    var idtype = m.Groups[3].ToString();
-                    var id = m.Groups[4].ToString();
-
-                    // verify: ke has to be in allowed range
-                    if (!AdminShell.Key.IsInKeyElements(ke))
-                        return null;
-                    var islocal = local == "local";
-
-                    // create key and make on refece
-                    var k = new AdminShell.Key(ke, islocal, idtype, id);
-                    return new AdminShell.Reference(k);
-                }
-                return null;
-            }
-            */
-
             public AdminShell.Reference ParseAmlReference(string refstr)
             {
                 // trivial
@@ -454,23 +427,8 @@ namespace AasxAmlImExport
                     return null;
 
                 //
-                // make up local data management (we do not know it better)
+                // make up local data management
                 //
-
-                /*
-                IEnumerable<System.Xml.Linq.XElement> address =
-                    from el in doc.XDocument.Elements()
-                    where (string)el.Attribute("ID") == "1234"
-                    select el;
-                foreach (System.Xml.Linq.XElement el in address)
-                    ;
-                */
-                /*
-                var idDict = new Dictionary<string, System.Xml.Linq.XElement>();
-                foreach (var el in doc.XDocument.Elements())
-                    if (el.Attribute("ID") != null)
-                        idDict.Add((string) el.Attribute("ID"), el);
-                */
 
                 // begin new (temporary) objects
                 var view = new AdminShell.View();
@@ -812,58 +770,6 @@ namespace AasxAmlImExport
                     // special data 
                     cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.Reference>(aseq, AmlConst.Attributes.CD_IsCaseOf, (s) => { return ParseAmlReference(s); });
 
-                    /*
-                    // embedded data spec
-                    var aeds = FindAttributeByRefSemantic(aseq, AmlConst.Attributes.CD_EmbeddedDataSpecification);
-                    if (aeds != null)
-                    {
-                        // create the (empty) entity
-                        var eds = new AdminShell.EmbeddedDataSpecification();
-                        cd.embeddedDataSpecification = eds;
-
-                        var hds = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DataSpecificationRef);
-                        if (hds != null)
-                            eds.hasDataSpecification = AdminShell.DataSpecificationRef.CreateNew(ParseAmlReference(hds));
-
-                        var adsc = FindAttributeByRefSemantic(aeds.Attribute, AmlConst.Attributes.CD_DataSpecificationContent);
-                        if (adsc != null)
-                        {
-                            eds.dataSpecificationContent = new AdminShellV10.DataSpecificationContent();
-
-                            var adsc61360 = FindAttributeByRefSemantic(aeds.Attribute, AmlConst.Attributes.CD_DataSpecification61360);
-                            if (adsc != null)
-                            {
-                                // finally, create the entity
-                                var cd61360 = new AdminShell.DataSpecificationIEC61360();
-                                eds.dataSpecificationContent.dataSpecificationIEC61360 = cd61360;
-
-                                // populate
-                                var pn = TryParseListOfLangStrFromAttributes(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_PreferredName);
-                                if (pn != null)
-                                    cd61360.preferredName = AdminShell.LangStringIEC61360.CreateFrom(pn);
-
-                                cd61360.shortName = FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_ShortName);
-                                cd61360.unit = FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_Unit);
-
-                                cd61360.unitId = AdminShell.UnitId.CreateNew(ParseAmlReference(FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_UnitId)));
-
-                                cd61360.valueFormat = FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_ValueFormat);
-
-                                var sod = TryParseListOfLangStrFromAttributes(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
-                                if (sod != null)
-                                    cd61360.sourceOfDefinition = sod;
-
-                                cd61360.symbol = FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_Symbol);
-                                cd61360.dataType = FindAttributeValueByRefSemantic(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_DataType);
-
-                                var def = TryParseListOfLangStrFromAttributes(adsc61360.Attribute, AmlConst.Attributes.CD_DSC61360_Definition);
-                                if (def != null)
-                                    cd61360.definition = AdminShell.LangStringIEC61360.CreateFrom(def);
-                            }
-                        }
-                    }
-                    */
-
                     // result
                     return cd;
                 }
@@ -973,7 +879,7 @@ namespace AasxAmlImExport
                     //
                     // Asset
                     //
-                    if (currentAas != null /* && currentSubmodel == null */ && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.Asset))
+                    if (currentAas != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.Asset))
                     {
                         // begin new (temporary) object
                         var asset = TryParseAssetFromIe(ie);
@@ -993,7 +899,7 @@ namespace AasxAmlImExport
                     //
                     // View
                     //
-                    if (currentAas != null /* && currentSubmodel == null */ && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.View))
+                    if (currentAas != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.View))
                     {
                         // begin new (temporary) object
                         var view = TryParseViewFromIe(insthier, ie);
@@ -1264,50 +1170,6 @@ namespace AasxAmlImExport
 
             }
 
-            /*
-            public void ParseRoleClasses(
-                CAEXSequenceOfCAEXObjects<RoleFamilyType> rcseq,
-                int indentation = 0)
-            {
-                if (rcseq == null)
-                    return;
-                foreach (var rc in rcseq)
-                {
-                    // start
-                    Debug(indentation, "Consulting RC name {0}", rc.Name);
-
-                    if (rc.RefBaseClassPath.Trim().ToLower() == AmlConst.Roles.ConceptDescription.Trim().ToLower())
-                    {
-                        var cd = TryParseConceptDescription(rc.Attribute);
-                        if (cd != null)
-                        {
-                            Debug(indentation, " .. added as {0}", cd.identification.ToString());
-                            this.package.AasEnv.ConceptDescriptions.Add(cd);
-                        }
-                    }
-                }
-
-            }
-
-            public void ParseRoleClassLib(
-                RoleClassLibType rcl,
-                int indentation = 0)
-            {
-                // start
-                Debug(indentation, "Consulting RCL name {0}", rcl.Name);
-
-                // detect ROOT?
-                if (rcl.Name.Trim().ToLower() == AmlConst.Names.RootConceptDescriptions.Trim().ToLower())
-                {
-                    // mark element as root of CDs
-                    Debug(indentation, "  root of ConceptDescriptions recognised. Starting collecting CDs..");
-
-                    // recurse into childs, which are SUC
-                    ParseRoleClasses(rcl.RoleClass, indentation + 1);
-                }
-            }
-            */
-
             /// <summary>
             /// Go recursively through internal elements to identify concept descriptions, and below, data specifications
             /// </summary>
@@ -1456,10 +1318,6 @@ namespace AasxAmlImExport
             parser.Start(doc.CAEXFile);
 
             // try find ConceptDescriptions
-            /*
-            foreach (var x in doc.CAEXFile.RoleClassLib)
-                parser.ParseRoleClassLib(x);
-            */
             foreach (var x in doc.CAEXFile.InstanceHierarchy)
                 parser.ParseIEsForConceptDescriptions(x, x.InternalElement);
 

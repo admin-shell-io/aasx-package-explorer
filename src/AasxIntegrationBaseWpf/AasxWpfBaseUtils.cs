@@ -212,13 +212,11 @@ namespace AasxIntegrationBase
                 if (sp.color == StoredPrint.ColorRed)
                 {
                     tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
-                    // tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
                 }
 
                 if (sp.color == StoredPrint.ColorBlue)
                 {
                     tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
-                    // tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
                 }
             }
 
@@ -226,8 +224,6 @@ namespace AasxIntegrationBase
             {
                 // see: https://stackoverflow.com/questions/762271/clicking-hyperlinks-in-a-richtextbox-without-holding-down-ctrl-wpf
                 // see: https://stackoverflow.com/questions/9279061/dynamically-adding-hyperlinks-to-a-richtextbox
-                //tr.ApplyPropertyValue(TextElement.ForegroundProperty, BrushLink);
-                //tr.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
 
                 // try modify existing
                 tr.Text = tr.Text.TrimEnd('\r', '\n') + " ";

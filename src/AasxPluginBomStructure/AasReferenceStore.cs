@@ -12,32 +12,7 @@ namespace AasxPluginBomStructure
 {
     public class AasReferenceStore
     {
-        // also interesting:
-        // https://stackoverflow.com/questions/1440392/use-byte-as-key-in-dictionary
-        // private dict = new Dictionary<byte[], string>(StructuralComparisons.StructuralEqualityComparer);
-
-
         private MultiTupleDictionary<uint, AdminShell.Referable> dict = new MultiTupleDictionary<uint, AdminShellV20.Referable>();
-
-        /*
-        private Dictionary<int, AdminShell.Referable> dict = new Dictionary<int, AdminShellV20.Referable>();
-
-        private int GetHashcode(AdminShell.Reference r)
-        {
-            if (r == null || r.Keys == null)
-                return 0;
-
-            var hash = 0;
-            foreach (var k in r.Keys)
-            {
-                hash = hash ^ k.type.Trim().ToLower().GetHashCode();
-                hash = hash ^ k.idType.Trim().ToLower().GetHashCode();
-                hash = hash ^ k.value.Trim().ToLower().GetHashCode();
-            }
-
-            return hash;
-        }
-        */
 
         private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
 

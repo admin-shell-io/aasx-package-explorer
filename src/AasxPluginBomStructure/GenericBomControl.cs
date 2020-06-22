@@ -576,9 +576,6 @@ namespace AasxPluginBomStructure
 
 #else
 
-            //graph.AddEdge("A", "B");
-            //graph.AddNode("CC");
-
             var creator = new GenericBomCreator(package.AasEnv);
 
             using (var tw = new StreamWriter("bomgraph.log"))
@@ -587,14 +584,6 @@ namespace AasxPluginBomStructure
                 creator.RecurseOnLayout(2, graph, null, sm.submodelElements, 1, tw);
                 creator.RecurseOnLayout(3, graph, null, sm.submodelElements, 1, tw);
             }
-
-            //var settings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
-            //Microsoft.Msagl.Miscellaneous.LayoutHelpers.CalculateLayout(graph.Geometr yGraph, settings, null);
-
-            // graph.LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.MDS.MdsLayoutSettings();
-            //var setting = new Microsoft.Msagl.Layout.Incremental.FastIncrementalLayoutSettings();
-            //setting.RepulsiveForceConstant = 50.0;
-            //graph.LayoutAlgorithmSettings = setting;
 
             // make default or (already) preferred settings
             var settings = GivePresetSettings(cbli.SelectedIndex);
@@ -627,9 +616,6 @@ namespace AasxPluginBomStructure
             theGraph = graph;
             theViewer = viewer;
             theReferable = sm;
-
-            //var labelPlacer = new Microsoft.Msagl.Core.Layout.EdgeLabelPlacement(graph.GeometryGraph);
-            //labelPlacer.Run();
 
             // return viewer for advanced manilulation
             return viewer;

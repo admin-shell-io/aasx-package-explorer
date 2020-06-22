@@ -18,7 +18,6 @@ using System.Text;
 using AdminShellNS;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
-// using SampleClient; // Read property values by OPC UA
 
 /* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
 The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
@@ -86,7 +85,6 @@ namespace AasxPackageExplorer
         /// </summary>
         public void ShowHelp(bool silent = false)
         {
-            // ShowContentBrowser(@"https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md", silent);
             if (!silent)
                 BrowserDisplayLocalFile(@"https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
         }
@@ -344,7 +342,6 @@ namespace AasxPackageExplorer
                     catch
                     {
                         // no error, intended behaviour, as thumbnail might not exist / be faulty in some way (not violating the spec)
-                        // Log.Error(ex, "Error loading package's thumbnail");
                     }
                     // ReSharper enable EmptyGeneralCatchClause
                 }
@@ -412,7 +409,6 @@ namespace AasxPackageExplorer
             {
                 // make a fully qualified filename from that one provided as input argument
                 var fn = System.IO.Path.GetFullPath(Options.Curr.AasxToLoad);
-                // UiLoadPackageEnv(fn);          
                 try
                 {
                     var pkg = LoadPackageFromFile(fn);
@@ -879,7 +875,6 @@ namespace AasxPackageExplorer
         {
             if (this.ActualWidth > 800)
             {
-                // Log.Info($"Resizing window to {this.ActualWidth}x{this.ActualHeight} ..");
                 if (MainSpaceGrid != null && MainSpaceGrid.ColumnDefinitions.Count >= 3)
                 {
                     MainSpaceGrid.ColumnDefinitions[0].Width = new GridLength(this.ActualWidth / 5);
@@ -1169,13 +1164,7 @@ namespace AasxPackageExplorer
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            // stupid! appearantly need to figure out, if OriginalSource would have handled the Drop???
-            /*
-            var enable = true;
-            if (e.OriginalSource != null && e.OriginalSource is UIElement && (e.OriginalSource as UIElement).AllowDrop)
-                enable = false;
-                */
-
+            // Appearantly you need to figure out if OriginalSource would have handled the Drop?
             if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
             {
                 // Note that you can have more than one file.
@@ -1225,7 +1214,6 @@ namespace AasxPackageExplorer
 
                         // Package the data.
                         DataObject data = new DataObject();
-                        // data.SetData(DataFormats.FileDrop, tempfile);
                         data.SetFileDropList(new System.Collections.Specialized.StringCollection() { tempfile });
 
                         // Inititate the drag-and-drop operation.

@@ -453,26 +453,6 @@ namespace AasxUANodesetImExport
             return prop.NodeId;
         }
 
-        //private static string createOpArgs(string name, List<AdminShellV20.OperationVariable> args)
-        //{
-        //    UAObject prop = new UAObject();
-        //    prop.NodeId = "ns=1;i=" + masterID.ToString();
-        //    prop.BrowseName = name;
-        //    masterID++;
-        //    List<Reference> refs = new List<Reference>();
-        //    refs.Add(CreateHasTypeDefinition("BaseObjectType"));
-
-        //    foreach(AdminShellV20.OperationVariable var in args)
-        //    {
-        //        refs.Add(CreateProperty(var.))
-        //    }
-
-
-        //    prop.References = refs.ToArray();
-        //    root.Add((UANode)prop);
-        //    return prop.NodeId;
-        //}
-
         private static string CreateAASBlob(string value, string mimeType)
         {
             UAObject prop = new UAObject();
@@ -552,22 +532,6 @@ namespace AasxUANodesetImExport
             return prop.NodeId;
         }
 
-        //public static string CreateAnnotatedRelationshipElement(AdminShellV20.RelationshipElement value)
-        //{
-        //    UAObject prop = new UAObject();
-        //    prop.NodeId = "ns=1;i=" + masterID.ToString();
-        //    prop.BrowseName = "1:AnnoatedRelationshipElement";
-        //    masterID++;
-        //    List<Reference> refs = new List<Reference>();
-        //    refs.Add(CreateHasTypeDefinition("1:AASAnnotatedRelationshipElement"));
-
-        //    value.
-
-        //    prop.References = refs.ToArray();
-        //    root.Add((UANode)prop);
-        //    return prop.NodeId;
-        //}
-
         private static Reference CreateHasTypeDefinition(string type)
         {
             string _value = findBaseType(type);
@@ -614,10 +578,6 @@ namespace AasxUANodesetImExport
                 case "FileType":
                     value = "ns=0;i=11575";
                     break;
-
-                //case "CodeType":
-                //    value = "ns=0;i=17589";
-                //    break;
 
                 case "BaseDataVariableType":
                     value = "ns=0;i=63";
@@ -913,7 +873,6 @@ namespace AasxUANodesetImExport
 
             refs.Add(CreateReference("HasProperty", CreateProperty("DataSpecificationIEC61360", "PropertyType", "DefaultInstanceBrowseName", "String")));
             refs.Add(CreateReference("HasProperty", CreateProperty("DataSpecificationIEC61360", "PropertyType", "IdShort", "String")));
-            //refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().sourceOfDefinition, "BaseVariableType", "SourceOfDestination", "String")));
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.category, "PropertyType", "Category", "String")));
 
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().GetHashCode().ToString(), "BaseVariableType", "Code", "String")));
@@ -925,10 +884,7 @@ namespace AasxUANodesetImExport
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().shortName.ToString(), "BaseVariableType", "ShortName", "String")));
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().symbol, "BaseVariableType", "Symbol", "String")));
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().unit, "BaseVariableType", "Unit", "String")));
-            //refs.Add(CreateReference("HasComponent", CreateProperty(concept.GetIEC61360().unitId., "1:AASReferenceType", "UnitId", "String")));
             refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().valueFormat, "BaseVariableType", "ValueFormat", "String")));
-
-            //refs.Add(CreateReference("HasProperty", CreateProperty(concept.GetIEC61360().sourceOfDefinition, "1:BaseVariableType", "ShortName", "String")));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);

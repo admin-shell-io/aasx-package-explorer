@@ -1,4 +1,4 @@
-/*
+﻿/*
 Microsoft Automatic Graph Layout,MSAGL 
 
 Copyright (c) Microsoft Corporation
@@ -211,7 +211,6 @@ namespace Microsoft.Msagl.WpfGraphControl
                                 var ellipse = iCurve as MEllipse;
                                 if (ellipse != null)
                                 {
-                                    //       context.LineTo(Common.WpfPoint(ellipse.End),true,false);
                                     double sweepAngle = EllipseSweepAngle(ellipse);
                                     bool largeArc = Math.Abs(sweepAngle) >= Math.PI;
                                     MRectangle box = ellipse.FullBox();
@@ -261,7 +260,6 @@ namespace Microsoft.Msagl.WpfGraphControl
                         var ellipse = seg as MEllipse;
                         if (ellipse != null)
                         {
-                            //       context.LineTo(Common.WpfPoint(ellipse.End),true,false);
                             double sweepAngle = EllipseSweepAngle(ellipse);
                             bool largeArc = Math.Abs(sweepAngle) >= Math.PI;
                             MRectangle box = ellipse.FullBox();
@@ -416,7 +414,6 @@ namespace Microsoft.Msagl.WpfGraphControl
                 {
                     var f = DashSize();
                     path.StrokeDashArray = new WDoubleCollection { f, f };
-                    //CurvePath.StrokeDashOffset = f;
                 }
             }
         }
@@ -449,7 +446,6 @@ namespace Microsoft.Msagl.WpfGraphControl
                 {
                     var f = DashSize();
                     path.StrokeDashArray = new WDoubleCollection { f, f };
-                    //CurvePath.StrokeDashOffset = f;
                 }
             }
         }
