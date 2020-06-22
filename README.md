@@ -8,33 +8,78 @@ https://github.com/admin-shell-io/aasx-package-explorer/raw/master/screenshot.pn
 )
 
 To help you familiarize with the concept of Asset Administration Shell 
-we provide the following screencasts (unfortunately only in German):
-* [1. Motivation](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_1_-_Motivation.mp4
+we provide the following screencasts:
+
+* [ 1. Motivation.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_01_Motivation.mp4
 )
-* [2. Browsen der Verwaltungsschale](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_2_-_Browsen_der_VWS.mp4
+
+* [ 2. Deployment.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_02_Deployment.mp4
 )
-* [3. Editor nutzen und Fehlerberichte senden](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_3_Editor_nutzen_Fehlerberichte_senden_e.mp4
+
+* [ 3. Configuration.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_03_Configuration.mp4
 )
-* [4. Editieren Asset und AAS](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_4_Editieren_Asset_und_AAS_e.mp4
+
+* [ 4. Browsing contents of AAS.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_04_Browsing_contents_of_AAS.mp4
 )
-* [5. Submodelle anlegen](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_5_-_Submodelle_anlegen.mp4
+
+* [ 5. Working with the Submodel for Documentation.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_05_Working_with_the_Submodel_for_Documentation.mp4
 )
-* [6. Erstes SubmodelElement und ConceptDescription](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_6_-_Erstes_SubmodelElement_und_ConceptDescription.mp4
+
+* [ 6. First editing steps for the AAS.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_06_First_editing_steps_for_the_AAS.mp4
 )
-* [7. SubmodelElemente über eCl@ss](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_7_-_SubmodelElemente_ueber_eClass.mp4
+
+* [ 7. First editing of a Submodel.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_07_First_editing_of_a_Submodel.mp4
 )
-* [8a. Elemente kopieren, Abschnitt A](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_8a_-_Elemente_kopieren_Abschnitt_A.mp4
+
+* [ 8. First editing of a SubmodelElement.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_08_First_editing_of_a_SubmodelElement.mp4
 )
-* [8b. Elemente kopieren, Abschnitt B](
-https://github.com/admin-shell-io/aasx-package-explorer-screencasts/raw/master/screencasts/Aasx_PackEx_Tutorial_8b_-_Elemente_kopieren_Abschnitt_B.mp4
+
+* [ 9. Create a SubmodelElement and a ConceptDescription.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_09_Create_a_SubmodelElement_and_a_ConceptDescription.mp4
+)
+
+* [10. Create a SubmodelElement from a predefined dictionary.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_10_Create_a_SubmodelElement_from_a_predefined_dictionary.mp4
+)
+
+* [11. Copy whole submodels form auxiliary AAS.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_11_Copy_whole_submodels_form_auxiliary_AAS.mp4
+)
+
+* [12. Switching Submodels between Instance and Template.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_12_Switching_Submodels_between_Instance_and_Template.mp4
+)
+
+* [13. Downloading and Uploading Supplementary files.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_13_Downloading_and_Uploading_Supplementary_files.mp4
+)
+
+* [14. Adding a thumbnail to AASX Package.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_14_Adding_a_thumbnail_to_AASX_Package.mp4
+)
+
+* [15. Copy cut and refactor elements inside a Package.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_15_Copy_cut_and_refactor_elements_inside_a_Package.mp4
+)
+
+* [16. Working with qualifiers.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_16_Working_with_qualifiers.mp4
+)
+
+* [20. Submodel TechnicalData.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_20_Submodel_TechnicalData.mp4
+)
+
+* [30. Create a Submodel Template Specification.mp4](
+http://h2841345.stratoserver.net:55000/Aasx_PackEx_Tutorial_-_EN_-_30_Create_a_Submodel_Template_Specification.mp4
 )
 
 For further information about the Asset Administration Shell, see the 
