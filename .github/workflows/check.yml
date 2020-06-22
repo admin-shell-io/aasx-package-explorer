@@ -23,35 +23,14 @@ jobs:
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.2
 
-      - name: Install Microsoft .NET Compilers
-        run: nuget install Microsoft.NET.Compilers -Version 2.10.0 -OutputDirectory tools
-
-      - name: Install Nunit Console Runner
-        run: nuget install NUnit.ConsoleRunner -Version 3.11.1 -OutputDirectory tools
-
-      - name: Install Nunit Project Loader
-        run: nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0 -OutputDirectory tools
-
-      - name: Install OpenCover
-        run: nuget install OpenCover -Version 4.7.922 -OutputDirectory tools
-
-      - name: Install ReportGenerator
-        run: nuget install ReportGenerator -Version 4.6.0 -OutputDirectory tools
-
-      - name: Install Resharper CLI
-        run: nuget install JetBrains.ReSharper.CommandLineTools -Version 2020.1.2 -OutputDirectory tools
-
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
 
-      - name: Restore NuGet Packages
+      - name: Install build dependencies
         working-directory: src
-        run: nuget restore AasxPackageExplorer.sln
-
-      - name: Install dotnet-format
-        run: dotnet tool install -g dotnet-format --version 3.3.111304
+        run: powershell .\InstallBuildDependencies.ps1
 
       - name: Check format
         working-directory: src
@@ -68,4 +47,3 @@ jobs:
       - name: Inspect code
         working-directory: src
         run: powershell .\InspectCode.ps1
-
