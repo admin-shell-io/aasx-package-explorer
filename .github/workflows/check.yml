@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
- 
+
       - name: Check the commit message(s)
         uses: mristin/opinionated-commit-message@v1.0.4
 
@@ -38,6 +38,9 @@ jobs:
       - name: Install ReportGenerator
         run: nuget install ReportGenerator -Version 4.6.0 -OutputDirectory tools
 
+      - name: Install Resharper CLI
+        run: nuget install JetBrains.ReSharper.CommandLineTools -Version 2020.1.2 -OutputDirectory tools
+
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
@@ -49,11 +52,6 @@ jobs:
 
       - name: Install dotnet-format
         run: dotnet tool install -g dotnet-format --version 3.3.111304
-
-      - name: Setup ReSharper Command Line Tools
-        uses: goit/setup-resharper@v1.0.0
-        with:
-          version: '2020.1.2'	
 
       - name: Check format
         working-directory: src
