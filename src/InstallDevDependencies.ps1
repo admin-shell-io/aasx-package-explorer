@@ -48,6 +48,3 @@ Invoke-WebRequest `
 
 & $installationDir\dotnet-install.ps1 -Version 3.1.202
 & $installationDir\dotnet-install.ps1 -Runtime dotnet -Version 3.1.4
-
-Write-Host "Install dotnet-format ..."
-dotnet tool install --global dotnet-format --version 3.3.111304
