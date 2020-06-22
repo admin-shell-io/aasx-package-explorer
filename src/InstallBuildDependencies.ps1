@@ -2,7 +2,7 @@
 # The script uses nuget and the dependencies are stored in the packages/ 
 # subdirectory.
 
-if ((Get-Command "nuget.exe" -ErrorAction SilentlyContinue) -eq $null) 
+if ((Get-Command "nuget.exe" -ErrorAction SilentlyContinue) -eq $null)
 { 
    throw "Unable to find nuget.exe in your PATH"
 }
@@ -26,6 +26,9 @@ nuget install NUnit.Extension.NUnitProjectLoader -Version 3.6.0 `
 Write-Host "Installing OpenCover ..."
 nuget install OpenCover -Version 4.7.922 -OutputDirectory $toolsDir
 nuget install ReportGenerator -Version 4.6.0 -OutputDirectory $toolsDir
+
+Write-Host "Installing Resharper CLI ..."
+nuget install JetBrains.ReSharper.CommandLineTools -Version 2020.1.2 -OutputDirectory $toolsDir
 
 Write-Host "Restoring packages for the solution ..."
 cd $PSScriptRoot
