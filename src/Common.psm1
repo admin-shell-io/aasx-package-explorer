@@ -82,22 +82,13 @@ function AssertDotnet
         }
         else
         {
-            throw "dotnet could not be found in the PATH. Look if you could find it, e.g., in " +    `
+            throw "dotnet could not be found in the PATH. Look if you could find it, e.g., in " + `
                "$( Join-Path $env:LOCALAPPDATA "Microsoft\dotnet" ) and add it to PATH."
         }
     }
 }
 
-<#
-.Synopsis
-Check the version of dotnet-format.
-
-.Description
-Check the version of dotnet-format. 
-This is important so that we always format the code in the same manner.
-#>
-function AssertDotnetFormatVersion
-{
+function FindDotnetToolVersion($PackageID) {
     AssertDotnet
 
     $version = ''
@@ -112,36 +103,61 @@ function AssertDotnetFormatVersion
             throw "Expected at least 3 columns in a line of `dotnet tool list`, got output: ${lines}"
         }
 
-        $packageID = $parts[0]
-        $packageVersion = $parts[1]
+        $aPackageID = $parts[0]
+        $aPackageVersion = $parts[1]
 
-        if ($packageID -eq "dotnet-format")
+        if ($aPackageID -eq $PackageID)
         {
-            $version = $packageVersion
+            $version = $aPackageVersion
+            break
         }
     }
 
-    $expectedVersion = "3.3.111304"
+    return $version
+}
+
+<#
+.Synopsis
+Check the version of the given dotnet tool.
+ #>
+function AssertDotnetToolVersion($PackageID, $ExpectedVersion) {
+    AssertDotnet
+
+    $version = FindDotnetToolVersion -PackageID $PackageID
     if ($version -eq '')
     {
-        throw "No dotnet-format could be found. Have you installed it " +    `
-               "(https://github.com/dotnet/format)? " +    `
-               "Check the list of the installed dotnet packages with: " +    `
+        throw "No $PackageID could be found. Have you installed it? " + `
+               "Check the list of the installed dotnet tools with: " + `
                "`dotnet tool list` and `dotnet tool list -g`."
     }
     else
     {
-        if ($version -ne $expectedVersion)
+        if ($version -ne $ExpectedVersion)
         {
-            throw "Expected dotnet-format version $expectedVersion, but got: $version;" +    `
-                   "Check the list of the installed dotnet packages with: " +    `
+            throw "Expected $PackageID version $ExpectedVersion, but got: $version;" + `
+                   "Check the list of the installed dotnet tools with: " + `
                    "`dotnet tool list` and `dotnet tool list -g`."
         }
-        else
-        {
-            # The version is correct.
-        }
+        # else: the version is correct.
     }
+}
+
+<#
+.Synopsis
+Check the version of dotnet-format so that the code is always formatted in the same manner.
+#>
+function AssertDotnetFormatVersion
+{
+    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "3.3.111304"
+}
+
+<#
+.Synopsis
+Check the version of dead-csharp so that the dead code is always detected in the same manner.
+#>
+function AssertDeadCsharpVersion
+{
+    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta3"
 }
 
 function FindInspectCode
@@ -151,8 +167,8 @@ function FindInspectCode
 
     if (!(Test-Path $inspectcode))
     {
-        throw "The inspectcode.exe could not be found at: $inspectcode;" +    `
-               "did you install it with nuget " +    `
+        throw "The inspectcode.exe could not be found at: $inspectcode;" + `
+               "did you install it with nuget " + `
                "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
     }
     return $inspectcode
@@ -164,7 +180,7 @@ function FindNunit3Console
     $nunit3Console = Join-Path $toolsDir "NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe"
     if (!(Test-Path $nunit3Console))
     {
-        throw "The nunit3-console.exe could not be found at: $nunit3Console; " +    `
+        throw "The nunit3-console.exe could not be found at: $nunit3Console; " + `
                "did you install or restore the dependencies of the solution?"
     }
 
@@ -177,8 +193,8 @@ function FindOpenCoverConsole
     $openCoverConsole = Join-Path $toolsDir "OpenCover.4.7.922\tools\OpenCover.Console.exe"
     if (!(Test-Path $openCoverConsole))
     {
-        throw "The OpenCover.Console.exe could not be found at: $openCoverConsole;" +    `
-               "did you install it with nuget " +    `
+        throw "The OpenCover.Console.exe could not be found at: $openCoverConsole;" + `
+               "did you install it with nuget " + `
                "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
     }
     return $openCoverConsole
@@ -190,8 +206,8 @@ function FindReportGenerator
     $reportGenerator = Join-Path $toolsDir "ReportGenerator.4.6.0\tools\net47\ReportGenerator.exe"
     if (!(Test-Path $reportGenerator))
     {
-        throw "The ReportGenerator.exe could not be found at: $reportGenerator;" +    `
-               "did you install it with nuget " +    `
+        throw "The ReportGenerator.exe could not be found at: $reportGenerator;" + `
+               "did you install it with nuget " + `
                "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
     }
     return $reportGenerator
@@ -206,12 +222,13 @@ function CreateAndGetArtefactsDir
 }
 
 Export-ModuleMember -Function `
-    GetToolsDir,    `
-     AssertDotnet,    `
-     AssertDotnetFormatVersion,    `
-     FindMSBuild,    `
-     FindInspectCode,    `
-     FindNunit3Console,    `
-     FindOpenCoverConsole,    `
-     FindReportGenerator,    `
+    GetToolsDir, `
+     AssertDotnet, `
+     AssertDotnetFormatVersion, `
+     AssertDeadCsharpVersion, `
+     FindMSBuild, `
+     FindInspectCode, `
+     FindNunit3Console, `
+     FindOpenCoverConsole, `
+     FindReportGenerator, `
      CreateAndGetArtefactsDir

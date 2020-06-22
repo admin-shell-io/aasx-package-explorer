@@ -7,6 +7,12 @@
       "commands": [
         "dotnet-format"
       ]
+    },
+    "deadcsharp": {
+      "version": "1.0.0-beta3",
+      "commands": [
+        "dead-csharp"
+      ]
     }
   }
 }
