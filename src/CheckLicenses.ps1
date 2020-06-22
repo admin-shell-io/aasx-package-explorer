@@ -13,20 +13,20 @@ function Main
     $includes = @($srcDir)
 
     $excludes = @{
-    # Example
-    # $( Join-Path $srcDir "AasxPluginBomStructure" ) = true
+        $( Join-Path $srcDir ".config" ) = $true
+        $( Join-Path $srcDir ".idea" ) = $true
     }
 
     $acceptedDirs = @()
-    foreach ($dir in $( Dir -Directory $srcDir|Select -Expand FullName ))
+    foreach ($dir in $( Get-ChildItem -Directory $srcDir -Force|Select-Object -Expand FullName ))
     {
-        if (!$excludes.ContainsKey($dir) -or !$excludes[$dir])
+        if (($excludes.ContainsKey($dir)) -and ($excludes[$dir]))
         {
-            $acceptedDirs += $dir
+            Write-Host "The subdirectory is exluded intentionally: $dir"
         }
         else
         {
-            Write-Host "The subdirectory is exluded intentionally: $dir"
+            $acceptedDirs += $dir
         }
     }
 
