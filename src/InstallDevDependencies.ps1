@@ -41,17 +41,6 @@ Write-Host "Adding nuget to system path ..."
     [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::Machine) + ";$nugetDir",
     [EnvironmentVariableTarget]::Machine)
 
-Write-Host "Downloading resharper to: $installationDir"
-Invoke-WebRequest `
-    https://download.jetbrains.com/resharper/ReSharperUltimate.2020.1.2/JetBrains.ReSharper.CommandLineTools.2020.1.2.zip `
-    -OutFile $installationDir\JetBrains.ReSharper.CommandLineTools.2020.1.2.zip
-
-$resharperDir="${Env:ProgramFiles(x86)}\resharper.2020.1.2"
-Write-Host "Unzipping resharper to: $resharperDir"
-Expand-Archive `
-    -LiteralPath $installationDir\JetBrains.ReSharper.CommandLineTools.2020.1.2.zip `
-    -DestinationPath $resharperDir
-
 Write-Host "Downloading dotnet-install.ps1 to: $installationDir"
 Invoke-WebRequest `
     https://dot.net/v1/dotnet-install.ps1 `

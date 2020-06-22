@@ -68,32 +68,6 @@ function FindMSBuild
     return $msbuild
 }
 
-
-<#
-.Synopsis
-Find `inspectcode.exe`eiher on PATH or at expected location.
-#>
-function FindInspectCode
-{
-    $inspectcode = ''
-    if ($null -eq (Get-Command "inspectcode.exe" -ErrorAction SilentlyContinue))
-    {
-        $inspectcode = 'inspectcode.exe'
-    }
-    else
-    {
-        $resharperDir = "${Env:ProgramFiles(x86)}\resharper.2020.1.2"
-        $inspectcode = Join-path $resharperDir 'inspectcode.exe'
-        if (!(Test-Path $inspectcode))
-        {
-            throw 'Resharper inspectcode.exe could not be found neither in PATH nor at: $inspectcode; " + `
-                "have you installed it (https://www.jetbrains.com/help/resharper/InspectCode.html)?';
-        }
-    }
-
-    return $inspectcode
-}
-
 <#
 .Synopsis
 Asserts that dotnet is on the path.
@@ -108,8 +82,8 @@ function AssertDotnet
         }
         else
         {
-            throw "dotnet could not be found in the PATH. Look if you could find it, e.g., in " +   `
-              "$( Join-Path $env:LOCALAPPDATA "Microsoft\dotnet" ) and add it to PATH."
+            throw "dotnet could not be found in the PATH. Look if you could find it, e.g., in " +    `
+               "$( Join-Path $env:LOCALAPPDATA "Microsoft\dotnet" ) and add it to PATH."
         }
     }
 }
@@ -150,18 +124,18 @@ function AssertDotnetFormatVersion
     $expectedVersion = "3.3.111304"
     if ($version -eq '')
     {
-        throw "No dotnet-format could be found. Have you installed it " +   `
-              "(https://github.com/dotnet/format)? " +   `
-              "Check the list of the installed dotnet packages with: " +   `
-              "`dotnet tool list` and `dotnet tool list -g`."
+        throw "No dotnet-format could be found. Have you installed it " +    `
+               "(https://github.com/dotnet/format)? " +    `
+               "Check the list of the installed dotnet packages with: " +    `
+               "`dotnet tool list` and `dotnet tool list -g`."
     }
     else
     {
         if ($version -ne $expectedVersion)
         {
-            throw "Expected dotnet-format version $expectedVersion, but got: $version;" +   `
-                  "Check the list of the installed dotnet packages with: " +   `
-                  "`dotnet tool list` and `dotnet tool list -g`."
+            throw "Expected dotnet-format version $expectedVersion, but got: $version;" +    `
+                   "Check the list of the installed dotnet packages with: " +    `
+                   "`dotnet tool list` and `dotnet tool list -g`."
         }
         else
         {
@@ -170,14 +144,28 @@ function AssertDotnetFormatVersion
     }
 }
 
+function FindInspectCode
+{
+    $toolsDir = GetToolsDir
+    $inspectcode = Join-Path $toolsDir "JetBrains.ReSharper.CommandLineTools.2020.1.2\tools\inspectcode.exe"
+
+    if (!(Test-Path $inspectcode))
+    {
+        throw "The inspectcode.exe could not be found at: $inspectcode;" +    `
+               "did you install it with nuget " +    `
+               "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
+    }
+    return $inspectcode
+}
+
 function FindNunit3Console
 {
     $toolsDir = GetToolsDir
     $nunit3Console = Join-Path $toolsDir "NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe"
     if (!(Test-Path $nunit3Console))
     {
-        throw "The nunit3-console.exe could not be found at: $nunit3Console; " +   `
-              "did you install or restore the dependencies of the solution?"
+        throw "The nunit3-console.exe could not be found at: $nunit3Console; " +    `
+               "did you install or restore the dependencies of the solution?"
     }
 
     return $nunit3Console
@@ -189,9 +177,9 @@ function FindOpenCoverConsole
     $openCoverConsole = Join-Path $toolsDir "OpenCover.4.7.922\tools\OpenCover.Console.exe"
     if (!(Test-Path $openCoverConsole))
     {
-        throw "The OpenCover.Console.exe could not be found at: $openCoverConsole;" +   `
-              "did you install it with nuget " +   `
-              "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
+        throw "The OpenCover.Console.exe could not be found at: $openCoverConsole;" +    `
+               "did you install it with nuget " +    `
+               "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
     }
     return $openCoverConsole
 }
@@ -202,9 +190,9 @@ function FindReportGenerator
     $reportGenerator = Join-Path $toolsDir "ReportGenerator.4.6.0\tools\net47\ReportGenerator.exe"
     if (!(Test-Path $reportGenerator))
     {
-        throw "The ReportGenerator.exe could not be found at: $reportGenerator;" +   `
-              "did you install it with nuget " +   `
-              "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
+        throw "The ReportGenerator.exe could not be found at: $reportGenerator;" +    `
+               "did you install it with nuget " +    `
+               "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
     }
     return $reportGenerator
 }
@@ -218,12 +206,12 @@ function CreateAndGetArtefactsDir
 }
 
 Export-ModuleMember -Function `
-    GetToolsDir,   `
-    AssertDotnet,   `
-    AssertDotnetFormatVersion,   `
-    FindMSBuild,   `
-    FindInspectCode,   `
-    FindNunit3Console,   `
-    FindOpenCoverConsole,   `
-    FindReportGenerator,   `
-    CreateAndGetArtefactsDir
+    GetToolsDir,    `
+     AssertDotnet,    `
+     AssertDotnetFormatVersion,    `
+     FindMSBuild,    `
+     FindInspectCode,    `
+     FindNunit3Console,    `
+     FindOpenCoverConsole,    `
+     FindReportGenerator,    `
+     CreateAndGetArtefactsDir
