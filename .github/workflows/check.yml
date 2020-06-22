@@ -36,6 +36,10 @@ jobs:
         working-directory: src
         run: powershell .\CheckFormat.ps1
 
+      - name: Check dead code
+        working-directory: src
+        run: powershell .\CheckDeadCode.ps1
+
       - name: Build
         working-directory: src
         run: powershell .\Build.ps1
