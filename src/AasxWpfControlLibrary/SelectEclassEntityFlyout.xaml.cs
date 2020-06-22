@@ -85,13 +85,6 @@ namespace AasxPackageExplorer
             // setup workers
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-
-            // test
-            /*
-            EntityList.Items.Add(new EclassUtils.SearchItem("prop", "321312321321321", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", null));
-            EntityList.Items.Add(new EclassUtils.SearchItem("prop", "321312321321321", "22222", null));
-            EntityList.Items.Add(new EclassUtils.SearchItem("prop", "321312321321321", "3333333333", null));
-            */
         }
 
         private readonly BackgroundWorker worker = new BackgroundWorker();

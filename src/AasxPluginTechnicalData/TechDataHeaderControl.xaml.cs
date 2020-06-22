@@ -106,8 +106,6 @@ namespace AasxPluginTechnicalData
             if (smcClassifications != null)
             {
                 var clr = new List<ClassificationRecord>();
-                //clr.Add(new ClassificationRecord("eCl@ss", "V11.0", "01-04-33-22"));
-                //clr.Add(new ClassificationRecord("IEC CDD", "V19", "04/01/33/22"));
                 foreach (var smc in smcClassifications.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_ProductClassificationItem.GetSingleKey()))
                 {
                     var sys = ("" + smc.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ClassificationSystem.GetSingleKey())?.value).Trim();

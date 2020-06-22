@@ -59,13 +59,6 @@ namespace AasxIntegrationBase
         public bool preferInternalDisplay = false;
     }
 
-    /* was intended to let the main program render a PDF file to bitmap
-    public class AasxPluginResultEventOffscreenRenderFile : AasxPluginResultEventBase
-    {
-        public string fn = null;
-    }
-    */
-
     public class AasxPluginResultEventRedrawAllElements : AasxPluginResultEventBase
     {
     }

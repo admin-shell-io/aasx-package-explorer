@@ -53,11 +53,6 @@ namespace Tetra.Framework.WPF
             // Use default paginator to handle pagination
             Visual originalPage = paginator.GetPage(pageNumber).Visual;
 
-            Console.WriteLine("--- Begin Page {0} -------", pageNumber + 1);
-            // originalPage.DumpVisualTree(Console.Out);
-            Console.WriteLine("--- End Page {0} -------", pageNumber + 1);
-            Console.WriteLine();
-
             ContainerVisual visual = new ContainerVisual();
             ContainerVisual pageVisual = new ContainerVisual()
             {
@@ -93,7 +88,6 @@ namespace Tetra.Framework.WPF
                     // was started on the previous page, so we'll repeat the
                     // table header.
                     Rect headerBounds = VisualTreeHelper.GetDescendantBounds(currentHeader);
-                    // Vector offset = VisualTreeHelper.GetOffset(currentHeader);
                     ContainerVisual tableHeaderVisual = new ContainerVisual();
 
                     // Translate the header to be at the top of the page
@@ -134,18 +128,6 @@ namespace Tetra.Framework.WPF
                     // "lock" only once the header
                     if (currentHeader == null)
                         currentHeader = newHeader;
-
-                    /*
-                    if (newTable == table)
-                    {
-                        // Still the same table so don't change the repeating header
-                    }
-                    else
-                    {
-                        // We've found a new table. Repeat the header on the next page
-                        currentHeader = newHeader;
-                    }
-                    */
                 }
                 else
                 {
@@ -153,24 +135,6 @@ namespace Tetra.Framework.WPF
                     currentHeader = null;
                 }
             }
-            /*
-            // MICHA
-            var b = new Label();
-            b.Width = 300;
-            b.Height = 200;
-            b.Content = "Hallo";
-            b.Background = Brushes.Azure;
-
-            Size bSize = new Size(
-                b.ActualWidth,
-                b.ActualHeight);
-            b.Measure(bSize);
-            b.Arrange(new Rect(new Point(0, 0), bSize));
-
-            b.RenderTransform = new TranslateTransform(150, 150);
-
-            visual.Children.Add(b);
-            */
 
             return new DocumentPage(
                 visual,

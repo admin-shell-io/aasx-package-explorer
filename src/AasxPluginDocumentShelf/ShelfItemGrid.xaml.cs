@@ -20,20 +20,6 @@ namespace AasxPluginDocumentShelf
     /// </summary>
     public partial class ShelfItemGrid : UserControl
     {
-        /*
-        #region Dependency property for Item
-
-        public DocumentEntity DocEntity
-        {
-            get { return (DocumentEntity)this.GetValue(DocEntityProperty); }
-            set { this.SetValue(DocEntityProperty, value); }
-        }
-
-        public static readonly DependencyProperty DocEntityProperty = DependencyProperty.Register("DocEntity", typeof(DocumentEntity), typeof(ShelfItemBar));
-
-        #endregion
-        */
-
         public ShelfItemGrid()
         {
             InitializeComponent();
@@ -62,12 +48,6 @@ namespace AasxPluginDocumentShelf
                         foreach (var ev in (CountryFlag.CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
                             if (Enum.GetName(typeof(CountryFlag.CountryCode), ev)?.Trim().ToUpper() == codeStr)
                             {
-                                /*
-                                var cf = new CountryFlag.CountryFlag();
-                                cf.Code = ev;
-                                cf.Width = 20;
-                                PanelCountries.Children.Add(cf);
-                                */
                                 break;
                             }
                     }

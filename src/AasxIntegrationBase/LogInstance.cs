@@ -211,40 +211,6 @@ namespace AasxIntegrationBase
         /// </summary>
         public int DebugLevel = 0;
 
-        /*
-        private static string appendToFileFN = "";
-        private static StreamWriter appendToFileWriter = null;
-        private static string AppendToFile
-        {
-            get
-            {
-                return appendToFileFN;
-            }
-            set
-            {
-                appendToFileFN = value.Trim();
-                if (appendToFileFN.Length < 1 && appendToFileWriter != null)
-                {
-                    appendToFileWriter.Close();
-                    appendToFileWriter = null;
-                }
-                else
-                if (appendToFileFN.Length > 0 && appendToFileWriter == null)
-                {
-                    appendToFileWriter = new StreamWriter(appendToFileFN, true);
-                }
-            }
-        }
-
-        public static void CloseFiles()
-        {
-            if (appendToFileWriter != null)
-                appendToFileWriter.Close();
-        }*/
-
-
-        // private static List<StoredPrint> LoggedPrints = new List<StoredPrint>();
-
         private StoredPrintsMinimalStore shortTermStore = new StoredPrintsMinimalStore();
         private StoredPrintsMinimalStore longTermStore = null;
 
@@ -313,23 +279,11 @@ namespace AasxIntegrationBase
             NumberErrors = 0;
         }
 
-        /*
-        private static void InternalAppendFile(StoredPrint p)
-        {
-            if (p == null || appendToFileWriter == null)
-                return;
-            appendToFileWriter.WriteLine(p.ToString());
-            appendToFileWriter.Flush();
-        }
-        */
-
-
         private void InternalPrint(int color, string msg, params object[] args)
         {
             var s = String.Format(msg, args);
             var p = new StoredPrint(color, s);
             Append(p);
-            // Console.WriteLine(s);
         }
 
         private void InternalPrintWithHyperlink(int color, string msg, string link, params object[] args)
@@ -337,7 +291,6 @@ namespace AasxIntegrationBase
             var s = String.Format(msg, args);
             var p = new StoredPrint(color, s, link);
             Append(p);
-            // Console.WriteLine(s);
         }
 
         #region //////// Append to Log
@@ -406,7 +359,6 @@ namespace AasxIntegrationBase
         public void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args)
         {
             var p = new StoredPrint(StoredPrint.ColorRed, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri, isError: true);
-            // InternalAppendFile(p);
             NumberErrors++;
             shortTermStore?.Append(p);
         }

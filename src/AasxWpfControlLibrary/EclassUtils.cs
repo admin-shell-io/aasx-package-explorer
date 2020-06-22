@@ -233,7 +233,6 @@ namespace AasxPackageExplorer
                                         long currPos = fileSteam.Position;
                                         double frac = Math.Min(100.0d * progressPerFile * (fileNdx) + (100.0d * currPos) * progressPerFile / totalSize, 100.0);
                                         if (updateProgress != null)
-                                            // progress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
                                             updateProgress(frac);
                                     }
                                 }
@@ -372,11 +371,6 @@ namespace AasxPackageExplorer
 
                                     // prepare the outer XML
                                     var oxml = node.OuterXml.Trim().ToLower();
-                                    /*
-                                    var xxx = GetAttributeByName(node, "xml:id");
-                                    if (xxx == "id0173-1x05-AAA161x002")
-                                        ;
-                                    */
                                     foreach (var uits in unitIrdisToSearch)
                                         if (uits != null && uits != "" && oxml.Contains(uits.ToLower().Trim()))
                                         {

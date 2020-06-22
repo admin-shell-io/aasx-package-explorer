@@ -833,58 +833,6 @@ namespace AasxIntegrationBase.AasForms
 
     }
 
-    /*
-     * Note: right now, not clear how to edit these elements
-    public class FormInstanceReferenceElement : FormInstanceSubmodelElement
-    {
-
-        public FormInstanceReferenceElement(
-            FormInstanceListOfSame parentInstance, FormDescReferenceElement parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
-        {
-            // way back to description
-            this.parentInstance = parentInstance;
-            this.desc = parentDesc;
-
-            // initialize Referable
-            var rf = new AdminShell.ReferenceElement();
-            this.sme = rf;
-            InitReferable(parentDesc);
-
-            // check, if a source is present
-            this.sourceSme = source;
-            var mlpSource = this.sourceSme as AdminShell.ReferenceElement;
-            if (mlpSource != null)
-            {
-                // take over
-                rf.value = new AdminShell.Reference(mlpSource.value);
-            }
-
-            // create user control
-            this.subControl = new FormSubControlReferenceElement();
-            (this.subControl as UserControl).DataContext = this;
-        }
-
-        /// <summary>
-        /// Before rendering the SME into a list of new elements, process the SME.
-        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back the new values instead of 
-        /// producing a new element. Returns True, if a new element shall be rendered.
-        /// </summary>
-        public override bool ProcessSmeForRender(AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
-        {
-            var rf = this.sme as AdminShell.ReferenceElement;
-            var rfSource = this.sourceSme as AdminShell.ReferenceElement;
-            if (rf != null && Touched && rfSource != null && editSource)
-            {
-                rfSource.value = new AdminShell.Reference(rf.value);
-                return false;
-            }
-            return true;
-        }
-
-    }
-    */
-
     public class FormInstanceFile : FormInstanceSubmodelElement
     {
         /// <summary>

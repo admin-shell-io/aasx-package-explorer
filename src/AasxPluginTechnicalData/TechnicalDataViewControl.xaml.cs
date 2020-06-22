@@ -180,11 +180,10 @@ namespace AasxPluginTechnicalData
 
                 // make suitable paginator
                 var paginator = new PimpedPaginator(copy, pdefs);
-                // DocumentPaginator paginator = ((IDocumentPaginatorSource)copy).DocumentPaginator;
 
                 // Change the PageSize and PagePadding for the document to match the CanvasSize for the printer device.
                 paginator.PageSize = new Size(ia.MediaSizeWidth, ia.MediaSizeHeight);
-                Thickness t = new Thickness(72);  // copy.PagePadding;
+                Thickness t = new Thickness(72);
                 copy.PagePadding = new Thickness(
                                  Math.Max(ia.OriginWidth, t.Left),
                                    Math.Max(ia.OriginHeight, t.Top),
@@ -192,7 +191,6 @@ namespace AasxPluginTechnicalData
                                    Math.Max(ia.MediaSizeHeight - (ia.OriginHeight + ia.ExtentHeight), t.Bottom));
 
                 copy.ColumnWidth = double.PositiveInfinity;
-                //copy.PageWidth = 528; // allow the page to be the natural with of the output device
 
                 // Send content to the printer.
                 docWriter.Write(paginator);

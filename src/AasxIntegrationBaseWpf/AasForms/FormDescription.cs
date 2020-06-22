@@ -128,9 +128,6 @@ namespace AasxIntegrationBase.AasForms
             rf.category = this.PresetCategory;
             if (this.PresetDescription != null)
                 rf.description = new AdminShell.Description(this.PresetDescription);
-
-            //if (this.KeySemanticId != null)
-            //    rf.semanticId = AdminShell.SemanticId.CreateFromKey(this.KeySemanticId);
         }
 
     }
@@ -339,10 +336,6 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElementCollection(FormDescSubmodelElementCollection other)
             : base(other)
         {
-            // this part == static, therefore only shallow copy
-            // this.value = other.value;
-
-            // No, wrong, make deep copy!
             if (other.value != null)
                 foreach (var ov in other.value)
                     this.value.Add(ov.Clone());
@@ -503,44 +496,6 @@ namespace AasxIntegrationBase.AasForms
         }
 
     }
-
-    /*
-     * Note: right now, not clear how to edit these elements
-    [DisplayName("FormReference")]
-    public class FormDescReferenceElement : FormDescSubmodelElement
-    {
-        public FormDescReferenceElement() { }
-
-        // Constructors
-        //=============
-
-        public FormDescReferenceElement(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort, string formInfo = null, bool isReadOnly = false)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
-        {
-        }
-
-        public FormDescReferenceElement(FormDescMultiLangProp other)
-            : base(other)
-        {
-        }
-
-        /// <summary>
-        /// Build a new instance, based on the description data
-        /// </summary>
-        public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
-        {
-            return new FormInstanceReferenceElement(parentInstance, this, source);
-        }
-
-        public AdminShell.ReferenceElement GenerateDefault()
-        {
-            var res = new AdminShell.ReferenceElement();
-            this.InitSme(res);
-            return res;
-        }
-
-    }
-    */
 
     [DisplayName("FormFile")]
     public class FormDescFile : FormDescSubmodelElement

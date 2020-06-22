@@ -142,7 +142,6 @@ namespace AasxIntegrationBase.AasForms
             int ri = 0;
             foreach (var si in inst.SubInstances)
                 if (si?.subControl != null)
-                // StackPanelInner.Children.Add(si.subControl as UserControl);
                 {
                     // row
                     var rd = new RowDefinition();
@@ -162,7 +161,7 @@ namespace AasxIntegrationBase.AasForms
                         // make a button like the "-"
                         var bt = CreateButtonLike(ButtonInstancePlus, content: "&#10134;");
                         bt.VerticalAlignment = VerticalAlignment.Top;
-                        bt.Content = "\u2796";  // "&#10134;";
+                        bt.Content = "\u2796";
 
                         if (inst.workingDesc != null && inst.workingDesc is FormDescSubmodelElementCollection)
                             bt.Margin = new Thickness(bt.Margin.Left, bt.Margin.Top + 6, bt.Margin.Right, bt.Margin.Bottom);
@@ -314,18 +313,6 @@ namespace AasxIntegrationBase.AasForms
                     }
                 }));
             }
-
-            // Minus, allowed?
-            /*
-            if (sender == ButtonInstanceMinus && inst.SubInstances.Count > this.minRows)
-            {
-                // delete
-                inst.SubInstances.RemoveAt(inst.SubInstances.Count - 1);
-
-                // redraw
-                UpdateDisplay();
-            }
-            */
         }
 
     }

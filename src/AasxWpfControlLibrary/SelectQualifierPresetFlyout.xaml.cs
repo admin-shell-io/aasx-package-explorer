@@ -57,19 +57,6 @@ namespace AasxPackageExplorer
 
             try
             {
-                /*
-                if (true)
-                {
-                    ThePresets = new List<QualifierPreset>();
-                    ThePresets.Add(new QualifierPreset());
-                    using (var s = new StreamWriter("dummy.json"))
-                    {
-                        var json = JsonConvert.SerializeObject(ThePresets, Newtonsoft.Json.Formatting.Indented);
-                        s.WriteLine(json);
-                    }
-                }
-                */
-
                 var init = File.ReadAllText(presetFn);
                 ThePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
             }

@@ -188,9 +188,6 @@ namespace AasxAmlImExport
             if (aseq == null || semid == null || semid.IsEmpty)
                 return;
 
-            //var semstr = "";
-            //foreach (var k in semid.Keys)
-            //    semstr += String.Format("({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
 
             AppendAttributeNameAndRole(aseq, "semanticId", AmlConst.Attributes.SemanticId, ToAmlSemanticId(semid));
         }
@@ -532,18 +529,6 @@ namespace AasxAmlImExport
             // directly add internal element
             var ie = AppendIeNameAndRole(ieseq, name: sm.idShort, altName: "Submodel", role: AmlConst.Roles.Submodel);
 
-            /*
-            // set some data
-            SetIdentification(ie.Attribute, sm.identification);
-            SetAdministration(ie.Attribute, sm.administration);
-            SetReferable(ie.Attribute, sm);
-            SetKind(ie.Attribute, sm.kind);
-            SetSemanticId(ie.Attribute, sm.semanticId);
-            SetHasDataSpecification(ie.Attribute, sm.hasDataSpecification);
-
-            // properties
-            ExportListOfSme(ie, env, sm.submodelElements, tryUseCompactProperties);
-            */
 
             ExportSubmodelIntoElement(matcher, internalLinksToCreate, ie, env, sm, tryUseCompactProperties, exportShallow);
 
@@ -830,30 +815,6 @@ namespace AasxAmlImExport
             }
         }
 
-        /*
-        private static void ExportConceptDescriptionsToIHT(InstanceHierarchyType lib, AdminShell.AdministrationShellEnv env)
-        {
-            // acceess
-            if (lib == null || env == null)
-                return;
-
-            // over CDs
-            foreach (var cd in env.ConceptDescriptions)
-            {
-                // make RC for CD
-                string name = "TODO";
-                var ie = AppendIeNameAndRole(lib.InternalElement, name: name, altName: "CD", role: AmlConst.Roles.ConceptDescription);
-                ie.RefBaseSystemUnitPath = "AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360";
-
-                // use inner function
-                SetAttributesForConceptDescription(ie.Attribute, null, cd, ref name);
-
-                // set the final name
-                name += "_" + ToAmlName(cd.identification.ToString());
-                ie.Name = name;
-            }
-        }
-        */
 
         private static void ExportConceptDescriptionsWithExtraContentToIHT(InstanceHierarchyType lib, AdminShell.AdministrationShellEnv env)
         {
@@ -881,53 +842,6 @@ namespace AasxAmlImExport
             }
         }
 
-        /*
-        private static void ExportConceptDescriptionsToSUCL(SystemUnitClassLibType lib, AdminShell.AdministrationShellEnv env)
-        {
-            // acceess
-            if (lib == null || env == null)
-                return;
-
-            // over CDs
-            foreach (var cd in env.ConceptDescriptions)
-            {
-                // make RC for CD
-                string name = "TODO";
-                var suc = lib.SystemUnitClass.Append(name);
-                suc.RefBaseClassPath = AmlConst.Roles.ConceptDescription;
-
-                // use inner function
-                SetAttributesForConceptDescription(suc.Attribute, null, cd, ref name);
-
-                // set the final name
-                name += "_" + ToAmlName(cd.identification.ToString());
-                suc.Name = name;
-            }
-        }
-
-        private static void ExportConceptDescriptionsToRCL(RoleClassLibType lib, AdminShell.AdministrationShellEnv env)
-        {
-            // acceess
-            if (lib == null || env == null)
-                return;
-
-            // over CDs
-            foreach (var cd in env.ConceptDescriptions)
-            {
-                // make RC for CD
-                string name = "TODO";
-                var rc = lib.RoleClass.Append(name);
-                rc.RefBaseClassPath = AmlConst.Roles.ConceptDescription;
-
-                // use inner function
-                SetAttributesForConceptDescription(rc.Attribute, null, cd, ref name);
-
-                // set the final name
-                name += "_" + ToAmlName(cd.identification.ToString());
-                rc.Name = name;
-            }
-        }
-        */
 
         private static void SetMatcherLinks(AasAmlMatcher matcher)
         {
@@ -1018,7 +932,6 @@ namespace AasxAmlImExport
 
                 foreach (var rcl in xdoc.CAEXFile.RoleClassLib)
                 {
-                    // var x = rcl.Copy();
                     doc.CAEXFile.RoleClassLib.Insert(rcl);
                 }
 
@@ -1028,20 +941,6 @@ namespace AasxAmlImExport
                 foreach (var suc in xdoc.CAEXFile.SystemUnitClassLib)
                     doc.CAEXFile.SystemUnitClassLib.Insert(suc);
             }
-
-            // set main doc infors
-            // TODO: Append() does not first
-            /*
-            var sdi = doc.CAEXFile.SourceDocumentInformation.Append();
-            sdi.OriginID = Guid.NewGuid().ToString();
-            sdi.OriginName = "AasxGenerated";
-            sdi.OriginRelease = "1";
-            sdi.OriginVersion = "0";
-            sdi.OriginVendorURL = "https://github.com/admin-shell/io";
-            sdi.OriginProjectID = "generated " + DateTime.Now.ToUniversalTime().ToString();
-            sdi.OriginProjectTitle = "generated from AASX Package";
-            sdi.LastWritingDateTime = DateTime.Now.ToUniversalTime();
-            */
 
             // create hierarchies
             var insthier = doc.CAEXFile.InstanceHierarchy.Append(AmlConst.Names.RootInstHierarchy);

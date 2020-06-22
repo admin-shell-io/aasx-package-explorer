@@ -709,42 +709,5 @@ namespace AasxPackageExplorer
         }
 
         #endregion
-
-        #region // Reflection
-
-        //public ExpandoObject ToExpandoObject()
-        //{
-        //    System.Attribute[] attrs = System.Attribute.GetCustomAttributes(typeof(Options));
-
-        //    var expando = new ExpandoObject();
-        //    var expandoDict = expando as IDictionary<string, object>;
-
-        //    var t = typeof(Options);
-        //    var l = t.GetFields(BindingFlags.Static | BindingFlags.Public);
-        //    foreach (var f in l)
-        //        foreach (var a in f.GetCustomAttributes<SettableOption>())
-        //        {
-        //            if (f.FieldType.IsPrimitive || f.FieldType == typeof(string))
-        //            {
-        //                // simply clone
-        //                expandoDict[f.Name] = f.GetValue(null);
-        //            }
-        //            else
-        //            {
-        //                // do a JSON clone
-        //                var json = JsonConvert.SerializeObject(f.GetValue(null));
-        //                expandoDict[f.Name] = JsonConvert.DeserializeObject(json, f.FieldType);
-        //            }
-
-        //        }
-
-        //    string outputJson = JsonConvert.SerializeObject(expando, Formatting.Indented);
-
-        //    var x = JsonConvert.DeserializeObject(outputJson);
-
-        //    return null;
-        //}
-
-        #endregion
     }
 }

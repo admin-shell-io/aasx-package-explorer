@@ -46,8 +46,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            // logger.Log("ActivatePlugin() called with action = {0}", action);
-
             if (action == "server-stop")
                 this.stop = true;
 

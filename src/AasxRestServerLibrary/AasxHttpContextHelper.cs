@@ -154,7 +154,6 @@ namespace AasxRestServerLibrary
                 return Package.AasEnv.AdministrationShells[0];
 
             // resolve an ID?
-            // var specialHandles = this.CreateHandlesFromQueryString(queryStrings);
             var specialHandles = this.CreateHandlesFromRawUrl(rawUrl);
             var handleId = IdRefHandleStore.ResolveSpecific<AasxHttpHandleIdentification>(aasid, specialHandles);
             if (handleId != null && handleId.identification != null)
@@ -171,7 +170,6 @@ namespace AasxRestServerLibrary
                 return null;
 
             // via handle
-            // var specialHandles = this.CreateHandlesFromQueryString(queryStrings);
             var specialHandles = this.CreateHandlesFromRawUrl(rawUrl);
             var handleId = IdRefHandleStore.ResolveSpecific<AasxHttpHandleIdentification>(smid, specialHandles);
 
@@ -202,7 +200,6 @@ namespace AasxRestServerLibrary
                 return null;
 
             // via handle
-            // var specialHandles = this.CreateHandlesFromQueryString(queryStrings);
             var specialHandles = this.CreateHandlesFromRawUrl(rawUrl);
             var handleId = IdRefHandleStore.ResolveSpecific<AasxHttpHandleIdentification>(smid, specialHandles);
             if (handleId != null && handleId.identification != null)
@@ -227,7 +224,6 @@ namespace AasxRestServerLibrary
                 return null;
 
             // via handle
-            // var specialHandles = this.CreateHandlesFromQueryString(queryStrings);
             var specialHandles = this.CreateHandlesFromRawUrl(rawUrl);
             var handleId = IdRefHandleStore.ResolveSpecific<AasxHttpHandleIdentification>(smid, specialHandles);
             if (handleId != null && handleId.identification != null)
@@ -251,7 +247,6 @@ namespace AasxRestServerLibrary
                 return null;
 
             // via handle
-            // var specialHandles = this.CreateHandlesFromQueryString(queryStrings);
             var specialHandles = this.CreateHandlesFromRawUrl(rawUrl);
             var handleId = IdRefHandleStore.ResolveSpecific<AasxHttpHandleIdentification>(cdid, specialHandles);
             if (handleId != null && handleId.identification != null)
@@ -369,7 +364,6 @@ namespace AasxRestServerLibrary
             context.Response.ContentLength64 = stream.Length;
             context.Response.SendChunked = true;
 
-            // context.Response.Advanced.ContentType = "application/pdf";
             if (headerAttachmentFileName != null)
                 context.Response.AddHeader("Content-Disposition", $"attachment; filename={headerAttachmentFileName}");
 
@@ -1075,9 +1069,6 @@ namespace AasxRestServerLibrary
             AdminShell.SubmodelElement sme = null;
             try
             {
-                // JsonSerializer serializer = new JsonSerializer();
-                // serializer.Converters.Add(new AdminShell.JsonAasxConverter("modelType", "name"));
-                // this.aasenv = (AdministrationShellEnv)serializer.Deserialize(file, typeof(AdministrationShellEnv));
                 sme = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.SubmodelElement>(context.Request.Payload, new AdminShellConverters.JsonAasxConverter("modelType", "name"));
             }
             catch (Exception ex)

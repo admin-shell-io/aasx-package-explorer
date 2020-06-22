@@ -130,12 +130,6 @@ namespace AdminShellNS
                     }
                 }
             }
-
-            //var fields = objType.GetFields();
-            //foreach (FieldInfo fi in fields)
-            //{
-            //    ;
-            //}
         }
 
         public class SearchOptions
@@ -233,7 +227,6 @@ namespace AdminShellNS
             // access
             if (results == null || obj == null || options == null)
                 return;
-            // string indentString = new string(' ', depth);
             Type objType = obj.GetType();
 
             // depth
@@ -242,13 +235,6 @@ namespace AdminShellNS
 
             // try to get element name of an AAS entity
             string elName = null;
-            /*
-            if (obj is AdminShell.Reference)
-            {
-                elName = (obj as AdminShell.Reference).GetElementName();
-                businessObject = obj;
-            }
-            */
             if (obj is AdminShell.Referable)
             {
                 elName = (obj as AdminShell.Referable).GetElementName();

@@ -93,261 +93,6 @@ namespace opctest
             return sub1;
         }
 
-        /*
-        public static AdminShell.Submodel CreateSubmodelDocumentation(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
-        {
-
-            // CONCEPTS
-            var cdGroup = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD001#001");
-            aasenv.ConceptDescriptions.Add(cdGroup);
-            cdGroup.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Dokumentationsgruppe", "EN", "Documentation item" },
-                shortName: "DocumentationItem",
-                definition: new [] { "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Dokumentation für ein Asset, beispielhaft struktuiert nach VDI 2770.", 
-                "EN", "Collection of properties, which gives access to documentation of an asset, structured examplary-wise according to VDI 2770." }
-            );
-
-            var cdClass = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD003#007");
-            aasenv.ConceptDescriptions.Add(cdClass);
-            cdClass.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Dokument Klassifizierung", "EN", "Document classification"},
-                shortName: "DocumentClass",
-                definition: new [] { "DE", "Eindeutige Klassifizierung nach VDI 2770 für das Dokument, nach eCl@ss Standard.", 
-                "EN", "Classification of the Document according VDI 2770 and eCl@ss." }
-            );
-
-            var cdTitle = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD004#007");
-            aasenv.ConceptDescriptions.Add(cdTitle);
-            cdTitle.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Titel des Dokuments", "EN", "Document title"},
-                shortName: "DocumentTitle",
-                definition: new [] { "DE", "Titel des Dokuments, wie vom Hersteller/ Erbringer des Assets vorgegeben.",
-                "EN", "Title of document, as described by producer of the asset." }
-            );
-
-            var cdLanguage = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD044#007");
-            aasenv.ConceptDescriptions.Add(cdLanguage);
-            cdLanguage.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Sprache des Dokuments", "EN", "Document language" },
-                shortName: "DocumentLanguage",
-                definition: new [] { "DE", "Sprache des Dokuments, Kürzel nach ISO 639-1.",
-                "EN", "Language of document, short id as defined by ISO 639-1." }
-            );
-
-            var cdVersion = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD005#006");
-            aasenv.ConceptDescriptions.Add(cdVersion);
-            cdVersion.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Version des Dokuments", "EN", "Version of document" },
-                shortName: "DocumentVersion",
-                definition: new [] { "DE", "Versionsstand der bereitgestellten Datei, wie vom Hersteller des Assets vorgesehen.",
-                "EN", "Version of embedded file, as described by producer of the asset." }
-            );
-
-            var cdFileId = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-ZAA120#007");
-            aasenv.ConceptDescriptions.Add(cdFileId);
-            cdFileId.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Datei-Identifikation Dokument", "EN", "File identification for document" },
-                shortName: "FileId",
-                definition: new [] { "DE", "Eindeutige Kennung, um bereitgestellte Dokumente unabhängig von Name und Version sicher unterscheiden zu können.",
-                "EN", "Unambigous ID of file, in order to safely distinguish provided files independent from name and version." }
-            );
-
-            var cdFilename = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD005#005");
-            aasenv.ConceptDescriptions.Add(cdFilename);
-            cdFilename.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Dateiname des Dokuments", "EN", "Filename of document" },
-                shortName: "FileName",
-                definition: new [] { "DE", "Name der bereitgestellten Datei, wie vom Hersteller des Assets vorgesehen.",
-                "EN", "Name of embedded file, as described by producer of the asset." }
-            );
-
-            var cdFile = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAD005#008");
-            aasenv.ConceptDescriptions.Add(cdFile);
-            cdFile.SetIEC61360Spec(
-                preferredNames: new [] { "DE", "Enthaltene Dokumenten-Datei", "EN", "Embedded document file" },
-                shortName: "File",
-                definition: new [] { "DE", "Verweis/ BLOB auf enthaltene Dokumentations-Datei.", "EN", "Reference/ BLOB to embedded documentation file." }
-            );
-
-            // SUB MODEL
-            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "DocuVDI2770example";
-            aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew("Submodel", false, "IRI", "http://www.zvei.de/standards/i40/beispiel_i40_komponente/submodel/vdi2770/1/1"));
-
-            // for each file one group
-            int ndx = 0;
-            foreach (var fr in prefs.filerecs)
-            {
-                if (fr.submodel != "docu")
-                    continue;
-                if (fr.args == null || fr.args.Count != 6)
-                    continue;
-
-                ndx++;
-
-                // GROUP
-                var cd = cdGroup;
-                using (var p0 = AdminShell.SubmodelElementCollection.CreateNew($"DocumentationItem{ndx:D2}", "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()))) {
-                    
-                    sub1.Add(p0);
-
-                    // CLASS
-                    cd = cdClass;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p.valueType = "string";
-                        p.value = "" + fr.args[0];
-                        p.valueId = AdminShell.Reference.CreateIrdiReference(fr.args[1]);
-                        p0.Add(p);                        
-                    }
-
-                    // TITLE
-                    cd = cdTitle;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + fr.args[2];
-                    }
-
-                    // LANGUAGE
-                    cd = cdLanguage;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + fr.args[3];
-                    }
-
-                    // VERSION
-                    cd = cdVersion;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + fr.args[4];
-                    }
-
-                    // FILE ID
-                    cd = cdFileId;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p.valueType = "string";
-                        p.value = "" + fr.args[5];
-                        p0.Add(p);
-                    }
-
-                    // FILENAME
-                    cd = cdFilename;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + System.IO.Path.GetFileName(fr.fn);
-                    }
-
-                    // FILE
-                    cd = cdFile;
-                    using (var p = AdminShell.File.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
-                        p.value = "" + fr.targetdir.Trim() + System.IO.Path.GetFileName(fr.fn);
-                    }
-
-                }
-
-            }
-
-            // for each url one group
-            foreach (var web in prefs.webrecs)
-            {
-                if (web.submodel != "docu")
-                    continue;
-                if (web.args == null || web.args.Count != 6)
-                    continue;
-
-                ndx++;
-
-                // GROUP
-                var cd = cdGroup;
-                using (var p0 = AdminShell.SubmodelElementCollection.CreateNew($"DocumentationItem{ndx:D2}", "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()))) {
-                    
-                    sub1.Add(p0);
-
-                    // CLASS
-                    cd = cdClass;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p.valueType = "string";
-                        p.value = "" + web.args[0];
-                        p.valueId = AdminShell.Reference.CreateIrdiReference(web.args[1]);
-                        p0.Add(p);
-                    }
-
-                    // TITLE
-                    cd = cdTitle;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + web.args[2];
-                    }
-
-                    // LANGUAGE
-                    cd = cdLanguage;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + web.args[3];
-                    }
-
-                    // VERSION
-                    cd = cdVersion;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + web.args[4];
-                    }
-
-                    // FILE ID
-                    cd = cdFileId;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p.valueType = "string";
-                        p.value = "" + web.args[5];
-                        p0.Add(p);
-                    }
-
-                    // FILENAME
-                    cd = cdFilename;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "" + System.IO.Path.GetFileName(web.url);
-                    }
-
-                    // FILE -> URL
-                    cd = cdFile;
-                    using (var p = AdminShell.File.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference())))
-                    {
-                        p0.Add(p);
-                        p.mimeType = AdminShellPackageEnv.GuessMimeType(web.url);
-                        p.value = web.url;
-                    }
-
-                }
-
-            }
-
-            return sub1;
-        }
-        */
-
         public static AdminShell.Submodel CreateSubmodelDocumentationBasedOnVDI2770(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // use pre-definitions
@@ -697,17 +442,6 @@ namespace opctest
                     AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";
-
-                /*
-                if (true)
-                {
-                    using (var s = new StreamWriter("dummy.json"))
-                    {
-                        var json = JsonConvert.SerializeObject(p2.qualifier, Newtonsoft.Json.Formatting.Indented);
-                        s.WriteLine(json);
-                    }
-                }
-                */
             }
 
             // CONCEPT: Material
@@ -1313,7 +1047,6 @@ namespace opctest
                 // DATASHEET
                 Log.WriteLine(2, "Creating submodel DATASHEET ..");
                 var subDatasheet = CreateSubmodelDatasheet(prefs, repo, aasenv1);
-                // -- var subDatasheet = CreateSubmodelDatasheetSingleItems(repo, aasenv1);
 
                 // ENERGY
                 Log.WriteLine(2, "Creating submodel ENERGY ..");
@@ -1336,12 +1069,6 @@ namespace opctest
                 aas1.submodelRefs.Add(subDatasheet.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subEng.GetReference() as AdminShell.SubmodelRef);
                 aas1.AddView(view1);
-
-                if (true)
-                {
-                    // asset1.assetIdentificationModelRef = new AdminShell.SubmodelRef(subDatasheet.GetReference() as AdminShell.SubmodelRef);
-                }
-
             }
             catch (Exception ex)
             {
@@ -1400,7 +1127,6 @@ namespace opctest
             if (true)
             {
                 Log.WriteLine(2, "Test serialize sample.json ..");
-                // var sw = new StreamWriter(Console.OpenStandardOutput());
                 var sw = new StreamWriter("sample.json");
                 sw.AutoFlush = true;
                 JsonSerializer serializer = new JsonSerializer();
@@ -1595,7 +1321,6 @@ namespace opctest
                 // DATASHEET
                 Log.WriteLine(2, "Creating submodel DATASHEET ..");
                 var subDatasheet = CreateSubmodelDatasheet(prefs, repo, aasenv1);
-                // -- var subDatasheet = CreateSubmodelDatasheetSingleItems(repo, aasenv1);
 
                 // ENERGY
                 Log.WriteLine(2, "Creating submodel ENERGY ..");
@@ -1632,12 +1357,6 @@ namespace opctest
                 aas1.submodelRefs.Add(subBOM.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subBOM2.GetReference() as AdminShell.SubmodelRef);
                 aas1.AddView(view1);
-
-                if (true)
-                {
-                    // asset1.assetIdentificationModelRef = new AdminShell.SubmodelRef(subDatasheet.GetReference() as AdminShell.SubmodelRef);
-                }
-
             }
             catch (Exception ex)
             {
@@ -1733,7 +1452,6 @@ namespace opctest
             if (true)
             {
                 Log.WriteLine(2, "Test serialize sample.json ..");
-                // var sw = new StreamWriter(Console.OpenStandardOutput());
                 var sw = new StreamWriter("sample.json");
                 sw.AutoFlush = true;
                 JsonSerializer serializer = new JsonSerializer();
