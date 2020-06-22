@@ -28,7 +28,6 @@ namespace AasxPackageExplorer
                 rows[1] != "idShort" ||
                 rows[2] != "value")
             {
-                // MessageBoxFlyoutShow("No valid SubModel selected.", "CSV import", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

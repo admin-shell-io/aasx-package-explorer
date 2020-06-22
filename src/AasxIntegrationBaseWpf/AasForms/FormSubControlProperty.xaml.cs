@@ -28,7 +28,7 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         protected bool UpdateDisplayInCharge = false;
 
-        // Constructors && access
+        // Constructors & access
 
         public class IndividualDataContext
         {
@@ -169,10 +169,6 @@ namespace AasxIntegrationBase.AasForms
                 // update property (don't knwo to realize as lambda)
                 ComboBoxValue.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
                       new System.Windows.Controls.TextChangedEventHandler(ComboBox_TextChanged));
-
-                //ComboBoxValue.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
-                //      new Action<object, EventArgs>( (s3,e3) => { }));
-
             }
             else
             {

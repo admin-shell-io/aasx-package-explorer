@@ -265,7 +265,6 @@ namespace De.Zvei.Aasx
                 System.Collections.Generic.List<Uri> toSign = new System.Collections.Generic.List<Uri>();
                 foreach (PackagePart packagePart in package.GetParts())
                 {
-                    // if (!PackUriHelper.IsRelationshipPartUri(packagePart.Uri)) -> This would exclude relationship parts (.rels files)
                     // Add all package parts to the list for signing.
                     toSign.Add(packagePart.Uri);
                 }
@@ -311,21 +310,6 @@ namespace De.Zvei.Aasx
                 // Sign() will prompt the user to select a Certificate to sign with.
                 try
                 {
-                    /*
-                    X509Store store = new X509Store(storeName);
-                    store.Open(OpenFlags.ReadOnly);
-                    X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
-                    X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(collection, "Certificate Select", "Select a certificate from the following list", X509SelectionFlag.SingleSelection);
-
-                    if (scollection.Count >= 1)
-                    {
-                        dsm.Sign(toSign, scollection[0], relationshipSelectors);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Cannot Sign\nNo selected certificate", "Error signing", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    */
                     var dlg = new OpenFileDialog();
                     try
                     {

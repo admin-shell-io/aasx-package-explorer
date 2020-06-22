@@ -199,9 +199,6 @@ namespace AdminShellNS
                 try
                 {
                     var reader = new StreamReader(fn);
-                    // TODO: use aasenv serialzers here!
-                    //XmlSerializer serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
-                    //this.aasenv = serializer.Deserialize(reader) as AdminShell.AdministrationShellEnv;
                     this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(reader.BaseStream);
                     if (this.aasenv == null)
                         throw (new Exception("Type error for XML file!"));
@@ -244,12 +241,6 @@ namespace AdminShellNS
                         this.tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".aasx");
                         System.IO.File.Copy(fn, this.tempFn);
                         fnToLoad = this.tempFn;
-
-                        /*
-                        using (var src = File.Open(fn, FileMode.Open, FileAccess.Read))
-                        using (var dst = File.Open(this.tempFn, FileMode.Create))
-                            src.CopyTo(dst);
-                            */
 
                     }
                     catch (Exception ex)
@@ -305,8 +296,6 @@ namespace AdminShellNS
                             using (var s = specPart.GetStream(FileMode.Open))
                             {
                                 // own catch loop to be more specific
-                                //XmlSerializer serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
-                                //this.aasenv = serializer.Deserialize(s) as AdminShell.AdministrationShellEnv;
                                 this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
                                 this.openPackage = package;
                                 if (this.aasenv == null)
@@ -659,36 +648,6 @@ namespace AdminShellNS
                                 }
                             }
                         }
-
-                        // thumbnail file?
-                        /*
-                        if (psfAdd.specialHandling == AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
-                        {
-                            // try find an existing part for that file ..
-                            PackagePart filePart = null;
-                            xs = package.GetRelationshipsByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
-                            foreach (var x in xs)
-                                if (x.SourceUri.ToString() == "/" && x.TargetUri == psfAdd.uri)
-                                {
-                                    filePart = package.GetPart(x.TargetUri);
-                                    break;
-                                }
-
-                            if (filePart == null)
-                            {
-                                // create new part and link
-                                filePart = package.CreatePart(psfAdd.uri, AdminShellPackageEnv.GuessMimeType(psfAdd.sourceLocalPath), CompressionOption.Maximum);
-                                package.CreateRelationship(filePart.Uri, TargetMode.Internal, "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
-                            }
-
-                            // now should be able to write
-                            using (var s = filePart.GetStream(FileMode.Create))
-                            {
-                                var bytes = System.IO.File.ReadAllBytes(psfAdd.sourceLocalPath);
-                                s.Write(bytes, 0, bytes.Length);
-                            }
-                        }
-                        */
                     }
 
                     // after this, there are no more pending for add files
@@ -996,57 +955,6 @@ namespace AdminShellNS
                 pendingFilesToDelete.Add(psf);
             }
         }
-
-        /*
-        private void AddSupplementaryFileDirect(string srcFn, string targetDir, string targetFn)
-        {
-            // access
-            if (this.openPackage == null)
-                throw (new Exception(string.Format($"AASX Package {this.fn} not opened. Aborting!")));
-
-            srcFn = srcFn.Trim();
-            targetDir = targetDir.Trim();
-            if (!targetDir.EndsWith("/"))
-                targetDir += "/";
-            targetDir = targetDir.Replace(@"\", "/");
-            targetFn = targetFn.Trim();
-            if (srcFn == "" || targetDir == "" || targetFn == "")
-                throw (new Exception(string.Format("Trying add supplementary file with empty name or path!")));
-
-            // get the origin from the package
-            PackagePart originPart = null;
-            var xs = this.openPackage.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aasx-origin");
-            foreach (var x in xs)
-                if (x.SourceUri.ToString() == "/")
-                {
-                    originPart = this.openPackage.GetPart(x.TargetUri);
-                    break;
-                }
-            if (originPart == null)
-                throw (new Exception(string.Format("Unable to find AASX origin. Aborting!")));
-
-            // get the specs from the package
-            PackagePart specPart = null;
-            xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
-            foreach (var x in xs)
-            {
-                specPart = this.openPackage.GetPart(x.TargetUri);
-                break;
-            }
-            if (specPart == null)
-                throw (new Exception(string.Format("Unable to find AASX spec(s). Aborting!")));
-
-            // add a supplementary file
-            var file_fn = "" + targetDir.Trim() + targetFn.Trim();
-            var file_part = this.openPackage.CreatePart(new Uri(file_fn, UriKind.RelativeOrAbsolute), AdminShell.PackageEnv.GuessMimeType(srcFn), CompressionOption.Maximum);
-            using (var s = file_part.GetStream(FileMode.Create))
-            {
-                var bytes = System.IO.File.ReadAllBytes(srcFn);
-                s.Write(bytes, 0, bytes.Length);
-            }
-            specPart.CreateRelationship(file_part.Uri, TargetMode.Internal, "http://www.admin-shell.io/aasx/relationships/aas-suppl");
-        }
-        */
 
         public void Close()
         {

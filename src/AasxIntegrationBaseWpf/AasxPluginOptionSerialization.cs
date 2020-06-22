@@ -72,16 +72,6 @@ namespace AasxIntegrationBase
                         _nameToType.Add(dn, t);
                     _typeToName.Add(t, dn);
                 }
-
-                /*
-                _nameToType = customDisplayNameTypes.ToDictionary(
-                    t => t.GetCustomAttributes(false).OfType<DisplayNameAttribute>().First().DisplayName,
-                    t => t);
-
-                _typeToName = _nameToType.ToDictionary(
-                    t => t.Value,
-                    t => t.Key);
-                */
             }
         }
 

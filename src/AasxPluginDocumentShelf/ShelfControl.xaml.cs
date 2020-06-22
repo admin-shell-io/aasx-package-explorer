@@ -69,10 +69,6 @@ namespace AasxPluginDocumentShelf
             public enum ListType { Bars, Grid };
             private ListType theSelectedListType = ListType.Bars;
             public ListType TheSelectedListType { get { return theSelectedListType; } set { theSelectedListType = value; RaisePropertyChanged("TheSelectedListType"); RaiseViewModelChanged(); } }
-
-            //private string tagName = "Foo bar";
-            //public string TagName { get { return tagName; } set { tagName = value; RaisePropertyChanged("TagName"); } }
-
         }
 
         #endregion
@@ -103,8 +99,6 @@ namespace AasxPluginDocumentShelf
 
             // combo box needs init
             ComboClassId.Items.Clear();
-            //for (int i = 0; i < DocumentShelfOptions.Vdi2770ClassIdMapping.Length / 2; i++)
-            //    ComboClassId.Items.Add("" + DocumentShelfOptions.Vdi2770ClassIdMapping[2 * i + 0] + " - " + DocumentShelfOptions.Vdi2770ClassIdMapping[2 * i + 1]);
             foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
                 ComboClassId.Items.Add("" + DefinitionsVDI2770.GetDocClass(dc) + " - " + DefinitionsVDI2770.GetDocClassName(dc));
 
@@ -149,9 +143,6 @@ namespace AasxPluginDocumentShelf
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            //if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0)
-            //    Log.Info("***" + numDocEntitiesInPreview);
-
             // each tick check for one image, if a preview shall be done
             if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0 && numDocEntitiesInPreview < maxDocEntitiesInPreview)
             {
@@ -413,7 +404,6 @@ namespace AasxPluginDocumentShelf
 
                             // class infos
                             var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdDocumentClassId)?.value;
-                            // var className = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdDocumentClassName)?.value;
 
                             // collect country codes
                             var countryCodesStr = new List<string>();
@@ -701,10 +691,8 @@ namespace AasxPluginDocumentShelf
                     }
 
                     // create a sequence of SMEs
-                    // AdminShell.SubmodelElementWrapperCollection smwc = null;
                     try
                     {
-                        /* smwc = */
                         this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
                     }
                     catch (Exception ex)

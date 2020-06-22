@@ -27,7 +27,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         public LogInstance Log = new LogInstance();
 
-        // private bool stop = false;
         private MqttServer AASMqttServer = new MqttServer();
 
         public string GetPluginName()
@@ -60,18 +59,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            // logger.Log("ActivatePlugin() called with action = {0}", action);
-
             if (action == "server-stop")
                 AASMqttServer.MqttSeverStopAsync().Wait();
-            // this.stop = true;
 
             if (action == "MQTTServer-start")
             {
-                // this.stop = false;
                 Log.Info("Starting Mqtt Server...");
 
-                // var client = new MqttServer();
                 // ReSharper disable EmptyGeneralCatchClause
                 try
                 {

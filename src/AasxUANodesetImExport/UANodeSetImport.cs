@@ -58,7 +58,6 @@ namespace AasxUANodesetImExport
 
             //Initialize everything needed
             AdminShell.AdministrationShellEnv env = thePackageEnv.AasEnv;
-            // var asset = new AdminShell.Asset();
             var aas = new AdminShell.AdministrationShell();
             aas.views = new Views();
             aas.views.views = new List<View>();
@@ -770,13 +769,10 @@ namespace AasxUANodesetImExport
                             if (_refref.ReferenceType == "HasProperty")
                             {
                                 UAVariable var = (UAVariable)findNode(_refref.Value);
-                                //if (var.BrowseName == "1:Code") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360. = var.Value.InnerText;
                                 if (var.BrowseName == "1:DataType") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.dataType = var.Value.InnerText;
-                                //if (var.BrowseName == "1:ShortName") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName = var.Value.InnerText;
                                 if (var.BrowseName == "1:Symbol") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.symbol = var.Value.InnerText;
                                 if (var.BrowseName == "1:Unit") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.unit = var.Value.InnerText;
                                 if (var.BrowseName == "1:ValueFormat") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.valueFormat = var.Value.InnerText;
-                                //if (var.BrowseName == "1:DefaultInstanceBrowseName ") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360. = var.Value.InnerText;
                                 if (var.BrowseName == "1:IdShort ") desc.idShort = var.Value.InnerText;
                                 if (var.BrowseName == "1:Category ") desc.category = var.Value.InnerText;
                             }

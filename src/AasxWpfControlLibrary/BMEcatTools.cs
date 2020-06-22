@@ -68,16 +68,6 @@ namespace AasxPackageExplorer
             Boolean is_FPARENT_ID = false;
             String[] Stack_FID = new string[10];
             int StackPointer_FID = 0;
-            // AML OPC
-            // String node = "";
-            /*
-            Boolean externalInterface = false;
-            Boolean is_value = false;
-            int count_value = 0;
-            String value = "";
-            String propertyName = "";
-            String propertyValue = "";
-            */
             // GWIS XML Publication
             String attribute_label_id = "";
             String attribute_value = "";
@@ -110,7 +100,6 @@ namespace AasxPackageExplorer
                                 is_attribute_label = true;
                             if (reader.Name == "value")
                                 is_attribute_value = true;
-                            // node = reader.Name;
                             break;
                         case XmlNodeType.Text: //Display the text in each element.
                             if (is_technical_data && is_attribute_list && is_attribute && is_attribute_label)
@@ -208,50 +197,8 @@ namespace AasxPackageExplorer
                                 is_FID = true;
                             if (reader.Name == "FPARENT_ID")
                                 is_FPARENT_ID = true;
-                            // AML OPC
-                            /*
-                            if (reader.Name == "Value")
-                            {
-                                is_value = true;
-                            }
-                            if (reader.Name == "ExternalInterface")
-                            {
-                                rString = reader.GetAttribute("RefBaseClassPath");
-                                if (rString == "MTPCommunicationICLib/DataItem/OPCUAItem")
-                                {
-                                    externalInterface = true;
-                                    if (count_value != 0)
-                                    {
-                                        propertyName = "OPC-Server: ";
-                                        propertyValue = value;
-                                        // sw.WriteLine("OPC-Server" + value);
-                                    }
-                                    count_value = 0;
-
-                                }
-                            }
-                            */
-                            // node = reader.Name;
                             break;
                         case XmlNodeType.Text: //Display the text in each element.
-                            // AML OPC
-                            /*
-                            if (is_value)
-                            {
-                                value = reader.Value;
-                                is_value = false;
-                                count_value++;
-                                if (externalInterface)
-                                {
-                                    if (count_value == 2)
-                                    {
-                                        propertyName = "OPC-Variable: ";
-                                        propertyValue = value;
-                                        // sw.WriteLine("OPC-Variable" + value);
-                                    }
-                                }
-                            }
-                            */
                             // BMEcat
                             if (is_FT_ID)
                             {
@@ -290,29 +237,9 @@ namespace AasxPackageExplorer
                             }
                             break;
                         case XmlNodeType.EndElement: //Display the end of the element.
-                            // AML OPC
-                            /*
-                            if (propertyName != "" && propertyValue != "")
-                            {
-                                sw.WriteLine(propertyName + " : " + propertyValue);
-                                var p = AdminShell.Property.CreateNew(propertyName, "PARAMETER");
-                                sm.Add(p);
-                                p.valueType = "string";
-                                p.value = propertyValue;
-                            }
-                            propertyName = "";
-                            propertyValue = "";
-
-                            if (reader.Name == "ExternalInterface")
-                            {
-                                externalInterface = false;
-                                count_value = 0;
-                            }
-                            */
                             // BMEcat
                             if (reader.Name == "FEATURE")
                             {
-                                // Boolean is_AXIS1D = IRDIs_AXIS1D.Contains(FT_ID);
                                 Boolean is_AXIS1D = (i_FVALUE == 6);
                                 int k;
 
@@ -371,7 +298,6 @@ namespace AasxPackageExplorer
                                                 extendedname += " " + names_LEVELTYPE[k]; // MIN, MAX, ...
                                             }
 
-                                            // sw.WriteLine(FT_ID + " | " + extendedname + " | " + FVALUE + " | " + FUNIT + " | " + FID +" | " + FPARENT_ID);
                                             using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, FT_ID))
                                             {
                                                 env.ConceptDescriptions.Add(cd);

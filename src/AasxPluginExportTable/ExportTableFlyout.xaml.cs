@@ -329,7 +329,6 @@ namespace AasxPluginExportTable
                     {
                         tb.Foreground = Brushes.DarkGray;
                         tb.Background = new SolidColorBrush(Color.FromArgb(0xff, 0x15, 0x1f, 0x33));
-                        // tb.BorderThickness = new Thickness(0);
                     }
                     else
                     {

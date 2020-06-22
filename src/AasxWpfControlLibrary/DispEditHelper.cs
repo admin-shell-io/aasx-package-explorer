@@ -154,8 +154,6 @@ namespace AasxPackageExplorer
                             var cbTemp = cb.Template;
                             if (cbTemp != null)
                             {
-                                // var rootGrid = cbTemp.FindName("templateRoot", cb) as Grid;
-
                                 var toggleButton = cbTemp.FindName("toggleButton", cb) as System.Windows.Controls.Primitives.ToggleButton;
                                 toggleButton?.ApplyTemplate();
                                 var tgbTemp = toggleButton?.Template;
@@ -435,7 +433,6 @@ namespace AasxPackageExplorer
         public StackPanel AddSubStackPanel(StackPanel view, string caption)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
-            // var l = AddSmallLabelTo(g, 0, 0, content: caption);
             var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
 
             // in total
@@ -676,7 +673,6 @@ namespace AasxPackageExplorer
 
             // key label
             var x = AddSmallLabelTo(g, 0, 0, margin: new Thickness(5, 0, 0, 0), content: "" + key);
-            // x.VerticalContentAlignment = VerticalAlignment.Center;
             x.VerticalAlignment = VerticalAlignment.Center;
 
             // 1 + action button
@@ -1410,14 +1406,6 @@ namespace AasxPackageExplorer
             }
         }
 
-        /*
-        public class  ImportEclassArgs
-        {
-            public EclassUtils.SearchJobData jobData;
-            public ProgressBar progress;
-        }
-        */
-
         public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
@@ -1445,11 +1433,6 @@ namespace AasxPackageExplorer
             worker.DoWork += (sender, e) =>
             {
                 // job data
-                /*
-                var args2 = e.Argument as ImportEclassArgs;
-                if (args2 == null)
-                    return;
-                */
 
                 // longrunnig task for searching IRDIs ..
                 uc.Info = "Collecting eCl@ss Data ..";
@@ -1495,28 +1478,6 @@ namespace AasxPackageExplorer
             // ok
             return true;
         }
-
-        /*
-        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            // in any case, close flyover
-            if (flyoutProvider != null)
-                flyoutProvider.CloseFlyover();
-        }
-
-        private void ImportEclassWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // job data
-            var args = e.Argument as ImportEclassArgs;
-            if (args == null)
-                return;
-
-            // longrunnig task for searching IRDIs ..
-            EclassUtils.SearchForIRDIinEclassFiles(args.jobData, (frac) => {
-                args.progress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => args.progress.Value = frac));
-            });
-        }
-        */
 
         //
         // Hinting

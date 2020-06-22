@@ -86,7 +86,7 @@ namespace AasxPackageExplorer
                     if (temp is ModifyRepo.LambdaActionRedrawAllElements
                         || temp is ModifyRepo.LambdaActionContentsChanged
                         || temp is ModifyRepo.LambdaActionContentsTakeOver)
-                        // twice as ugly :-(
+                        // Unfortunately twice as ugly
                         this.WishForOutsideAction.Add(temp);
                 }
             }
@@ -258,7 +258,6 @@ namespace AasxPackageExplorer
                        if (i is int && (int)i == 1)
                        {
                            var uc = new TextBoxFlyout("Asset ID:", MessageBoxImage.Question, TextBoxFlyout.DialogueOptions.FilterAllControlKeys);
-                           // uc.Text = asset.identification.id ?? "";
                            if (helper.flyoutProvider != null)
                            {
                                helper.flyoutProvider.StartFlyoverModal(uc);
@@ -1469,12 +1468,7 @@ namespace AasxPackageExplorer
                        }
                        return new ModifyRepo.LambdaActionNone();
                    });
-                helper.AddKeyValueRef(stack, "id", cd.identification, ref cd.identification.id, null, repo, v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); }
-                /* , auxButtonTitle: "Generate", auxButtonLambda: v => {
-                    cd.identification.idType = AdminShell.Identification.IRI;
-                    cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdConceptDescription);
-                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
-                } */);
+                helper.AddKeyValueRef(stack, "id", cd.identification, ref cd.identification.id, null, repo, v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
 
             helper.AddHintBubble(stack, hintMode, new[] {
@@ -1526,18 +1520,6 @@ namespace AasxPackageExplorer
                         helper.AddKeyListKeys(stack, String.Format("reference[{0}]", i), cd.IsCaseOf[i].Keys, repo, package, AdminShell.Key.AllElements, addEclassIrdi: true);
                 }
             }
-
-            /* OLD
-            if (helper.SafeguardAccess(stack, repo, cd.conceptDefinitionRef, "conceptDefinitionRef:", "Create data element!", v =>
-            {
-                cd.conceptDefinitionRef = new AdminShell.Reference();
-                return new ModifyRepo.LambdaActionRedrawEntity();
-            }))
-            {
-                helper.AddGroup(stack, "Concept Definition Reference", levelColors[1][0], levelColors[1][1]);
-                helper.AddKeyListKeys(stack, "reference", cd.conceptDefinitionRef.Keys, repo, package, "All");
-            }
-            */
 
             helper.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck( () => { return cd.embeddedDataSpecification == null; },
@@ -1618,34 +1600,6 @@ namespace AasxPackageExplorer
                         })) helper.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
 
                         // TODO: add Sync to shortName
-                        /*
-                        helper.AddHintBubble(stack, hintMode, new [] {
-                            new HintCheck( () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
-                                "Please provide a shortName, which is a reduced, even symbolic version of the preferred name. IEC 61360 defines some symbolic rules (e.g. greek characters) for this name.")
-                        });
-                        helper.AddKeyValue(stack, "shortName", dsiec.shortName, null, repo, v => { dsiec.shortName = v as string; return new ModifyRepo.LambdaActionNone(); },
-                            auxButtonTitle: "Sync", auxButtonToolTip: "Copy (if target is empty) idShort to idShort and SubmodelElement idShort.", auxButtonLambda: (v) =>
-                            {
-                                ModifyRepo.LambdaAction la = new ModifyRepo.LambdaActionNone();
-
-                                if (cd.idShort == null || cd.idShort.Trim() == "")
-                                {
-                                    cd.idShort = dsiec.shortName;
-                                    la = new ModifyRepo.LambdaActionRedrawEntity();
-                                }
-
-                                if (parentContainer != null & parentContainer is AdminShell.SubmodelElement)
-                                {
-                                    var sme = parentContainer as AdminShell.SubmodelElement;
-                                    if (sme.idShort == null || sme.idShort.Trim() == "")
-                                    {
-                                        sme.idShort = dsiec.shortName;
-                                        la = new ModifyRepo.LambdaActionRedrawEntity();
-                                    }
-                                }
-                                return la;
-                            });
-                        */
 
                         helper.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck( () => { return (dsiec.unitId == null || dsiec.unitId.Count < 1) && ( dsiec.unit == null || dsiec.unit.Trim().Length < 1); },
@@ -1663,7 +1617,6 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                         {
-                            // helper.AddGroup(stack, "UnitID", levelColors[1][0], levelColors[1][1]);
                             helper.AddKeyListKeys(stack, "unitId", dsiec.unitId.Keys, repo, package, AdminShell.Key.GlobalReference, addEclassIrdi: true);
                         }
 
@@ -2123,7 +2076,6 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
 
-                // var smc = sme as AdminShell.SubmodelElementCollection;
                 List<AdminShell.SubmodelElementWrapper> listOfSMEW = null;
                 if (sme is AdminShell.SubmodelElementCollection)
                     listOfSMEW = (sme as AdminShell.SubmodelElementCollection).value;
@@ -2185,18 +2137,6 @@ namespace AasxPackageExplorer
                                if (mdo != null && mdo is AdminShell.SubmodelElement)
                                {
                                    var clone = env.CopySubmodelElementAndCD(rve.theEnv, mdo as AdminShell.SubmodelElement, copyCD: true, shallowCopy: (int)buttonNdx == 0);
-                                   /*
-                                    * TO BE DELETED, if SMWC works..
-                                   if (listOfSMEW == null)
-                                   {
-                                       listOfSMEW = new List<AdminShell.SubmodelElementWrapper>();
-                                       if (sme is AdminShell.SubmodelElementCollection)
-                                           (sme as AdminShell.SubmodelElementCollection).value = listOfSMEW;
-                                       if (sme is AdminShell.Entity)
-                                           (sme as AdminShell.Entity).statements = listOfSMEW;
-                                   }
-                                   listOfSMEW.Add(clone);
-                                   */
                                    if (sme is AdminShell.SubmodelElementCollection smesmc)
                                        smesmc.value.Add(clone);
                                    if (sme is AdminShell.Entity smeent)
@@ -2644,7 +2584,6 @@ namespace AasxPackageExplorer
             else
             if (sme is AdminShell.Capability)
             {
-                // var cap = sme as AdminShell.Capability;
                 helper.AddGroup(stack, "Capability", levelColors[0][0], levelColors[0][1]);
                 helper.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
@@ -3026,7 +2965,6 @@ namespace AasxPackageExplorer
                 {
                     // replace at top level
                     theMasterPanel.Children.Clear();
-                    // result = x.theExt.FillWithWpfControls(x.thePackage, x.theReferable, theMasterPanel);
                     if (x.thePlugin != null)
                         result = x.thePlugin.InvokeAction("fill-panel-visual-extension", x.thePackage, x.theReferable, theMasterPanel);
                 }

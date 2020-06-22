@@ -108,7 +108,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 // rest follows
-                // Log.Info("ActivatePlugin() called with action = {0}", action);
 
                 if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
                 {

@@ -2511,7 +2511,7 @@ namespace AasxCompatibilityModels
                         // take over
                         res.submodels.Add(new Submodel(sm));
 
-                        // recursion in order to find used CDs ... :-(
+                        // recursion in order to find used CDs
                         CreateFromExistingEnvRecurseForCDs(src, sm.submodelElements, ref filterForCD);
                     }
 
@@ -2905,7 +2905,7 @@ namespace AasxCompatibilityModels
 
                             // TODO: Operation
 
-                            // else: :-(
+                            // else:
                             return null;
                         }
 

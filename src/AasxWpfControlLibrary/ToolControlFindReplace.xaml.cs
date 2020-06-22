@@ -106,10 +106,6 @@ namespace AasxPackageExplorer
                 return;
 
             var baseTxt = $"{index} of {count}";
-            /*
-            if (sri != null && sri.businessObject != null && sri.businessObject is AdminShell.Referable)
-                baseTxt += " in " + (sri.businessObject as AdminShell.Referable).GetElementName();
-            */
 
             this.ButtonToolsFindInfo.Text = baseTxt;
         }

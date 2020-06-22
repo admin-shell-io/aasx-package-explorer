@@ -49,7 +49,6 @@ namespace AasxPackageExplorer
             timer.IsEnabled = true;
             timer.Tick += (object sender, EventArgs e) =>
             {
-                // this.DialogResult = true;
                 this.Close();
             };
         }
