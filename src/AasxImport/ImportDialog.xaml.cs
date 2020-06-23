@@ -17,10 +17,10 @@ namespace AasxImport
 {
     /// <summary>
     /// The main import dialog.  The main elements of the dialog are a list view (the left half of the main panel) that
-    /// lists all available top-level elements and a tree view (the right half of the main panel) that displays the
-    /// structure of one or more top-level elements that have been selected in the list view.  Elements of the tree view
-    /// can be checked or unchecked to determine whether they should be imported.  The selection can be accessed using
-    /// the GetResult method.
+    /// lists all available elements depending on the import mode and a tree view (the right half of the main panel)
+    /// that displays the structure of one or more elements that have been selected in the list view.  Elements of the
+    /// tree view can be checked or unchecked to determine whether they should be imported.  The selection can be
+    /// accessed using the GetResult method.
     /// <para>
     /// The data source can be selected using a combo box.  If the user wants to use other data sources than those
     /// shipped with the AASX Package Exlporer, they can select a custom directory.  This dialog could be extended by
@@ -38,6 +38,8 @@ namespace AasxImport
         private readonly ObservableCollection<ElementWrapper> _detailsElements
             = new ObservableCollection<ElementWrapper>();
         private string _filter = string.Empty;
+
+        public ImportMode ImportMode { get; }
 
         public ListCollectionView TopLevelView { get; }
 
@@ -57,10 +59,11 @@ namespace AasxImport
             }
         }
 
-        public ImportDialog()
+        public ImportDialog(ImportMode importMode)
         {
             DataContext = this;
 
+            ImportMode = importMode;
             TopLevelView = new ListCollectionView(_topLevelElements);
             DetailsView = new ListCollectionView(_detailsElements);
 
@@ -108,6 +111,19 @@ namespace AasxImport
 
                     return element.Match(parts);
                 };
+            }
+        }
+
+        private IEnumerable<Model.IElement> GetElements(Model.IDataContext context)
+        {
+            switch (ImportMode)
+            {
+                case ImportMode.SubmodelElements:
+                    return context.LoadSubmodelElements();
+                case ImportMode.Submodels:
+                    return context.LoadSubmodels();
+                default:
+                    return new List<Model.IElement>();
             }
         }
 
@@ -165,9 +181,9 @@ namespace AasxImport
                         Mouse.OverrideCursor = null;
                     }
 
-                    foreach (var cls in Context.LoadSubmodels())
+                    foreach (var element in GetElements(Context))
                     {
-                        _topLevelElements.Add(cls);
+                        _topLevelElements.Add(element);
                     }
                     Title = $"IEC CDD Import [{source}]";
 
@@ -229,6 +245,23 @@ namespace AasxImport
                 dialog.Activate();
             }
         }
+    }
+
+    /// <summary>
+    /// The import mode that determines which elements are shown in the element
+    /// list on the left side of the import dialog.
+    /// </summary>
+    internal enum ImportMode
+    {
+        /// <summary>
+        /// Show all elements that correspond to AAS submodels.
+        /// </summary>
+        Submodels,
+        /// <summary>
+        /// Show all elements that correspond to AAS submodel elements, i. e.
+        /// collections and properties.
+        /// </summary>
+        SubmodelElements,
     }
 
     internal class ElementWrapper : INotifyPropertyChanged

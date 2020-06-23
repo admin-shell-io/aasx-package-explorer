@@ -55,6 +55,28 @@ namespace AasxImport.Cdd
             return true;
         }
 
+        /// <summary>
+        /// Import the given IEC CDD element as a submodel element into the given parent
+        /// element.
+        /// </summary>
+        /// <param name="element">The IEC CDD element to import</param>
+        /// <param name="parent">The parent element to import the submodel into</param>
+        /// <returns>true if the class was imported successfully</returns>
+        public bool ImportSubmodelElements(Model.IElement element, AdminShell.IManageSubmodelElements parent)
+        {
+            if (!element.IsSelected)
+                return false;
+
+            var submodelElement = CreateSubmodelElement(element);
+            if (submodelElement != null)
+            {
+                parent.Add(submodelElement);
+                return true;
+            }
+
+            return false;
+        }
+
         private void AddProperties<T>(T elements, IEnumerable<Model.IElement> properties)
             where T : AdminShellV20.IManageSubmodelElements
         {

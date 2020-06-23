@@ -12,8 +12,9 @@ using System.Windows.Input;
 namespace AasxImport
 {
     /// <summary>
-    /// A generic import dialog for submodels.  For the data model, see the Model namespace.  For implementations of
-    /// this data model, see the Cdd namespace.  For the actual dialog, see the ImportDialog.xaml file.
+    /// A generic import dialog for submodels and submodel elements.  For the data model, see the Model namespace.  For
+    /// implementations of this data model, see the Cdd namespace.  For the actual dialog, see the ImportDialog.xaml
+    /// file.
     /// <para>
     /// This project uses nullable types.  Methods may only throw exceptions if they are mentioned in the doc comment.
     /// </para>
@@ -31,7 +32,7 @@ namespace AasxImport
     /// <description>fetching data from the network (IEC CDD HTML web service, eCl@ss REST API)</description>
     /// </item>
     /// <item>
-    /// <description>supporting import of properties and concept descriptions</description>
+    /// <description>supporting import of concept descriptions for existing elements</description>
     /// </item>
     /// <item>
     /// <description>better resize handling in ElementDetailsDialog</description>
@@ -45,7 +46,7 @@ namespace AasxImport
     }
 
     /// <summary>
-    /// A generic import dialog for submodels.
+    /// A generic import dialog for submodels and submodel elements.
     /// </summary>
     public static class Import
     {
@@ -62,27 +63,41 @@ namespace AasxImport
             AdminShellV20.AdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
-            var dialog = new ImportDialog();
+            return PerformImport(ImportMode.Submodels, e => e.ImportSubmodelInto(env, adminShell));
+        }
+
+        /// <summary>
+        /// Shows the import dialog and allows the user to select data from a data provider implementation that is
+        /// converted into AAS submodel elements (usually properties and collections) and imported into the given parent
+        /// element (usually a submodel).
+        /// </summary>
+        /// <param name="env">The AAS environment to import into</param>
+        /// <param name="parent">The parent element to import into</param>
+        /// <returns>true if at least one submodel element was imported</returns>
+        public static bool ImportSubmodelElements(AdminShell.AdministrationShellEnv env,
+            AdminShell.IManageSubmodelElements parent)
+        {
+            return PerformImport(ImportMode.SubmodelElements, e => e.ImportSubmodelElementsInto(env, parent));
+        }
+
+        private static bool PerformImport(ImportMode importMode, Func<Model.IElement, bool> f)
+        {
+            var dialog = new ImportDialog(importMode);
             if (dialog.ShowDialog() != true || dialog.Context == null)
                 return false;
-
 
             int imported;
             try
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                imported = dialog.GetResult().Count(e => e.ImportSubmodelInto(env, adminShell));
+                imported = dialog.GetResult().Count(f);
             }
             finally
             {
                 Mouse.OverrideCursor = null;
             }
 
-            if (dialog.Context.UnknownReferences.Count > 0)
-            {
-                Log.Info($"Found {dialog.Context.UnknownReferences.Count} unknown references during import: " +
-                    string.Join(", ", dialog.Context.UnknownReferences));
-            }
+            CheckUnresolvedReferences(dialog.Context);
 
             return imported > 0;
         }
@@ -100,5 +115,13 @@ namespace AasxImport
             return adminShell;
         }
 
+        private static void CheckUnresolvedReferences(Model.IDataContext context)
+        {
+            if (context.UnknownReferences.Count > 0)
+            {
+                Log.Info($"Found {context.UnknownReferences.Count} unknown references during import: " +
+                    string.Join(", ", context.UnknownReferences));
+            }
+        }
     }
 }

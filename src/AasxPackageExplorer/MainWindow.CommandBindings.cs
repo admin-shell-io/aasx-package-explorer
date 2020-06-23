@@ -436,6 +436,9 @@ namespace AasxPackageExplorer
             if (cmd == "importsubmodel")
                 CommandBinding_ImportSubmodel();
 
+            if (cmd == "importsubmodelelements")
+                CommandBinding_ImportSubmodelElements();
+
             if (cmd == "importaml")
                 CommandBinding_ImportAML();
 
@@ -1487,6 +1490,45 @@ namespace AasxPackageExplorer
             catch (Exception e)
             {
                 Log.Error(e, "An error occurred during the submodel import.");
+            }
+
+            if (dataChanged)
+            {
+                Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                RestartUIafterNewPackage();
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        public void CommandBinding_ImportSubmodelElements()
+        {
+            AdminShell.AdministrationShellEnv env = null;
+            AdminShell.Submodel submodel = null;
+            if (DisplayElements.SelectedItem is VisualElementSubmodel ves)
+            {
+                env = ves.theEnv;
+                submodel = ves.theSubmodel;
+            }
+            else if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesr)
+            {
+                env = vesr.theEnv;
+                submodel = vesr.theSubmodel;
+            }
+            else
+            {
+                MessageBoxFlyoutShow("Please select the submodel for the submodel element import.",
+                    "Submodel Element Import", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var dataChanged = false;
+            try
+            {
+                dataChanged = AasxImport.Import.ImportSubmodelElements(env, submodel);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "An error occurred during the submodel element import.");
             }
 
             if (dataChanged)

@@ -22,11 +22,11 @@
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10" HorizontalAlignment="Stretch">
             <WrapPanel>
                 <Label Content="Source:" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                <ComboBox x:Name="ComboBoxSource" Width="150" Margin="0,0,10,0" SelectionChanged="ComboBoxSource_SelectionChanged" VerticalAlignment="Center"/>
+                <ComboBox x:Name="ComboBoxSource" Width="250" Margin="0,0,10,0" SelectionChanged="ComboBoxSource_SelectionChanged" VerticalAlignment="Center"/>
                 <Button Content="Open Directory" Padding="5,0" Click="ButtonOpenDirectory_Click" VerticalAlignment="Center" Margin="0,0,10,0"/>
             </WrapPanel>
             <WrapPanel HorizontalAlignment="Right">
-                <Label Content="Filter classes: " VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <Label Content="Filter elements: " VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <TextBox TextWrapping="NoWrap" Width="150" Text="{Binding Filter,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
             </WrapPanel>
         </DockPanel>
