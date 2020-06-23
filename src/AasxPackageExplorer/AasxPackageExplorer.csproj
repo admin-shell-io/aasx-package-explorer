@@ -246,9 +246,6 @@
     <Resource Include="Resources\round_right.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="NotesBackup.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\thumb-aasxplore.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -262,9 +259,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj">
