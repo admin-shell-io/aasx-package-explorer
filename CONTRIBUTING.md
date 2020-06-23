@@ -1,18 +1,41 @@
-Contributing
-============
-Notes on LICENSE.txt
---------------------
+# Contributing
+
+## Notes on LICENSE.txt
+
 The file `LICENSE.TXT` in the main folder of the repo is the leading license
 information, even if it does not show up in the Visual Studio solution. To
 update all dependent license files, manually start `CopyLicense.bat`.
 
-Pull Requests
--------------
-We develop using the feature branches, see this section of the Git book:
+## Pull Requests
+
+**Feature branches**. We develop using the feature branches, see this section of the Git book:
 https://git-scm.com/book/en/v2/Git-Branching-Branching-Workflows.
 
-Please prefix the branch with your user name 
+If you are a member of the development team, create a feature branch directly
+within the repository.
+
+Otherwise, if you are a non-member contributor, fork the repository and create
+the feature branch in your forked repository. See [this Github tuturial](
+https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork
+) for more guidance. 
+
+**Branch Prefix**. Please prefix the branch with your Github user name 
 (*e.g.,* `mristin/Add-some-feature`).
+
+**Continuous Integration**. Github will run the continuous integration (CI) automatically through Github 
+actions. The CI includes building the solution, running the test, inspecting
+the code *etc.* (see below the section "Pre-merge Checks").
+
+**Branch Infix.** If the pull request contains only changes to the 
+documentation, make sure you infix your branch name with `/doc/` (*e.g.*, 
+`mristin/doc/Describe-CI-in-Readme`). This will signal to CI that only a reduced
+set of checks should be performed. 
+
+(**Note**. We are all adults. Please do not
+game the system to push through your changes unchecked and be extra cautious 
+when you submit such a pull request.)  
+
+## Commit Messages
 
 The commit messages follow the guidelines from 
 from https://chris.beams.io/posts/git-commit:
@@ -24,13 +47,7 @@ from https://chris.beams.io/posts/git-commit:
 * Wrap the body at 72 characters
 * Use the body to explain *what* and *why* (instead of *how*)
 
-If you are a member of the development team, create a feature branch directly
-within the repository.
-
-Otherwise, if you are a non-member contributor, fork the repository and create
-the feature branch in your forked repository. See [this Github tuturial](
-https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork
-) for more guidance. 
+## Binary Files
 
 We use Git Large File Support (LFS) to handle binary files. Please do not forget
 to install Git-Lfs (https://git-lfs.github.com) on your computer.
@@ -46,15 +63,15 @@ Listing tracked patterns
     *.png (.gitattributes)
 ```
 
-# Building the Solution
+## Building the Solution
 
 We provide PowerShell scripts to help you install the dependencies and build 
 the solution from the command line.
 
-First, change to the `src/` directory. All the subsequent scripts will be 
+**src**. First, change to the `src/` directory. All the subsequent scripts will be 
 invoked from there.
 
-We separated *development* dependencies, which are installed for many different
+**Dependencies**. We separated *development* dependencies, which are installed for many different
 solutions (such as Visual Studio Build tools) and *solution* dependencies
 which are specific to this particular solution.
 
@@ -71,7 +88,7 @@ To install the solution dependencies, invoke:
 .\InstallBuildDependencies.ps1
 ```
 
-Now you are all set to build the solution:
+**Build**. Now you are all set to build the solution:
 
 ```powershell
 .\Build.ps1
@@ -94,10 +111,11 @@ To format the code in-place with `dotnet-format`, invoke:
 .\FormatCode.ps1
 ```
 
-o run the unit tests:
+To run the unit tests:
 
 ```powershell
 .\Test.ps1
 ```
 
-We specify in `src\tests.nunit` hich unit tests are always run in the continous integration.
+We specify in `src\tests.nunit` which unit tests are always run in the 
+continuous integration.
