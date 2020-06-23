@@ -43,11 +43,6 @@ The implementation uses the concepts of the document "Details of the Asset
 Administration Shell" published on www.plattform-i40.de which is licensed
 under Creative Commons CC BY-ND 3.0 DE.
 
-Some licenses may only apply to their related plugins.
-
-When using eCl@ss or IEC CDD data, please check the corresponding license
-conditions.
-
 Apache License 2.0 (Apache-2.0)
 ===============================
 
