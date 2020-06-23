@@ -16,11 +16,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -46,15 +55,22 @@ namespace AasxPackageExplorer
             // image
             this.ImageIcon.Source = null;
             if (image == MessageBoxImage.Error)
-                this.ImageIcon.Source = new BitmapImage(new Uri("/AasxWpfControlLibrary;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(
+                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Hand)
-                this.ImageIcon.Source = new BitmapImage(new Uri("/AasxWpfControlLibrary;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(
+                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Information)
-                this.ImageIcon.Source = new BitmapImage(new Uri("/AasxWpfControlLibrary;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(
+                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Question)
-                this.ImageIcon.Source = new BitmapImage(new Uri("/AasxWpfControlLibrary;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(
+                    new Uri(
+                        "/AasxWpfControlLibrary;component/Resources/msg_question.png",
+                        UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Warning)
-                this.ImageIcon.Source = new BitmapImage(new Uri("/AasxWpfControlLibrary;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(
+                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
         }
 
@@ -82,7 +98,9 @@ namespace AasxPackageExplorer
             }
             set
             {
-                LabelInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => LabelInfo.Content = value));
+                LabelInfo.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    new Action(() => LabelInfo.Content = value));
             }
         }
 
@@ -94,7 +112,9 @@ namespace AasxPackageExplorer
             }
             set
             {
-                TheProgressBar.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => TheProgressBar.Value = value));
+                TheProgressBar.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    new Action(() => TheProgressBar.Value = value));
             }
         }
 

@@ -10,12 +10,22 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -38,7 +48,8 @@ namespace AasxPackageExplorer
             public PluginInstance()
             { }
 
-            public PluginInstance(int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
+            public PluginInstance(
+                int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
             {
                 this.SourceIndex = sourceIndex;
                 this.asm = asm;
@@ -70,7 +81,8 @@ namespace AasxPackageExplorer
                 // ReSharper enable RedundantExplicitParamsArrayCreation
             }
 
-            public static PluginInstance CreateNew(int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
+            public static PluginInstance CreateNew(
+                int sourceIndex, Assembly asm, Type plugType, IAasxPluginInterface plugObj, string[] args)
             {
                 var pi = new PluginInstance(sourceIndex, asm, plugType, plugObj, args);
                 pi.name = pi.GetName();
@@ -155,7 +167,8 @@ namespace AasxPackageExplorer
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
 
                     // Note: use LoadFrom instead of LoadFile, insane:
-                    // https://stackoverflow.com/questions/36075829/assembly-loadfile-look-dependencies-in-location-of-executeable
+                    // https://stackoverflow.com/questions/36075829/
+                    // assembly-loadfile-look-dependencies-in-location-of-executeable
                     var asm = Assembly.LoadFrom(fullfn);
 
                     var tp = asm.GetType("AasxIntegrationBase.AasxPlugin");
@@ -177,7 +190,9 @@ namespace AasxPackageExplorer
                     var pi = PluginInstance.CreateNew(index, asm, tp, ob, pluginDll[index].Args);
                     if (pi == null)
                     {
-                        Log.Error("Cannot invoke methods within instance from class AasxIntegrationBase.AasxPlugin within .dll.");
+                        Log.Error(
+                            "Cannot invoke methods within instance from " +
+                                "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
                     }
 
@@ -224,9 +239,12 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Execute lambda for all loaded plugins and correlate with source plugin-dll-information. Returns a list of results of the lambda.
+        /// Execute lambda for all loaded plugins and correlate with source plugin-dll-information.
+        /// Returns a list of results of the lambda.
         /// </summary>
-        public static List<object> TryForAllLoadedPlugins(OptionsInformation opt, string exceptionWhere, Func<OptionsInformation.PluginDllInfo, PluginInstance, object> lambda)
+        public static List<object> TryForAllLoadedPlugins(
+            OptionsInformation opt, string exceptionWhere,
+            Func<OptionsInformation.PluginDllInfo, PluginInstance, object> lambda)
         {
             // access
             var res = new List<object>();

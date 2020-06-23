@@ -15,11 +15,22 @@ using System.Windows.Media;
 using Newtonsoft.Json;
 using System.IO;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-The QR code generation (QRCoder) is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC, ZXing.Net) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
+The QR code generation (QRCoder) is under the MIT license
+(see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+
+The Dot Matrix Code (DMC, ZXing.Net) generation is under Apache license v.2
+(see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -44,18 +55,24 @@ namespace AasxPackageExplorer
                 //get scale of the print wrt to screen of WPF visual
                 if (capabilities.PageImageableArea == null)
                     return;
-                double scale = Math.Min(capabilities.PageImageableArea.ExtentWidth / e.ActualWidth, capabilities.PageImageableArea.ExtentHeight /
-                               e.ActualHeight);
+                double scale = Math.Min(
+                    capabilities.PageImageableArea.ExtentWidth / e.ActualWidth,
+                    capabilities.PageImageableArea.ExtentHeight / e.ActualHeight);
 
                 //Transform the Visual to scale
                 e.LayoutTransform = new ScaleTransform(scale, scale);
 
                 //get the size of the printer page
-                System.Windows.Size sz = new System.Windows.Size(capabilities.PageImageableArea.ExtentWidth, capabilities.PageImageableArea.ExtentHeight);
+                System.Windows.Size sz = new System.Windows.Size(
+                    capabilities.PageImageableArea.ExtentWidth, capabilities.PageImageableArea.ExtentHeight);
 
                 //update the layout of the visual to the printer page size.
                 e.Measure(sz);
-                e.Arrange(new System.Windows.Rect(new System.Windows.Point(capabilities.PageImageableArea.OriginWidth, capabilities.PageImageableArea.OriginHeight), sz));
+                e.Arrange(
+                    new System.Windows.Rect(
+                        new System.Windows.Point(
+                            capabilities.PageImageableArea.OriginWidth, capabilities.PageImageableArea.OriginHeight),
+                        sz));
 
                 //now print the visual to printer to fit on the one page.
                 pd.PrintVisual(v, "My Print");
@@ -173,10 +190,13 @@ namespace AasxPackageExplorer
             cb.BorderBrush = System.Windows.Media.Brushes.Black;
             cb.BorderThickness = new Thickness(1);
             g.Measure(overSize);
-            g.Arrange(new Rect(new System.Windows.Point(0, 0), g.DesiredSize)); // this will bring down the overSize to adequate values
+            // this will bring down the overSize to adequate values
+            g.Arrange(
+                new Rect(new System.Windows.Point(0, 0), g.DesiredSize));
             cb.Child = g;
             cb.Measure(overSize);
-            cb.Arrange(new Rect(new System.Windows.Point(0, 0), cb.DesiredSize)); // this will bring down the overSize to adequate values
+            // this will bring down the overSize to adequate values
+            cb.Arrange(new Rect(new System.Windows.Point(0, 0), cb.DesiredSize));
 
             Print(cb);
         }
@@ -215,7 +235,8 @@ namespace AasxPackageExplorer
             return true;
         }
 
-        public static bool PrintSingleAssetCodeSheet(string assetId, string description, string title = "Single asset code sheet")
+        public static bool PrintSingleAssetCodeSheet(
+            string assetId, string description, string title = "Single asset code sheet")
         {
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try

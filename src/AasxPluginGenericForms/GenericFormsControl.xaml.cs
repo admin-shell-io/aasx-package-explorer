@@ -182,8 +182,8 @@ namespace AasxPluginGenericForms
                     && theOptions != null
                     && theSubmodel != null)
                 {
-                    // on this level of the hierarchy, shall a new SMEC be created or shall the existing source of elements
-                    // be used?
+                    // on this level of the hierarchy, shall a new SMEC be created or shall
+                    // the existing source of elements be used?
                     AdminShell.SubmodelElementWrapperCollection currentElements = null;
                     if (formInUpdateMode && updateSourceElements != null)
                     {
@@ -196,7 +196,8 @@ namespace AasxPluginGenericForms
                     // create a sequence of SMEs
                     try
                     {
-                        this.currentFormInst.AddOrUpdateDifferentElementsToCollection(currentElements, thePackage, addFilesToPackage: true);
+                        this.currentFormInst.AddOrUpdateDifferentElementsToCollection(
+                            currentElements, thePackage, addFilesToPackage: true);
                     }
                     catch (Exception ex)
                     {
@@ -213,7 +214,9 @@ namespace AasxPluginGenericForms
                     catch (Exception ex)
                     {
                         if (theLogger != null)
-                            theLogger.Log($"Saving package {thePackage.Filename} failed for adding Document and gave: {ex.Message}");
+                            theLogger.Log(
+                                $"Saving package {thePackage.Filename} failed for adding Document " +
+                                $"and gave: {ex.Message}");
                     }
 #endif
                 }
@@ -234,9 +237,12 @@ namespace AasxPluginGenericForms
             if (sender == ButtonFixCDs)
             {
                 // check if CDs are present
-                if (currentFormRecord == null || currentFormRecord.ConceptDescriptions == null || currentFormRecord.ConceptDescriptions.Count < 1)
+                if (currentFormRecord == null || currentFormRecord.ConceptDescriptions == null ||
+                    currentFormRecord.ConceptDescriptions.Count < 1)
                 {
-                    Log.Error("Not able to find appropriate ConceptDescriptions in the GeneralForm option records. Aborting.");
+                    Log.Error(
+                        "Not able to find appropriate ConceptDescriptions in the GeneralForm option records. " +
+                        "Aborting.");
                     return;
                 }
 
@@ -244,12 +250,15 @@ namespace AasxPluginGenericForms
                 var env = this.thePackage?.AasEnv;
                 if (env == null)
                 {
-                    Log.Error("Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
+                    Log.Error(
+                        "Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
                     return;
                 }
 
                 // be safe?
-                if (MessageBoxResult.Yes != MessageBox.Show("Add missing ConceptDescriptions to the AAS?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                if (MessageBoxResult.Yes != MessageBox.Show(
+                    "Add missing ConceptDescriptions to the AAS?", "Question",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
                     return;
 
                 // ok, check

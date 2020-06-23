@@ -22,7 +22,8 @@ namespace AasxIntegrationBase.AasForms
     public partial class FormSubControlFile : UserControl
     {
         /// <summary>
-        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and program logic
+        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and
+        /// program logic
         /// </summary>
         protected bool UpdateDisplayInCharge = false;
 

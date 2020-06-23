@@ -15,7 +15,7 @@ namespace Tetra.Framework.WPF
 {
 
     /// <summary>
-    /// This paginator provides document headers, footers and repeating table headers 
+    /// This paginator provides document headers, footers and repeating table headers
     /// </summary>
     /// <remarks>
     /// </remarks>
@@ -84,7 +84,7 @@ namespace Tetra.Framework.WPF
                 if (PageStartsWithTable(originalPage, out table) && currentHeader != null)
                 {
                     // The page starts with a table and a table header was
-                    // found on the previous page. Presumably this table 
+                    // found on the previous page. Presumably this table
                     // was started on the previous page, so we'll repeat the
                     // table header.
                     Rect headerBounds = VisualTreeHelper.GetDescendantBounds(currentHeader);
@@ -101,7 +101,8 @@ namespace Tetra.Framework.WPF
                     // content area, we'll need to scale down the rest of the content
                     // to accomodate this. Since the table header is relatively small,
                     // this probably is barely noticeable.
-                    double yScale = (definition.ContentSize.Height - headerBounds.Height) / definition.ContentSize.Height;
+                    double yScale =
+                        (definition.ContentSize.Height - headerBounds.Height) / definition.ContentSize.Height;
                     TransformGroup group = new TransformGroup();
                     group.Children.Add(new ScaleTransform(1.0, yScale));
                     group.Children.Add(new TranslateTransform(
@@ -172,14 +173,15 @@ namespace Tetra.Framework.WPF
         /// There is no such thing as a 'TableVisual'. There is a RowVisual, which
         /// is contained in a ParagraphVisual if it's part of a table. For our
         /// purposes, we'll consider this the table Visual
-        /// 
-        /// You'd think that if the last element on the page was a table row, 
+        ///
+        /// You'd think that if the last element on the page was a table row,
         /// this would also be the last element in the visual tree, but this is not true
         /// The page ends with a ContainerVisual which is aparrently  empty.
         /// Therefore, this method will only check the last child of an element
         /// unless this is a ContainerVisual
         /// </remarks>
-        private bool PageEndsWithTable(DependencyObject element, out ContainerVisual tableVisual, out ContainerVisual headerVisual)
+        private bool PageEndsWithTable(
+            DependencyObject element, out ContainerVisual tableVisual, out ContainerVisual headerVisual)
         {
             tableVisual = null;
             headerVisual = null;

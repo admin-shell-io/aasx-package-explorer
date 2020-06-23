@@ -10,7 +10,8 @@ namespace AasxIntegrationBase.AasForms
 {
     public static class AasFormUtils
     {
-        private static void RecurseExportAsTemplate(AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
+        private static void RecurseExportAsTemplate(
+            AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
             AdminShell.AdministrationShellEnv env = null, AdminShell.ListOfConceptDescriptions cds = null)
         {
             // access
@@ -25,22 +26,30 @@ namespace AasxIntegrationBase.AasForms
                     if (smw.submodelElement is AdminShell.Property)
                     {
                         var p = (smw.submodelElement as AdminShell.Property);
-                        tsme = new FormDescProperty("" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsExactlyOneKey(), "" + p.idShort, valueType: p.valueType /* , presetValue: p.value */);
+                        tsme = new FormDescProperty(
+                            "" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsExactlyOneKey(),
+                            "" + p.idShort, valueType: p.valueType);
                     }
                     if (smw.submodelElement is AdminShell.MultiLanguageProperty)
                     {
                         var mlp = (smw.submodelElement as AdminShell.MultiLanguageProperty);
-                        tsme = new FormDescMultiLangProp("" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(), "" + mlp.idShort);
+                        tsme = new FormDescMultiLangProp(
+                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
+                            "" + mlp.idShort);
                     }
                     if (smw.submodelElement is AdminShell.File)
                     {
                         var mlp = (smw.submodelElement as AdminShell.File);
-                        tsme = new FormDescFile("" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(), "" + mlp.idShort);
+                        tsme = new FormDescFile(
+                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
+                            "" + mlp.idShort);
                     }
                     if (smw.submodelElement is AdminShell.SubmodelElementCollection)
                     {
                         var smec = (smw.submodelElement as AdminShell.SubmodelElementCollection);
-                        tsme = new FormDescSubmodelElementCollection("" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsExactlyOneKey(), "" + smec.idShort);
+                        tsme = new FormDescSubmodelElementCollection(
+                            "" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsExactlyOneKey(),
+                            "" + smec.idShort);
                     }
 
                     if (tsme != null)
@@ -76,7 +85,8 @@ namespace AasxIntegrationBase.AasForms
                             (tsme as FormDescFile).presetMimeType = "" + q.value;
 
                         // adopt presetIdShort
-                        if (tsme.Multiplicity == FormMultiplicity.ZeroToMany || tsme.Multiplicity == FormMultiplicity.OneToMany)
+                        if (tsme.Multiplicity == FormMultiplicity.ZeroToMany ||
+                            tsme.Multiplicity == FormMultiplicity.OneToMany)
                             tsme.PresetIdShort += "{0:00}";
 
                         // Ignore this element
@@ -106,7 +116,9 @@ namespace AasxIntegrationBase.AasForms
 
                     // recurse
                     if (smw.submodelElement is AdminShell.SubmodelElementCollection)
-                        RecurseExportAsTemplate((smw.submodelElement as AdminShell.SubmodelElementCollection).value, (tsme as FormDescSubmodelElementCollection).value, env, cds);
+                        RecurseExportAsTemplate(
+                            (smw.submodelElement as AdminShell.SubmodelElementCollection).value,
+                            (tsme as FormDescSubmodelElementCollection).value, env, cds);
                 }
         }
 
@@ -184,10 +196,12 @@ namespace AasxIntegrationBase.AasForms
         [DisplayName("Options", noTypeLookup: true)]
         private class ExportAsGenericFormsOptions_OptionsOverall
         {
-            public List<ExportAsGenericFormsOptions_OptionsRecord> Records = new List<ExportAsGenericFormsOptions_OptionsRecord>();
+            public List<ExportAsGenericFormsOptions_OptionsRecord> Records =
+                new List<ExportAsGenericFormsOptions_OptionsRecord>();
         }
 
-        public static void ExportAsGenericFormsOptions(AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
+        public static void ExportAsGenericFormsOptions(
+            AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.submodelElements == null)

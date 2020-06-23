@@ -10,15 +10,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
+
 The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
@@ -40,7 +45,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try load defaults options from assy directory
             try
             {
-                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginExportTable.ExportTableOptions>(this.GetPluginName(), Assembly.GetExecutingAssembly());
+                var newOpt =
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginExportTable.ExportTableOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     this.options = newOpt;
             }
@@ -59,10 +66,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             Log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(new AasxPluginActionDescriptionBase("set-json-options", "Sets plugin-options according to provided JSON string."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "set-json-options", "Sets plugin-options according to provided JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(new AasxPluginActionDescriptionBase("get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-events", "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             return res.ToArray();
         }
@@ -71,14 +82,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginExportTable.ExportTableOptions>((args[0] as string));
+                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginExportTable.ExportTableOptions>(
+                    (args[0] as string));
                 if (newOpt != null)
                     this.options = newOpt;
             }
 
             if (action == "get-json-options")
             {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(this.options, Newtonsoft.Json.Formatting.Indented);
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                    this.options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -89,7 +102,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "The ClosedXML library is under MIT license.";
 
                 lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxPluginExportTable.Resources.LICENSE.txt"))
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                    "AasxPluginExportTable.Resources.LICENSE.txt"))
                 {
                     if (stream != null)
                     {
@@ -107,8 +121,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
-            if (action == "export-submodel" && args != null && args.Length >= 3
-                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv && args[2] is AdminShell.Submodel)
+            if (action == "export-submodel" && args != null && args.Length >= 3 &&
+                args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv &&
+                args[2] is AdminShell.Submodel)
             {
                 // flyout provider
                 var fop = args[0] as IFlyoutProvider;
@@ -139,7 +154,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory);
+                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                        System.AppDomain.CurrentDomain.BaseDirectory);
                 }
                 catch { }
                 // ReSharper enable EmptyGeneralCatchClause
@@ -149,7 +165,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 {
                     dlg.FileName = "new.txt";
                     dlg.DefaultExt = "*.txt";
-                    dlg.Filter = "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+                    dlg.Filter =
+                        "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
                 }
                 if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
                 {
@@ -196,7 +213,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         }
 
                         if (!success)
-                            fop?.MessageBoxFlyoutShow("Some error occured while exporting the table. Please refer to the log messages.", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            fop?.MessageBoxFlyoutShow(
+                                "Some error occured while exporting the table. Please refer to the log messages.",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
                 }
                 catch (Exception ex)
@@ -251,8 +270,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     list.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd));
 
                     // go directly deeper?
-                    if (!broadSearch && ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                        ExportTable_EnumerateSubmodel(list, env, broadSearch: false, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
+                    if (!broadSearch && ci.submodelElement != null &&
+                        ci.submodelElement is AdminShell.IEnumerateChildren)
+                        ExportTable_EnumerateSubmodel(
+                            list, env, broadSearch: false, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
                 }
 
             // pass 2: go for recursion AFTER?
@@ -261,7 +282,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (coll != null)
                     foreach (var ci in coll.EnumerateChildren())
                         if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
-                            ExportTable_EnumerateSubmodel(list, env, broadSearch: true, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
+                            ExportTable_EnumerateSubmodel(
+                                list, env, broadSearch: true, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
             }
         }
 

@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace AasxIntegrationBase
 {
-    // see: https://stackoverflow.com/questions/11099466/using-a-custom-type-discriminator-to-tell-json-net-which-type-of-a-class-hierarc
+    // see: https://stackoverflow.com/questions/11099466/
+    // using-a-custom-type-discriminator-to-tell-json-net-which-type-of-a-class-hierarc
 
     /// <summary>
     /// This attribute indicates, that it should e.g. serialized in JSON.
@@ -123,7 +124,8 @@ namespace AasxIntegrationBase
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
-                    SerializationBinder = new DisplayNameSerializationBinder(new[] { typeof(FormDescListOfElement), typeof(FormDescProperty) }),
+                    SerializationBinder = new DisplayNameSerializationBinder(
+                        new[] { typeof(FormDescListOfElement), typeof(FormDescProperty) }),
                     NullValueHandling = NullValueHandling.Ignore,
                     ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                     TypeNameHandling = TypeNameHandling.Auto,

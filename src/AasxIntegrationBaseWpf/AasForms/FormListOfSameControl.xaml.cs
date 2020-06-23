@@ -35,7 +35,7 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Set the property, given by enum <c>IFormListControlPropertyType</c> to the
-        /// value 
+        /// value
         /// </summary>
         public void SetProperty(IFormListControlPropertyType property, object value)
         {
@@ -113,7 +113,9 @@ namespace AasxIntegrationBase.AasForms
             // obligatory
             this.TextBlockFormTitle.Text = "" + desc.FormTitle;
             this.TextBlockFormInfo.Text = "" + desc.FormInfo;
-            this.TextBlockFormInfo.Visibility = (this.TextBlockFormInfo.Text.Trim() != "") ? Visibility.Visible : Visibility.Collapsed;
+            this.TextBlockFormInfo.Visibility = (this.TextBlockFormInfo.Text.Trim() != "")
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
             // url link
             ButtonFormUrl.Visibility = Visibility.Hidden;
@@ -164,10 +166,13 @@ namespace AasxIntegrationBase.AasForms
                         bt.Content = "\u2796";
 
                         if (inst.workingDesc != null && inst.workingDesc is FormDescSubmodelElementCollection)
-                            bt.Margin = new Thickness(bt.Margin.Left, bt.Margin.Top + 6, bt.Margin.Right, bt.Margin.Bottom);
+                            bt.Margin = new Thickness(
+                                bt.Margin.Left, bt.Margin.Top + 6, bt.Margin.Right, bt.Margin.Bottom);
 
-                        bt.SetBinding(Button.WidthProperty, CreateBindingWithElementName("ActualWidth", "ButtonInstancePlus"));
-                        bt.SetBinding(Button.HeightProperty, CreateBindingWithElementName("ActualHeight", "ButtonInstancePlus"));
+                        bt.SetBinding(
+                            Button.WidthProperty, CreateBindingWithElementName("ActualWidth", "ButtonInstancePlus"));
+                        bt.SetBinding(
+                            Button.HeightProperty, CreateBindingWithElementName("ActualHeight", "ButtonInstancePlus"));
 
                         // remeber the instances
                         var masterInst = inst;
@@ -280,7 +285,8 @@ namespace AasxIntegrationBase.AasForms
             // need data context of the UC in the right shape
             var inst = this.DataContext as FormInstanceListOfSame;
             var desc = inst?.workingDesc as FormDescSubmodelElement;
-            if (inst == null || desc == null || GridOuterElement == null || GridInner == null || inst.SubInstances == null)
+            if (inst == null || desc == null || GridOuterElement == null || GridInner == null ||
+                inst.SubInstances == null)
                 return;
 
             // Plus, allowed?

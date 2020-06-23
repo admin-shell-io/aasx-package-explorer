@@ -72,7 +72,7 @@ namespace AasxIntegrationBase
                 return;
             }
 
-            // no, locally 
+            // no, locally
             lock (list)
             {
                 list.Add(string.Format(msg, args));

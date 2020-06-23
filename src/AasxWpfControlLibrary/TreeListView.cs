@@ -15,11 +15,20 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -32,7 +41,8 @@ namespace AasxPackageExplorer
         static TreeListView()
         {
             //Override the default style and the default control template
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(TreeListView), new FrameworkPropertyMetadata(typeof(TreeListView)));
+            DefaultStyleKeyProperty.OverrideMetadata(
+                typeof(TreeListView), new FrameworkPropertyMetadata(typeof(TreeListView)));
         }
 
         /// <summary>
@@ -45,7 +55,7 @@ namespace AasxPackageExplorer
 
         #region Properties
         /// <summary>
-        /// Gets or sets the collection of System.Windows.Controls.GridViewColumn 
+        /// Gets or sets the collection of System.Windows.Controls.GridViewColumn
         /// objects that is defined for this TreeListView.
         /// </summary>
         public GridViewColumnCollection Columns
@@ -66,11 +76,14 @@ namespace AasxPackageExplorer
         #endregion
 
         #region Static Dependency Properties
-        // Using a DependencyProperty as the backing store for AllowsColumnReorder.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for AllowsColumnReorder.
+        // This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AllowsColumnReorderProperty =
-            DependencyProperty.Register("AllowsColumnReorder", typeof(bool), typeof(TreeListView), new UIPropertyMetadata(null));
+            DependencyProperty.Register(
+                "AllowsColumnReorder", typeof(bool), typeof(TreeListView), new UIPropertyMetadata(null));
 
-        // Using a DependencyProperty as the backing store for Columns.  This enables animation, styling, binding, etc...
+        // Using a DependencyProperty as the backing store for Columns.
+        // This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ColumnsProperty =
             DependencyProperty.Register("Columns", typeof(GridViewColumnCollection),
             typeof(TreeListView),
@@ -82,7 +95,7 @@ namespace AasxPackageExplorer
 
     /// <summary>
     /// Represents a control that can switch states in order to expand a node of a TreeListView.
-    /// </summary>   
+    /// </summary>
     public class TreeListViewExpander : ToggleButton
     {
 
@@ -141,7 +154,8 @@ namespace AasxPackageExplorer
                 value.GetType(), targetType));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(
+            object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new NotSupportedException("This method is not supported.");
         }

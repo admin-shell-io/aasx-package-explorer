@@ -69,21 +69,25 @@ namespace AasxPluginDocumentShelf
             opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentClassId = preDefs.CD_VDI2770_DocumentClassId?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentClassName = preDefs.CD_VDI2770_DocumentClassName?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentClassificationSystem = preDefs.CD_VDI2770_DocumentClassificationSystem?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentClassificationSystem =
+                preDefs.CD_VDI2770_DocumentClassificationSystem?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdOrganizationName = preDefs.CD_VDI2770_OrganizationName?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdOrganizationOfficialName = preDefs.CD_VDI2770_OrganizationOfficialName?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdOrganizationOfficialName =
+                preDefs.CD_VDI2770_OrganizationOfficialName?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentVersion = preDefs.CD_VDI2770_DocumentVersion?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdLanguage = preDefs.CD_VDI2770_Language?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdTitle = preDefs.CD_VDI2770_Title?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDate = preDefs.CD_VDI2770_Date?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentVersionIdValue = preDefs.CD_VDI2770_DocumentVersionIdValue?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentVersionIdValue =
+                preDefs.CD_VDI2770_DocumentVersionIdValue?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDigitalFile = preDefs.CD_VDI2770_DigitalFile?.GetReference()?.GetAsExactlyOneKey();
 
             opt.FormVdi2770 = CreateVdi2770TemplateDesc(opt);
 
             /* new, Birgit */
             opt.SemIdDocumentId = preDefs.CD_VDI2770_DocumentId?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdIsPrimaryDocumentId = preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdIsPrimaryDocumentId =
+                preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentVersionId = preDefs.CD_VDI2770_DocumentVersionId?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdSummary = preDefs.CD_VDI2770_Summary?.GetReference()?.GetAsExactlyOneKey();
             opt.SemIdKeywords = preDefs.CD_VDI2770_Keywords?.GetReference()?.GetAsExactlyOneKey();
@@ -109,7 +113,8 @@ namespace AasxPluginDocumentShelf
 
             var descDoc = new FormDescSubmodelElementCollection(
                 "Document", FormMultiplicity.ZeroToMany, opt.SemIdDocument, "Document{0:00}",
-                "Each document item comprises a set of elements describing the information of a VDI 2770 Document with directly attached DocumentVersion.");
+                "Each document item comprises a set of elements describing the information of a VDI 2770 Document " +
+                "with directly attached DocumentVersion.");
 
             // Document
 
@@ -127,7 +132,8 @@ namespace AasxPluginDocumentShelf
 
             var cbList = new List<string>();
             var vlList = new List<string>();
-            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
+            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(
+                                                typeof(DefinitionsVDI2770.Vdi2770DocClass)))
             {
                 if ((int)dc == 0)
                     continue;
@@ -141,19 +147,24 @@ namespace AasxPluginDocumentShelf
 
             var descDocName = new FormDescProperty(
                 "ClassName", FormMultiplicity.One, opt.SemIdDocumentClassName, "ClassName",
-                "VDI2770 ClassName of the document. This property is automaticall computed based on ClassId.", isReadOnly: true);
+                "VDI2770 ClassName of the document. This property is automaticall computed based on ClassId.",
+                isReadOnly: true);
 
             descDocName.SlaveOfIdShort = "ClassId";
 
             descDocName.valueFromMasterValue = new Dictionary<string, string>();
-            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(typeof(DefinitionsVDI2770.Vdi2770DocClass)))
-                descDocName.valueFromMasterValue.Add(DefinitionsVDI2770.GetDocClass(dc), DefinitionsVDI2770.GetDocClassName(dc));
+            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(
+                                                                    typeof(DefinitionsVDI2770.Vdi2770DocClass)))
+                descDocName.valueFromMasterValue.Add(
+                    DefinitionsVDI2770.GetDocClass(dc), DefinitionsVDI2770.GetDocClassName(dc));
 
             descDoc.Add(descDocName);
 
-            descDoc.Add(new FormDescProperty(
-                "ClassificationSystem", FormMultiplicity.One, opt.SemIdDocumentClassificationSystem, "ClassificationSystem",
-                "This property is always set to VDI2770:2018", isReadOnly: true, presetValue: "VDI2770:2018"));
+            descDoc.Add(
+                new FormDescProperty(
+                    "ClassificationSystem", FormMultiplicity.One, opt.SemIdDocumentClassificationSystem,
+                    "ClassificationSystem",
+                    "This property is always set to VDI2770:2018", isReadOnly: true, presetValue: "VDI2770:2018"));
 
             descDoc.Add(new FormDescProperty(
                 "ReferencedObject", FormMultiplicity.One, opt.SemIdReferencedObject, "ReferencedObject",
@@ -172,7 +183,8 @@ namespace AasxPluginDocumentShelf
 
             descDocVer.Add(new FormDescProperty(
                 "Languages", FormMultiplicity.ZeroToMany, opt.SemIdLanguage, "Language{0}",
-                "List of languages used in the DocumentVersion. For most cases, at least one language shall be given."));
+                "List of languages used in the DocumentVersion. For most cases, " +
+                "at least one language shall be given."));
 
             descDocVer.Add(new FormDescMultiLangProp(
                 "Title", FormMultiplicity.One, opt.SemIdTitle, "Title",
@@ -188,7 +200,8 @@ namespace AasxPluginDocumentShelf
 
             descDocVer.Add(new FormDescFile(
                 "DigitalFile", FormMultiplicity.OneToMany, opt.SemIdDigitalFile, "DigitalFile{0:00}",
-                "Digital file, which represents the Document and DocumentVersion. A PDF/A format is required for textual representations."));
+                "Digital file, which represents the Document and DocumentVersion. " +
+                "A PDF/A format is required for textual representations."));
 
             descDocVer.Add(new FormDescProperty(
                 "SetDate", FormMultiplicity.One, opt.SemIdDate, "SetDate",
@@ -196,7 +209,10 @@ namespace AasxPluginDocumentShelf
 
             var descStatus = new FormDescProperty(
                 "StatusValue", FormMultiplicity.One, opt.SemIdStatusValue, "StatusValue",
-                "Each document version represents a point in time in the document life cycle. This status value refers to the milestones in the document life cycle. The following two statuses should be used for the application of this guideline: InReview (under review), Released (released).");
+                "Each document version represents a point in time in the document life cycle. " +
+                "This status value refers to the milestones in the document life cycle. " +
+                "The following two statuses should be used for the application of this guideline: " +
+                "InReview (under review), Released (released).");
             descDocVer.Add(descStatus);
             descStatus.comboBoxChoices = new[] { "InReview", "Released" };
 
@@ -211,7 +227,8 @@ namespace AasxPluginDocumentShelf
                 "Common name for the organisation."));
 
             descDocVer.Add(new FormDescProperty(
-                "OrganizationOfficialName", FormMultiplicity.One, opt.SemIdOrganizationOfficialName, "OrganizationOfficialName",
+                "OrganizationOfficialName", FormMultiplicity.One, opt.SemIdOrganizationOfficialName,
+                "OrganizationOfficialName",
                 "Official name for the organisation (which might be longer or include legal information)."));
 
             return descDoc;

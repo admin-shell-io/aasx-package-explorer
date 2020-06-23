@@ -1,7 +1,14 @@
-﻿/* Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-   Copyright (c) 2020 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
-   Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
-    zur Förderung der angewandten Forschung e.V. <jan.nicolas.weskamp@iosb-ina.fraunhofer.de>, author: Jan Nicolas Weskamp
+﻿/* 
+Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+Copyright (c) 2020 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
+
+Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo, 
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <jan.nicolas.weskamp@iosb-ina.fraunhofer.de>
+Author: Jan Nicolas Weskamp
 */
 
 using System;
@@ -24,8 +31,10 @@ namespace AasxUANodesetImExport
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
+    [System.Xml.Serialization.XmlTypeAttribute(
+        AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(
+        Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
     public partial class UANodeSet
     {
 
@@ -1924,8 +1933,10 @@ namespace AasxUANodesetImExport
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
+    [System.Xml.Serialization.XmlTypeAttribute(
+        AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(
+        Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
     public partial class UANodeSetChanges
     {
 
@@ -2140,8 +2151,10 @@ namespace AasxUANodesetImExport
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
+    [System.Xml.Serialization.XmlTypeAttribute(
+        AnonymousType = true, Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(
+        Namespace = "http://opcfoundation.org/UA/2011/03/UANodeSet.xsd", IsNullable = false)]
     public partial class UANodeSetChangesStatus
     {
 

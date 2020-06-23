@@ -88,8 +88,9 @@ namespace AasxIntegrationBase
     {
         public string Tag = "";
         public string Caption = "";
-        public Func<object, object, object, object> FillWithWpfControls = null; // 1. object = any result data (null means error), 2. object = Package, 3. object = Referable, 4. object = master dock panel to insert in
-
+        // 1. object = any result data (null means error),
+        // 2. object = Package, 3. object = Referable, 4. object = master dock panel to insert in
+        public Func<object, object, object, object> FillWithWpfControls = null;
         public AasxPluginResultVisualExtension() { }
 
         public AasxPluginResultVisualExtension(string tag, string caption)
@@ -103,8 +104,9 @@ namespace AasxIntegrationBase
     {
         public string Tag = "";
         public string Caption = "";
-        public Func<object, object, object, object> FillWithWpfControls = null; // 1. object = any result data (null means error), 2. object = Package, 3. object = Referable, 4. object = master dock panel to insert in
-
+        // 1. object = any result data (null means error), 2. object = Package, 3. object = Referable,
+        // 4. object = master dock panel to insert in
+        public Func<object, object, object, object> FillWithWpfControls = null;
         public AasxPluginVisualElementExtension() { }
 
         public AasxPluginVisualElementExtension(string tag, string caption)

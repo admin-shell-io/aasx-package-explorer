@@ -102,11 +102,13 @@ namespace AasxPluginTechnicalData
                 // If the visual isn't part of the visual tree, then it needs to be forced to finish its layout
                 visual.Width = width;
                 visual.Height = height;
-                visual.Measure(new Size(width, height));        //  I thought these two statements would be expensive, but profiling shows it's mostly all on Render
+                //  I thought these two statements would be expensive, but profiling shows it's mostly all on Render
+                visual.Measure(new Size(width, height));
                 visual.Arrange(new Rect(0, 0, width, height));
             }
 
-            RenderTargetBitmap retVal = new RenderTargetBitmap(2 * width, 2 * height, 2 * DPI, 2 * DPI, PixelFormats.Pbgra32);
+            RenderTargetBitmap retVal = new RenderTargetBitmap(
+                2 * width, 2 * height, 2 * DPI, 2 * DPI, PixelFormats.Pbgra32);
 
             DrawingVisual dv = new DrawingVisual();
             using (DrawingContext ctx = dv.RenderOpen())
@@ -137,7 +139,8 @@ namespace AasxPluginTechnicalData
             // create middle part
             var cntlProps = new TechDataPropertiesControl();
             cntlProps.SetContents(this.thePackage, this.theDefs, this.theDefaultLang, this.theSubmodel);
-            var document = cntlProps.CreateFlowDocument(this.thePackage, this.theDefs, this.theDefaultLang, this.theSubmodel);
+            var document = cntlProps.CreateFlowDocument(
+                this.thePackage, this.theDefs, this.theDefaultLang, this.theSubmodel);
 
             // Clone the source document's content into a new FlowDocument.
             // This is because the pagination for the printer needs to be
@@ -155,7 +158,8 @@ namespace AasxPluginTechnicalData
 
             // get information about the dimensions of the seleted printer+media.
             System.Printing.PrintDocumentImageableArea ia = null;
-            System.Windows.Xps.XpsDocumentWriter docWriter = System.Printing.PrintQueue.CreateXpsDocumentWriter(ref ia);
+            System.Windows.Xps.XpsDocumentWriter docWriter =
+                System.Printing.PrintQueue.CreateXpsDocumentWriter(ref ia);
 
             if (docWriter != null && ia != null)
             {

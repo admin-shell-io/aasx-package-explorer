@@ -12,7 +12,8 @@ namespace AasxPluginBomStructure
 {
     public class AasReferenceStore
     {
-        private MultiTupleDictionary<uint, AdminShell.Referable> dict = new MultiTupleDictionary<uint, AdminShellV20.Referable>();
+        private MultiTupleDictionary<uint, AdminShell.Referable> dict =
+            new MultiTupleDictionary<uint, AdminShellV20.Referable>();
 
         private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
 
@@ -56,12 +57,14 @@ namespace AasxPluginBomStructure
 
         private void RecurseIndexSME(AdminShell.Reference currRef, AdminShell.SubmodelElement sme)
         {
-            // access 
+            // access
             if (currRef == null || sme == null)
                 return;
 
             // add to the currRef
-            currRef.Keys.Add(new AdminShell.Key(sme.GetElementName(), false, AdminShell.Identification.IdShort, sme.idShort));
+            currRef.Keys.Add(
+                new AdminShell.Key(
+                    sme.GetElementName(), false, AdminShell.Identification.IdShort, sme.idShort));
 
             // index
             dict.Add(ComputeHashOnReference(currRef), sme);
