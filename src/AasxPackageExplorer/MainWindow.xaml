@@ -40,6 +40,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <RoutedUICommand x:Key="PrintRepo" Text="PrintRepo" />
         <RoutedUICommand x:Key="PrintAsset" Text="PrintAsset" />
         <RoutedUICommand x:Key="ImportAML" Text="ImportAML" />
+        <RoutedUICommand x:Key="ImportSubmodel" Text="ImportSubmodel" />
         <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
         <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />
         <RoutedUICommand x:Key="SubmodelRead" Text="SubmodelRead" />
@@ -176,6 +177,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <CommandBinding Command="{StaticResource PrintRepo}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource PrintAsset}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportAML}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ImportSubmodel}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCRead}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelWrite}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelRead}" Executed="CommandBinding_Executed"/>
@@ -276,6 +278,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                             <MenuItem Header="Import AutomationML into AASX .." Command="{StaticResource ImportAML}"/>
                             <MenuItem Header="Import Submodel from JSON .." Command="{StaticResource SubmodelRead}"/>
                             <MenuItem Header="GET Submodel from URL .." Command="{StaticResource SubmodelGet}"/>
+                            <MenuItem Header="Import Submodel from IEC CDD .." Command="{StaticResource ImportSubmodel}"/>
                             <MenuItem Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
                             <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
