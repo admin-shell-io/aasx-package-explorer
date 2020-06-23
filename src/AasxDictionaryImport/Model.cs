@@ -118,9 +118,9 @@ namespace AasxDictionaryImport.Model
     }
 
     /// <summary>
-    /// A collection of elements stored in a data set as a tree.  The LoadSubmodels method can be used to retrieve those
-    /// elements that correspond to AAS submodels, the first level of the tree.  If the data source contains undefined
-    /// references, they will be ignored and recorded in the UnknownReferences collection.
+    /// A collection of elements stored in a data set as a tree.  The LoadSubmodels and LoadSubmodelElements methods can
+    /// be used to retrieve the elements stored in this data set.  If the data source contains undefined references,
+    /// they will be ignored and recorded in the UnknownReferences collection.
     /// </summary>
     public interface IDataContext
     {
@@ -135,6 +135,13 @@ namespace AasxDictionaryImport.Model
         /// </summary>
         /// <returns>A collection of elements corresponding to AAS submodels</returns>
         ICollection<IElement> LoadSubmodels();
+
+        /// <summary>
+        /// Loads and returns those elements that correspond to AAS submodel elements, for example IEC CDD classes and
+        /// properties.
+        /// </summary>
+        /// <returns>A collection of elements corresponding to AAS submodel elements</returns>
+        ICollection<IElement> LoadSubmodelElements();
     }
 
     /// <summary>
@@ -203,6 +210,22 @@ namespace AasxDictionaryImport.Model
         /// converted to an AAS submodel</returns>
         bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
             AdminShellV20.AdministrationShell adminShell);
+
+        /// <summary>
+        /// Converts this element into a AAS submodel element (i. e. a property or a collection) and adds it to the
+        /// given parent element (typically a submodel).  If this element cannot be converted into a submodel element,
+        /// this method returns false.
+        /// <para>
+        /// Implementations of this method should check the IsSelected attribute both for this element and for all
+        /// children.  Only those elements with IsSelected equals true should be imported.
+        /// </para>
+        /// </summary>
+        /// <param name="env">The admin shell environment for the import</param>
+        /// <param name="parent">The parent element to add the submodel elements to</param>
+        /// <returns>true if the import was successful, or false if the import failed or
+        /// if this element cannot be converted to an AAS submodel element</returns>
+        bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.IManageSubmodelElements parent);
 
         /// <summary>
         /// Returns all detail information for this element, suitable for the user interface.  The keys of the returned
@@ -373,6 +396,10 @@ namespace AasxDictionaryImport.Model
         /// <inheritdoc/>
         public virtual bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
             AdminShellV20.AdministrationShell adminShell) => false;
+
+        /// <inheritdoc/>
+        public virtual bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.IManageSubmodelElements parent) => false;
 
         /// <inheritdoc/>
         public virtual bool Match(IEnumerable<string> queryParts)
