@@ -4,7 +4,7 @@
 
 The file `LICENSE.TXT` in the main folder of the repo is the leading license
 information, even if it does not show up in the Visual Studio solution. To
-update all dependent license files, manually start `CopyLicense.bat`.
+update all dependent license files, manually start `src/CopyLicense.ps1`.
 
 ## Pull Requests
 

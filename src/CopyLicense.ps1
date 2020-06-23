@@ -17,7 +17,8 @@ function Main
     # Excludes and includes need to be absolute paths.
 
     $excludes = @{
-        $( Join-Path $srcDir "AasxPluginBomStructure" ) = true
+    # Example:
+    # $( Join-Path $srcDir "AasxPluginBomStructure" ) = true
     }
 
     $includes = @(
