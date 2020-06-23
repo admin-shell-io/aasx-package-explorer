@@ -273,6 +273,10 @@
       <Project>{294fc59a-5645-412f-8216-702fb66528c1}</Project>
       <Name>AasxGenerate</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj">
+      <Project>{dec389bc-59bc-48e5-b163-6e44ce782c4a}</Project>
+      <Name>AasxDictionaryImport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj">
       <Project>{e3ab36ea-e98a-4cc2-bc18-1d0e40eeae1a}</Project>
       <Name>AasxIntegrationBaseWpf</Name>
