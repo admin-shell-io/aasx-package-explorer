@@ -24,7 +24,8 @@ namespace AasxIntegrationBase.AasForms
         // Members
 
         /// <summary>
-        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and program logic
+        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and
+        /// program logic
         /// </summary>
         protected bool UpdateDisplayInCharge = false;
 
@@ -58,7 +59,7 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Set the property, given by enum <c>IFormListControlPropertyType</c> to the
-        /// value 
+        /// value
         /// </summary>
         public void SetProperty(IFormListControlPropertyType property, object value)
         {
@@ -144,7 +145,8 @@ namespace AasxIntegrationBase.AasForms
                     ComboBoxValue.Items.Add(cbc);
 
                 // editable, if valueFromComboBoxIndex[] is null
-                var editableMode = (dc.desc.valueFromComboBoxIndex == null || dc.desc.valueFromComboBoxIndex.Length < 1);
+                var editableMode = (dc.desc.valueFromComboBoxIndex == null ||
+                    dc.desc.valueFromComboBoxIndex.Length < 1);
                 ComboBoxValue.IsEditable = editableMode;
 
                 // update property

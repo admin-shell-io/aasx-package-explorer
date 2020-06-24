@@ -27,22 +27,28 @@ namespace AasxPluginTechnicalData
             InitializeComponent();
         }
 
-        public void SetContents(AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShell.Submodel sm)
+        public void SetContents(
+            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShell.Submodel sm)
         {
             // access
             if (sm == null)
                 return;
 
             // section General
-            var smcFurther = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_FurtherInformation.GetSingleKey());
+            var smcFurther = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                theDefs.CD_FurtherInformation.GetSingleKey());
             if (smcFurther != null)
             {
                 // single items
-                TextBoxValidDate.Text = "" + smcFurther.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ValidDate.GetSingleKey())?.value;
+                TextBoxValidDate.Text = "" + smcFurther.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                    theDefs.CD_ValidDate.GetSingleKey())?.value;
 
                 // Lines
                 var tsl = new List<string>();
-                foreach (var smw in smcFurther.value.FindAllSemanticId(theDefs.CD_TextStatement.GetSingleKey(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
+                foreach (var smw in
+                    smcFurther.value.FindAllSemanticId(
+                        theDefs.CD_TextStatement.GetSingleKey(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
                     tsl.Add("" + smw?.submodelElement?.ValueAsText(defaultLang));
 
 

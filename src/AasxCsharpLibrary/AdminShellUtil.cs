@@ -180,7 +180,8 @@ namespace AdminShellNS
             }
         }
 
-        public static void CheckSearchable(SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
+        public static void CheckSearchable(
+            SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
             MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
         {
             // try get a speaking name
@@ -199,7 +200,8 @@ namespace AdminShellNS
                 // find options
                 var found = true;
                 if (options.findText != null)
-                    found = foundText.IndexOf(options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+                    found = foundText.IndexOf(
+                        options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
 
                 // add?
                 if (found)
@@ -222,7 +224,9 @@ namespace AdminShellNS
             }
         }
 
-        public static void EnumerateSearchable(SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options, object businessObject = null)
+        public static void EnumerateSearchable(
+            SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
+            object businessObject = null)
         {
             // access
             if (results == null || obj == null || options == null)
@@ -277,7 +281,9 @@ namespace AdminShellNS
                 else
                 {
                     // field is a single entity .. check it
-                    CheckSearchable(results, options, qualifiedName, businessObject, fi, fieldValue, obj, () => { return fieldValue.GetHashCode(); });
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, fi, fieldValue, obj,
+                        () => { return fieldValue.GetHashCode(); });
 
                     // dive deeper ..
                     EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject);
@@ -316,7 +322,9 @@ namespace AdminShellNS
                 else
                 {
                     // field is a single entity .. check it
-                    CheckSearchable(results, options, qualifiedName, businessObject, pi, propValue, obj, () => { return propValue.GetHashCode(); });
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, pi, propValue, obj,
+                        () => { return propValue.GetHashCode(); });
 
                     // dive deeper ..
                     EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject);

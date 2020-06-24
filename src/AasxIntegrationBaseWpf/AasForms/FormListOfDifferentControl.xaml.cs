@@ -56,7 +56,8 @@ namespace AasxIntegrationBase.AasForms
                 if (dc.smInst != null && dc.smInst.desc != null && dc.smInst.desc is FormDescSubmodel fdsm)
                     dc.listOfElements = fdsm.SubmodelElements;
 
-                if (dc.smecInst != null && dc.smecInst.desc != null && dc.smecInst.desc is FormDescSubmodelElementCollection fdsmc)
+                if (dc.smecInst != null && dc.smecInst.desc != null &&
+                    dc.smecInst.desc is FormDescSubmodelElementCollection fdsmc)
                     dc.listOfElements = fdsmc.value;
 
                 if (directLoE != null)
@@ -78,7 +79,7 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Set the property, given by enum <c>IFormListControlPropertyType</c> to the
-        /// value 
+        /// value
         /// </summary>
         public void SetProperty(IFormListControlPropertyType property, object value)
         {
@@ -100,7 +101,8 @@ namespace AasxIntegrationBase.AasForms
                 lod = dc.smecInst.PairInstances;
             if (lod != null && lod.Count > 0)
                 foreach (var ld in lod)
-                    if (ld.instances != null && ld.instances.subControl != null && ld.instances.subControl is FormListOfSameControl flsc)
+                    if (ld.instances != null && ld.instances.subControl != null &&
+                        ld.instances.subControl is FormListOfSameControl flsc)
                         flsc.SetProperty(property, value);
         }
 
@@ -180,7 +182,8 @@ namespace AasxIntegrationBase.AasForms
                 {
                     GridHeader.Visibility = Visibility.Visible;
                     GridHeader.Background = System.Windows.Media.Brushes.White;
-                    TextBlockHeaderFormTitle.Text = (dc.smDesc.FormTitle.Trim().Length < 1) ? "Submodel" : dc.smDesc.FormTitle;
+                    TextBlockHeaderFormTitle.Text =
+                        (dc.smDesc.FormTitle.Trim().Length < 1) ? "Submodel" : dc.smDesc.FormTitle;
                     TextBlockHeaderFormInfo.Text = dc.smDesc.FormInfo;
                 }
 
@@ -205,8 +208,11 @@ namespace AasxIntegrationBase.AasForms
                 if (ShowHeader)
                 {
                     GridHeader.Visibility = Visibility.Visible;
-                    GridHeader.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xf0, 0xf0, 0xf0));
-                    TextBlockHeaderFormTitle.Text = (dc.smecDesc.FormTitle.Trim().Length < 1) ? "SubmodelElementCollection" : dc.smecDesc.FormTitle;
+                    GridHeader.Background = new System.Windows.Media.SolidColorBrush(
+                        System.Windows.Media.Color.FromRgb(0xf0, 0xf0, 0xf0));
+                    TextBlockHeaderFormTitle.Text = (dc.smecDesc.FormTitle.Trim().Length < 1)
+                        ? "SubmodelElementCollection"
+                        : dc.smecDesc.FormTitle;
                     TextBlockHeaderFormInfo.Text = dc.smecDesc.FormInfo;
                 }
 

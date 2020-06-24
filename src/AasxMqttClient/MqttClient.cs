@@ -8,14 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-   Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
-   Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
-    zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>, author: Florian Pethig
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
 
-*/
+Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
 
-/* For Mqtt Content:
+Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo,
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>
+Author: Florian Pethig
+
+For Mqtt Content:
 
 MIT License
 

@@ -54,7 +54,9 @@ namespace AasxPackageExplorer
         static Dictionary<string, UaNode> parentNodes;
         static Dictionary<string, Int16> semanticIDPool;
 
-        public static void ImportNodeSetToSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
+        public static void ImportNodeSetToSubModel(
+            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
+            AdminShell.SubmodelRef smref)
         {
             XmlTextReader reader = new XmlTextReader(inputFn);
             StreamWriter sw = File.CreateText(inputFn + ".log.txt");
@@ -268,35 +270,40 @@ namespace AasxPackageExplorer
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluriversion
-            msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluriversion");
+            msemanticID = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "models/modeluriversion");
             mp = AdminShell.Property.CreateNew("ModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriVersion;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluripublicationdate
-            msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluripublicationdate");
+            msemanticID = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "models/modeluripublicationdate");
             mp = AdminShell.Property.CreateNew("ModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriPublicationDate;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // requiredmodeluri
-            msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluri");
+            msemanticID = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluri");
             mp = AdminShell.Property.CreateNew("RequiredModelUri", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUri;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluriversion
-            msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluriversion");
+            msemanticID = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluriversion");
             mp = AdminShell.Property.CreateNew("RequiredModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriVersion;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluripublicationdate
-            msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluripublicationdate");
+            msemanticID = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluripublicationdate");
             mp = AdminShell.Property.CreateNew("RequiredModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriPublicationDate;
@@ -305,8 +312,10 @@ namespace AasxPackageExplorer
 
             // iterate through independent root trees
             // store UADataType to UADataTypeCollection in the end
-            var semanticIDDataTypes = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "UADataTypeCollection");
-            var smeDataTypes = AdminShell.SubmodelElementCollection.CreateNew("UADataTypeCollection", null, semanticIDDataTypes);
+            var semanticIDDataTypes = AdminShell.Key.CreateNew(
+                "GlobalReference", false, "IRI", ModelUri + "UADataTypeCollection");
+            var smeDataTypes = AdminShell.SubmodelElementCollection.CreateNew(
+                "UADataTypeCollection", null, semanticIDDataTypes);
 
             foreach (UaNode n in roots)
             {
@@ -339,8 +348,13 @@ namespace AasxPackageExplorer
                     }
                     foreach (field f in n.fields)
                     {
-                        sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
-                        semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + name + "/" + f.name);
+                        sme.semanticId.Keys.Add(
+                            AdminShell.Key.CreateNew(
+                                "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+
+                        semanticID = AdminShell.Key.CreateNew(
+                            "GlobalReference", false, "IRI", ModelUri + name + "/" + f.name);
+
                         var p = AdminShell.Property.CreateNew(f.name, null, semanticID);
                         p.valueType = "string";
                         p.value = f.value;
@@ -374,7 +388,9 @@ namespace AasxPackageExplorer
             innerSme.Add(smeDataTypes);
         }
 
-        public static void createSubmodelElements(UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.SubmodelElementCollection smec, AdminShell.SubmodelRef smref, string path, AdminShell.SubmodelElementCollection concepts)
+        public static void createSubmodelElements(
+            UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.SubmodelElementCollection smec,
+            AdminShell.SubmodelRef smref, string path, AdminShell.SubmodelElementCollection concepts)
         {
             String name = n.BrowseName;
             if (n.SymbolicName != null && n.SymbolicName != "")
@@ -396,7 +412,9 @@ namespace AasxPackageExplorer
                 }
                 foreach (field f in n.fields)
                 {
-                    sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+                    sme.semanticId.Keys.Add(
+                        AdminShell.Key.CreateNew(
+                            "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
                     semanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", path + name + "/" + f.name);
                     var p = AdminShell.Property.CreateNew(f.name, null, semanticID);
                     p.valueType = "string";
@@ -486,10 +504,14 @@ namespace AasxPackageExplorer
             if (n.DefinitionName != null && n.DefinitionName != "")
                 se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionName", false, "OPC", n.DefinitionName));
             if (n.DefinitionNameSpace != null && n.DefinitionNameSpace != "")
-                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionNameSpace", false, "OPC", n.DefinitionNameSpace));
+                se.semanticId.Keys.Add(
+                    AdminShell.Key.CreateNew(
+                        "UADefinitionNameSpace", false, "OPC", n.DefinitionNameSpace));
             foreach (field f in n.fields)
             {
-                se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
+                se.semanticId.Keys.Add(
+                    AdminShell.Key.CreateNew(
+                        "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
             }
 
             return se;

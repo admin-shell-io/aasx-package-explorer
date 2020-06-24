@@ -12,7 +12,7 @@ namespace AasxIntegrationBase.AasForms
     {
         /// <summary>
         /// Set the property, given by enum <c>IFormListControlPropertyType</c> to the
-        /// value 
+        /// value
         /// </summary>
         void SetProperty(IFormListControlPropertyType property, object value);
 

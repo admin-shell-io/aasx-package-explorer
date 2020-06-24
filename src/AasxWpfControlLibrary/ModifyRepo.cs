@@ -8,11 +8,20 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -33,7 +42,10 @@ namespace AasxPackageExplorer
             public DispEditHighlight.HighlightFieldInfo HighlightField = null;
             public bool OnlyReFocus = false;
 
-            public LambdaActionRedrawAllElements(object nextFocus, bool? isExpanded = true, DispEditHighlight.HighlightFieldInfo highlightField = null, bool onlyReFocus = false)
+            public LambdaActionRedrawAllElements(
+                object nextFocus, bool? isExpanded = true,
+                DispEditHighlight.HighlightFieldInfo highlightField = null,
+                bool onlyReFocus = false)
             {
                 this.NextFocus = nextFocus;
                 this.IsExpanded = isExpanded;
@@ -62,7 +74,8 @@ namespace AasxPackageExplorer
             WishForOutsideAction.Add(la);
         }
 
-        public Control RegisterControl(Control c, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
+        public Control RegisterControl(
+            Control c, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
             // add item
             var it = new RepoItem();

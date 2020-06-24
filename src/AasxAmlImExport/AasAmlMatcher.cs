@@ -13,9 +13,11 @@ namespace AasxAmlImExport
     /// </summary>
     public class AasAmlMatcher
     {
-        private Dictionary<AdminShell.Referable, CAEXObject> aasToAml = new Dictionary<AdminShell.Referable, CAEXObject>();
+        private Dictionary<AdminShell.Referable, CAEXObject> aasToAml =
+            new Dictionary<AdminShell.Referable, CAEXObject>();
 
-        private Dictionary<CAEXObject, AdminShell.Referable> amlToAas = new Dictionary<CAEXObject, AdminShell.Referable>();
+        private Dictionary<CAEXObject, AdminShell.Referable> amlToAas =
+            new Dictionary<CAEXObject, AdminShell.Referable>();
 
         public void AddMatch(AdminShell.Referable aasReferable, CAEXObject amlObject)
         {

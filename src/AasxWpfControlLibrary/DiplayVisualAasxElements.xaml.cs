@@ -17,11 +17,20 @@ using System.Windows.Shapes;
 using AdminShellNS;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -125,11 +134,14 @@ namespace AasxPackageExplorer
 
             var scrollViewer = tv1.Template.FindName("_tv_scrollviewer_", tv1) as ScrollViewer;
             if (scrollViewer != null)
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, (Action)(() => scrollViewer.ScrollToLeftEnd()));
+                Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Loaded,
+                    (Action)(() => scrollViewer.ScrollToLeftEnd()));
         }
 
         /// <summary>
-        /// As the SelectedItemChanged event is also fired due to internal operations, it is suppressed from time to time.
+        /// As the SelectedItemChanged event is also fired due to internal operations,
+        /// it is suppressed from time to time.
         /// </summary>
         private bool preventSelectedItemChanged = false;
 
@@ -325,7 +337,8 @@ namespace AasxPackageExplorer
             {
 
                 // generate lines, add
-                var x = Generators.GenerateVisualElementsFromShellEnv(treeViewLineCache, env, package, editMode, expandMode: 1);
+                var x = Generators.GenerateVisualElementsFromShellEnv(
+                    treeViewLineCache, env, package, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
 
@@ -333,7 +346,8 @@ namespace AasxPackageExplorer
                 if (auxPackages != null)
                     foreach (var aux in auxPackages)
                     {
-                        var x2 = Generators.GenerateVisualElementsFromShellEnv(treeViewLineCache, aux.AasEnv, aux, editMode, expandMode: 1);
+                        var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                            treeViewLineCache, aux.AasEnv, aux, editMode, expandMode: 1);
                         foreach (var xx in x2)
                             displayedTreeViewLines.Add(xx);
                     }
@@ -348,7 +362,10 @@ namespace AasxPackageExplorer
                 if (displayedTreeViewLines.Count < 1)
                 {
                     // emergency
-                    displayedTreeViewLines.Add(new VisualElementEnvironmentItem(null /* no parent */, treeViewLineCache, package, env, VisualElementEnvironmentItem.ItemType.EmptySet));
+                    displayedTreeViewLines.Add(
+                        new VisualElementEnvironmentItem(
+                            null /* no parent */, treeViewLineCache, package, env,
+                            VisualElementEnvironmentItem.ItemType.EmptySet));
                 }
 
             }

@@ -14,53 +14,73 @@ using AasxIntegrationBase.AasForms;
 
 #pragma warning disable CS0162 // dead code
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace opctest
 {
     public static class Program
     {
 
-        public static AdminShell.Submodel CreateSubmodelCad(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelCad(
+            InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
 
             // CONCEPTS
-            var cdGroup = AdminShell.ConceptDescription.CreateNew("IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
+            var cdGroup = AdminShell.ConceptDescription.CreateNew(
+                "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
             aasenv.ConceptDescriptions.Add(cdGroup);
             cdGroup.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "CAD Dateieinheit", "EN", "CAD file item" },
                 shortName: "CadItem",
                 unit: "",
-                definition: new[] { "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.", "EN", "Collection of properties, which make a file for a CAD system accessible." }
+                definition: new[] {
+                    "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
+                    "EN", "Collection of properties, which make a file for a CAD system accessible." }
             );
 
-            var cdFile = AdminShell.ConceptDescription.CreateNew("IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
+            var cdFile = AdminShell.ConceptDescription.CreateNew(
+                "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "Enthaltene CAD Datei", "EN", "Embedded CAD file" },
                 shortName: "File",
                 unit: "",
-                definition: new[] { "DE", "Verweis auf enthaltene CAD Datei.", "EN", "Reference to embedded CAD file." }
+                definition: new[] {
+                    "DE", "Verweis auf enthaltene CAD Datei.", "EN", "Reference to embedded CAD file." }
             );
 
-            var cdFormat = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-ZAA120#007");
+            var cdFormat = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "Filetype CAD", "EN", "Filetype CAD" },
                 shortName: "FileFormat",
                 unit: "",
-                definition: new[] { "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.", "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
+                definition: new[] {
+                    "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.",
+                    "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
             );
 
             // SUB MODEL
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "CAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew("Submodel", false, "IRI", "http://example.com/id/type/submodel/cad/1/1"));
+            sub1.semanticId.Keys.Add(
+                AdminShell.Key.CreateNew(
+                    "Submodel", false, "IRI", "http://example.com/id/type/submodel/cad/1/1"));
 
             // for each cad file in prefs
             int ndx = 0;
@@ -75,25 +95,31 @@ namespace opctest
                 ndx++;
 
                 // GROUP
-                var propGroup = AdminShell.SubmodelElementCollection.CreateNew($"CadItem{ndx:D2}", "PARAMETER", AdminShell.Key.GetFromRef(cdGroup.GetReference()));
+                var propGroup = AdminShell.SubmodelElementCollection.CreateNew(
+                    $"CadItem{ndx:D2}", "PARAMETER", AdminShell.Key.GetFromRef(cdGroup.GetReference()));
                 sub1.Add(propGroup);
 
                 // FILE
-                var propFile = AdminShell.File.CreateNew("File", "PARAMETER", AdminShell.Key.GetFromRef(cdFile.GetReference()));
+                var propFile = AdminShell.File.CreateNew(
+                    "File", "PARAMETER", AdminShell.Key.GetFromRef(cdFile.GetReference()));
                 propGroup.Add(propFile);
                 propFile.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
                 propFile.value = "" + fr.targetdir.Trim() + System.IO.Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
-                var propType = AdminShell.ReferenceElement.CreateNew("FileFormat", "PARAMETER", AdminShell.Key.GetFromRef(cdFormat.GetReference()));
+                var propType = AdminShell.ReferenceElement.CreateNew(
+                    "FileFormat", "PARAMETER", AdminShell.Key.GetFromRef(cdFormat.GetReference()));
                 propGroup.Add(propType);
-                propType.value = AdminShell.Reference.CreateNew(AdminShell.Key.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "" + fr.args[0]));
+                propType.value = AdminShell.Reference.CreateNew(
+                    AdminShell.Key.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI, "" + fr.args[0]));
             }
 
             return sub1;
         }
 
-        public static AdminShell.Submodel CreateSubmodelDocumentationBasedOnVDI2770(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelDocumentationBasedOnVDI2770(
+            InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // use pre-definitions
             var preDefLib = new AasxPredefinedConcepts.DefinitionsVDI2770();
@@ -123,7 +149,8 @@ namespace opctest
 
                     // DOCUMENT ID
                     cd = preDefs.CD_VDI2770_DocumentId;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args.GetHashCode();
@@ -132,7 +159,8 @@ namespace opctest
 
                     // Is Primary
                     cd = preDefs.CD_VDI2770_IsPrimaryDocumentId;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "boolean";
                         p.value = "true";
@@ -141,7 +169,8 @@ namespace opctest
 
                     // DOCUMENT CLASS ID
                     cd = preDefs.CD_VDI2770_DocumentClassId;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args[0];
@@ -151,7 +180,8 @@ namespace opctest
 
                     // DOCUMENT CLASS NAME
                     cd = preDefs.CD_VDI2770_DocumentClassName;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args[1];
@@ -160,7 +190,8 @@ namespace opctest
 
                     // CLASS SYS
                     cd = preDefs.CD_VDI2770_DocumentClassificationSystem;
-                    using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                     {
                         p0.Add(p);
                         p.valueType = "string";
@@ -179,7 +210,9 @@ namespace opctest
                         cd = preDefs.CD_VDI2770_Language;
                         var lngs = args[4].Split(',');
                         for (int i = 0; i < lngs.Length; i++)
-                            using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName() + $"{i + 1:00}", "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                            using (var p = AdminShell.Property.CreateNew(
+                                cd.GetDefaultShortName() + $"{i + 1:00}", "CONSTANT",
+                                AdminShell.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
                                 p.valueType = "string";
@@ -188,7 +221,8 @@ namespace opctest
 
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -197,7 +231,8 @@ namespace opctest
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Title;
-                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.value.Add("EN", "" + args[3]);
@@ -207,7 +242,8 @@ namespace opctest
 
                         // SUMMARY
                         cd = preDefs.CD_VDI2770_Summary;
-                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.value.Add("EN", "Summary for: " + args[3]);
@@ -217,7 +253,8 @@ namespace opctest
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Keywords;
-                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.value.Add("EN", "Keywords for: " + args[3]);
@@ -227,7 +264,8 @@ namespace opctest
 
                         // SET DATE
                         cd = preDefs.CD_VDI2770_Date;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "date";
@@ -236,7 +274,8 @@ namespace opctest
 
                         // STATUS
                         cd = preDefs.CD_VDI2770_StatusValue;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -245,7 +284,8 @@ namespace opctest
 
                         // ROLE
                         cd = preDefs.CD_VDI2770_Role;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -254,7 +294,8 @@ namespace opctest
 
                         // ORGANIZATION
                         cd = preDefs.CD_VDI2770_OrganizationName;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -263,7 +304,8 @@ namespace opctest
 
                         // ORGANIZATION OFFICIAL
                         cd = preDefs.CD_VDI2770_OrganizationOfficialName;
-                        using (var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                        using (var p = AdminShell.Property.CreateNew(
+                            cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -275,7 +317,8 @@ namespace opctest
                         {
                             // physical file
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShell.File.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                            using (var p = AdminShell.File.CreateNew(
+                                cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
                                 p.mimeType = AdminShellPackageEnv.GuessMimeType(fn);
@@ -286,7 +329,8 @@ namespace opctest
                         {
                             // URL
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShell.File.CreateNew(cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
+                            using (var p = AdminShell.File.CreateNew(
+                                cd.GetDefaultShortName(), "CONSTANT", AdminShell.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
                                 p.mimeType = AdminShellPackageEnv.GuessMimeType(url);
@@ -328,35 +372,44 @@ namespace opctest
             return sub1;
         }
 
-        public static AdminShell.Submodel CreateSubmodelDatasheet(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelDatasheet(
+            InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
-            // eClass product group: 19-15-07-01 USB stick 
+            // eClass product group: 19-15-07-01 USB stick
 
             // SUB MODEL
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew("Submodel", false, "IRI", "http://example.com/id/type/submodel/datasheet/1/1"));
+            sub1.semanticId.Keys.Add(
+                AdminShell.Key.CreateNew(
+                    "Submodel", false, "IRI", "http://example.com/id/type/submodel/datasheet/1/1"));
 
             // CONCEPT: Manufacturer
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAO677#001"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-AAO677#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] { "DE", "TBD", "EN", "Manufacturer name" },
                     shortName: "Manufacturer",
                     definition: new[] { "DE", "TBD",
-                    "EN", "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation" }
+                    "EN",
+                    "legally valid designation of the natural or judicial person which is directly " +
+                        "responsible for the design, production, packaging and labeling of a product in respect " +
+                        "to its being brought into circulation" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "string";
                 p.value = "Example company Ltd.";
             }
 
             // CONCEPT: Width
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-BAF016#005"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-BAF016#005"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -364,18 +417,25 @@ namespace opctest
                     shortName: "Width",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new[] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung rechtwinklig zur längsten Symmetrieachse",
-                    "EN", "for objects with orientation in preferred position during use the dimension perpendicular to height/ length/depth" }
+                    definition: new[] {
+                        "DE",
+                        "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
+                        "rechtwinklig zur längsten Symmetrieachse",
+                        "EN",
+                        "for objects with orientation in preferred position during use the dimension " +
+                        "perpendicular to height/ length/depth" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "48";
             }
 
             // CONCEPT: Height
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-BAA020#008"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-BAA020#008"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -383,18 +443,26 @@ namespace opctest
                     shortName: "Height",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new[] { "DE", "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
-                    "EN", "for objects with orientation in preferred position during use the dimension perpendicular to diameter/length/width/depth" }
+                    definition: new[] {
+                        "DE",
+                        "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
+                        "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
+                        "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
+                        "EN",
+                        "for objects with orientation in preferred position during use the dimension " +
+                        "perpendicular to diameter/length/width/depth" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "56";
             }
 
             // CONCEPT: Depth
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -402,22 +470,30 @@ namespace opctest
                     shortName: "Depth",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
-                    definition: new[] { "DE", "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
-                    "EN", "for objects with fixed orientation or in preferred utilization position, the rear , generally away from the observer expansion is described as depth" }
+                    definition: new[] {
+                        "DE",
+                        "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
+                        "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
+                        "EN",
+                        "for objects with fixed orientation or in preferred utilization position, " +
+                        "the rear , generally away from the observer expansion is described as depth" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "11.9";
             }
 
             // CONCEPT: Weight
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-AAS627#001"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-AAS627#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "Gewicht der Artikeleinzelverpackung", "EN", "Weight of the individual packaging" },
+                    preferredNames: new[] {
+                        "DE", "Gewicht der Artikeleinzelverpackung", "EN", "Weight of the individual packaging" },
                     shortName: "Weight",
                     unit: "g",
                     valueFormat: "REAL_MEASURE",
@@ -426,38 +502,52 @@ namespace opctest
                 );
 
                 // as designed
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.AddQualifier("life cycle qual", "SPEC",
-                    AdminShell.KeyList.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
-                    AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF579"));
+                    AdminShell.KeyList.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
+                    AdminShell.Reference.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF579"));
                 p.valueType = "double";
                 p.value = "23.1";
 
                 // as produced
-                var p2 = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p2 = AdminShell.Property.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
-                    AdminShell.KeyList.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
-                    AdminShell.Reference.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF573"));
+                    AdminShell.KeyList.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF575"),
+                    AdminShell.Reference.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI, "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";
             }
 
             // CONCEPT: Material
-            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] { "DE", "Werkstoff", "EN", "Material" },
                     shortName: "Material",
                     definition: new[] { "DE", "TBD",
-                    "EN", "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, Schweißen usw. in die endgültige Form gebracht werden" }
+                    "EN",
+                    "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
+                    "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
+                    "Schweißen usw. in die endgültige Form gebracht werden" }
                 );
 
-                var p = AdminShell.ReferenceElement.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.ReferenceElement.CreateNew(
+                    cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
-                p.value = p.value = AdminShell.Reference.CreateNew(AdminShell.Key.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, "0173-1#07-AAA878#004")); // Polyamide (PA)
+                p.value = p.value = AdminShell.Reference.CreateNew(
+                    AdminShell.Key.CreateNew(
+                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "0173-1#07-AAA878#004")); // Polyamide (PA)
             }
 
             // Nice
@@ -479,18 +569,18 @@ namespace opctest
 
 #if notyet
 
-            // eClass product group: 19-15-07-01 USB stick              
+            // eClass product group: 19-15-07-01 USB stick
             // siehe: http://www.eclasscontent.com/?id=19150701&version=10_1&language=de&action=det
 
             // CONCEPT: Weight by Michael Hoffmeister                   // Schreiben Sie hier Ihren Namen
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType:AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType:AdminShell.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id:"0173-1#02-AAS627#001"))                             // die ID des Merkmales bei eCl@ss
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { 
-                        "DE", "Gewicht der Artikeleinzelverpackung",    // wechseln Sie die Sprache bei eCl@ss 
+                    preferredNames: new [] {
+                        "DE", "Gewicht der Artikeleinzelverpackung",    // wechseln Sie die Sprache bei eCl@ss
                         "EN", "Weight of the individual packaging" },   // um die Sprach-Texte aufzufinden
                     shortName: "Weight",                                // kurzer, sprechender Name
                     unit: "g",                                          // Gewicht als SI Einheit ohne Klammern
@@ -499,25 +589,25 @@ namespace opctest
                     "EN", "Mass of the individual packaging of an article" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", 
+                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
                             AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";                                 // hier den Datentypen im XSD-Format
                 p.value = "23";                                         // hier den Wert; immer als String mit
             }                                                           // doppelten Anfuehrungszeichen
 
-            // eClass product group: 19-15-07-01 USB stick              
+            // eClass product group: 19-15-07-01 USB stick
             // siehe: http://www.eclasscontent.com/?id=19150701&version=10_1&language=de&action=det
 
             // CONCEPT: Color by Dominik                   // Schreiben Sie hier Ihren Namen
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType:AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType:AdminShell.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id:"0173-1#02-AAS624#002"))                             // die ID des Merkmales bei eCl@ss
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { 
-                        "DE", "Farbcode der Artikeleinzelverpackung",    // wechseln Sie die Sprache bei eCl@ss 
+                    preferredNames: new [] {
+                        "DE", "Farbcode der Artikeleinzelverpackung",    // wechseln Sie die Sprache bei eCl@ss
                         "EN", "Color code of the individual packaging" },   // um die Sprach-Texte aufzufinden
                     shortName: "Color",                                // kurzer, sprechender Name
                     unit: "g",                                          // Gewicht als SI Einheit ohne Klammern
@@ -526,7 +616,7 @@ namespace opctest
                     "EN", "Color of the individual packaging of an article" }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", 
+                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
                             AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "string";                                 // hier den Datentypen im XSD-Format
@@ -535,13 +625,13 @@ namespace opctest
 
             // CONCEPT: Manufacturer by Stefan Pollmeier                // Schreiben Sie hier Ihren Namen
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType:AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType:AdminShell.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id:"0173-1#02-AAO677#001"))                             // die ID des Merkmales bei eCl@ss
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new [] { 
-                        "DE", "Herstellername",    // wechseln Sie die Sprache bei eCl@ss 
+                    preferredNames: new [] {
+                        "DE", "Herstellername",    // wechseln Sie die Sprache bei eCl@ss
                         "EN", "Manufacturer name" },   // um die Sprach-Texte aufzufinden
                     shortName: "ManufName",                                // kurzer, sprechender Name
                     unit: "mm",                                          // Gewicht als SI Einheit ohne Klammern
@@ -550,7 +640,7 @@ namespace opctest
                     "EN", "legally valid designation of the natural or judicial person..." }
                 );
 
-                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", 
+                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
                             AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "string";                                 // hier den Datentypen im XSD-Format
@@ -560,13 +650,13 @@ namespace opctest
 
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei eCl@ss
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss 
+                        "DE", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss
                         "EN", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
                     shortName: "DocuName",                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -584,13 +674,13 @@ namespace opctest
 
             // CONCEPT: Range
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei eCl@ss
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss 
+                        "DE", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss
                         "EN", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
                     shortName: "VoltageRange",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
@@ -629,7 +719,7 @@ namespace opctest
             AdminShell.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,        // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ993#001",
                 idShort: "E-CAD"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -637,7 +727,7 @@ namespace opctest
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss
                         "DE", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -648,7 +738,7 @@ namespace opctest
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,                         // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ982#001",
                 idShort: "single pole connection"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -656,7 +746,7 @@ namespace opctest
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss
                         "DE", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -667,7 +757,7 @@ namespace opctest
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,    // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ994#001",
                 idShort: "1"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -675,7 +765,7 @@ namespace opctest
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss
                         "DE", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -686,7 +776,7 @@ namespace opctest
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,                // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ995#001",
                 idShort: "2"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -694,7 +784,7 @@ namespace opctest
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss
                         "DE", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -721,7 +811,9 @@ namespace opctest
             sw001.Add(sw001_2);
 
             var la001 = new AdminShell.Entity(AdminShell.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
-                new AdminShellV20.AssetRef(AdminShell.Reference.CreateNew("Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
+                new AdminShellV20.AssetRef(
+                    AdminShell.Reference.CreateNew(
+                        "Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
             sub1.Add(la001);
             var la001_1 = AdminShell.Property.CreateNew("1", "CONSTANT", cdContact1.GetReference()[0]);
             var la001_2 = AdminShell.Property.CreateNew("2", "CONSTANT", cdContact2.GetReference()[0]);
@@ -730,7 +822,8 @@ namespace opctest
 
             // RELATIONS
 
-            var smec1 = AdminShell.SubmodelElementCollection.CreateNew("E-CAD", semanticIdKey: cdRelEPlan.GetReference()[0]);
+            var smec1 = AdminShell.SubmodelElementCollection.CreateNew(
+                "E-CAD", semanticIdKey: cdRelEPlan.GetReference()[0]);
             sub1.Add(smec1);
 
             smec1.Add(AdminShell.RelationshipElement.CreateNew("w001", semanticIdKey: cdRelElCon.GetReference()[0],
@@ -764,7 +857,7 @@ namespace opctest
             AdminShell.ConceptDescription cdIsPartOf;
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                                          // immer IRDI für eCl@ss
+                idType: AdminShell.Identification.IRDI,                         // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ998#002",
                 idShort: "isPartOf"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -772,7 +865,7 @@ namespace opctest
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Is part of",    // wechseln Sie die Sprache bei eCl@ss 
+                        "EN", "Is part of",    // wechseln Sie die Sprache bei eCl@ss
                         "DE", "Teil von" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -831,7 +924,7 @@ namespace opctest
                 idType: "IRI",
                 value: "http://example.com/id/type/submodel/energymode/1/1"));
 
-            // CONCEPT: SetMode 
+            // CONCEPT: SetMode
             var theOp = new AdminShell.Operation();
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 idType: AdminShell.Identification.IRDI,
@@ -881,7 +974,8 @@ namespace opctest
         }
 
 
-        private static void CreateStochasticViewOnSubmodelsRecurse(AdminShell.View vw, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme)
+        private static void CreateStochasticViewOnSubmodelsRecurse(
+            AdminShell.View vw, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme)
         {
             if (vw == null || sme == null)
                 return;
@@ -994,9 +1088,9 @@ namespace opctest
                             { 'fn' : 'data\\docu_cecc_fullmanual_DE.PDF',           'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'Beschreibung Steuerung CECC-LK',       'de-DE',   '1403a'  ] },
                             { 'fn' : 'data\\docu_cecc_fullmanual_EN.PDF',           'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'Description Steuerung CECC-LK',        'en-US',   '1403a'  ] },
                         ],  'webrecs' : [
-                            { 'url' : 'https://www.festo.com/net/de_de/SupportPortal/Downloads/385954/407353/CECC_2013-05a_8031104e2.pdf',          
+                            { 'url' : 'https://www.festo.com/net/de_de/SupportPortal/Downloads/385954/407353/CECC_2013-05a_8031104e2.pdf',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Controlador CECC',                     'es',   '2013-05a'  ] },
-                            { 'url' : 'https://www.festo.com/net/SupportPortal/Files/407352/CECC_2013-05a_8031105x2.pdf',                           
+                            { 'url' : 'https://www.festo.com/net/SupportPortal/Files/407352/CECC_2013-05a_8031105x2.pdf',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Controllore CECC',                     'it',   '2013-05a'  ] },
                         ] }";
                     Log.WriteLine(3, "Dump of built-in preferences: {0}", init);
@@ -1055,7 +1149,7 @@ namespace opctest
                 // VIEW1
                 var view1 = CreateStochasticViewOnSubmodels(new[] { subCad, subDocu, subDatasheet }, "View1");
 
-                // ADMIN SHELL            
+                // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShell.AdministrationShell.CreateNew("IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(new AdminShell.Key("AssetAdministrationShell", false, "IRI", "www.admin-shell.io/aas/sample-series-aas/1/1"));
@@ -1237,9 +1331,9 @@ namespace opctest
                             { 'fn' : 'data\\docu_cecc_fullmanual_DE.PDF',           'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'Beschreibung Steuerung CECC-LK',       'de',   '1403a'  ] },
                             { 'fn' : 'data\\docu_cecc_fullmanual_EN.PDF',           'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'Description Steuerung CECC-LK',        'en',   '1403a'  ] },
                         ],  'webrecs' : [
-                            { 'url' : 'https://www.festo.com/net/de_de/SupportPortal/Downloads/385954/407353/CECC_2013-05a_8031104e2.pdf',          
+                            { 'url' : 'https://www.festo.com/net/de_de/SupportPortal/Downloads/385954/407353/CECC_2013-05a_8031104e2.pdf',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Controlador CECC',                     'es', '2013-05a'  ] },
-                            { 'url' : 'https://www.festo.com/net/SupportPortal/Files/407352/CECC_2013-05a_8031105x2.pdf',                           
+                            { 'url' : 'https://www.festo.com/net/SupportPortal/Files/407352/CECC_2013-05a_8031105x2.pdf',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Controllore CECC',                     'it', '2013-05a'  ] },
                         ] }";
 
@@ -1262,9 +1356,9 @@ namespace opctest
                             { 'fn' : 'data\\Secure-Retrieval-of-CAE-Data_EN.pdf',   'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Secure retrieval of CAE data',         'en',   'V3.6b'  ] },
                             { 'fn' : 'data\\verwaltungsschale-praxis-flyer_DE.pdf', 'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'VWS/ AAS in praxis',                   'de,en',   '1403a'  ] },
                         ],  'webrecs' : [
-                            { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-Asset-Administration-Shell-Part1.pdf?__blob=publicationFile&v=5',          
+                            { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-Asset-Administration-Shell-Part1.pdf?__blob=publicationFile&v=5',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'AAS in details V2.0 specification',    'en', '2013-05a'  ] },
-                            { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/wg3-trilaterale-coop.pdf?__blob=publicationFile&v=4',                           
+                            { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/wg3-trilaterale-coop.pdf?__blob=publicationFile&v=4',
                                                                                     'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Paris Declaration',                    'fr', '2013-05a'  ] },
                         ] }";
 
@@ -1340,7 +1434,7 @@ namespace opctest
                 // VIEW1
                 var view1 = CreateStochasticViewOnSubmodels(new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
 
-                // ADMIN SHELL            
+                // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShell.AdministrationShell.CreateNew("IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(new AdminShell.Key("AssetAdministrationShell", false, "IRI", "www.admin-shell.io/aas/sample-series-aas/1/1"));

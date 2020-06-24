@@ -8,8 +8,12 @@ using System.Windows.Controls;
 using AasxIntegrationBase;
 using AdminShellNS;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
+
 The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).
 */
 namespace AasxPluginBomStructure
@@ -20,17 +24,25 @@ namespace AasxPluginBomStructure
 
         public static Microsoft.Msagl.Drawing.Color DefaultBorderColor = new Microsoft.Msagl.Drawing.Color(0, 0, 0);
 
-        public static Microsoft.Msagl.Drawing.Color PropertyFillColor = new Microsoft.Msagl.Drawing.Color(89, 139, 209);
-        public static Microsoft.Msagl.Drawing.Color PropertyBorderColor = new Microsoft.Msagl.Drawing.Color(12, 94, 209);
+        public static Microsoft.Msagl.Drawing.Color PropertyFillColor =
+            new Microsoft.Msagl.Drawing.Color(89, 139, 209);
+        public static Microsoft.Msagl.Drawing.Color PropertyBorderColor =
+            new Microsoft.Msagl.Drawing.Color(12, 94, 209);
 
-        public static Microsoft.Msagl.Drawing.Color AssetCoManagedColor = new Microsoft.Msagl.Drawing.Color(184, 194, 209);
-        public static Microsoft.Msagl.Drawing.Color AssetSelfManagedColor = new Microsoft.Msagl.Drawing.Color(136, 166, 210);
+        public static Microsoft.Msagl.Drawing.Color AssetCoManagedColor =
+            new Microsoft.Msagl.Drawing.Color(184, 194, 209);
+        public static Microsoft.Msagl.Drawing.Color AssetSelfManagedColor =
+            new Microsoft.Msagl.Drawing.Color(136, 166, 210);
 
-        public static Microsoft.Msagl.Drawing.Color AssetFillColor = new Microsoft.Msagl.Drawing.Color(192, 192, 192);
-        public static Microsoft.Msagl.Drawing.Color AssetBorderColor = new Microsoft.Msagl.Drawing.Color(128, 128, 128);
+        public static Microsoft.Msagl.Drawing.Color AssetFillColor =
+            new Microsoft.Msagl.Drawing.Color(192, 192, 192);
+        public static Microsoft.Msagl.Drawing.Color AssetBorderColor =
+            new Microsoft.Msagl.Drawing.Color(128, 128, 128);
 
-        private Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node> referableToNode = new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
-        private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation = new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
+        private Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node> referableToNode =
+            new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
+        private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation =
+            new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
         private AdminShell.AdministrationShellEnv env;
         private int maxNodeId = 1;
 
@@ -228,7 +240,7 @@ namespace AasxPluginBomStructure
             wrap.Orientation = Orientation.Horizontal;
             wrap.Margin = new System.Windows.Thickness(2);
 
-            // Populate 
+            // Populate
             for (int type = 0; type < 6; type++)
             {
                 // inside make a stack panel
@@ -318,7 +330,9 @@ namespace AasxPluginBomStructure
                     continue;
 
                 if (textWriter != null)
-                    textWriter.WriteLine("{0} Recurse pass {1} SME {2}", new String(' ', depth), pass, "" + smw.submodelElement?.idShort);
+                    textWriter.WriteLine(
+                        "{0} Recurse pass {1} SME {2}",
+                        new String(' ', depth), pass, "" + smw.submodelElement?.idShort);
 
                 if (smw.submodelElement is AdminShell.RelationshipElement)
                 {
@@ -353,7 +367,9 @@ namespace AasxPluginBomStructure
                             // even CD?
                             if (rel.semanticId != null && rel.semanticId.Count > 0)
                             {
-                                var cd = this.FindReferableByReference(new AdminShell.Reference(rel.semanticId)) as AdminShell.ConceptDescription;
+                                var cd = this.FindReferableByReference(
+                                    new AdminShell.Reference(
+                                        rel.semanticId)) as AdminShell.ConceptDescription;
                                 if (cd != null)
                                     labelText += " = " + cd.ToIdShortString();
                             }
@@ -493,7 +509,10 @@ namespace AasxPluginBomStructure
                 if (smw.submodelElement is AdminShell.SubmodelElementCollection)
                 {
                     // recurse
-                    RecurseOnLayout(pass, graph, smw.submodelElement, (smw.submodelElement as AdminShell.SubmodelElementCollection).value, depth + 1, textWriter);
+                    RecurseOnLayout(
+                        pass, graph, smw.submodelElement,
+                        (smw.submodelElement as AdminShell.SubmodelElementCollection).value,
+                        depth + 1, textWriter);
                 }
             }
         }
@@ -511,7 +530,8 @@ namespace AasxPluginBomStructure
 
         private PluginEventStack eventStack = null;
 
-        private Dictionary<AdminShell.Referable, int> preferredPresetIndex = new Dictionary<AdminShellV20.Referable, int>();
+        private Dictionary<AdminShell.Referable, int> preferredPresetIndex =
+            new Dictionary<AdminShellV20.Referable, int>();
 
         public void SetEventStack(PluginEventStack es)
         {
@@ -555,11 +575,11 @@ namespace AasxPluginBomStructure
             // set default for very small edge label size
             Microsoft.Msagl.Drawing.Label.DefaultFontSize = 6;
 
-            //create a graph object 
+            //create a graph object
             Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("BOM-graph");
 
 #if FALSE
-            //create the graph content 
+            //create the graph content
             graph.AddEdge("A", "B");
                 var e1 = graph.AddEdge("B", "C");
                 // e1.LabelText = "Dumpf!";
@@ -594,7 +614,7 @@ namespace AasxPluginBomStructure
 
 #endif
 
-            // make a Dock panel    
+            // make a Dock panel
             var dp = new DockPanel();
             dp.ClipToBounds = true;
             dp.MinWidth = 10;
@@ -622,7 +642,8 @@ namespace AasxPluginBomStructure
 
         }
 
-        private void Viewer_ObjectUnderMouseCursorChanged(object sender, Microsoft.Msagl.Drawing.ObjectUnderMouseCursorChangedEventArgs e)
+        private void Viewer_ObjectUnderMouseCursorChanged(
+            object sender, Microsoft.Msagl.Drawing.ObjectUnderMouseCursorChangedEventArgs e)
         {
         }
 

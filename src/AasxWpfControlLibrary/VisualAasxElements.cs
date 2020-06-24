@@ -10,11 +10,20 @@ using System.Windows.Media;
 
 using AdminShellNS;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 // TODO: check again
 // ReSharper disable VirtualMemberCallInConstructor
@@ -75,7 +84,9 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Restores the state of the IsExpanded from an cache. The cache associates with the MainDataObject and therefore survives, even if the the TreeViewLines are completely rebuilt.
+        /// Restores the state of the IsExpanded from an cache.
+        /// The cache associates with the MainDataObject and therefore survives,
+        /// even if the the TreeViewLines are completely rebuilt.
         /// </summary>
         public void RestoreFromCache()
         {
@@ -88,7 +99,9 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// For each different sub-class type of TreeViewLineGeneric, this methods refreshes attributes such as Caption and Info. Required, if updates to the MainDataObject shall be reflected on the UI.
+        /// For each different sub-class type of TreeViewLineGeneric,
+        /// this methods refreshes attributes such as Caption and Info.
+        /// Required, if updates to the MainDataObject shall be reflected on the UI.
         /// </summary>
         public virtual void RefreshFromMainData()
         {
@@ -96,7 +109,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Gets/sets whether the TreeViewItem 
+        /// Gets/sets whether the TreeViewItem
         /// associated with this object is expanded.
         /// </summary>
         public bool IsExpanded
@@ -126,7 +139,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Gets/sets whether the TreeViewItem 
+        /// Gets/sets whether the TreeViewItem
         /// associated with this object is selected.
         /// </summary>
         public bool IsSelected
@@ -154,7 +167,8 @@ namespace AasxPackageExplorer
         //
         //
 
-        private bool SearchForDescendentAndCallIfFound(VisualElementGeneric descendent, Action<VisualElementGeneric> lambda)
+        private bool SearchForDescendentAndCallIfFound(
+            VisualElementGeneric descendent, Action<VisualElementGeneric> lambda)
         {
             var res = false;
             if (this == descendent)
@@ -207,14 +221,22 @@ namespace AasxPackageExplorer
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
     {
-        public enum ItemType { Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles, EmptySet };
-        public static string[] ItemTypeNames = new string[] { "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels", "All Submodels", "Supplementary files", "Empty" };
+        public enum ItemType
+        {
+            Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
+            EmptySet
+        };
+        public static string[] ItemTypeNames = new string[] {
+            "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
+            "All Submodels", "Supplementary files", "Empty" };
 
         public AdminShellPackageEnv thePackage = null;
         public AdminShell.AdministrationShellEnv theEnv = null;
         public ItemType theItemType = ItemType.Env;
 
-        public VisualElementEnvironmentItem(VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, ItemType itemType)
+        public VisualElementEnvironmentItem(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
+            AdminShell.AdministrationShellEnv env, ItemType itemType)
         : base()
         {
             this.Parent = parent;
@@ -267,7 +289,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.AdministrationShell theAas = null;
 
-        public VisualElementAdminShell(VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas)
+        public VisualElementAdminShell(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
+            AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas)
             : base()
         {
             this.Parent = parent;
@@ -310,7 +334,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.Asset theAsset = null;
 
-        public VisualElementAsset(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset)
+        public VisualElementAsset(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Asset asset)
             : base()
         {
             this.Parent = parent;
@@ -350,7 +376,9 @@ namespace AasxPackageExplorer
         public AdminShell.SubmodelRef theSubmodelRef = null;
         public AdminShell.Submodel theSubmodel = null;
 
-        public VisualElementSubmodelRef(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.SubmodelRef smr, AdminShell.Submodel sm)
+        public VisualElementSubmodelRef(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.SubmodelRef smr, AdminShell.Submodel sm)
             : base()
         {
             this.Parent = parent;
@@ -401,7 +429,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.Submodel theSubmodel = null;
 
-        public VisualElementSubmodel(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm)
+        public VisualElementSubmodel(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Submodel sm)
             : base()
         {
             this.Parent = parent;
@@ -441,7 +471,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.View theView = null;
 
-        public VisualElementView(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.View vw)
+        public VisualElementView(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.View vw)
             : base()
         {
             this.Parent = parent;
@@ -481,7 +513,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.Reference theReference = null;
 
-        public VisualElementReference(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.Reference rf)
+        public VisualElementReference(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Reference rf)
             : base()
         {
             this.Parent = parent;
@@ -523,7 +557,9 @@ namespace AasxPackageExplorer
 
         private AdminShell.ConceptDescription cachedCD = null;
 
-        public VisualElementSubmodelElement(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrap)
+        public VisualElementSubmodelElement(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrap)
             : base()
         {
             this.Parent = parent;
@@ -570,11 +606,20 @@ namespace AasxPackageExplorer
                     {
                         if (this.cachedCD == null)
                             this.cachedCD = this.theEnv.FindConceptDescription(sme.semanticId.Keys);
-                        if (this.cachedCD != null && this.cachedCD.embeddedDataSpecification != null
-                            && this.cachedCD.embeddedDataSpecification.dataSpecificationContent != null
-                            && this.cachedCD.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                        if (this.cachedCD != null && this.cachedCD.embeddedDataSpecification != null &&
+                                this.cachedCD
+                                    .embeddedDataSpecification
+                                    .dataSpecificationContent != null &&
+                                this.cachedCD
+                                    .embeddedDataSpecification
+                                    .dataSpecificationContent
+                                    .dataSpecificationIEC61360 != null)
                         {
-                            var iecprop = this.cachedCD.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
+                            var iecprop = this.cachedCD
+                                .embeddedDataSpecification
+                                .dataSpecificationContent
+                                .dataSpecificationIEC61360;
+
                             if (iecprop.unit != null && iecprop.unit != "")
                                 this.Info += " [" + iecprop.unit + "]";
                         }
@@ -637,7 +682,10 @@ namespace AasxPackageExplorer
         public AdminShell.OperationVariable theOpVar = null;
         public AdminShell.OperationVariable.Direction theDir = AdminShell.OperationVariable.Direction.In;
 
-        public VisualElementOperationVariable(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.Referable parentContainer, AdminShell.OperationVariable opvar, AdminShell.OperationVariable.Direction dir)
+        public VisualElementOperationVariable(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Referable parentContainer, AdminShell.OperationVariable opvar,
+            AdminShell.OperationVariable.Direction dir)
             : base()
         {
             this.Parent = parent;
@@ -694,7 +742,9 @@ namespace AasxPackageExplorer
         public AdminShell.AdministrationShellEnv theEnv = null;
         public AdminShell.ConceptDescription theCD = null;
 
-        public VisualElementConceptDescription(VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShell.ConceptDescription cd)
+        public VisualElementConceptDescription(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.ConceptDescription cd)
             : base()
         {
             this.Parent = parent;
@@ -735,7 +785,9 @@ namespace AasxPackageExplorer
         public AdminShellPackageEnv thePackage = null;
         public AdminShellPackageSupplementaryFile theFile = null;
 
-        public VisualElementSupplementalFile(VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package, AdminShellPackageSupplementaryFile sf)
+        public VisualElementSupplementalFile(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
+            AdminShellPackageSupplementaryFile sf)
             : base()
         {
             this.Parent = parent;
@@ -825,7 +877,8 @@ namespace AasxPackageExplorer
             var mdoParent = this.Parent?.GetMainDataObject();
             if (mdoParent == null)
                 return null;
-            var st = String.Format("MDO:VisualElementPluginExtension:{0:X08}:{1:X08}", thePlugin.GetHashCode(), mdoParent.GetHashCode());
+            var st = String.Format(
+                "MDO:VisualElementPluginExtension:{0:X08}:{1:X08}", thePlugin.GetHashCode(), mdoParent.GetHashCode());
             return st;
         }
 
@@ -846,7 +899,9 @@ namespace AasxPackageExplorer
 
     public static class Generators
     {
-        public static void GenerateVisualElementsFromShellEnvAddElements(TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent, AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
+        public static void GenerateVisualElementsFromShellEnvAddElements(
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
+            AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
             var ti = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
             parent.Members.Add(ti);
@@ -868,17 +923,26 @@ namespace AasxPackageExplorer
             {
                 if (elo.inputVariable != null)
                     foreach (var vin in elo.inputVariable)
-                        ti.Members.Add(new VisualElementOperationVariable(ti, cache, env, el.submodelElement, vin, AdminShell.OperationVariable.Direction.In));
+                        ti.Members.Add(
+                            new VisualElementOperationVariable(
+                                ti, cache, env, el.submodelElement, vin, AdminShell.OperationVariable.Direction.In));
                 if (elo.outputVariable != null)
                     foreach (var vout in elo.outputVariable)
-                        ti.Members.Add(new VisualElementOperationVariable(ti, cache, env, el.submodelElement, vout, AdminShell.OperationVariable.Direction.Out));
+                        ti.Members.Add(
+                            new VisualElementOperationVariable(
+                                ti, cache, env, el.submodelElement, vout, AdminShell.OperationVariable.Direction.Out));
                 if (elo.inoutputVariable != null)
                     foreach (var vout in elo.inoutputVariable)
-                        ti.Members.Add(new VisualElementOperationVariable(ti, cache, env, el.submodelElement, vout, AdminShell.OperationVariable.Direction.InOut));
+                        ti.Members.Add(
+                            new VisualElementOperationVariable(
+                                ti, cache, env, el.submodelElement, vout,
+                                AdminShell.OperationVariable.Direction.InOut));
             }
         }
 
-        public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null, bool editMode = false, int expandMode = 0)
+        public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
+            bool editMode = false, int expandMode = 0)
         {
             // clear tree
             var res = new List<VisualElementGeneric>();
@@ -900,7 +964,9 @@ namespace AasxPackageExplorer
                     // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
-                        var x = lpi.InvokeAction("get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
+                        var x =
+                            lpi.InvokeAction(
+                                "get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
                         if (x != null && (bool)x.obj)
                             pluginsToCheck.Add(lpi);
                     }
@@ -915,27 +981,32 @@ namespace AasxPackageExplorer
                 if (editMode)
                 {
                     // package
-                    tiPackage = new VisualElementEnvironmentItem(null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package);
+                    tiPackage = new VisualElementEnvironmentItem(
+                        null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package);
                     tiPackage.SetIsExpandedIfNotTouched(true);
                     res.Add(tiPackage);
 
                     // env
-                    tiEnv = new VisualElementEnvironmentItem(tiPackage, cache, package, env, VisualElementEnvironmentItem.ItemType.Env);
+                    tiEnv = new VisualElementEnvironmentItem(
+                        tiPackage, cache, package, env, VisualElementEnvironmentItem.ItemType.Env);
                     tiEnv.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiPackage.Members.Add(tiEnv);
 
                     // shells
-                    tiShells = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Shells);
+                    tiShells = new VisualElementEnvironmentItem(
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Shells);
                     tiShells.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiShells);
 
                     // assets
-                    tiAssets = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Assets);
+                    tiAssets = new VisualElementEnvironmentItem(
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Assets);
                     tiAssets.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAssets);
 
                     // concept descriptions
-                    tiCDs = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions);
+                    tiCDs = new VisualElementEnvironmentItem(
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions);
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiCDs);
                 }
@@ -978,10 +1049,13 @@ namespace AasxPackageExplorer
                                 // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
-                                    var ext = lpi.InvokeAction("call-check-visual-extension", sm) as AasxIntegrationBase.AasxPluginResultVisualExtension;
+                                    var ext = lpi.InvokeAction(
+                                        "call-check-visual-extension", sm)
+                                        as AasxIntegrationBase.AasxPluginResultVisualExtension;
                                     if (ext != null)
                                     {
-                                        var tiExt = new VisualElementPluginExtension(tiSm, cache, package, sm, lpi, ext);
+                                        var tiExt = new VisualElementPluginExtension(
+                                            tiSm, cache, package, sm, lpi, ext);
                                         tiSm.Members.Add(tiExt);
                                     }
                                 }
@@ -1040,7 +1114,8 @@ namespace AasxPackageExplorer
                     // alternative code deleted
                     {
                         // head
-                        var tiAllSubmodels = new VisualElementEnvironmentItem(tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
+                        var tiAllSubmodels = new VisualElementEnvironmentItem(
+                            tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
                         tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
                         tiEnv.Members.Add(tiAllSubmodels);
 
@@ -1058,7 +1133,8 @@ namespace AasxPackageExplorer
                 if (editMode && package != null && tiPackage != null)
                 {
                     // file folder
-                    var tiFiles = new VisualElementEnvironmentItem(tiPackage, cache, package, env, VisualElementEnvironmentItem.ItemType.SupplFiles);
+                    var tiFiles = new VisualElementEnvironmentItem(
+                        tiPackage, cache, package, env, VisualElementEnvironmentItem.ItemType.SupplFiles);
                     tiFiles.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiPackage.Members.Add(tiFiles);
 

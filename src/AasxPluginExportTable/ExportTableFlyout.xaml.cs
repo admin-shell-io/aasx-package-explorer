@@ -20,11 +20,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPluginExportTable
 {
@@ -63,7 +72,9 @@ namespace AasxPluginExportTable
                 this.ThisFromPreset(this.Presets[0]);
 
             // placeholders
-            TextBoxPlaceholders.Text = AasxWpfBaseUtils.CleanHereStringWithNewlines(@"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional                
+            TextBoxPlaceholders.Text =
+                AasxWpfBaseUtils.CleanHereStringWithNewlines(
+                @"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
                 {Referable}.{idShort, category, description[@en..], elementName, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent
                 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, {Qualifiable}.qualifiers, {Qualifiable}.multiplicity
                 {Reference}, {Reference}[0..n], {Reference}[0..n].{type, local, idType, value}, {Reference} = {semanticId, isCaseOf, unitId}

@@ -25,7 +25,9 @@ namespace AasxPackageExplorer
 
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
-        public static void ImportBMEcatToSubModel(string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
+        public static void ImportBMEcatToSubModel(
+            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
+            AdminShell.SubmodelRef smref)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File
@@ -131,7 +133,8 @@ namespace AasxPackageExplorer
                                 if (attribute_label_id != "" && attribute_value != "")
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
-                                    using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, FT_ID))
+                                    using (var cd = AdminShell.ConceptDescription.CreateNew(
+                                        AdminShell.Identification.IRDI, FT_ID))
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -142,7 +145,9 @@ namespace AasxPackageExplorer
                                             definition: new[] { "EN", attribute_label_id }
                                         );
 
-                                        var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                                        var p = AdminShell.Property.CreateNew(
+                                            cd.GetDefaultShortName(), "PARAMETER",
+                                            AdminShell.Key.GetFromRef(cd.GetReference()));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -188,7 +193,8 @@ namespace AasxPackageExplorer
                             if (reader.Name == "FVALUE")
                             {
                                 var rString = reader.GetAttribute("lang");
-                                if (rString == null || rString == "" || rString == "eng") // only no language or English values
+                                // only no language or English values
+                                if (rString == null || rString == "" || rString == "eng")
                                     is_FVALUE = true;
                             }
                             if (reader.Name == "FUNIT")
@@ -244,7 +250,8 @@ namespace AasxPackageExplorer
                                 int k;
 
                                 for (k = 0; k < i_FVALUE; k++)
-                                    sw.WriteLine(FT_ID + " | " + FT_NAME + " | " + FVALUE[k] + " | " + FUNIT + " | " + FID + " | " + FPARENT_ID);
+                                    sw.WriteLine(FT_ID + " | " + FT_NAME + " | " + FVALUE[k] + " | " + FUNIT +
+                                                    " | " + FID + " | " + FPARENT_ID);
 
                                 if (FT_ID != "" && FT_NAME != "") // korrekter Eintrag
                                 {
@@ -298,7 +305,8 @@ namespace AasxPackageExplorer
                                                 extendedname += " " + names_LEVELTYPE[k]; // MIN, MAX, ...
                                             }
 
-                                            using (var cd = AdminShell.ConceptDescription.CreateNew(AdminShell.Identification.IRDI, FT_ID))
+                                            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                                                AdminShell.Identification.IRDI, FT_ID))
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
@@ -309,7 +317,9 @@ namespace AasxPackageExplorer
                                                     definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
-                                                var p = AdminShell.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER", AdminShell.Key.GetFromRef(cd.GetReference()));
+                                                var p = AdminShell.Property.CreateNew(
+                                                    cd.GetDefaultShortName(), "PARAMETER",
+                                                    AdminShell.Key.GetFromRef(cd.GetReference()));
                                                 p.valueType = "double";
                                                 p.value = FVALUE[k];
 
@@ -350,7 +360,8 @@ namespace AasxPackageExplorer
                                                 {
                                                     StackPointer_FID = j + 1;
                                                     Stack_FID[StackPointer_FID] = FID;
-                                                    propGroup[StackPointer_FID] = AdminShell.SubmodelElementCollection.CreateNew(FT_NAME);
+                                                    propGroup[StackPointer_FID] =
+                                                        AdminShell.SubmodelElementCollection.CreateNew(FT_NAME);
                                                     propGroup[StackPointer_FID - 1].Add(propGroup[StackPointer_FID]);
                                                     StackPointer_FID++; // nächste Ebene
                                                     break;

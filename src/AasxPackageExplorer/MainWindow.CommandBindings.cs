@@ -31,13 +31,23 @@ using De.Zvei.Aasx;
 using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
 
-/* Copyright (c) 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-   Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>, author: Andreas Orzelski 
-  
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
+Author: Andreas Orzelski
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -83,7 +93,9 @@ namespace AasxPackageExplorer
         {
             if (cmd == "new")
             {
-                if (MessageBoxResult.Yes == MessageBoxFlyoutShow("Create new Adminshell environment? This operation can not be reverted!", "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                    "Create new Adminshell environment? This operation can not be reverted!", "AASX",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
                 {
                     try
                     {
@@ -107,7 +119,9 @@ namespace AasxPackageExplorer
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
-                dlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
+                dlg.Filter =
+                    "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
+                    "AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
@@ -115,9 +129,13 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     if (cmd == "open")
-                        UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(dlg.FileName), dlg.FileName, onlyAuxiliary: false);
+                        UiLoadPackageWithNew(
+                            ref thePackageEnv, new AdminShellPackageEnv(dlg.FileName), dlg.FileName,
+                            onlyAuxiliary: false);
                     if (cmd == "openaux")
-                        UiLoadPackageWithNew(ref thePackageAux, new AdminShellPackageEnv(dlg.FileName), dlg.FileName, onlyAuxiliary: true);
+                        UiLoadPackageWithNew(
+                            ref thePackageAux,
+                            new AdminShellPackageEnv(dlg.FileName), dlg.FileName, onlyAuxiliary: true);
                 }
             }
 
@@ -150,7 +168,9 @@ namespace AasxPackageExplorer
                 dlg.InitialDirectory = DetermineInitialDirectory(thePackageEnv.Filename);
                 dlg.FileName = thePackageEnv.Filename;
                 dlg.DefaultExt = "*.aasx";
-                dlg.Filter = "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
+                dlg.Filter =
+                    "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
+                    "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
@@ -185,7 +205,9 @@ namespace AasxPackageExplorer
 
             if (cmd == "close" && thePackageEnv != null)
             {
-                if (MessageBoxResult.Yes == MessageBoxFlyoutShow("Do you want to close the open package? Please make sure that you have saved before.", "Close Package?", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                    "Do you want to close the open package? Please make sure that you have saved before.",
+                    "Close Package?", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     try
                     {
                         thePackageEnv.Close();
@@ -235,7 +257,8 @@ namespace AasxPackageExplorer
 
                                 string payload = "{ \"file\" : \" " + binaryBase64 + " \" }";
 
-                                string fileToken = Jose.JWT.Encode(payload, publicKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+                                string fileToken = Jose.JWT.Encode(
+                                    payload, publicKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
                                 Byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(fileToken);
 
                                 var dlg3 = new Microsoft.Win32.SaveFileDialog();
@@ -252,7 +275,9 @@ namespace AasxPackageExplorer
                             }
                             catch
                             {
-                                System.Windows.MessageBox.Show(this, "Can not encrypt with " + dlg2.FileName, "Decrypt .AASX2", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                System.Windows.MessageBox.Show(
+                                    this, "Can not encrypt with " + dlg2.FileName, "Decrypt .AASX2",
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             }
                         }
                     }
@@ -286,7 +311,8 @@ namespace AasxPackageExplorer
                                 Byte[] binaryFile = File.ReadAllBytes(dlg.FileName);
                                 string fileString = System.Text.Encoding.UTF8.GetString(binaryFile);
 
-                                string fileString2 = Jose.JWT.Decode(fileString, privateKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
+                                string fileString2 = Jose.JWT.Decode(
+                                    fileString, privateKey, JweAlgorithm.RSA_OAEP_256, JweEncryption.A256CBC_HS512);
 
                                 var parsed0 = JObject.Parse(fileString2);
                                 string binaryBase64_2 = parsed0.SelectToken("file").Value<string>();
@@ -305,7 +331,9 @@ namespace AasxPackageExplorer
                             }
                             catch
                             {
-                                System.Windows.MessageBox.Show(this, "Can not decrypt with " + dlg2.FileName, "Decrypt .AASX2", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                System.Windows.MessageBox.Show(
+                                    this, "Can not decrypt with " + dlg2.FileName, "Decrypt .AASX2",
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             }
                         }
                     }
@@ -326,7 +354,10 @@ namespace AasxPackageExplorer
                 System.Windows.Application.Current.Shutdown();
 
             if (cmd == "connectopcua")
-                MessageBoxFlyoutShow("In future versions, this feature will allow connecting to an online Administration Shell via OPC UA or similar.", "Connect", MessageBoxButton.OK, MessageBoxImage.Hand);
+                MessageBoxFlyoutShow(
+                    "In future versions, this feature will allow connecting to an online Administration Shell " +
+                    "via OPC UA or similar.",
+                    "Connect", MessageBoxButton.OK, MessageBoxImage.Hand);
 
             if (cmd == "about")
             {
@@ -442,13 +473,16 @@ namespace AasxPackageExplorer
                 CommandBinding_ExportTable();
 
             if (cmd == "serverpluginemptysample")
-                CommandBinding_ExecutePluginServer("EmptySample", "server-start", "server-stop", "Empty sample plug-in.");
+                CommandBinding_ExecutePluginServer(
+                    "EmptySample", "server-start", "server-stop", "Empty sample plug-in.");
 
             if (cmd == "serverpluginopcua")
-                CommandBinding_ExecutePluginServer("Net46AasxServerPlugin", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
+                CommandBinding_ExecutePluginServer(
+                    "Net46AasxServerPlugin", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
 
             if (cmd == "serverpluginmqtt")
-                CommandBinding_ExecutePluginServer("AasxPluginMqttServer", "MQTTServer-start", "server-stop", "Plug-in for MQTT Server for AASX.");
+                CommandBinding_ExecutePluginServer(
+                    "AasxPluginMqttServer", "MQTTServer-start", "server-stop", "Plug-in for MQTT Server for AASX.");
 
             if (cmd == "newsubmodelfromplugin")
                 CommandBinding_NewSubmodelFromPlugin();
@@ -552,7 +586,8 @@ namespace AasxPackageExplorer
                     if (fn != null && fn != "")
                     {
                         Log.Info("Switching to {0} ..", fn);
-                        UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
+                        UiLoadPackageWithNew(
+                            ref thePackageEnv, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
                     }
 
                 };
@@ -648,7 +683,9 @@ namespace AasxPackageExplorer
 
             if (asset == null)
             {
-                MessageBoxFlyoutShow("No asset selected for printing code sheet.", "Print code sheet", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No asset selected for printing code sheet.", "Print code sheet",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -686,7 +723,8 @@ namespace AasxPackageExplorer
             var worker = new BackgroundWorker();
             worker.DoWork += (s1, e1) =>
             {
-                AasxRestServerLibrary.AasxRestServer.Start(this.thePackageEnv, Options.Curr.RestServerHost, Options.Curr.RestServerPort, logger);
+                AasxRestServerLibrary.AasxRestServer.Start(
+                    this.thePackageEnv, Options.Curr.RestServerHost, Options.Curr.RestServerPort, logger);
             };
             worker.RunWorkerAsync();
 
@@ -699,7 +737,7 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_MQTTPub()
         {
-            // make a logger                      
+            // make a logger
             var logger = new AasxMqttClient.GrapevineLoggerToListOfStrings();
 
             // make listing flyout
@@ -747,7 +785,10 @@ namespace AasxPackageExplorer
                     }
                     await AasxPrivateKeyJwtClient.OpenIDClient.Run(tag, value);
 
-                    UiLoadPackageWithNew(ref thePackageEnv, new AdminShellPackageEnv(AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx"), AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    UiLoadPackageWithNew(
+                        ref thePackageEnv,
+                        new AdminShellPackageEnv(AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx"),
+                        AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     return;
                 }
 
@@ -777,7 +818,9 @@ namespace AasxPackageExplorer
 
             if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected for BMEcat information.", "BMEcat import", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected for BMEcat information.", "BMEcat import",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -815,7 +858,8 @@ namespace AasxPackageExplorer
 
             if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "CSV import", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "CSV import", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -853,7 +897,8 @@ namespace AasxPackageExplorer
 
             if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "Import", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Import", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -883,14 +928,17 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
-        private void CommandBinding_ExecutePluginServer(string pluginName, string actionName, string stopName, string caption, string[] additionalArgs = null)
+        private void CommandBinding_ExecutePluginServer(
+            string pluginName, string actionName, string stopName, string caption, string[] additionalArgs = null)
         {
             // check
             var pi = Plugins.FindPluginInstance(pluginName);
             if (pi == null || !pi.HasAction(actionName) || !pi.HasAction(stopName))
             {
                 var res = MessageBoxFlyoutShow(
-                        $"This function requires a binary plug-in file named '{pluginName}', which needs to be added to the command line, with an action named '{actionName}'. Press 'OK' to show help page on GitHub.",
+                        $"This function requires a binary plug-in file named '{pluginName}', " +
+                        $"which needs to be added to the command line, with an action named '{actionName}'. " +
+                        "Press 'OK' to show help page on GitHub.",
                         "Plug-in not present",
                         MessageBoxButton.OKCancel, MessageBoxImage.Hand);
                 if (res == MessageBoxResult.OK)
@@ -975,7 +1023,8 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "Submodel Write", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Submodel Write", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var obj = ve1.theSubmodel;
@@ -1010,7 +1059,8 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var obj = ve1.theSubmodel;
@@ -1046,21 +1096,26 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception)
                 {
-                    MessageBoxFlyoutShow("Can not read SubModel.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Can not read SubModel.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 // need id for idempotent behaviour
                 if (submodel == null || submodel.identification == null)
                 {
-                    MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Identification of SubModel is (null).", "Submodel Read",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 // datastructure update
                 if (thePackageEnv == null || thePackageEnv.AasEnv == null || thePackageEnv.AasEnv.Assets == null)
                 {
-                    MessageBoxFlyoutShow("Error accessing internal data structures.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Error accessing internal data structures.", "Submodel Read",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1070,9 +1125,10 @@ namespace AasxPackageExplorer
                     thePackageEnv.AasEnv.Submodels.Remove(existingSm);
                 thePackageEnv.AasEnv.Submodels.Add(submodel);
 
-                // add SubmodelRef to AAS            
+                // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", true, submodel.identification.idType, submodel.identification.id);
+                var newsmr = AdminShell.SubmodelRef.CreateNew(
+                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1095,7 +1151,8 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "PUT Submodel", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "PUT Submodel", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -1114,7 +1171,8 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "PUT Submodel", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "PUT Submodel", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var obj = ve1.theSubmodel;
@@ -1167,7 +1225,8 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", "GET Submodel", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "GET Submodel", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -1210,21 +1269,26 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception)
                 {
-                    MessageBoxFlyoutShow("Can not read SubModel.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Can not read SubModel.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 // need id for idempotent behaviour
                 if (submodel == null || submodel.identification == null)
                 {
-                    MessageBoxFlyoutShow("Identification of SubModel is (null).", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Identification of SubModel is (null).", "Submodel Read",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 // datastructure update
                 if (thePackageEnv == null || thePackageEnv.AasEnv == null || thePackageEnv.AasEnv.Assets == null)
                 {
-                    MessageBoxFlyoutShow("Error accessing internal data structures.", "Submodel Read", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Error accessing internal data structures.", "Submodel Read",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1236,7 +1300,8 @@ namespace AasxPackageExplorer
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", true, submodel.identification.idType, submodel.identification.id);
+                var newsmr = AdminShell.SubmodelRef.CreateNew(
+                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1257,7 +1322,9 @@ namespace AasxPackageExplorer
 
                 if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
                 {
-                    MessageBoxFlyoutShow("No valid SubModel selected for OPC import.", "OPC import", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "No valid SubModel selected for OPC import.", "OPC import",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1330,13 +1397,18 @@ namespace AasxPackageExplorer
                             var pi = Plugins.FindPluginInstance("AasxPluginOpcUaClient");
                             if (pi == null || !pi.HasAction("create-client") || !pi.HasAction("read-sme-value"))
                             {
-                                Log.Error("No plug-in 'AasxPluginOpcUaClient' with appropriate actions 'create-client()', 'read-sme-value()' found.");
+                                Log.Error(
+                                    "No plug-in 'AasxPluginOpcUaClient' with appropriate " +
+                                    "actions 'create-client()', 'read-sme-value()' found.");
                                 return;
                             }
 
                             // create client
                             // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                            var resClient = pi.InvokeAction("create-client", URL, autoAccept, stopTimeout, Username, Password) as AasxPluginResultBaseObject;
+                            var resClient =
+                                pi.InvokeAction(
+                                    "create-client", URL, autoAccept, stopTimeout,
+                                    Username, Password) as AasxPluginResultBaseObject;
                             // ReSharper enable ConditionIsAlwaysTrueOrFalse
                             if (resClient == null || resClient.obj == null)
                             {
@@ -1356,7 +1428,9 @@ namespace AasxPackageExplorer
                                     var nodeName = "" + Path + p?.idShort;
 
                                     // do read() via plug-in
-                                    var resValue = pi.InvokeAction("read-sme-value", resClient.obj, nodeName, Namespace) as AasxPluginResultBaseObject;
+                                    var resValue = pi.InvokeAction(
+                                        "read-sme-value", resClient.obj,
+                                        nodeName, Namespace) as AasxPluginResultBaseObject;
 
                                     // set?
                                     if (resValue != null && resValue.obj != null && resValue.obj is string)
@@ -1417,7 +1491,9 @@ namespace AasxPackageExplorer
             dlg.Title = "Select AML file to be exported";
             dlg.FileName = "new.aml";
             dlg.DefaultExt = "*.aml";
-            dlg.Filter = "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|*.aml|All files (*.*)|*.*";
+            dlg.Filter =
+                "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
+                "*.aml|All files (*.*)|*.*";
 
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog(this);
@@ -1427,7 +1503,8 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     RememberForInitialDirectory(dlg.FileName);
-                    AasxAmlImExport.AmlExport.ExportTo(this.thePackageEnv, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
+                    AasxAmlImExport.AmlExport.ExportTo(
+                        this.thePackageEnv, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
                 }
             }
             catch (Exception ex)
@@ -1495,13 +1572,16 @@ namespace AasxPackageExplorer
 
             if (ve == null || mdo == null)
             {
-                MessageBoxFlyoutShow("No valid element selected.", "Copy selected elements", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid element selected.", "Copy selected elements",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             // ok, for Serialization we just want the plain element with no BLOBs..
             var settings = new JsonSerializerSettings();
-            settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(deep: false, complete: false);
+            settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
+                deep: false, complete: false);
             var jsonStr = JsonConvert.SerializeObject(mdo, Formatting.Indented, settings);
 
             // copy to clipboard
@@ -1521,7 +1601,8 @@ namespace AasxPackageExplorer
             // trivial things
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
-                MessageBoxFlyoutShow("An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             // a SubmodelRef shall be exported
@@ -1531,7 +1612,9 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected for exporting options file for GenericForms.", "Generic Forms", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected for exporting options file for GenericForms.", "Generic Forms",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1552,7 +1635,8 @@ namespace AasxPackageExplorer
                 {
                     Log.Info("Exporting add-options file to GenericForm: {0}", dlg.FileName);
                     RememberForInitialDirectory(dlg.FileName);
-                    AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(ve1.theEnv, ve1.theSubmodel, dlg.FileName);
+                    AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(
+                        ve1.theEnv, ve1.theSubmodel, dlg.FileName);
                 }
             }
             catch (Exception ex)
@@ -1568,7 +1652,8 @@ namespace AasxPackageExplorer
             // trivial things
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
-                MessageBoxFlyoutShow("An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             // a SubmodelRef shall be exported
@@ -1578,7 +1663,9 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected for exporting snippets.", "Snippets for PredefinedConcepts", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected for exporting snippets.", "Snippets for PredefinedConcepts",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1599,7 +1686,8 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     Log.Info("Exporting text snippets for PredefinedConcepts: {0}", dlg.FileName);
-                    AasxPredefinedConcepts.ExportPredefinedConcepts.Export(thePackageEnv.AasEnv, ve1.theSubmodel, dlg.FileName);
+                    AasxPredefinedConcepts.ExportPredefinedConcepts.Export(
+                        thePackageEnv.AasEnv, ve1.theSubmodel, dlg.FileName);
                 }
             }
             catch (Exception ex)
@@ -1615,7 +1703,8 @@ namespace AasxPackageExplorer
             // trivial things
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
-                MessageBoxFlyoutShow("An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             // a Referable shall be exported
@@ -1629,7 +1718,9 @@ namespace AasxPackageExplorer
 
             if (rf == null)
             {
-                MessageBoxFlyoutShow("No valid Referable selected for conversion.", "Convert Referable", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid Referable selected for conversion.", "Convert Referable",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1637,7 +1728,9 @@ namespace AasxPackageExplorer
             var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
             if (offers == null || offers.Count < 1)
             {
-                MessageBoxFlyoutShow("No valid conversion offers found for this Referable. Aborting.", "Convert Referable", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid conversion offers found for this Referable. Aborting.", "Convert Referable",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1652,12 +1745,14 @@ namespace AasxPackageExplorer
             uc.Caption = "Select Conversion action to be executed ..";
             uc.ListOfItems = fol;
             this.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null && uc.ResultItem.Tag is AasxPredefinedConcepts.Convert.ConvertOfferBase)
+            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
+                uc.ResultItem.Tag is AasxPredefinedConcepts.Convert.ConvertOfferBase)
                 try
                 {
                     {
                         var offer = uc.ResultItem.Tag as AasxPredefinedConcepts.Convert.ConvertOfferBase;
-                        offer?.Provider?.ExecuteOffer(this.thePackageEnv, rf, offer, deleteOldCDs: true, addNewCDs: true);
+                        offer?.Provider?.ExecuteOffer(
+                            this.thePackageEnv, rf, offer, deleteOldCDs: true, addNewCDs: true);
                     }
                 }
                 catch (Exception ex)
@@ -1675,7 +1770,8 @@ namespace AasxPackageExplorer
             // trivial things
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
-                MessageBoxFlyoutShow("An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             // a SubmodelRef shall be exported
@@ -1685,7 +1781,9 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected for exporting table.", "Export Table", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected for exporting table.", "Export Table",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1696,7 +1794,9 @@ namespace AasxPackageExplorer
             if (pi == null || !pi.HasAction(actionName))
             {
                 var res = MessageBoxFlyoutShow(
-                        $"This function requires a binary plug-in file named '{pluginName}', which needs to be added to the command line, with an action named '{actionName}'. Press 'OK' to show help page on GitHub.",
+                        $"This function requires a binary plug-in file named '{pluginName}', " +
+                        $"which needs to be added to the command line, with an action named '{actionName}'. " +
+                        $"Press 'OK' to show help page on GitHub.",
                         "Plug-in not present",
                         MessageBoxButton.OKCancel, MessageBoxImage.Hand);
                 if (res == MessageBoxResult.OK)
@@ -1715,7 +1815,8 @@ namespace AasxPackageExplorer
             // trivial things
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
-                MessageBoxFlyoutShow("An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
             // an AAS needs to be selected
@@ -1725,7 +1826,9 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theAas == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid AAS selected for creating a new Submodel.", "New Submodel from plugins", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid AAS selected for creating a new Submodel.", "New Submodel from plugins",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1754,7 +1857,9 @@ namespace AasxPackageExplorer
             // could be nothing
             if (listOfSm.Count < 1)
             {
-                MessageBoxFlyoutShow("No plugins generating Submodels found. Aborting.", "New Submodel from plugins", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No plugins generating Submodels found. Aborting.", "New Submodel from plugins",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1763,7 +1868,8 @@ namespace AasxPackageExplorer
             uc.Caption = "Select Plug-in and Submodel to be generated ..";
             uc.ListOfItems = listOfSm;
             this.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null && uc.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
+            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
+                uc.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
             {
                 // get result arguments
                 var TagTuple = uc.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
@@ -1771,7 +1877,9 @@ namespace AasxPackageExplorer
                 var smname = TagTuple?.Item2;
                 if (lpi == null || smname == null || smname.Length < 1)
                 {
-                    MessageBoxFlyoutShow("Error accessing plugins. Aborting.", "New Submodel from plugins", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Error accessing plugins. Aborting.", "New Submodel from plugins",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1787,7 +1895,9 @@ namespace AasxPackageExplorer
                 var smres = gsres?.obj as AdminShell.Submodel;
                 if (gsres == null || smres == null)
                 {
-                    MessageBoxFlyoutShow("Error accessing plugins. Aborting.", "New Submodel from plugins", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBoxFlyoutShow(
+                        "Error accessing plugins. Aborting.", "New Submodel from plugins",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -1797,9 +1907,11 @@ namespace AasxPackageExplorer
                     // Submodel needs an identification
                     smres.identification = new AdminShell.Identification("IRI", "");
                     if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance);
+                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelInstance);
                     else
-                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelTemplate);
+                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add
                     var smref = new AdminShell.SubmodelRef(smres.GetReference());
@@ -1873,7 +1985,11 @@ namespace AasxPackageExplorer
             string workingDirectory = "" + Environment.CurrentDirectory;
 
             // ReSharper disable PossibleNullReferenceException
-            if (File.Exists(Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName), filename)))
+            if (File.Exists(
+                Path.Combine(
+                    System.IO.Path.GetDirectoryName(
+                        Directory.GetParent(workingDirectory).Parent.FullName),
+                    filename)))
             // ReSharper enable PossibleNullReferenceException
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
@@ -1893,7 +2009,11 @@ namespace AasxPackageExplorer
                 UANodeSet InformationModel = null;
 
                 // ReSharper disable PossibleNullReferenceException
-                InformationModel = UANodeSetExport.getInformationModel(Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName), filename));
+                InformationModel = UANodeSetExport.getInformationModel(
+                    Path.Combine(
+                        System.IO.Path.GetDirectoryName(
+                            Directory.GetParent(workingDirectory).Parent.FullName),
+                        filename));
                 // ReSharper enable PossibleNullReferenceException
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
@@ -1915,9 +2035,8 @@ namespace AasxPackageExplorer
             }
             else
             {
-                System.Windows.MessageBox.Show("Mapping Types could not be found.",
-                                          "Error",
-                                          MessageBoxButton.OK);
+                System.Windows.MessageBox.Show(
+                    "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
         }
     }

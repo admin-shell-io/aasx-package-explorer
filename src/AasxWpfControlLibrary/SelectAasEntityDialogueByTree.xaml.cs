@@ -14,11 +14,20 @@ using System.Windows.Shapes;
 
 using AdminShellNS;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -111,14 +120,21 @@ namespace AasxPackageExplorer
                         // a Identifiable will terminate the list of keys
                         var data = de.GetMainDataObject() as AdminShell.Identifiable;
                         if (data != null)
-                            this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(dataRef.GetElementName(), true, data.identification.idType, data.identification.id));
+                            this.ResultKeys.Insert(
+                                0,
+                                AdminShell.Key.CreateNew(
+                                    dataRef.GetElementName(), true, data.identification.idType,
+                                    data.identification.id));
                         break;
                     }
                     else
                     if (de.GetMainDataObject() is AdminShell.Referable data)
                     {
                         // add a key and go up ..
-                        this.ResultKeys.Insert(0, AdminShell.Key.CreateNew(dataRef.GetElementName(), true, "IdShort", data.idShort));
+                        this.ResultKeys.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                dataRef.GetElementName(), true, "IdShort", data.idShort));
                     }
                     else
                     // uups!
@@ -129,10 +145,11 @@ namespace AasxPackageExplorer
                 return true;
             }
 
-            // 
+            //
             // other special cases
             //
-            if (siMdo is AdminShell.SubmodelRef smref && ApplyFullFilterString(theFilter).ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0)
+            if (siMdo is AdminShell.SubmodelRef smref &&
+                    ApplyFullFilterString(theFilter).ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0)
             {
                 this.ResultKeys = new List<AdminShell.Key>();
                 this.ResultKeys.AddRange(smref.Keys);

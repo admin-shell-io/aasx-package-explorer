@@ -73,9 +73,11 @@ namespace AasxRestServerLibrary
                 request.Proxy = this.proxy;
             var response = client.Execute(request);
             if (response.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception($"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
+                throw new Exception(
+                    $"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
 
-            // Note: the normal response.GetContent() internally reads ContentStream as a string and screws up binary data.
+            // Note: the normal response.GetContent() internally reads ContentStream as a string and
+            // screws up binary data.
             // Necessary to access the real implementing object
             var rr = response as RestResponse;
             if (rr != null)
@@ -126,7 +128,8 @@ namespace AasxRestServerLibrary
                 request.Proxy = this.proxy;
             var respose = client.Execute(request);
             if (respose.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception($"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
+                throw new Exception(
+                    $"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
             var res = new AdminShellPackageEnv();
             res.LoadFromAasEnvString(respose.GetContent());
             return res;
@@ -140,7 +143,8 @@ namespace AasxRestServerLibrary
                 request.Proxy = this.proxy;
             var response = client.Execute(request);
             if (response.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception($"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
+                throw new Exception(
+                    $"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
             return response.GetContent();
         }
 
@@ -155,11 +159,13 @@ namespace AasxRestServerLibrary
                 request.Proxy = this.proxy;
             var response = client.Execute(request);
             if (response.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception($"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
+                throw new Exception(
+                    $"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
             return response.GetContent();
         }
 
-        public string UpdatePropertyValue(AdminShell.AdministrationShellEnv env, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme)
+        public string UpdatePropertyValue(
+            AdminShell.AdministrationShellEnv env, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme)
         {
             // trivial fails
             if (env == null || sme == null)
@@ -170,7 +176,7 @@ namespace AasxRestServerLibrary
             if (aas == null)
                 return null;
 
-            // build path         
+            // build path
             var aasId = aas.idShort;
             var submodelId = submodel.idShort;
             var elementId = sme.CollectIdShortByParent();
@@ -182,7 +188,8 @@ namespace AasxRestServerLibrary
                 request.Proxy = this.proxy;
             var respose = client.Execute(request);
             if (respose.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception($"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
+                throw new Exception(
+                    $"REST {respose.ResponseUri} response {respose.StatusCode} with {respose.StatusDescription}");
 
             var json = respose.GetContent();
             var parsed = JObject.Parse(json);

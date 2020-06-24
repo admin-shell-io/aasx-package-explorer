@@ -12,12 +12,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). 
-The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -85,13 +94,16 @@ namespace AasxPackageExplorer
         /// The current (used) licenses of the application. Use of Options as singleton.
         /// </summary>
         [JsonIgnore]
-        public string PrefLicenseShort = "This software is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-                "The browser functionality is licensed under the cefSharp license." + Environment.NewLine +
-                "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
-                "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
-                "The Zxing.Net Dot Matrix Code (DMC) generation is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-                "The Grapevine REST server framework is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-                "The AutomationML.Engine is licensed under the MIT license (MIT).";
+        public string PrefLicenseShort =
+            "This software is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
+            "The browser functionality is licensed under the cefSharp license." + Environment.NewLine +
+            "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
+            "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
+            "The Zxing.Net Dot Matrix Code (DMC) generation is licensed " +
+            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
+            "The Grapevine REST server framework is licensed " +
+            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
+            "The AutomationML.Engine is licensed under the MIT license (MIT).";
 
         /// <summary>
         /// The last build date of the application. Based on a resource file. Use of Options as singleton.
@@ -101,7 +113,10 @@ namespace AasxPackageExplorer
         {
             get
             {
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxWpfControlLibrary.Resources.BuildDate.txt"))
+                using (var stream =
+                    Assembly
+                        .GetExecutingAssembly()
+                        .GetManifestResourceStream("AasxWpfControlLibrary.Resources.BuildDate.txt"))
                 {
                     if (stream != null)
                     {
@@ -124,7 +139,10 @@ namespace AasxPackageExplorer
         {
             get
             {
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxWpfControlLibrary.Resources.LICENSE.txt"))
+                using (var stream =
+                    Assembly
+                        .GetExecutingAssembly()
+                        .GetManifestResourceStream("AasxWpfControlLibrary.Resources.LICENSE.txt"))
                 {
                     if (stream != null)
                     {
@@ -256,7 +274,8 @@ namespace AasxPackageExplorer
         public string OptionsTextFn = null;
 
         /// <summary>
-        /// If not null, enables backing up XML files of the AAS-ENV in some files under BackupDir, which could be relative
+        /// If not null, enables backing up XML files of the AAS-ENV in some files under BackupDir,
+        /// which could be relative
         /// </summary>
         public string BackupDir = null;
 
@@ -282,16 +301,18 @@ namespace AasxPackageExplorer
         public string RestServerPort = "1111";
 
         /// <summary>
-        /// If not null, will retrieved the options of all instantiated plugins and will write these into JSON option file
+        /// If not null, will retrieved the options of all instantiated plugins and
+        /// will write these into JSON option file
         /// </summary>
         [JsonIgnore]
         public string WriteDefaultOptionsFN = null;
 
         /// <summary>
-        /// Dictionary of override colors 
+        /// Dictionary of override colors
         /// </summary>
         [SettableOption]
-        public Dictionary<int, System.Windows.Media.Color> AccentColors = new Dictionary<int, System.Windows.Media.Color>();
+        public Dictionary<int, System.Windows.Media.Color> AccentColors =
+            new Dictionary<int, System.Windows.Media.Color>();
 
         /// <summary>
         /// Contains a list of remarks. Intended use: disabling lines of preferences.

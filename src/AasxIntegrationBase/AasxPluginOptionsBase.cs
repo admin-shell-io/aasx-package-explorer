@@ -17,7 +17,9 @@ namespace AasxIntegrationBase
         {
         }
 
-        public static T LoadDefaultOptionsFromAssemblyDir<T>(string pluginName, Assembly assy = null, JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+        public static T LoadDefaultOptionsFromAssemblyDir<T>(
+            string pluginName, Assembly assy = null,
+            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
         {
             // expand assy?
             if (assy == null)
@@ -41,7 +43,9 @@ namespace AasxIntegrationBase
             return null;
         }
 
-        public void TryLoadAdditionalOptionsFromAssemblyDir<T>(string pluginName, Assembly assy = null, JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+        public void TryLoadAdditionalOptionsFromAssemblyDir<T>(
+            string pluginName, Assembly assy = null,
+            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
         {
             // expand assy?
             if (assy == null)

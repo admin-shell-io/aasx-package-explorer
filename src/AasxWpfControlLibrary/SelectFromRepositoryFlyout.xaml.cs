@@ -16,11 +16,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -60,11 +69,26 @@ namespace AasxPackageExplorer
                 if (fn == null)
                 {
                     // Static example
-                    var init = @"{ 'filemaps' : [
-                            { 'assetid' : 'http://pk.festo.com/3s7plfdrs35',                'tag' : 'F',        'fn' : 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Festo-USB-stick-sample-admin-shell.aasx' },
-                            { 'assetid' : 'http://pk.pf.com/40000039198163',                'tag' : 'PF',       'fn' : 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\pf_232769_40000039198163.aasx' },
-                            { 'assetid' : 'www.phoenixcontact.com/asset/product/2404267',   'tag' : 'PC',       'fn' : 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Phoenix Contact AXC F 2152 - 11.aasx' },
-                        ] }";
+                    var init =
+                        @"{
+  'filemaps': [
+    {
+      'assetid': 'http://pk.festo.com/3s7plfdrs35',
+      'tag': 'F',
+      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Festo-USB-stick-sample-admin-shell.aasx'
+    },
+    {
+      'assetid': 'http://pk.pf.com/40000039198163',
+      'tag': 'PF',
+      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\pf_232769_40000039198163.aasx'
+    },
+    {
+      'assetid': 'www.phoenixcontact.com/asset/product/2404267',
+      'tag': 'PC',
+      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Phoenix Contact AXC F 2152 - 11.aasx'
+    }
+  ]
+}";
                     this.TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
                 }
                 else

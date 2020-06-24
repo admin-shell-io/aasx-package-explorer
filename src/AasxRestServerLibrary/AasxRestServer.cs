@@ -17,17 +17,30 @@ using Grapevine.Shared;
 using System.Reflection;
 using Grapevine.Interfaces.Shared;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). 
-The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
 
-/* Please notice: the API and REST routes implemented in this version of the source code are not specified and standardised by the
-specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s). */
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
-// ReSharper disable ClassNeverInstantiated.Global .. motivation: unsure what happens to reflection, when making class static ..
+/*
+Please notice:
+The API and REST routes implemented in this version of the source code are not specified and standardised by the
+specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s).
+*/
+
+// ReSharper disable ClassNeverInstantiated.Global
+//.. motivation: unsure what happens to reflection, when making class static ..
 
 namespace AasxRestServerLibrary
 {
@@ -38,9 +51,11 @@ namespace AasxRestServerLibrary
         {
             public static AasxHttpContextHelper helper = null;
 
-            // Basic AAS + Asset 
+            // Basic AAS + Asset
 
-            [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "^/aas/(id|([^/]+))(|/core|/complete|/thumbnail|/aasenv)(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.GET,
+                PathInfo = "^/aas/(id|([^/]+))(|/core|/complete|/thumbnail|/aasenv)(/|)$")]
             public IHttpContext GetAasAndAsset(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -164,7 +179,9 @@ namespace AasxRestServerLibrary
 
             // Contents of a Submodel
 
-            [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)(|/core|/deep|/complete)(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.GET,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)(|/core|/deep|/complete)(/|)$")]
             public IHttpContext GetSubmodelContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -172,7 +189,9 @@ namespace AasxRestServerLibrary
                 {
                     var deep = helper.PathEndsWith(context, "deep");
                     var complete = helper.PathEndsWith(context, "complete");
-                    helper.EvalGetSubmodelContents(context, m.Groups[1].ToString(), m.Groups[3].ToString(), deep: deep || complete, complete: complete);
+                    helper.EvalGetSubmodelContents(
+                        context, m.Groups[1].ToString(), m.Groups[3].ToString(),
+                        deep: deep || complete, complete: complete);
                 }
                 return context;
             }
@@ -190,7 +209,10 @@ namespace AasxRestServerLibrary
 
             // Contents of SubmodelElements
 
-            [RestRoute(HttpMethod = HttpMethod.GET, PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?(|/core|/complete|/deep|/file|/blob|/events|/property)(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.GET,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?" +
+                    "(|/core|/complete|/deep|/file|/blob|/events|/property)(/|)$")]
             public IHttpContext GetSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -220,7 +242,8 @@ namespace AasxRestServerLibrary
                     else
                     if (helper.PathEndsWith(context, "events"))
                     {
-                        context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotImplemented, $"Events currently not implented.");
+                        context.Response.SendResponse(
+                            Grapevine.Shared.HttpStatusCode.NotImplemented, $"Events currently not implented.");
                     }
                     else
                     {
@@ -240,7 +263,9 @@ namespace AasxRestServerLibrary
                 return context;
             }
 
-            [RestRoute(HttpMethod = HttpMethod.POST, PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?/invoke(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.POST,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?/invoke(/|)$")]
             public IHttpContext PostSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -261,7 +286,9 @@ namespace AasxRestServerLibrary
                 return context;
             }
 
-            [RestRoute(HttpMethod = HttpMethod.PUT, PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){0,99}?(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.PUT,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){0,99}?(/|)$")]
             public IHttpContext PutSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -278,7 +305,9 @@ namespace AasxRestServerLibrary
                 return context;
             }
 
-            [RestRoute(HttpMethod = HttpMethod.DELETE, PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){0,99}?(/|)$")]
+            [RestRoute(
+                HttpMethod = HttpMethod.DELETE,
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){0,99}?(/|)$")]
             public IHttpContext DeleteSubmodelElementsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -345,7 +374,8 @@ namespace AasxRestServerLibrary
 
         private static RestServer startedRestServer = null;
 
-        public static void Start(AdminShellPackageEnv package, string host, string port, GrapevineLoggerSuper logger = null)
+        public static void Start(
+            AdminShellPackageEnv package, string host, string port, GrapevineLoggerSuper logger = null)
         {
             // if running, stop old server
             Stop();
@@ -359,8 +389,11 @@ namespace AasxRestServerLibrary
             serverSettings.Port = port;
 
             if (logger != null)
-                logger.Warn("Please notice: the API and REST routes implemented in this version of the source code are not specified and standardised by the" +
-                    "specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s).");
+                logger.Warn(
+                    "Please notice: the API and REST routes implemented in this version " +
+                    "of the source code are not specified and standardised by the" +
+                    "specification Details of the Administration Shell. " +
+                    "The hereby stated approach is solely the opinion of its author(s).");
 
             startedRestServer = new RestServer(serverSettings);
             {
@@ -371,8 +404,11 @@ namespace AasxRestServerLibrary
 
             // tail of the messages, again
             if (logger != null)
-                logger.Warn("Please notice: the API and REST routes implemented in this version of the source code are not specified and standardised by the" +
-                    "specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s).");
+                logger.Warn(
+                    "Please notice: the API and REST routes implemented in this version " +
+                    "of the source code are not specified and standardised by the" +
+                    "specification Details of the Administration Shell. " +
+                    "The hereby stated approach is solely the opinion of its author(s).");
         }
 
         public static void Stop()

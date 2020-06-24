@@ -23,7 +23,7 @@ namespace AasxUtilities
         #endregion
 
         #region Magic for DEP PROPERTIES
-        //============================== 
+        //==============================
 
         /// <summary>
         /// Raises the PropertyChange event for the property specified

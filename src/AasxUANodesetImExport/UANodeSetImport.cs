@@ -1,7 +1,14 @@
-﻿/* Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-   Copyright (c) 2020 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
-   Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
-    zur Förderung der angewandten Forschung e.V. <jan.nicolas.weskamp@iosb-ina.fraunhofer.de>, author: Jan Nicolas Weskamp
+﻿/* 
+Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+Copyright (c) 2020 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
+
+Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo, 
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <jan.nicolas.weskamp@iosb-ina.fraunhofer.de>
+Author: Jan Nicolas Weskamp
 */
 
 using AdminShellNS;
@@ -85,7 +92,9 @@ namespace AasxUANodesetImExport
                                 //add Submodel and its SubmodelRef
                                 env.Submodels.Add(submodel);
                                 var smr = new AdminShell.SubmodelRef();
-                                smr.Keys.Add(new AdminShell.Key("Submodel", true, submodel.identification.idType, submodel.identification.id));
+                                smr.Keys.Add(
+                                    new AdminShell.Key(
+                                        "Submodel", true, submodel.identification.idType, submodel.identification.id));
                                 aas.submodelRefs.Add(smr);
                             }
 
@@ -123,7 +132,8 @@ namespace AasxUANodesetImExport
                         {
                             aas.assetRef = createAssetRef(node);
                         }
-                        else if (node.BrowseName == "1:Identification" && getTypeDefinition(node) == "1:AASIdentifierType")
+                        else if (node.BrowseName == "1:Identification" &&
+                                getTypeDefinition(node) == "1:AASIdentifierType")
                         {
                             aas.identification = createIdentification(node);
                         }
@@ -259,9 +269,10 @@ namespace AasxUANodesetImExport
             }
             catch (Exception ex)
             {
-                MessageBoxResult result = MessageBox.Show("NodeId " + nodeId + " could not be found.\nPlease check your NodeSet file.",
-                                          "Error",
-                                          MessageBoxButton.OK);
+                MessageBoxResult result = MessageBox.Show(
+                    "NodeId " + nodeId + " could not be found.\nPlease check your NodeSet file.",
+                    "Error",
+                    MessageBoxButton.OK);
                 throw ex;
             }
         }
@@ -381,7 +392,8 @@ namespace AasxUANodesetImExport
             List<Key> keys = new List<Key>();
             foreach (Reference _ref in sem.References)
             {
-                if (_ref.ReferenceType != "HasTypeDefinition" && getTypeDefinition(findNode(_ref.Value)) == "1:AASKeyType")
+                if (_ref.ReferenceType != "HasTypeDefinition" &&
+                    getTypeDefinition(findNode(_ref.Value)) == "1:AASKeyType")
                 {
                     UAVariable key = (UAVariable)findNode(_ref.Value);
                     Key _key = new Key();
@@ -714,7 +726,8 @@ namespace AasxUANodesetImExport
             Administration admin = new Administration();
             Identification iden = new Identification();
 
-            desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName = new LangStringSetIEC61360("EN?", makePretty(name));
+            desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName =
+                new LangStringSetIEC61360("EN?", makePretty(name));
 
 
             foreach (Reference _ref in node.References)
@@ -730,7 +743,8 @@ namespace AasxUANodesetImExport
                             {
                                 UANode var = findNode(_refref.Value);
                                 if (getTypeDefinition(var) == "1:AASIdentifierType") iden = createIdentification(var);
-                                if (getTypeDefinition(var) == "1:AASAdministrativeInformationType") admin = createAdmninistration(var);
+                                if (getTypeDefinition(var) == "1:AASAdministrativeInformationType")
+                                    admin = createAdmninistration(var);
                             }
                         }
                     }
@@ -769,25 +783,57 @@ namespace AasxUANodesetImExport
                             if (_refref.ReferenceType == "HasProperty")
                             {
                                 UAVariable var = (UAVariable)findNode(_refref.Value);
-                                if (var.BrowseName == "1:DataType") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.dataType = var.Value.InnerText;
-                                if (var.BrowseName == "1:Symbol") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.symbol = var.Value.InnerText;
-                                if (var.BrowseName == "1:Unit") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.unit = var.Value.InnerText;
-                                if (var.BrowseName == "1:ValueFormat") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.valueFormat = var.Value.InnerText;
+                                if (var.BrowseName == "1:DataType")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .dataType = var.Value.InnerText;
+
+                                if (var.BrowseName == "1:Symbol")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .symbol = var.Value.InnerText;
+
+                                if (var.BrowseName == "1:Unit")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .unit = var.Value.InnerText;
+
+                                if (var.BrowseName == "1:ValueFormat")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .valueFormat = var.Value.InnerText;
+
                                 if (var.BrowseName == "1:IdShort ") desc.idShort = var.Value.InnerText;
                                 if (var.BrowseName == "1:Category ") desc.category = var.Value.InnerText;
                             }
                             else if (_refref.ReferenceType == "HasComponent")
                             {
                                 UANode obj = findNode(_refref.Value);
-                                if (obj.BrowseName == "1:Definition") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.definition.langString = getDescription(obj);
-                                if (obj.BrowseName == "1:PreferredName") desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.preferredName.langString = getDescription(obj);
+                                if (obj.BrowseName == "1:Definition")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .definition
+                                        .langString = getDescription(obj);
+
+                                if (obj.BrowseName == "1:PreferredName")
+                                    desc.embeddedDataSpecification
+                                        .dataSpecificationContent
+                                        .dataSpecificationIEC61360
+                                        .preferredName
+                                        .langString = getDescription(obj);
                             }
                         }
                     }
                 }
             }
             desc.SetAdminstration("2.0", "1");
-            desc.SetIdentification("URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
+            desc.SetIdentification(
+                "URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
         }
 
         private static Identification createIdentification(UANode node)
@@ -867,8 +913,11 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     UANode var = findNode(_ref.Value);
-                    if (getTypeDefinition(var) == "1:AASAdministrativeInformationType") asset.administration = createAdmninistration(var);
-                    if (getTypeDefinition(var) == "1:AASIdentifierType") asset.identification = createIdentification(var);
+                    if (getTypeDefinition(var) == "1:AASAdministrativeInformationType")
+                        asset.administration = createAdmninistration(var);
+
+                    if (getTypeDefinition(var) == "1:AASIdentifierType")
+                        asset.identification = createIdentification(var);
                 }
             }
         }

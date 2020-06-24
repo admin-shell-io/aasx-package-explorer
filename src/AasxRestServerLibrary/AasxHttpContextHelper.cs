@@ -20,15 +20,27 @@ using System.IO;
 using System.Dynamic;
 using System.Globalization;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). 
-The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
 
-/* Please notice: the API and REST routes implemented in this version of the source code are not specified and standardised by the
-specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s). */
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
+
+/*
+Please notice:
+The API and REST routes implemented in this version of the source code are not specified and standardised by the
+specification Details of the Administration Shell. The hereby stated approach is solely the opinion of its author(s).
+*/
 
 namespace AasxRestServerLibrary
 {
@@ -51,7 +63,8 @@ namespace AasxRestServerLibrary
             return PathEndsWith(context.Request.PathInfo, tag);
         }
 
-        // see also: https://stackoverflow.com/questions/33619469/how-do-i-write-a-regular-expression-to-route-traffic-with-grapevine-when-my-requ
+        // see also: https://stackoverflow.com/questions/33619469/
+        // how-do-i-write-a-regular-expression-to-route-traffic-with-grapevine-when-my-requ
 
         public Match PathInfoRegexMatch(MethodBase methodWithRestRoute, string input)
         {
@@ -67,7 +80,8 @@ namespace AasxRestServerLibrary
             return m;
         }
 
-        public List<AasxHttpHandleIdentification> CreateHandlesFromQueryString(System.Collections.Specialized.NameValueCollection queryStrings)
+        public List<AasxHttpHandleIdentification> CreateHandlesFromQueryString(
+            System.Collections.Specialized.NameValueCollection queryStrings)
         {
             // start
             var res = new List<AasxHttpHandleIdentification>();
@@ -143,10 +157,12 @@ namespace AasxRestServerLibrary
 
         #region // Access package structures
 
-        public AdminShell.AdministrationShell FindAAS(string aasid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
+        public AdminShell.AdministrationShell FindAAS(
+            string aasid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
         {
             // trivial
-            if (Package == null || Package.AasEnv == null || Package.AasEnv.AdministrationShells == null || Package.AasEnv.AdministrationShells.Count < 1)
+            if (Package == null || Package.AasEnv == null || Package.AasEnv.AdministrationShells == null ||
+                Package.AasEnv.AdministrationShells.Count < 1)
                 return null;
 
             // default aas?
@@ -163,7 +179,9 @@ namespace AasxRestServerLibrary
             return Package.AasEnv.FindAAS(aasid);
         }
 
-        public AdminShell.SubmodelRef FindSubmodelRefWithinAas(AdminShell.AdministrationShell aas, string smid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
+        public AdminShell.SubmodelRef FindSubmodelRefWithinAas(
+            AdminShell.AdministrationShell aas, string smid,
+            System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
         {
             // trivial
             if (Package == null || Package.AasEnv == null || aas == null || smid == null || smid.Trim() == "")
@@ -193,7 +211,9 @@ namespace AasxRestServerLibrary
             return null;
         }
 
-        public AdminShell.Submodel FindSubmodelWithinAas(AdminShell.AdministrationShell aas, string smid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
+        public AdminShell.Submodel FindSubmodelWithinAas(
+            AdminShell.AdministrationShell aas, string smid,
+            System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
         {
             // trivial
             if (Package == null || Package.AasEnv == null || aas == null || smid == null || smid.Trim() == "")
@@ -217,7 +237,9 @@ namespace AasxRestServerLibrary
             return null;
         }
 
-        public AdminShell.Submodel FindSubmodelWithoutAas(string smid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
+        public AdminShell.Submodel FindSubmodelWithoutAas(
+            string smid, System.Collections.Specialized.NameValueCollection queryStrings = null,
+            string rawUrl = null)
         {
             // trivial
             if (Package == null || Package.AasEnv == null || smid == null || smid.Trim() == "")
@@ -240,7 +262,9 @@ namespace AasxRestServerLibrary
             return null;
         }
 
-        public AdminShell.ConceptDescription FindCdWithoutAas(AdminShell.AdministrationShell aas, string cdid, System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
+        public AdminShell.ConceptDescription FindCdWithoutAas(
+            AdminShell.AdministrationShell aas, string cdid,
+            System.Collections.Specialized.NameValueCollection queryStrings = null, string rawUrl = null)
         {
             // trivial
             if (Package == null || Package.AasEnv == null || aas == null || cdid == null || cdid.Trim() == "")
@@ -270,7 +294,9 @@ namespace AasxRestServerLibrary
             public AdminShell.SubmodelElementWrapper wrapper = null;
             public AdminShell.Referable parent = null;
 
-            public FindSubmodelElementResult(AdminShell.Referable elem = null, AdminShell.SubmodelElementWrapper wrapper = null, AdminShell.Referable parent = null)
+            public FindSubmodelElementResult(
+                AdminShell.Referable elem = null, AdminShell.SubmodelElementWrapper wrapper = null,
+                AdminShell.Referable parent = null)
             {
                 this.elem = elem;
                 this.wrapper = wrapper;
@@ -278,7 +304,9 @@ namespace AasxRestServerLibrary
             }
         }
 
-        public FindSubmodelElementResult FindSubmodelElement(AdminShell.Referable parent, List<AdminShell.SubmodelElementWrapper> wrappers, string[] elemids, int elemNdx = 0)
+        public FindSubmodelElementResult FindSubmodelElement(
+            AdminShell.Referable parent, List<AdminShell.SubmodelElementWrapper> wrappers,
+            string[] elemids, int elemNdx = 0)
         {
             // trivial
             if (wrappers == null || elemids == null || elemNdx >= elemids.Length)
@@ -333,7 +361,8 @@ namespace AasxRestServerLibrary
         #region // Generate responses
 
 
-        protected static void SendJsonResponse(IHttpContext context, object obj, IContractResolver contractResolver = null)
+        protected static void SendJsonResponse(
+            IHttpContext context, object obj, IContractResolver contractResolver = null)
         {
             var settings = new JsonSerializerSettings();
             if (contractResolver != null)
@@ -358,7 +387,8 @@ namespace AasxRestServerLibrary
             context.Response.SendResponse(txt);
         }
 
-        protected static void SendStreamResponse(IHttpContext context, Stream stream, string headerAttachmentFileName = null)
+        protected static void SendStreamResponse(
+            IHttpContext context, Stream stream, string headerAttachmentFileName = null)
         {
             context.Response.ContentType = ContentType.APPLICATION;
             context.Response.ContentLength64 = stream.Length;
@@ -381,7 +411,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
                 return;
             }
 
@@ -402,7 +433,8 @@ namespace AasxRestServerLibrary
         {
             if (this.Package == null || this.Package.AasEnv == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
 
@@ -410,7 +442,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
                 return;
             }
 
@@ -418,11 +451,13 @@ namespace AasxRestServerLibrary
             AdminShell.AdministrationShellEnv copyenv = null;
             try
             {
-                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
+                copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(
+                    this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot filter aas envioronment: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot filter aas envioronment: {ex.Message}.");
                 return;
             }
 
@@ -446,7 +481,9 @@ namespace AasxRestServerLibrary
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot serialize and send aas envioronment: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Cannot serialize and send aas envioronment: {ex.Message}.");
             }
         }
 
@@ -455,7 +492,8 @@ namespace AasxRestServerLibrary
         {
             if (this.Package == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
 
@@ -463,7 +501,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with id '{aasid}' found.");
                 return;
             }
 
@@ -473,7 +512,8 @@ namespace AasxRestServerLibrary
             var thumbStream = this.Package.GetLocalThumbnailStream(ref thumbUri);
             if (thumbStream == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No thumbnail available in package.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No thumbnail available in package.");
                 return;
             }
 
@@ -487,7 +527,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -495,28 +536,36 @@ namespace AasxRestServerLibrary
             AdminShell.AdministrationShell aas = null;
             try
             {
-                aas = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AdministrationShell>(context.Request.Payload);
+                aas = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AdministrationShell>(
+                    context.Request.Payload);
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
 
             // need id for idempotent behaviour
             if (aas.identification == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Identification of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Identification of entity is (null); PUT cannot be performed.");
                 return;
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
+            if (this.Package == null || this.Package.AasEnv == null ||
+                this.Package.AasEnv.AdministrationShells == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
-            context.Server.Logger.Debug($"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and id {aas.identification.ToString() }");
+            context.Server.Logger.Debug(
+                $"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
+                $"id {aas.identification.ToString() }");
             var existingAas = this.Package.AasEnv.FindAAS(aas.identification);
             if (existingAas != null)
                 this.Package.AasEnv.AdministrationShells.Remove(existingAas);
@@ -529,9 +578,11 @@ namespace AasxRestServerLibrary
         public void EvalDeleteAasAndAsset(IHttpContext context, string aasid, bool deleteAsset = false)
         {
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
+            if (this.Package == null || this.Package.AasEnv == null ||
+                this.Package.AasEnv.AdministrationShells == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
 
@@ -539,7 +590,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -547,12 +599,16 @@ namespace AasxRestServerLibrary
             var asset = this.Package.AasEnv.FindAsset(aas.assetRef);
 
             // delete
-            context.Server.Logger.Debug($"Deleting AdministrationShell with idShort {aas.idShort ?? "--"} and id {aas.identification?.ToString() ?? "--"}");
+            context.Server.Logger.Debug(
+                $"Deleting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
+                $"id {aas.identification?.ToString() ?? "--"}");
             this.Package.AasEnv.AdministrationShells.Remove(aas);
 
             if (deleteAsset && asset != null)
             {
-                context.Server.Logger.Debug($"Deleting Asset with idShort {asset.idShort ?? "--"} and id {asset.identification?.ToString() ?? "--"}");
+                context.Server.Logger.Debug(
+                    $"Deleting Asset with idShort {asset.idShort ?? "--"} and " +
+                    $"id {asset.identification?.ToString() ?? "--"}");
                 this.Package.AasEnv.Assets.Remove(asset);
             }
 
@@ -588,7 +644,8 @@ namespace AasxRestServerLibrary
             else
             {
                 foreach (var aas in this.Package.AasEnv.AdministrationShells)
-                    if (aas.idShort != null && aas.idShort.Trim() != "" && aas.idShort.Trim().ToLower() == assetid.Trim().ToLower())
+                    if (aas.idShort != null && aas.idShort.Trim() != "" &&
+                        aas.idShort.Trim().ToLower() == assetid.Trim().ToLower())
                     {
                         dynamic o = new ExpandoObject();
                         o.identification = aas.identification;
@@ -606,7 +663,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -618,21 +676,26 @@ namespace AasxRestServerLibrary
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
 
             // need id for idempotent behaviour
             if (asset.identification == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Identification of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Identification of entity is (null); PUT cannot be performed.");
                 return;
             }
 
             // datastructure update
             if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError,
+                    $"Error accessing internal data structures.");
                 return;
             }
             context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
@@ -677,7 +740,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -701,7 +765,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -709,7 +774,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -721,37 +787,46 @@ namespace AasxRestServerLibrary
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
 
             // need id for idempotent behaviour
             if (submodel.identification == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Identification of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Identification of entity is (null); PUT cannot be performed.");
                 return;
             }
 
             // datastructure update
             if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
 
             // add Submodel
-            context.Server.Logger.Debug($"Adding Submodel with idShort {submodel.idShort ?? "--"} and id {submodel.identification?.ToString() }");
+            context.Server.Logger.Debug(
+                $"Adding Submodel with idShort {submodel.idShort ?? "--"} and " +
+                $"id {submodel.identification?.ToString() }");
             var existingSm = this.Package.AasEnv.FindSubmodel(submodel.identification);
             if (existingSm != null)
                 this.Package.AasEnv.Submodels.Remove(existingSm);
             this.Package.AasEnv.Submodels.Add(submodel);
 
-            // add SubmodelRef to AAS            
-            var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", true, submodel.identification.idType, submodel.identification.id);
+            // add SubmodelRef to AAS
+            var newsmr = AdminShell.SubmodelRef.CreateNew(
+                "Submodel", true, submodel.identification.idType, submodel.identification.id);
             var existsmr = aas.HasSubmodelRef(newsmr);
             if (!existsmr)
             {
-                context.Server.Logger.Debug($"Adding SubmodelRef to AAS with idShort {aas.idShort ?? "--"} and id {aas.identification?.ToString() ?? "--"}");
+                context.Server.Logger.Debug(
+                    $"Adding SubmodelRef to AAS with idShort {aas.idShort ?? "--"} and " +
+                    $"id {aas.identification?.ToString() ?? "--"}");
                 aas.AddSubmodelRef(newsmr);
             }
 
@@ -764,7 +839,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -772,7 +848,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -780,7 +857,9 @@ namespace AasxRestServerLibrary
             var smref = this.FindSubmodelRefWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (smref != null)
             {
-                context.Server.Logger.Debug($"Removing SubmodelRef {smid} from AAS with idShort {aas.idShort ?? "--"} and id {aas.identification?.ToString() ?? "--"}");
+                context.Server.Logger.Debug(
+                    $"Removing SubmodelRef {smid} from AAS with idShort {aas.idShort ?? "--"} and " +
+                    $"id {aas.identification?.ToString() ?? "--"}");
                 aas.submodelRefs.Remove(smref);
             }
 
@@ -804,14 +883,17 @@ namespace AasxRestServerLibrary
 
         #region // Submodel Complete
 
-        public void EvalGetSubmodelContents(IHttpContext context, string aasid, string smid, bool deep = false, bool complete = false)
+        public void EvalGetSubmodelContents(
+            IHttpContext context, string aasid, string smid, bool deep = false, bool complete = false)
         {
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -827,14 +909,18 @@ namespace AasxRestServerLibrary
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
             // AAS ENV
             if (this.Package == null || this.Package.AasEnv == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError,
+                    $"Error accessing internal data structures.");
                 return;
             }
 
@@ -936,14 +1022,18 @@ namespace AasxRestServerLibrary
 
         #region // Submodel Elements
 
-        public void EvalGetSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids, bool deep = false, bool complete = false)
+        public void EvalGetSubmodelElementContents(
+            IHttpContext context, string aasid, string smid, string[] elemids, bool deep = false,
+            bool complete = false)
         {
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -951,7 +1041,9 @@ namespace AasxRestServerLibrary
             var sme = this.FindSubmodelElement(sm, sm.submodelElements, elemids);
             if (sme == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No matching element in Submodel found.");
                 return;
             }
 
@@ -967,7 +1059,9 @@ namespace AasxRestServerLibrary
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -976,7 +1070,8 @@ namespace AasxRestServerLibrary
             var smeb = fse?.elem as AdminShell.Blob;
             if (smeb == null || smeb.value == null || smeb.value == "")
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Blob element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Blob element in Submodel found.");
                 return;
             }
 
@@ -991,7 +1086,9 @@ namespace AasxRestServerLibrary
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -1000,14 +1097,16 @@ namespace AasxRestServerLibrary
             var smep = fse?.elem as AdminShell.Property;
             if (smep == null || smep.value == null || smep.value == "")
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Property element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Property element in Submodel found.");
                 return;
             }
 
             // a little bit of demo
             string strval = smep.value;
-            if (smep.HasQualifierOfType("DEMO") != null && smep.value != null && smep.valueType != null && smep.valueType.Trim().ToLower() == "double"
-                && double.TryParse(smep.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dblval))
+            if (smep.HasQualifierOfType("DEMO") != null && smep.value != null && smep.valueType != null &&
+                smep.valueType.Trim().ToLower() == "double" &&
+                double.TryParse(smep.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dblval))
             {
                 dblval += Math.Sin((0.001 * DateTime.UtcNow.Millisecond) * 6.28);
                 strval = dblval.ToString(CultureInfo.InvariantCulture);
@@ -1030,7 +1129,9 @@ namespace AasxRestServerLibrary
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -1039,7 +1140,9 @@ namespace AasxRestServerLibrary
             var smef = fse?.elem as AdminShell.File;
             if (smef == null || smef.value == null || smef.value == "")
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching File element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No matching File element in Submodel found.");
                 return;
             }
 
@@ -1047,7 +1150,9 @@ namespace AasxRestServerLibrary
             var packageStream = this.Package.GetLocalStreamFromPackage(smef.value);
             if (packageStream == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No file contents available in package.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No file contents available in package.");
                 return;
             }
 
@@ -1061,7 +1166,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -1069,18 +1175,22 @@ namespace AasxRestServerLibrary
             AdminShell.SubmodelElement sme = null;
             try
             {
-                sme = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.SubmodelElement>(context.Request.Payload, new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                sme = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.SubmodelElement>(
+                    context.Request.Payload, new AdminShellConverters.JsonAasxConverter("modelType", "name"));
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
 
             // need id for idempotent behaviour
             if (sme?.idShort == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"entity or idShort of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"entity or idShort of entity is (null); PUT cannot be performed.");
                 return;
             }
 
@@ -1089,7 +1199,9 @@ namespace AasxRestServerLibrary
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -1114,7 +1226,8 @@ namespace AasxRestServerLibrary
                 var parent = this.FindSubmodelElement(sm, sm.submodelElements, elemids);
                 if (parent == null)
                 {
-                    context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching element in Submodel found.");
+                    context.Response.SendResponse(
+                        Grapevine.Shared.HttpStatusCode.NotFound, $"No matching element in Submodel found.");
                     return;
                 }
 
@@ -1124,7 +1237,8 @@ namespace AasxRestServerLibrary
                     if (existsmw != null)
                     {
                         updated = true;
-                        context.Server.Logger.Debug($"Removing old SubmodelElement {sme.idShort} from SubmodelCollection.");
+                        context.Server.Logger.Debug(
+                            $"Removing old SubmodelElement {sme.idShort} from SubmodelCollection.");
                         parentsmc.value.Remove(existsmw);
                     }
 
@@ -1133,7 +1247,9 @@ namespace AasxRestServerLibrary
                 }
                 else
                 {
-                    context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Matching SubmodelElement in Submodel {smid} is not suitable to add childs.");
+                    context.Response.SendResponse(
+                        Grapevine.Shared.HttpStatusCode.BadRequest,
+                        $"Matching SubmodelElement in Submodel {smid} is not suitable to add childs.");
                     return;
                 }
 
@@ -1143,14 +1259,18 @@ namespace AasxRestServerLibrary
             SendTextResponse(context, "OK" + (updated ? " (with updates)" : ""));
         }
 
-        public void EvalDeleteSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids)
+        public void EvalDeleteSubmodelElementContents(
+            IHttpContext context, string aasid, string smid, string[] elemids)
         {
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null || elemids == null || elemids.Length < 1)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found or no elements to delete specified.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found or " +
+                    $"no elements to delete specified.");
                 return;
             }
 
@@ -1158,7 +1278,8 @@ namespace AasxRestServerLibrary
             var fse = this.FindSubmodelElement(sm, sm.submodelElements, elemids);
             if (fse == null || fse.elem == null || fse.parent == null || fse.wrapper == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No matching element in Submodel found.");
                 return;
             }
 
@@ -1174,7 +1295,8 @@ namespace AasxRestServerLibrary
 
             if (fse.parent is AdminShell.SubmodelElementCollection smc)
             {
-                context.Server.Logger.Debug($"Deleting specified SubmodelElement {elinfo} from SubmodelElementCollection {smc.idShort}.");
+                context.Server.Logger.Debug(
+                    $"Deleting specified SubmodelElement {elinfo} from SubmodelElementCollection {smc.idShort}.");
                 smc.value.Remove(fse.wrapper);
                 deleted = true;
             }
@@ -1183,14 +1305,17 @@ namespace AasxRestServerLibrary
             SendTextResponse(context, "OK" + (!deleted ? " (but nothing deleted)" : ""));
         }
 
-        public void EvalInvokeSubmodelElementOperation(IHttpContext context, string aasid, string smid, string[] elemids)
+        public void EvalInvokeSubmodelElementOperation(
+            IHttpContext context, string aasid, string smid, string[] elemids)
         {
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
             if (sm == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
                 return;
             }
 
@@ -1199,7 +1324,8 @@ namespace AasxRestServerLibrary
             var smep = fse?.elem as AdminShell.Operation;
             if (smep == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Operation element in Submodel found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No matching Operation element in Submodel found.");
                 return;
             }
 
@@ -1217,7 +1343,9 @@ namespace AasxRestServerLibrary
                 // payload present
                 if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
                 {
-                    context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload for Operation input argument or content type is not JSON.");
+                    context.Response.SendResponse(
+                        Grapevine.Shared.HttpStatusCode.BadRequest,
+                        $"No payload for Operation input argument or content type is not JSON.");
                     return;
                 }
 
@@ -1237,7 +1365,8 @@ namespace AasxRestServerLibrary
                 }
                 catch (Exception ex)
                 {
-                    context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                    context.Response.SendResponse(
+                        Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                     return;
                 }
             }
@@ -1245,7 +1374,9 @@ namespace AasxRestServerLibrary
             // do a check
             if (numExpectedInputArgs != numGivenInputArgs)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Number of input arguments in payload does not fit expected input arguments of Operation.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Number of input arguments in payload does not fit expected input arguments of Operation.");
                 return;
             }
 
@@ -1266,7 +1397,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -1275,7 +1407,8 @@ namespace AasxRestServerLibrary
 
             // create a new, filtered AasEnv
             // (this is expensive, but delivers us with a list of CDs which are in relation to the respective AAS)
-            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
+            var copyenv = AdminShell.AdministrationShellEnv.CreateFromExistingEnv(
+                this.Package.AasEnv, filterForAas: new List<AdminShell.AdministrationShell>(new[] { aas }));
 
             // get all CDs and describe them
             foreach (var cd in copyenv.ConceptDescriptions)
@@ -1302,7 +1435,9 @@ namespace AasxRestServerLibrary
             var cd = this.FindCdWithoutAas(aas, cdid, context.Request.QueryString, context.Request.RawUrl);
             if (cd == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no ConceptDescription with id '{cdid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no ConceptDescription with id '{cdid}' found.");
                 return;
             }
 
@@ -1317,13 +1452,16 @@ namespace AasxRestServerLibrary
             var cd = this.FindCdWithoutAas(aas, cdid, context.Request.QueryString, context.Request.RawUrl);
             if (cd == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS '{aasid}' or no ConceptDescription with id '{cdid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no ConceptDescription with id '{cdid}' found.");
                 return;
             }
 
             // delete ?!
             var deleted = false;
-            if (this.Package != null && this.Package.AasEnv != null && this.Package.AasEnv.ConceptDescriptions.Contains(cd))
+            if (this.Package != null && this.Package.AasEnv != null &&
+                this.Package.AasEnv.ConceptDescriptions.Contains(cd))
             {
                 this.Package.AasEnv.ConceptDescriptions.Remove(cd);
                 deleted = true;
@@ -1351,7 +1489,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -1359,16 +1498,19 @@ namespace AasxRestServerLibrary
             List<AdminShell.Identification> ids = null;
             try
             {
-                ids = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AdminShell.Identification>>(context.Request.Payload);
+                ids = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AdminShell.Identification>>(
+                    context.Request.Payload);
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
             if (ids == null || ids.Count < 1)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No Identification entities in payload.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No Identification entities in payload.");
                 return;
             }
 
@@ -1412,7 +1554,8 @@ namespace AasxRestServerLibrary
             // first check
             if (context.Request.Payload == null || context.Request.ContentType != ContentType.JSON)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"No payload or content type is not JSON.");
                 return;
             }
 
@@ -1420,7 +1563,8 @@ namespace AasxRestServerLibrary
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             if (aas == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound, $"No AAS with idShort '{aasid}' found.");
                 return;
             }
 
@@ -1428,30 +1572,37 @@ namespace AasxRestServerLibrary
             AdminShell.ConceptDescription cd = null;
             try
             {
-                cd = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.ConceptDescription>(context.Request.Payload);
+                cd = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.ConceptDescription>(
+                    context.Request.Payload);
             }
             catch (Exception ex)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest, $"Cannot deserialize payload: {ex.Message}.");
                 return;
             }
 
             // need id for idempotent behaviour
             if (cd.identification == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Identification of entity is (null); PUT cannot be performed.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.BadRequest,
+                    $"Identification of entity is (null); PUT cannot be performed.");
                 return;
             }
 
             // datastructure update
             if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
             {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
                 return;
             }
 
             // add Submodel
-            context.Server.Logger.Debug($"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and id {cd.identification.ToString() }");
+            context.Server.Logger.Debug(
+                $"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and " +
+                $"id {cd.identification.ToString() }");
             var existingCd = this.Package.AasEnv.FindConceptDescription(cd.identification);
             if (existingCd != null)
                 this.Package.AasEnv.ConceptDescriptions.Remove(existingCd);

@@ -22,7 +22,8 @@ namespace AasxIntegrationBase.AasForms
     public partial class FormSubControlMultiLangProp : UserControl
     {
         /// <summary>
-        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and program logic
+        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and
+        /// program logic
         /// </summary>
         protected bool UpdateDisplayInCharge = false;
 
@@ -71,7 +72,9 @@ namespace AasxIntegrationBase.AasForms
 
             // set plain fields
             TextBlockIndex.Text = (!dc.instance.ShowIndex) ? "" : "#" + (1 + dc.instance.Index);
-            TextBlockInfo.Visibility = (dc.prop.value == null || dc.prop.value.IsEmpty) ? Visibility.Visible : Visibility.Hidden;
+            TextBlockInfo.Visibility = (dc.prop.value == null || dc.prop.value.IsEmpty)
+                ? Visibility.Visible
+                : Visibility.Hidden;
 
             // set flag
             UpdateDisplayInCharge = true;
