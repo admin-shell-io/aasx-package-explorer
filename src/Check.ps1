@@ -6,7 +6,7 @@ check the quality of the code base.
 $ErrorActionPreference = "Stop"
 
 Set-Location $PSScriptRoot
-.\CheckLicense.ps1
+.\CheckLicenses.ps1
 .\CheckFormat.ps1
 .\CheckDeadCode.ps1
 .\Build.ps1
