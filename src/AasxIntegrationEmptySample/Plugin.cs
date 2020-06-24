@@ -5,13 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
         private bool stop = false;

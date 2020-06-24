@@ -99,19 +99,25 @@ namespace AasxAmlImExport
             public static string Submodel = "AssetAdministrationShellRoleClassLib/Submodel";
 
             public static string SubmodelElement_Header = "AssetAdministrationShellRoleClassLib/";
-            public static string SubmodelElement_SMEC = "AssetAdministrationShellRoleClassLib/SubmodelElementCollection";
+            public static string SubmodelElement_SMEC =
+                "AssetAdministrationShellRoleClassLib/SubmodelElementCollection";
 
             public static string OperationVariableIn = "AssetAdministrationShellRoleClassLib/OperationInputVariables";
-            public static string OperationVariableOut = "AssetAdministrationShellRoleClassLib/OperationOutputVariables";
-            public static string OperationVariableInOut = "AssetAdministrationShellRoleClassLib/OperationInoutputVariables";
+            public static string OperationVariableOut =
+                "AssetAdministrationShellRoleClassLib/OperationOutputVariables";
+            public static string OperationVariableInOut =
+                "AssetAdministrationShellRoleClassLib/OperationInoutputVariables";
 
             public static string ConceptDescription = "AssetAdministrationShellRoleClassLib/ConceptDescription";
-            public static string DataSpecificationContent = "AssetAdministrationShellRoleClassLib/DataSpecificationContent";
+            public static string DataSpecificationContent =
+                "AssetAdministrationShellRoleClassLib/DataSpecificationContent";
         }
 
         public static class Classes
         {
-            public static string DataSpecificationContent61360 = "AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/DataSpecificationIEC61360";
+            public static string DataSpecificationContent61360 =
+                "AssetAdministrationShellDataSpecificationTemplates/DataSpecificationIEC61360Template/" +
+                "DataSpecificationIEC61360";
         }
 
         public static class Interfaces

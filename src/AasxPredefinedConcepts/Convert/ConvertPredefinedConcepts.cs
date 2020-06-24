@@ -13,7 +13,12 @@ namespace AasxPredefinedConcepts.Convert
         public string OfferDisplay = "";
 
         public ConvertOfferBase() { }
-        public ConvertOfferBase(ConvertProviderBase provider, string offerDisp) { this.Provider = provider; this.OfferDisplay = offerDisp; }
+        public ConvertOfferBase(
+            ConvertProviderBase provider, string offerDisp)
+        {
+            this.Provider = provider;
+            this.OfferDisplay = offerDisp;
+        }
     }
 
     public class ConvertProviderBase
@@ -23,7 +28,9 @@ namespace AasxPredefinedConcepts.Convert
             return null;
         }
 
-        public virtual bool ExecuteOffer(AdminShellPackageEnv package, AdminShell.Referable currentReferable, ConvertOfferBase offer, bool deleteOldCDs, bool addNewCDs)
+        public virtual bool ExecuteOffer(
+            AdminShellPackageEnv package, AdminShell.Referable currentReferable, ConvertOfferBase offer,
+            bool deleteOldCDs, bool addNewCDs)
         {
             return true;
         }

@@ -38,7 +38,7 @@ Desc + Instances                            Desc + Instances
 outer Desc:
 Submodel
 
- * 
+ *
  */
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global .. to be carefully checked later
@@ -50,7 +50,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Check if <c>smw.idShort</c>c> contains something like "{0:00}" and iterate index to make it unique
         /// </summary>
-        public static void MakeIdShortUnique(AdminShell.SubmodelElementWrapperCollection collection, AdminShell.SubmodelElement sme)
+        public static void MakeIdShortUnique(
+            AdminShell.SubmodelElementWrapperCollection collection, AdminShell.SubmodelElement sme)
         {
             // access
             if (collection == null || sme == null)
@@ -67,7 +68,7 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Finds the topmost form instance, e.g. to link to outer event stack.
-        /// </summary>        
+        /// </summary>
         public static IFormInstanceParent GetTopMostParent(IFormInstanceParent current)
         {
             IFormInstanceParent top = current;
@@ -204,7 +205,8 @@ namespace AasxIntegrationBase.AasForms
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements,
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // will be a list of newly added elements (for tracing)
             var res = new AdminShell.SubmodelElementWrapperCollection();
@@ -271,8 +273,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
         /// <summary>
-        /// Within this super-ordinate list of (different) instances, identifiy the instances matching <c>idShortHead</c>
-        /// and trigger the instance with infex <c>index</c> on its MasterEvent method
+        /// Within this super-ordinate list of (different) instances, identifiy the instances matching
+        /// <c>idShortHead</c> and trigger the instance with infex <c>index</c> on its MasterEvent method
         /// </summary>
         public void TriggerSlaveEvents(FormInstanceSubmodelElement masterInst, int masterIndex)
         {
@@ -298,7 +300,8 @@ namespace AasxIntegrationBase.AasForms
                     continue;
                 if (!masterIdShort.StartsWith(lisme.SlaveOfIdShort))
                     continue;
-                if (li.instances == null || li.instances.SubInstances == null || li.instances.SubInstances.Count <= masterIndex)
+                if (li.instances == null || li.instances.SubInstances == null ||
+                    li.instances.SubInstances.Count <= masterIndex)
                     break;
                 var slaveSme = li.instances.SubInstances[masterIndex] as FormInstanceSubmodelElement;
                 if (slaveSme != null)
@@ -307,7 +310,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
         /// <summary>
-        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering of the description/ form.
+        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering of
+        /// the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
         public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
@@ -349,7 +353,8 @@ namespace AasxIntegrationBase.AasForms
             if (this.InitialSourceElements == null)
                 this.InitialSourceElements = new List<AdminShellV20.SubmodelElement>();
             foreach (var inst in this.SubInstances)
-                if (inst != null && inst is FormInstanceSubmodelElement && (inst as FormInstanceSubmodelElement).sourceSme != null)
+                if (inst != null && inst is FormInstanceSubmodelElement &&
+                    (inst as FormInstanceSubmodelElement).sourceSme != null)
                     this.InitialSourceElements.Add((inst as FormInstanceSubmodelElement).sourceSme);
         }
 
@@ -357,7 +362,8 @@ namespace AasxIntegrationBase.AasForms
         /// Render the form description and adds or updates its instances into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateSameElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+            bool addFilesToPackage = false)
         {
             // access
             var res = new AdminShell.SubmodelElementWrapperCollection();
@@ -378,7 +384,8 @@ namespace AasxIntegrationBase.AasForms
                 // this is not very nice: distinguish between SMECs und SMEs
                 if (!(this.workingDesc is FormDescSubmodelElementCollection))
                 {
-                    var lst1 = (ins as FormInstanceSubmodelElement).AddOrUpdateSmeToCollection(elements, packageEnv, addFilesToPackage);
+                    var lst1 = (ins as FormInstanceSubmodelElement).AddOrUpdateSmeToCollection(
+                        elements, packageEnv, addFilesToPackage);
 
                     // for monitoring purpose
                     res.AddRange(lst1);
@@ -387,7 +394,8 @@ namespace AasxIntegrationBase.AasForms
                 {
                     // Special case: SMEC
 
-                    // the Same-Instance was already prepared, however it needs to be eventually filled with the new elements
+                    // the Same-Instance was already prepared, however it needs to be eventually
+                    // filled with the new elements
                     var smecInst = ins as FormInstanceSubmodelElementCollection;
                     var sourceSmec = smecInst?.sourceSme as AdminShell.SubmodelElementCollection;
 
@@ -406,7 +414,8 @@ namespace AasxIntegrationBase.AasForms
                         addMode = false;
                     }
 
-                    var lst = (ins as FormInstanceSubmodelElement).AddOrUpdateSmeToCollection(newElems, packageEnv, addFilesToPackage);
+                    var lst = (ins as FormInstanceSubmodelElement).AddOrUpdateSmeToCollection(
+                        newElems, packageEnv, addFilesToPackage);
 
                     if (newElems != null && newElems.Count > 0)
                     {
@@ -433,7 +442,8 @@ namespace AasxIntegrationBase.AasForms
                 }
             }
 
-            // now, check if original SMEs are missing in the Instances and have therefore be removed (kind of post-mortem analysis)
+            // now, check if original SMEs are missing in the Instances and have therefore be removed
+            // (kind of post-mortem analysis)
             if (this.InitialSourceElements != null)
                 foreach (var ise in this.InitialSourceElements)
                 {
@@ -444,7 +454,8 @@ namespace AasxIntegrationBase.AasForms
                     // manually search
                     var found = false;
                     foreach (var ins in this.SubInstances)
-                        if (ins != null && ins is FormInstanceSubmodelElement && (ins as FormInstanceSubmodelElement).sourceSme == ise)
+                        if (ins != null && ins is FormInstanceSubmodelElement &&
+                            (ins as FormInstanceSubmodelElement).sourceSme == ise)
                             found = true;
 
                     // if not foudnd, DELETE original element
@@ -486,7 +497,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
         /// <summary>
-        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering of the description/ form.
+        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering
+        /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
         public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
@@ -502,10 +514,12 @@ namespace AasxIntegrationBase.AasForms
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+            bool addFilesToPackage = false)
         {
             if (this.PairInstances != null)
-                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(elements, packageEnv, addFilesToPackage);
+                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
+                    elements, packageEnv, addFilesToPackage);
             return null;
         }
     }
@@ -542,11 +556,12 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Before rendering the SME into a list of new elements, process the SME.
-        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back the new values instead of 
-        /// producing a new element.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back
+        /// the new values instead of producing a new element.
         /// </summary>
         /// <returns>True, if a new element shall be rendered from the instance <c>sme</c>.</returns>
-        public virtual bool ProcessSmeForRender(AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        public virtual bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
         {
             if (this.sme != null && Touched && this.sourceSme != null && editSource)
             {
@@ -559,10 +574,12 @@ namespace AasxIntegrationBase.AasForms
         }
 
         /// <summary>
-        /// Render the instance into a list (right now, exactly one!) of SubmodelElements. Might be overridden in subclasses.
+        /// Render the instance into a list (right now, exactly one!) of SubmodelElements.
+        /// Might be overridden in subclasses.
         /// </summary>
         public virtual AdminShell.SubmodelElementWrapperCollection AddOrUpdateSmeToCollection(
-            AdminShell.SubmodelElementWrapperCollection collectionNewElements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection collectionNewElements,
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // typically, there will be only one SME
             var res = new AdminShell.SubmodelElementWrapperCollection();
@@ -591,7 +608,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Event was raised from master because matching slave.
         /// </summary>
-        public virtual void OnSlaveEvent(FormDescSubmodelElement masterDesc, FormInstanceSubmodelElement masterInst, int index)
+        public virtual void OnSlaveEvent(
+            FormDescSubmodelElement masterDesc, FormInstanceSubmodelElement masterInst, int index)
         {
         }
     }
@@ -614,7 +632,7 @@ namespace AasxIntegrationBase.AasForms
             this.sme = smec;
             InitReferable(parentDesc, source);
 
-            // initially create pairs 
+            // initially create pairs
             if (smecDesc?.value != null)
                 foreach (var subDesc in smecDesc.value)
                 {
@@ -652,15 +670,18 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
 
         public override AdminShell.SubmodelElementWrapperCollection AddOrUpdateSmeToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+            bool addFilesToPackage = false)
         {
             if (this.PairInstances != null)
-                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(elements, packageEnv, addFilesToPackage);
+                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
+                    elements, packageEnv, addFilesToPackage);
             return null;
         }
 
         /// <summary>
-        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering of the description/ form.
+        /// Checks, if the <c>sourceElements</c> can be used to pre-set instances for the rendering
+        /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
         public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
@@ -676,10 +697,12 @@ namespace AasxIntegrationBase.AasForms
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+            bool addFilesToPackage = false)
         {
             if (this.PairInstances != null)
-                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(elements, packageEnv, addFilesToPackage);
+                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
+                    elements, packageEnv, addFilesToPackage);
             return null;
         }
 
@@ -730,10 +753,12 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Before rendering the SME into a list of new elements, process the SME.
-        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back the new values instead of 
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set,
+        /// this function shall write back the new values instead of
         /// producing a new element. Returns True, if a new element shall be rendered.
         /// </summary>
-        public override bool ProcessSmeForRender(AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
         {
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
@@ -753,7 +778,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Event was raised from master because matching slave.
         /// </summary>
-        public override void OnSlaveEvent(FormDescSubmodelElement masterDesc, FormInstanceSubmodelElement masterInst, int index)
+        public override void OnSlaveEvent(
+            FormDescSubmodelElement masterDesc, FormInstanceSubmodelElement masterInst, int index)
         {
             // access to master
             var pMasterInst = masterInst as FormInstanceProperty;
@@ -761,14 +787,15 @@ namespace AasxIntegrationBase.AasForms
             if (pMaster?.value == null)
                 return;
 
-            // accues to this 
+            // accues to this
             var pThis = this.sme as AdminShell.Property;
             if (pThis == null)
                 return;
 
             // desc of this
             var pDesc = this.desc as FormDescProperty;
-            if (pDesc == null || pDesc.valueFromMasterValue == null || !pDesc.valueFromMasterValue.ContainsKey(pMaster.value.Trim()))
+            if (pDesc == null || pDesc.valueFromMasterValue == null ||
+                !pDesc.valueFromMasterValue.ContainsKey(pMaster.value.Trim()))
                 return;
 
             // simply take value
@@ -813,10 +840,11 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Before rendering the SME into a list of new elements, process the SME.
-        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back the new values instead of 
-        /// producing a new element. Returns True, if a new element shall be rendered.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back
+        /// the new values instead of producing a new element. Returns True, if a new element shall be rendered.
         /// </summary>
-        public override bool ProcessSmeForRender(AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
         {
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
@@ -869,10 +897,12 @@ namespace AasxIntegrationBase.AasForms
 
         /// <summary>
         /// Before rendering the SME into a list of new elements, process the SME.
-        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back the new values instead of 
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set,
+        /// this function shall write back the new values instead of
         /// producing a new element. Returns True, if a new element shall be rendered.
         /// </summary>
-        public override bool ProcessSmeForRender(AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
         {
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
@@ -891,7 +921,7 @@ namespace AasxIntegrationBase.AasForms
 
                     if (sourcePath != null && sourcePath.Length > 0)
                     {
-                        // target path challenge: shall be unqiue                
+                        // target path challenge: shall be unqiue
                         try
                         {
                             var onlyFn = System.IO.Path.GetFileNameWithoutExtension(sourcePath);
@@ -903,11 +933,14 @@ namespace AasxIntegrationBase.AasForms
                             file.value = targetPath + targetFn;
 
                             if (addFilesToPackage)
-                                packageEnv.AddSupplementaryFileToStore(sourcePath, targetPath, targetFn, embedAsThumb: false);
+                                packageEnv.AddSupplementaryFileToStore(
+                                    sourcePath, targetPath, targetFn, embedAsThumb: false);
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception($"FormInstanceFile.RenderAasSmeCollection failed while writing package for {sourcePath}", ex);
+                            throw new Exception(
+                                $"FormInstanceFile.RenderAasSmeCollection failed while " +
+                                $"writing package for {sourcePath}", ex);
                         }
                     }
                 }

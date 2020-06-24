@@ -9,12 +9,23 @@ using AdminShellNS;
 using Aml.Engine.CAEX;
 using AasxIntegrationBase;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-The AutomationML.Engine is under the MIT license. (see https://raw.githubusercontent.com/AutomationML/AMLEngine2.1/master/license.txt) */
+
+The AutomationML.Engine is under the MIT license.
+(see https://raw.githubusercontent.com/AutomationML/AMLEngine2.1/master/license.txt)
+*/
 
 namespace AasxAmlImExport
 {
@@ -39,16 +50,20 @@ namespace AasxAmlImExport
             public AdminShellPackageEnv package = null;
 
             /// <summary>
-            /// During parsing of internal elements, AAS entities can register themselves to be source or target of an AML internal link.
+            /// During parsing of internal elements, AAS entities can register themselves to be source or target
+            /// of an AML internal link.
             /// Key is the value of il.RefPartnerSide(A|B).
             /// Lambda will be called, checking if link is meaningful needs to be done inside.
             /// </summary>
-            private MultiTupleDictionary<string, MultiTuple2<int, Action<InternalLinkType, int>>> registerForInternalLinks = new MultiTupleDictionary<string, MultiTuple2<int, Action<InternalLinkType, int>>>();
+            private MultiTupleDictionary<
+                string, MultiTuple2<int, Action<InternalLinkType, int>>> registerForInternalLinks =
+                    new MultiTupleDictionary<string, MultiTuple2<int, Action<InternalLinkType, int>>>();
 
             /// <summary>
             /// Remember contained element refs for Views, to be assiciated later with AAS entities
             /// </summary>
-            private List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>> latePopoulationViews = new List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>>();
+            private List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>> latePopoulationViews =
+                new List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>>();
 
             /// <summary>
             /// Hold available all IDs of input AML
@@ -136,15 +151,19 @@ namespace AasxAmlImExport
             {
                 // TODO MICHA+M. WIEGAND: I dont understand the determinism behind that!
                 // WIEGAND: me, neither ;-)
-                // Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und RoleRequirement verwendet werden:
+                // Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und
+                // RoleRequirement verwendet werden:
                 // In CAEX2.15(aktuelle AML Version und unsere AAS Mapping Version):
-                //   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre „mögliche Rolle beschreiben(Drucker / Fax / kopierer)
-                //   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich für eine Hauptrolle, die dann zum RoleRequirement wird 
-                //     und evtl.Nebenklassen die dann SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur ein RoleReuqirement erlaubt)
+                //   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre „mögliche Rolle
+                //     beschreiben(Drucker / Fax / kopierer)
+                //   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich für eine
+                //     Hauptrolle, die dann zum RoleRequirement wird und evtl. Nebenklassen die dann
+                //     SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur
+                //     ein RoleReuqirement erlaubt)
                 // InCAEX3.0(nächste AMl Version):
                 //   1.Wie bei CAEX2.15
-                //   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen jeweils als RoleRequirement zugewiesen (in CAEX3 
-                //     sind mehrere RoleReuqirements nun erlaubt)
+                //   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen
+                //     jeweils als RoleRequirement zugewiesen (in CAEX3 sind mehrere RoleReuqirements nun erlaubt)
 
                 // Remark: SystemUnitClassType is suitable for SysUnitClasses and InternalElements
 
@@ -160,8 +179,9 @@ namespace AasxAmlImExport
             {
                 if (a.RefSemantic != null)
                     foreach (var rf in a.RefSemantic)
-                        if (rf.CorrespondingAttributePath != null && rf.CorrespondingAttributePath.Trim() != ""
-                            && rf.CorrespondingAttributePath.Trim().ToLower() == correspondingAttributePath.Trim().ToLower())
+                        if (rf.CorrespondingAttributePath != null &&
+                        rf.CorrespondingAttributePath.Trim() != "" &&
+                        rf.CorrespondingAttributePath.Trim().ToLower() == correspondingAttributePath.Trim().ToLower())
                             // found!
                             return true;
                 return false;
@@ -190,18 +210,24 @@ namespace AasxAmlImExport
                 return a?.Value;
             }
 
-            public ExternalInterfaceType FindExternalInterfaceByNameAndBaseClassPath(ExternalInterfaceSequence eiseq, string name, string classpath)
+            public ExternalInterfaceType FindExternalInterfaceByNameAndBaseClassPath(
+                ExternalInterfaceSequence eiseq, string name, string classpath)
             {
                 ExternalInterfaceType res = null;
                 if (eiseq != null)
                     foreach (var ei in eiseq)
-                        if ((name == null || (ei.Name != null && ei.Name.Trim().ToLower() == name.Trim().ToLower()))
-                            && (classpath == null || (ei.RefBaseClassPath != null && ei.RefBaseClassPath.Trim().ToLower() == classpath.Trim().ToLower())))
+                        if (
+                            (name == null || (ei.Name != null &&
+                                ei.Name.Trim().ToLower() == name.Trim().ToLower())) &&
+                            (classpath == null ||
+                                (ei.RefBaseClassPath != null &&
+                                 ei.RefBaseClassPath.Trim().ToLower() == classpath.Trim().ToLower())))
                             res = ei;
                 return res;
             }
 
-            public AdminShell.ListOfLangStr TryParseListOfLangStrFromAttributes(AttributeSequence aseq, string correspondingAttributePath)
+            public AdminShell.ListOfLangStr TryParseListOfLangStrFromAttributes(
+                AttributeSequence aseq, string correspondingAttributePath)
             {
                 if (aseq == null || correspondingAttributePath == null)
                     return null;
@@ -225,7 +251,8 @@ namespace AasxAmlImExport
                 return res;
             }
 
-            public AdminShell.Description TryParseDescriptionFromAttributes(AttributeSequence aseq, string correspondingAttributePath)
+            public AdminShell.Description TryParseDescriptionFromAttributes(
+                AttributeSequence aseq, string correspondingAttributePath)
             {
                 var ls = TryParseListOfLangStrFromAttributes(aseq, correspondingAttributePath);
                 if (ls == null)
@@ -294,7 +321,8 @@ namespace AasxAmlImExport
                 return res;
             }
 
-            public List<T> TryParseListItemsFromAttributes<T>(AttributeSequence aseq, string correspondingAttributePath, Func<string, T> lambda)
+            public List<T> TryParseListItemsFromAttributes<T>(
+                AttributeSequence aseq, string correspondingAttributePath, Func<string, T> lambda)
             {
                 var list = new List<T>();
                 foreach (var a in aseq)
@@ -324,8 +352,10 @@ namespace AasxAmlImExport
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
                 var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
-                var version = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Version);
-                var revision = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Revision);
+                var version = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Version);
+                var revision = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Revision);
                 var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
                 var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
                 var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
@@ -366,8 +396,10 @@ namespace AasxAmlImExport
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
                 var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
-                var version = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Version);
-                var revision = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Revision);
+                var version = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Version);
+                var revision = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Revision);
                 var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
                 var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
                 var kind = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Asset_Kind);
@@ -399,7 +431,8 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private void FillDictWithInternalElementsIds(Dictionary<string, InternalElementType> dict, InternalElementSequence ieseq)
+            private void FillDictWithInternalElementsIds(
+                Dictionary<string, InternalElementType> dict, InternalElementSequence ieseq)
             {
                 if (dict == null || ieseq == null)
                     return;
@@ -464,9 +497,13 @@ namespace AasxAmlImExport
                                 var el = FindInternalElementByID(mie.RefBaseSystemUnitPath);
                                 if (el != null)
                                 {
-                                    // for the View's contain element references, all targets of the references shall exists.
-                                    // This is not already the case, therefore store the AML IE / View Information for later parsing
-                                    this.latePopoulationViews.Add(new MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>(ie, view, el));
+                                    // for the View's contain element references, all targets of the references
+                                    // shall exists.
+                                    // This is not already the case, therefore store the AML IE / View Information
+                                    // for later parsing
+                                    this.latePopoulationViews.Add(
+                                        new MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>(
+                                            ie, view, el));
                                 }
                             }
 
@@ -487,8 +524,10 @@ namespace AasxAmlImExport
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
                 var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
-                var version = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Version);
-                var revision = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Administration_Revision);
+                var version = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Version);
+                var revision = FindAttributeValueByRefSemantic(
+                    ie.Attribute, AmlConst.Attributes.Administration_Revision);
                 var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
                 var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
                 var semid = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.SemanticId);
@@ -568,7 +607,9 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private void TryPopulateReferenceAttribute(SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target, int targetId = 0)
+            private void TryPopulateReferenceAttribute(
+                SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target,
+                int targetId = 0)
             {
                 // now used
                 var ei = FindExternalInterfaceByNameAndBaseClassPath(ie.ExternalInterface, ifName, ifClassPath);
@@ -587,7 +628,8 @@ namespace AasxAmlImExport
                                 if (il == null || ti != targetId)
                                     return;
                                 // assume to be side A
-                                if (il.RelatedObjects.ASystemUnitClass == null || il.RelatedObjects.ASystemUnitClass != ie)
+                                if (il.RelatedObjects.ASystemUnitClass == null ||
+                                    il.RelatedObjects.ASystemUnitClass != ie)
                                     return;
                                 // extract side B
                                 if (il.RelatedObjects.BSystemUnitClass == null)
@@ -612,7 +654,8 @@ namespace AasxAmlImExport
 
                     // 2nd (but earlier in evaluation sequence), we can try to access the AAS Reference
                     // via value directly
-                    var value = FindAttributeValueByRefSemantic(ei.Attribute, AmlConst.Attributes.ReferenceElement_Value);
+                    var value = FindAttributeValueByRefSemantic(
+                        ei.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                     if (value != null)
                     {
                         if (targetId == 1 && target is AdminShell.ReferenceElement tre)
@@ -625,7 +668,9 @@ namespace AasxAmlImExport
                 }
             }
 
-            private AdminShell.SubmodelElement TryPopulateSubmodelElement(SystemUnitClassType ie, AdminShell.SubmodelElement sme, bool aasStyleAttributes = false, bool amlStyleAttributes = true)
+            private AdminShell.SubmodelElement TryPopulateSubmodelElement(
+                SystemUnitClassType ie, AdminShell.SubmodelElement sme, bool aasStyleAttributes = false,
+                bool amlStyleAttributes = true)
             {
                 // access?
                 if (sme == null)
@@ -664,7 +709,8 @@ namespace AasxAmlImExport
                     {
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_Value);
                         var valueAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_Value);
-                        var valueId = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Property_ValueId);
+                        var valueId = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.Property_ValueId);
 
                         p.value = value;
                         if (valueId != null)
@@ -675,7 +721,8 @@ namespace AasxAmlImExport
 
                     if (sme is AdminShell.Blob smeb)
                     {
-                        var mimeType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Blob_MimeType);
+                        var mimeType = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.Blob_MimeType);
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Blob_Value);
                         if (mimeType != null)
                             smeb.mimeType = mimeType;
@@ -685,7 +732,8 @@ namespace AasxAmlImExport
 
                     if (sme is AdminShell.File smef)
                     {
-                        var mimeType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.File_MimeType);
+                        var mimeType = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.File_MimeType);
                         var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.File_Value);
                         if (mimeType != null)
                             smef.mimeType = mimeType;
@@ -698,7 +746,8 @@ namespace AasxAmlImExport
                         if (aasStyleAttributes)
                         {
                             // not used anymore!
-                            var value = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
+                            var value = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                             if (value != null)
                                 smer.value = ParseAmlReference(value);
                         }
@@ -706,7 +755,8 @@ namespace AasxAmlImExport
                         if (amlStyleAttributes)
                         {
                             // now the default
-                            TryPopulateReferenceAttribute(ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smer, 1);
+                            TryPopulateReferenceAttribute(
+                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smer, 1);
                         }
                     }
 
@@ -715,8 +765,10 @@ namespace AasxAmlImExport
                         if (aasStyleAttributes)
                         {
                             // not used anymore!
-                            var first = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.RelationshipElement_First);
-                            var second = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.RelationshipElement_Second);
+                            var first = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.RelationshipElement_First);
+                            var second = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.RelationshipElement_Second);
                             if (first != null && second != null)
                             {
                                 smere.first = ParseAmlReference(first);
@@ -727,8 +779,10 @@ namespace AasxAmlImExport
                         if (amlStyleAttributes)
                         {
                             // now the default
-                            TryPopulateReferenceAttribute(ie, "first", AmlConst.Interfaces.ReferableReference, smere, 2);
-                            TryPopulateReferenceAttribute(ie, "second", AmlConst.Interfaces.ReferableReference, smere, 3);
+                            TryPopulateReferenceAttribute(
+                                ie, "first", AmlConst.Interfaces.ReferableReference, smere, 2);
+                            TryPopulateReferenceAttribute(
+                                ie, "second", AmlConst.Interfaces.ReferableReference, smere, 3);
                         }
                     }
 
@@ -767,8 +821,9 @@ namespace AasxAmlImExport
                     if (cat != null)
                         cd.category = cat;
 
-                    // special data 
-                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.Reference>(aseq, AmlConst.Attributes.CD_IsCaseOf, (s) => { return ParseAmlReference(s); });
+                    // special data
+                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.Reference>(
+                        aseq, AmlConst.Attributes.CD_IsCaseOf, (s) => { return ParseAmlReference(s); });
 
                     // result
                     return cd;
@@ -778,7 +833,8 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private AdminShell.DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(AttributeSequence aseq)
+            private AdminShell.DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
+                AttributeSequence aseq)
             {
 
                 // finally, create the entity
@@ -795,11 +851,13 @@ namespace AasxAmlImExport
 
                 ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-                ds.unitId = AdminShell.UnitId.CreateNew(ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)));
+                ds.unitId = AdminShell.UnitId.CreateNew(
+                    ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)));
 
                 ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
-                ds.sourceOfDefinition = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
+                ds.sourceOfDefinition = FindAttributeValueByRefSemantic(
+                    aseq, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
 
                 ds.symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
                 ds.dataType = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType);
@@ -825,7 +883,8 @@ namespace AasxAmlImExport
             }
 
             /// <summary>
-            /// Tries to build up one or multiple AAS with respective entities based on the hierarchy of internal elements, found.
+            /// Tries to build up one or multiple AAS with respective entities based on the hierarchy of internal
+            /// elements, found.
             /// Utilizes recursion!
             /// </summary>
             public void ParseInternalElementsForAasEntities(
@@ -924,10 +983,14 @@ namespace AasxAmlImExport
                         var sm = TryParseSubmodelFromIe(ie);
                         if (sm != null && (sm.kind == null || sm.kind.IsInstance))
                         {
-                            Debug(indentation, "  SUBMODEL with required attributes recognised. Starting new Submodel..");
+                            Debug(
+                                indentation,
+                                "  SUBMODEL with required attributes recognised. Starting new Submodel..");
 
-                            // there might be the case, that a submodel with the same identification is already existing.
-                            // If so, that switch to it and ignore the newly parsed set of information (TODO: check, if to merge information?)
+                            // there might be the case, that a submodel with the same identification is already
+                            // existing.
+                            // If so, that switch to it and ignore the newly parsed set of information
+                            // (TODO: check, if to merge information?)
                             var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
                             if (existSm != null)
                                 sm = existSm;
@@ -937,8 +1000,8 @@ namespace AasxAmlImExport
                             matcher.AddMatch(sm, ie);
 
                             // this will be the parent for child elements
-                            // Remark: add only, if not a SM with the same ID is existing. This could have the consequences
-                            // that additional properties in the 2nd SM with the same SM get lost!
+                            // Remark: add only, if not a SM with the same ID is existing. This could have the
+                            // consequences that additional properties in the 2nd SM with the same SM get lost!
                             if (null == this.package.AasEnv.FindSubmodel(sm.identification))
                                 this.package.AasEnv.Submodels.Add(sm);
                             currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
@@ -949,7 +1012,8 @@ namespace AasxAmlImExport
                     }
 
                     // Mirror of Submodel?
-                    if (currentAas != null && mirrorTarget != null && CheckForRoleClassOrRoleRequirements(mirrorTarget, AmlConst.Roles.Submodel))
+                    if (currentAas != null && mirrorTarget != null &&
+                        CheckForRoleClassOrRoleRequirements(mirrorTarget, AmlConst.Roles.Submodel))
                     {
                         // try parse EXISTING (target) Submodel -> to get Identification
                         var targetSm = TryParseSubmodelFromIe(mirrorTarget);
@@ -967,13 +1031,17 @@ namespace AasxAmlImExport
                     // Submodel Element Collection
                     //
                     var parentSmeCollection = currentSmeCollection;
-                    if (currentAas != null && currentSubmodel != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_SMEC))
+                    if (currentAas != null && currentSubmodel != null &&
+                        CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_SMEC))
                     {
                         // begin new (temporary) object
                         var smec = TryParseSubmodelElementCollection(ie);
                         if (smec != null)
                         {
-                            Debug(indentation, "  SUBMODEL-ELEMENT-COLLECTION with required attributes recognised. Starting new SME..");
+                            Debug(
+                                indentation,
+                                "  SUBMODEL-ELEMENT-COLLECTION with required attributes recognised. " +
+                                "Starting new SME..");
 
                             // make collection official
                             AddToSubmodelOrSmec(currentSmeCollection, smec);
@@ -990,7 +1058,8 @@ namespace AasxAmlImExport
                     // in Submodel oder SMEC, look out for attributes
                     //
                     #region
-                    if (ie.Attribute != null && currentAas != null && currentSubmodel != null && currentSmeCollection != null)
+                    if (ie.Attribute != null && currentAas != null && currentSubmodel != null &&
+                        currentSmeCollection != null)
                         foreach (var a in ie.Attribute)
                             if (CheckAttributeFoRefSemantic(a, "AAS_Property"))
                             {
@@ -1007,9 +1076,11 @@ namespace AasxAmlImExport
                                 };
 
                                 // gather information
-                                var semid = FindAttributeValueByRefSemantic(a.Attribute, AmlConst.Attributes.SemanticId);
+                                var semid = FindAttributeValueByRefSemantic(
+                                    a.Attribute, AmlConst.Attributes.SemanticId);
                                 if (semid != null)
-                                    p.semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(semid)?.Keys);
+                                    p.semanticId = AdminShell.SemanticId.CreateFromKeys(
+                                        ParseAmlReference(semid)?.Keys);
 
                                 // add
                                 AddToSubmodelOrSmec(currentSmeCollection, p);
@@ -1021,9 +1092,12 @@ namespace AasxAmlImExport
                     //
                     for (int i = 0; i < 2; i++)
                         if (currentAas != null && currentSubmodel != null && currentOperation != null &&
-                            CheckForRoleClassOrRoleRequirements(ie, (new[] { AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
+                            CheckForRoleClassOrRoleRequirements(
+                                ie, (new[] {
+                                    AmlConst.Roles.OperationVariableIn, AmlConst.Roles.OperationVariableOut })[i]))
                         {
-                            Debug(indentation, "  List of OPERATION VARIABLE detected. Switching direction to {0}..", i);
+                            Debug(
+                                indentation, "  List of OPERATION VARIABLE detected. Switching direction to {0}..", i);
 
                             // switch direction
                             currentOperationDir = i;
@@ -1050,7 +1124,10 @@ namespace AasxAmlImExport
                             {
                                 if (currentOperation == null || currentOperationDir < 0 || currentOperationDir >= 2)
                                 {
-                                    Debug(indentation, "  SUBMODEL-ELEMENT {0} with required attributes recognised. Adding to a SMEC..", sme.GetType().ToString());
+                                    Debug(
+                                        indentation,
+                                        "  SUBMODEL-ELEMENT {0} with required attributes recognised. " +
+                                        "Adding to a SMEC..", sme.GetType().ToString());
 
                                     // add
                                     AddToSubmodelOrSmec(currentSmeCollection, sme);
@@ -1064,7 +1141,10 @@ namespace AasxAmlImExport
                                 }
                                 else
                                 {
-                                    Debug(indentation, "  SUBMODEL-ELEMENT {0} with required attributes recognised. Adding to a pending OPERATION..", sme.GetType().ToString());
+                                    Debug(
+                                        indentation,
+                                        "  SUBMODEL-ELEMENT {0} with required attributes recognised. " +
+                                        "Adding to a pending OPERATION..", sme.GetType().ToString());
 
                                     // add
                                     var wrapper = new AdminShell.SubmodelElementWrapper();
@@ -1084,7 +1164,9 @@ namespace AasxAmlImExport
                     }
 
                     // recurse into childs
-                    ParseInternalElementsForAasEntities(insthier, ie.InternalElement, currentAas, currentSubmodel, parentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
+                    ParseInternalElementsForAasEntities(
+                        insthier, ie.InternalElement, currentAas, currentSubmodel, parentSmeCollection,
+                        currentOperation, currentOperationDir, indentation + 1);
                 }
 
             }
@@ -1117,7 +1199,8 @@ namespace AasxAmlImExport
                             Debug(indentation, "  AAS with required attributes recognised. Starting new AAS..");
 
                             // AAS might already exist by parsing instance, therefore check for existance
-                            // If so, then switch to it and ignore the newly parsed set of information (TODO: check, if to merge information?)
+                            // If so, then switch to it and ignore the newly parsed set of information
+                            // (TODO: check, if to merge information?)
                             var existAas = this.package.AasEnv.FindAAS(aas.identification);
                             if (existAas != null)
                                 aas = existAas;
@@ -1141,10 +1224,13 @@ namespace AasxAmlImExport
                         var sm = TryParseSubmodelFromIe(suc);
                         if (sm != null && sm.kind != null && sm.kind.IsTemplate)
                         {
-                            Debug(indentation, "  SUBMODEL with required attributes recognised. Starting new Submodel..");
+                            Debug(
+                                indentation,
+                                "  SUBMODEL with required attributes recognised. Starting new Submodel..");
 
-                            // there might be the case, that a submodel with the same identification is already existing.
-                            // If so, that switch to it and ignore the newly parsed set of information (TODO: check, if to merge information?)
+                            // there might be the case, that a submodel with the same identification already exists.
+                            // If so, that switch to it and ignore the newly parsed set of information
+                            // (TODO: check, if to merge information?)
                             var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
                             if (existSm != null)
                                 sm = existSm;
@@ -1162,16 +1248,21 @@ namespace AasxAmlImExport
                     }
 
                     // recurse into childs, which are SUC
-                    ParseSystemUnits(suc.SystemUnitClass, currentAas, currentSubmodel, currentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
+                    ParseSystemUnits(
+                        suc.SystemUnitClass, currentAas, currentSubmodel, currentSmeCollection, currentOperation,
+                        currentOperationDir, indentation + 1);
                     // switch recursion into InternalElements
                     if (suc is SystemUnitClassType suct)
-                        ParseInternalElementsForAasEntities(null, suct.InternalElement, currentAas, currentSubmodel, currentSmeCollection, currentOperation, currentOperationDir, indentation + 1);
+                        ParseInternalElementsForAasEntities(
+                            null, suct.InternalElement, currentAas, currentSubmodel, currentSmeCollection,
+                            currentOperation, currentOperationDir, indentation + 1);
                 }
 
             }
 
             /// <summary>
-            /// Go recursively through internal elements to identify concept descriptions, and below, data specifications
+            /// Go recursively through internal elements to identify concept descriptions, and below,
+            /// data specifications.
             /// </summary>
             public void ParseIEsForConceptDescriptions(
                 InstanceHierarchyType insthier,
@@ -1198,7 +1289,9 @@ namespace AasxAmlImExport
                             // look for direct descendants = Data Specifcations
                             if (ie.InternalElement != null)
                                 foreach (var ie2 in ie.InternalElement)
-                                    if (ie2.RefBaseSystemUnitPath != null && ie2.RefBaseSystemUnitPath.Trim() == AmlConst.Classes.DataSpecificationContent61360)
+                                    if (ie2.RefBaseSystemUnitPath != null &&
+                                        ie2.RefBaseSystemUnitPath.Trim() ==
+                                            AmlConst.Classes.DataSpecificationContent61360)
                                     {
                                         // (inner) Data Spec
                                         var ds61360 = TryParseDataSpecificationContentIEC61360(ie2.Attribute);
@@ -1209,9 +1302,11 @@ namespace AasxAmlImExport
                                             cd.embeddedDataSpecification = eds;
 
                                             // TODO: fill out eds.hasDataSpecification by using outer attributes
-                                            var hds = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
+                                            var hds = FindAttributeValueByRefSemantic(
+                                                ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)
-                                                eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(ParseAmlReference(hds));
+                                                eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(
+                                                    ParseAmlReference(hds));
 
                                             // make 61360 data
                                             eds.dataSpecificationContent = new AdminShell.DataSpecificationContent()
@@ -1337,7 +1432,8 @@ namespace AasxAmlImExport
             // do the late population of views
             parser.LatePopulateViews();
 
-            // the different parse stages might have reegistered actions to be source or destination of AML internal links
+            // the different parse stages might have reegistered actions to be source or
+            // destination of AML internal links
             // find all internal links and assess them ..
             foreach (var x in doc.CAEXFile.InstanceHierarchy)
                 parser.ParseIEsForInternalLinks(x.InternalElement);

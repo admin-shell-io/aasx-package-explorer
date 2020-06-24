@@ -56,7 +56,8 @@ namespace AasxPackageExplorer
 
             ComboBoxToolsFindText.GotFocus += (object sender, RoutedEventArgs e) =>
             {
-                var textBox = ComboBoxToolsFindText.Template.FindName("PART_EditableTextBox", ComboBoxToolsFindText) as TextBox;
+                var textBox = ComboBoxToolsFindText.Template.FindName(
+                    "PART_EditableTextBox", ComboBoxToolsFindText) as TextBox;
                 if (textBox != null)
                     textBox.Select(0, textBox.Text.Length);
             };
@@ -135,7 +136,8 @@ namespace AasxPackageExplorer
 
             // try to go to 1st result
             CurrentResultIndex = -1;
-            if (TheSearchResults.foundResults != null && TheSearchResults.foundResults.Count > 0 && ResultSelected != null)
+            if (TheSearchResults.foundResults != null && TheSearchResults.foundResults.Count > 0 &&
+                    ResultSelected != null)
             {
                 CurrentResultIndex = 0;
                 var sri = TheSearchResults.foundResults[0];
@@ -169,7 +171,8 @@ namespace AasxPackageExplorer
 
         private void ButtonToolsFind_Click(object sender, RoutedEventArgs e)
         {
-            if (ComboBoxToolsFindText == null || TheSearchResults == null || TheSearchResults.foundResults == null || ResultSelected == null)
+            if (ComboBoxToolsFindText == null || TheSearchResults == null ||
+                    TheSearchResults.foundResults == null || ResultSelected == null)
                 return;
 
             if (sender == ButtonToolsFindBackward || sender == ButtonToolsFindForward)
@@ -194,7 +197,8 @@ namespace AasxPackageExplorer
                 ResultSelected(sri);
             }
 
-            if (sender == ButtonToolsFindForward && CurrentResultIndex >= 0 && CurrentResultIndex < TheSearchResults.foundResults.Count - 1)
+            if (sender == ButtonToolsFindForward && CurrentResultIndex >= 0 &&
+                    CurrentResultIndex < TheSearchResults.foundResults.Count - 1)
             {
                 CurrentResultIndex++;
                 var sri = TheSearchResults.foundResults[CurrentResultIndex];

@@ -14,11 +14,20 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using AasxGlobalLogging;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -40,9 +49,11 @@ namespace AasxPackageExplorer
         /// </summary>
         /// <param name="check">Lambda to check. If returns true, trigger the hint.</param>
         /// <param name="text">Hint in plain text form.</param>
-        /// <param name="breakIfTrue">If check was true, abort checking of further hints. Use: avoid checking of null for every hint.</param>
+        /// <param name="breakIfTrue">If check was true, abort checking of further hints.
+        /// Use: avoid checking of null for every hint.</param>
         /// <param name="severityLevel">Display high/red or normal/blue</param>
-        public HintCheck(Func<bool> check, string text, bool breakIfTrue = false, Severity severityLevel = Severity.High)
+        public HintCheck(
+            Func<bool> check, string text, bool breakIfTrue = false, Severity severityLevel = Severity.High)
         {
             this.CheckPred = check;
             this.TextToShow = text;
@@ -80,7 +91,7 @@ namespace AasxPackageExplorer
 
     public class DispEditHelper
     {
-        // 
+        //
         // Members
         //
 
@@ -103,7 +114,7 @@ namespace AasxPackageExplorer
 
         //
         // Highlighting
-        //        
+        //
 
         public void HightligtStateElement(FrameworkElement fe, bool highlighted)
         {
@@ -149,19 +160,22 @@ namespace AasxPackageExplorer
                         try
                         {
                             // see: https://stackoverflow.com/questions/37006596/borderbrush-to-combobox
-                            // see also: https://stackoverflow.com/questions/2285491/wpf-findname-returns-null-when-it-should-not
+                            // see also: https://stackoverflow.com/questions/2285491/
+                            // wpf-findname-returns-null-when-it-should-not
                             cb.ApplyTemplate();
                             var cbTemp = cb.Template;
                             if (cbTemp != null)
                             {
-                                var toggleButton = cbTemp.FindName("toggleButton", cb) as System.Windows.Controls.Primitives.ToggleButton;
+                                var toggleButton = cbTemp.FindName(
+                                    "toggleButton", cb) as System.Windows.Controls.Primitives.ToggleButton;
                                 toggleButton?.ApplyTemplate();
                                 var tgbTemp = toggleButton?.Template;
                                 if (tgbTemp != null)
                                 {
                                     var border = tgbTemp.FindName("templateRoot", toggleButton) as Border;
                                     if (border != null)
-                                        border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                                        border.BorderBrush = new SolidColorBrush(
+                                            Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
                                 }
                             }
                         }
@@ -241,7 +255,8 @@ namespace AasxPackageExplorer
             return g;
         }
 
-        public WrapPanel AddSmallWrapPanelTo(Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null)
+        public WrapPanel AddSmallWrapPanelTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null)
         {
             var wp = new WrapPanel();
             wp.Margin = margin;
@@ -253,7 +268,9 @@ namespace AasxPackageExplorer
             return (wp);
         }
 
-        public StackPanel AddSmallStackPanelTo(Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null, bool setVertical = false, bool setHorizontal = false)
+        public StackPanel AddSmallStackPanelTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null,
+            bool setVertical = false, bool setHorizontal = false)
         {
             var sp = new StackPanel();
             sp.Margin = margin;
@@ -269,8 +286,10 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
-        public TextBox AddSmallTextBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "",
-            Brush foreground = null, Brush background = null, Nullable<VerticalAlignment> verticalContentAlignment = null)
+        public TextBox AddSmallTextBoxTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string text = "", Brush foreground = null, Brush background = null,
+            Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
             var tb = new TextBox();
             tb.Margin = margin;
@@ -288,7 +307,9 @@ namespace AasxPackageExplorer
             return (tb);
         }
 
-        public ComboBox AddSmallComboBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string text = "", Brush foreground = null, Brush background = null,
+        public ComboBox AddSmallComboBoxTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string text = "", Brush foreground = null, Brush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
@@ -329,7 +350,9 @@ namespace AasxPackageExplorer
                 cb.SelectedIndex = foundI;
         }
 
-        public Button AddSmallButtonTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string content = "", Brush foreground = null, Brush background = null)
+        public Button AddSmallButtonTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string content = "", Brush foreground = null, Brush background = null)
         {
             var but = new Button();
             but.Margin = margin;
@@ -345,7 +368,8 @@ namespace AasxPackageExplorer
             return (but);
         }
 
-        public CheckBox AddSmallCheckBoxTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public CheckBox AddSmallCheckBoxTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
@@ -399,12 +423,19 @@ namespace AasxPackageExplorer
 
             if (auxButton)
             {
-                repo.RegisterControl(AddSmallButtonTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: auxButtonTitle),
+                repo.RegisterControl(
+                    AddSmallButtonTo(
+                        g, 0, 1,
+                        margin: new Thickness(2, 2, 2, 2),
+                        padding: new Thickness(5, 0, 5, 0),
+                        content: auxButtonTitle),
                     auxButtonLambda);
             }
         }
 
-        public TextBlock AddSmallLabelTo(Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(), string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
+        public TextBlock AddSmallLabelTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
         {
             var lab = new SelectableTextBlock();
 
@@ -424,8 +455,8 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Adds a subpanel, which has the caption "key". Can be used to visual set apart multiple items from the sub-panel
-        /// from the items on the main panel.
+        /// Adds a subpanel, which has the caption "key". Can be used to visual set apart multiple items
+        /// from the sub-panel from the items on the main panel.
         /// </summary>
         /// <param name="view">Panel to be added to</param>
         /// <param name="caption">Caption</param>
@@ -446,12 +477,17 @@ namespace AasxPackageExplorer
             StackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null, string auxButtonToolTip = null,
-            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
+            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonToolTip = null,
+            string[] auxButtonTitles = null,
+            string[] auxButtonToolTips = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null)
         {
-            AddKeyValue(view, key, value, nullValue, repo, setValue, comboBoxItems, comboBoxIsEditable, auxButtonTitle, auxButtonLambda, auxButtonToolTip,
-                auxButtonTitles, auxButtonToolTips, takeOverLambdaAction, (value == null) ? 0 : value.GetHashCode(), containingObject: containingObject);
+            AddKeyValue(
+                view, key, value, nullValue, repo, setValue, comboBoxItems, comboBoxIsEditable,
+                auxButtonTitle, auxButtonLambda, auxButtonToolTip,
+                auxButtonTitles, auxButtonToolTips, takeOverLambdaAction,
+                (value == null) ? 0 : value.GetHashCode(), containingObject: containingObject);
         }
 
 
@@ -459,7 +495,8 @@ namespace AasxPackageExplorer
             StackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null, string auxButtonToolTip = null,
+            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonToolTip = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null,
             Nullable<int> valueHash = null,
@@ -522,7 +559,7 @@ namespace AasxPackageExplorer
             }
             else if (comboBoxItems != null)
             {
-                // guess some max width, in order 
+                // guess some max width, in order
                 var maxc = 5;
                 foreach (var c in comboBoxItems)
                     if (c.Length > maxc)
@@ -530,13 +567,21 @@ namespace AasxPackageExplorer
                 var maxWidth = 10 * maxc; // about one em
 
                 // use combo box
-                var cb = AddSmallComboBoxTo(g, 0, 1, margin: new Thickness(0, 2, 2, 2), padding: new Thickness(2, 0, 2, 0), text: "" + value,
-                        minWidth: 60, maxWidth: maxWidth, items: comboBoxItems, isEditable: comboBoxIsEditable);
+                var cb = AddSmallComboBoxTo(
+                    g, 0, 1,
+                    margin: new Thickness(0, 2, 2, 2),
+                    padding: new Thickness(2, 0, 2, 0),
+                    text: "" + value,
+                    minWidth: 60,
+                    maxWidth: maxWidth,
+                    items: comboBoxItems,
+                    isEditable: comboBoxIsEditable);
                 repo.RegisterControl(cb, setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
-                if (cb != null && this.highlightField != null && valueHash != null && this.highlightField.fieldHash == valueHash.Value
-                    && (containingObject == null || containingObject == this.highlightField.containingObject))
+                if (cb != null && this.highlightField != null && valueHash != null &&
+                        this.highlightField.fieldHash == valueHash.Value &&
+                        (containingObject == null || containingObject == this.highlightField.containingObject))
                     this.HightligtStateElement(cb, true);
             }
             else
@@ -547,8 +592,9 @@ namespace AasxPackageExplorer
                     setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
-                if (tb != null && this.highlightField != null && valueHash != null && this.highlightField.fieldHash == valueHash.Value
-                    && (containingObject == null || containingObject == this.highlightField.containingObject))
+                if (tb != null && this.highlightField != null && valueHash != null &&
+                        this.highlightField.fieldHash == valueHash.Value &&
+                        (containingObject == null || containingObject == this.highlightField.containingObject))
                     this.HightligtStateElement(tb, true);
             }
 
@@ -562,7 +608,12 @@ namespace AasxPackageExplorer
                         {
                             return auxButtonLambda(closureI); // exchange o with i !!
                         };
-                    var b = repo.RegisterControl(AddSmallButtonTo(g, 0, 2 + i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: intButtonTitles[i]),
+                    var b = repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g, 0, 2 + i,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: intButtonTitles[i]),
                         lmb) as Button;
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
@@ -642,9 +693,11 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> action = null)
+        public void AddAction(
+            Panel view, string key, string[] actionStr, ModifyRepo repo = null,
+            Func<object, ModifyRepo.LambdaAction> action = null)
         {
-            // access 
+            // access
             if (repo == null || action == null || actionStr == null)
                 return;
             var numButton = actionStr.Length;
@@ -680,7 +733,12 @@ namespace AasxPackageExplorer
             for (int i = 0; i < numButton; i++)
             {
                 int currentI = i;
-                repo.RegisterControl(ElemViewAddSmallButtonTo(g, 0, 1+i, margin: new Thickness(0, 0, 5, 0), padding: new Thickness(5,0,5,0), content: "" + actionStr[i]),
+                repo.RegisterControl(
+                    ElemViewAddSmallButtonTo(
+                        g, 0, 1+i,
+                        margin: new Thickness(0, 0, 5, 0),
+                        padding: new Thickness(5,0,5,0),
+                        content: "" + actionStr[i]),
                     (o) => {
                         return action(currentI); // button # as argument!
                     });
@@ -706,12 +764,15 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddAction(StackPanel view, string key, string actionStr, ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> action = null)
+        public void AddAction(
+            StackPanel view, string key, string actionStr, ModifyRepo repo = null,
+            Func<object, ModifyRepo.LambdaAction> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
 
-        public void AddKeyListLangStr(StackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
+        public void AddKeyListLangStr(
+            StackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -761,7 +822,12 @@ namespace AasxPackageExplorer
             // populate [+]
             if (repo != null)
             {
-                repo.RegisterControl(AddSmallButtonTo(g, 0, 3, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add blank"),
+                repo.RegisterControl(
+                    AddSmallButtonTo(
+                        g, 0, 3,
+                        margin: new Thickness(2, 2, 2, 2),
+                        padding: new Thickness(5, 0, 5, 0),
+                        content: "Add blank"),
                     (o) =>
                     {
                         var ls = new AdminShell.LangStr();
@@ -776,44 +842,68 @@ namespace AasxPackageExplorer
                     if (repo == null)
                     {
                         // lang
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 1, padding: new Thickness(2, 0, 0, 0), content: "[" + langStr[i].lang + "]");
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 1,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "[" + langStr[i].lang + "]");
 
                         // str
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 2, padding: new Thickness(2, 0, 0, 0), content: "" + langStr[i].str);
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 2,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "" + langStr[i].str);
                     }
-
                     else
                     {
                         // save in current context
                         var currentI = 0 + i;
 
-                        // lang   
-                        var tbLang = AddSmallComboBoxTo(g, 0 + i + rowOfs, 1, margin: new Thickness(0, 2, 2, 2), text: "" + langStr[currentI].lang,
-                                minWidth: 50, items: defaultLanguages, isEditable: true);
-                        repo.RegisterControl(tbLang, (o) =>
+                        // lang
+                        var tbLang = AddSmallComboBoxTo(
+                            g, 0 + i + rowOfs, 1,
+                            margin: new Thickness(0, 2, 2, 2),
+                            text: "" + langStr[currentI].lang,
+                            minWidth: 50,
+                            items: defaultLanguages,
+                            isEditable: true);
+                        repo.RegisterControl(
+                            tbLang,
+                            (o) =>
                             {
                                 langStr[currentI].lang = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             });
                         // check here, if to hightlight
-                        if (tbLang != null && this.highlightField != null && this.highlightField.fieldHash == langStr[currentI].lang.GetHashCode()
-                            && (this.highlightField.containingObject == langStr[currentI]))
+                        if (tbLang != null && this.highlightField != null &&
+                                this.highlightField.fieldHash == langStr[currentI].lang.GetHashCode() &&
+                                (this.highlightField.containingObject == langStr[currentI]))
                             this.HightligtStateElement(tbLang, true);
 
                         // str
-                        var tbStr = AddSmallTextBoxTo(g, 0 + i + rowOfs, 2, margin: new Thickness(2, 2, 2, 2), text: "" + langStr[currentI].str);
-                        repo.RegisterControl(tbStr, (o) =>
+                        var tbStr = AddSmallTextBoxTo(
+                            g, 0 + i + rowOfs, 2,
+                            margin: new Thickness(2, 2, 2, 2),
+                            text: "" + langStr[currentI].str);
+                        repo.RegisterControl(
+                            tbStr,
+                            (o) =>
                             {
                                 langStr[currentI].str = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             });
                         // check here, if to hightlight
-                        if (tbStr != null && this.highlightField != null && this.highlightField.fieldHash == langStr[currentI].str.GetHashCode()
-                            && (this.highlightField.containingObject == langStr[currentI]))
+                        if (tbStr != null && this.highlightField != null &&
+                                this.highlightField.fieldHash == langStr[currentI].str.GetHashCode() &&
+                                (this.highlightField.containingObject == langStr[currentI]))
                             this.HightligtStateElement(tbStr, true);
 
                         // button [-]
-                        repo.RegisterControl(AddSmallButtonTo(g, 0 + i + rowOfs, 3, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "-"),
+                        repo.RegisterControl(
+                            AddSmallButtonTo(
+                                g, 0 + i + rowOfs, 3,
+                                margin: new Thickness(2, 2, 2, 2),
+                                padding: new Thickness(5, 0, 5, 0),
+                                content: "-"),
                             (o) =>
                             {
                                 langStr.RemoveAt(currentI);
@@ -825,7 +915,9 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public List<AdminShell.Key> SmartSelectAasEntityKeys(AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null, AdminShellPackageEnv[] auxPackages = null)
+        public List<AdminShell.Key> SmartSelectAasEntityKeys(
+            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
+            AdminShellPackageEnv[] auxPackages = null)
         {
             if (this.flyoutProvider == null)
             {
@@ -843,7 +935,9 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        public VisualElementGeneric SmartSelectAasEntityVisualElement(AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null, AdminShellPackageEnv[] auxPackages = null)
+        public VisualElementGeneric SmartSelectAasEntityVisualElement(
+            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
+            AdminShellPackageEnv[] auxPackages = null)
         {
             if (this.flyoutProvider == null)
             {
@@ -861,7 +955,9 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        public bool SmartSelectEclassEntity(SelectEclassEntityFlyout.SelectMode selectMode, ref string resIRDI, ref AdminShell.ConceptDescription resCD)
+        public bool SmartSelectEclassEntity(
+            SelectEclassEntityFlyout.SelectMode selectMode, ref string resIRDI,
+            ref AdminShell.ConceptDescription resCD)
         {
             var res = false;
             var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
@@ -889,7 +985,8 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Asks the user for SME element type, allowing exclusion of types.
         /// </summary>
-        public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null)
+        public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(
+            string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null)
         {
             // prepare a list
             var fol = new List<SelectFromListFlyoutItem>();
@@ -901,7 +998,8 @@ namespace AasxPackageExplorer
             uc.Caption = caption;
             uc.ListOfItems = fol;
             this.flyoutProvider.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null && uc.ResultItem.Tag is AdminShell.SubmodelElementWrapper.AdequateElementEnum)
+            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
+                    uc.ResultItem.Tag is AdminShell.SubmodelElementWrapper.AdequateElementEnum)
             {
                 // to which?
                 var en = (AdminShell.SubmodelElementWrapper.AdequateElementEnum)uc.ResultItem.Tag;
@@ -921,11 +1019,17 @@ namespace AasxPackageExplorer
                 return null;
 
             // ask
-            var en = SelectAdequateEnum($"Refactor {oldSme.GetElementName()} '{"" + oldSme.idShort}' to new element type ..");
+            var en = SelectAdequateEnum(
+                $"Refactor {oldSme.GetElementName()} '{"" + oldSme.idShort}' to new element type ..");
             if (en == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                 return null;
 
-            if (this.flyoutProvider != null && MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow("Recfactor selected entity? This operation will change the selected submodel element and delete specific attributes. It can not be reverted!", "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+            if (this.flyoutProvider != null &&
+                    MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                        "Recfactor selected entity? " +
+                            "This operation will change the selected submodel element and " +
+                            "delete specific attributes. It can not be reverted!",
+                        "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
             {
                 try
                 {
@@ -1038,14 +1142,23 @@ namespace AasxPackageExplorer
                 g.Children.Add(g2);
 
                 if (addEclassIrdi)
-                    repo.RegisterControl(AddSmallButtonTo(g2, 0, 1, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add eCl@ss IRDI"),
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 1,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "Add eCl@ss IRDI"),
                         (o) =>
                         {
                             string resIRDI = null;
                             AdminShell.ConceptDescription resCD = null;
-                            if (this.SmartSelectEclassEntity(SelectEclassEntityFlyout.SelectMode.IRDI, ref resIRDI, ref resCD))
+                            if (this.SmartSelectEclassEntity(
+                                    SelectEclassEntityFlyout.SelectMode.IRDI, ref resIRDI, ref resCD))
                             {
-                                keys.Add(AdminShell.Key.CreateNew(AdminShell.Key.GlobalReference, false, AdminShell.Identification.IRDI, resIRDI));
+                                keys.Add(
+                                    AdminShell.Key.CreateNew(
+                                        AdminShell.Key.GlobalReference, false,
+                                        AdminShell.Identification.IRDI, resIRDI));
                             }
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
@@ -1054,7 +1167,12 @@ namespace AasxPackageExplorer
                         });
 
                 if (addExistingEntities != null && package != null)
-                    repo.RegisterControl(AddSmallButtonTo(g2, 0, 2, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add existing"),
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 2,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "Add existing"),
                         (o) =>
                         {
                             var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities);
@@ -1068,7 +1186,12 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
-                repo.RegisterControl(AddSmallButtonTo(g2, 0, 3, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Add blank"),
+                repo.RegisterControl(
+                    AddSmallButtonTo(
+                        g2, 0, 3,
+                        margin: new Thickness(2, 2, 2, 2),
+                        padding: new Thickness(5, 0, 5, 0),
+                        content: "Add blank"),
                     (o) =>
                     {
                         var k = new AdminShell.Key();
@@ -1079,7 +1202,12 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                     });
 
-                repo.RegisterControl(AddSmallButtonTo(g2, 0, 4, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "Clipboard"),
+                repo.RegisterControl(
+                    AddSmallButtonTo(
+                        g2, 0, 4,
+                        margin: new Thickness(2, 2, 2, 2),
+                        padding: new Thickness(5, 0, 5, 0),
+                        content: "Clipboard"),
                     (o) =>
                     {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
@@ -1091,7 +1219,12 @@ namespace AasxPackageExplorer
                 for (int i = 0; i < presetNo; i++)
                 {
                     var closureKey = addPresetKeys[i];
-                    repo.RegisterControl(AddSmallButtonTo(g2, 0, 5 + i, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "" + addPresetNames[i]),
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 5 + i,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "" + addPresetNames[i]),
                         (o) =>
                         {
                             keys.Add(closureKey);
@@ -1106,16 +1239,28 @@ namespace AasxPackageExplorer
                     if (repo == null)
                     {
                         // lang
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 1, padding: new Thickness(2, 0, 0, 0), content: "(" + keys[i].type + ")");
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 1,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "(" + keys[i].type + ")");
 
                         // local
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 2, padding: new Thickness(2, 0, 0, 0), content: "" + ((keys[i].local) ? "(local)" : "(no-local)"));
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 2,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "" + ((keys[i].local) ? "(local)" : "(no-local)"));
 
                         // id type
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 3, padding: new Thickness(2, 0, 0, 0), content: "[" + keys[i].idType + "]");
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 3,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "[" + keys[i].idType + "]");
 
                         // value
-                        AddSmallLabelTo(g, 0 + i + rowOfs, 4, padding: new Thickness(2, 0, 0, 0), content: "" + keys[i].value);
+                        AddSmallLabelTo(
+                            g, 0 + i + rowOfs, 4,
+                            padding: new Thickness(2, 0, 0, 0),
+                            content: "" + keys[i].value);
                     }
 
                     else
@@ -1127,60 +1272,93 @@ namespace AasxPackageExplorer
 
                         // type
                         var cbType = repo.RegisterControl(
-                            AddSmallComboBoxTo(g, 0 + i + rowOfs, 1, margin: new Thickness(2, 2, 2, 2), text: "" + keys[currentI].type,
-                                minWidth: 100, items: AdminShell.Key.KeyElements, isEditable: false, verticalContentAlignment: VerticalAlignment.Center),
+                            AddSmallComboBoxTo(
+                                g, 0 + i + rowOfs, 1,
+                                margin: new Thickness(2, 2, 2, 2),
+                                text: "" + keys[currentI].type,
+                                minWidth: 100,
+                                items: AdminShell.Key.KeyElements,
+                                isEditable: false,
+                                verticalContentAlignment: VerticalAlignment.Center),
                             (o) =>
                             {
                                 keys[currentI].type = o as string;
                                 return new ModifyRepo.LambdaActionNone();
-                            }, takeOverLambda: takeOverLambdaAction) as ComboBox;
+                            },
+                            takeOverLambda: takeOverLambdaAction) as ComboBox;
                         SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
                         // check here, if to hightlight
-                        if (cbType != null && this.highlightField != null && keys[currentI].type != null && this.highlightField.fieldHash == keys[currentI].type.GetHashCode()
-                            && keys[currentI] == this.highlightField.containingObject)
+                        if (cbType != null && this.highlightField != null && keys[currentI].type != null &&
+                                this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
+                                keys[currentI] == this.highlightField.containingObject)
                             this.HightligtStateElement(cbType, true);
 
                         // local
                         repo.RegisterControl(
-                            AddSmallCheckBoxTo(g, 0 + i + rowOfs, 2, margin: new Thickness(2, 2, 2, 2), content: "local", isChecked: keys[currentI].local,
-                            verticalContentAlignment: VerticalAlignment.Center),
+                            AddSmallCheckBoxTo(
+                                g, 0 + i + rowOfs, 2,
+                                margin: new Thickness(2, 2, 2, 2),
+                                content: "local",
+                                isChecked: keys[currentI].local,
+                                verticalContentAlignment: VerticalAlignment.Center),
                             (o) =>
                             {
                                 keys[currentI].local = (bool)o;
                                 return new ModifyRepo.LambdaActionNone();
-                            }, takeOverLambda: takeOverLambdaAction);
+                            },
+                            takeOverLambda: takeOverLambdaAction);
 
                         // id type
-                        var cbIdType = AddSmallComboBoxTo(g, 0 + i + rowOfs, 3, margin: new Thickness(2, 2, 2, 2), text: "" + keys[currentI].idType,
-                                minWidth: 100, items: AdminShell.Key.IdentifierTypeNames, isEditable: false, verticalContentAlignment: VerticalAlignment.Center);
-                        repo.RegisterControl(cbIdType, (o) =>
+                        var cbIdType = AddSmallComboBoxTo(
+                            g, 0 + i + rowOfs, 3,
+                            margin: new Thickness(2, 2, 2, 2),
+                            text: "" + keys[currentI].idType,
+                            minWidth: 100,
+                            items: AdminShell.Key.IdentifierTypeNames,
+                            isEditable: false,
+                            verticalContentAlignment: VerticalAlignment.Center);
+                        repo.RegisterControl(
+                            cbIdType,
+                            (o) =>
                             {
                                 keys[currentI].idType = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
                         // check here, if to hightlight
-                        if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null && this.highlightField.fieldHash == keys[currentI].idType.GetHashCode()
-                            && keys[currentI] == this.highlightField.containingObject)
+                        if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
+                                this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
+                                keys[currentI] == this.highlightField.containingObject)
                             this.HightligtStateElement(cbIdType, true);
 
                         // value
-                        var tbValue = AddSmallTextBoxTo(g, 0 + i + rowOfs, 4, margin: new Thickness(2, 2, 2, 2), text: "" + keys[currentI].value,
+                        var tbValue = AddSmallTextBoxTo(
+                            g, 0 + i + rowOfs, 4,
+                            margin: new Thickness(2, 2, 2, 2),
+                            text: "" + keys[currentI].value,
                             verticalContentAlignment: VerticalAlignment.Center);
-                        repo.RegisterControl(tbValue, (o) =>
+                        repo.RegisterControl(
+                            tbValue,
+                            (o) =>
                             {
                                 keys[currentI].value = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
                         // check here, if to hightlight
-                        if (tbValue != null && this.highlightField != null && keys[currentI].value != null && this.highlightField.fieldHash == keys[currentI].value.GetHashCode()
-                            && keys[currentI] == this.highlightField.containingObject)
+                        if (tbValue != null && this.highlightField != null && keys[currentI].value != null &&
+                                this.highlightField.fieldHash == keys[currentI].value.GetHashCode() &&
+                                keys[currentI] == this.highlightField.containingObject)
                             this.HightligtStateElement(tbValue, true);
 
                         // button [-]
-                        repo.RegisterControl(AddSmallButtonTo(g, 0 + i + rowOfs, 5, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), content: "-"),
+                        repo.RegisterControl(
+                            AddSmallButtonTo(
+                                g, 0 + i + rowOfs, 5,
+                                margin: new Thickness(2, 2, 2, 2),
+                                padding: new Thickness(5, 0, 5, 0),
+                                content: "-"),
                             (o) =>
                             {
                                 keys.RemoveAt(currentI);
@@ -1199,7 +1377,9 @@ namespace AasxPackageExplorer
         // Safeguarding functions (checking if somethingis null and doing ..)
         //
 
-        public bool SafeguardAccess(StackPanel view, ModifyRepo repo, object data, string key, string actionStr, Func<object, ModifyRepo.LambdaAction> action)
+        public bool SafeguardAccess(
+            StackPanel view, ModifyRepo repo, object data, string key, string actionStr,
+            Func<object, ModifyRepo.LambdaAction> action)
         {
             if (repo != null && data == null)
                 AddAction(view, key, actionStr, repo, action);
@@ -1265,35 +1445,42 @@ namespace AasxPackageExplorer
             list.Insert(ndx + 1, entity);
         }
 
-        public void EntityListUpDownDeleteHelper<T>(Panel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:", object nextFocus = null)
+        public void EntityListUpDownDeleteHelper<T>(
+            Panel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
+            object nextFocus = null)
         {
             if (nextFocus == null)
                 nextFocus = entity;
-            AddAction(stack, label, new[] { "Move up", "Move down", "Delete" }, repo, (buttonNdx) =>
-           {
-               if (buttonNdx is int)
-               {
-                   if ((int)buttonNdx == 0)
-                   {
-                       MoveElementInListUpwards<T>(list, entity);
-                       return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                   }
+            AddAction(
+                stack, label, new[] { "Move up", "Move down", "Delete" }, repo,
+                (buttonNdx) =>
+                {
+                    if (buttonNdx is int)
+                    {
+                        if ((int)buttonNdx == 0)
+                        {
+                            MoveElementInListUpwards<T>(list, entity);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        }
 
-                   if ((int)buttonNdx == 1)
-                   {
-                       MoveElementInListDownwards<T>(list, entity);
-                       return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                   }
+                        if ((int)buttonNdx == 1)
+                        {
+                            MoveElementInListDownwards<T>(list, entity);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        }
 
-                   if ((int)buttonNdx == 2)
-                       if (this.flyoutProvider != null && MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow("Delete selected entity? This operation can not be reverted!", "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                       {
-                           var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
-                       }
-               }
-               return new ModifyRepo.LambdaActionNone();
-           });
+                        if ((int)buttonNdx == 2)
+                            if (this.flyoutProvider != null &&
+                                    MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                                        "Delete selected entity? This operation can not be reverted!", "AASX",
+                                        MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                            {
+                                var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
+                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                            }
+                    }
+                    return new ModifyRepo.LambdaActionNone();
+                });
         }
 
         public void QualifierHelper(StackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
@@ -1301,36 +1488,38 @@ namespace AasxPackageExplorer
             if (editMode)
             {
                 // let the user control the number of references
-                AddAction(stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo, (buttonNdx) =>
-               {
-                   if (buttonNdx is int)
-                   {
-                       if ((int)buttonNdx == 0)
-                           qualifiers.Add(new AdminShell.Qualifier());
+                AddAction(
+                    stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo,
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx is int)
+                        {
+                            if ((int)buttonNdx == 0)
+                                qualifiers.Add(new AdminShell.Qualifier());
 
-                       if ((int)buttonNdx == 1)
-                       {
-                           if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
-                               return new ModifyRepo.LambdaActionNone();
-                           try
-                           {
-                               var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                               var uc = new SelectQualifierPresetFlyout(fullfn);
-                               flyoutProvider.StartFlyoverModal(uc);
-                               if (uc.ResultQualifier != null)
-                                   qualifiers.Add(uc.ResultQualifier);
-                           }
-                           catch (Exception ex)
-                           {
-                               Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
-                           }
-                       }
+                            if ((int)buttonNdx == 1)
+                            {
+                                if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
+                                    return new ModifyRepo.LambdaActionNone();
+                                try
+                                {
+                                    var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                                    var uc = new SelectQualifierPresetFlyout(fullfn);
+                                    flyoutProvider.StartFlyoverModal(uc);
+                                    if (uc.ResultQualifier != null)
+                                        qualifiers.Add(uc.ResultQualifier);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                                }
+                            }
 
-                       if ((int)buttonNdx == 2 && qualifiers.Count > 0)
-                           qualifiers.RemoveAt(qualifiers.Count - 1);
-                   }
-                   return new ModifyRepo.LambdaActionRedrawEntity();
-               });
+                            if ((int)buttonNdx == 2 && qualifiers.Count > 0)
+                                qualifiers.RemoveAt(qualifiers.Count - 1);
+                        }
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    });
             }
 
             for (int i = 0; i < qualifiers.Count; i++)
@@ -1338,34 +1527,54 @@ namespace AasxPackageExplorer
                 var qual = qualifiers[i];
                 var substack = AddSubStackPanel(stack, "     "); // just a bit spacing to the left
 
-                AddGroup(substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo, auxButtonTitle: "Delete", auxButtonLambda: (o) =>
-                {
-                    qualifiers.Remove(qual);
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                });
+                AddGroup(
+                    substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo,
+                    auxButtonTitle: "Delete",
+                    auxButtonLambda: (o) =>
+                    {
+                        qualifiers.Remove(qual);
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    });
 
-                AddHintBubble(substack, hintMode, new[] {
-                        new HintCheck( () => { return (qual.semanticId == null || qual.semanticId.IsEmpty) && (qual.type == null || qual.type.Trim() == ""); },
+                AddHintBubble(
+                    substack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => {
+                                return (qual.semanticId == null || qual.semanticId.IsEmpty) &&
+                                    (qual.type == null || qual.type.Trim() == "");
+                            },
                             "Either a semanticId or a type string specification shall be given!")
                     });
-                if (SafeguardAccess(substack, repo, qual.semanticId, "semanticId:", "Create data element!", v =>
+                if (SafeguardAccess(
+                        substack, repo, qual.semanticId, "semanticId:", "Create data element!",
+                        v =>
+                        {
+                            qual.semanticId = new AdminShell.SemanticId();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
-                    qual.semanticId = new AdminShell.SemanticId();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
-                {
-                    AddKeyListKeys(substack, "semanticId", qual.semanticId.Keys, repo, package, addExistingEntities: AdminShell.Key.AllElements, addEclassIrdi: true);
+                    AddKeyListKeys(
+                        substack, "semanticId", qual.semanticId.Keys, repo, package,
+                        addExistingEntities: AdminShell.Key.AllElements,
+                        addEclassIrdi: true);
                 }
 
-                AddKeyValueRef(substack, "type", qual, ref qual.type, null, repo, v => { qual.type = v as string; return new ModifyRepo.LambdaActionNone(); });
+                AddKeyValueRef(
+                    substack, "type", qual, ref qual.type, null, repo,
+                    v => { qual.type = v as string; return new ModifyRepo.LambdaActionNone(); });
 
-                AddKeyValueRef(substack, "value", qual, ref qual.value, null, repo, v => { qual.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                AddKeyValueRef(
+                    substack, "value", qual, ref qual.value, null, repo,
+                    v => { qual.value = v as string; return new ModifyRepo.LambdaActionNone(); });
 
-                if (SafeguardAccess(substack, repo, qual.valueId, "valueId:", "Create data element!", v =>
-                {
-                    qual.valueId = new AdminShell.Reference();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                if (SafeguardAccess(
+                        substack, repo, qual.valueId, "valueId:", "Create data element!",
+                        v =>
+                        {
+                            qual.valueId = new AdminShell.Reference();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo, package, AdminShell.Key.AllElements);
                 }
@@ -1378,7 +1587,9 @@ namespace AasxPackageExplorer
         // Identify eCl@ss properties to be imported
         //
 
-        public void IdentifyTargetsForEclassImportOfCDs(AdminShell.AdministrationShellEnv env, List<AdminShell.SubmodelElement> elems, ref List<AdminShell.SubmodelElement> targets)
+        public void IdentifyTargetsForEclassImportOfCDs(
+            AdminShell.AdministrationShellEnv env, List<AdminShell.SubmodelElement> elems,
+            ref List<AdminShell.SubmodelElement> targets)
         {
             if (env == null || targets == null || elems == null)
                 return;
@@ -1400,19 +1611,22 @@ namespace AasxPackageExplorer
                 // recursion?
                 if (elem is AdminShell.SubmodelElementCollection)
                 {
-                    var childs = AdminShell.SubmodelElementWrapper.ListOfWrappersToListOfElems((elem as AdminShell.SubmodelElementCollection).value);
+                    var childs = AdminShell.SubmodelElementWrapper.ListOfWrappersToListOfElems(
+                        (elem as AdminShell.SubmodelElementCollection).value);
                     IdentifyTargetsForEclassImportOfCDs(env, childs, ref targets);
                 }
             }
         }
 
-        public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
+        public bool ImportEclassCDsForTargets(
+            AdminShell.AdministrationShellEnv env, object startMainDataElement,
+            List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
             if (this.flyoutProvider == null || env == null || targets == null)
                 return false;
 
-            // use eCl@ss utilities 
+            // use eCl@ss utilities
             var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
             var jobData = new EclassUtils.SearchJobData(fullfn);
             foreach (var t in targets)
@@ -1423,7 +1637,8 @@ namespace AasxPackageExplorer
                 return false;
 
             // make a progress flyout
-            var uc = new ProgressBarFlyout("Import ConceptDescriptions from eCl@ss", "Preparing ...", MessageBoxImage.Information);
+            var uc = new ProgressBarFlyout(
+                "Import ConceptDescriptions from eCl@ss", "Preparing ...", MessageBoxImage.Information);
             uc.Progress = 0.0;
             // show this
             this.flyoutProvider.StartFlyover(uc);
@@ -1460,7 +1675,10 @@ namespace AasxPackageExplorer
                         continue;
 
                     // add?
-                    if (null == env.FindConceptDescription(AdminShell.Key.CreateNew(AdminShell.Key.ConceptDescription, true, newcd.identification.idType, newcd.identification.id)))
+                    if (null == env.FindConceptDescription(
+                            AdminShell.Key.CreateNew(
+                                AdminShell.Key.ConceptDescription, true, newcd.identification.idType,
+                                newcd.identification.id)))
                         env.ConceptDescriptions.Add(newcd);
                 }
             };
@@ -1508,7 +1726,8 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        textsToShow.Add($"Error while checking hints: {ex.Message} at {AdminShellUtil.ShortLocation(ex)}");
+                        textsToShow.Add(
+                            $"Error while checking hints: {ex.Message} at {AdminShellUtil.ShortLocation(ex)}");
                         highestSev = HintCheck.Severity.High;
                     }
                 }

@@ -17,7 +17,8 @@ namespace AasxPredefinedConcepts
 
         public DefinitionsZveiDigitalTypeplate()
         {
-            this.theLibrary = BuildLibrary(Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiDigitalTypeplate.json");
+            this.theLibrary = BuildLibrary(
+                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiDigitalTypeplate.json");
         }
 
         [JetBrains.Annotations.UsedImplicitly]
@@ -50,22 +51,28 @@ namespace AasxPredefinedConcepts
                 this.SM_Nameplate = bs.RetrieveReferable<AdminShell.Submodel>("SM_Nameplate");
 
                 this.CD_ManufacturerName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerName");
-                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerProductDesignation");
+                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ManufacturerProductDesignation");
                 this.CD_PhysicalAddress = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_PhysicalAddress");
                 this.CD_CountryCode = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_CountryCode");
                 this.CD_Street = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_Street");
                 this.CD_Zip = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_Zip");
                 this.CD_CityTown = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_CityTown");
                 this.CD_StateCounty = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_StateCounty");
-                this.CD_ManufacturerProductFamily = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerProductFamily");
+                this.CD_ManufacturerProductFamily = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ManufacturerProductFamily");
                 this.CD_SerialNumber = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SerialNumber");
                 this.CD_BatchNumber = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_BatchNumber");
-                this.CD_ProductCountryOfOrigin = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ProductCountryOfOrigin");
-                this.CD_YearOfConstruction = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_YearOfConstruction");
+                this.CD_ProductCountryOfOrigin = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ProductCountryOfOrigin");
+                this.CD_YearOfConstruction = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_YearOfConstruction");
                 this.CD_ProductMarking = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ProductMarking");
-                this.CD_CEQualificationPresent = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_CEQualificationPresent");
+                this.CD_CEQualificationPresent = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_CEQualificationPresent");
                 this.CD_File = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_File");
-                this.CD_CRUUSLabelingPresent = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_CRUUSLabelingPresent");
+                this.CD_CRUUSLabelingPresent = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_CRUUSLabelingPresent");
             }
 
             public AdminShell.Referable[] GetAllReferables()
@@ -144,31 +151,43 @@ namespace AasxPredefinedConcepts
                 this.SM_Identification = bs.RetrieveReferable<AdminShell.Submodel>("SM_Identification");
 
                 this.CD_ManufacturerName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerName");
-                this.CD_GLNOfManufacturer = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_GLNOfManufacturer");
-                this.CD_SupplierOfTheIdentifier = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SupplierOfTheIdentifier");
+                this.CD_GLNOfManufacturer = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_GLNOfManufacturer");
+                this.CD_SupplierOfTheIdentifier = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_SupplierOfTheIdentifier");
                 this.CD_MAN_PROD_NUM = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_MAN_PROD_NUM");
-                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerProductDesignation");
-                this.CD_ManufacturerProductDescription = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerProductDescription");
+                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ManufacturerProductDesignation");
+                this.CD_ManufacturerProductDescription = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ManufacturerProductDescription");
                 this.CD_NameOfSupplier = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_NameOfSupplier");
                 this.CD_GLNOfSupplier = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_GLNOfSupplier");
-                this.CD_SupplierIdProvider = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SupplierIdProvider");
+                this.CD_SupplierIdProvider = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_SupplierIdProvider");
                 this.CD_SUP_PROD_NUM = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SUP_PROD_NUM");
-                this.CD_SupplierProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SupplierProductDesignation");
-                this.CD_SupplierProductDescription = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SupplierProductDescription");
-                this.CD_ManufacturerProductFamily = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ManufacturerProductFamily");
-                this.CD_ClassificationSystem = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ClassificationSystem");
+                this.CD_SupplierProductDesignation = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_SupplierProductDesignation");
+                this.CD_SupplierProductDescription = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_SupplierProductDescription");
+                this.CD_ManufacturerProductFamily = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ManufacturerProductFamily");
+                this.CD_ClassificationSystem = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_ClassificationSystem");
                 this.CD_SecondaryKeyTyp = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SecondaryKeyTyp");
                 this.CD_TypThumbnail = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_TypThumbnail");
                 this.CD_AssetId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_AssetId");
                 this.CD_SerialNumber = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SerialNumber");
                 this.CD_BatchNumber = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_BatchNumber");
-                this.CD_SecondaryKeyInstance = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SecondaryKeyInstance");
-                this.CD_DateOfManufacture = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DateOfManufacture");
+                this.CD_SecondaryKeyInstance = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_SecondaryKeyInstance");
+                this.CD_DateOfManufacture = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_DateOfManufacture");
                 this.CD_DeviceRevision = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DeviceRevision");
                 this.CD_SoftwareRevision = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_SoftwareRevision");
                 this.CD_HardwareRevision = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_HardwareRevision");
                 this.CD_QrCode = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_QrCode");
-                this.CD_OrganisationContactInfo = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_OrganisationContactInfo");
+                this.CD_OrganisationContactInfo = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_OrganisationContactInfo");
                 this.CD_ContactInfo_Role = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_ContactInfo_Role");
                 this.CD_PhysicalAddress = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_PhysicalAddress");
                 this.CD_CountryCode = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_CountryCode");
@@ -273,37 +292,53 @@ namespace AasxPredefinedConcepts
             {
                 this.SM_Document = bs.RetrieveReferable<AdminShell.Submodel>("SM_Document");
 
-                this.CD_DocumentationItem = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentationItem");
+                this.CD_DocumentationItem = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_DocumentationItem");
                 this.CD_DocumentType = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentType");
                 this.CD_VDI2770_DomainId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_DomainId");
                 this.CD_VDI2770_IdType = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_IdType");
                 this.CD_DocumentId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentId");
                 this.CD_DocumentDomainId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentDomainId");
                 this.CD_VDI2770_Role = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Role");
-                this.CD_VDI2770_OrganisationId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_OrganisationId");
-                this.CD_VDI2770_OrganisationName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_OrganisationName");
-                this.CD_VDI2770_OrganisationOfficialName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_OrganisationOfficialName");
-                this.CD_VDI2770_Description = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Description");
+                this.CD_VDI2770_OrganisationId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_OrganisationId");
+                this.CD_VDI2770_OrganisationName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_OrganisationName");
+                this.CD_VDI2770_OrganisationOfficialName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_OrganisationOfficialName");
+                this.CD_VDI2770_Description = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_Description");
                 this.CD_DocumentPartId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentPartId");
-                this.CD_DocumentClassification_ClassId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentClassification_ClassId");
-                this.CD_VDI2770_ClassName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_ClassName");
-                this.CD_VDI2770_ClassificationSystem = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_ClassificationSystem");
-                this.CD_DocumentVersionId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentVersionId");
-                this.CD_DocumentVersion_LanguageCode = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DocumentVersion_LanguageCode");
+                this.CD_DocumentClassification_ClassId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_DocumentClassification_ClassId");
+                this.CD_VDI2770_ClassName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_ClassName");
+                this.CD_VDI2770_ClassificationSystem = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_ClassificationSystem");
+                this.CD_DocumentVersionId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_DocumentVersionId");
+                this.CD_DocumentVersion_LanguageCode = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_DocumentVersion_LanguageCode");
                 this.CD_VDI2770_Title = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Title");
                 this.CD_VDI2770_Summary = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Summary");
                 this.CD_VDI2770_Keywords = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Keywords");
-                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_StatusValue");
+                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_StatusValue");
                 this.CD_VDI2770_SetDate = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_SetDate");
                 this.CD_VDI2770_Purpose = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Purpose");
-                this.CD_VDI2770_BasedOnProcedure = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_BasedOnProcedure");
+                this.CD_VDI2770_BasedOnProcedure = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_BasedOnProcedure");
                 this.CD_VDI2770_Comments = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Comments");
-                this.CD_VDI2770_ReferencedObject_Type = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_ReferencedObject_Type");
-                this.CD_VDI2770_ReferencedObject_RefType = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_ReferencedObject_RefType");
-                this.CD_VDI2770_ReferencedObject_ObjectId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_ReferencedObject_ObjectId");
+                this.CD_VDI2770_ReferencedObject_Type = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_ReferencedObject_Type");
+                this.CD_VDI2770_ReferencedObject_RefType = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_ReferencedObject_RefType");
+                this.CD_VDI2770_ReferencedObject_ObjectId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_ReferencedObject_ObjectId");
                 this.CD_VDI2770_FileId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_FileId");
                 this.CD_VDI2770_FileName = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_FileName");
-                this.CD_VDI2770_FileFormat = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_FileFormat");
+                this.CD_VDI2770_FileFormat = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                    "CD_VDI2770_FileFormat");
                 this.CD_File = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_DigitalFile");
 
             }

@@ -18,11 +18,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -112,7 +121,10 @@ namespace AasxPackageExplorer
             var st = SearchFor.Text.Trim().ToLower();
             if (st.Length < 2)
             {
-                MessageBox.Show("The search string needs to comprise at least 2 characters in order to limit the amount of search results!", "Info", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show(
+                    "The search string needs to comprise at least 2 characters in order to " +
+                        "limit the amount of search results!", "Info",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -149,13 +161,17 @@ namespace AasxPackageExplorer
             if (a?.jobData != null && a.jobType == 1)
                 EclassUtils.SearchForTextInEclassFiles(a.jobData, (frac) =>
                 {
-                    SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
+                    SearchProgress.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => this.SearchProgress.Value = frac));
                 });
 
             if (a?.jobData != null && a.jobType == 2)
                 EclassUtils.SearchForIRDIinEclassFiles(a.jobData, (frac) =>
                 {
-                    SearchProgress.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() => this.SearchProgress.Value = frac));
+                    SearchProgress.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => this.SearchProgress.Value = frac));
                 });
 
             // set result
@@ -178,7 +194,9 @@ namespace AasxPackageExplorer
             {
                 // may be inform upon too many elements
                 if (a.jobData.tooMany)
-                    MessageBox.Show("Too many search results. Search aborted!", "Search entities", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    MessageBox.Show(
+                        "Too many search results. Search aborted!", "Search entities",
+                        MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
                 // sort
                 a.jobData.items.Sort(delegate (EclassUtils.SearchItem si1, EclassUtils.SearchItem si2)
@@ -197,7 +215,7 @@ namespace AasxPackageExplorer
 
             if (a.jobType == 2 && a.jobData != null && a.jobData.searchIRDIs.Count == 1)
             {
-                // 1st pass already done, the jobData items already containing all required information to 
+                // 1st pass already done, the jobData items already containing all required information to
                 // generate a proper content description
 
                 // own function
@@ -225,7 +243,8 @@ namespace AasxPackageExplorer
         private void EntityList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // access
-            if (EntityContent == null || EntityList == null || EntityList.SelectedItem == null || !(EntityList.SelectedItem is EclassUtils.SearchItem))
+            if (EntityContent == null || EntityList == null || EntityList.SelectedItem == null ||
+                    !(EntityList.SelectedItem is EclassUtils.SearchItem))
                 return;
 
             // set

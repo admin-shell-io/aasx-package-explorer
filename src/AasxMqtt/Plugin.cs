@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using AasxMqttServer;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-   Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
-   Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
-    zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>, author: Florian Pethig
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
 
-*/
+Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
 
-/* For Mqtt Content:
+Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo,
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>
+Author: Florian Pethig
 
-MIT License
+For Mqtt Content: MIT License
 
 MQTTnet Copyright (c) 2016-2019 Christian Kratky
 */
@@ -23,7 +26,8 @@ MQTTnet Copyright (c) 2016-2019 Christian Kratky
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
 

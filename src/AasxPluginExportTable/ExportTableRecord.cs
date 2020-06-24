@@ -29,7 +29,9 @@ namespace AasxPluginExportTable
         public AdminShell.SubmodelElement sme;
         public AdminShell.ConceptDescription cd;
 
-        public ExportTableAasEntitiesItem(int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null, AdminShell.ConceptDescription cd = null)
+        public ExportTableAasEntitiesItem(
+            int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null,
+            AdminShell.ConceptDescription cd = null)
         {
             this.depth = depth;
             this.sm = sm;
@@ -52,7 +54,7 @@ namespace AasxPluginExportTable
         public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
         public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
 
-        // 
+        //
         // Members
         //
 
@@ -87,7 +89,9 @@ namespace AasxPluginExportTable
 
         public ExportTableRecord() { }
 
-        public ExportTableRecord(int rows, int cols, string name = "", IEnumerable<string> header = null, IEnumerable<string> elements = null)
+        public ExportTableRecord(
+            int rows, int cols, string name = "", IEnumerable<string> header = null,
+            IEnumerable<string> elements = null)
         {
             this.Rows = rows;
             this.Cols = cols;
@@ -127,7 +131,8 @@ namespace AasxPluginExportTable
 
         public class CellRecord
         {
-            public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null, Text = "", TextWithHeaders = "";
+            public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
+                Text = "", TextWithHeaders = "";
 
             public CellRecord() { }
 
@@ -143,7 +148,9 @@ namespace AasxPluginExportTable
             if (row < 0 || col < 0 || this.Header == null || i >= this.Header.Count)
                 return null;
             var cr = new CellRecord(this.Header[i]);
-            cr.TextWithHeaders = this.Header[0] + " " + this.Header[(1 + row) * (1 + this.Cols)] + " " + this.Header[1 + col] + " " + cr.Text;
+            cr.TextWithHeaders =
+                this.Header[0] + " " + this.Header[(1 + row) * (1 + this.Cols)] + " " +
+                this.Header[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -153,7 +160,9 @@ namespace AasxPluginExportTable
             if (row < 0 || col < 0 || this.Elements == null || i >= this.Elements.Count)
                 return null;
             var cr = new CellRecord(this.Elements[i]);
-            cr.TextWithHeaders = this.Elements[0] + " " + this.Elements[(1 + row) * (1 + this.Cols)] + " " + this.Elements[1 + col] + " " + cr.Text;
+            cr.TextWithHeaders =
+                this.Elements[0] + " " + this.Elements[(1 + row) * (1 + this.Cols)] + " " +
+                this.Elements[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -314,7 +323,7 @@ namespace AasxPluginExportTable
 
             public void Start()
             {
-                // init Regex         
+                // init Regex
                 // nice tester: http://regexstorm.net/tester
                 regexReplacements = new Regex(@"%([a-zA-Z0-9.@\[\]]+)%", RegexOptions.IgnoreCase);
                 regexCommands = new Regex(@"%([A-Za-z0-9-_]+)=(.*?)%", RegexOptions.IgnoreCase);
@@ -440,7 +449,12 @@ namespace AasxPluginExportTable
                         {
                             var smc = sme as AdminShell.SubmodelElementCollection;
                             //-2- SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}
-                            rep("SubmodelElementCollection.value", "" + ((smc.value != null) ? smc.value.Count : 0) + " elements");
+                            rep(
+                                "SubmodelElementCollection.value", "" +
+                                ((smc.value != null)
+                                    ? smc.value.Count
+                                    : 0) +
+                                " elements");
                             rep("SubmodelElementCollection.ordered", "" + smc.ordered);
                             rep("SubmodelElementCollection.allowDuplicates", "" + smc.allowDuplicates);
 
@@ -469,7 +483,8 @@ namespace AasxPluginExportTable
                         var iec = cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360;
                         if (iec != null)
                         {
-                            //-2- CD.{preferredName[@en..], shortName[@en..], anyName, unit, unitId, sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
+                            //-2- CD.{preferredName[@en..], shortName[@en..], anyName, unit, unitId,
+                            // sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
                             repListOfLangStr(head + "preferredName", iec.preferredName?.langString);
                             repListOfLangStr(head + "shortName", iec.shortName?.langString);
                             rep(head + "unit", "" + iec.unit);
@@ -495,7 +510,8 @@ namespace AasxPluginExportTable
                 }
             }
 
-            // see: https://codereview.stackexchange.com/questions/119519/regex-to-first-match-then-replace-found-matches
+            // see: https://codereview.stackexchange.com/questions/119519/
+            // regex-to-first-match-then-replace-found-matches
             public static string Replace(string s, int index, int length, string replacement)
             {
                 var builder = new StringBuilder();
@@ -510,7 +526,7 @@ namespace AasxPluginExportTable
                 if (Record == null || regexReplacements == null || regexCommands == null)
                     return;
 
-                // local 
+                // local
                 var input = cr.Text;
 
                 // newline
@@ -522,7 +538,8 @@ namespace AasxPluginExportTable
                 }
 
                 // process from right to left
-                // see: https://codereview.stackexchange.com/questions/119519/regex-to-first-match-then-replace-found-matches
+                // see: https://codereview.stackexchange.com/questions/119519/
+                // regex-to-first-match-then-replace-found-matches
                 var matchesReplace = regexReplacements.Matches(input);
                 foreach (var match in matchesReplace.Cast<Match>().Reverse())
                 {
@@ -690,7 +707,7 @@ namespace AasxPluginExportTable
             return true;
         }
 
-        // 
+        //
         // Excel
         //
 
@@ -888,7 +905,7 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    // column widths                
+                    // column widths
                     ws.Columns(1, this.Cols).AdjustToContents();
                 }
             }
@@ -912,7 +929,8 @@ namespace AasxPluginExportTable
             TableCell tc = tr.AppendChild(new TableCell());
             Paragraph para = tc.AppendChild(new Paragraph());
 
-            // see: https://stackoverflow.com/questions/17675526/how-can-i-modify-the-foreground-and-background-color-of-an-openxml-tablecell/17677892
+            // see: https://stackoverflow.com/questions/17675526/
+            // how-can-i-modify-the-foreground-and-background-color-of-an-openxml-tablecell/17677892
 
             if (cr.HorizAlign != null)
             {
@@ -1021,7 +1039,7 @@ namespace AasxPluginExportTable
                 //
 
 
-                // Add a main document part. 
+                // Add a main document part.
                 MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
 
                 // Create the document structure and add some text.
@@ -1057,12 +1075,48 @@ namespace AasxPluginExportTable
 
                         var tblProperties = table.AppendChild(new TableProperties());
                         var tblBorders = tblProperties.AppendChild(new TableBorders());
-                        tblBorders.Append(new TopBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickOuter });
-                        tblBorders.Append(new LeftBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickOuter });
-                        tblBorders.Append(new RightBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickOuter });
-                        tblBorders.Append(new BottomBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickOuter });
-                        tblBorders.Append(new InsideHorizontalBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickInner });
-                        tblBorders.Append(new InsideVerticalBorder() { Val = new EnumValue<BorderValues>(BorderValues.Thick), Color = "000000", Size = thickInner });
+                        tblBorders.Append(
+                            new TopBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickOuter
+                            });
+                        tblBorders.Append(
+                            new LeftBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickOuter
+                            });
+                        tblBorders.Append(
+                            new RightBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickOuter
+                            });
+                        tblBorders.Append(
+                            new BottomBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickOuter
+                            });
+                        tblBorders.Append(
+                            new InsideHorizontalBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickInner
+                            });
+                        tblBorders.Append(
+                            new InsideVerticalBorder()
+                            {
+                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                Color = "000000",
+                                Size = thickInner
+                            });
                     }
                 }
 

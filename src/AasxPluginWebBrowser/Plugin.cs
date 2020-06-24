@@ -10,15 +10,20 @@ using System.Windows;
 using System.Windows.Controls;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
+
 The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         private LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
@@ -43,7 +48,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try load defaults options from assy directory
             try
             {
-                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginWebBrowser.WebBrowserOptions>(this.GetPluginName(), Assembly.GetExecutingAssembly());
+                var newOpt =
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginWebBrowser.WebBrowserOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     this.options = newOpt;
             }
@@ -62,11 +69,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             Log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
-            res.Add(new AasxPluginActionDescriptionBase("set-json-options", "Sets plugin-options according to provided JSON string."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "set-json-options", "Sets plugin-options according to provided JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(new AasxPluginActionDescriptionBase("get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(new AasxPluginActionDescriptionBase("get-browser-grid", "Returns a new instance of a Grid with a Chromium web-browser control."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-browser-grid", "Returns a new instance of a Grid with a Chromium web-browser control."));
             res.Add(new AasxPluginActionDescriptionBase("set-zoom-level", "Set a normalizd (1.0-based) zoom leve."));
             res.Add(new AasxPluginActionDescriptionBase("go-to-address", "Will go to a web address."));
             return res.ToArray();
@@ -76,14 +89,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginWebBrowser.WebBrowserOptions>((args[0] as string));
+                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginWebBrowser.WebBrowserOptions>(
+                    (args[0] as string));
                 if (newOpt != null)
                     this.options = newOpt;
             }
 
             if (action == "get-json-options")
             {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(this.options, Newtonsoft.Json.Formatting.Indented);
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                    this.options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -93,7 +108,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 lic.shortLicense = "The browser functionality is licensed under the cefSharp license (see below).";
 
                 lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxPluginWebBrowser.Resources.LICENSE.txt"))
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                    "AasxPluginWebBrowser.Resources.LICENSE.txt"))
                 {
                     if (stream != null)
                     {
@@ -119,8 +135,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // build visual
                 this.browserGrid = new Grid();
 
-                this.browserGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1.0, GridUnitType.Star) });
-                this.browserGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1.0, GridUnitType.Star) });
+                this.browserGrid.RowDefinitions.Add(
+                    new RowDefinition() { Height = new GridLength(1.0, GridUnitType.Star) });
+                this.browserGrid.ColumnDefinitions.Add(
+                    new ColumnDefinition() { Width = new GridLength(1.0, GridUnitType.Star) });
 
                 this.theBrowser = new CefSharp.Wpf.ChromiumWebBrowser();
                 this.theBrowser.Address = url;

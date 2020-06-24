@@ -12,11 +12,20 @@ using System.IO.Packaging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 // ReSharper disable All .. as this is legacy code!
 
@@ -25,7 +34,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 namespace AasxCompatibilityModels
 {
     #region Utils
-    // 
+    //
     // Utils
     //
 
@@ -1098,7 +1107,8 @@ namespace AasxCompatibilityModels
                 if (this is Identifiable)
                 {
                     var idf = this as Identifiable;
-                    var k = Key.CreateNew(idf.GetElementName(), true, idf.identification.idType, idf.identification.id);
+                    var k = Key.CreateNew(
+                        idf.GetElementName(), true, idf.identification.idType, idf.identification.id);
                     refs.Insert(0, k);
                 }
                 else
@@ -1244,7 +1254,8 @@ namespace AasxCompatibilityModels
                 }
             }
 
-            public static AdministrationShell CreateNew(string idType, string id, string version = null, string revision = null)
+            public static AdministrationShell CreateNew(
+                string idType, string id, string version = null, string revision = null)
             {
                 var s = new AdministrationShell();
                 s.identification.idType = idType;
@@ -1388,7 +1399,8 @@ namespace AasxCompatibilityModels
             public AssetRef GetReference()
             {
                 var r = new AssetRef();
-                r.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                r.Keys.Add(
+                    Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
             }
 
@@ -1453,7 +1465,14 @@ namespace AasxCompatibilityModels
             [JsonIgnore]
             public int Count { get { if (containedElements == null) return 0; return containedElements.Count; } }
 
-            public ContainedElementRef this[int index] { get { if (containedElements == null) return null; return containedElements[index]; } }
+            public ContainedElementRef this[int index]
+            {
+                get
+                {
+                    if (
+containedElements == null) return null; return containedElements[index];
+                }
+            }
 
             // constructors / creators
 
@@ -1532,7 +1551,8 @@ namespace AasxCompatibilityModels
                 if (this.semanticId != null)
                     info = Key.KeyListToString(this.semanticId.Keys);
                 if (this.containedElements != null && this.containedElements.reference != null)
-                    info = (info + " ").Trim() + String.Format("({0} elements)", this.containedElements.reference.Count);
+                    info =
+                        (info + " ").Trim() + String.Format("({0} elements)", this.containedElements.reference.Count);
                 return Tuple.Create(caption, info);
             }
 
@@ -1715,10 +1735,10 @@ namespace AasxCompatibilityModels
             public List<LangStr> sourceOfDefinition = new List<LangStr>();
             public string symbol = null;
             public string dataType = "";
-            // public List<LangStr> definition = new List<LangStr>();    
+            // public List<LangStr> definition = new List<LangStr>();
             public LangStringIEC61360 definition = new LangStringIEC61360();
 
-            // getter / setters 
+            // getter / setters
 
             // constructors
 
@@ -1887,7 +1907,8 @@ namespace AasxCompatibilityModels
                     }
             }
 
-            public static ConceptDescription CreateNew(string idType, string id, string version = null, string revision = null)
+            public static ConceptDescription CreateNew(
+                string idType, string id, string version = null, string revision = null)
             {
                 var cd = new ConceptDescription();
                 cd.identification.idType = idType;
@@ -1905,7 +1926,8 @@ namespace AasxCompatibilityModels
             public ConceptDescriptionRef GetReference()
             {
                 var r = new ConceptDescriptionRef();
-                r.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                r.Keys.Add(
+                    Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
             }
 
@@ -1929,23 +1951,32 @@ namespace AasxCompatibilityModels
             )
             {
                 this.embeddedDataSpecification = new EmbeddedDataSpecification();
-                this.embeddedDataSpecification.hasDataSpecification.Keys.Add(Key.CreateNew("GlobalReference", false, "URI", "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
-                this.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 = AdminShellV10.DataSpecificationIEC61360.CreateNew(
-                    preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol, dataType, definition
-                );
-                this.AddIsCaseOf(Reference.CreateNew(new Key("ConceptDescription", false, this.identification.idType, this.identification.id)));
+                this.embeddedDataSpecification.hasDataSpecification.Keys.Add(
+                    Key.CreateNew("GlobalReference", false, "URI",
+                        "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
+                this.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 =
+                    AdminShellV10.DataSpecificationIEC61360.CreateNew(
+                        preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol, dataType,
+                        definition);
+                this.AddIsCaseOf(
+                    Reference.CreateNew(new Key(
+                        "ConceptDescription", false, this.identification.idType, this.identification.id)));
             }
 
             public DataSpecificationIEC61360 GetIEC61360()
             {
-                if (embeddedDataSpecification != null && embeddedDataSpecification.dataSpecificationContent != null && embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                if (embeddedDataSpecification != null &&
+                    embeddedDataSpecification.dataSpecificationContent != null &&
+                    embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
                     return embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
                 return null;
             }
 
             public string GetShortName()
             {
-                if (embeddedDataSpecification != null && embeddedDataSpecification.dataSpecificationContent != null && embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                if (embeddedDataSpecification != null &&
+                    embeddedDataSpecification.dataSpecificationContent != null &&
+                    embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
                     return embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName;
                 return "";
             }
@@ -1964,7 +1995,9 @@ namespace AasxCompatibilityModels
                     caption = (caption + " " + this.identification).Trim();
 
                 var info = "";
-                if (embeddedDataSpecification != null && embeddedDataSpecification.dataSpecificationContent != null && embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                if (embeddedDataSpecification != null &&
+                    embeddedDataSpecification.dataSpecificationContent != null &&
+                    embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
                     info += embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName;
 
                 return Tuple.Create(caption, info);
@@ -2032,7 +2065,8 @@ namespace AasxCompatibilityModels
         public class AdministrationShellEnv
         {
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
-            public string schemaLocation = "http://www.admin-shell.io/aas/1/0 AAS.xsd http://www.admin-shell.io/IEC61360/1/0 IEC61360.xsd";
+            public string schemaLocation =
+                "http://www.admin-shell.io/aas/1/0 AAS.xsd http://www.admin-shell.io/IEC61360/1/0 IEC61360.xsd";
 
             // [XmlElement(ElementName="assetAdministrationShells")]
             [XmlIgnore] // will be ignored, anyway
@@ -2143,7 +2177,7 @@ namespace AasxCompatibilityModels
                     if (a.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && a.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return a;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2174,7 +2208,7 @@ namespace AasxCompatibilityModels
                     if (sm.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && sm.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return sm;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2268,7 +2302,7 @@ namespace AasxCompatibilityModels
                     if (cd.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && cd.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return cd;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2283,7 +2317,8 @@ namespace AasxCompatibilityModels
 
             // creators
 
-            private void CopyConceptDescriptionsFrom(AdministrationShellEnv srcEnv, SubmodelElement src, bool shallowCopy = false)
+            private void CopyConceptDescriptionsFrom(
+                AdministrationShellEnv srcEnv, SubmodelElement src, bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || src == null || src.semanticId == null)
@@ -2305,7 +2340,8 @@ namespace AasxCompatibilityModels
 
             }
 
-            public SubmodelElementWrapper CopySubmodelElementAndCD(AdministrationShellEnv srcEnv, SubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
+            public SubmodelElementWrapper CopySubmodelElementAndCD(
+                AdministrationShellEnv srcEnv, SubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || srcElem == null)
@@ -2322,7 +2358,9 @@ namespace AasxCompatibilityModels
                 return res;
             }
 
-            public SubmodelRef CopySubmodelRefAndCD(AdministrationShellEnv srcEnv, SubmodelRef srcSubRef, bool copySubmodel = false, bool copyCD = false, bool shallowCopy = false)
+            public SubmodelRef CopySubmodelRefAndCD(
+                AdministrationShellEnv srcEnv, SubmodelRef srcSubRef, bool copySubmodel = false, bool copyCD = false,
+                bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || srcSubRef == null)
@@ -2399,7 +2437,8 @@ namespace AasxCompatibilityModels
 
             public AdministrationShellEnv DeserializeFromXmlStream(TextReader reader)
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
+                XmlSerializer serializer = new XmlSerializer(
+                    typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
                 var res = serializer.Deserialize(reader) as AdminShellV10.AdministrationShellEnv;
                 return res;
             }
@@ -2414,7 +2453,9 @@ namespace AasxCompatibilityModels
 
             // special functions
 
-            private static void CreateFromExistingEnvRecurseForCDs(AdministrationShellEnv src, List<SubmodelElementWrapper> wrappers, ref List<ConceptDescription> filterForCD)
+            private static void CreateFromExistingEnvRecurseForCDs(
+                AdministrationShellEnv src, List<SubmodelElementWrapper> wrappers,
+                ref List<ConceptDescription> filterForCD)
             {
                 if (wrappers == null || filterForCD == null)
                     return;
@@ -2431,7 +2472,8 @@ namespace AasxCompatibilityModels
 
                     // recurse?
                     if (w.submodelElement is SubmodelElementCollection)
-                        CreateFromExistingEnvRecurseForCDs(src, (w.submodelElement as SubmodelElementCollection).value, ref filterForCD);
+                        CreateFromExistingEnvRecurseForCDs(
+                            src, (w.submodelElement as SubmodelElementCollection).value, ref filterForCD);
 
                     if (w.submodelElement is Operation)
                         for (int i = 0; i < 2; i++)
@@ -2487,7 +2529,8 @@ namespace AasxCompatibilityModels
 
                         if (aas.conceptDictionaries != null)
                             foreach (var cdd in aas.conceptDictionaries)
-                                if (cdd.conceptDescriptionsRefs != null && cdd.conceptDescriptionsRefs.conceptDescriptions != null)
+                                if (cdd.conceptDescriptionsRefs != null &&
+                                    cdd.conceptDescriptionsRefs.conceptDescriptions != null)
                                     foreach (var cdr in cdd.conceptDescriptionsRefs.conceptDescriptions)
                                     {
                                         var cd = src.FindConceptDescription(cdr);
@@ -2664,7 +2707,9 @@ namespace AasxCompatibilityModels
                 }
             }
 
-            public void AddQualifier(string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null, Reference qualifierValueId = null)
+            public void AddQualifier(
+                string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
+                Reference qualifierValueId = null)
             {
                 if (this.qualifiers == null)
                     this.qualifiers = new List<Qualifier>();
@@ -2757,7 +2802,8 @@ namespace AasxCompatibilityModels
             public SubmodelElement submodelElement;
 
             // element names
-            public static string[] AdequateElementNames = { "SubmodelElementCollection", "Property", "File", "Blob", "ReferenceElement",
+            public static string[] AdequateElementNames = {
+                "SubmodelElementCollection", "Property", "File", "Blob", "ReferenceElement",
                 "RelationshipElement", "Operation", "OperationVariable" };
 
             // constructors
@@ -2778,7 +2824,8 @@ namespace AasxCompatibilityModels
                 if (src is RelationshipElement)
                     this.submodelElement = new RelationshipElement(src as RelationshipElement);
                 if (src is SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(src as SubmodelElementCollection, shallowCopy: shallowCopy);
+                    this.submodelElement = new SubmodelElementCollection(
+                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
                 if (src is Operation)
                     this.submodelElement = new Operation(src as Operation);
             }
@@ -2879,20 +2926,23 @@ namespace AasxCompatibilityModels
                 return res;
             }
 
-            public static Referable FindReferableByReference(List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
+            public static Referable FindReferableByReference(
+                List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
             {
                 // first index needs to exist ..
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
 
                 // as SubmodelElements are not Identifiables, the actual key shall be IdSHort
-                if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(Key.IdentifierType.IdShort).Trim().ToLower())
+                if (rf[keyIndex].idType.Trim().ToLower() !=
+                        Key.GetIdentifierTypeName(Key.IdentifierType.IdShort).Trim().ToLower())
                     return null;
 
                 // over all wrappers
                 if (wrappers != null)
                     foreach (var smw in wrappers)
-                        if (smw.submodelElement != null && smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
+                        if (smw.submodelElement != null &&
+                            smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
                         {
                             // match on this level. Did we find a leaf element?
                             if ((keyIndex + 1) >= rf.Count)
@@ -2901,7 +2951,8 @@ namespace AasxCompatibilityModels
                             // ok, not a leaf, must be a recursion
                             // int SMEC
                             if (smw.submodelElement is SubmodelElementCollection)
-                                return FindReferableByReference((smw.submodelElement as SubmodelElementCollection).value, rf, keyIndex + 1);
+                                return FindReferableByReference(
+                                    (smw.submodelElement as SubmodelElementCollection).value, rf, keyIndex + 1);
 
                             // TODO: Operation
 
@@ -2958,7 +3009,7 @@ namespace AasxCompatibilityModels
             [XmlArrayItem("qualifier")]
             public List<Qualifier> qualifiers = null;
 
-            // from this very class     
+            // from this very class
             [JsonIgnore]
             public List<SubmodelElementWrapper> submodelElements = null;
             [XmlIgnore]
@@ -3048,7 +3099,8 @@ namespace AasxCompatibilityModels
             public Reference GetReference()
             {
                 SubmodelRef l = new SubmodelRef();
-                l.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                l.Keys.Add(
+                    Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return l;
             }
 
@@ -3101,7 +3153,9 @@ namespace AasxCompatibilityModels
 
             // Recursing
 
-            private void RecurseOnSubmodelElementsRecurse(List<SubmodelElementWrapper> wrappers, object state, List<SubmodelElement> parents, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+            private void RecurseOnSubmodelElementsRecurse(
+                List<SubmodelElementWrapper> wrappers, object state, List<SubmodelElement> parents,
+                Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
                 // trivial
                 if (wrappers == null || parents == null || lambda == null)
@@ -3139,7 +3193,8 @@ namespace AasxCompatibilityModels
                 }
             }
 
-            public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+            public void RecurseOnSubmodelElements(
+                object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
                 RecurseOnSubmodelElementsRecurse(this.submodelElements, state, new List<SubmodelElement>(), lambda);
             }
@@ -3206,7 +3261,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -3266,7 +3324,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -3309,7 +3370,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -3369,7 +3433,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -3386,7 +3453,8 @@ namespace AasxCompatibilityModels
                     this.value = new Reference(src.value);
             }
 
-            public static ReferenceElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static ReferenceElement CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new ReferenceElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -3410,7 +3478,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -3430,7 +3501,8 @@ namespace AasxCompatibilityModels
                     this.second = new Reference(src.second);
             }
 
-            public static RelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static RelationshipElement CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new RelationshipElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -3454,7 +3526,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
             [JsonIgnore]
@@ -3521,7 +3596,8 @@ namespace AasxCompatibilityModels
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
             }
 
-            public static SubmodelElementCollection CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static SubmodelElementCollection CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new SubmodelElementCollection();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -3571,7 +3647,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
             public SubmodelElementWrapper value = null;
@@ -3606,7 +3685,10 @@ namespace AasxCompatibilityModels
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
             [JsonIgnore]
@@ -3705,9 +3787,11 @@ namespace AasxCompatibilityModels
         //
 
         /// <summary>
-        /// This converter is used for reading JSON files; it claims to be responsible for "SubmodelElements" (the base class)
-        /// and decides, which sub-class of the base class shall be populated. 
-        /// The decision, shich special sub-class to create is done in a factory AdminShell.SubmodelElementWrapper.CreateAdequateType(),
+        /// This converter is used for reading JSON files; it claims to be responsible for
+        /// "SubmodelElements" (the base class)
+        /// and decides, which sub-class of the base class shall be populated.
+        /// The decision, shich special sub-class to create is done in a factory
+        /// AdminShell.SubmodelElementWrapper.CreateAdequateType(),
         /// in order to have all sub-class specific decisions in one place (SubmodelElementWrapper)
         /// Remark: There is a NuGet package JsonSubTypes, which could have done the job, except the fact of having
         /// "modelType" being a class property with a contained property "name".
@@ -3758,7 +3842,9 @@ namespace AasxCompatibilityModels
                         var cprop = c as Newtonsoft.Json.Linq.JProperty;
                         if (cprop == null)
                             continue;
-                        if (cprop.Name == LowerClassProperty && cprop.Value != null && cprop.Value.Type.ToString() == "String")
+                        if (cprop.Name == LowerClassProperty &&
+                            cprop.Value != null &&
+                            cprop.Value.Type.ToString() == "String")
                         {
                             var cpval = cprop.Value.ToObject<string>();
                             if (cpval == null)
@@ -3797,7 +3883,9 @@ namespace AasxCompatibilityModels
             public LocationType location = LocationType.InPackage;
             public SpecialHandlingType specialHandling = SpecialHandlingType.None;
 
-            public PackageSupplementaryFile(Uri uri, string sourcePath = null, LocationType location = LocationType.InPackage, SpecialHandlingType specialHandling = SpecialHandlingType.None)
+            public PackageSupplementaryFile(
+                Uri uri, string sourcePath = null, LocationType location = LocationType.InPackage,
+                SpecialHandlingType specialHandling = SpecialHandlingType.None)
             {
                 this.uri = uri;
                 this.sourcePath = sourcePath;
@@ -3877,7 +3965,8 @@ namespace AasxCompatibilityModels
                     try
                     {
                         // TODO: use aasenv serialzers here!
-                        XmlSerializer serializer = new XmlSerializer(typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
+                        XmlSerializer serializer = new XmlSerializer(
+                            typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
                         TextReader reader = new StreamReader(fn);
                         this.aasenv = serializer.Deserialize(reader) as AdminShellV10.AdministrationShellEnv;
                         if (this.aasenv == null)
@@ -3886,7 +3975,9 @@ namespace AasxCompatibilityModels
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While reading AAS {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While reading AAS {0} at {1} gave: {2}", fn,
+                                AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -3901,12 +3992,15 @@ namespace AasxCompatibilityModels
                             // TODO: use aasenv serialzers here!
                             JsonSerializer serializer = new JsonSerializer();
                             serializer.Converters.Add(new AdminShellV10.JsonAasxConverter("modelType", "name"));
-                            this.aasenv = (AdministrationShellEnv)serializer.Deserialize(file, typeof(AdministrationShellEnv));
+                            this.aasenv = (AdministrationShellEnv)serializer.Deserialize(
+                                file, typeof(AdministrationShellEnv));
                         }
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While reading AAS {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While reading AAS {0} at {1} gave: {2}",
+                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -3920,7 +4014,8 @@ namespace AasxCompatibilityModels
 
                         // get the origin from the package
                         PackagePart originPart = null;
-                        var xs = package.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aasx-origin");
+                        var xs = package.GetRelationshipsByType(
+                            "http://www.admin-shell.io/aasx/relationships/aasx-origin");
                         foreach (var x in xs)
                             if (x.SourceUri.ToString() == "/")
                             {
@@ -3932,7 +4027,8 @@ namespace AasxCompatibilityModels
 
                         // get the specs from the package
                         PackagePart specPart = null;
-                        xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
+                        xs = originPart.GetRelationshipsByType(
+                            "http://www.admin-shell.io/aasx/relationships/aas-spec");
                         foreach (var x in xs)
                         {
                             specPart = package.GetPart(x.TargetUri);
@@ -3951,8 +4047,10 @@ namespace AasxCompatibilityModels
                                     using (StreamReader file = new StreamReader(s))
                                     {
                                         JsonSerializer serializer = new JsonSerializer();
-                                        serializer.Converters.Add(new AdminShellV10.JsonAasxConverter("modelType", "name"));
-                                        this.aasenv = (AdministrationShellEnv)serializer.Deserialize(file, typeof(AdministrationShellEnv));
+                                        serializer.Converters.Add(
+                                            new AdminShellV10.JsonAasxConverter("modelType", "name"));
+                                        this.aasenv = (AdministrationShellEnv)serializer.Deserialize(
+                                            file, typeof(AdministrationShellEnv));
                                     }
                                 }
                             }
@@ -3961,7 +4059,9 @@ namespace AasxCompatibilityModels
                                 using (var s = specPart.GetStream(FileMode.Open))
                                 {
                                     // own catch loop to be more specific
-                                    XmlSerializer serializer = new XmlSerializer(typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
+                                    XmlSerializer serializer = new XmlSerializer(
+                                        typeof(AdminShellV10.AdministrationShellEnv),
+                                        "http://www.admin-shell.io/aas/1/0");
                                     this.aasenv = serializer.Deserialize(s) as AdminShellV10.AdministrationShellEnv;
                                     this.openPackage = package;
                                     if (this.aasenv == null)
@@ -3972,12 +4072,16 @@ namespace AasxCompatibilityModels
                         }
                         catch (Exception ex)
                         {
-                            throw (new Exception(string.Format("While reading AAS {0} spec at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                            throw (new Exception(
+                                string.Format("While reading AAS {0} spec at {1} gave: {2}",
+                                    fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                         }
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While reading AASX {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While reading AASX {0} at {1} gave: {2}", fn,
+                                AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -3995,12 +4099,15 @@ namespace AasxCompatibilityModels
                         // TODO: use aasenv serialzers here!
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.Converters.Add(new AdminShellV10.JsonAasxConverter("modelType", "name"));
-                        this.aasenv = (AdministrationShellEnv)serializer.Deserialize(file, typeof(AdministrationShellEnv));
+                        this.aasenv = (AdministrationShellEnv)serializer.Deserialize(
+                            file, typeof(AdministrationShellEnv));
                     }
                 }
                 catch (Exception ex)
                 {
-                    throw (new Exception(string.Format("While reading AASENV string {0} gave: {1}", AdminShellUtil.ShortLocation(ex), ex.Message)));
+                    throw (new Exception(
+                        string.Format("While reading AASENV string {0} gave: {1}",
+                            AdminShellUtil.ShortLocation(ex), ex.Message)));
                 }
                 return true;
             }
@@ -4029,7 +4136,9 @@ namespace AasxCompatibilityModels
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While writing AAS {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While writing AAS {0} at {1} gave: {2}",
+                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4059,7 +4168,9 @@ namespace AasxCompatibilityModels
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While writing AAS {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While writing AAS {0} at {1} gave: {2}",
+                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4090,7 +4201,8 @@ namespace AasxCompatibilityModels
 
                         // get the origin from the package
                         PackagePart originPart = null;
-                        var xs = package.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aasx-origin");
+                        var xs = package.GetRelationshipsByType(
+                            "http://www.admin-shell.io/aasx/relationships/aasx-origin");
                         foreach (var x in xs)
                             if (x.SourceUri.ToString() == "/")
                             {
@@ -4100,19 +4212,25 @@ namespace AasxCompatibilityModels
                         if (originPart == null)
                         {
                             // create, as not existing
-                            originPart = package.CreatePart(new Uri("/aasx/aasx-origin", UriKind.RelativeOrAbsolute), System.Net.Mime.MediaTypeNames.Text.Plain, CompressionOption.Maximum);
+                            originPart = package.CreatePart(
+                                new Uri(
+                                    "/aasx/aasx-origin", UriKind.RelativeOrAbsolute),
+                                    System.Net.Mime.MediaTypeNames.Text.Plain, CompressionOption.Maximum);
                             using (var s = originPart.GetStream(FileMode.Create))
                             {
                                 var bytes = System.Text.Encoding.ASCII.GetBytes("Intentionally empty.");
                                 s.Write(bytes, 0, bytes.Length);
                             }
-                            package.CreateRelationship(originPart.Uri, TargetMode.Internal, "http://www.admin-shell.io/aasx/relationships/aasx-origin");
+                            package.CreateRelationship(
+                                originPart.Uri, TargetMode.Internal,
+                                "http://www.admin-shell.io/aasx/relationships/aasx-origin");
                         }
 
                         // get the specs from the package
                         PackagePart specPart = null;
                         PackageRelationship specRel = null;
-                        xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
+                        xs = originPart.GetRelationshipsByType(
+                            "http://www.admin-shell.io/aasx/relationships/aas-spec");
                         foreach (var x in xs)
                         {
                             specRel = x;
@@ -4123,7 +4241,8 @@ namespace AasxCompatibilityModels
                         // check, if we have to change the spec part
                         if (specPart != null && specRel != null)
                         {
-                            var name = System.IO.Path.GetFileNameWithoutExtension(specPart.Uri.ToString()).ToLower().Trim();
+                            var name = System.IO.Path.GetFileNameWithoutExtension(
+                                specPart.Uri.ToString()).ToLower().Trim();
                             var ext = System.IO.Path.GetExtension(specPart.Uri.ToString()).ToLower().Trim();
                             if ((ext == ".json" && prefFmt == PreferredFormat.Xml)
                                  || (ext == ".xml" && prefFmt == PreferredFormat.Json)
@@ -4152,8 +4271,13 @@ namespace AasxCompatibilityModels
                             else
                                 aas_spec_fn += ".xml";
                             aas_spec_fn = aas_spec_fn.Replace("#", "" + frn);
-                            specPart = package.CreatePart(new Uri(aas_spec_fn, UriKind.RelativeOrAbsolute), System.Net.Mime.MediaTypeNames.Text.Xml, CompressionOption.Maximum);
-                            originPart.CreateRelationship(specPart.Uri, TargetMode.Internal, "http://www.admin-shell.io/aasx/relationships/aas-spec");
+                            specPart = package.CreatePart(
+                                new Uri(
+                                    aas_spec_fn, UriKind.RelativeOrAbsolute), System.Net.Mime.MediaTypeNames.Text.Xml,
+                                    CompressionOption.Maximum);
+                            originPart.CreateRelationship(
+                                specPart.Uri, TargetMode.Internal,
+                                "http://www.admin-shell.io/aasx/relationships/aas-spec");
                         }
 
                         // now, specPart shall be != null!
@@ -4187,14 +4311,16 @@ namespace AasxCompatibilityModels
                             }
                         }
 
-                        // there might be pending files to be deleted (first delete, then add, in case of identical files in both categories)
+                        // there might be pending files to be deleted (first delete, then add, in case of identical
+                        // files in both categories)
                         foreach (var psfDel in pendingFilesToDelete)
                         {
                             // try find an existing part for that file ..
                             var found = false;
 
-                            // normal files 
-                            xs = specPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-suppl");
+                            // normal files
+                            xs = specPart.GetRelationshipsByType(
+                                "http://www.admin-shell.io/aasx/relationships/aas-suppl");
                             foreach (var x in xs)
                                 if (x.TargetUri == psfDel.uri)
                                 {
@@ -4206,7 +4332,8 @@ namespace AasxCompatibilityModels
                                 }
 
                             // thumbnails
-                            xs = package.GetRelationshipsByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
+                            xs = package.GetRelationshipsByType(
+                                "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
                             foreach (var x in xs)
                                 if (x.TargetUri == psfDel.uri)
                                 {
@@ -4218,7 +4345,8 @@ namespace AasxCompatibilityModels
                                 }
 
                             if (!found)
-                                throw (new Exception($"Not able to delete pending file {psfDel.uri} in saving package {fn}"));
+                                throw (new Exception(
+                                    $"Not able to delete pending file {psfDel.uri} in saving package {fn}"));
                         }
 
                         // after this, there are no more pending for delete files
@@ -4228,7 +4356,8 @@ namespace AasxCompatibilityModels
                         foreach (var psfAdd in pendingFilesToAdd)
                         {
                             // make sure ..
-                            if (psfAdd.sourcePath == null || psfAdd.location != PackageSupplementaryFile.LocationType.AddPending)
+                            if (psfAdd.sourcePath == null ||
+                                psfAdd.location != PackageSupplementaryFile.LocationType.AddPending)
                                 continue;
 
                             // normal file?
@@ -4237,7 +4366,8 @@ namespace AasxCompatibilityModels
 
                                 // try find an existing part for that file ..
                                 PackagePart filePart = null;
-                                xs = specPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-suppl");
+                                xs = specPart.GetRelationshipsByType(
+                                    "http://www.admin-shell.io/aasx/relationships/aas-suppl");
                                 foreach (var x in xs)
                                     if (x.TargetUri == psfAdd.uri)
                                     {
@@ -4248,8 +4378,12 @@ namespace AasxCompatibilityModels
                                 if (filePart == null)
                                 {
                                     // create new part and link
-                                    filePart = package.CreatePart(psfAdd.uri, AdminShellV10.PackageEnv.GuessMimeType(psfAdd.sourcePath), CompressionOption.Maximum);
-                                    specPart.CreateRelationship(filePart.Uri, TargetMode.Internal, "http://www.admin-shell.io/aasx/relationships/aas-suppl");
+                                    filePart = package.CreatePart(
+                                        psfAdd.uri, AdminShellV10.PackageEnv.GuessMimeType(psfAdd.sourcePath),
+                                        CompressionOption.Maximum);
+                                    specPart.CreateRelationship(
+                                        filePart.Uri, TargetMode.Internal,
+                                        "http://www.admin-shell.io/aasx/relationships/aas-suppl");
                                 }
 
                                 // now should be able to write
@@ -4261,11 +4395,13 @@ namespace AasxCompatibilityModels
                             }
 
                             // thumbnail file?
-                            if (psfAdd.specialHandling == PackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
+                            if (psfAdd.specialHandling ==
+                                PackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
                             {
                                 // try find an existing part for that file ..
                                 PackagePart filePart = null;
-                                xs = package.GetRelationshipsByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
+                                xs = package.GetRelationshipsByType(
+                                    "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
                                 foreach (var x in xs)
                                     if (x.SourceUri.ToString() == "/" && x.TargetUri == psfAdd.uri)
                                     {
@@ -4276,8 +4412,13 @@ namespace AasxCompatibilityModels
                                 if (filePart == null)
                                 {
                                     // create new part and link
-                                    filePart = package.CreatePart(psfAdd.uri, AdminShellV10.PackageEnv.GuessMimeType(psfAdd.sourcePath), CompressionOption.Maximum);
-                                    package.CreateRelationship(filePart.Uri, TargetMode.Internal, "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
+                                    filePart = package.CreatePart(
+                                        psfAdd.uri, AdminShellV10.PackageEnv.GuessMimeType(psfAdd.sourcePath),
+                                        CompressionOption.Maximum);
+                                    package.CreateRelationship(
+                                        filePart.Uri, TargetMode.Internal,
+                                        "http://schemas.openxmlformats.org/package/2006/" +
+                                        "relationships/metadata/thumbnail");
                                 }
 
                                 // now should be able to write
@@ -4298,7 +4439,9 @@ namespace AasxCompatibilityModels
                     }
                     catch (Exception ex)
                     {
-                        throw (new Exception(string.Format("While write AASX {0} at {1} gave: {2}", fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        throw (new Exception(
+                            string.Format("While write AASX {0} at {1} gave: {2}",
+                            fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4352,7 +4495,9 @@ namespace AasxCompatibilityModels
                     throw (new Exception(string.Format($"AASX Package {this.fn} not opened. Aborting!")));
                 var part = this.openPackage.GetPart(new Uri(uriString, UriKind.RelativeOrAbsolute));
                 if (part == null)
-                    throw (new Exception(string.Format($"Cannot access URI {uriString} in {this.fn} not opened. Aborting!")));
+                    throw (new Exception(
+                        string.Format(
+                            $"Cannot access URI {uriString} in {this.fn} not opened. Aborting!")));
                 return part.GetStream(FileMode.Open);
             }
 
@@ -4382,7 +4527,8 @@ namespace AasxCompatibilityModels
                     throw (new Exception(string.Format($"AASX Package {this.fn} not opened. Aborting!")));
                 // get the thumbnail over the relationship
                 PackagePart thumbPart = null;
-                var xs = this.openPackage.GetRelationshipsByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
+                var xs = this.openPackage.GetRelationshipsByType(
+                    "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
                 foreach (var x in xs)
                     if (x.SourceUri.ToString() == "/")
                     {
@@ -4411,7 +4557,8 @@ namespace AasxCompatibilityModels
                 {
 
                     // get the thumbnail(s) from the package
-                    var xs = this.openPackage.GetRelationshipsByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
+                    var xs = this.openPackage.GetRelationshipsByType(
+                        "http://schemas.openxmlformats.org/package/2006/relationships/metadata/thumbnail");
                     foreach (var x in xs)
                         if (x.SourceUri.ToString() == "/")
                         {
@@ -4423,7 +4570,8 @@ namespace AasxCompatibilityModels
 
                     // get the origin from the package
                     PackagePart originPart = null;
-                    xs = this.openPackage.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aasx-origin");
+                    xs = this.openPackage.GetRelationshipsByType(
+                        "http://www.admin-shell.io/aasx/relationships/aasx-origin");
                     foreach (var x in xs)
                         if (x.SourceUri.ToString() == "/")
                         {
@@ -4435,7 +4583,8 @@ namespace AasxCompatibilityModels
                     {
                         // get the specs from the origin
                         PackagePart specPart = null;
-                        xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
+                        xs = originPart.GetRelationshipsByType(
+                            "http://www.admin-shell.io/aasx/relationships/aas-spec");
                         foreach (var x in xs)
                         {
                             specPart = this.openPackage.GetPart(x.TargetUri);
@@ -4445,10 +4594,13 @@ namespace AasxCompatibilityModels
                         if (specPart != null)
                         {
                             // get the supplementaries from the package, derived from spec
-                            xs = specPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-suppl");
+                            xs = specPart.GetRelationshipsByType(
+                                "http://www.admin-shell.io/aasx/relationships/aas-suppl");
                             foreach (var x in xs)
                             {
-                                result.Add(new PackageSupplementaryFile(x.TargetUri, location: PackageSupplementaryFile.LocationType.InPackage));
+                                result.Add(
+                                    new PackageSupplementaryFile(
+                                        x.TargetUri, location: PackageSupplementaryFile.LocationType.InPackage));
                             }
                         }
                     }
@@ -4504,7 +4656,8 @@ namespace AasxCompatibilityModels
                 return content_type;
             }
 
-            public void AddSupplementaryFileToStore(string sourcePath, string targetDir, string targetFn, bool embedAsThumb)
+            public void AddSupplementaryFileToStore(
+                string sourcePath, string targetDir, string targetFn, bool embedAsThumb)
             {
                 // beautify parameters
                 sourcePath = sourcePath.Trim();
@@ -4524,7 +4677,10 @@ namespace AasxCompatibilityModels
                         new Uri(file_fn, UriKind.RelativeOrAbsolute),
                         sourcePath,
                         location: PackageSupplementaryFile.LocationType.AddPending,
-                        specialHandling: (embedAsThumb ? PackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail : PackageSupplementaryFile.SpecialHandlingType.None)
+                        specialHandling: (
+                            embedAsThumb
+                                ? PackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail
+                                : PackageSupplementaryFile.SpecialHandlingType.None)
                     ));
             }
 
@@ -4545,57 +4701,6 @@ namespace AasxCompatibilityModels
                     pendingFilesToDelete.Add(psf);
                 }
             }
-
-            /*
-            private void AddSupplementaryFileDirect(string srcFn, string targetDir, string targetFn)
-            {
-                // access
-                if (this.openPackage == null)
-                    throw (new Exception(string.Format($"AASX Package {this.fn} not opened. Aborting!")));
-
-                srcFn = srcFn.Trim();
-                targetDir = targetDir.Trim();
-                if (!targetDir.EndsWith("/"))
-                    targetDir += "/";
-                targetDir = targetDir.Replace(@"\", "/");
-                targetFn = targetFn.Trim();
-                if (srcFn == "" || targetDir == "" || targetFn == "")
-                    throw (new Exception(string.Format("Trying add supplementary file with empty name or path!")));
-
-                // get the origin from the package
-                PackagePart originPart = null;
-                var xs = this.openPackage.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aasx-origin");
-                foreach (var x in xs)
-                    if (x.SourceUri.ToString() == "/")
-                    {
-                        originPart = this.openPackage.GetPart(x.TargetUri);
-                        break;
-                    }
-                if (originPart == null)
-                    throw (new Exception(string.Format("Unable to find AASX origin. Aborting!")));
-
-                // get the specs from the package
-                PackagePart specPart = null;
-                xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
-                foreach (var x in xs)
-                {
-                    specPart = this.openPackage.GetPart(x.TargetUri);
-                    break;
-                }
-                if (specPart == null)
-                    throw (new Exception(string.Format("Unable to find AASX spec(s). Aborting!")));
-
-                // add a supplementary file
-                var file_fn = "" + targetDir.Trim() + targetFn.Trim();
-                var file_part = this.openPackage.CreatePart(new Uri(file_fn, UriKind.RelativeOrAbsolute), AdminShellV10.PackageEnv.GuessMimeType(srcFn), CompressionOption.Maximum);
-                using (var s = file_part.GetStream(FileMode.Create))
-                {
-                    var bytes = System.IO.File.ReadAllBytes(srcFn);
-                    s.Write(bytes, 0, bytes.Length);
-                }
-                specPart.CreateRelationship(file_part.Uri, TargetMode.Internal, "http://www.admin-shell.io/aasx/relationships/aas-suppl");
-            }
-            */
 
             public void Close()
             {

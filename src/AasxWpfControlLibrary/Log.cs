@@ -49,9 +49,10 @@ namespace AasxGlobalLogging
         }
 
         /// <summary>
-        /// Display a message, which is for information only        
+        /// Display a message, which is for information only
         /// </summary>
-        public static void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args)
+        public static void InfoWithHyperlink(
+            int level, string msg, string linkTxt, string linkUri, params object[] args)
         {
             logInstance?.InfoWithHyperlink(level, msg, linkTxt, linkUri, args);
         }
@@ -65,7 +66,7 @@ namespace AasxGlobalLogging
         }
 
         /// <summary>
-        /// Display a message, which is for derrors      
+        /// Display a message, which is for derrors
         /// </summary>
         public static void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args)
         {

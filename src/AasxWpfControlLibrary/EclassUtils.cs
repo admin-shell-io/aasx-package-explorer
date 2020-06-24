@@ -7,11 +7,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -231,7 +240,10 @@ namespace AasxPackageExplorer
                                     if (numElems % 500 == 0)
                                     {
                                         long currPos = fileSteam.Position;
-                                        double frac = Math.Min(100.0d * progressPerFile * (fileNdx) + (100.0d * currPos) * progressPerFile / totalSize, 100.0);
+                                        double frac = Math.Min(
+                                            100.0d * progressPerFile * (fileNdx) +
+                                                (100.0d * currPos) * progressPerFile / totalSize,
+                                            100.0);
                                         if (updateProgress != null)
                                             updateProgress(frac);
                                     }
@@ -267,7 +279,8 @@ namespace AasxPackageExplorer
 
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
-                if (a.eclassFiles[fileNdx].dft != DataFileType.Dictionary && a.eclassFiles[fileNdx].dft != DataFileType.Other)
+                if (a.eclassFiles[fileNdx].dft != DataFileType.Dictionary &&
+                        a.eclassFiles[fileNdx].dft != DataFileType.Other)
                     continue;
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
@@ -326,7 +339,10 @@ namespace AasxPackageExplorer
                                     if (numElems % 500 == 0)
                                     {
                                         long currPos = fileSteam.Position;
-                                        double frac = Math.Min(100.0d * progressPerFile * (fileNdx) + (100.0d * currPos) * progressPerFile / totalSize, 100.0);
+                                        double frac = Math.Min(
+                                            100.0d * progressPerFile * (fileNdx) +
+                                                (100.0d * currPos) * progressPerFile / totalSize,
+                                            100.0);
                                         if (updateProgress != null)
                                             updateProgress(frac);
                                     }
@@ -344,7 +360,8 @@ namespace AasxPackageExplorer
 
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
-                if (a.eclassFiles[fileNdx].dft != DataFileType.Units || unitIrdisToSearch == null || unitIrdisToSearch.Count < 1)
+                if (a.eclassFiles[fileNdx].dft != DataFileType.Units ||
+                        unitIrdisToSearch == null || unitIrdisToSearch.Count < 1)
                     continue;
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
@@ -391,7 +408,10 @@ namespace AasxPackageExplorer
                                     if (numElems % 500 == 0)
                                     {
                                         long currPos = fileSteam.Position;
-                                        double frac = Math.Min(100.0d * progressPerFile * (fileNdx) + (100.0d * currPos) * progressPerFile / totalSize, 100.0);
+                                        double frac = Math.Min(
+                                            100.0d * progressPerFile * (fileNdx) +
+                                                (100.0d * currPos) * progressPerFile / totalSize,
+                                            100.0);
                                         if (updateProgress != null)
                                             updateProgress(frac);
                                     }
@@ -447,7 +467,9 @@ namespace AasxPackageExplorer
             return otherwise;
         }
 
-        private static void FindChildLangStrings(XmlNode node, string childName, string childChildName, string langCodeAttrib, Action<AdminShell.LangStr> action)
+        private static void FindChildLangStrings(
+            XmlNode node, string childName, string childChildName, string langCodeAttrib,
+            Action<AdminShell.LangStr> action)
         {
             if (node == null || action == null)
                 return;
@@ -467,7 +489,8 @@ namespace AasxPackageExplorer
             }
         }
 
-        public static AdminShell.ConceptDescription GenerateConceptDescription(List<EclassUtils.SearchItem> input, string targetIrdi)
+        public static AdminShell.ConceptDescription GenerateConceptDescription(
+            List<EclassUtils.SearchItem> input, string targetIrdi)
         {
             // access
             if (input == null || input.Count < 1)
@@ -542,7 +565,9 @@ namespace AasxPackageExplorer
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.unitId = AdminShell.UnitId.CreateNew("GlobalReference", false, AdminShell.Identification.IRDI, urefIrdi.Trim());
+                                            ds.unitId = AdminShell.UnitId.CreateNew(
+                                                "GlobalReference", false,
+                                                AdminShell.Identification.IRDI, urefIrdi.Trim());
                                             ds.unit = xiun.InnerText.Trim();
                                         }
                                 }
@@ -603,7 +628,9 @@ namespace AasxPackageExplorer
                             // ok
                             found = true;
                             // Array of words
-                            var words = pn.str.Split(new[] { ' ', '\t', '-', '_' }, StringSplitOptions.RemoveEmptyEntries);
+                            var words = pn.str.Split(
+                                new[] { ' ', '\t', '-', '_' },
+                                StringSplitOptions.RemoveEmptyEntries);
                             var sn = "";
                             foreach (var w in words)
                             {

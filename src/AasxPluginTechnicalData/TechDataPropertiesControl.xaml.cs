@@ -28,7 +28,9 @@ namespace AasxPluginTechnicalData
             InitializeComponent();
         }
 
-        private TableCell NewTableCellPara(string runText, string cellStyleName = null, string paraStyleName = null, int columnSpan = 1, Nullable<Thickness> padding = null)
+        private TableCell NewTableCellPara(
+            string runText, string cellStyleName = null,
+            string paraStyleName = null, int columnSpan = 1, Nullable<Thickness> padding = null)
         {
             var run = new Run("" + runText);
             var para = new Paragraph(run);
@@ -43,7 +45,9 @@ namespace AasxPluginTechnicalData
             return cell;
         }
 
-        public void TableAddPropertyRows_Recurse(DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShellPackageEnv package, Table table, AdminShell.SubmodelElementWrapperCollection smwc, int depth = 0)
+        public void TableAddPropertyRows_Recurse(
+            DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShellPackageEnv package,
+            Table table, AdminShell.SubmodelElementWrapperCollection smwc, int depth = 0)
         {
             // access
             if (table == null || smwc == null)
@@ -61,13 +65,17 @@ namespace AasxPluginTechnicalData
                     continue;
                 var sme = smw.submodelElement;
 
-                if (sme is AdminShell.SubmodelElementCollection && true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                if (sme is AdminShell.SubmodelElementCollection &&
+                    true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
                 {
                     // finalize current row group??
                     ;
 
                     // Main Section
-                    var cell = NewTableCellPara("" + sme.idShort, null, "ParaStyleSectionMain", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara(
+                        "" + sme.idShort,
+                        null, "ParaStyleSectionMain",
+                        columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -77,20 +85,25 @@ namespace AasxPluginTechnicalData
                     tr.Cells.Add(cell);
 
                     // recurse into that (again, new group)
-                    TableAddPropertyRows_Recurse(theDefs, defaultLang, package, table, (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
+                    TableAddPropertyRows_Recurse(
+                        theDefs, defaultLang, package, table,
+                        (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
 
                     // start new group
                     currentRowGroup = new TableRowGroup();
                     table.RowGroups.Add(currentRowGroup);
                 }
                 else
-                if (sme is AdminShell.SubmodelElementCollection && true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey()))
+                if (sme is AdminShell.SubmodelElementCollection &&
+                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey()))
                 {
                     // finalize current row group??
                     ;
 
                     // Sub Section
-                    var cell = NewTableCellPara("" + sme.idShort, null, "ParaStyleSectionSub", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara(
+                        "" + sme.idShort, null, "ParaStyleSectionSub",
+                        columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -100,7 +113,9 @@ namespace AasxPluginTechnicalData
                     tr.Cells.Add(cell);
 
                     // recurse into that
-                    TableAddPropertyRows_Recurse(theDefs, defaultLang, package, table, (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
+                    TableAddPropertyRows_Recurse(
+                        theDefs, defaultLang, package, table,
+                        (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
 
                     // start new group
                     currentRowGroup = new TableRowGroup();
@@ -146,9 +161,14 @@ namespace AasxPluginTechnicalData
                         propName = descDef;
 
                     // add cells
-                    tr.Cells.Add(NewTableCellPara(propName, "CellStylePropertyLeftmost", "ParaStyleProperty", padding: new Thickness(5 * depth, 0, 0, 0)));
-                    tr.Cells.Add(NewTableCellPara(semantics, "CellStylePropertyOther", "ParaStyleProperty"));
-                    tr.Cells.Add(NewTableCellPara("" + sme.ValueAsText(defaultLang), "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(
+                        NewTableCellPara(propName, "CellStylePropertyLeftmost", "ParaStyleProperty",
+                        padding: new Thickness(5 * depth, 0, 0, 0)));
+                    tr.Cells.Add(
+                        NewTableCellPara(semantics, "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(
+                        NewTableCellPara(
+                            "" + sme.ValueAsText(defaultLang), "CellStylePropertyOther", "ParaStyleProperty"));
                 }
             }
 
@@ -156,14 +176,18 @@ namespace AasxPluginTechnicalData
             ;
         }
 
-        public FlowDocument CreateFlowDocument(AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShell.Submodel sm)
+        public FlowDocument CreateFlowDocument(
+            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs,
+            string defaultLang, AdminShell.Submodel sm)
         {
             // access
             if (package == null || theDefs == null || sm == null)
                 return null;
 
             // section Properties
-            var smcProps = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_TechnicalProperties.GetSingleKey());
+            var smcProps =
+                sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    theDefs.CD_TechnicalProperties.GetSingleKey());
             if (smcProps == null)
                 return null;
 
@@ -207,9 +231,15 @@ namespace AasxPluginTechnicalData
                     var tr = new TableRow();
                     currentRowGroup.Rows.Add(tr);
 
-                    tr.Cells.Add(NewTableCellPara("" + i, "CellStylePropertyLeftmost", "ParaStyleProperty", padding: new Thickness(5 * 0, 0, 0, 0)));
+                    tr.Cells.Add(
+                        NewTableCellPara(
+                            "" + i,
+                            "CellStylePropertyLeftmost", "ParaStyleProperty",
+                            padding: new Thickness(5 * 0, 0, 0, 0)));
                     tr.Cells.Add(NewTableCellPara("" + i * i, "CellStylePropertyOther", "ParaStyleProperty"));
-                    tr.Cells.Add(NewTableCellPara("" + Math.Sqrt(1.0 * i), "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(
+                        NewTableCellPara(
+                            "" + Math.Sqrt(1.0 * i), "CellStylePropertyOther", "ParaStyleProperty"));
                 }
             }
 #endif
@@ -218,7 +248,9 @@ namespace AasxPluginTechnicalData
             return doc;
         }
 
-        public void SetContents(AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShell.Submodel sm)
+        public void SetContents(
+            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShell.Submodel sm)
         {
             FlowDocViewer.Document = CreateFlowDocument(package, theDefs, defaultLang, sm);
         }

@@ -11,7 +11,8 @@ using AasxIntegrationBase;
 namespace AasxIntegrationBase.AasForms
 {
     /// <summary>
-    /// Possible multiplicities for form description elements. This says, how many of a e.g. Property with _same__ SemanticId shall be placed in a collection.
+    /// Possible multiplicities for form description elements. This says, how many of a e.g.
+    /// Property with _same__ SemanticId shall be placed in a collection.
     /// Outside the FormDescription class only for shorter names.
     /// </summary>
     public enum FormMultiplicity { ZeroToOne = 0, One, ZeroToMany, OneToMany };
@@ -30,7 +31,7 @@ namespace AasxIntegrationBase.AasForms
     }
 
     /// <summary>
-    /// Aim: provide a (abstract) communality for Submodel und SubmodelElement. 
+    /// Aim: provide a (abstract) communality for Submodel und SubmodelElement.
     /// Host FormTitle, Info, Presets and Semantic Id
     /// </summary>
     [DisplayName("FormSubmodelReferable")]
@@ -94,7 +95,8 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescReferable() { }
 
-        public FormDescReferable(string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
+        public FormDescReferable(
+            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
             : base()
         {
             this.FormTitle = formText;
@@ -116,7 +118,7 @@ namespace AasxIntegrationBase.AasForms
         }
 
 
-        // Dynamic behaviour 
+        // Dynamic behaviour
         //==================
 
         protected void InitReferable(AdminShell.Referable rf)
@@ -133,8 +135,10 @@ namespace AasxIntegrationBase.AasForms
     }
 
     /// <summary>
-    /// An specialization of <c>FormDescListOfElement</c>. Defines a total Submodel to be represented by the form, that is,
-    /// no outer structures tha form instances will be in the Submodel. The Plugin's will match to the <c>SemanticId</c> of the 
+    /// An specialization of <c>FormDescListOfElement</c>. Defines a total Submodel to be represented by the form,
+    /// that is,
+    /// no outer structures tha form instances will be in the Submodel. The Plugin's will match to
+    /// the <c>SemanticId</c> of the
     /// Submodel, therefore it has to be present.
     /// </summary>
     [DisplayName("FormSubmodel")]
@@ -148,7 +152,8 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescSubmodel() { }
 
-        public FormDescSubmodel(string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
+        public FormDescSubmodel(
+            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
         }
@@ -161,7 +166,7 @@ namespace AasxIntegrationBase.AasForms
         }
 
 
-        // Dynamic behaviour 
+        // Dynamic behaviour
         //==================
 
         public void Add(FormDescSubmodelElement elem)
@@ -265,8 +270,8 @@ namespace AasxIntegrationBase.AasForms
         public bool IsReadOnly = false;
 
         /// <summary>
-        /// If not null, this SME will subscribe to events from a "master" SME which is identifed by an IdShort starting 
-        /// with this string.
+        /// If not null, this SME will subscribe to events from a "master" SME which is identifed
+        /// by an IdShort starting with this string.
         /// </summary>
         public string SlaveOfIdShort = null;
 
@@ -275,7 +280,9 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescSubmodelElement() { }
 
-        public FormDescSubmodelElement(string formText, FormMultiplicity multiplicity, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null, bool isReadOnly = false)
+        public FormDescSubmodelElement(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key keySemanticId, string presetIdShort,
+            string formInfo = null, bool isReadOnly = false)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
             this.Multiplicity = multiplicity;
@@ -298,7 +305,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
-        public virtual FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        public virtual FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return null;
         }
@@ -328,7 +336,9 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescSubmodelElementCollection() { }
 
-        public FormDescSubmodelElementCollection(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort, string formInfo = null)
+        public FormDescSubmodelElementCollection(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formInfo = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo)
         {
         }
@@ -349,7 +359,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
-        public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return new FormInstanceSubmodelElementCollection(parentInstance, this, source);
         }
@@ -399,14 +410,16 @@ namespace AasxIntegrationBase.AasForms
         public string[] comboBoxChoices = null;
 
         /// <summary>
-        /// If not null, take the combox box index and map into to the given field of values. To be used in combination with comboBoxChoices[].
+        /// If not null, take the combox box index and map into to the given field of values.
+        /// To be used in combination with comboBoxChoices[].
         /// If null, then use the comboBoxChoices[] to set the value, which is also editable.
         /// </summary>
         [JsonProperty(Order = 23)]
         public string[] valueFromComboBoxIndex = null;
 
         /// <summary>
-        /// If not null, contains a dictionary mapping possible master values (that is: strings) into this SME's values.
+        /// If not null, contains a dictionary mapping possible master values (that is: strings)
+        /// into this SME's values.
         /// </summary>
         [JsonProperty(Order = 23)]
         public Dictionary<string, string> valueFromMasterValue = null;
@@ -416,8 +429,10 @@ namespace AasxIntegrationBase.AasForms
 
         public FormDescProperty() { }
 
-        public FormDescProperty(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
-            string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null, string presetValue = null)
+        public FormDescProperty(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
+            string presetValue = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
             // init
@@ -445,7 +460,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
-        public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return new FormInstanceProperty(parentInstance, this, source);
         }
@@ -470,7 +486,9 @@ namespace AasxIntegrationBase.AasForms
         // Constructors
         //=============
 
-        public FormDescMultiLangProp(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort, string formInfo = null, bool isReadOnly = false)
+        public FormDescMultiLangProp(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
         }
@@ -483,7 +501,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
-        public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return new FormInstanceMultiLangProp(parentInstance, this, source);
         }
@@ -511,7 +530,10 @@ namespace AasxIntegrationBase.AasForms
         // Constructors
         //=============
 
-        public FormDescFile(string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort, string formInfo = null, bool isReadOnly = false, string presetMimeType = null)
+        public FormDescFile(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false,
+            string presetMimeType = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
             if (presetMimeType != null)
@@ -533,7 +555,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
-        public override FormInstanceSubmodelElement CreateInstance(FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
         {
             return new FormInstanceFile(parentInstance, this, source);
         }

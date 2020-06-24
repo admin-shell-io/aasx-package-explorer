@@ -17,18 +17,18 @@ namespace AasxIntegrationBase
         // see: https://stackoverflow.com/questions/636383/how-can-i-find-wpf-controls-by-name-or-type
 
         /// <summary>
-        /// Finds a Child of a given item in the visual tree. 
+        /// Finds a Child of a given item in the visual tree.
         /// </summary>
         /// <param name="parent">A direct parent of the queried item.</param>
         /// <typeparam name="T">The type of the queried item.</typeparam>
         /// <param name="childName">x:Name or Name of child. </param>
-        /// <returns>The first parent item that matches the submitted type parameter. 
-        /// If not matching item can be found, 
+        /// <returns>The first parent item that matches the submitted type parameter.
+        /// If not matching item can be found,
         /// a null parent is being returned.</returns>
         public static T FindChild<T>(DependencyObject parent, string childName)
            where T : DependencyObject
         {
-            // Confirm parent and childName are valid. 
+            // Confirm parent and childName are valid.
             if (parent == null) return null;
 
             T foundChild = null;
@@ -44,7 +44,7 @@ namespace AasxIntegrationBase
                     // recursively drill down the tree
                     foundChild = FindChild<T>(child, childName);
 
-                    // If the child is found, break so we do not overwrite the found child. 
+                    // If the child is found, break so we do not overwrite the found child.
                     if (foundChild != null) break;
                 }
                 else if (!string.IsNullOrEmpty(childName))
@@ -191,13 +191,15 @@ namespace AasxIntegrationBase
             BrushLink = new SolidColorBrush(Color.FromRgb(5, 14, 187))
         };
 
-        public static void StoredPrintToRichTextBox(RichTextBox rtb, StoredPrint sp, StoredPrintColors colors, bool isExternalError = false, RoutedEventHandler linkClickHandler = null)
+        public static void StoredPrintToRichTextBox(
+            RichTextBox rtb, StoredPrint sp, StoredPrintColors colors, bool isExternalError = false,
+            RoutedEventHandler linkClickHandler = null)
         {
             // access
             if (rtb == null || sp == null)
                 return;
 
-            // append                
+            // append
             TextRange tr = new TextRange(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
             tr.Text = "" + sp.msg;
             tr.Text += Environment.NewLine;
@@ -222,7 +224,8 @@ namespace AasxIntegrationBase
 
             if (sp.linkTxt != null && sp.linkUri != null)
             {
-                // see: https://stackoverflow.com/questions/762271/clicking-hyperlinks-in-a-richtextbox-without-holding-down-ctrl-wpf
+                // see: https://stackoverflow.com/questions/762271/
+                // clicking-hyperlinks-in-a-richtextbox-without-holding-down-ctrl-wpf
                 // see: https://stackoverflow.com/questions/9279061/dynamically-adding-hyperlinks-to-a-richtextbox
 
                 // try modify existing

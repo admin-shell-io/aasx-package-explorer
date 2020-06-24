@@ -5,9 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md). */
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+ */
 
 namespace AasxIntegrationBase
 {
@@ -16,7 +23,7 @@ namespace AasxIntegrationBase
     /// </summary>
     public class StoredPrint
     {
-        // constants 
+        // constants
         public const int ColorBlack = 0;
         public const int ColorBlue = 1;
         public const int ColorRed = 2;
@@ -47,7 +54,9 @@ namespace AasxIntegrationBase
         /// <param name="isError">Represents an error, e.g. will be counted</param>
         /// <param name="stackTrace">string serialized stack trace information</param>
         /// <param name="origException">original exception information</param>
-        public StoredPrint(int color, string msg, string linkTxt = null, string linkUri = null, bool isError = false, string stackTrace = null, Exception origException = null)
+        public StoredPrint(
+            int color, string msg, string linkTxt = null, string linkUri = null, bool isError = false,
+            string stackTrace = null, Exception origException = null)
         {
             this.color = color;
             this.msg = msg;
@@ -113,7 +122,7 @@ namespace AasxIntegrationBase
         void Info(int level, string msg, params object[] args);
 
         /// <summary>
-        /// Display a message, which is for information only        
+        /// Display a message, which is for information only
         /// </summary>
         void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args);
 
@@ -123,7 +132,7 @@ namespace AasxIntegrationBase
         void Error(string msg, params object[] args);
 
         /// <summary>
-        /// Display a message, which is for derrors      
+        /// Display a message, which is for derrors
         /// </summary>
         void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args);
 
@@ -334,11 +343,12 @@ namespace AasxIntegrationBase
         }
 
         /// <summary>
-        /// Display a message, which is for information only        
+        /// Display a message, which is for information only
         /// </summary>
         public void InfoWithHyperlink(int level, string msg, string linkTxt, string linkUri, params object[] args)
         {
-            var p = new StoredPrint(StoredPrint.ColorBlack, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri);
+            var p = new StoredPrint(
+                StoredPrint.ColorBlack, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri);
             if (level <= DebugLevel)
                 Append(p);
         }
@@ -354,11 +364,12 @@ namespace AasxIntegrationBase
         }
 
         /// <summary>
-        /// Display a message, which is for derrors      
+        /// Display a message, which is for derrors
         /// </summary>
         public void ErrorWithHyperlink(string msg, string linkTxt, string linkUri, params object[] args)
         {
-            var p = new StoredPrint(StoredPrint.ColorRed, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri, isError: true);
+            var p = new StoredPrint(
+                StoredPrint.ColorRed, String.Format(msg, args), linkTxt: linkTxt, linkUri: linkUri, isError: true);
             NumberErrors++;
             shortTermStore?.Append(p);
         }

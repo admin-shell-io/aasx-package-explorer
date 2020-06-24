@@ -111,7 +111,7 @@ namespace AasxPackageExplorer
                 this.theOnscreenBrowser = new CefSharp.Wpf.ChromiumWebBrowser();
                 GoToContentBrowserAddress(startUrl);
             }
-               
+
 #endif
 
 #if WITHBROWSERPLUGIN
@@ -210,7 +210,8 @@ namespace AasxPackageExplorer
             var settings = new CefSharp.OffScreen.CefSettings()
             {
                 //By default CefSharp will use an in-memory cache, you need to specify a Cache Folder to persist data
-                CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache"),
+                CachePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache"),
             };
 
             // play with surfaces
@@ -220,7 +221,8 @@ namespace AasxPackageExplorer
             // Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
 
             var rqs = new RequestContextSettings();
-            rqs.CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache");
+            rqs.CachePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache");
             var rq = new RequestContext(rqs, null);
 
             var bs = new BrowserSettings();
@@ -247,7 +249,8 @@ namespace AasxPackageExplorer
 #if WITHCEF
         private void TheBrowser_LoadingStateChanged(object sender, CefSharp.LoadingStateChangedEventArgs e)
         {
-            // see: https://github.com/cefsharp/CefSharp.MinimalExample/blob/master/CefSharp.MinimalExample.OffScreen/Program.cs
+            // see: https://github.com/cefsharp/CefSharp.MinimalExample/blob/master/
+            // CefSharp.MinimalExample.OffScreen/Program.cs
             if (theOffscreenBrowser == null)
                 return;
 
@@ -259,7 +262,8 @@ namespace AasxPackageExplorer
                 // Remove the load event handler, because we only want one snapshot of the initial page.
                 this.theOffscreenBrowser.LoadingStateChanged -= TheBrowser_LoadingStateChanged;
 
-                var scriptTask = this.theOffscreenBrowser.EvaluateScriptAsync("document.getElementById('lst-ib').value = 'CefSharp Was Here!'");
+                var scriptTask = this.theOffscreenBrowser.EvaluateScriptAsync(
+                    "document.getElementById('lst-ib').value = 'CefSharp Was Here!'");
 
                 scriptTask.ContinueWith(t =>
                 {
@@ -270,7 +274,8 @@ namespace AasxPackageExplorer
                     task.ContinueWith(x =>
                     {
                         // Make a file to save it to (e.g. C:\Users\jan\Desktop\CefSharp screenshot.png)
-                        var screenshotPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "CefSharp screenshot.png");
+                        var screenshotPath = Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "CefSharp screenshot.png");
 
                         Console.WriteLine();
                         Console.WriteLine("Screenshot ready. Saving to {0}", screenshotPath);
@@ -278,7 +283,8 @@ namespace AasxPackageExplorer
                         // Save the Bitmap to the path.
                         // The image type is auto-detected via the ".png" extension.
                         System.Drawing.Bitmap orig = task.Result;
-                        var rect = new System.Drawing.Rectangle(new System.Drawing.Point(3, 59), new System.Drawing.Size(376, 532));
+                        var rect = new System.Drawing.Rectangle(
+                            new System.Drawing.Point(3, 59), new System.Drawing.Size(376, 532));
                         var cutout = CropImage(orig, rect);
 
                         cutout.Save(screenshotPath);

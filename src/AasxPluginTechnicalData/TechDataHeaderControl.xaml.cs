@@ -59,39 +59,58 @@ namespace AasxPluginTechnicalData
             }
         }
 
-        public void SetContents(AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShell.Submodel sm)
+        public void SetContents(
+            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShell.Submodel sm)
         {
             // access
             if (sm == null)
                 return;
 
             // section General
-            var smcGeneral = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_GeneralInformation.GetSingleKey());
+            var smcGeneral = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                theDefs.CD_GeneralInformation.GetSingleKey());
             if (smcGeneral != null)
             {
                 // Product info
 
-                TextBoxProdDesig.Text = "" + smcGeneral.value.FindFirstSemanticId(theDefs.CD_ManufacturerProductDesignation.GetSingleKey(),
-                    allowedTypes: AdminShell.SubmodelElement.PROP_MLP)?.submodelElement?.ValueAsText(defaultLang);
+                TextBoxProdDesig.Text =
+                    "" +
+                    smcGeneral.value.FindFirstSemanticId(
+                        theDefs.CD_ManufacturerProductDesignation.GetSingleKey(),
+                        allowedTypes: AdminShell.SubmodelElement.PROP_MLP)?
+                            .submodelElement?.ValueAsText(defaultLang);
 
-                TextBoxProdCode.Text = "" + smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ManufacturerOrderCode.GetSingleKey())?.value;
-                TextBoxPartNumber.Text = "" + smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ManufacturerPartNumber.GetSingleKey())?.value;
+                TextBoxProdCode.Text =
+                    "" +
+                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        theDefs.CD_ManufacturerOrderCode.GetSingleKey())?.value;
+                TextBoxPartNumber.Text =
+                    "" +
+                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        theDefs.CD_ManufacturerPartNumber.GetSingleKey())?.value;
 
                 // Manu data
 
-                TextBoxManuName.Text = "" + smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ManufacturerName.GetSingleKey())?.value;
+                TextBoxManuName.Text =
+                    "" +
+                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        theDefs.CD_ManufacturerName.GetSingleKey())?.value;
                 if (package != null)
                 {
                     ImageManuLogo.Source = AasxWpfBaseUtils.LoadBitmapImageFromPackage(
                         package,
-                        smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
+                        smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
+                            theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
                         );
                 }
 
                 // Product Images
 
                 var pil = new List<ProductImageRecord>();
-                foreach (var pi in smcGeneral.value.FindAllSemanticIdAs<AdminShell.File>(theDefs.CD_ProductImage.GetSingleKey()))
+                foreach (var pi in
+                            smcGeneral.value.FindAllSemanticIdAs<AdminShell.File>(
+                                theDefs.CD_ProductImage.GetSingleKey()))
                 {
                     var data = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
                     if (data != null)
@@ -102,15 +121,28 @@ namespace AasxPluginTechnicalData
             }
 
             // also Section: Product Classifications
-            var smcClassifications = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_ProductClassifications.GetSingleKey());
+            var smcClassifications =
+                sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    theDefs.CD_ProductClassifications.GetSingleKey());
             if (smcClassifications != null)
             {
                 var clr = new List<ClassificationRecord>();
-                foreach (var smc in smcClassifications.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(theDefs.CD_ProductClassificationItem.GetSingleKey()))
+                foreach (var smc in
+                        smcClassifications.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                            theDefs.CD_ProductClassificationItem.GetSingleKey()))
                 {
-                    var sys = ("" + smc.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ClassificationSystem.GetSingleKey())?.value).Trim();
-                    var ver = ("" + smc.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_SystemVersion.GetSingleKey())?.value).Trim();
-                    var cls = ("" + smc.value.FindFirstSemanticIdAs<AdminShell.Property>(theDefs.CD_ProductClass.GetSingleKey())?.value).Trim();
+                    var sys = (
+                        "" +
+                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            theDefs.CD_ClassificationSystem.GetSingleKey())?.value).Trim();
+                    var ver = (
+                        "" +
+                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            theDefs.CD_SystemVersion.GetSingleKey())?.value).Trim();
+                    var cls = (
+                        "" +
+                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            theDefs.CD_ProductClass.GetSingleKey())?.value).Trim();
                     if (sys != "" && cls != "")
                         clr.Add(new ClassificationRecord(sys, ver, cls));
                 }

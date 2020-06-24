@@ -29,7 +29,7 @@ namespace AasxPluginDocumentShelf
         public AdminShell.SubmodelElementWrapperCollection SourceElementsDocument = null;
         public AdminShell.SubmodelElementWrapperCollection SourceElementsDocumentVersion = null;
 
-        public string ImageReadyToBeLoaded = null; // adding Image to ImgContainer needs to be done by the GUI thread!!    
+        public string ImageReadyToBeLoaded = null; // adding Image to ImgContainer needs to be done by the GUI thread!!
         public string[] DeleteFilesAfterLoading = null;
 
         public DocumentEntity() { }

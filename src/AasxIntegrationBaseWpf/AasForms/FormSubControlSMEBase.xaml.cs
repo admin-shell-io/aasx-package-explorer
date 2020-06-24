@@ -22,7 +22,8 @@ namespace AasxIntegrationBase.AasForms
     public partial class FormSubControlSMEBase : UserControl
     {
         /// <summary>
-        /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and program logic
+        /// Is true while <c>UpdateDisplay</c> takes place,
+        /// in order to distinguish between user updates and program logic
         /// </summary>
         protected bool UpdateDisplayInCharge = false;
 
@@ -39,7 +40,7 @@ namespace AasxIntegrationBase.AasForms
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
-                // this "header" (base) element uses the same context as the actual SME 
+                // this "header" (base) element uses the same context as the actual SME
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceSubmodelElement;
                 dc.desc = dc.instance?.desc as FormDescSubmodelElement;

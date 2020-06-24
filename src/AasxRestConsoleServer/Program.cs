@@ -12,7 +12,8 @@ namespace AasxRestConsoleServer
     {
         static void Main(string[] args)
         {
-            Console.Error.WriteLine("AAS Console Server. (c) 2019 Michael Hoffmeister, Festo AG & Co. KG. See LICENSE.TXT.");
+            Console.Error.WriteLine(
+                "AAS Console Server. (c) 2019 Michael Hoffmeister, Festo AG & Co. KG. See LICENSE.TXT.");
 
             // default command line options
             var fn = "usb-stick-REST-demo.aasx";

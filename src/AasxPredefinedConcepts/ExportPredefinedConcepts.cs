@@ -20,7 +20,7 @@ namespace AasxPredefinedConcepts
             // make text file
             using (var snippets = new System.IO.StreamWriter(fn))
             {
-                // Phase (1) which ConceptDescriptions need to be exported 
+                // Phase (1) which ConceptDescriptions need to be exported
                 // Phase (2) export CDs as JSON
                 // Phase (3) export SubModel as JSON without SMEs
                 // Phase (4) export list of IDs used
@@ -64,32 +64,37 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine();
 
                 // Phase (2) export SubModel as JSON without SMEs
-                snippets.WriteLine("Phase (2) export SubModel as JSON without SMEs. Paste the following into appropriate JSON (resource) file:");
-                snippets.WriteLine("==========================================================================================================");
+                string message = "Phase (2) export SubModel as JSON without SMEs. " +
+                    "Paste the following into appropriate JSON (resource) file:";
+                snippets.WriteLine(message);
+                snippets.WriteLine(new String('=', message.Length));
 
                 var keySM = "SM_" + sm.idShort;
                 if (true)
                 {
                     // ok, for Serialization we just want the plain element with no BLOBs..
                     var settings = new JsonSerializerSettings();
-                    settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(deep: false, complete: false);
+                    settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
+                        deep: false, complete: false);
                     var jsonStr = JsonConvert.SerializeObject(sm, Formatting.Indented, settings);
 
-                    // export                    
+                    // export
                     snippets.WriteLine($"\"{keySM}\" : {jsonStr},");
                 }
 
                 snippets.WriteLine();
 
                 // Phase (3) export CDs
-                snippets.WriteLine("Phase (3) export CDs as JSON. Paste the following into appropriate JSON (resource) file:");
-                snippets.WriteLine("========================================================================================");
+                message = "Phase (3) export CDs as JSON. Paste the following into appropriate JSON (resource) file:";
+                snippets.WriteLine(message);
+                snippets.WriteLine(new String('=', message.Length));
 
                 foreach (var k in usedCds.Keys)
                 {
                     // ok, for Serialization we just want the plain element with no BLOBs..
                     var settings = new JsonSerializerSettings();
-                    settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(deep: false, complete: false);
+                    settings.ContractResolver = new AdminShellConverters.AdaptiveFilterContractResolver(
+                        deep: false, complete: false);
                     var jsonStr = JsonConvert.SerializeObject(usedCds[k], Formatting.Indented, settings);
 
                     // export
@@ -99,8 +104,10 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine();
 
                 // Phase (4) export list of IDs used
-                snippets.WriteLine("Phase (4) export list of IDs used. Paste the following into appropriate C# file and reformat it:");
-                snippets.WriteLine("================================================================================================");
+                message = "Phase (4) export list of IDs used. " +
+                    "Paste the following into appropriate C# file and reformat it:";
+                snippets.WriteLine(message);
+                snippets.WriteLine(new String('=', message.Length));
 
                 snippets.WriteLine(keySM);
                 foreach (var k in usedCds.Keys)
@@ -109,8 +116,9 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine();
 
                 // Phase (5) generate look ups
-                snippets.WriteLine("Phase (5) generate look ups. Paste the following into appropriate C# file and reformat it:");
-                snippets.WriteLine("==========================================================================================");
+                message = "Phase (5) generate look ups. Paste the following into appropriate C# file and reformat it:";
+                snippets.WriteLine(message);
+                snippets.WriteLine(new String('=', message.Length));
 
                 snippets.WriteLine($"this.{keySM} = bs.RetrieveReferable<AdminShell.Submodel>(\"{keySM}\");");
                 foreach (var k in usedCds.Keys)

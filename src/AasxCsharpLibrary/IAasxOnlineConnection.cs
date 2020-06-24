@@ -17,6 +17,7 @@ namespace AasxIntegrationBase
         bool IsConnected();
         string GetInfo();
         Stream GetThumbnailStream();
-        string UpdatePropertyValue(AdminShell.AdministrationShellEnv env, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme);
+        string UpdatePropertyValue(
+            AdminShell.AdministrationShellEnv env, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme);
     }
 }

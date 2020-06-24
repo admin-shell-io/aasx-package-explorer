@@ -14,11 +14,20 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Linq;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AdminShellNS
 {
@@ -261,7 +270,8 @@ namespace AdminShellNS
             {
                 if (format == 1)
                 {
-                    return String.Format("({0})({1})[{2}]{3}", this.type, this.local ? "local" : "no-local", this.idType, this.value);
+                    return String.Format(
+                        "({0})({1})[{2}]{3}", this.type, this.local ? "local" : "no-local", this.idType, this.value);
                 }
                 if (format == 2)
                 {
@@ -375,7 +385,8 @@ namespace AdminShellNS
             public static string AAS = "AssetAdministrationShell";
             // Resharper enable MemberHidesStaticFromOuterClass
 
-            public static string[] IdentifierTypeNames = new string[] { Identification.IdShort, "Custom", Identification.IRDI, Identification.IRI };
+            public static string[] IdentifierTypeNames = new string[] {
+                Identification.IdShort, "Custom", Identification.IRDI, Identification.IRI };
 
             public enum IdentifierType { IdShort = 0, Custom, IRDI, IRI };
 
@@ -395,7 +406,8 @@ namespace AdminShellNS
                 return res;
             }
 
-            public bool Matches(string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
+            public bool Matches(
+                string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {
                 if (matchMode == MatchMode.Strict)
                     return this.type == type && this.local == local && this.idType == idType && this.value == id;
@@ -585,7 +597,8 @@ namespace AdminShellNS
                 return new Key(k.type, k.local, k.idType, k.value);
             }
 
-            public bool MatchesExactlyOneKey(string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool MatchesExactlyOneKey(
+                string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 if (keys == null || keys.Count != 1)
                     return false;
@@ -600,7 +613,8 @@ namespace AdminShellNS
                 return this.MatchesExactlyOneKey(key.type, key.local, key.idType, key.value, matchMode);
             }
 
-            public bool Matches(string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(
+                string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 if (this.Count == 1)
                 {
@@ -772,7 +786,8 @@ namespace AdminShellNS
             public ConceptDescriptionRef(ConceptDescriptionRef src) : base(src) { }
 
 #if UseAasxCompatibilityModels
-            public ConceptDescriptionRef(AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRef src) : base(src) { }
+            public ConceptDescriptionRef(
+                AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRef src) : base(src) { }
 #endif
 
             // further methods
@@ -1272,7 +1287,8 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// This attribute indicates, that the field / property shall be skipped for reflection in order to avoid cycles
+        /// This attribute indicates, that the field / property shall be skipped for reflection
+        /// in order to avoid cycles
         /// </summary>
         [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
         public class SkipForReflection : System.Attribute
@@ -1280,8 +1296,8 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// This attribute indicates, that the field / property shall be skipped for searching, because it is not directly
-        /// displayed in Package Explorer
+        /// This attribute indicates, that the field / property shall be skipped for searching, because it is not
+        /// directly displayed in Package Explorer
         /// </summary>
         [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
         public class SkipForSearch : System.Attribute
@@ -1398,7 +1414,8 @@ namespace AdminShellNS
                     var idf = this as Identifiable;
                     if (idf != null)
                     {
-                        var k = Key.CreateNew(idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
+                        var k = Key.CreateNew(
+                            idf.GetElementName(), true, idf.identification?.idType, idf.identification?.id);
                         refs.Insert(0, k);
                     }
                 }
@@ -1544,7 +1561,8 @@ namespace AdminShellNS
                 return mems.ToArray();
             }
 
-            private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
+            private static System.Security.Cryptography.SHA256 HashProvider =
+                System.Security.Cryptography.SHA256.Create();
 
             public string ComputeHashcode()
             {
@@ -1721,7 +1739,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static AdministrationShell CreateNew(string idType, string id, string version = null, string revision = null)
+            public static AdministrationShell CreateNew(
+                string idType, string id, string version = null, string revision = null)
             {
                 var s = new AdministrationShell();
                 if (version != null)
@@ -1888,7 +1907,9 @@ namespace AdminShellNS
             public AssetRef GetReference()
             {
                 var r = new AssetRef();
-                r.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                r.Keys.Add(
+                    Key.CreateNew(
+                        this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
             }
 
@@ -1955,7 +1976,10 @@ namespace AdminShellNS
             [JsonIgnore]
             public int Count { get { if (containedElements == null) return 0; return containedElements.Count; } }
 
-            public ContainedElementRef this[int index] { get { if (containedElements == null) return null; return containedElements[index]; } }
+            public ContainedElementRef this[int index]
+            {
+                get { if (containedElements == null) return null; return containedElements[index]; }
+            }
 
             // constructors / creators
 
@@ -2046,7 +2070,8 @@ namespace AdminShellNS
                 if (this.semanticId != null)
                     info = Key.KeyListToString(this.semanticId.Keys);
                 if (this.containedElements != null && this.containedElements.reference != null)
-                    info = (info + " ").Trim() + String.Format("({0} elements)", this.containedElements.reference.Count);
+                    info = (info + " ").Trim() +
+                        String.Format("({0} elements)", this.containedElements.reference.Count);
                 return Tuple.Create(caption, info);
             }
 
@@ -2379,7 +2404,7 @@ namespace AdminShellNS
             public string dataType = "";
             public LangStringSetIEC61360 definition = new LangStringSetIEC61360();
 
-            // getter / setters 
+            // getter / setters
 
             // constructors
 
@@ -2598,7 +2623,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static ConceptDescription CreateNew(string idType, string id, string version = null, string revision = null, string idShort = null)
+            public static ConceptDescription CreateNew(
+                string idType, string id, string version = null, string revision = null, string idShort = null)
             {
                 var cd = new ConceptDescription();
                 if (idShort != null)
@@ -2623,7 +2649,9 @@ namespace AdminShellNS
             public ConceptDescriptionRef GetReference()
             {
                 var r = new ConceptDescriptionRef();
-                r.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                r.Keys.Add(
+                    Key.CreateNew(
+                        this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
             }
 
@@ -2647,28 +2675,40 @@ namespace AdminShellNS
             )
             {
                 this.embeddedDataSpecification = new EmbeddedDataSpecification();
-                this.embeddedDataSpecification.dataSpecification.Keys.Add(Key.CreateNew("GlobalReference", false, "IRI", "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
-                this.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 = AdminShell.DataSpecificationIEC61360.CreateNew(
-                    preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol, dataType, definition
-                );
-                this.AddIsCaseOf(Reference.CreateNew(new Key("ConceptDescription", false, this.identification.idType, this.identification.id)));
+                this.embeddedDataSpecification.dataSpecification.Keys.Add(
+                    Key.CreateNew(
+                        "GlobalReference", false, "IRI",
+                        "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
+                this.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 =
+                    AdminShell.DataSpecificationIEC61360.CreateNew(
+                        preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
+                        dataType, definition);
+                this.AddIsCaseOf(
+                    Reference.CreateNew(
+                        new Key("ConceptDescription", false, this.identification.idType, this.identification.id)));
             }
 
             public DataSpecificationIEC61360 GetIEC61360()
             {
-                if (embeddedDataSpecification != null && embeddedDataSpecification.dataSpecificationContent != null && embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                if (embeddedDataSpecification != null &&
+                    embeddedDataSpecification.dataSpecificationContent != null &&
+                    embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
                     return embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
                 return null;
             }
 
             public string GetDefaultPreferredName(string defaultLang = null)
             {
-                return "" + embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?.preferredName?.GetDefaultStr(defaultLang);
+                return "" +
+                    embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?
+                        .preferredName?.GetDefaultStr(defaultLang);
             }
 
             public string GetDefaultShortName(string defaultLang = null)
             {
-                return "" + embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?.shortName?.GetDefaultStr(defaultLang);
+                return "" +
+                    embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?
+                        .shortName?.GetDefaultStr(defaultLang);
             }
 
             public override string GetElementName()
@@ -2743,7 +2783,7 @@ namespace AdminShellNS
                     if (cd.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && cd.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return cd;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2814,7 +2854,8 @@ namespace AdminShellNS
         public class AdministrationShellEnv
         {
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
-            public string schemaLocation = "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
+            public string schemaLocation =
+                "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
 
             // [XmlElement(ElementName="assetAdministrationShells")]
             [XmlIgnore] // will be ignored, anyway
@@ -2950,7 +2991,7 @@ namespace AdminShellNS
                     if (a.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && a.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return a;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2981,7 +3022,7 @@ namespace AdminShellNS
                     if (sm.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && sm.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return sm;
-                // uups 
+                // uups
                 return null;
             }
 
@@ -2999,7 +3040,8 @@ namespace AdminShellNS
                 return null;
             }
 
-            public IEnumerable<Submodel> FindAllSubmodelBySemanticId(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public IEnumerable<Submodel> FindAllSubmodelBySemanticId(
+                Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 // access
                 if (semId == null)
@@ -3093,11 +3135,12 @@ namespace AdminShellNS
                     if (cd.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
                         && cd.identification.id.ToLower().Trim() == key.value.ToLower().Trim())
                         return cd;
-                // uups 
+                // uups
                 return null;
             }
 
-            public IEnumerable<T> FindAllSubmodelElements<T>(Predicate<T> match = null, AdministrationShell onlyForAAS = null) where T : SubmodelElement
+            public IEnumerable<T> FindAllSubmodelElements<T>(
+                Predicate<T> match = null, AdministrationShell onlyForAAS = null) where T : SubmodelElement
             {
                 // more or less two different schemes
                 if (onlyForAAS != null)
@@ -3132,7 +3175,8 @@ namespace AdminShellNS
 
             // creators
 
-            private void CopyConceptDescriptionsFrom(AdministrationShellEnv srcEnv, SubmodelElement src, bool shallowCopy = false)
+            private void CopyConceptDescriptionsFrom(
+                AdministrationShellEnv srcEnv, SubmodelElement src, bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || src == null || src.semanticId == null)
@@ -3154,7 +3198,8 @@ namespace AdminShellNS
 
             }
 
-            public SubmodelElementWrapper CopySubmodelElementAndCD(AdministrationShellEnv srcEnv, SubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
+            public SubmodelElementWrapper CopySubmodelElementAndCD(
+                AdministrationShellEnv srcEnv, SubmodelElement srcElem, bool copyCD = false, bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || srcElem == null)
@@ -3171,7 +3216,9 @@ namespace AdminShellNS
                 return res;
             }
 
-            public SubmodelRef CopySubmodelRefAndCD(AdministrationShellEnv srcEnv, SubmodelRef srcSubRef, bool copySubmodel = false, bool copyCD = false, bool shallowCopy = false)
+            public SubmodelRef CopySubmodelRefAndCD(
+                AdministrationShellEnv srcEnv, SubmodelRef srcSubRef, bool copySubmodel = false, bool copyCD = false,
+                bool shallowCopy = false)
             {
                 // access
                 if (srcEnv == null || srcSubRef == null)
@@ -3205,7 +3252,9 @@ namespace AdminShellNS
                         if (dstSub.submodelElements == null)
                             dstSub.submodelElements = new SubmodelElementWrapperCollection();
                         foreach (var smw in srcSub.submodelElements)
-                            dstSub.submodelElements.Add(new SubmodelElementWrapper(smw.submodelElement, shallowCopy: false));
+                            dstSub.submodelElements.Add(
+                                new SubmodelElementWrapper(
+                                    smw.submodelElement, shallowCopy: false));
                     }
                 }
 
@@ -3219,7 +3268,8 @@ namespace AdminShellNS
             }
 
             /// <summary>
-            /// Tries renaming an Identifiable, specifically: the identification of an Identifiable and all references to it.
+            /// Tries renaming an Identifiable, specifically: the identification of an Identifiable and
+            /// all references to it.
             /// Currently supported: ConceptDescriptions
             /// Returns, if a successful renaming was performed
             /// </summary>
@@ -3290,7 +3340,8 @@ namespace AdminShellNS
 
             public AdministrationShellEnv DeserializeFromXmlStream(TextReader reader)
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
+                XmlSerializer serializer = new XmlSerializer(
+                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
                 var res = serializer.Deserialize(reader) as AdminShell.AdministrationShellEnv;
                 return res;
             }
@@ -3305,7 +3356,9 @@ namespace AdminShellNS
 
             // special functions
 
-            private static void CreateFromExistingEnvRecurseForCDs(AdministrationShellEnv src, List<SubmodelElementWrapper> wrappers, ref List<ConceptDescription> filterForCD)
+            private static void CreateFromExistingEnvRecurseForCDs(
+                AdministrationShellEnv src, List<SubmodelElementWrapper> wrappers,
+                ref List<ConceptDescription> filterForCD)
             {
                 if (wrappers == null || filterForCD == null)
                     return;
@@ -3382,7 +3435,8 @@ namespace AdminShellNS
 
                         if (aas.conceptDictionaries != null)
                             foreach (var cdd in aas.conceptDictionaries)
-                                if (cdd.conceptDescriptionsRefs != null && cdd.conceptDescriptionsRefs.conceptDescriptions != null)
+                                if (cdd.conceptDescriptionsRefs != null &&
+                                    cdd.conceptDescriptionsRefs.conceptDescriptions != null)
                                     foreach (var cdr in cdd.conceptDescriptionsRefs.conceptDescriptions)
                                     {
                                         var cd = src.FindConceptDescription(cdr);
@@ -3579,7 +3633,8 @@ namespace AdminShellNS
         public class SubmodelElement : Referable, System.IDisposable, IGetReference
         {
             // constants
-            public static Type[] PROP_MLP = new Type[] { typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
+            public static Type[] PROP_MLP = new Type[] {
+                typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
 
             // for JSON only
             [XmlIgnore]
@@ -3685,7 +3740,9 @@ namespace AdminShellNS
                 }
             }
 
-            public void AddQualifier(string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null, Reference qualifierValueId = null)
+            public void AddQualifier(
+                string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
+                Reference qualifierValueId = null)
             {
                 if (this.qualifiers == null)
                     this.qualifiers = new QualifierCollection();
@@ -3790,11 +3847,14 @@ namespace AdminShellNS
             // element names
             public enum AdequateElementEnum
             {
-                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, ReferenceElement,
+                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob,
+                ReferenceElement,
                 RelationshipElement, Capability, Operation, BasicEvent, Entity
             }
 
-            public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement",
+            public static string[] AdequateElementNames = {
+                "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File",
+                "Blob", "ReferenceElement",
                 "RelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
@@ -3806,7 +3866,8 @@ namespace AdminShellNS
             public SubmodelElementWrapper(SubmodelElement src, bool shallowCopy = false)
             {
                 if (src is SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(src as SubmodelElementCollection, shallowCopy: shallowCopy);
+                    this.submodelElement = new SubmodelElementCollection(
+                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
                 if (src is Property)
                     this.submodelElement = new Property(src as Property);
                 if (src is MultiLanguageProperty)
@@ -3832,10 +3893,13 @@ namespace AdminShellNS
             }
 
 #if UseAasxCompatibilityModels
-            public SubmodelElementWrapper(AasxCompatibilityModels.AdminShellV10.SubmodelElement src, bool shallowCopy = false)
+            public SubmodelElementWrapper(
+                AasxCompatibilityModels.AdminShellV10.SubmodelElement src, bool shallowCopy = false)
             {
                 if (src is AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(src as AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection, shallowCopy: shallowCopy);
+                    this.submodelElement = new SubmodelElementCollection(
+                        src as AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection,
+                        shallowCopy: shallowCopy);
                 if (src is AasxCompatibilityModels.AdminShellV10.Property)
                     this.submodelElement = new Property(src as AasxCompatibilityModels.AdminShellV10.Property);
                 if (src is AasxCompatibilityModels.AdminShellV10.File)
@@ -3843,9 +3907,11 @@ namespace AdminShellNS
                 if (src is AasxCompatibilityModels.AdminShellV10.Blob)
                     this.submodelElement = new Blob(src as AasxCompatibilityModels.AdminShellV10.Blob);
                 if (src is AasxCompatibilityModels.AdminShellV10.ReferenceElement)
-                    this.submodelElement = new ReferenceElement(src as AasxCompatibilityModels.AdminShellV10.ReferenceElement);
+                    this.submodelElement = new ReferenceElement(
+                        src as AasxCompatibilityModels.AdminShellV10.ReferenceElement);
                 if (src is AasxCompatibilityModels.AdminShellV10.RelationshipElement)
-                    this.submodelElement = new RelationshipElement(src as AasxCompatibilityModels.AdminShellV10.RelationshipElement);
+                    this.submodelElement = new RelationshipElement(
+                        src as AasxCompatibilityModels.AdminShellV10.RelationshipElement);
                 if (src is AasxCompatibilityModels.AdminShellV10.Operation)
                     this.submodelElement = new Operation(src as AasxCompatibilityModels.AdminShellV10.Operation);
             }
@@ -3862,7 +3928,8 @@ namespace AdminShellNS
                     return AdequateElementEnum.Unknown;
 
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
-                    if (Enum.GetName(typeof(AdequateElementEnum), en)?.Trim().ToLower() == adequateName.Trim().ToLower())
+                    if (Enum.GetName(typeof(AdequateElementEnum), en)?.Trim().ToLower() ==
+                        adequateName.Trim().ToLower())
                         return en;
 
                 return AdequateElementEnum.Unknown;
@@ -3970,19 +4037,22 @@ namespace AdminShellNS
                 return res;
             }
 
-            public static Referable FindReferableByReference(List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
+            public static Referable FindReferableByReference(
+                List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
             {
                 // first index needs to exist ..
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
 
                 // as SubmodelElements are not Identifiables, the actual key shall be IdSHort
-                if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(Key.IdentifierType.IdShort).Trim().ToLower())
+                if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(
+                                                                Key.IdentifierType.IdShort).Trim().ToLower())
                     return null;
 
                 // over all wrappers
                 foreach (var smw in wrappers)
-                    if (smw.submodelElement != null && smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
+                    if (smw.submodelElement != null &&
+                        smw.submodelElement.idShort.Trim().ToLower() == rf[keyIndex].value.Trim().ToLower())
                     {
                         // match on this level. Did we find a leaf element?
                         if ((keyIndex + 1) >= rf.Count)
@@ -4124,7 +4194,9 @@ namespace AdminShellNS
             public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId) where T : SubmodelElement
             {
                 foreach (var smw in this)
-                    if (smw.submodelElement != null && smw.submodelElement is T && smw.submodelElement.semanticId != null)
+                    if (smw.submodelElement != null &&
+                        smw.submodelElement is T &&
+                        smw.submodelElement.semanticId != null)
                         if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId))
                             yield return smw.submodelElement as T;
             }
@@ -4141,7 +4213,9 @@ namespace AdminShellNS
 
             // recursion
 
-            public void RecurseOnSubmodelElements(object state, List<SubmodelElement> parents, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+            public void RecurseOnSubmodelElements(
+                object state, List<SubmodelElement> parents,
+                Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
                 // trivial
                 if (lambda == null)
@@ -4190,8 +4264,8 @@ namespace AdminShellNS
             // idShort management
 
             /// <summary>
-            /// Checks, if given <c>idShort</c> is already existing in the collection of SubmodelElements. Trims the string, but
-            /// does not ignore upper/ lowercase. An empty <c>idShort</c> returns <c>false</c>.
+            /// Checks, if given <c>idShort</c> is already existing in the collection of SubmodelElements.
+            /// Trims the string, but does not ignore upper/ lowercase. An empty <c>idShort</c> returns <c>false</c>.
             /// </summary>
             public bool CheckIdShortIsUnique(string idShort)
             {
@@ -4201,7 +4275,8 @@ namespace AdminShellNS
 
                 var res = true;
                 foreach (var smw in this)
-                    if (smw.submodelElement != null && smw.submodelElement.idShort != null && smw.submodelElement.idShort == idShort)
+                    if (smw.submodelElement != null && smw.submodelElement.idShort != null &&
+                        smw.submodelElement.idShort == idShort)
                     {
                         res = false;
                         break;
@@ -4212,8 +4287,9 @@ namespace AdminShellNS
 
             /// <summary>
             /// The string <c>idShortTemplate</c> shall contain <c>Format.String</c> partt such as <c>{0}</c>.
-            /// A <c>int</c>-Parameter is as long incremented, until the resulting <c>idShort</c> proves to be unique in the collection
-            /// of SubmodelElements or <c>maxNum</c> is reached. Returns <c>null</c> in case of any error.
+            /// A <c>int</c>-Parameter is as long incremented, until the resulting <c>idShort</c> proves
+            /// to be unique in the collection of SubmodelElements or <c>maxNum</c> is reached.
+            /// Returns <c>null</c> in case of any error.
             /// </summary>
             public string IterateIdShortTemplateToBeUnique(string idShortTemplate, int maxNum)
             {
@@ -4279,9 +4355,11 @@ namespace AdminShellNS
 
                 // try to potentially figure out idShort
                 var ids = cd.idShort;
-                if (ids == null && cd.embeddedDataSpecification != null && cd.embeddedDataSpecification.dataSpecificationContent != null
-                    && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
-                    ids = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName?.GetDefaultStr();
+                if (ids == null && cd.embeddedDataSpecification != null &&
+                    cd.embeddedDataSpecification.dataSpecificationContent != null &&
+                    cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                    ids = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName?
+                        .GetDefaultStr();
                 if (idShort != null)
                     ids = idShort;
                 if (ids == null)
@@ -4342,7 +4420,8 @@ namespace AdminShellNS
             void Remove(SubmodelElement sme);
         }
 
-        public class Submodel : Identifiable, IManageSubmodelElements, System.IDisposable, IGetReference, IEnumerateChildren
+        public class Submodel : Identifiable, IManageSubmodelElements,
+                                    System.IDisposable, IGetReference, IEnumerateChildren
         {
             // for JSON only
             [XmlIgnore]
@@ -4386,7 +4465,7 @@ namespace AdminShellNS
             [XmlArrayItem("qualifier")]
             public QualifierCollection qualifiers = null;
 
-            // from this very class     
+            // from this very class
             [JsonIgnore]
             public SubmodelElementWrapperCollection submodelElements = null;
 
@@ -4511,7 +4590,9 @@ namespace AdminShellNS
             public Reference GetReference()
             {
                 SubmodelRef l = new SubmodelRef();
-                l.Keys.Add(Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id));
+                l.Keys.Add(
+                    Key.CreateNew(
+                        this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return l;
             }
 
@@ -4568,7 +4649,8 @@ namespace AdminShellNS
             // Recursing
 
 
-            public void RecurseOnSubmodelElements(object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+            public void RecurseOnSubmodelElements(
+                object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
                 this.submodelElements?.RecurseOnSubmodelElements(state, null, lambda);
             }
@@ -4628,9 +4710,12 @@ namespace AdminShellNS
             public static string ValueType_BOOLEAN = "date";
 
             public static string[] ValueTypeItems = new string[] {
-                        "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary", "boolean", "date", "dateTime",
-                        "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger", "positiveInteger",
-                        "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger", "double", "duration",
+                        "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
+                        "boolean", "date", "dateTime",
+                        "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                        "positiveInteger",
+                        "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
+                        "double", "duration",
                         "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
             public DataElement() { }
@@ -4674,7 +4759,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -4769,7 +4857,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -4794,7 +4885,8 @@ namespace AdminShellNS
             // not available in V1.0
 #endif
 
-            public static MultiLanguageProperty CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static MultiLanguageProperty CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new MultiLanguageProperty();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -4837,7 +4929,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -4907,7 +5002,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -4968,7 +5066,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -5051,7 +5152,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -5079,7 +5183,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static ReferenceElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static ReferenceElement CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new ReferenceElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -5103,7 +5208,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
@@ -5136,7 +5244,9 @@ namespace AdminShellNS
             }
 #endif
 
-            public static RelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null, Reference first = null, Reference second = null)
+            public static RelationshipElement CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null, Reference first = null,
+                Reference second = null)
             {
                 var x = new RelationshipElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -5162,11 +5272,14 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
 
-            // from this very class     
+            // from this very class
 
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
@@ -5215,7 +5328,8 @@ namespace AdminShellNS
                     this.annotation = new SubmodelElementWrapperCollection(src.annotation);
             }
 
-            public new static AnnotatedRelationshipElement CreateNew(string idShort = null, string category = null, Key semanticIdKey = null,
+            public new static AnnotatedRelationshipElement CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null,
                 Reference first = null, Reference second = null)
             {
                 var x = new AnnotatedRelationshipElement();
@@ -5259,7 +5373,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // values == SMEs
             [JsonIgnore]
@@ -5322,7 +5439,8 @@ namespace AdminShellNS
             }
 
 #if UseAasxCompatibilityModels
-            public SubmodelElementCollection(AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection src, bool shallowCopy = false)
+            public SubmodelElementCollection(
+                AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection src, bool shallowCopy = false)
                 : base(src)
             {
                 this.ordered = src.ordered;
@@ -5333,7 +5451,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static SubmodelElementCollection CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static SubmodelElementCollection CreateNew(
+                string idShort = null, string category = null, Key semanticIdKey = null)
             {
                 var x = new SubmodelElementCollection();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -5420,7 +5539,8 @@ namespace AdminShellNS
             }
 
 #if UseAasxCompatibilityModels
-            public OperationVariable(AasxCompatibilityModels.AdminShellV10.OperationVariable src, bool shallowCopy = false)
+            public OperationVariable(
+                AasxCompatibilityModels.AdminShellV10.OperationVariable src, bool shallowCopy = false)
             {
                 this.value = new SubmodelElementWrapper(src.value.submodelElement, shallowCopy);
             }
@@ -5443,7 +5563,10 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
             // members
             [JsonIgnore]
@@ -5605,9 +5728,12 @@ namespace AdminShellNS
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
-            // from this very class     
+            // from this very class
 
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
@@ -5749,9 +5875,12 @@ namespace AdminShellNS
             // for JSON only
             [XmlIgnore]
             [JsonProperty(PropertyName = "modelType")]
-            public new JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
 
-            // from this very class     
+            // from this very class
             public Reference observed = new Reference();
 
             // constructors

@@ -13,9 +13,11 @@ namespace AdminShellNS
     public static class AdminShellConverters
     {
         /// <summary>
-        /// This converter is used for reading JSON files; it claims to be responsible for "SubmodelElements" (the base class)
-        /// and decides, which sub-class of the base class shall be populated. 
-        /// The decision, shich special sub-class to create is done in a factory AdminShell.SubmodelElementWrapper.CreateAdequateType(),
+        /// This converter is used for reading JSON files; it claims to be responsible for
+        /// "SubmodelElements" (the base class)
+        /// and decides, which sub-class of the base class shall be populated.
+        /// The decision, shich special sub-class to create is done in a factory
+        /// AdminShell.SubmodelElementWrapper.CreateAdequateType(),
         /// in order to have all sub-class specific decisions in one place (SubmodelElementWrapper)
         /// Remark: There is a NuGet package JsonSubTypes, which could have done the job, except the fact of having
         /// "modelType" being a class property with a contained property "name".
@@ -125,19 +127,24 @@ namespace AdminShellNS
             {
                 JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-                if (!BlobHasValue && property.DeclaringType == typeof(AdminShell.Blob) && property.PropertyName == "value")
+                if (!BlobHasValue && property.DeclaringType == typeof(AdminShell.Blob) &&
+                    property.PropertyName == "value")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SubmodelHasElements && property.DeclaringType == typeof(AdminShell.Submodel) && property.PropertyName == "submodelElements")
+                if (!SubmodelHasElements && property.DeclaringType == typeof(AdminShell.Submodel) &&
+                    property.PropertyName == "submodelElements")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SmcHasValue && property.DeclaringType == typeof(AdminShell.SubmodelElementCollection) && property.PropertyName == "value")
+                if (!SmcHasValue && property.DeclaringType == typeof(AdminShell.SubmodelElementCollection) &&
+                    property.PropertyName == "value")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!OpHasVariables && property.DeclaringType == typeof(AdminShell.Operation) && (property.PropertyName == "in" || property.PropertyName == "out"))
+                if (!OpHasVariables && property.DeclaringType == typeof(AdminShell.Operation) &&
+                    (property.PropertyName == "in" || property.PropertyName == "out"))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!AasHasViews && property.DeclaringType == typeof(AdminShell.AdministrationShell) && property.PropertyName == "views")
+                if (!AasHasViews && property.DeclaringType == typeof(AdminShell.AdministrationShell) &&
+                    property.PropertyName == "views")
                     property.ShouldSerialize = instance => { return false; };
 
                 return property;

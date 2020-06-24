@@ -8,15 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
+
 The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
@@ -40,7 +45,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try load defaults options from assy directory
             try
             {
-                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginBomStructure.BomStructureOptions>(this.GetPluginName(), Assembly.GetExecutingAssembly());
+                var newOpt =
+                    AasxPluginOptionsBase
+                        .LoadDefaultOptionsFromAssemblyDir<AasxPluginBomStructure.BomStructureOptions>(
+                            this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     this.options = newOpt;
             }
@@ -60,14 +68,26 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             Log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
-            res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension", "When called with Referable, returns possibly visual extension for it."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "call-check-visual-extension",
+                    "When called with Referable, returns possibly visual extension for it."));
             // rest follows
-            res.Add(new AasxPluginActionDescriptionBase("set-json-options", "Sets plugin-options according to provided JSON string."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "set-json-options", "Sets plugin-options according to provided JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(new AasxPluginActionDescriptionBase("get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-            res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension", "When called, fill given WPF panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "fill-panel-visual-extension",
+                    "When called, fill given WPF panel with control for graph display."));
             return res.ToArray();
         }
 
@@ -110,24 +130,30 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
-                var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginBomStructure.BomStructureOptions>((args[0] as string));
+                var newOpt =
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginBomStructure.BomStructureOptions>(
+                        (args[0] as string));
                 if (newOpt != null)
                     this.options = newOpt;
             }
 
             if (action == "get-json-options")
             {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(this.options, Newtonsoft.Json.Formatting.Indented);
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(
+                    this.options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
             if (action == "get-licenses")
             {
                 var lic = new AasxPluginResultLicense();
-                lic.shortLicense = "The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).";
+                lic.shortLicense =
+                    "The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).";
 
                 lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxPluginBomStructure.Resources.LICENSE.txt"))
+                using (var stream =
+                    Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                        "AasxPluginBomStructure.Resources.LICENSE.txt"))
                 {
                     if (stream != null)
                     {

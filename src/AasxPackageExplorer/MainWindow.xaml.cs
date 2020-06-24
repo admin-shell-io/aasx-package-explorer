@@ -19,11 +19,20 @@ using AdminShellNS;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+The browser functionality is under the cefSharp license
+(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+
+The JSON serialization is under the MIT license
+(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+
 The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). */
+
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+*/
 
 namespace AasxPackageExplorer
 {
@@ -86,7 +95,8 @@ namespace AasxPackageExplorer
         public void ShowHelp(bool silent = false)
         {
             if (!silent)
-                BrowserDisplayLocalFile(@"https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
+                BrowserDisplayLocalFile(
+                    @"https://github.com/admin-shell/aasx-package-explorer/blob/master/help/index.md");
         }
 
         /// <summary>
@@ -136,7 +146,8 @@ namespace AasxPackageExplorer
             ContentTakeOver.IsEnabled = false;
 
             // rebuild middle section
-            DisplayElements.RebuildAasxElements(this.thePackageEnv?.AasEnv, this.thePackageEnv, null, MenuItemWorkspaceEdit.IsChecked);
+            DisplayElements.RebuildAasxElements(
+                this.thePackageEnv?.AasEnv, this.thePackageEnv, null, MenuItemWorkspaceEdit.IsChecked);
             DisplayElements.Refresh();
 
         }
@@ -173,7 +184,9 @@ namespace AasxPackageExplorer
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
 
-        public void UiLoadPackageWithNew(ref AdminShellPackageEnv packenv, AdminShellPackageEnv packnew, string info = "", bool onlyAuxiliary = false)
+        public void UiLoadPackageWithNew(
+            ref AdminShellPackageEnv packenv, AdminShellPackageEnv packnew, string info = "",
+            bool onlyAuxiliary = false)
         {
             Log.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
             // loading
@@ -202,12 +215,19 @@ namespace AasxPackageExplorer
 
         }
 
-        public void PrepareDispEditEntity(AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, DispEditHighlight.HighlightFieldInfo hightlightField = null)
+        public void PrepareDispEditEntity(
+            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode,
+            DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // make UI visible settings ..
             // update element view
-            var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(package, entity, editMode, hintMode,
-                (thePackageAux == null) ? null : new[] { thePackageAux }, flyoutProvider: this, hightlightField: hightlightField);
+            var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
+                package, entity, editMode, hintMode,
+                (thePackageAux == null)
+                    ? null
+                    : new[] { thePackageAux },
+                flyoutProvider: this,
+                hightlightField: hightlightField);
 
             // panels
             var panelHeight = 48;
@@ -252,14 +272,16 @@ namespace AasxPackageExplorer
             Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
 
             // some entities require special handling
-            if (entity is VisualElementSubmodelElement && (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File file)
+            if (entity is VisualElementSubmodelElement &&
+                (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File file)
             {
                 ShowContent.IsEnabled = true;
                 this.showContentPackageUri = file.value;
                 DragSource.Foreground = Brushes.Black;
             }
 
-            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() && this.theOnlineConnection.IsConnected())
+            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+                this.theOnlineConnection.IsConnected())
             {
                 UpdateContent.IsEnabled = true;
                 this.currentEntityForUpdate = entity;
@@ -279,7 +301,8 @@ namespace AasxPackageExplorer
                 // update graphic left
 
                 // what is AAS specific?
-                this.AasId.Text = WpfStringAddWrapChars(AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.identification.id, "<id missing!>"));
+                this.AasId.Text = WpfStringAddWrapChars(
+                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.identification.id, "<id missing!>"));
 
                 // what is asset specific?
                 this.AssetPic.Source = null;
@@ -290,7 +313,8 @@ namespace AasxPackageExplorer
 
                     // text id
                     if (asset.identification != null)
-                        this.AssetId.Text = WpfStringAddWrapChars(AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
+                        this.AssetId.Text = WpfStringAddWrapChars(
+                            AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
 
                     // asset thumbail
                     // ReSharper disable EmptyGeneralCatchClause
@@ -317,7 +341,8 @@ namespace AasxPackageExplorer
                             }
                             catch { }
 
-                        if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() && this.theOnlineConnection.IsConnected())
+                        if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+                            this.theOnlineConnection.IsConnected())
                             try
                             {
                                 var thumbStream = this.theOnlineConnection.GetThumbnailStream();
@@ -341,14 +366,17 @@ namespace AasxPackageExplorer
                     }
                     catch
                     {
-                        // no error, intended behaviour, as thumbnail might not exist / be faulty in some way (not violating the spec)
+                        // no error, intended behaviour, as thumbnail might not exist / be faulty in some way
+                        // (not violating the spec)
                     }
                     // ReSharper enable EmptyGeneralCatchClause
                 }
             }
 
             // for all, prepare the display
-            PrepareDispEditEntity(thePackageEnv, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked, MenuItemWorkspaceHints.IsChecked, hightlightField: hightlightField);
+            PrepareDispEditEntity(
+                thePackageEnv, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked,
+                MenuItemWorkspaceHints.IsChecked, hightlightField: hightlightField);
 
         }
 
@@ -430,7 +458,10 @@ namespace AasxPackageExplorer
             // for valid display, app needs to be in edit mode
             if (!MenuItemWorkspaceEdit.IsChecked)
             {
-                this.MessageBoxFlyoutShow("The application needs to be in edit mode to show found entities correctly. Aborting.", "Find and Replace", MessageBoxButton.OK, MessageBoxImage.Hand);
+                this.MessageBoxFlyoutShow(
+                    "The application needs to be in edit mode to show found entities correctly. Aborting.",
+                    "Find and Replace",
+                    MessageBoxButton.OK, MessageBoxImage.Hand);
                 return;
             }
 
@@ -438,7 +469,8 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(
                 new ModifyRepo.LambdaActionRedrawAllElements(
                     nextFocus: resultItem.businessObject,
-                    highlightField: new DispEditHighlight.HighlightFieldInfo(resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
+                    highlightField: new DispEditHighlight.HighlightFieldInfo(
+                        resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
                     onlyReFocus: true));
         }
 
@@ -644,7 +676,8 @@ namespace AasxPackageExplorer
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, $"While starting offscreen render of file {evtRender.fn} requested by plug-in");
+                            Log.Error(
+                                ex, $"While starting offscreen render of file {evtRender.fn} requested by plug-in");
                         }
 #endif
                     #endregion
@@ -658,11 +691,13 @@ namespace AasxPackageExplorer
                         {
                             // figure out the current business object
                             object nextFocus = null;
-                            if (DisplayElements != null && DisplayElements.SelectedItem != null && DisplayElements.SelectedItem != null)
+                            if (DisplayElements != null && DisplayElements.SelectedItem != null &&
+                                DisplayElements.SelectedItem != null)
                                 nextFocus = DisplayElements.SelectedItem.GetMainDataObject();
 
                             // add to "normal" event quoue
-                            DispEditEntityPanel.AddWishForOutsideAction(new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
+                            DispEditEntityPanel.AddWishForOutsideAction(
+                                new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
                         }
                     }
 
@@ -673,7 +708,8 @@ namespace AasxPackageExplorer
                     var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
                     if (evSelectEntity != null)
                     {
-                        var uc = new SelectAasEntityFlyout(thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv);
+                        var uc = new SelectAasEntityFlyout(
+                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv);
                         this.StartFlyoverModal(uc);
                         if (uc.ResultKeys != null)
                         {
@@ -742,7 +778,7 @@ namespace AasxPackageExplorer
                 // report on message / exception
                 var head = @"
                 |Dear user,
-                |thank you for reporting an error / bug / unexpected behaviour back to the AASX package explorer team. 
+                |thank you for reporting an error / bug / unexpected behaviour back to the AASX package explorer team.
                 |Please provide the following details:
                 |
                 |  User: <who was working with the application>
@@ -755,13 +791,15 @@ namespace AasxPackageExplorer
                 |
                 |  Latest message: {0}
                 |
-                |Please consider attaching the AASX package (you might rename this to .zip), you were working on, as well as an screen shot.
+                |Please consider attaching the AASX package (you might rename this to .zip),
+                |you were working on, as well as an screen shot.
                 |
                 |Please mail your report to: michael.hoffmeister@festo.com
                 |or you can directly add it at github: https://github.com/admin-shell/aasx-package-explorer/issues
                 |
-                |Below, you're finding the history of log messages. Please check, if non-public information is contained here.
-                |-------------------------------------------------------------------------------------------------------------";
+                |Below, you're finding the history of log messages. Please check, if non-public information
+                |is contained here.
+                |----------------------------------------------------------------------------------------------------";
 
                 // Substitute
                 head += "\n";
@@ -850,7 +888,12 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            var positiveQuestion = Options.Curr.UseFlyovers && MessageBoxResult.Yes == MessageBoxFlyoutShow("Do you want to proceed closing the application? Make sure, that you have saved your data before.", "Exit application?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var positiveQuestion =
+                Options.Curr.UseFlyovers &&
+                MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                    "Do you want to proceed closing the application? Make sure, that you have saved your data before.",
+                    "Exit application?",
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (!positiveQuestion)
             {
@@ -914,22 +957,25 @@ namespace AasxPackageExplorer
         private void UpdateContent_Click(object sender, RoutedEventArgs e)
         {
             // have a online connection?
-            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() && this.theOnlineConnection.IsConnected())
+            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+                this.theOnlineConnection.IsConnected())
             {
                 // current entity is a property
                 if (this.currentEntityForUpdate != null && this.currentEntityForUpdate is VisualElementSubmodelElement)
                 {
                     var viselem = this.currentEntityForUpdate as VisualElementSubmodelElement;
-                    if (viselem != null && viselem.theEnv != null
-                        && viselem.theContainer != null && viselem.theContainer is AdminShell.Submodel
-                        && viselem.theWrapper != null && viselem.theWrapper.submodelElement != null && viselem.theWrapper.submodelElement is AdminShell.Property)
+                    if (viselem != null && viselem.theEnv != null &&
+                        viselem.theContainer != null && viselem.theContainer is AdminShell.Submodel &&
+                        viselem.theWrapper != null && viselem.theWrapper.submodelElement != null &&
+                        viselem.theWrapper.submodelElement is AdminShell.Property)
                     {
                         // access a valid property
                         var p = viselem.theWrapper.submodelElement as AdminShell.Property;
                         if (p != null)
                         {
                             // use online connection
-                            var x = this.theOnlineConnection.UpdatePropertyValue(viselem.theEnv, viselem.theContainer as AdminShell.Submodel, p);
+                            var x = this.theOnlineConnection.UpdatePropertyValue(
+                                viselem.theEnv, viselem.theContainer as AdminShell.Submodel, p);
                             p.value = x;
 
                             // refresh
@@ -1133,7 +1179,8 @@ namespace AasxPackageExplorer
             currentFlyoutControl = null;
         }
 
-        public MessageBoxResult MessageBoxFlyoutShow(string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        public MessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
         {
             if (!Options.Curr.UseFlyovers)
             {
@@ -1192,8 +1239,9 @@ namespace AasxPackageExplorer
 
         private void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && (Math.Abs(dragStartPoint.X) < 0.001 && Math.Abs(dragStartPoint.Y) < 0.001)
-                && this.showContentPackageUri != null && this.thePackageEnv != null)
+            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && (Math.Abs(dragStartPoint.X) < 0.001 &&
+                Math.Abs(dragStartPoint.Y) < 0.001) && this.showContentPackageUri != null &&
+                this.thePackageEnv != null)
             {
                 Point position = e.GetPosition(null);
                 if (Math.Abs(position.X - dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||

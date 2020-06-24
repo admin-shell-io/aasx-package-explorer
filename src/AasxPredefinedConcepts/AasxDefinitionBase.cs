@@ -33,7 +33,7 @@ namespace AasxPredefinedConcepts
             // empty result
             var res = new Dictionary<string, LibraryEntry>();
 
-            // access resource 
+            // access resource
             var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream == null)
                 return res;
