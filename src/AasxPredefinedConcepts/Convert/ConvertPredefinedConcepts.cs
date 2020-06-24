@@ -41,6 +41,7 @@ namespace AasxPredefinedConcepts.Convert
         public static IEnumerable<ConvertProviderBase> GetAllProviders()
         {
             yield return new ConvertDocumentationSg2ToHsuProvider();
+            yield return new ConvertDocumentationHsuToSg2Provider();
         }
 
         public static List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)

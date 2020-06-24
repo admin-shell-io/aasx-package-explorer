@@ -104,6 +104,8 @@ namespace AasxPackageExplorer
 
         public Brush[][] levelColors = null;
 
+        public int standardFirstColWidth = 100;
+
         public bool editMode = false;
         public bool hintMode = false;
 
@@ -535,7 +537,7 @@ namespace AasxPackageExplorer
             var g = new Grid();
             g.Margin = new Thickness(0, 1, 0, 1);
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(100);
+            gc1.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new ColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
@@ -641,7 +643,7 @@ namespace AasxPackageExplorer
             g.Margin = new Thickness(0, 0, 0, 0);
 
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(100);
+            gc1.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
@@ -693,11 +695,43 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddAction(
-            Panel view, string key, string[] actionStr, ModifyRepo repo = null,
-            Func<object, ModifyRepo.LambdaAction> action = null)
+        public void AddCheckBox(Panel panel, string key, bool initialValue, string additionalInfo = "",
+                Action<bool> valueChanged = null)
         {
-            // access
+            // make grid
+            var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" },
+                    margin: new Thickness(0, 2, 0, 0));
+
+            // Column 0 = Key
+            this.AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: key);
+
+            // Column 1 = Check box or info
+            if (repo == null || valueChanged == null)
+            {
+                this.AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0),
+                        content: initialValue ? "True" : "False");
+            }
+            else
+            {
+                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
+                    content: additionalInfo, verticalContentAlignment: VerticalAlignment.Center,
+                    isChecked: initialValue),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                valueChanged((bool)o);
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+            }
+
+            // add
+            panel.Children.Add(g);
+        }
+
+        public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
+                Func<object, ModifyRepo.LambdaAction> action = null)
+        {
+            // access 
             if (repo == null || action == null || actionStr == null)
                 return;
             var numButton = actionStr.Length;
@@ -790,7 +824,7 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(100);
+            gc.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
@@ -986,11 +1020,12 @@ namespace AasxPackageExplorer
         /// Asks the user for SME element type, allowing exclusion of types.
         /// </summary>
         public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(
-            string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null)
+            string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null,
+            AdminShell.SubmodelElementWrapper.AdequateElementEnum[] includeValues = null)
         {
             // prepare a list
             var fol = new List<SelectFromListFlyoutItem>();
-            foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues))
+            foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues, includeValues))
                 fol.Add(new SelectFromListFlyoutItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
 
             // prompt for this list
@@ -1077,7 +1112,7 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(100);
+            gc.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
@@ -1618,9 +1653,18 @@ namespace AasxPackageExplorer
             }
         }
 
-        public bool ImportEclassCDsForTargets(
-            AdminShell.AdministrationShellEnv env, object startMainDataElement,
-            List<AdminShell.SubmodelElement> targets)
+        // dead-csharp off
+        /*
+        public class  ImportEclassArgs
+        {
+            public EclassUtils.SearchJobData jobData;
+            public ProgressBar progress;
+        }
+        */
+        // dead-csharp on
+
+        public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement,
+                List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
             if (this.flyoutProvider == null || env == null || targets == null)

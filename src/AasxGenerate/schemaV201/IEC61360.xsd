@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="qualified" targetNamespace="http://www.admin-shell.io/IEC61360/2/0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0">
+	<attributeGroup name="keyTypes">
+		<attribute name="identifierType" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="Custom"/>
+					<enumeration value="IRDI"/>
+					<enumeration value="IRI"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="localKeyType" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="idShort"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</attributeGroup>
+	<complexType name="code_t"/>
+	<complexType name="dataSpecificationIEC61630_t">
+		<choice minOccurs="1" maxOccurs="unbounded">
+            <element maxOccurs="1" minOccurs="1" name="preferredName" type="IEC61360:langStringSet_t" />
+            <element maxOccurs="1" minOccurs="0" name="shortName" type="IEC61360:langStringSet_t" />
+            <element maxOccurs="1" minOccurs="0" name="unit" type="string" />
+            <element maxOccurs="1" minOccurs="0" name="unitId" type="IEC61360:reference_t" />
+            <element maxOccurs="1" minOccurs="0" name="sourceOfDefinition" type="string" />
+            <element maxOccurs="1" minOccurs="0" name="symbol" type="string" />
+            <element maxOccurs="1" minOccurs="0" name="dataType" type="IEC61360:dataTypeIEC61360_t"/>
+			<element maxOccurs="1" minOccurs="0" name="definition" type="IEC61360:langStringSet_t"/>			<element maxOccurs="1" minOccurs="0" name="valueFormat" type="string"/>
+            <element maxOccurs="1" minOccurs="0" name="valueList" type="IEC61360:valueList_t" />
+            <element maxOccurs="1" minOccurs="0" name="value" type="IEC61360:valueDataType_t" />
+            <element maxOccurs="1" minOccurs="0" name="valueId" type="IEC61360:reference_t"/>			<element maxOccurs="unbounded" minOccurs="0" name="levelType" type="IEC61360:levelType_t"/>
+		</choice>
+	</complexType>
+	<complexType name="key_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="idType">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="Custom"/>
+							<enumeration value="FragementId"/>
+							<enumeration value="idShort"/>
+							<enumeration value="IRDI"/>
+							<enumeration value="IRI"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+				<attribute name="local" type="boolean"/>
+				<attribute name="type">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="AccessPermissionRule"/>
+							<enumeration value="AnnotatedRelationshipElement"/>
+							<enumeration value="Asset"/>
+							<enumeration value="AssetAdministrationShell"/>
+							<enumeration value="BasicEvent"/>
+							<enumeration value="Blob"/>
+							<enumeration value="Capability"/>
+							<enumeration value="ConceptDescription"/>
+							<enumeration value="ConceptDictionary"/>
+							<enumeration value="DataElement"/>
+							<enumeration value="Entity"/>
+							<enumeration value="Event"/>
+							<enumeration value="File"/>
+							<enumeration value="FragmentReference"/>
+							<enumeration value="GlobalReference"/>
+							<enumeration value="MultiLanguageProperty"/>
+							<enumeration value="Operation"/>
+							<enumeration value="Property"/>
+							<enumeration value="Range"/>
+							<enumeration value="ReferenceElement"/>
+							<enumeration value="RelationshipElement"/>
+							<enumeration value="Submodel"/>
+							<enumeration value="SubmodelElement"/>
+							<enumeration value="SubmodelElementCollection"/>
+							<enumeration value="View"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="keys_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" ref="IEC61360:key"/>
+		</sequence>
+	</complexType>
+	<complexType name="langString_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="lang" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="langStringSet_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="langString" type="IEC61360:langString_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="reference_t">
+		<sequence>
+			<element name="keys" type="IEC61360:keys_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="valueDataType_t">
+		<simpleContent>
+			<extension base="anySimpleType"></extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="valueList_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="valueReferencePair" type="IEC61360:valueReferencePair_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="valueReferencePair_t">
+		<sequence>
+			<element name="valueId" type="IEC61360:reference_t"/>
+			<element name="value" type="IEC61360:valueDataType_t"/>
+		</sequence>
+	</complexType>
+	<element name="key" type="IEC61360:key_t"/>
+	<simpleType name="dataTypeIEC61360_t">
+		<restriction base="string">
+			<enumeration value="" />
+			<enumeration value="BOOLEAN" />
+			<enumeration value="DATE" />
+			<enumeration value="RATIONAL" />
+			<enumeration value="RATIONAL_MEASURE" />
+			<enumeration value="REAL_COUNT" />
+			<enumeration value="REAL_CURRENCY" />
+			<enumeration value="REAL_MEASURE" />
+			<enumeration value="STRING" />
+			<enumeration value="STRING_TRANSLATABLE" />
+			<enumeration value="TIME" />
+			<enumeration value="TIMESTAMP" />
+			<enumeration value="URL" />
+			<enumeration value="INTEGER" />
+			<enumeration value="INTEGER_COUNT" />
+			<enumeration value="INTEGER_CURRENCY" />
+		</restriction>
+	</simpleType>
+	<simpleType name="levelType_t">
+		<restriction base="string">
+			<enumeration value="Max"/>
+			<enumeration value="Min"/>
+			<enumeration value="Nom"/>
+			<enumeration value="Typ"/>
+		</restriction>
+	</simpleType>
+</schema>
