@@ -31,6 +31,7 @@ namespace AasxImport
     {
         public ISet<Model.IDataProvider> DataProviders = new HashSet<Model.IDataProvider> {
             new Cdd.DataProvider(),
+            new Eclass.DataProvider(),
         };
         public Model.IDataContext? Context;
         private readonly ObservableCollection<Model.IElement> _topLevelElements

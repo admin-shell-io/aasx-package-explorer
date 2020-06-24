@@ -57,6 +57,7 @@
     <Compile Include="Cdd\Data.cs" />
     <Compile Include="Cdd\Model.cs" />
     <Compile Include="Cdd\Parser.cs" />
+    <Compile Include="Eclass\Model.cs" />
     <Compile Include="ImportDialog.xaml.cs">
       <DependentUpon>ImportDialog.xaml</DependentUpon>
     </Compile>

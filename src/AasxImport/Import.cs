@@ -13,8 +13,8 @@ namespace AasxImport
 {
     /// <summary>
     /// A generic import dialog for submodels and submodel elements.  For the data model, see the Model namespace.  For
-    /// implementations of this data model, see the Cdd namespace.  For the actual dialog, see the ImportDialog.xaml
-    /// file.
+    /// implementations of this data model, see the Cdd and Eclass namespaces.  For the actual dialog, see the
+    /// ImportDialog.xaml file.
     /// <para>
     /// This project uses nullable types.  Methods may only throw exceptions if they are mentioned in the doc comment.
     /// </para>
@@ -26,7 +26,7 @@ namespace AasxImport
     /// ElementDetailsDialog)</description>
     /// </item>
     /// <item>
-    /// <description>supporting other data providers, especially eCl@ss</description>
+    /// <description>adding support for eCl@ss Advanced</description>
     /// </item>
     /// <item>
     /// <description>fetching data from the network (IEC CDD HTML web service, eCl@ss REST API)</description>
