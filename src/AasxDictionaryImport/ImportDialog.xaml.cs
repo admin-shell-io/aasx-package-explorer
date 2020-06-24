@@ -36,6 +36,7 @@ namespace AasxDictionaryImport
     {
         public ISet<Model.IDataProvider> DataProviders = new HashSet<Model.IDataProvider> {
             new Cdd.DataProvider(),
+            new Eclass.DataProvider(),
         };
         public Model.IDataContext? Context;
         private readonly ObservableCollection<Model.IElement> _topLevelElements
@@ -169,7 +170,7 @@ namespace AasxDictionaryImport
 
         private void ComboBoxSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Title = "IEC CDD Import";
+            Title = "Dictionary Import";
             _topLevelElements.Clear();
             _detailsElements.Clear();
 
@@ -191,7 +192,7 @@ namespace AasxDictionaryImport
                     {
                         _topLevelElements.Add(element);
                     }
-                    Title = $"IEC CDD Import [{source}]";
+                    Title = $"Dictionary Import [{source}]";
 
                     if (ClassViewControl.Items.Count > 0)
                         ClassViewControl.SelectedItem = ClassViewControl.Items[0];
