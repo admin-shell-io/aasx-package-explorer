@@ -322,6 +322,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "SubmodelElement",
             "SubmodelElementCollection",
@@ -346,6 +347,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "SubmodelElement",
             "SubmodelElementCollection",
@@ -361,6 +363,7 @@ namespace AdminShellNS
             "Range",
             "ReferenceElement",
             "RelationshipElement",
+            "AnnotatedRelationshipElement",
             "Capability",
             "BasicEvent",
             "Entity",
@@ -1255,6 +1258,7 @@ namespace AdminShellNS
         public interface IEnumerateChildren
         {
             IEnumerable<SubmodelElementWrapper> EnumerateChildren();
+            void AddChild(SubmodelElementWrapper smw);
         }
 
         /// <summary>
@@ -2571,10 +2575,6 @@ namespace AdminShellNS
                 }
             }
 
-
-            // old
-            // [XmlElement(ElementName="conceptDefinitionRef")]
-
             // this class
             [XmlIgnore]
             private List<Reference> isCaseOf = null;
@@ -3388,6 +3388,11 @@ namespace AdminShellNS
                             CreateFromExistingEnvRecurseForCDs(src, w2s, ref filterForCD);
                         }
 
+                    if (w.submodelElement is Entity smee)
+                        CreateFromExistingEnvRecurseForCDs(src, smee.statements, ref filterForCD);
+
+                    if (w.submodelElement is AnnotatedRelationshipElement smea)
+                        CreateFromExistingEnvRecurseForCDs(src, smea.annotations, ref filterForCD);
                 }
             }
 
@@ -3506,16 +3511,29 @@ namespace AdminShellNS
             [MetaModelName("Qualifier.type")]
             [TextSearchable]
             [CountForHash]
-            public string type = null;
-            // [JsonIgnore]
+            public string type = "";
 
+            // [JsonIgnore]
+            [MetaModelName("Qualifier.valueType")]
+            [TextSearchable]
+            [CountForHash]
+            public string valueType = "";
+
+            // [JsonIgnore]
+            [CountForHash]
+            public Reference valueId = null;
+
+            // [JsonIgnore]
             [MetaModelName("Qualifier.value")]
             [TextSearchable]
             [CountForHash]
             public string value = null;
+            
+            // Remark: due to publication of v2.0.1, the order of elements has changed!!!
+            // from hasSemantics:
+            [XmlElement(ElementName = "semanticId")]
             // [JsonIgnore]
-            [CountForHash]
-            public Reference valueId = null;
+            public SemanticId semanticId = null;
 
             // constructors
 
@@ -3754,6 +3772,8 @@ namespace AdminShellNS
                 };
                 if (semanticKeys != null)
                     q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
+                if (valueType != null)
+                    q.valueType = valueType;
                 this.qualifiers.Add(q);
             }
 
@@ -3837,6 +3857,7 @@ namespace AdminShellNS
             [XmlElement(ElementName = "blob", Type = typeof(Blob))]
             [XmlElement(ElementName = "referenceElement", Type = typeof(ReferenceElement))]
             [XmlElement(ElementName = "relationshipElement", Type = typeof(RelationshipElement))]
+            [XmlElement(ElementName = "annotatedRelationshipElement", Type = typeof(AnnotatedRelationshipElement))]
             [XmlElement(ElementName = "capability", Type = typeof(Capability))]
             [XmlElement(ElementName = "submodelElementCollection", Type = typeof(SubmodelElementCollection))]
             [XmlElement(ElementName = "operation", Type = typeof(Operation))]
@@ -3847,15 +3868,18 @@ namespace AdminShellNS
             // element names
             public enum AdequateElementEnum
             {
-                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob,
-                ReferenceElement,
-                RelationshipElement, Capability, Operation, BasicEvent, Entity
+                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, ReferenceElement,
+                RelationshipElement, AnnotatedRelationshipElement, Capability, Operation, BasicEvent, Entity
             }
 
-            public static string[] AdequateElementNames = {
-                "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File",
-                "Blob", "ReferenceElement",
-                "RelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+            public static AdequateElementEnum[] AdequateElementsDataElement =
+            {
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement, AdequateElementEnum.AnnotatedRelationshipElement,
+                AdequateElementEnum.Capability, AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+            };
+
+            public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement",
+                "RelationshipElement", "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
 
@@ -3866,8 +3890,7 @@ namespace AdminShellNS
             public SubmodelElementWrapper(SubmodelElement src, bool shallowCopy = false)
             {
                 if (src is SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(
-                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
+                    this.submodelElement = new SubmodelElementCollection(src as SubmodelElementCollection, shallowCopy: shallowCopy);
                 if (src is Property)
                     this.submodelElement = new Property(src as Property);
                 if (src is MultiLanguageProperty)
@@ -3882,6 +3905,8 @@ namespace AdminShellNS
                     this.submodelElement = new ReferenceElement(src as ReferenceElement);
                 if (src is RelationshipElement)
                     this.submodelElement = new RelationshipElement(src as RelationshipElement);
+                if (src is AnnotatedRelationshipElement)
+                    this.submodelElement = new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
                 if (src is Capability)
                     this.submodelElement = new Capability(src as Capability);
                 if (src is Operation)
@@ -3935,15 +3960,23 @@ namespace AdminShellNS
                 return AdequateElementEnum.Unknown;
             }
 
-            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(AdequateElementEnum[] excludeValues = null)
+            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(AdequateElementEnum[] excludeValues = null, AdequateElementEnum[] includeValues = null)
             {
-                foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                if (includeValues != null)
                 {
-                    if (en == AdequateElementEnum.Unknown)
-                        continue;
-                    if (excludeValues != null && excludeValues.Contains(en))
-                        continue;
-                    yield return en;
+                    foreach (var en in includeValues)
+                        yield return en;
+                }
+                else
+                {
+                    foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                    {
+                        if (en == AdequateElementEnum.Unknown)
+                            continue;
+                        if (excludeValues != null && excludeValues.Contains(en))
+                            continue;
+                        yield return en;
+                    }
                 }
             }
 
@@ -3966,6 +3999,8 @@ namespace AdminShellNS
                     return new ReferenceElement(src);
                 if (ae == AdequateElementEnum.RelationshipElement)
                     return new RelationshipElement(src);
+                if (ae == AdequateElementEnum.AnnotatedRelationshipElement)
+                    return new AnnotatedRelationshipElement(src);
                 if (ae == AdequateElementEnum.Capability)
                     return new Capability(src);
                 if (ae == AdequateElementEnum.SubmodelElementCollection)
@@ -4011,6 +4046,7 @@ namespace AdminShellNS
                 if (submodelElement is AdminShell.File) return ("File");
                 if (submodelElement is AdminShell.Blob) return ("Blob");
                 if (submodelElement is AdminShell.ReferenceElement) return ("Ref");
+                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel"); // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
                 if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
                 if (submodelElement is AdminShell.Capability) return ("Cap");
                 if (submodelElement is AdminShell.SubmodelElementCollection) return ("Coll");
@@ -4083,26 +4119,53 @@ namespace AdminShellNS
             }
 
             // typecasting wrapper into specific type
-
             public T GetAs<T>() where T : SubmodelElement
             {
                 var x = (this.submodelElement) as T;
                 return x;
+            }
+
+        }
+
+        public class SubmodelElementWrapperCollection : BaseSubmodelElementWrapperCollection<SubmodelElement>
+        {
+            public SubmodelElementWrapperCollection() : base() { }
+
+            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
+                : base(other)
+            {
+            }
+        }
+
+        public class DataElementWrapperCollection : BaseSubmodelElementWrapperCollection<DataElement>
+        {
+            public DataElementWrapperCollection() : base() { }
+
+            public DataElementWrapperCollection(SubmodelElementWrapperCollection other)
+                : base(other)
+            {
+            }
+
+            public DataElementWrapperCollection(DataElementWrapperCollection other)
+                : base()
+            {
+                foreach (var wo in other)
+                    this.Add(wo);
             }
         }
 
         /// <summary>
         /// Provides some more functionalities for searching specific elements, e.g. in a SMEC
         /// </summary>
-        public class SubmodelElementWrapperCollection : List<SubmodelElementWrapper>
+        public class BaseSubmodelElementWrapperCollection<ELEMT> : List<SubmodelElementWrapper> where ELEMT : SubmodelElement
         {
             // no new members, as due to inheritance
 
             // constructors
 
-            public SubmodelElementWrapperCollection() : base() { }
+            public BaseSubmodelElementWrapperCollection() : base() { }
 
-            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
+            public BaseSubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
                 : base()
             {
                 if (other == null)
@@ -4191,13 +4254,11 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId) where T : SubmodelElement
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
             {
                 foreach (var smw in this)
-                    if (smw.submodelElement != null &&
-                        smw.submodelElement is T &&
-                        smw.submodelElement.semanticId != null)
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId))
+                    if (smw.submodelElement != null && smw.submodelElement is T && smw.submodelElement.semanticId != null)
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw.submodelElement as T;
             }
 
@@ -4206,9 +4267,9 @@ namespace AdminShellNS
                 return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId) where T : SubmodelElement
+            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
             {
-                return FindAllSemanticIdAs<T>(semId)?.FirstOrDefault<T>();
+                return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
 
             // recursion
@@ -4237,24 +4298,18 @@ namespace AdminShellNS
                     parents.Add(current);
 
                     // dive into?
-                    if (current is SubmodelElementCollection)
-                    {
-                        var smc = current as SubmodelElementCollection;
+                    if (current is SubmodelElementCollection smc)
                         smc.value?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
 
-                    if (current is Entity)
-                    {
-                        var ent = current as Entity;
+                    if (current is Entity ent)
                         ent.statements?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
 
-                    if (current is Operation)
-                    {
-                        var op = current as Operation;
+                    if (current is Operation op)
                         for (int i = 0; i < 2; i++)
                             Operation.GetWrappers(op[i])?.RecurseOnSubmodelElements(state, parents, lambda);
-                    }
+
+                    if (current is AnnotatedRelationshipElement arel)
+                        arel.annotations?.RecurseOnSubmodelElements(state, parents, lambda);
 
                     // remove from parents
                     parents.RemoveAt(parents.Count - 1);
@@ -4561,6 +4616,15 @@ namespace AdminShellNS
                 if (this.submodelElements != null)
                     foreach (var smw in this.submodelElements)
                         yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.submodelElements == null)
+                    this.submodelElements = new SubmodelElementWrapperCollection();
+                this.submodelElements.Add(smw);
             }
 
             // from IManageSubmodelElements
@@ -5267,7 +5331,7 @@ namespace AdminShellNS
             }
         }
 
-        public class AnnotatedRelationshipElement : RelationshipElement
+        public class AnnotatedRelationshipElement : RelationshipElement, IEnumerateChildren
         {
             // for JSON only
             [XmlIgnore]
@@ -5283,29 +5347,32 @@ namespace AdminShellNS
 
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            public SubmodelElementWrapperCollection annotation = null;
+            [XmlArray("annotations")]
+            [XmlArrayItem("dataElement")]
+            public DataElementWrapperCollection annotations = null;
 
             [XmlIgnore]
-            [JsonProperty(PropertyName = "annotation")]
-            public SubmodelElement[] JsonAnotation
+            [JsonProperty(PropertyName = "annotations")]
+            public DataElement[] JsonAnotations
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
-                    if (annotation != null)
-                        foreach (var smew in annotation)
-                            res.Add(smew.submodelElement);
+                    var res = new List<DataElement>();
+                    if (annotations != null)
+                        foreach (var smew in annotations)
+                            if (smew.submodelElement is DataElement de)
+                            res.Add(de);
                     return res.ToArray();
                 }
                 set
                 {
                     if (value != null)
                     {
-                        this.annotation = new SubmodelElementWrapperCollection();
+                        this.annotations = new DataElementWrapperCollection();
                         foreach (var x in value)
                         {
                             var smew = new SubmodelElementWrapper() { submodelElement = x };
-                            this.annotation.Add(smew);
+                            this.annotations.Add(smew);
                         }
                     }
                 }
@@ -5324,8 +5391,8 @@ namespace AdminShellNS
                     this.first = new Reference(src.first);
                 if (src.second != null)
                     this.second = new Reference(src.second);
-                if (src.annotation != null)
-                    this.annotation = new SubmodelElementWrapperCollection(src.annotation);
+                if (src.annotations != null)
+                    this.annotations = new DataElementWrapperCollection(src.annotations);
             }
 
             public new static AnnotatedRelationshipElement CreateNew(
@@ -5338,6 +5405,26 @@ namespace AdminShellNS
                 x.second = second;
                 return (x);
             }
+
+            // enumerates its children
+
+            public IEnumerable<SubmodelElementWrapper> EnumerateChildren()
+            {
+                if (this.annotations != null)
+                    foreach (var smw in this.annotations)
+                        yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null || !(smw?.submodelElement is DataElement))
+                    return;
+                if (this.annotations == null)
+                    this.annotations = new DataElementWrapperCollection();
+                this.annotations.Add(smw);
+            }
+
+            // further 
 
             public new void Set(Reference first = null, Reference second = null)
             {
@@ -5420,6 +5507,15 @@ namespace AdminShellNS
                 if (this.value != null)
                     foreach (var smw in this.value)
                         yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.value == null)
+                    this.value = new SubmodelElementWrapperCollection();
+                this.value.Add(smw);
             }
 
             // constructors
@@ -5678,6 +5774,10 @@ namespace AdminShellNS
                         yield return smw?.value;
             }
 
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                // not enough information to select list of children
+            }
 
             // constructors
 
@@ -5737,7 +5837,7 @@ namespace AdminShellNS
 
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            public SubmodelElementWrapperCollection statements = null;
+            public SubmodelElementWrapperCollection statements = new SubmodelElementWrapperCollection();
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "statements")]
@@ -5780,6 +5880,15 @@ namespace AdminShellNS
                 if (this.statements != null)
                     foreach (var smw in this.statements)
                         yield return smw;
+            }
+
+            public void AddChild(SubmodelElementWrapper smw)
+            {
+                if (smw == null)
+                    return;
+                if (this.statements == null)
+                    this.statements = new SubmodelElementWrapperCollection();
+                this.statements.Add(smw);
             }
 
             // constructors

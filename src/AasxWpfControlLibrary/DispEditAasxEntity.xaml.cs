@@ -220,24 +220,20 @@ namespace AasxPackageExplorer
                         "Consider having description in multiple langauges.",
                         severityLevel: HintCheck.Severity.Notice)
             });
-            if (helper.SafeguardAccess(
-                    stack, repo, asset.description, "description:", "Create data element!",
-                    v =>
-                    {
-                        asset.description = new AdminShell.Description();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+            if (helper.SafeguardAccess(stack, repo, asset.description, "description:", "Create data element!", v =>
+            {
+                asset.description = new AdminShell.Description();
+                return new ModifyRepo.LambdaActionRedrawEntity();
+            }))
             {
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new HintCheck(
-                        () =>
-                        {
-                            return asset.description.langString == null || asset.description.langString.Count < 1;
-                        },
-                        "Please add some descriptions in your main languages here to help consumers " +
+                        () => { 
+                            return asset.description.langString == null || asset.description.langString.Count < 1; 
+                        }, 
+                        "Please add some descriptions in your main languages here to help consumers " + 
                             "of your Administration shell to understand your intentions."));
-
                 helper.AddKeyListLangStr(stack, "description", asset.description.langString, repo);
             }
 
@@ -288,23 +284,24 @@ namespace AasxPackageExplorer
 
             helper.AddGroup(stack, "Identifiable members:", levelColors[1][0], levelColors[1][1]);
 
-            helper.AddHintBubble(
-                stack, hintMode,
-                new[] {
-                    new HintCheck( () => { return asset.identification == null; },
-                        "Providing a worldwide unique identification is mandatory.", breakIfTrue: true),
-                    new HintCheck(
-                        () => { return asset.identification.idType != AdminShell.Identification.IRI; },
-                        "Check if identification type is correct. Use of IRIs is usual here.",
-                        severityLevel: HintCheck.Severity.Notice ),
-                    new HintCheck(
-                        () => { return asset.identification.id.Trim() == ""; },
-                        "Identification id shall not be empty. You could use the 'Generate' button " +
-                            "in order to generate a worldwide unique id. " +
-                            "The template of this id could be set by commandline arguments." )
-                });
+            helper.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => { return asset.identification == null; },
+                    "Providing a worldwide unique identification is mandatory.", 
+                    breakIfTrue: true),
+                new HintCheck(
+                    () => { return asset.identification.idType != AdminShell.Identification.IRI; },
+                    "Check if identification type is correct. Use of IRIs is usual here.", 
+                    severityLevel: HintCheck.Severity.Notice ),
+                new HintCheck(
+                    () => { return asset.identification.id.Trim() == ""; },
+                    "Identification id shall not be empty. You could use the 'Generate' button in order to " + 
+                        "generate a worldwide unique id. " + 
+                        "The template of this id could be set by commandline arguments." )
+
+            });
             if (helper.SafeguardAccess(
-                    stack, repo, asset.identification, "identification:", "Create data element!",
+                    stack, repo, asset.identification, "identification:", "Create data element!", 
                     v =>
                     {
                         asset.identification = new AdminShell.Identification();
@@ -312,7 +309,7 @@ namespace AasxPackageExplorer
                     }))
             {
                 helper.AddKeyValueRef(
-                    stack, "idType", asset, ref asset.identification.idType, null, repo,
+                    stack, "idType", asset, ref asset.identification.idType, null, repo, 
                     v => { asset.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
 
@@ -365,7 +362,7 @@ namespace AasxPackageExplorer
                     severityLevel: HintCheck.Severity.Notice )
             });
             if (helper.SafeguardAccess(
-                    stack, repo, asset.administration, "administration:", "Create data element!",
+                    stack, repo, asset.administration, "administration:", "Create data element!", 
                     v =>
                     {
                         asset.administration = new AdminShell.Administration();
@@ -373,11 +370,11 @@ namespace AasxPackageExplorer
                     }))
             {
                 helper.AddKeyValueRef(
-                    stack, "version", asset.administration, ref asset.administration.version, null, repo,
+                    stack, "version", asset.administration, ref asset.administration.version, null, repo, 
                     v => { asset.administration.version = v as string; return new ModifyRepo.LambdaActionNone(); });
 
                 helper.AddKeyValueRef(
-                    stack, "revision", asset.administration, ref asset.administration.revision, null, repo,
+                    stack, "revision", asset.administration, ref asset.administration.revision, null, repo, 
                     v => { asset.administration.revision = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
 
@@ -417,33 +414,34 @@ namespace AasxPackageExplorer
                         "to an identification Submodel."),
             });
             if (helper.SafeguardAccess(
-                stack, repo, asset.assetIdentificationModelRef, "assetIdentificationModel:", "Create data element!",
-                v =>
-                {
-                    asset.assetIdentificationModelRef = new AdminShell.SubmodelRef();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, asset.assetIdentificationModelRef, "assetIdentificationModel:", 
+                    "Create data element!", 
+                    v =>
+                    {
+                        asset.assetIdentificationModelRef = new AdminShell.SubmodelRef();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 helper.AddGroup(
-                    stack, "Asset Identification Model - Reference to describing Submodel",
+                    stack, "Asset Identification Model - Reference to describing Submodel", 
                     levelColors[1][0], levelColors[1][1]);
                 helper.AddKeyListKeys(
-                    stack, "assetIdentificationModelRef", asset.assetIdentificationModelRef.Keys, repo, package,
-                    "Submodel");
+                    stack, "assetIdentificationModelRef", asset.assetIdentificationModelRef.Keys, 
+                    repo, package, "Submodel");
             }
 
             // BillOfMaterialRef
 
             if (helper.SafeguardAccess(
-                stack, repo, asset.billOfMaterialRef, "billOfMaterial:", "Create data element!",
-                v =>
-                {
-                    asset.billOfMaterialRef = new AdminShell.SubmodelRef();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, asset.billOfMaterialRef, "billOfMaterial:", "Create data element!", 
+                    v =>
+                    {
+                        asset.billOfMaterialRef = new AdminShell.SubmodelRef();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 helper.AddGroup(
-                    stack, "Bill of Material - Reference to describing Submodel",
+                    stack, "Bill of Material - Reference to describing Submodel", 
                     levelColors[1][0], levelColors[1][1]);
                 helper.AddKeyListKeys(
                     stack, "billOfMaterial", asset.billOfMaterialRef.Keys, repo, package, "Submodel");
@@ -558,8 +556,9 @@ namespace AasxPackageExplorer
                     });
 
                     helper.AddAction(
-                        stack, "Copy from existing AAS:",
-                        new[] { "Copy single entity ", "Copy recursively", "Copy rec. w/ suppl. files" }, repo,
+                        stack, "Copy from existing AAS:", 
+                        new[] { "Copy single entity ", "Copy recursively", "Copy rec. w/ suppl. files" }, 
+                        repo, 
                         (buttonNdx) =>
                         {
                             if (buttonNdx is int)
@@ -567,7 +566,7 @@ namespace AasxPackageExplorer
                                 if ((int)buttonNdx == 0 || (int)buttonNdx == 1 || (int)buttonNdx == 2)
                                 {
                                     var rve = helper.SmartSelectAasEntityVisualElement(
-                                        package.AasEnv, AdminShell.Key.AAS, package: package,
+                                        package.AasEnv, AdminShell.Key.AAS, package: package, 
                                         auxPackages: helper.auxPackages) as VisualElementAdminShell;
 
                                     if (rve != null)
@@ -595,10 +594,9 @@ namespace AasxPackageExplorer
                                                     destAsset = new AdminShell.Asset(sourceAsset);
                                                     if (createNewIds)
                                                         destAsset.identification = new AdminShell.Identification(
-                                                            AdminShell.Identification.IRI,
+                                                            AdminShell.Identification.IRI, 
                                                             Options.Curr.GenerateIdAccordingTemplate(
                                                                 Options.Curr.TemplateIdAsset));
-
                                                     env.Assets.Add(destAsset);
                                                 }
 
@@ -610,7 +608,7 @@ namespace AasxPackageExplorer
                                                     destAAS.assetRef = destAsset.GetReference();
                                                 if (createNewIds)
                                                     destAAS.identification = new AdminShell.Identification(
-                                                        AdminShell.Identification.IRI,
+                                                        AdminShell.Identification.IRI, 
                                                         Options.Curr.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAas));
                                                 env.AdministrationShells.Add(destAAS);
@@ -628,14 +626,14 @@ namespace AasxPackageExplorer
 
                                                         // get hold of suppl file infos?
                                                         if (srcSub.submodelElements != null)
-                                                            foreach (var f in
-                                                                srcSub.submodelElements.FindAll<AdminShell.File>())
-                                                                if (f != null && f.value != null &&
-                                                                    f.value.StartsWith("/") &&
-                                                                    !potentialSupplFilesToCopy.ContainsKey(
-                                                                        f.value.ToLower().Trim()))
+                                                            foreach (var f in 
+                                                                    srcSub.submodelElements.FindAll<AdminShell.File>())
+                                                                if (f != null && f.value != null && 
+                                                                        f.value.StartsWith("/") && 
+                                                                        !potentialSupplFilesToCopy
+                                                                        .ContainsKey(f.value.ToLower().Trim()))
                                                                     potentialSupplFilesToCopy[
-                                                                        f.value.ToLower().Trim()] =
+                                                                        f.value.ToLower().Trim()] = 
                                                                             f.value.ToLower().Trim();
 
                                                         // complicated new ids?
@@ -643,7 +641,7 @@ namespace AasxPackageExplorer
                                                         {
                                                             // straightforward between environments
                                                             var destSMR = env.CopySubmodelRefAndCD(
-                                                                rve.theEnv, smr, copySubmodel: true, copyCD: true,
+                                                                rve.theEnv, smr, copySubmodel: true, copyCD: true, 
                                                                 shallowCopy: false);
                                                             if (destSMR != null)
                                                             {
@@ -653,18 +651,18 @@ namespace AasxPackageExplorer
                                                         else
                                                         {
                                                             // in the same environment?
-                                                            // means: we have to generate a new submodel ref
+                                                            // means: we have to generate a new submodel ref 
                                                             // by using template mechanism
                                                             var tid = Options.Curr.TemplateIdSubmodelInstance;
                                                             if (srcSub.kind != null && srcSub.kind.IsTemplate)
                                                                 tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                                            // create Submodel as deep copy
+                                                            // create Submodel as deep copy 
                                                             // with new id from scratch
                                                             var dstSub = new AdminShell.Submodel(
                                                                 srcSub, shallowCopy: false);
                                                             dstSub.identification = new AdminShell.Identification(
-                                                                AdminShell.Identification.IRI,
+                                                                AdminShell.Identification.IRI, 
                                                                 Options.Curr.GenerateIdAccordingTemplate(tid));
 
                                                             // make a new ref
@@ -694,11 +692,11 @@ namespace AasxPackageExplorer
                                                     try
                                                     {
                                                         // copy ONLY if not existing in destination
-                                                        // rationale: do not potential harm the source content,
+                                                        // rationale: do not potential harm the source content, 
                                                         // even when voiding destination integrity
                                                         if (rve.thePackage.IsLocalFile(fn) && !package.IsLocalFile(fn))
                                                         {
-                                                            var tmpFile =
+                                                            var tmpFile = 
                                                                 rve.thePackage.MakePackageFileAvailableAsTempFile(fn);
                                                             var targetDir = System.IO.Path.GetDirectoryName(fn);
                                                             var targetFn = System.IO.Path.GetFileName(fn);
@@ -723,7 +721,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                             return new ModifyRepo.LambdaActionNone();
-                        });
+                   });
                 }
 
                 // Copy Concept Descriptions
@@ -782,20 +780,20 @@ namespace AasxPackageExplorer
                     });
                 repo.RegisterControl(
                     helper.AddSmallButtonTo(
-                        g, 0, 2, margin: new Thickness(2, 2, 2, 2),
-                        padding: new Thickness(5, 0, 5, 0), content: "Select"),
-                    (o) =>
-                    {
-                        var dlg = new Microsoft.Win32.OpenFileDialog();
-                        var res = dlg.ShowDialog();
-                        if (res == true)
+                        g, 0, 2, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0), 
+                        content: "Select"),
+                        (o) =>
                         {
-                            PackageSourcePath = dlg.FileName;
-                            PackageTargetFn = System.IO.Path.GetFileName(dlg.FileName);
-                            PackageTargetFn = PackageTargetFn.Replace(" ", "_");
-                        }
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    });
+                            var dlg = new Microsoft.Win32.OpenFileDialog();
+                            var res = dlg.ShowDialog();
+                            if (res == true)
+                            {
+                                PackageSourcePath = dlg.FileName;
+                                PackageTargetFn = System.IO.Path.GetFileName(dlg.FileName);
+                                PackageTargetFn = PackageTargetFn.Replace(" ", "_");
+                            }
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        });
                 helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "Target filename: ");
                 repo.RegisterControl(
                     helper.AddSmallTextBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), text: PackageTargetFn),
@@ -815,10 +813,8 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallCheckBoxTo(
-                        g, 3, 1, margin: new Thickness(2, 2, 2, 2),
-                        content: "Embed as thumbnail (only one file per package!)",
-                        isChecked: PackageEmbedAsThumbnail),
+                    helper.AddSmallCheckBoxTo(g, 3, 1, margin: new Thickness(2, 2, 2, 2), 
+                    content: "Embed as thumbnail (only one file per package!)", isChecked: PackageEmbedAsThumbnail),
                     (o) =>
                     {
                         if (o is bool)
@@ -826,9 +822,8 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallButtonTo(
-                        g, 4, 1, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
-                        content: "Add file to package"),
+                    helper.AddSmallButtonTo(g, 4, 1, margin: new Thickness(2, 2, 2, 2), 
+                    padding: new Thickness(5, 0, 5, 0), content: "Add file to package"),
                     (o) =>
                     {
                         try
@@ -839,7 +834,7 @@ namespace AasxPackageExplorer
                             package.AddSupplementaryFileToStore(
                                 PackageSourcePath, ptd, PackageTargetFn, PackageEmbedAsThumbnail);
                             Log.Info(
-                                "Added {0} to pending package items. A save-operation is required.",
+                                "Added {0} to pending package items. A save-operation is required.", 
                                 PackageSourcePath);
                         }
                         catch (Exception ex)
@@ -1058,80 +1053,78 @@ namespace AasxPackageExplorer
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 helper.AddAction(
-                    stack, "Copy from existing Submodel:",
-                    new[] { "Copy single entity ", "Copy recursively" }, repo,
+                    stack, "Copy from existing Submodel:", 
+                    new[] { "Copy single entity ", "Copy recursively" }, repo, 
                     (buttonNdx) =>
-                    {
-                        if (buttonNdx is int)
-                        {
-                            if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
-                            {
-                                var rve = helper.SmartSelectAasEntityVisualElement(
-                                    package.AasEnv, "SubmodelRef", package: package,
-                                    auxPackages: helper.auxPackages) as VisualElementSubmodelRef;
+                   {
+                       if (buttonNdx is int)
+                       {
+                           if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
+                           {
+                               var rve = helper.SmartSelectAasEntityVisualElement(
+                                package.AasEnv, "SubmodelRef", package: package, 
+                                auxPackages: helper.auxPackages) as VisualElementSubmodelRef;
 
-                                if (rve != null)
-                                {
-                                    var mdo = rve.GetMainDataObject();
-                                    if (mdo != null && mdo is AdminShell.SubmodelRef)
-                                    {
-                                        // we have 2 different use cases:
-                                        // (1) copy between AAS ENVs,
-                                        // (2) copy in one AAS ENV!
-                                        if (env != rve.theEnv)
-                                        {
-                                            // use case (1) copy between AAS ENVs
-                                            var clone = env.CopySubmodelRefAndCD(
-                                                rve.theEnv, mdo as AdminShell.SubmodelRef, copySubmodel: true,
+                               if (rve != null)
+                               {
+                                   var mdo = rve.GetMainDataObject();
+                                   if (mdo != null && mdo is AdminShell.SubmodelRef)
+                                   {
+                                       // we have 2 different use cases: 
+                                       // (1) copy between AAS ENVs, 
+                                       // (2) copy in one AAS ENV!
+                                       if (env != rve.theEnv)
+                                       {
+                                           // use case (1) copy between AAS ENVs
+                                           var clone = env.CopySubmodelRefAndCD(
+                                                rve.theEnv, mdo as AdminShell.SubmodelRef, copySubmodel: true, 
                                                 copyCD: true, shallowCopy: (int)buttonNdx == 0);
+                                           if (clone == null)
+                                               return new ModifyRepo.LambdaActionNone();
+                                           if (aas.submodelRefs == null)
+                                               aas.submodelRefs = new List<AdminShell.SubmodelRef>();
+                                           aas.submodelRefs.Add(clone);
+                                           return new ModifyRepo.LambdaActionRedrawAllElements(
+                                            nextFocus: clone, isExpanded: true);
+                                       }
+                                       else
+                                       {
+                                           // use case (2) copy in one AAS ENV!
 
-                                            if (clone == null)
-                                                return new ModifyRepo.LambdaActionNone();
-                                            if (aas.submodelRefs == null)
-                                                aas.submodelRefs = new List<AdminShell.SubmodelRef>();
-                                            aas.submodelRefs.Add(clone);
-                                            return new ModifyRepo.LambdaActionRedrawAllElements(
-                                                nextFocus: clone, isExpanded: true);
-                                        }
-                                        else
-                                        {
-                                            // use case (2) copy in one AAS ENV!
+                                           // need access to source submodel
+                                           var srcSub = rve.theEnv.FindSubmodel(mdo as AdminShell.SubmodelRef);
+                                           if (srcSub == null)
+                                               return new ModifyRepo.LambdaActionNone();
 
-                                            // need access to source submodel
-                                            var srcSub = rve.theEnv.FindSubmodel(mdo as AdminShell.SubmodelRef);
-                                            if (srcSub == null)
-                                                return new ModifyRepo.LambdaActionNone();
+                                           // means: we have to generate a new submodel ref by using template mechanism
+                                           var tid = Options.Curr.TemplateIdSubmodelInstance;
+                                           if (srcSub.kind != null && srcSub.kind.IsTemplate)
+                                               tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                            // means: we have to generate a new submodel ref
-                                            // by using template mechanism
-                                            var tid = Options.Curr.TemplateIdSubmodelInstance;
-                                            if (srcSub.kind != null && srcSub.kind.IsTemplate)
-                                                tid = Options.Curr.TemplateIdSubmodelTemplate;
-
-                                            // create Submodel as deep copy
-                                            // with new id from scratch
-                                            var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
-                                            dstSub.identification = new AdminShell.Identification(
-                                                AdminShell.Identification.IRI,
+                                           // create Submodel as deep copy 
+                                           // with new id from scratch
+                                           var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
+                                           dstSub.identification = new AdminShell.Identification(
+                                                AdminShell.Identification.IRI, 
                                                 Options.Curr.GenerateIdAccordingTemplate(tid));
 
-                                            // make a new ref
-                                            var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
+                                           // make a new ref
+                                           var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
 
-                                            // formally add this to active environment and AAS
-                                            env.Submodels.Add(dstSub);
-                                            if (aas.submodelRefs == null)
-                                                aas.submodelRefs = new List<AdminShell.SubmodelRef>();
-                                            aas.submodelRefs.Add(dstRef);
-                                            return new ModifyRepo.LambdaActionRedrawAllElements(
-                                                nextFocus: dstRef, isExpanded: true);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        return new ModifyRepo.LambdaActionNone();
-                    });
+                                           // formally add this to active environment and AAS
+                                           env.Submodels.Add(dstSub);
+                                           if (aas.submodelRefs == null)
+                                               aas.submodelRefs = new List<AdminShell.SubmodelRef>();
+                                           aas.submodelRefs.Add(dstRef);
+                                           return new ModifyRepo.LambdaActionRedrawAllElements(
+                                               nextFocus: dstRef, isExpanded: true);
+                                       }
+                                   }
+                               }
+                           }
+                       }
+                       return new ModifyRepo.LambdaActionNone();
+                   });
 
                 // let the user control the number of entities
                 helper.AddAction(stack, "Entities:", new[] { "Add View" }, repo, (buttonNdx) =>
@@ -1173,48 +1166,42 @@ namespace AasxPackageExplorer
                 v => { aas.idShort = v as string; return new ModifyRepo.LambdaActionNone(); });
 
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new HintCheck(
-                    () => { return aas.category != null && aas.category.Length >= 1; },
-                    "The use of category is unusual here.",
+                    () => { return aas.category != null && aas.category.Length >= 1; }, 
+                    "The use of category is unusual here.", 
                     severityLevel: HintCheck.Severity.Notice));
-
             helper.AddKeyValueRef(
-                stack, "category", aas, ref aas.category, null, repo,
+                stack, "category", aas, ref aas.category, null, repo, 
                 v => { aas.category = v as string; return new ModifyRepo.LambdaActionNone(); },
-                comboBoxItems: AdminShell.Referable.ReferableCategoryNames,
-                comboBoxIsEditable: true);
+                comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
-            helper.AddHintBubble(
-                stack, hintMode,
-                new[] {
-                    new HintCheck(
-                        () => {
-                            return aas.description == null || aas.description.langString == null ||
-                                            aas.description.langString.Count < 1;
-                        },
-                        "The use of an description is recommended to allow the consumer of " +
-                            "an Administration Shell to understand the nature of it.",
-                        breakIfTrue: true,
-                        severityLevel: HintCheck.Severity.Notice),
+            helper.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => { 
+                        return aas.description == null || aas.description.langString == null || 
+                            aas.description.langString.Count < 1;  },
+                    "The use of an description is recommended to allow the consumer of an Administration Shell " + 
+                        "to understand the nature of it.", 
+                    breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
                 new HintCheck(
                     () => { return aas.description.langString.Count < 2; },
-                    "Consider having description in multiple langauges.",
+                    "Consider having description in multiple langauges.", 
                     severityLevel: HintCheck.Severity.Notice)
             });
             if (helper.SafeguardAccess(
-                    stack, repo, aas.description, "description:", "Create data element!",
-                    v =>
-                    {
-                        aas.description = new AdminShell.Description();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                stack, repo, aas.description, "description:", "Create data element!", 
+                v =>
+                {
+                    aas.description = new AdminShell.Description();
+                    return new ModifyRepo.LambdaActionRedrawEntity();
+                }))
             {
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new HintCheck(
-                        () => { return aas.description.langString == null || aas.description.langString.Count < 1; },
-                        "Please add some descriptions in your main languages here to help consumers " +
+                        () => { return aas.description.langString == null || aas.description.langString.Count < 1; }, 
+                        "Please add some descriptions in your main languages here to help consumers " + 
                             "of your Admin shell to understand your intentions."));
                 helper.AddKeyListLangStr(stack, "description", aas.description.langString, repo);
             }
@@ -1281,18 +1268,17 @@ namespace AasxPackageExplorer
                             "generate a worldwide unique id. " +
                             "The template of this id could be set by commandline arguments." )
 
-                });
-
+            });
             if (helper.SafeguardAccess(
-                stack, repo, aas.identification, "identification:", "Create data element!",
-                v =>
-                {
-                    aas.identification = new AdminShell.Identification();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, aas.identification, "identification:", "Create data element!", 
+                    v =>
+                    {
+                        aas.identification = new AdminShell.Identification();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 helper.AddKeyValueRef(
-                    stack, "idType", aas.identification, ref aas.identification.idType, null, repo,
+                    stack, "idType", aas.identification, ref aas.identification.idType, null, repo, 
                     v => { aas.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
 
@@ -1323,20 +1309,17 @@ namespace AasxPackageExplorer
                     "Admistrative information fields should not be empty.",
                     severityLevel: HintCheck.Severity.Notice )
             });
-            if (helper.SafeguardAccess(
-                stack, repo, aas.administration, "administration:", "Create data element!",
-                v =>
-                {
-                    aas.administration = new AdminShell.Administration();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+            if (helper.SafeguardAccess(stack, repo, aas.administration, "administration:", "Create data element!", v =>
+            {
+                aas.administration = new AdminShell.Administration();
+                return new ModifyRepo.LambdaActionRedrawEntity();
+            }))
             {
                 helper.AddKeyValueRef(
-                    stack, "version", aas.administration, ref aas.administration.version, null, repo,
+                    stack, "version", aas.administration, ref aas.administration.version, null, repo, 
                     v => { aas.administration.version = v as string; return new ModifyRepo.LambdaActionNone(); });
-
                 helper.AddKeyValueRef(
-                    stack, "revision", aas.administration, ref aas.administration.revision, null, repo,
+                    stack, "revision", aas.administration, ref aas.administration.revision, null, repo, 
                     v => { aas.administration.revision = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
 
@@ -1670,43 +1653,36 @@ namespace AasxPackageExplorer
                     comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
-                        new HintCheck(
-                            () =>
-                            {
-                                return submodel.description == null || submodel.description.langString == null ||
-                                    submodel.description.langString.Count < 1;
-                            },
-                            "The use of an description is recommended to allow the consumer of an Submodel " +
-                                "to understand the nature of it.",
-                            breakIfTrue: true,
-                            severityLevel: HintCheck.Severity.Notice),
-
-                        new HintCheck(
-                            () => { return submodel.description.langString.Count < 2; },
-                            "Consider having description in multiple langauges.",
-                            severityLevel: HintCheck.Severity.Notice)
+                    new HintCheck(
+                        () => { 
+                            return submodel.description == null || submodel.description.langString == null || 
+                                submodel.description.langString.Count < 1;  },
+                        "The use of an description is recommended to allow the consumer of an Submodel " + 
+                            "to understand the nature of it.", 
+                        breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
+                    new HintCheck(
+                        () => { return submodel.description.langString.Count < 2; },
+                        "Consider having description in multiple langauges.", 
+                        severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                    stack, repo, submodel.description, "description:", "Create data element!",
-                    v =>
-                    {
-                        submodel.description = new AdminShell.Description();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, submodel.description, "description:", "Create data element!", 
+                        v =>
+                        {
+                            submodel.description = new AdminShell.Description();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     helper.AddHintBubble(
-                        stack, hintMode,
-                        new HintCheck(
-                            () =>
-                            {
-                                return submodel.description.langString == null ||
-                                    submodel.description.langString.Count < 1;
-                            },
-                            "Please add some descriptions in your main languages here " +
-                                "to help consumers of your Admin shell to understand your intentions."));
-
+                        stack, hintMode, 
+                        new HintCheck(() => { 
+                            return submodel.description.langString == null || 
+                                submodel.description.langString.Count < 1; 
+                        }, 
+                        "Please add some descriptions in your main languages here to help consumers " + 
+                            "of your Admin shell to understand your intentions."));
                     helper.AddKeyListLangStr(stack, "description", submodel.description.langString, repo);
                 }
 
@@ -1844,7 +1820,7 @@ namespace AasxPackageExplorer
                         severityLevel: HintCheck.Severity.Notice )
                 });
                 if (helper.SafeguardAccess(
-                        stack, repo, submodel.administration, "administration:", "Create data element!",
+                        stack, repo, submodel.administration, "administration:", "Create data element!", 
                         v =>
                         {
                             submodel.administration = new AdminShell.Administration();
@@ -1852,19 +1828,16 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyValueRef(
-                        stack, "version", submodel.administration, ref submodel.administration.version, null, repo,
-                        v =>
-                        {
-                            submodel.administration.version = v as string;
-                            return new ModifyRepo.LambdaActionNone();
+                        stack, "version", submodel.administration, ref submodel.administration.version, null, repo, 
+                        v => { 
+                            submodel.administration.version = v as string; 
+                            return new ModifyRepo.LambdaActionNone(); 
                         });
-
                     helper.AddKeyValueRef(
-                        stack, "revision", submodel.administration, ref submodel.administration.revision, null, repo,
-                        v =>
-                        {
-                            submodel.administration.revision = v as string;
-                            return new ModifyRepo.LambdaActionNone();
+                        stack, "revision", submodel.administration, ref submodel.administration.revision, null, repo, 
+                        v => { 
+                            submodel.administration.revision = v as string; 
+                            return new ModifyRepo.LambdaActionNone(); 
                         });
                 }
 
@@ -2012,50 +1985,45 @@ namespace AasxPackageExplorer
                 });
 
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new HintCheck(
-                    () => { return cd.category != null && cd.category.Length >= 1; },
-                    "The use of category is unusual here.",
+                    () => { return cd.category != null && cd.category.Length >= 1; }, 
+                    "The use of category is unusual here.", 
                     severityLevel: HintCheck.Severity.Notice));
-
             helper.AddKeyValueRef(
-                stack, "category", cd, ref cd.category, null, repo,
+                stack, "category", cd, ref cd.category, null, repo, 
                 v => { cd.category = v as string; return new ModifyRepo.LambdaActionNone(); },
-                comboBoxItems: AdminShell.Referable.ReferableCategoryNames,
-                comboBoxIsEditable: true);
+                comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new[] {
                     new HintCheck(
-                        () =>
-                        {
-                            return cd.description == null || cd.description.langString == null ||
-                                cd.description.langString.Count < 1;
+                        () => { 
+                            return cd.description == null || cd.description.langString == null || 
+                                cd.description.langString.Count < 1;  
                         },
-                        "The use of an description is recommended to allow the consumer of an ConceptDescription " +
-                            "to understand the nature of it.",
-                        breakIfTrue: true,
-                        severityLevel: HintCheck.Severity.Notice),
+                        "The use of an description is recommended to allow the consumer " + 
+                            "of an ConceptDescription to understand the nature of it.", 
+                        breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
                     new HintCheck(
                         () => { return cd.description.langString.Count < 2; },
-                        "Consider having description in multiple langauges.",
+                        "Consider having description in multiple langauges.", 
                         severityLevel: HintCheck.Severity.Notice)
-                });
+            });
             if (helper.SafeguardAccess(
-                stack, repo, cd.description, "description:", "Create data element!",
-                v =>
-                {
-                    cd.description = new AdminShell.Description();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, cd.description, "description:", "Create data element!", 
+                    v => {
+                        cd.description = new AdminShell.Description();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new HintCheck(
-                        () => { return cd.description.langString == null || cd.description.langString.Count < 1; },
-                        "Please add some descriptions in your main languages here " +
-                            "to help consumers of your Administration shell to understand your intentions."));
+                        () => { return cd.description.langString == null || cd.description.langString.Count < 1; }, 
+                        "Please add some descriptions in your main languages here to help consumers " + 
+                            "of your Administration shell to understand your intentions."));
                 helper.AddKeyListLangStr(stack, "description", cd.description.langString, repo);
             }
 
@@ -2076,17 +2044,15 @@ namespace AasxPackageExplorer
                             "You could use the 'Generate' button in order to generate a worldwide unique id. " +
                             "The template of this id could be set by commandline arguments." )
 
-                });
-            if (helper.SafeguardAccess(
-                stack, repo, cd.identification, "identification:", "Create data element!",
-                v =>
-                {
-                    cd.identification = new AdminShell.Identification();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+            });
+            if (helper.SafeguardAccess(stack, repo, cd.identification, "identification:", "Create data element!", v =>
+            {
+                cd.identification = new AdminShell.Identification();
+                return new ModifyRepo.LambdaActionRedrawEntity();
+            }))
             {
                 helper.AddKeyValueRef(
-                    stack, "idType", cd.identification, ref cd.identification.idType, null, repo,
+                    stack, "idType", cd.identification, ref cd.identification.idType, null, repo, 
                     v => { cd.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames,
                     auxButtonTitles: new[] { "Generate", "Rename" },
@@ -2120,56 +2086,56 @@ namespace AasxPackageExplorer
                                     catch { }
                                     // ReSharper enable EmptyGeneralCatchClause
 
-                                    if (!res)
-                                        helper.flyoutProvider.MessageBoxFlyoutShow(
-                                           "The renaming of the ConceptDescription or some referring elements " +
-                                               "has not performed successfully! " +
-                                               "Please review your inputs and the AAS structure " +
-                                               "for any inconsistencies.",
-                                           "Warning",
-                                           MessageBoxButton.OK, MessageBoxImage.Warning);
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(cd);
-                                }
-                            }
-                        }
-                        return new ModifyRepo.LambdaActionNone();
-                    });
+                                   if (!res)
+                                       helper.flyoutProvider.MessageBoxFlyoutShow(
+                                        "The renaming of the ConceptDescription or some referring elements has not " + 
+                                            "performed successfully! Please review your inputs and the AAS " + 
+                                            "structure for any inconsistencies.", 
+                                            "Warning", 
+                                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                                   return new ModifyRepo.LambdaActionRedrawAllElements(cd);
+                               }
+                           }
+                       }
+                       return new ModifyRepo.LambdaActionNone();
+                   });
                 helper.AddKeyValueRef(
-                    stack, "id", cd.identification, ref cd.identification.id, null, repo,
-                    v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    stack, "id", cd.identification, ref cd.identification.id, null, repo, 
+                    v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); }
+                /* , auxButtonTitle: "Generate", auxButtonLambda: v => {
+                    cd.identification.idType = AdminShell.Identification.IRI;
+                    cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdConceptDescription);
+                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
+                } */);
             }
 
-            helper.AddHintBubble(
-                stack, hintMode,
-                new[] {
-                    new HintCheck(
-                        () => { return cd.administration == null; },
-                        "Check if providing admistrative information on version/ revision would be useful. " +
-                            "This allows for better version management.",
-                         breakIfTrue: true,
-                         severityLevel: HintCheck.Severity.Notice),
-                    new HintCheck(
-                        () =>
-                        {
-                            return cd.administration.version.Trim() == "" || cd.administration.revision.Trim() == "";
-                        },
-                        "Admistrative information fields should not be empty.",
-                        severityLevel: HintCheck.Severity.Notice )
-                });
+            helper.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => { return cd.administration == null; },
+                    "Check if providing admistrative information on version/ revision would be useful. " + 
+                        "This allows for better version management.", 
+                    breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
+                new HintCheck(
+                    () => { 
+                        return cd.administration.version.Trim() == "" || cd.administration.revision.Trim() == ""; 
+                    },
+                    "Admistrative information fields should not be empty.", 
+                    severityLevel: HintCheck.Severity.Notice )
+            });
             if (helper.SafeguardAccess(
-                stack, repo, cd.administration, "administration:", "Create data element!",
-                v =>
-                {
-                    cd.administration = new AdminShell.Administration();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, cd.administration, "administration:", "Create data element!", 
+                    v =>
+                    {
+                        cd.administration = new AdminShell.Administration();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 helper.AddKeyValueRef(
-                    stack, "version", cd.administration, ref cd.administration.version, null, repo,
+                    stack, "version", cd.administration, ref cd.administration.version, null, repo, 
                     v => { cd.administration.version = v as string; return new ModifyRepo.LambdaActionNone(); });
 
                 helper.AddKeyValueRef(
-                    stack, "revision", cd.administration, ref cd.administration.revision, null, repo,
+                    stack, "revision", cd.administration, ref cd.administration.revision, null, repo, 
                     v => { cd.administration.revision = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
 
@@ -2214,46 +2180,56 @@ namespace AasxPackageExplorer
                 }
             }
 
+            /* OLD
+            if (helper.SafeguardAccess(stack, repo, cd.conceptDefinitionRef, "conceptDefinitionRef:", "Create data element!", v =>
+            {
+                cd.conceptDefinitionRef = new AdminShell.Reference();
+                return new ModifyRepo.LambdaActionRedrawEntity();
+            }))
+            {
+                helper.AddGroup(stack, "Concept Definition Reference", levelColors[1][0], levelColors[1][1]);
+                helper.AddKeyListKeys(stack, "reference", cd.conceptDefinitionRef.Keys, repo, package, "All");
+            }
+            */
+
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new[] {
                     new HintCheck(
                         () => { return cd.embeddedDataSpecification == null; },
-                        "Providing embeddedDataSpecification is mandatory. " +
-                            "This holds the descriptive information of an concept and allows " +
-                            "for an off-line understanding of the meaning of an concept/ SubmodelElement. " +
-                            "Please create this data element.",
+                        "Providing embeddedDataSpecification is mandatory. This holds the descriptive information " + 
+                            "of an concept and allows for an off-line understanding of the meaning " + 
+                            "of an concept/ SubmodelElement. Please create this data element.", 
                         breakIfTrue: true),
                 });
             if (helper.SafeguardAccess(
-                stack, repo, cd.embeddedDataSpecification, "embeddedDataSpecification:", "Create data element!",
-                v =>
-                {
-                    cd.embeddedDataSpecification = new AdminShell.EmbeddedDataSpecification();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
-                }))
+                    stack, repo, cd.embeddedDataSpecification, "embeddedDataSpecification:", "Create data element!", 
+                    v =>
+                    {
+                        cd.embeddedDataSpecification = new AdminShell.EmbeddedDataSpecification();
+                        return new ModifyRepo.LambdaActionRedrawEntity();
+                    }))
             {
                 // has data spec
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
-                        () => { return cd.embeddedDataSpecification.dataSpecification == null; },
-                        "Providing hasDataSpecification is mandatory. " +
-                            "This holds the external global reference to the specification, " +
-                            "which defines the data template, which attributes are featured " +
-                            "within the ConceptDescription. " +
-                            "Typically, it refers to " +
-                            "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360.")
+                            () => { return cd.embeddedDataSpecification.dataSpecification == null; },
+                            "Providing hasDataSpecification is mandatory. " + 
+                                "This holds the external global reference to the specification, " + 
+                                "which defines the data template, which attributes are featured within " + 
+                                "the ConceptDescription. Typically, it refers to " + 
+                                "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360.")
                     });
                 if (helper.SafeguardAccess(
-                    stack, repo, cd.embeddedDataSpecification.dataSpecification, "hasDataSpecification:",
-                    "Create data element!",
-                    v =>
-                    {
-                        cd.embeddedDataSpecification.dataSpecification = new AdminShell.DataSpecificationRef();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, cd.embeddedDataSpecification.dataSpecification, "hasDataSpecification:", 
+                        "Create data element!", 
+                        v =>
+                        {
+                            cd.embeddedDataSpecification.dataSpecification = new AdminShell.DataSpecificationRef();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     helper.AddGroup(stack, "HasDataSpecification", levelColors[1][0], levelColors[1][1]);
 
@@ -2288,141 +2264,171 @@ namespace AasxPackageExplorer
 
                 // data spec content
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
                             () => { return cd.embeddedDataSpecification.dataSpecificationContent == null; },
-                            "Providing dataSpecificationContent is mandatory. " +
+                            "Providing dataSpecificationContent is mandatory. " + 
                                 "This holds the attributes describing the concept. Please create this data element.")
-                    });
+                });
                 if (helper.SafeguardAccess(
-                    stack, repo, cd.embeddedDataSpecification.dataSpecificationContent,
-                    "dataSpecificationContent:", "Create data element!",
-                    v =>
-                    {
-                        cd.embeddedDataSpecification.dataSpecificationContent =
-                            new AdminShell.DataSpecificationContent();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, cd.embeddedDataSpecification.dataSpecificationContent, 
+                        "dataSpecificationContent:", "Create data element!", 
+                        v =>
+                        {
+                            cd.embeddedDataSpecification.dataSpecificationContent = 
+                                new AdminShell.DataSpecificationContent();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     helper.AddGroup(stack, "DataSpecificationContent", levelColors[1][0], levelColors[1][1]);
 
                     // 61360?
                     helper.AddHintBubble(
-                        stack, hintMode,
+                        stack, hintMode, 
                         new[] {
                             new HintCheck(
-                                () =>
-                                {
+                                () => { 
                                     return cd
                                         .embeddedDataSpecification
                                         .dataSpecificationContent
-                                        .dataSpecificationIEC61360 == null;
+                                        .dataSpecificationIEC61360 == null; 
                                 },
-                                "As of January 2019, there is only a data specification for IEC 61360. " +
+                                "As of January 2019, there is only a data specification for IEC 61360. " + 
                                     "Please create this data element.")
                         });
                     if (helper.SafeguardAccess(
-                        stack, repo, cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360,
-                        "dataSpecificationIEC61360:", "Create data element!",
-                        v =>
-                        {
-                            cd.embeddedDataSpecification
-                                .dataSpecificationContent
-                                .dataSpecificationIEC61360 = new AdminShell.DataSpecificationIEC61360();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
-                        }))
+                            stack, repo, 
+                            cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360, 
+                            "dataSpecificationIEC61360:", "Create data element!", 
+                            v =>
+                            {
+                                cd
+                                    .embeddedDataSpecification
+                                    .dataSpecificationContent
+                                    .dataSpecificationIEC61360 = new AdminShell.DataSpecificationIEC61360();
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }))
                     {
                         var dsiec = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
                         helper.AddGroup(
                             stack, "Data Specification Content IEC61360", levelColors[1][0], levelColors[1][1]);
 
                         helper.AddHintBubble(
-                            stack, hintMode,
+                            stack, hintMode, 
                             new[] {
                                 new HintCheck(
-                                    () => { return dsiec.preferredName == null || dsiec.preferredName.Count < 1; },
-                                    "Please add a preferred name, which could be used on user interfaces " +
-                                        "to identify the concept to a human person.",
+                                    () => { return dsiec.preferredName == null || dsiec.preferredName.Count < 1; }, 
+                                    "Please add a preferred name, which could be used on user interfaces " + 
+                                        "to identify the concept to a human person.", 
                                     breakIfTrue: true),
                                 new HintCheck(
-                                    () => { return dsiec.preferredName.Count <2; },
-                                    "Please add multiple languanges.",
-                                    severityLevel: HintCheck.Severity.Notice)
-                        });
-                        if (helper.SafeguardAccess(
-                            stack, repo, dsiec.preferredName, "preferredName:", "Create data element!",
-                            v =>
-                            {
-                                dsiec.preferredName = new AdminShell.LangStringSetIEC61360();
-                                return new ModifyRepo.LambdaActionRedrawEntity();
-                            })) helper.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName.langString, repo);
-
-                        helper.AddHintBubble(
-                            stack, hintMode,
-                            new[] {
-                                new HintCheck(
-                                    () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
-                                    "Please add a short name, which is a reduced, " +
-                                        "even symbolic version of the preferred name. " +
-                                        "IEC 61360 defines some symbolic rules (e.g. greek characters) for this name.",
-                                    breakIfTrue: true),
-                                new HintCheck(
-                                    () => { return dsiec.shortName.Count <2; },
-                                    "Please add multiple languanges.",
+                                    () => { return dsiec.preferredName.Count <2; }, 
+                                    "Please add multiple languanges.", 
                                     severityLevel: HintCheck.Severity.Notice)
                             });
                         if (helper.SafeguardAccess(
-                                stack, repo, dsiec.shortName, "shortName:", "Create data element!",
+                                stack, repo, dsiec.preferredName, "preferredName:", "Create data element!", 
+                                v =>
+                                {
+                                    dsiec.preferredName = new AdminShell.LangStringSetIEC61360();
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                })) 
+                            helper.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName.langString, repo);
+
+                        helper.AddHintBubble(
+                            stack, hintMode, 
+                            new[] {
+                                new HintCheck(
+                                    () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; }, 
+                                    "Please add a short name, which is a reduced, even symbolic version of " + 
+                                        "the preferred name. IEC 61360 defines some symbolic rules " + 
+                                        "(e.g. greek characters) for this name.", 
+                                    breakIfTrue: true),
+                                new HintCheck(
+                                    () => { return dsiec.shortName.Count <2; }, 
+                                    "Please add multiple languanges.", 
+                                    severityLevel: HintCheck.Severity.Notice)
+                            });
+                        if (helper.SafeguardAccess(
+                                stack, repo, dsiec.shortName, "shortName:", "Create data element!", 
                                 v =>
                                 {
                                     dsiec.shortName = new AdminShell.LangStringSetIEC61360();
                                     return new ModifyRepo.LambdaActionRedrawEntity();
-                                }))
+                                })) 
                             helper.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
 
                         // TODO: add Sync to shortName
+                        /*
+                        helper.AddHintBubble(stack, hintMode, new [] {
+                            new HintCheck( () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
+                                "Please provide a shortName, which is a reduced, even symbolic version of the preferred name. IEC 61360 defines some symbolic rules (e.g. greek characters) for this name.")
+                        });
+                        helper.AddKeyValue(stack, "shortName", dsiec.shortName, null, repo, v => { dsiec.shortName = v as string; return new ModifyRepo.LambdaActionNone(); },
+                            auxButtonTitle: "Sync", auxButtonToolTip: "Copy (if target is empty) idShort to idShort and SubmodelElement idShort.", auxButtonLambda: (v) =>
+                            {
+                                ModifyRepo.LambdaAction la = new ModifyRepo.LambdaActionNone();
+
+                                if (cd.idShort == null || cd.idShort.Trim() == "")
+                                {
+                                    cd.idShort = dsiec.shortName;
+                                    la = new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+
+                                if (parentContainer != null & parentContainer is AdminShell.SubmodelElement)
+                                {
+                                    var sme = parentContainer as AdminShell.SubmodelElement;
+                                    if (sme.idShort == null || sme.idShort.Trim() == "")
+                                    {
+                                        sme.idShort = dsiec.shortName;
+                                        la = new ModifyRepo.LambdaActionRedrawEntity();
+                                    }
+                                }
+                                return la;
+                            });
+                        */
 
                         helper.AddHintBubble(
-                            stack, hintMode,
+                            stack, hintMode, 
                             new[] {
                                 new HintCheck(
-                                    () =>
-                                    {
-                                        return (dsiec.unitId == null || dsiec.unitId.Count < 1) &&
-                                            ( dsiec.unit == null || dsiec.unit.Trim().Length < 1);
+                                    () => { 
+                                        return (dsiec.unitId == null || dsiec.unitId.Count < 1) && 
+                                            ( dsiec.unit == null || dsiec.unit.Trim().Length < 1); 
                                     },
-                                "Please check, if you can provide a unit or a unitId, " +
-                                    "in which the concept is being measured. " +
-                                    "Usage of SI-based units is encouraged.")
-                            });
+                                    "Please check, if you can provide a unit or a unitId, " + 
+                                        "in which the concept is being measured. " + 
+                                        "Usage of SI-based units is encouraged.")
+                        });
                         helper.AddKeyValueRef(
-                            stack, "unit", dsiec, ref dsiec.unit, null, repo,
+                            stack, "unit", dsiec, ref dsiec.unit, null, repo, 
                             v => { dsiec.unit = v as string; return new ModifyRepo.LambdaActionNone(); });
 
                         helper.AddHintBubble(
-                            stack, hintMode,
+                            stack, hintMode, 
                             new[] {
                                 new HintCheck(
-                                    () =>
-                                    {
-                                        return ( dsiec.unit == null || dsiec.unit.Trim().Length < 1) &&
-                                            ( dsiec.unitId == null || dsiec.unitId.Count < 1);
+                                    () => { 
+                                        return ( dsiec.unit == null || dsiec.unit.Trim().Length < 1) && 
+                                            ( dsiec.unitId == null || dsiec.unitId.Count < 1); 
                                     },
-                                    "Please check, if you can provide a unit or a unitId, in which the concept " +
-                                        "is being measured. Usage of SI-based units is encouraged.")
+                                    "Please check, if you can provide a unit or a unitId, " + 
+                                        "in which the concept is being measured. " + 
+                                        "Usage of SI-based units is encouraged.")
                             });
                         if (helper.SafeguardAccess(
-                                stack, repo, dsiec.unitId, "unitId:", "Create data element!",
+                                stack, repo, dsiec.unitId, "unitId:", "Create data element!", 
                                 v =>
-                            {
-                                dsiec.unitId = new AdminShell.UnitId();
-                                return new ModifyRepo.LambdaActionRedrawEntity();
-                            }))
+                                {
+                                    dsiec.unitId = new AdminShell.UnitId();
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }))
                         {
+                            // helper.AddGroup(stack, "UnitID", levelColors[1][0], levelColors[1][1]);
                             helper.AddKeyListKeys(
-                                stack, "unitId", dsiec.unitId.Keys, repo, package, AdminShell.Key.GlobalReference,
-                                addEclassIrdi: true);
+                                stack, "unitId", dsiec.unitId.Keys, repo, package, 
+                                AdminShell.Key.GlobalReference, addEclassIrdi: true);
                         }
 
                         helper.AddKeyValueRef(
@@ -2551,41 +2557,37 @@ namespace AasxPackageExplorer
                     if (editMode)
                     {
                         helper.AddAction(
-                            stack, "value:",
-                            new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
-                            repo,
-                            (buttonNdx) =>
-                            {
+                            stack, "value:", 
+                            new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." }, 
+                            repo, 
+                            (buttonNdx) => {
                                 if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
                                 {
                                     // which adequate type?
                                     var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
-
                                     if ((int)buttonNdx == 0)
                                         en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
-
                                     if ((int)buttonNdx == 1)
                                         en = AdminShell
                                             .SubmodelElementWrapper
                                             .AdequateElementEnum
                                             .MultiLanguageProperty;
-
                                     if ((int)buttonNdx == 2)
                                         en = AdminShell
                                             .SubmodelElementWrapper
                                             .AdequateElementEnum
                                             .SubmodelElementCollection;
-
                                     if ((int)buttonNdx == 3)
-                                        en = helper.SelectAdequateEnum("Select SubmodelElement to create ..",
-                                            excludeValues: new[] {
+                                        en = helper.SelectAdequateEnum(
+                                            "Select SubmodelElement to create ..",
+                                            excludeValues: new[] { 
                                                 AdminShell.SubmodelElementWrapper.AdequateElementEnum.Operation });
 
                                     // ok?
                                     if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                                     {
                                         // create
-                                        AdminShell.SubmodelElement sme2 =
+                                        AdminShell.SubmodelElement sme2 = 
                                             AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
 
                                         // add
@@ -2722,15 +2724,13 @@ namespace AasxPackageExplorer
                 if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
                     helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
-                        "SubmodelElement:",
-                        nextFocus: wrapper.submodelElement);
+                        "SubmodelElement:", nextFocus: wrapper.submodelElement);
 
-                if (parentContainer != null &&
-                        parentContainer is AdminShell.SubmodelElementCollection &&
+                if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection && 
                         wrapper != null)
                     helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
-                        horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value,
-                        wrapper, env, "SubmodelElement:",
+                        horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value, 
+                        wrapper, env, "SubmodelElement:", 
                         nextFocus: wrapper.submodelElement);
 
                 // refactor?
@@ -2765,10 +2765,9 @@ namespace AasxPackageExplorer
             if (parentContainer != null)
             {
                 helper.AddAction(
-                    stack, "Buffer:", new[] { "Cut", "Copy", "Paste above", "Paste below" },
-                    repo,
-                    (buttonNdx) =>
-                    {
+                    stack, "Buffer:", 
+                    new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo, 
+                    (buttonNdx) => {
                         if (buttonNdx is int)
                         {
                             if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
@@ -2781,62 +2780,90 @@ namespace AasxPackageExplorer
                                 cpb.sme = sme;
                                 this.theCopyPaste = cpb;
 
-                                // user feedback
-                                Log.Info(
-                                    0, StoredPrint.ColorBlue,
-                                    "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme?.idShort,
-                                    "" + sme?.GetElementName(),
-                                   cpb.duplicate
-                                       ? " Paste will duplicate."
-                                       : " Paste will cut at original position.");
-                            }
+                                     // user feedback
+                                     Log.Info(
+                                         0, StoredPrint.ColorBlue,
+                                         "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme?.idShort,
+                                         "" + sme?.GetElementName(),
+                                        cpb.duplicate
+                                            ? " Paste will duplicate."
+                                            : " Paste will cut at original position.");
+                                 }
 
-                            if ((int)buttonNdx == 2 || (int)buttonNdx == 3)
+                            if ((int)buttonNdx == 2 || (int)buttonNdx == 3 || (int)buttonNdx == 4)
                             {
                                 // access copy/paste
                                 var cpb = this.theCopyPaste;
 
-                                // present
-                                if (cpb == null || cpb.sme == null || cpb.wrapper == null ||
-                                    cpb.parentContainer == null)
-                                {
-                                    if (helper.flyoutProvider != null)
-                                        helper.flyoutProvider.MessageBoxFlyoutShow(
-                                            "No (valid) information in copy/paste buffer.", "Copy & Paste",
-                                            MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return new ModifyRepo.LambdaActionNone();
-                                }
+                                     // present
+                                     if (cpb == null || cpb.sme == null || cpb.wrapper == null ||
+                                         cpb.parentContainer == null)
+                                     {
+                                         if (helper.flyoutProvider != null)
+                                             helper.flyoutProvider.MessageBoxFlyoutShow(
+                                                 "No (valid) information in copy/paste buffer.", "Copy & Paste",
+                                                 MessageBoxButton.OK, MessageBoxImage.Information);
+                                         return new ModifyRepo.LambdaActionNone();
+                                     }
 
-                                // user feedback
-                                Log.Info(
-                                    "Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.",
-                                    "" + cpb.sme?.idShort, "" + cpb.sme?.GetElementName());
+                                     // user feedback
+                                     Log.Info(
+                                         "Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.",
+                                         "" + cpb.sme?.idShort, "" + cpb.sme?.GetElementName());
 
-                                // apply info
-                                var smw2 = new AdminShell.SubmodelElementWrapper(cpb.sme, shallowCopy: false);
+                                     // apply info
+                                     var smw2 = new AdminShell.SubmodelElementWrapper(cpb.sme, shallowCopy: false);
 
                                 // insertation depends on parent container
                                 if ((int)buttonNdx == 2)
                                 {
-                                    if (parentContainer is AdminShell.Submodel && wrapper != null)
+                                    if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
                                         helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                            (parentContainer as AdminShell.Submodel).submodelElements, smw2, wrapper);
+                                            pcsm.submodelElements, smw2, wrapper);
 
-                                    if (parentContainer is AdminShell.SubmodelElementCollection && wrapper != null)
+                                    if (parentContainer is AdminShell.SubmodelElementCollection pcsmc && 
+                                            wrapper != null)
                                         helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                            (parentContainer as AdminShell.SubmodelElementCollection).value,
-                                            smw2, wrapper);
+                                            pcsmc.value, smw2, wrapper);
+
+                                    if (parentContainer is AdminShell.Entity pcent && 
+                                            wrapper != null)
+                                        helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                            pcent.statements, smw2, wrapper);
+
+                                    if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel && 
+                                            wrapper != null)
+                                        helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                            pcarel.annotations, smw2, wrapper);
+
+                                    // TODO: Operation mssing here?
                                 }
                                 if ((int)buttonNdx == 3)
                                 {
-                                    if (parentContainer is AdminShell.Submodel && wrapper != null)
+                                    if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
                                         helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                            (parentContainer as AdminShell.Submodel).submodelElements, smw2, wrapper);
+                                            pcsm.submodelElements, smw2, wrapper);
 
-                                    if (parentContainer is AdminShell.SubmodelElementCollection && wrapper != null)
+                                    if (parentContainer is AdminShell.SubmodelElementCollection pcsmc && 
+                                            wrapper != null)
                                         helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                            (parentContainer as AdminShell.SubmodelElementCollection).value,
-                                            smw2, wrapper);
+                                            pcsmc.value, smw2, wrapper);
+
+                                    if (parentContainer is AdminShell.Entity pcent && wrapper != null)
+                                        helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                            pcent.statements, smw2, wrapper);
+
+                                    if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel && 
+                                            wrapper != null)
+                                        helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                            pcarel.annotations, smw2, wrapper);
+
+                                    // TODO: Operation mssing here?
+                                }
+                                if ((int)buttonNdx == 4)
+                                {
+                                    if (sme is AdminShell.IEnumerateChildren smeec)
+                                        smeec.AddChild(smw2);
                                 }
 
                                 // may delete original
@@ -2846,7 +2873,7 @@ namespace AasxPackageExplorer
                                         helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
                                             pcsm.submodelElements, cpb.wrapper, null);
 
-                                    if (cpb.parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
+                                    if (cpb.parentContainer is AdminShell.SubmodelElementCollection pcsmc && 
                                             wrapper != null)
                                         helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
                                             pcsmc.value, cpb.wrapper, null);
@@ -3095,16 +3122,15 @@ namespace AasxPackageExplorer
                     });
 
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
                             () => { return helper.auxPackages != null;  },
-                            "You have opened an auxiliary AASX package. You can copy elements from it!",
+                            "You have opened an auxiliary AASX package. You can copy elements from it!", 
                             severityLevel: HintCheck.Severity.Notice)
-                    });
+                });
                 helper.AddAction(
-                    stack, "Copy from existing SubmodelElement:",
-                    new[] { "Copy single", "Copy recursively" }, repo,
+                    stack, "Copy from existing SubmodelElement:", new[] { "Copy single", "Copy recursively" }, repo, 
                     (buttonNdx) =>
                     {
                         if (buttonNdx is int)
@@ -3112,8 +3138,7 @@ namespace AasxPackageExplorer
                             if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
                             {
                                 var rve = helper.SmartSelectAasEntityVisualElement(
-                                    package.AasEnv, "SubmodelElement",
-                                    package: package,
+                                    package.AasEnv, "SubmodelElement", package: package, 
                                     auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
 
                                 if (rve != null)
@@ -3122,10 +3147,20 @@ namespace AasxPackageExplorer
                                     if (mdo != null && mdo is AdminShell.SubmodelElement)
                                     {
                                         var clone = env.CopySubmodelElementAndCD(
-                                            rve.theEnv, mdo as AdminShell.SubmodelElement,
-                                            copyCD: true,
+                                            rve.theEnv, mdo as AdminShell.SubmodelElement, copyCD: true, 
                                             shallowCopy: (int)buttonNdx == 0);
-
+                                        /*
+                                         * TO BE DELETED, if SMWC works..
+                                        if (listOfSMEW == null)
+                                        {
+                                            listOfSMEW = new List<AdminShell.SubmodelElementWrapper>();
+                                            if (sme is AdminShell.SubmodelElementCollection)
+                                                (sme as AdminShell.SubmodelElementCollection).value = listOfSMEW;
+                                            if (sme is AdminShell.Entity)
+                                                (sme as AdminShell.Entity).statements = listOfSMEW;
+                                        }
+                                        listOfSMEW.Add(clone);
+                                        */
                                         if (sme is AdminShell.SubmodelElementCollection smesmc)
                                             smesmc.value.Add(clone);
                                         if (sme is AdminShell.Entity smeent)
@@ -3158,11 +3193,9 @@ namespace AasxPackageExplorer
                });
             }
 
-            if (editMode && sme is AdminShell.Operation)
+            if (editMode && sme is AdminShell.Operation smo)
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
-
-                var smo = sme as AdminShell.Operation;
 
                 var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
 
@@ -3180,75 +3213,171 @@ namespace AasxPackageExplorer
                     helper.AddGroup(substack, "OperationVariables " + names, levelColors[1][0], levelColors[1][1]);
 
                     helper.AddHintBubble(
-                        substack, hintMode,
+                        substack, hintMode, 
                         new[] {
                             new HintCheck(
                                 () => { return smo[dir] == null || smo[dir].Count < 1; },
-                                "This collection of OperationVariables currently has no elements, yet. " +
-                                    "Please check, which in- and out-variables are required.",
-                                    severityLevel: HintCheck.Severity.Notice)
-                        });
-                    helper.AddAction(
-                        substack, "OperationVariable:", new[] { "Add" }, repo,
-                        (buttonNdx) =>
-                        {
-                            if (buttonNdx is int && (int)buttonNdx == 0)
-                            {
-                                var ov = new AdminShell.OperationVariable();
-                                if (smo[dir] == null)
-                                    smo[dir] = new List<AdminShell.OperationVariable>();
-                                smo[dir].Add(ov);
-
-                                // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
-                            }
-                            return new ModifyRepo.LambdaActionNone();
-                        });
-
-                    helper.AddHintBubble(
-                        substack, hintMode,
-                        new[] {
-                            new HintCheck(
-                                () => { return helper.auxPackages != null;  },
-                                "You have opened an auxiliary AASX package. You can copy elements from it!",
+                                "This collection of OperationVariables currently has no elements, yet. " + 
+                                    "Please check, which in- and out-variables are required.", 
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                     helper.AddAction(
-                        substack, "Copy from existing OperationVariable:",
-                        new[] { "Copy single", "Copy recursively" }, repo,
+                        substack, "OperationVariable:", new[] { "Add" }, repo, 
                         (buttonNdx) =>
                         {
-                            if (buttonNdx is int)
-                            {
-                                if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
-                                {
-                                    var rve = helper.SmartSelectAasEntityVisualElement(
-                                        package.AasEnv, "OperationVariable",
-                                        package: package,
-                                        auxPackages: helper.auxPackages) as VisualElementOperationVariable;
+                           if (buttonNdx is int && (int)buttonNdx == 0)
+                           {
+                               var ov = new AdminShell.OperationVariable();
+                               if (smo[dir] == null)
+                                   smo[dir] = new List<AdminShell.OperationVariable>();
+                               smo[dir].Add(ov);
 
-                                    if (rve != null)
-                                    {
-                                        var mdo = rve.GetMainDataObject();
-                                        if (mdo != null && mdo is AdminShell.OperationVariable)
-                                        {
-                                            var clone = new AdminShell.OperationVariable(
-                                                mdo as AdminShell.OperationVariable,
-                                                shallowCopy: (int)buttonNdx == 0);
+                               // redraw
+                               return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
+                           }
+                           return new ModifyRepo.LambdaActionNone();
+                        });
 
-                                            if (smo[dir] == null)
-                                                smo[dir] = new List<AdminShell.OperationVariable>();
-                                            smo[dir].Add(clone);
-                                            return new ModifyRepo.LambdaActionRedrawAllElements(
-                                                nextFocus: smo, isExpanded: true);
-                                        }
-                                    }
-                                }
-                            }
-                            return new ModifyRepo.LambdaActionNone();
+                    helper.AddHintBubble(
+                        substack, hintMode, 
+                        new[] {
+                            new HintCheck(
+                                () => { return helper.auxPackages != null;  },
+                                "You have opened an auxiliary AASX package. You can copy elements from it!", 
+                                severityLevel: HintCheck.Severity.Notice)
+                        });
+                    helper.AddAction(
+                        substack, "Copy from existing OperationVariable:", new[] { "Copy single", "Copy recursively" }, 
+                        repo, 
+                        (buttonNdx) =>
+                        {
+                           if (buttonNdx is int)
+                           {
+                               if ((int)buttonNdx == 0 || (int)buttonNdx == 1)
+                               {
+                                   var rve = helper.SmartSelectAasEntityVisualElement(
+                                    package.AasEnv, "OperationVariable", package: package, 
+                                    auxPackages: helper.auxPackages) as VisualElementOperationVariable;
+
+                                   if (rve != null)
+                                   {
+                                       var mdo = rve.GetMainDataObject();
+                                       if (mdo != null && mdo is AdminShell.OperationVariable)
+                                       {
+                                           var clone = new AdminShell.OperationVariable(
+                                               mdo as AdminShell.OperationVariable, shallowCopy: (int)buttonNdx == 0);
+
+                                           if (smo[dir] == null)
+                                               smo[dir] = new List<AdminShell.OperationVariable>();
+
+                                           smo[dir].Add(clone);
+                                           return new ModifyRepo.LambdaActionRedrawAllElements(
+                                               nextFocus: smo, isExpanded: true);
+                                       }
+                                   }
+                               }
+                           }
+                           return new ModifyRepo.LambdaActionNone();
                         });
 
                 }
+
+            }
+
+            if (editMode && sme is AdminShell.AnnotatedRelationshipElement are)
+            {
+                helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
+
+                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+
+                helper.AddHintBubble(
+                    substack, hintMode, 
+                    new[] {
+                        new HintCheck(
+                            () => { return are.annotations == null || are.annotations.Count < 1; },
+                            "The annotations collection currently has no elements, yet. " + 
+                                "Consider add DataElements or refactor to ordinary RelationshipElement.", 
+                            severityLevel: HintCheck.Severity.Notice)
+                        });
+                helper.AddAction(
+                    stack, "annotation:", new[] { "Add Property", "Add MultiLang.Prop.", "Add Range", "Add other .." }, 
+                    repo, 
+                    (buttonNdx) => {
+                        if (buttonNdx is int && (int)buttonNdx >= 0 && (int)buttonNdx <= 3)
+                        {
+                            // which adequate type?
+                            var en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown;
+                            if ((int)buttonNdx == 0)
+                                en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Property;
+                            if ((int)buttonNdx == 1)
+                                en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.MultiLanguageProperty;
+                            if ((int)buttonNdx == 2)
+                                en = AdminShell.SubmodelElementWrapper.AdequateElementEnum.Range;
+                            if ((int)buttonNdx == 3)
+                                en = helper.SelectAdequateEnum(
+                                    "Select SubmodelElement to create ..", 
+                                    includeValues: AdminShell.SubmodelElementWrapper.AdequateElementsDataElement);
+
+                            // ok?
+                            if (en != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                            {
+                                // create, add
+                                AdminShell.SubmodelElement sme2 = 
+                                    AdminShell.SubmodelElementWrapper.CreateAdequateType(en);
+
+                                if (are.annotations == null)
+                                    are.annotations = new AdminShell.DataElementWrapperCollection();
+
+                                are.annotations.Add(sme2);
+
+                                // redraw
+                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
+
+                helper.AddHintBubble(
+                    substack, hintMode, 
+                    new[] {
+                        new HintCheck(
+                            () => { return helper.auxPackages != null;  },
+                            "You have opened an auxiliary AASX package. You can copy elements from it!", 
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                helper.AddAction(
+                    substack, "Copy from existing DataElement:", new[] { "Copy single" }, repo, 
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx is int)
+                        {
+                            if ((int)buttonNdx == 0)
+                            {
+                                var rve = helper.SmartSelectAasEntityVisualElement(
+                                    package.AasEnv, "SubmodelElement", package: package, 
+                                    auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+
+                                if (rve != null)
+                                {
+                                    var mdo = rve.GetMainDataObject();
+                                    if (mdo != null && mdo is AdminShell.DataElement)
+                                    {
+                                        var clonesmw = new AdminShell.SubmodelElementWrapper(
+                                            mdo as AdminShell.DataElement, shallowCopy: true);
+
+                                        if (are.annotations == null)
+                                            are.annotations = new AdminShell.DataElementWrapperCollection();
+
+                                        are.annotations.Add(clonesmw);
+
+                                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                                            nextFocus: clonesmw.submodelElement, isExpanded: true);
+                                    }
+                                }
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
 
             }
 
@@ -3458,40 +3587,41 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
+                    sme.semanticId = new AdminShell.SemanticId();
+                    return new ModifyRepo.LambdaActionRedrawEntity();
+                }))
+                {
                     helper.AddHintBubble(
-                        stack, hintMode,
+                        stack, hintMode, 
                         new[] {
                             new HintCheck(
                                 () => { return sme.semanticId.IsEmpty; },
-                                "The use of semanticId for SubmodelElements is mandatory! " +
-                                    "Only by this means, an automatic system can identify and " +
-                                    "understand the meaning of the SubmodelElements and, for example, " +
-                                    "its unit or logical datatype. " +
-                                    "The semanticId shall reference to a ConceptDescription " +
-                                    "within the AAS environment or an external repository, " +
-                                    "such as IEC CDD or eCl@ss or a company / consortia repository.",
+                                "The use of semanticId for SubmodelElements is mandatory! " + 
+                                    "Only by this means, an automatic system can identify and " + 
+                                    "understand the meaning of the SubmodelElements and, for example, " + 
+                                    "its unit or logical datatype. The semanticId shall reference " + 
+                                    "to a ConceptDescription within the AAS environment or an external repository, " + 
+                                    "such as IEC CDD or eCl@ss or a company / consortia repository.", 
                                 breakIfTrue: true),
                             new HintCheck(
                                 () => { return sme.semanticId[0].type != AdminShell.Key.ConceptDescription; },
-                                "The semanticId usually refers to a ConceptDescription " +
-                                    "within the respective repository.",
+                                "The semanticId usually refers to a ConceptDescription " + 
+                                    "within the respective repository.", 
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                     helper.AddKeyListKeys(
-                        stack, "semanticId", sme.semanticId.Keys, repo,
-                        package: package,
-                        addExistingEntities: AdminShell.Key.ConceptDescription,
-                        addEclassIrdi: true);
+                        stack, "semanticId", sme.semanticId.Keys, repo, package: package, 
+                        addExistingEntities: AdminShell.Key.ConceptDescription, addEclassIrdi: true);
                 }
 
                 // qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
                 if (helper.SafeguardAccess(
-                    stack, repo, sme.qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",
-                    v =>
-                    {
-                        sme.qualifiers = new AdminShellV20.QualifierCollection();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, sme.qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",
+                        v =>
+                        {
+                            sme.qualifiers = new AdminShellV20.QualifierCollection();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     helper.AddGroup(stack, "Qualifier", levelColors[1][0], levelColors[1][1]);
                     helper.QualifierHelper(stack, repo, sme.qualifiers);
@@ -3790,56 +3920,60 @@ namespace AasxPackageExplorer
                     helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, thePackage, AdminShell.Key.AllElements);
                 }
             }
-            else if (sme is AdminShell.RelationshipElement)
+            else
+            if (sme is AdminShell.RelationshipElement rele)
             {
-                var p = sme as AdminShell.RelationshipElement;
-                helper.AddGroup(stack, "RelationshipElement", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "" + sme.GetElementName(), levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
-                            () => { return p.first == null || p.first.IsEmpty; },
-                            "Please choose the first element of the relationship. " +
-                                "In terms of a semantic triple, it would be the subject. " +
-                                "The semantics of your reference (the predicate) shall be described " +
-                                "by the concept referred by semanticId.",
+                            () => { return rele.first == null || rele.first.IsEmpty; },
+                            "Please choose the first element of the relationship. " + 
+                                "In terms of a semantic triple, it would be the subject. " + 
+                                "The semantics of your reference (the predicate) shall be described " + 
+                                "by the concept referred by semanticId.", 
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                    stack, repo, p.first, "First relation:", "Create data element!",
-                    v =>
-                    {
-                        p.first = new AdminShell.Reference();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, rele.first, "First relation:", "Create data element!", 
+                        v =>
+                        {
+                            rele.first = new AdminShell.Reference();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
-                    helper.AddKeyListKeys(
-                        stack, "first", p.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                    helper.AddKeyListKeys(stack, "first", rele.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
                         jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); });
                 }
 
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
-                            () => { return p.second == null || p.second.IsEmpty; },
-                            "Please choose the second element of the relationship. " +
-                                "In terms of a semantic triple, it would be the object. " +
-                                "The semantics of your reference (the predicate) shall be described " +
-                                "by the concept referred by semanticId.",
+                            () => { return rele.second == null || rele.second.IsEmpty; },
+                            "Please choose the second element of the relationship. " + 
+                                "In terms of a semantic triple, it would be the object. " + 
+                                "The semantics of your reference (the predicate) shall be described " + 
+                                "by the concept referred by semanticId.", 
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                    stack, repo, p.first, "Secind relation:", "Create data element!",
-                    v =>
-                    {
-                        p.second = new AdminShell.Reference();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                        stack, repo, rele.first, "Secind relation:", "Create data element!", 
+                        v =>
+                        {
+                            rele.second = new AdminShell.Reference();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "second", p.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                        stack, "second", rele.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                }
+
+                // specifically for annotated relationship?
+                if (sme is AdminShell.AnnotatedRelationshipElement arele)
+                {
                 }
             }
             else if (sme is AdminShell.Capability)
@@ -3847,14 +3981,48 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Capability", levelColors[0][0], levelColors[0][1]);
                 helper.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
-            else if (sme is AdminShell.SubmodelElementCollection)
+            else
+            if (sme is AdminShell.SubmodelElementCollection smc)
             {
-                var p = sme as AdminShell.SubmodelElementCollection;
                 helper.AddGroup(stack, "SubmodelElementCollection", levelColors[0][0], levelColors[0][1]);
-                if (p.value != null)
-                    helper.AddKeyValue(stack, "# of values", "" + p.value.Count);
+                if (smc.value != null)
+                    helper.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else
                     helper.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                // TODO: ordered, allowDuplicates
+
+                /* non-edit mode fails
+
+                var g = helper.AddSmallGrid(2, 2, new[] { "#", "*" });
+
+                helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "ordered: ");
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), content: "(true e.g. for indexed array)", isChecked: smc.ordered),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                smc.ordered = (bool)o;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "allowDuplicates: ");
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), content: "(true for multiple same element)", isChecked: smc.allowDuplicates),
+                        (o) =>
+                        {
+                            if (o is bool)
+                                smc.allowDuplicates = (bool)o;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                stack.Children.Add(g);
+
+                */
+
+                helper.AddCheckBox(
+                    stack, "ordered:", smc.ordered, " (true e.g. for indexed array)", (b) => { smc.ordered = b; });
+                helper.AddCheckBox(
+                    stack, "allowDuplicates:", smc.allowDuplicates, 
+                    " (true, if multiple elements with same semanticId)", (b) => { smc.allowDuplicates = b; });
             }
             else if (sme is AdminShell.Operation)
             {
@@ -3864,6 +4032,8 @@ namespace AasxPackageExplorer
                     helper.AddKeyValue(stack, "# of input vars.", "" + p.inputVariable.Count);
                 if (p.outputVariable != null)
                     helper.AddKeyValue(stack, "# of output vars.", "" + p.outputVariable.Count);
+                if (p.inoutputVariable != null)
+                    helper.AddKeyValue(stack, "# of in/out vars.", "" + p.inoutputVariable.Count);
             }
             else if (sme is AdminShell.Entity)
             {
@@ -3895,19 +4065,19 @@ namespace AasxPackageExplorer
                     comboBoxIsEditable: true);
 
                 helper.AddHintBubble(
-                    stack, hintMode,
+                    stack, hintMode, 
                     new[] {
                         new HintCheck(
-                            () => {
-                                return ent.entityType != null &&
-                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity &&
-                                    (ent.assetRef == null || ent.assetRef.Count < 1);
+                            () => { 
+                                return ent.entityType != null && 
+                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity && 
+                                    (ent.assetRef == null || ent.assetRef.Count < 1); 
                             },
-                            "Please choose the Asset for the SelfManagedEntity.",
+                            "Please choose the Asset for the SelfManagedEntity.", 
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                        stack, repo, ent.assetRef, "Asset:", "Create data element!",
+                        stack, repo, ent.assetRef, "Asset:", "Create data element!", 
                         v =>
                         {
                             ent.assetRef = new AdminShell.AssetRef();
@@ -4008,42 +4178,39 @@ namespace AasxPackageExplorer
                 v => { view.idShort = v as string; return new ModifyRepo.LambdaActionNone(); });
 
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new HintCheck(
-                    () => { return view.category != null && view.category.Trim().Length >= 1; },
-                    "The use of category is unusual here.",
+                    () => { return view.category != null && view.category.Trim().Length >= 1; }, 
+                    "The use of category is unusual here.", 
                     severityLevel: HintCheck.Severity.Notice));
 
             helper.AddKeyValueRef(
-                stack, "category", view, ref view.category, null, repo,
+                stack, "category", view, ref view.category, null, repo, 
                 v => { view.category = v as string; return new ModifyRepo.LambdaActionNone(); },
-                comboBoxItems: AdminShell.Referable.ReferableCategoryNames,
-                comboBoxIsEditable: true);
+                comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
             helper.AddHintBubble(
-                stack, hintMode,
+                stack, hintMode, 
                 new[] {
                     new HintCheck(
-                        () => {
-                            return view.description == null || view.description.langString == null ||
-                                view.description.langString.Count < 1;
+                        () => { 
+                            return view.description == null || view.description.langString == null || 
+                                view.description.langString.Count < 1;  
                         },
-                        "The use of an description is recommended to allow the consumer of an view " +
-                            "to understand the nature of it.",
-                        breakIfTrue: true,
-                        severityLevel: HintCheck.Severity.Notice),
+                        "The use of an description is recommended to allow the consumer " + 
+                            "of an view to understand the nature of it.", 
+                        breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
                     new HintCheck(
                         () => { return view.description.langString.Count < 2; },
-                        "Consider having description in multiple langauges.",
-                        severityLevel: HintCheck.Severity.Notice)
+                        "Consider having description in multiple langauges.", severityLevel: HintCheck.Severity.Notice)
                 });
             if (helper.SafeguardAccess(
-                    stack, repo, view.description, "description:", "Create data element!",
+                    stack, repo, view.description, "description:", "Create data element!", 
                     v =>
                     {
                         view.description = new AdminShell.Description();
                         return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
+                    })) 
                 helper.AddKeyListLangStr(stack, "description", view.description.langString, repo);
 
             // HasSemantics

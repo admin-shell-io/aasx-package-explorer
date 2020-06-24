@@ -65,17 +65,58 @@ namespace AasxPluginTechnicalData
                     continue;
                 var sme = smw.submodelElement;
 
-                if (sme is AdminShell.SubmodelElementCollection &&
-                    true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                // prepare information about displayName, semantics unit
+                var semantics = "-";
+                var unit = "";
+                // make up property name (1)
+                var dispName = "" + sme.idShort;
+                var dispNameWithCD = dispName;
+
+                // make up semantics
+                if (sme.semanticId != null)
+                {
+                    if (sme.semanticId.Matches(theDefs.CD_NonstandardizedProperty.GetSingleKey()))
+                        semantics = "Non-standardized";
+                    else
+                    {
+                        // the semantics display
+                        semantics = "" + sme.semanticId.ToString(2);
+
+                        // find better property name (2)
+                        var cd = package?.AasEnv?.FindConceptDescription(sme.semanticId);
+                        if (cd != null)
+                        {
+                            // unit?
+                            unit = "" + cd.GetIEC61360()?.unit;
+
+                            // names
+                            var dsn = cd.GetDefaultShortName(defaultLang);
+                            if (dsn != "")
+                                dispNameWithCD = dsn;
+
+                            var dpn = cd.GetDefaultPreferredName(defaultLang);
+                            if (dpn != "")
+                                dispNameWithCD = dpn;
+                        }
+                    }
+                }
+
+                // make up even better better property name (3)
+                var descDef = "" + sme.description?.langString?.GetDefaultStr(defaultLang);
+                if (descDef.HasContent())
+                {
+                    dispName = descDef;
+                    dispNameWithCD = dispName;
+                }
+
+                // special function?
+                if (sme is AdminShell.SubmodelElementCollection && true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
                 {
                     // finalize current row group??
                     ;
 
                     // Main Section
-                    var cell = NewTableCellPara(
-                        "" + sme.idShort,
-                        null, "ParaStyleSectionMain",
-                        columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionMain", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -101,9 +142,7 @@ namespace AasxPluginTechnicalData
                     ;
 
                     // Sub Section
-                    var cell = NewTableCellPara(
-                        "" + sme.idShort, null, "ParaStyleSectionSub",
-                        columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionSub", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -126,49 +165,12 @@ namespace AasxPluginTechnicalData
                 {
                     // make a row (in current group)
                     var tr = new TableRow();
-                    currentRowGroup.Rows.Add(tr);
-
-                    // make up property name (1)
-                    var propName = "" + sme.idShort;
-
-                    // make up semantics
-                    var semantics = "-";
-                    if (sme.semanticId != null)
-                    {
-                        if (sme.semanticId.Matches(theDefs.CD_NonstandardizedProperty.GetSingleKey()))
-                            semantics = "Non-standardized";
-                        else
-                        {
-                            // the semantics display
-                            semantics = "" + sme.semanticId.ToString(2);
-
-                            // find better property name (2)
-                            var cd = package?.AasEnv?.FindConceptDescription(sme.semanticId);
-                            var dsn = cd?.GetDefaultShortName(defaultLang);
-
-                            if (dsn != "")
-                                propName = dsn;
-
-                            var dpn = cd?.GetDefaultPreferredName(defaultLang);
-                            if (dpn != "")
-                                propName = dpn;
-                        }
-                    }
-
-                    // make up even better better property name (3)
-                    var descDef = "" + sme.description?.langString?.GetDefaultStr(defaultLang);
-                    if (descDef.HasContent())
-                        propName = descDef;
+                    currentRowGroup.Rows.Add(tr);                   
 
                     // add cells
-                    tr.Cells.Add(
-                        NewTableCellPara(propName, "CellStylePropertyLeftmost", "ParaStyleProperty",
-                        padding: new Thickness(5 * depth, 0, 0, 0)));
-                    tr.Cells.Add(
-                        NewTableCellPara(semantics, "CellStylePropertyOther", "ParaStyleProperty"));
-                    tr.Cells.Add(
-                        NewTableCellPara(
-                            "" + sme.ValueAsText(defaultLang), "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(NewTableCellPara(dispNameWithCD, "CellStylePropertyLeftmost", "ParaStyleProperty", padding: new Thickness(5 * depth, 0, 0, 0)));
+                    tr.Cells.Add(NewTableCellPara(semantics, "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(NewTableCellPara("" + sme.ValueAsText(defaultLang) + " " + unit, "CellStylePropertyOther", "ParaStyleProperty"));
                 }
             }
 

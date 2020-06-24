@@ -1,4 +1,5 @@
-﻿{
+﻿/* these items were adopted 12 JUN 2020, based on 1st draft of Y. Zhangs proposal for Submodel template */
+{
   /* Nameplate */
   "SM_Nameplate": {
     "hasDataSpecification": null,
@@ -2936,8 +2937,8 @@
   },
   "CD_DocumentationItem": {
     "identification": {
-      "idType": "IRDI",
-      "id": "0173-1#02-AAD001#001"
+      "idType": "IRI",
+      "id": "http://www.vdi.de/2770/AssetDocumentation/Document"
     },
     "administration": null,
     "idShort": "DocumentationItem",
