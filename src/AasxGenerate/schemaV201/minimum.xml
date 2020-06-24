@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aas:aasenv xmlns:aas="http://www.admin-shell.io/aas/2/0" 
+xmlns:abac="http://www.admin-shell.io/aas/abac/2/0" 
+xmlns:aas_common="http://www.admin-shell.io/aas_common/2/0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:IEC="http://www.admin-shell.io/IEC61360/2/0" 
+xsi:schemaLocation="http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd http://www.admin-shell.io/aas/abac/2/0 AAS_ABAC.xsd">
+<aas:assetAdministrationShells></aas:assetAdministrationShells>
+<aas:assets></aas:assets>
+<aas:submodels></aas:submodels>
+<aas:conceptDescriptions></aas:conceptDescriptions>
+</aas:aasenv>
