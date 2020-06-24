@@ -39,6 +39,10 @@ jobs:
         working-directory: src
         run: powershell .\CheckFormat.ps1
 
+      - name: Check bite-sized
+        working-directory: src
+        run: powershell .\CheckBiteSized.ps1
+
       - name: Check dead code
         working-directory: src
         run: powershell .\CheckDeadCode.ps1

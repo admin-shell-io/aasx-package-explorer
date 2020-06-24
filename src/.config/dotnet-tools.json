@@ -13,6 +13,12 @@
       "commands": [
         "dead-csharp"
       ]
+    },
+    "bitesized": {
+      "version": "1.0.0-beta1",
+      "commands": [
+        "bite-sized"
+      ]
     }
   }
 }
