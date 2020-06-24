@@ -224,6 +224,7 @@ function CreateAndGetArtefactsDir
 Export-ModuleMember -Function `
     GetToolsDir, `
      AssertDotnet, `
+     AssertDotnetToolVersion, `
      AssertDotnetFormatVersion, `
      AssertDeadCsharpVersion, `
      FindMSBuild, `
