@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v1.0.4
+        uses: mristin/opinionated-commit-message@v1.0.5
 
       - name: Check licenses
         working-directory: src
