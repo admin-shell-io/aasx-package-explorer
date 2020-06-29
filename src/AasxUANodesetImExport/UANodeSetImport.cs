@@ -474,8 +474,7 @@ namespace AasxUANodesetImExport
 
         private static AdminShellV20.Reference createReference(string val)
         {
-            //Refereces are saved as Strings:
-            //  [type,local,idtype,value]
+            //Refereces are saved as Strings: [type,local,idtype,value]
 
 
             AdminShellV20.Reference reference = new AdminShellV20.Reference();
