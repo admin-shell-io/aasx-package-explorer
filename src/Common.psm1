@@ -157,7 +157,7 @@ Check the version of dead-csharp so that the dead code is always detected in the
 #>
 function AssertDeadCsharpVersion
 {
-    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta3"
+    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta4"
 }
 
 function FindInspectCode
