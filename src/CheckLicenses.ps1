@@ -15,6 +15,9 @@ function Main
     $excludes = @{
         $( Join-Path $srcDir ".config" ) = $true
         $( Join-Path $srcDir ".idea" ) = $true
+        $( Join-Path $srcDir ".vs" ) = $true
+        $( Join-Path $srcDir "bin" ) = $true
+        $( Join-Path $srcDir "packages" ) = $true
     }
 
     $acceptedDirs = @()
