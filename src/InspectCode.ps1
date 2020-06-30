@@ -17,6 +17,8 @@ function Main
     $artefactsDir = CreateAndGetArtefactsDir
     $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
 
+    Set-Location $PSScriptRoot
+
     Write-Host "Inspecting the code with inspectcode.exe ..."
 
     # InspectCode passes over the properties to MSBuild,
