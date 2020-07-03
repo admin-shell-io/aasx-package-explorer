@@ -165,7 +165,7 @@ namespace AasxPluginTechnicalData
                 {
                     // make a row (in current group)
                     var tr = new TableRow();
-                    currentRowGroup.Rows.Add(tr);                   
+                    currentRowGroup.Rows.Add(tr);
 
                     // add cells
                     tr.Cells.Add(NewTableCellPara(dispNameWithCD, "CellStylePropertyLeftmost", "ParaStyleProperty", padding: new Thickness(5 * depth, 0, 0, 0)));
