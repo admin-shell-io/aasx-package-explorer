@@ -3531,9 +3531,11 @@ namespace AdminShellNS
             
             // Remark: due to publication of v2.0.1, the order of elements has changed!!!
             // from hasSemantics:
+            /* OZ
             [XmlElement(ElementName = "semanticId")]
             // [JsonIgnore]
             public SemanticId semanticId = null;
+            */
 
             // constructors
 
@@ -3772,8 +3774,10 @@ namespace AdminShellNS
                 };
                 if (semanticKeys != null)
                     q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
+                /* OZ
                 if (valueType != null)
                     q.valueType = valueType;
+                */
                 this.qualifiers.Add(q);
             }
 
@@ -4157,8 +4161,11 @@ namespace AdminShellNS
         /// <summary>
         /// Provides some more functionalities for searching specific elements, e.g. in a SMEC
         /// </summary>
+        // OZ
+        // Resharper disable UnusedTypeParameter
         public class BaseSubmodelElementWrapperCollection<ELEMT> : List<SubmodelElementWrapper> where ELEMT : SubmodelElement
         {
+            // Resharper enable UnusedTypeParameter
             // no new members, as due to inheritance
 
             // constructors
@@ -5361,7 +5368,7 @@ namespace AdminShellNS
                     if (annotations != null)
                         foreach (var smew in annotations)
                             if (smew.submodelElement is DataElement de)
-                            res.Add(de);
+                                res.Add(de);
                     return res.ToArray();
                 }
                 set
@@ -5417,7 +5424,7 @@ namespace AdminShellNS
 
             public void AddChild(SubmodelElementWrapper smw)
             {
-                if (smw == null || !(smw?.submodelElement is DataElement))
+                if (smw == null || !(smw.submodelElement is DataElement))
                     return;
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();

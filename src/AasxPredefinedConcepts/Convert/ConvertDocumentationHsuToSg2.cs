@@ -137,6 +137,7 @@ namespace AasxPredefinedConcepts.Convert
                     // languages
                     var lcs = "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(defsHsu.CD_DocumentVersion_LanguageCode.GetSingleKey())?.value;
                     var lcsa = lcs.Trim().Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    //ReSharper disable ConditionIsAlwaysTrueOrFalse
                     if (lcsa != null && lcsa.Length > 0)
                     {
                         int i = 0;
@@ -149,6 +150,7 @@ namespace AasxPredefinedConcepts.Convert
                                 Set("string", "" + lcc);
                         }
                     }
+                    //ReSharper enable ConditionIsAlwaysTrueOrFalse
 
                     smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentVersionId, addSme: true)?.
                         Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(defsHsu.CD_DocumentVersionId.GetSingleKey())?.value);

@@ -974,8 +974,8 @@ namespace opctest
                 var ar = AdminShell.AnnotatedRelationshipElement.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
                             AdminShell.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(ar);
-                ar.first = sme1?.GetReference();
-                ar.second = sme2?.GetReference();
+                ar.first = sme1.GetReference();
+                ar.second = sme2.GetReference();
 
                 ar.annotations = new AdminShell.DataElementWrapperCollection();
                 ar.annotations.Add(sme1);

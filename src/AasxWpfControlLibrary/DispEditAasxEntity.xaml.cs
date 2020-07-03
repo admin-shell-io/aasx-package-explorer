@@ -2094,11 +2094,11 @@ namespace AasxPackageExplorer
                                             "Warning", 
                                             MessageBoxButton.OK, MessageBoxImage.Warning);
                                    return new ModifyRepo.LambdaActionRedrawAllElements(cd);
-                               }
-                           }
-                       }
-                       return new ModifyRepo.LambdaActionNone();
-                   });
+                                }
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
                 helper.AddKeyValueRef(
                     stack, "id", cd.identification, ref cd.identification.id, null, repo, 
                     v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); }
@@ -2788,7 +2788,7 @@ namespace AasxPackageExplorer
                                         cpb.duplicate
                                             ? " Paste will duplicate."
                                             : " Paste will cut at original position.");
-                                 }
+                            }
 
                             if ((int)buttonNdx == 2 || (int)buttonNdx == 3 || (int)buttonNdx == 4)
                             {
@@ -3586,10 +3586,12 @@ namespace AasxPackageExplorer
                             sme.semanticId = new AdminShell.SemanticId();
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
+                /* OZ
                 {
                     sme.semanticId = new AdminShell.SemanticId();
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
+                */
                 {
                     helper.AddHintBubble(
                         stack, hintMode, 
@@ -3972,7 +3974,7 @@ namespace AasxPackageExplorer
                 }
 
                 // specifically for annotated relationship?
-                if (sme is AdminShell.AnnotatedRelationshipElement arele)
+                if (sme is AdminShell.AnnotatedRelationshipElement /* arele */)
                 {
                 }
             }
