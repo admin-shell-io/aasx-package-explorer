@@ -58,7 +58,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxOpenidClient", "AasxOpe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCsharpLibrary.Tests", "AasxCsharpLibrary.Tests\AasxCsharpLibrary.Tests.csproj", "{2F21FEFF-F0EF-40B5-BA05-09FC9F499AE9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseCode", "BaseCode", "{DDA9C372-F8ED-4099-A53C-01B9333FD985}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxDictionaryImport.Tests", "AasxDictionaryImport.Tests\AasxDictionaryImport.Tests.csproj", "{B540EBF4-C026-45A4-9721-909AF0CC14C1}"
+EndProject
+
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalLibs", "FunctionalLibs", "{F9AE9D23-200C-455B-B14E-2EF20B13432E}"
 EndProject
@@ -85,8 +87,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginUaNetClient", "AasxPluginUaNetClient\AasxPluginUaNetClient.csproj", "{9EB71E8B-EC41-4054-BAB4-F419B4D13A36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxUaNetConsoleServer", "AasxUaNetConsoleServer\AasxUaNetConsoleServer.csproj", "{232852C2-358B-4577-9D29-1E48ED75C342}"
-EndProject
-Global
+EndProjectGlobal
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64

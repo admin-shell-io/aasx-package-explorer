@@ -38,7 +38,7 @@ function Main
 
 
     # Relative to $targetDir
-    $testDlls = @( "AasxCsharpLibrary.Tests.dll" )
+    $testDlls = @( "AasxCsharpLibrary.Tests.dll", "AasxDictionaryImport.Tests.dll" )
 
     foreach ($testDll in $testDlls)
     {
