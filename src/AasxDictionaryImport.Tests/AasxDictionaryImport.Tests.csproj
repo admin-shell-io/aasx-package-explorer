@@ -1,0 +1,63 @@
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <OutputType>Library</OutputType>
+    <AssemblyName>AasxDictionaryImport.Tests</AssemblyName>
+    <ProjectGuid>{B540EBF4-C026-45A4-9721-909AF0CC14C1}</ProjectGuid>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;UseAasxCompatibilityModels</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;UseAasxCompatibilityModels</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
+      <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
+      <Name>AasxCsharpLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
+    <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj">
+      <Project>{ebae658a-3ece-4c98-89bc-f79809ab4a5e}</Project>
+      <Name>AasxWpfControlLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Utils.cs" />
+    <Compile Include="Cdd\CddTest.cs" />
+    <Compile Include="Cdd\TestImport.cs" />
+    <Compile Include="Cdd\TestModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cdd\data\empty.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cdd\data\simple-class.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Cdd\data\simple-property.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
