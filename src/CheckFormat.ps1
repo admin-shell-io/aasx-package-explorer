@@ -19,7 +19,7 @@ function Main
     $artefactsDir = CreateAndGetArtefactsDir
 
     $reportPath = Join-Path $artefactsDir "dotnet-format-report.json"
-    dotnet-format --dry-run --report $reportPath
+    dotnet format --dry-run --report $reportPath
     $formatReport = Get-Content $reportPath |ConvertFrom-Json
     if ($formatReport.Count -ge 1)
     {
