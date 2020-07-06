@@ -10,7 +10,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
 using AasxPackageExplorer;
@@ -21,18 +23,85 @@ namespace AasxDictionaryImport.Eclass
     /// <summary>
     /// Data provider for eCl@ss Basic data.  The data is read from XML files using the OntoML scheme, see
     /// <see cref="Context"/> for more information.  The complete eCl@ss exports use one file per language and domain.
-    /// Currently, we only parse one file at a time, i. e. we can only read data for one language at a time.  Also,
-    /// units are stored in a separate file and are currently not parsed.
+    /// In this implementation, a data source is always backed by an English export file.  If present, export files in
+    /// other languages are loaded additionally.
     /// </summary>
     /// <seealso href="https://wiki.eclass.eu/wiki/ISO_13584-32_ontoML"/>
     public class DataProvider : Model.DataProviderBase
     {
+        private static XNamespace Dic20 = "urn:eclass:xml-schema:dictionary:2.0";
+
+        private static XNamespace Dic30 = "urn:eclass:xml-schema:dictionary:3.0";
+
+        private static XNamespace Hea20 = "urn:eclass:xml-schema:header:2.0";
+
+        private static XNamespace Hea30 = "urn:eclass:xml-schema:header:3.0";
+
         /// <inheritdoc/>
         public override string Name => "ECLASS";
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Checks whether the given path contains valid eCl@ss data that can be read by this data provider.  If this
+        /// method returns true, the data source at the given path can be opened using the <see cref="OpenPath"/>
+        /// method.
+        /// <para>
+        /// This function performs the following checks:
+        /// <list>
+        /// <item><description>The path must be a valid XML file.</description></item>
+        /// <item><description>The XML file must be an eCl@ss dictionary.</description></item>
+        /// <item><description>The language of the XML file must be English (see class comment).</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        /// <param name="path">The path of the data to check</param>
+        /// <returns>true if the path is a valid data source for this provider</returns>
         public override bool IsValidPath(string path)
-            => EclassUtils.TryGetDataFileType(path) == EclassUtils.DataFileType.Dictionary;
+        {
+            if (!File.Exists(path))
+                return false;
+
+            try
+            {
+                // We only want to look at the first few elements.  Therefore we use XmlReader instead of XDocument.
+                using var reader = XmlReader.Create(path);
+
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        // Verify that the root element is eclass_dictionary and find the header element for different
+                        // schema versions
+                        if (reader.IsStartElement("eclass_dictionary", Dic30.NamespaceName))
+                        {
+                            if (!reader.ReadToDescendant("header", Hea30.NamespaceName))
+                                return false;
+                        }
+                        else if (reader.IsStartElement("eclass_dictionary", Dic20.NamespaceName))
+                        {
+                            if (!reader.ReadToDescendant("header", Hea20.NamespaceName))
+                                return false;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+
+                        // The content language must be English, see class comment
+                        if (!reader.ReadToDescendant("content_language"))
+                            return false;
+                        var lang = reader.GetAttribute("language_ref");
+                        return lang != null && lang.StartsWith("0112-1#LG-EN#");
+                    }
+                }
+
+                return false;
+            }
+            catch (XmlException)
+            {
+                return false;
+            }
+        }
 
         /// <inheritdoc/>
         protected override IEnumerable<string> GetDefaultPaths(string dir)
@@ -49,9 +118,9 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// Data source for eCl@ss data.  The eCl@ss data is read from XML files, and a data source represents one eCl@ss
-    /// XML file.  For more information on the XML parser, see the <see cref="Context"/> and <see cref="Element"/>
-    /// classes.
+    /// Data source for eCl@ss data.  The eCl@ss data is read from XML files, and a data source represents one English
+    /// eCl@ss XML file, optionally with additional XML files in other languages.  For more information on the XML
+    /// parser, see the <see cref="Context"/> and <see cref="Element"/> classes.
     /// </summary>
     public class DataSource : Model.FileSystemDataSource
     {
@@ -86,6 +155,10 @@ namespace AasxDictionaryImport.Eclass
     /// removes all deprecated elements because they are no longer part of the eCl@ss release.  It also computes a
     /// mapping from classification classes to application classes.  For more information on the class types, see
     /// <see cref="Class"/>.
+    /// <para>
+    /// The main class structure is loaded from the English-language XML export.  If XML files for other languages are
+    /// detected, they are loaded additionally.
+    /// </para>
     /// </summary>
     public class Context : Model.IDataContext
     {
