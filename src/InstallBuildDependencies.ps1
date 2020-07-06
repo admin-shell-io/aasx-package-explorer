@@ -15,8 +15,12 @@ function Main {
        throw "Unable to find nuget.exe in your PATH"
     }
 
+    Push-Location
+
+    Set-Location $PSScriptRoot
+
     Write-Host "Restoring packages for the solution ..."
-    nuget.exe restore AasxPackageExplorer.sln
+    nuget.exe restore AasxPackageExplorer.sln -PackagesDirectory packages
 }
 
 Main
