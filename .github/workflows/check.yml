@@ -55,6 +55,14 @@ jobs:
         working-directory: src
         run: powershell .\Test.ps1
 
+      - name: Cache inspect code
+        uses: actions/cache@v2
+        env:
+          cache-name: inspect-code
+        with:
+          path: artefacts/inspectcode-caches
+          key: ${{ env.cache-name }}-2020-07-06-T-14-40Z
+
       - name: Inspect code
         working-directory: src
         run: powershell .\InspectCode.ps1
