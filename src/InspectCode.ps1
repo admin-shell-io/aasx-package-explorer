@@ -21,12 +21,19 @@ function Main
 
     Write-Host "Inspecting the code with inspectcode.exe ..."
 
+    $cachesHome = Join-Path $artefactsDir "inspectcode-caches"
+    New-Item -ItemType Directory -Force -Path "$cachesHome"|Out-Null
+
+    $excludePattern = '*\obj\*'
+
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
     & $inspectcode `
         "--properties:Configuration=Debug" `
         "--properties:Platform=x64" `
         "-o=$codeInspectionPath" `
+        "--caches-home=$cachesHome" `
+        '--exclude=*\obj\*;packages\*;*\bin\*' `
         AasxPackageExplorer.sln
 
     [xml]$inspection = Get-Content $codeInspectionPath
