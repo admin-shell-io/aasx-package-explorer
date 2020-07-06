@@ -3606,7 +3606,7 @@ namespace AdminShellNS
             public QualifierCollection(List<AasxCompatibilityModels.AdminShellV10.Qualifier> src, bool shallowCopy = false)
 
             {
-                if (src.Count != 0)
+                if (src != null && src.Count != 0)
                 {
                     foreach (var q in src)
                     {
