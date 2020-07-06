@@ -3603,7 +3603,8 @@ namespace AdminShellNS
             }
 
 #if UseAasxCompatibilityModels
-            public QualifierCollection(List<AasxCompatibilityModels.AdminShellV10.Qualifier> src, bool shallowCopy = false)
+            public QualifierCollection(
+                List<AasxCompatibilityModels.AdminShellV10.Qualifier> src, bool shallowCopy = false)
 
             {
                 if (src != null && src.Count != 0)
@@ -3890,18 +3891,21 @@ namespace AdminShellNS
             // element names
             public enum AdequateElementEnum
             {
-                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, ReferenceElement,
-                RelationshipElement, AnnotatedRelationshipElement, Capability, Operation, BasicEvent, Entity
+                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, 
+                ReferenceElement, RelationshipElement, AnnotatedRelationshipElement, Capability, Operation,
+                BasicEvent, Entity
             }
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement, AdequateElementEnum.AnnotatedRelationshipElement,
-                AdequateElementEnum.Capability, AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement, 
+                AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
+                AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
             };
 
-            public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property", "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement",
-                "RelationshipElement", "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+            public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
+                "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
+                "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
 
@@ -3912,7 +3916,8 @@ namespace AdminShellNS
             public SubmodelElementWrapper(SubmodelElement src, bool shallowCopy = false)
             {
                 if (src is SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(src as SubmodelElementCollection, shallowCopy: shallowCopy);
+                    this.submodelElement = new SubmodelElementCollection(
+                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
                 if (src is Property)
                     this.submodelElement = new Property(src as Property);
                 if (src is MultiLanguageProperty)
@@ -3982,7 +3987,8 @@ namespace AdminShellNS
                 return AdequateElementEnum.Unknown;
             }
 
-            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(AdequateElementEnum[] excludeValues = null, AdequateElementEnum[] includeValues = null)
+            public static IEnumerable<AdequateElementEnum> GetAdequateEnums(
+                AdequateElementEnum[] excludeValues = null, AdequateElementEnum[] includeValues = null)
             {
                 if (includeValues != null)
                 {
@@ -4068,7 +4074,8 @@ namespace AdminShellNS
                 if (submodelElement is AdminShell.File) return ("File");
                 if (submodelElement is AdminShell.Blob) return ("Blob");
                 if (submodelElement is AdminShell.ReferenceElement) return ("Ref");
-                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel"); // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
+                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel"); 
+                    // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
                 if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
                 if (submodelElement is AdminShell.Capability) return ("Cap");
                 if (submodelElement is AdminShell.SubmodelElementCollection) return ("Coll");
@@ -4181,7 +4188,8 @@ namespace AdminShellNS
         /// </summary>
         // OZ
         // Resharper disable UnusedTypeParameter
-        public class BaseSubmodelElementWrapperCollection<ELEMT> : List<SubmodelElementWrapper> where ELEMT : SubmodelElement
+        public class BaseSubmodelElementWrapperCollection<ELEMT> : List<SubmodelElementWrapper>
+            where ELEMT : SubmodelElement
         {
             // Resharper enable UnusedTypeParameter
             // no new members, as due to inheritance
@@ -4279,10 +4287,12 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) 
+                where T : SubmodelElement
             {
                 foreach (var smw in this)
-                    if (smw.submodelElement != null && smw.submodelElement is T && smw.submodelElement.semanticId != null)
+                    if (smw.submodelElement != null && smw.submodelElement is T 
+                        && smw.submodelElement.semanticId != null)
                         if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw.submodelElement as T;
             }
@@ -4292,7 +4302,8 @@ namespace AdminShellNS
                 return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) where T : SubmodelElement
+            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) 
+                where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
