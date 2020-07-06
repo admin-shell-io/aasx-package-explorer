@@ -31,6 +31,26 @@ jobs:
         with:
           dotnet-version: '3.1.100'
 
+      - name: Cache local nuget tools
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-local-nuget-tools
+        with:
+          path: tools
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}
+
+      - name: Cache global nuget packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-global-nuget-packages
+        with:
+          path: ~/.nuget/packages/
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}
+
+      - name: Install tools
+        working-directory: src
+        run: powershell .\InstallTools.ps1
+
       - name: Install build dependencies
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1

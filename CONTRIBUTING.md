@@ -82,6 +82,12 @@ run:
 .\InstallDevDependencies.ps1
 ```
 
+To install the tools for building & checking, call:
+
+```powershell
+.\InstallTools.ps1
+```
+
 To install the solution dependencies, invoke:
 
 ```powershell
