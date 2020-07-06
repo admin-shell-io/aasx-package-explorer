@@ -3891,14 +3891,14 @@ namespace AdminShellNS
             // element names
             public enum AdequateElementEnum
             {
-                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob, 
+                Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob,
                 ReferenceElement, RelationshipElement, AnnotatedRelationshipElement, Capability, Operation,
                 BasicEvent, Entity
             }
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement, 
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
                 AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
                 AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
             };
@@ -4074,8 +4074,8 @@ namespace AdminShellNS
                 if (submodelElement is AdminShell.File) return ("File");
                 if (submodelElement is AdminShell.Blob) return ("Blob");
                 if (submodelElement is AdminShell.ReferenceElement) return ("Ref");
-                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel"); 
-                    // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
+                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel");
+                // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
                 if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
                 if (submodelElement is AdminShell.Capability) return ("Cap");
                 if (submodelElement is AdminShell.SubmodelElementCollection) return ("Coll");
@@ -4287,11 +4287,11 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) 
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
                 where T : SubmodelElement
             {
                 foreach (var smw in this)
-                    if (smw.submodelElement != null && smw.submodelElement is T 
+                    if (smw.submodelElement != null && smw.submodelElement is T
                         && smw.submodelElement.semanticId != null)
                         if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw.submodelElement as T;
@@ -4302,7 +4302,7 @@ namespace AdminShellNS
                 return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict) 
+            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
