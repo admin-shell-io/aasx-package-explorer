@@ -3,6 +3,8 @@
 This script installs the dependencies necessary to build the solution.
 #>
 
+$ErrorActionPreference = "Stop"
+
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
     GetToolsDir
