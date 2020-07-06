@@ -15,20 +15,24 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     FindInspectCode, `
     CreateAndGetArtefactsDir
 
-$msbuild = FindMSBuild
-Write-Host $msbuild.GetType()
+function Main
+{
+    $msbuild = FindMSBuild
 
-Write-Host "Using MSBuild from: $msbuild"
+    Write-Host "Using MSBuild from: $msbuild"
 
-$configuration = "Debug"
-$artefactsDir = CreateAndGetArtefactsDir
+    $configuration = "Debug"
+    $artefactsDir = CreateAndGetArtefactsDir
 
-$outputPath = Join-Path $artefactsDir (Join-Path "build" $configuration)
+    $outputPath = Join-Path $artefactsDir (Join-Path "build" $configuration)
 
-Write-Host "Building to: $outputPath"
+    Write-Host "Building to: $outputPath"
 
-cd $PSScriptRoot
-& $msbuild `
-    /p:OutputPath=$outputPath `
-    /p:Configuration=$configuration `
-    /p:Platform=x64
+    Set-Location $PSScriptRoot
+    & $msbuild `
+        /p:OutputPath=$outputPath `
+        /p:Configuration=$configuration `
+        /p:Platform=x64
+}
+
+Main
