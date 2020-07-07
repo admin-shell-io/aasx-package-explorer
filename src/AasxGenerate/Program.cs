@@ -118,6 +118,7 @@ namespace opctest
             return sub1;
         }
 
+        // dead-csharp off
         /*
         public static AdminShell.Submodel CreateSubmodelDocumentation(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
@@ -372,6 +373,7 @@ namespace opctest
             return sub1;
         }
         */
+        // dead-csharp on
 
         public static AdminShell.Submodel CreateSubmodelDocumentationBasedOnVDI2770(InputFilePrefs prefs, AdminShellNS.IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {

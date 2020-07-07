@@ -1648,6 +1648,7 @@ namespace AasxPackageExplorer
             }
         }
 
+        // dead-csharp off
         /*
         public class  ImportEclassArgs
         {
@@ -1655,6 +1656,7 @@ namespace AasxPackageExplorer
             public ProgressBar progress;
         }
         */
+        // dead-csharp on
 
         public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
         {

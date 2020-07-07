@@ -3529,13 +3529,13 @@ namespace AdminShellNS
             [CountForHash]
             public string value = null;
 
+            // dead-csharp off
             // Remark: due to publication of v2.0.1, the order of elements has changed!!!
             // from hasSemantics:
-            /* OZ
-            [XmlElement(ElementName = "semanticId")]
+            // [XmlElement(ElementName = "semanticId")]
             // [JsonIgnore]
-            public SemanticId semanticId = null;
-            */
+            // public SemanticId semanticId = null;
+            // dead-csharp on
 
             // constructors
 
@@ -3793,10 +3793,12 @@ namespace AdminShellNS
                 };
                 if (semanticKeys != null)
                     q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
+                // dead-csharp off
                 /* OZ
                 if (valueType != null)
                     q.valueType = valueType;
                 */
+                // dead-csharp on
                 this.qualifiers.Add(q);
             }
 

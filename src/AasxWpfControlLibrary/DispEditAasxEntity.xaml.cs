@@ -2107,11 +2107,13 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(
                     stack, "id", cd.identification, ref cd.identification.id, null, repo,
                     v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); }
+                    // dead-csharp off
                 /* , auxButtonTitle: "Generate", auxButtonLambda: v => {
                     cd.identification.idType = AdminShell.Identification.IRI;
                     cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdConceptDescription);
                     return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
                 } */);
+                    // dead-csharp on
             }
 
             helper.AddHintBubble(stack, hintMode, new[] {
@@ -2185,8 +2187,10 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // dead-csharp off
             /* OLD
-            if (helper.SafeguardAccess(stack, repo, cd.conceptDefinitionRef, "conceptDefinitionRef:", "Create data element!", v =>
+            if (helper.SafeguardAccess(stack, repo, cd.conceptDefinitionRef, "conceptDefinitionRef:",
+                "Create data element!", v =>
             {
                 cd.conceptDefinitionRef = new AdminShell.Reference();
                 return new ModifyRepo.LambdaActionRedrawEntity();
@@ -2196,6 +2200,7 @@ namespace AasxPackageExplorer
                 helper.AddKeyListKeys(stack, "reference", cd.conceptDefinitionRef.Keys, repo, package, "All");
             }
             */
+            // dead-csharp on
 
             helper.AddHintBubble(
                 stack, hintMode,
@@ -2364,14 +2369,21 @@ namespace AasxPackageExplorer
                                 }))
                             helper.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
 
+                        // dead-csharp off
                         // TODO: add Sync to shortName
                         /*
                         helper.AddHintBubble(stack, hintMode, new [] {
                             new HintCheck( () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
-                                "Please provide a shortName, which is a reduced, even symbolic version of the preferred name. IEC 61360 defines some symbolic rules (e.g. greek characters) for this name.")
+                                "Please provide a shortName, which is a reduced, even symbolic version of the " +
+                                "preferred name. IEC 61360 defines some symbolic rules (e.g. greek characters) for " +
+                                "this name.")
                         });
-                        helper.AddKeyValue(stack, "shortName", dsiec.shortName, null, repo, v => { dsiec.shortName = v as string; return new ModifyRepo.LambdaActionNone(); },
-                            auxButtonTitle: "Sync", auxButtonToolTip: "Copy (if target is empty) idShort to idShort and SubmodelElement idShort.", auxButtonLambda: (v) =>
+                        helper.AddKeyValue(stack, "shortName", dsiec.shortName, null, repo,
+                            v => { dsiec.shortName = v as string; return new ModifyRepo.LambdaActionNone(); },
+                            auxButtonTitle: "Sync",
+                            auxButtonToolTip: "Copy (if target is empty) idShort to idShort and SubmodelElement " +
+                                "idShort.",
+                            auxButtonLambda: (v) =>
                             {
                                 ModifyRepo.LambdaAction la = new ModifyRepo.LambdaActionNone();
 
@@ -2393,6 +2405,7 @@ namespace AasxPackageExplorer
                                 return la;
                             });
                         */
+                        // dead-csharp on
 
                         helper.AddHintBubble(
                             stack, hintMode,
@@ -2430,7 +2443,9 @@ namespace AasxPackageExplorer
                                     return new ModifyRepo.LambdaActionRedrawEntity();
                                 }))
                         {
+                            // dead-csharp off
                             // helper.AddGroup(stack, "UnitID", levelColors[1][0], levelColors[1][1]);
+                            // dead-csharp on
                             helper.AddKeyListKeys(
                                 stack, "unitId", dsiec.unitId.Keys, repo, package,
                                 AdminShell.Key.GlobalReference, addEclassIrdi: true);
@@ -3156,6 +3171,7 @@ namespace AasxPackageExplorer
                                         var clone = env.CopySubmodelElementAndCD(
                                             rve.theEnv, mdo as AdminShell.SubmodelElement, copyCD: true,
                                             shallowCopy: (int)buttonNdx == 0);
+                                        // dead-csharp off
                                         /*
                                          * TO BE DELETED, if SMWC works..
                                         if (listOfSMEW == null)
@@ -3168,6 +3184,7 @@ namespace AasxPackageExplorer
                                         }
                                         listOfSMEW.Add(clone);
                                         */
+                                        // dead-csharp on
                                         if (sme is AdminShell.SubmodelElementCollection smesmc)
                                             smesmc.value.Add(clone);
                                         if (sme is AdminShell.Entity smeent)
@@ -3594,12 +3611,14 @@ namespace AasxPackageExplorer
                             sme.semanticId = new AdminShell.SemanticId();
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
+                // dead-csharp off
                 /* OZ
                 {
                     sme.semanticId = new AdminShell.SemanticId();
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
                 */
+                // dead-csharp on
                 {
                     helper.AddHintBubble(
                         stack, hintMode,
@@ -4002,12 +4021,14 @@ namespace AasxPackageExplorer
 
                 // TODO: ordered, allowDuplicates
 
+                // dead-csharp off
                 /* non-edit mode fails
 
                 var g = helper.AddSmallGrid(2, 2, new[] { "#", "*" });
 
                 helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "ordered: ");
-                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), content: "(true e.g. for indexed array)", isChecked: smc.ordered),
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
+                    content: "(true e.g. for indexed array)", isChecked: smc.ordered),
                         (o) =>
                         {
                             if (o is bool)
@@ -4016,7 +4037,8 @@ namespace AasxPackageExplorer
                         });
 
                 helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "allowDuplicates: ");
-                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), content: "(true for multiple same element)", isChecked: smc.allowDuplicates),
+                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2),
+                    content: "(true for multiple same element)", isChecked: smc.allowDuplicates),
                         (o) =>
                         {
                             if (o is bool)
@@ -4027,6 +4049,7 @@ namespace AasxPackageExplorer
                 stack.Children.Add(g);
 
                 */
+                // dead-csharp on
 
                 helper.AddCheckBox(
                     stack, "ordered:", smc.ordered, " (true e.g. for indexed array)", (b) => { smc.ordered = b; });
