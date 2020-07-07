@@ -14,6 +14,11 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
@@ -45,6 +50,12 @@ namespace AasxDictionaryImport.Eclass
     {
         /// <inheritdoc/>
         public override string Name => "ECLASS";
+
+        /// <inheritdoc/>
+        public override bool IsFetchSupported => true;
+
+        /// <inheritdoc/>
+        public override string FetchPrompt => "IRDI";
 
         /// <summary>
         /// Checks whether the given path contains valid eCl@ss data that can be read by this data provider.  If this
@@ -107,6 +118,66 @@ namespace AasxDictionaryImport.Eclass
             {
                 return false;
             }
+        }
+
+        /// <inheritdoc/>
+        public override Model.IDataSource Fetch(string query)
+        {
+            return new DataSource(this, FetchXmlFile(query), Model.DataSourceType.Online);
+        }
+
+        /// <summary>
+        /// Fetch the XML data for the eCl@ss element with the given IRDI using the eCl@ss web service, write it to a
+        /// file and return the path to the file.  The file name of the created file should identify the fetched
+        /// element as it is shown as the name of the data source in the user interface.
+        /// </summary>
+        /// <param name="irdi">The IRDI of the eCl@ss element to fetch from the web service</param>
+        /// <returns>The path of the XML file containing the data for the eCl@ss element with the given IRDI</returns>
+        /// <exception cref="Model.ImportException">If the element could not be fetched from the web API</exception>
+        private string FetchXmlFile(string irdi)
+        {
+            X509Certificate2 cert;
+            try
+            {
+                // TODO (aorzelski, 2021-02-24): Use system certificate storage
+                cert = new X509Certificate2(@"C:\Users\krahlro\certs\19-SICK_Webservice.full.pfx", "");
+            }
+            catch (CryptographicException ex)
+            {
+                throw new ImportException("Could not open ECLASS webservice certificate", ex);
+            }
+
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            clientHandler.ClientCertificates.Add(cert);
+            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+
+            var url = "https://eclass-cdp.com/xmlapi/v1/classes/" + Uri.EscapeDataString(irdi);
+
+            HttpResponseMessage response;
+            try
+            {
+                HttpClient client = new HttpClient(clientHandler);
+                response = client.GetAsync(url).Result;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new ImportException("Failed to perform ECLASS query", ex);
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ImportException($"ECLASS query failed with status code: {response.ReasonPhrase}");
+            }
+
+            var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDir);
+            var tempFile = Path.Combine(tempDir, irdi + ".xml");
+
+            using var fs = new FileStream(tempFile, FileMode.CreateNew);
+            response.Content.CopyToAsync(fs).Wait();
+
+            return tempFile;
         }
 
         /// <inheritdoc/>

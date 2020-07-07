@@ -80,6 +80,7 @@ namespace AasxDictionaryImport
                     ComboBoxSource.Items.Add(source);
 
             DataSourceLabel.Content = String.Join(", ", DataProviders.Select(p => p.Name));
+            ButtonFetchOnline.IsEnabled = DataProviders.Any(p => p.IsFetchSupported);
         }
 
         public IEnumerable<Model.IElement> GetResult()
@@ -233,6 +234,33 @@ namespace AasxDictionaryImport
 
             ComboBoxSource.Items.Add(source);
             ComboBoxSource.SelectedItem = source;
+        }
+
+        private void ButtonFetchOnline_Click(object sender, RoutedEventArgs e)
+        {
+            var fetchProviders = DataProviders.Where(p => p.IsFetchSupported).ToList();
+            if (fetchProviders.Count == 0)
+                return;
+
+            var dialog = new FetchOnlineDialog(fetchProviders);
+            if (dialog.ShowDialog() != true || dialog.DataProvider == null)
+                return;
+
+            try
+            {
+                var source = dialog.DataProvider.Fetch(dialog.Query);
+                ComboBoxSource.Items.Add(source);
+                ComboBoxSource.SelectedItem = source;
+            }
+            catch (Model.ImportException ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(ex,
+                        $"Could not fetch data from {dialog.DataProvider} using the query {dialog.Query}.");
+                MessageBox.Show(
+                        "Could not fetch the requested data.\n" +
+                        "Details: " + ex.Message,
+                        "Fetch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
