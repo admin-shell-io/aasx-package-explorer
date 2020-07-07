@@ -119,6 +119,3 @@ To run the unit tests:
 ```powershell
 .\Test.ps1
 ```
-
-We specify in `src\tests.nunit` which unit tests are always run in the 
-continuous integration.
