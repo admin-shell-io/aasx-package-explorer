@@ -12,7 +12,8 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v1.0.5
+        uses: mristin/opinionated-commit-message@v1.0.8
+        continue-on-error: true
 
       - name: Check licenses
         working-directory: src
@@ -31,6 +32,26 @@ jobs:
         with:
           dotnet-version: '3.1.100'
 
+      - name: Cache local nuget tools
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-local-nuget-tools
+        with:
+          path: tools
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}
+
+      - name: Cache global nuget packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-global-nuget-packages
+        with:
+          path: ~/.nuget/packages/
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
+
+      - name: Install tools
+        working-directory: src
+        run: powershell .\InstallTools.ps1
+
       - name: Install build dependencies
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1
@@ -38,14 +59,17 @@ jobs:
       - name: Check format
         working-directory: src
         run: powershell .\CheckFormat.ps1
+        continue-on-error: true
 
       - name: Check bite-sized
         working-directory: src
         run: powershell .\CheckBiteSized.ps1
+        continue-on-error: true
 
       - name: Check dead code
         working-directory: src
         run: powershell .\CheckDeadCode.ps1
+        continue-on-error: true
 
       - name: Build
         working-directory: src
@@ -54,6 +78,14 @@ jobs:
       - name: Test
         working-directory: src
         run: powershell .\Test.ps1
+
+      - name: Cache inspect code
+        uses: actions/cache@v2
+        env:
+          cache-name: inspect-code
+        with:
+          path: artefacts/inspectcode-caches
+          key: ${{ env.cache-name }}-2020-07-06-T-14-40Z
 
       - name: Inspect code
         working-directory: src

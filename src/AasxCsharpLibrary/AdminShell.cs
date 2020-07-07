@@ -2575,6 +2575,8 @@ namespace AdminShellNS
                 }
             }
 
+            // old
+
             // this class
             [XmlIgnore]
             private List<Reference> isCaseOf = null;
@@ -2857,7 +2859,6 @@ namespace AdminShellNS
             public string schemaLocation =
                 "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
 
-            // [XmlElement(ElementName="assetAdministrationShells")]
             [XmlIgnore] // will be ignored, anyway
             private List<AdministrationShell> administrationShells = new List<AdministrationShell>();
             [XmlIgnore] // will be ignored, anyway
@@ -3501,29 +3502,24 @@ namespace AdminShellNS
             // member
             // from hasSemantics:
             [XmlElement(ElementName = "semanticId")]
-            // [JsonIgnore]
             public SemanticId semanticId = null;
 
             // this class
             // TODO: check, if Json has Qualifiers or not
 
-            // [JsonIgnore]
             [MetaModelName("Qualifier.type")]
             [TextSearchable]
             [CountForHash]
             public string type = "";
 
-            // [JsonIgnore]
             [MetaModelName("Qualifier.valueType")]
             [TextSearchable]
             [CountForHash]
             public string valueType = "";
 
-            // [JsonIgnore]
             [CountForHash]
             public Reference valueId = null;
 
-            // [JsonIgnore]
             [MetaModelName("Qualifier.value")]
             [TextSearchable]
             [CountForHash]
@@ -5723,7 +5719,6 @@ namespace AdminShellNS
             [XmlIgnore]
             // MICHA 190504: enabled JSON operation variables!
             [JsonProperty(PropertyName = "inputVariable")]
-            // [JsonIgnore]
             public OperationVariable[] JsonInputVariable
             {
                 get { return inputVariable?.ToArray(); }
@@ -5733,7 +5728,6 @@ namespace AdminShellNS
             [XmlIgnore]
             [JsonProperty(PropertyName = "outputVariable")]
             // MICHA 190504: enabled JSON operation variables!
-            // [JsonIgnore]
             public OperationVariable[] JsonOutputVariable
             {
                 get { return outputVariable?.ToArray(); }
@@ -5743,7 +5737,6 @@ namespace AdminShellNS
             [XmlIgnore]
             [JsonProperty(PropertyName = "inoutputVariable")]
             // MICHA 190504: enabled JSON operation variables!
-            // [JsonIgnore]
             public OperationVariable[] JsonInOutputVariable
             {
                 get { return inoutputVariable?.ToArray(); }

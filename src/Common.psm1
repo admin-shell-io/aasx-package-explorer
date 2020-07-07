@@ -21,7 +21,7 @@ function FindMSBuild
 
     $msbuildCommand = Get-Command "MSBuild.exe" -ErrorAction SilentlyContinue
     $msbuildFailedSearches = @()
-    if ($null -eq $msbuildCommand)
+    if ($null -ne $msbuildCommand)
     {
         $msbuild = $msbuildCommand.Source
     }
@@ -32,6 +32,7 @@ function FindMSBuild
         {
             throw "Could not find vswhere at: $vswherePath"
         }
+
         $ids = 'Community', 'Professional', 'Enterprise', 'BuildTools' `
             | ForEach-Object { 'Microsoft.VisualStudio.Product.' + $_ }
 
@@ -62,7 +63,7 @@ function FindMSBuild
 
     if (!$msbuild)
     {
-        throw "Could not find MSBuild. Searched in PATH and at the following locations: $( $msbuildFailedSearches -join ';' )"
+        throw "Could not find MSBuild in PATH and at these locations: $( $msbuildFailedSearches -join ';' )"
     }
 
     return $msbuild
@@ -157,7 +158,7 @@ Check the version of dead-csharp so that the dead code is always detected in the
 #>
 function AssertDeadCsharpVersion
 {
-    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta3"
+    AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta4"
 }
 
 function FindInspectCode
