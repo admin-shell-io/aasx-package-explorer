@@ -26,15 +26,6 @@ https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/cr
 actions. The CI includes building the solution, running the test, inspecting
 the code *etc.* (see below the section "Pre-merge Checks").
 
-**Branch Infix.** If the pull request contains only changes to the 
-documentation, make sure you infix your branch name with `/doc/` (*e.g.*, 
-`mristin/doc/Describe-CI-in-Readme`). This will signal to CI that only a reduced
-set of checks should be performed. 
-
-(**Note**. We are all adults. Please do not
-game the system to push through your changes unchecked and be extra cautious 
-when you submit such a pull request.)  
-
 ## Commit Messages
 
 The commit messages follow the guidelines from 
@@ -82,13 +73,19 @@ run:
 .\InstallDevDependencies.ps1
 ```
 
-To install the tools for building & checking, call:
+To install the tools for build-test-inspect workflow, call:
 
 ```powershell
-.\InstallTools.ps1
+.\InstallToolsForBuildTestInspect.ps1
 ```
 
-To install the solution dependencies, invoke:
+and to install the tools for appearance checks, run:
+
+```powershell
+.\InstallToolsForStyle.ps1
+```
+
+The dependencies of the solution are installed by:
 
 ```powershell
 .\InstallBuildDependencies.ps1
