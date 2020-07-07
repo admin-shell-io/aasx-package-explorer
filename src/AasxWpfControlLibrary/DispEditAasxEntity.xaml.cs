@@ -2107,13 +2107,14 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(
                     stack, "id", cd.identification, ref cd.identification.id, null, repo,
                     v => { cd.identification.id = v as string; return new ModifyRepo.LambdaActionNone(); }
-                    // dead-csharp off
+                // dead-csharp off
                 /* , auxButtonTitle: "Generate", auxButtonLambda: v => {
                     cd.identification.idType = AdminShell.Identification.IRI;
-                    cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdConceptDescription);
+                    cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                        Options.Curr.TemplateIdConceptDescription);
                     return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
                 } */);
-                    // dead-csharp on
+                // dead-csharp on
             }
 
             helper.AddHintBubble(stack, hintMode, new[] {

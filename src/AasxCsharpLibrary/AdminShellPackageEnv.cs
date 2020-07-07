@@ -375,7 +375,8 @@ namespace AdminShellNS
             return nss;
         }
 
-        public bool SaveAs(string fn, bool writeFreshly = false, PreferredFormat prefFmt = PreferredFormat.None, MemoryStream useMemoryStream = null)
+        public bool SaveAs(string fn, bool writeFreshly = false, PreferredFormat prefFmt = PreferredFormat.None,
+                MemoryStream useMemoryStream = null)
         {
             if (fn.ToLower().EndsWith(".xml"))
             {

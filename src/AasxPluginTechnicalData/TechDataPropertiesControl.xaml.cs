@@ -110,13 +110,15 @@ namespace AasxPluginTechnicalData
                 }
 
                 // special function?
-                if (sme is AdminShell.SubmodelElementCollection && true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                if (sme is AdminShell.SubmodelElementCollection &&
+                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
                 {
                     // finalize current row group??
                     ;
 
                     // Main Section
-                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionMain", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionMain", columnSpan: 3,
+                            padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -142,7 +144,8 @@ namespace AasxPluginTechnicalData
                     ;
 
                     // Sub Section
-                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionSub", columnSpan: 3, padding: new Thickness(5 * depth, 0, 0, 0));
+                    var cell = NewTableCellPara("" + dispName, null, "ParaStyleSectionSub", columnSpan: 3,
+                            padding: new Thickness(5 * depth, 0, 0, 0));
 
                     // add cell (to a new row group)
                     currentRowGroup = new TableRowGroup();
@@ -168,9 +171,11 @@ namespace AasxPluginTechnicalData
                     currentRowGroup.Rows.Add(tr);
 
                     // add cells
-                    tr.Cells.Add(NewTableCellPara(dispNameWithCD, "CellStylePropertyLeftmost", "ParaStyleProperty", padding: new Thickness(5 * depth, 0, 0, 0)));
+                    tr.Cells.Add(NewTableCellPara(dispNameWithCD, "CellStylePropertyLeftmost", "ParaStyleProperty",
+                                padding: new Thickness(5 * depth, 0, 0, 0)));
                     tr.Cells.Add(NewTableCellPara(semantics, "CellStylePropertyOther", "ParaStyleProperty"));
-                    tr.Cells.Add(NewTableCellPara("" + sme.ValueAsText(defaultLang) + " " + unit, "CellStylePropertyOther", "ParaStyleProperty"));
+                    tr.Cells.Add(NewTableCellPara("" + sme.ValueAsText(defaultLang) + " " + unit,
+                                "CellStylePropertyOther", "ParaStyleProperty"));
                 }
             }
 

@@ -695,10 +695,12 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddCheckBox(Panel panel, string key, bool initialValue, string additionalInfo = "", Action<bool> valueChanged = null)
+        public void AddCheckBox(Panel panel, string key, bool initialValue, string additionalInfo = "",
+                Action<bool> valueChanged = null)
         {
             // make grid
-            var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" }, margin: new Thickness(0, 2, 0, 0));
+            var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" },
+                    margin: new Thickness(0, 2, 0, 0));
 
             // Column 0 = Key
             this.AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: key);
@@ -706,12 +708,14 @@ namespace AasxPackageExplorer
             // Column 1 = Check box or info
             if (repo == null || valueChanged == null)
             {
-                this.AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: initialValue ? "True" : "False");
+                this.AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0),
+                        content: initialValue ? "True" : "False");
             }
             else
             {
-                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), content: additionalInfo,
-                    verticalContentAlignment: VerticalAlignment.Center, isChecked: initialValue),
+                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
+                    content: additionalInfo, verticalContentAlignment: VerticalAlignment.Center,
+                    isChecked: initialValue),
                         (o) =>
                         {
                             if (o is bool)
@@ -724,7 +728,8 @@ namespace AasxPackageExplorer
             panel.Children.Add(g);
         }
 
-        public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> action = null)
+        public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
+                Func<object, ModifyRepo.LambdaAction> action = null)
         {
             // access 
             if (repo == null || action == null || actionStr == null)
@@ -1658,7 +1663,8 @@ namespace AasxPackageExplorer
         */
         // dead-csharp on
 
-        public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement, List<AdminShell.SubmodelElement> targets)
+        public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement,
+                List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
             if (this.flyoutProvider == null || env == null || targets == null)
