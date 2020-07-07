@@ -1,4 +1,4 @@
-name: Check
+name: Build-test-inspect
 
 on:
   pull_request:
@@ -11,14 +11,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
-
-      - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v1.0.8
-        continue-on-error: true
-
-      - name: Check licenses
-        working-directory: src
-        run: powershell .\CheckLicenses.ps1
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.0
@@ -49,28 +41,13 @@ jobs:
           path: ~/.nuget/packages/
           key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
 
-      - name: Install tools
+      - name: Install tools for build-test-inspect
         working-directory: src
-        run: powershell .\InstallTools.ps1
+        run: powershell .\InstallToolsForBuildTestInspect.ps1
 
       - name: Install build dependencies
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1
-
-      - name: Check format
-        working-directory: src
-        run: powershell .\CheckFormat.ps1
-        continue-on-error: true
-
-      - name: Check bite-sized
-        working-directory: src
-        run: powershell .\CheckBiteSized.ps1
-        continue-on-error: true
-
-      - name: Check dead code
-        working-directory: src
-        run: powershell .\CheckDeadCode.ps1
-        continue-on-error: true
 
       - name: Build
         working-directory: src

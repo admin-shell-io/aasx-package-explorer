@@ -1,0 +1,53 @@
+name: Check-style
+
+on:
+  pull_request:
+    branches:
+      - master
+      - V20DataModel
+
+jobs:
+  Execute:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Check the commit message(s)
+        uses: mristin/opinionated-commit-message@v1.0.8
+        continue-on-error: true
+
+      - name: Check licenses
+        working-directory: src
+        run: powershell .\CheckLicenses.ps1
+
+      - name: Install .NET core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+
+      - name: Cache global nuget packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-global-nuget-packages
+        with:
+          path: ~/.nuget/packages/
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
+
+      - name: Install tools for style
+        working-directory: src
+        run: powershell .\InstallToolsForStyle.ps1
+
+      - name: Check format
+        working-directory: src
+        run: powershell .\CheckFormat.ps1
+        continue-on-error: true
+
+      - name: Check bite-sized
+        working-directory: src
+        run: powershell .\CheckBiteSized.ps1
+        continue-on-error: true
+
+      - name: Check dead code
+        working-directory: src
+        run: powershell .\CheckDeadCode.ps1
+        continue-on-error: true
