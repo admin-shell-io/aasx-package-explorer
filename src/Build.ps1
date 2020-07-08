@@ -32,7 +32,8 @@ function Main
     & $msbuild `
         /p:OutputPath=$outputPath `
         /p:Configuration=$configuration `
-        /p:Platform=x64
+        /p:Platform=x64 `
+        /maxcpucount
 }
 
 Main
