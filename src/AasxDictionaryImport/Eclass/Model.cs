@@ -141,12 +141,20 @@ namespace AasxDictionaryImport.Eclass
             try
             {
                 var xml = XDocument.Load(Path);
-                return new Context(this, xml);
+                var additionalXml = FindAdditionalFiles().Select(f => XDocument.Load(f)).ToList();
+                return new Context(this, xml, additionalXml);
             }
             catch (XmlException e)
             {
                 throw new Model.ImportException($"Could not load the XML document at '{Path}'", e);
             }
+        }
+
+        private IEnumerable<string> FindAdditionalFiles()
+        {
+            var dir = System.IO.Path.GetDirectoryName(Path);
+            var searchPattern = System.IO.Path.GetFileName(Path).Replace("_EN_", "_??_");
+            return Directory.GetFiles(dir, searchPattern).Where(path => path != Path);
         }
     }
 
@@ -186,7 +194,9 @@ namespace AasxDictionaryImport.Eclass
         /// </summary>
         /// <param name="dataSource">The data source for this context</param>
         /// <param name="document">The XML document to read the data from</param>
-        public Context(DataSource dataSource, XDocument document)
+        /// <param name="additionalDocuments">Additional XML documents with translations for the data stored in
+        /// <paramref name="document"/></param>
+        public Context(DataSource dataSource, XDocument document, ICollection<XDocument> additionalDocuments)
         {
             DataSource = dataSource;
 
@@ -196,6 +206,31 @@ namespace AasxDictionaryImport.Eclass
             AssignApplicationClasses();
 
             AddElements(document.Descendants(OntoML + "property").Select(e => new Property(this, e)));
+
+            foreach (var additionalDocument in additionalDocuments)
+                LoadTranslations(additionalDocument);
+        }
+
+        private void LoadTranslations(XDocument document)
+        {
+            LoadTranslations(document.Descendants(OntoML + "class"));
+            LoadTranslations(document.Descendants(OntoML + "property"));
+        }
+
+        private void LoadTranslations(IEnumerable<XElement> elements)
+        {
+            foreach (var element in elements)
+                LoadTranslations(element);
+        }
+
+        private void LoadTranslations(XElement element)
+        {
+            var idAttr = element.Attribute("id");
+            if (idAttr == null)
+                return;
+
+            if (_elements.TryGetValue(idAttr.Value, out Element oldElement))
+                oldElement.AddTranslation(element);
         }
 
         private void AssignApplicationClasses()
@@ -264,6 +299,8 @@ namespace AasxDictionaryImport.Eclass
     {
         protected XElement XElement;
 
+        private ICollection<XElement> _translations = new List<XElement>();
+
         /// <summary>
         /// The current data context.
         /// </summary>
@@ -296,6 +333,21 @@ namespace AasxDictionaryImport.Eclass
             Context = context;
         }
 
+        protected Element(Element element, Model.IElement? parent = null)
+            : this(element.Context, element.XElement, parent)
+        {
+            _translations = element._translations;
+        }
+
+        /// <summary>
+        /// Adds the given XML element as a source for translations for the main XML element.
+        /// </summary>
+        /// <param name="element">An element to read additional translations from</param>
+        public void AddTranslation(XElement element)
+        {
+            _translations.Add(element);
+        }
+
         protected virtual Iec61360Data GetIec61360Data()
         {
             return new Iec61360Data(Id)
@@ -308,13 +360,20 @@ namespace AasxDictionaryImport.Eclass
         protected MultiString GetMultiString(string name, string childElement)
         {
             var ms = new MultiString();
-            foreach (var label in XElement.Elements(name).Elements(childElement))
+            AddStrings(ms, XElement, name, childElement);
+            foreach (var translation in _translations)
+                AddStrings(ms, translation, name, childElement);
+            return ms;
+        }
+
+        private static void AddStrings(MultiString ms, XElement element, string name, string childElement)
+        {
+            foreach (var label in element.Elements(name).Elements(childElement))
             {
                 var lang = label.Attribute("language_code");
                 if (lang != null && lang.Value.Length > 0)
                     ms.Add(lang.Value, label.Value);
             }
-            return ms;
         }
 
         /// <inheritdoc/>
@@ -446,7 +505,7 @@ namespace AasxDictionaryImport.Eclass
         }
 
         public Property(Property property, Model.IElement? parent)
-            : this(property.Context, property.XElement, parent)
+            : base(property, parent)
         {
         }
 
