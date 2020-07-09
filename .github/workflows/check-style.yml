@@ -12,9 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v1.0.8
-
       - name: Check licenses
         working-directory: src
         run: powershell .\CheckLicenses.ps1
