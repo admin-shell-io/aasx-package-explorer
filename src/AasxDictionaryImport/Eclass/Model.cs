@@ -25,6 +25,17 @@ namespace AasxDictionaryImport.Eclass
     /// <see cref="Context"/> for more information.  The complete eCl@ss exports use one file per language and domain.
     /// In this implementation, a data source is always backed by an English export file.  If present, export files in
     /// other languages and unit files are loaded additionally.
+    /// <para>
+    /// This data provider assumes that the eCl@ss XML files follow this naming convention:
+    /// <list type="bullet">
+    /// <item><description><code>&lt;Prefix&gt;_&lt;Version&gt;_&lt;Lang&gt;_*.xml</code> for class
+    /// exports, and</description></item>
+    /// <item><description><code>&lt;Prefix&gt;_UnitsML_*.xml</code> for unit data,</description></item>
+    /// </list>
+    /// where <code>&lt;Prefix&gt;</code> is a constant prefix per eCl@ss release, <code>&lt;Version&gt;</code> is
+    /// either <code>BASIC</code> or <code>ADVANCED</code> and <code>&lt;Lang&gt;</code> is an uppercase two-character
+    /// language code (e. g. <code>EN</code> for the English export).
+    /// </para>
     /// </summary>
     /// <seealso href="https://wiki.eclass.eu/wiki/ISO_13584-32_ontoML"/>
     public class DataProvider : Model.DataProviderBase
