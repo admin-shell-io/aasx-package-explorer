@@ -1,0 +1,12 @@
+name: Check-commit-messages
+
+on: [push, pull_request]
+
+jobs:
+  Execute:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Check the commit message(s)
+        uses: mristin/opinionated-commit-message@v2.0.0-pre1
