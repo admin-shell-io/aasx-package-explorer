@@ -1,5 +1,5 @@
 ﻿<# 
-This script runs all the unit tests specified in `.\tests.nunit` file.
+This script runs all the unit tests specified in the testDlls variable below.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -17,9 +17,6 @@ function Main
     $reportGenerator = FindReportGenerator
 
     Set-Location $PSScriptRoot
-    $nunitProjectPath = Join-Path $PSScriptRoot "tests.nunit"
-
-    Write-Host "Running the tests specified in: $nunitProjectPath"
 
     $artefactsDir = CreateAndGetArtefactsDir
 
