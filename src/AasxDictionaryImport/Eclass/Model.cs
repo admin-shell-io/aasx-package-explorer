@@ -24,7 +24,7 @@ namespace AasxDictionaryImport.Eclass
     /// Data provider for eCl@ss Basic data.  The data is read from XML files using the OntoML scheme, see
     /// <see cref="Context"/> for more information.  The complete eCl@ss exports use one file per language and domain.
     /// In this implementation, a data source is always backed by an English export file.  If present, export files in
-    /// other languages are loaded additionally.
+    /// other languages and unit files are loaded additionally.
     /// </summary>
     /// <seealso href="https://wiki.eclass.eu/wiki/ISO_13584-32_ontoML"/>
     public class DataProvider : Model.DataProviderBase
@@ -142,7 +142,12 @@ namespace AasxDictionaryImport.Eclass
             {
                 var xml = XDocument.Load(Path);
                 var additionalXml = FindAdditionalFiles().Select(f => XDocument.Load(f)).ToList();
-                return new Context(this, xml, additionalXml);
+                var units = FindUnits();
+
+                if (units == null)
+                    Log.Singleton.Info("Could not find units for eCl@ss import.");
+
+                return new Context(this, xml, additionalXml, units);
             }
             catch (XmlException e)
             {
@@ -156,6 +161,24 @@ namespace AasxDictionaryImport.Eclass
             var searchPattern = System.IO.Path.GetFileName(Path).Replace("_EN_", "_??_");
             return Directory.GetFiles(dir, searchPattern).Where(path => path != Path);
         }
+
+        private XDocument? FindUnits()
+        {
+            var dir = System.IO.Path.GetDirectoryName(Path);
+            var dictName = System.IO.Path.GetFileName(Path);
+            var i = dictName.IndexOf("BASIC", System.StringComparison.Ordinal);
+            if (i < 0)
+                i = dictName.IndexOf("ADVANCED", System.StringComparison.Ordinal);
+            if (i < 0)
+                return null;
+
+            var pattern = dictName.Substring(0, i) + "UnitsML*.xml";
+            var files = Directory.GetFiles(dir, pattern);
+            if (files.Length != 1)
+                return null;
+
+            return XDocument.Load(files[0]);
+        }
     }
 
     /// <summary>
@@ -164,13 +187,15 @@ namespace AasxDictionaryImport.Eclass
     /// mapping from classification classes to application classes.  For more information on the class types, see
     /// <see cref="Class"/>.
     /// <para>
-    /// The main class structure is loaded from the English-language XML export.  If XML files for other languages are
-    /// detected, they are loaded additionally.
+    /// The main class structure is loaded from the English-language XML export.  XML files for other languages and an
+    /// XML file with information about the units can be loaded additionally.
     /// </para>
     /// </summary>
     public class Context : Model.IDataContext
     {
         private static XNamespace OntoML { get; } = "urn:iso:std:iso:is:13584:-32:ed-1:tech:xml-schema:ontoml";
+
+        private static XNamespace UnitsML { get; } = "urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-1.0";
 
         private readonly IDictionary<string, Element> _elements = new Dictionary<string, Element>();
 
@@ -196,7 +221,10 @@ namespace AasxDictionaryImport.Eclass
         /// <param name="document">The XML document to read the data from</param>
         /// <param name="additionalDocuments">Additional XML documents with translations for the data stored in
         /// <paramref name="document"/></param>
-        public Context(DataSource dataSource, XDocument document, ICollection<XDocument> additionalDocuments)
+        /// <param name="units">A UnitsML XML document with information about the units used in the eCl@ss data, if
+        /// available</param>
+        public Context(DataSource dataSource, XDocument document, ICollection<XDocument> additionalDocuments,
+            XDocument? units)
         {
             DataSource = dataSource;
 
@@ -205,7 +233,10 @@ namespace AasxDictionaryImport.Eclass
             Classes = classes.Where(c => !c.IsDeprecated).ToList();
             AssignApplicationClasses();
 
-            AddElements(document.Descendants(OntoML + "property").Select(e => new Property(this, e)));
+            var properties = document.Descendants(OntoML + "property").Select(e => new Property(this, e)).ToList();
+            AddElements(properties);
+            if (units != null)
+                AssignUnits(properties, units);
 
             foreach (var additionalDocument in additionalDocuments)
                 LoadTranslations(additionalDocument);
@@ -231,6 +262,36 @@ namespace AasxDictionaryImport.Eclass
 
             if (_elements.TryGetValue(idAttr.Value, out Element oldElement))
                 oldElement.AddTranslation(element);
+        }
+
+        private void AssignUnits(ICollection<Property> properties, XDocument document)
+        {
+            var units = LoadUnits(document);
+            foreach (var property in properties)
+            {
+                var unitIrdi = property.UnitIrdi;
+                if (unitIrdi.Length > 0 && units.TryGetValue(unitIrdi, out string unit))
+                    property.Unit = unit;
+            }
+        }
+
+        private IDictionary<string, string> LoadUnits(XDocument document)
+        {
+            var units = new Dictionary<string, string>();
+            foreach (var element in document.Descendants(UnitsML + "Unit"))
+            {
+                var data = element
+                    .Elements(UnitsML + "CodeListValue")
+                    .ToDictionary(e => e.Attributes("codeListName").FirstValue(),
+                        e => e.Attributes("unitCodeValue").FirstValue());
+                if (data.TryGetValue("IRDI", out string irdi) && data.TryGetValue("SI code", out string siCode))
+                {
+                    if (!units.ContainsKey(irdi))
+                        // TODO: HTML-decode SI code
+                        units.Add(irdi, siCode);
+                }
+            }
+            return units;
         }
 
         private void AssignApplicationClasses()
@@ -491,6 +552,8 @@ namespace AasxDictionaryImport.Eclass
 
         public string Type => XElement.Elements("domain").Attributes(Xsi + "type").FirstValue();
 
+        public string Unit { get; set; } = string.Empty;
+
         public string UnitIrdi => XElement.Elements("domain").Elements("unit").Attributes("unit_ref").FirstValue();
 
         /// <summary>
@@ -507,6 +570,7 @@ namespace AasxDictionaryImport.Eclass
         public Property(Property property, Model.IElement? parent)
             : base(property, parent)
         {
+            Unit = property.Unit;
         }
 
         /// <inheritdoc/>
@@ -528,6 +592,7 @@ namespace AasxDictionaryImport.Eclass
             var data = base.GetIec61360Data();
             data.DataType = GetDataType(Type);
             data.ShortName = ShortName;
+            data.Unit = Unit;
             data.UnitIrdi = UnitIrdi;
             return data;
         }
