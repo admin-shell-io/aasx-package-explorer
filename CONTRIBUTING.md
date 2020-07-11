@@ -26,6 +26,16 @@ https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/cr
 actions. The CI includes building the solution, running the test, inspecting
 the code *etc.* (see below the section "Pre-merge Checks").
 
+Please note that running the Github actions consumes limited resources (we have only 2,000 minutes
+per month available for CI on our current Github plan). You can manually disable workflows
+by appending the following lines to the body of the pull request:
+* `The workflow build-test-inspect was intentionally skipped.`
+* `The workflow check-style was intentionally skipped.`.
+
+For an example, see [this pull request](
+https://github.com/admin-shell-io/aasx-package-explorer/pull/94
+).
+
 ## Commit Messages
 
 The commit messages follow the guidelines from 

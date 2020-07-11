@@ -5,12 +5,19 @@ on:
     branches:
       - master
       - V20DataModel
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
   Execute:
     runs-on: windows-latest
+    if: contains(github.event.pull_request.body, 'The workflow build-test-inspect was intentionally skipped.') == false
     steps:
       - uses: actions/checkout@master
+
+      - name: Debug
+        env:
+          COMMIT_MESSAGE: ${{ toJson(github.event.pull_request) }}
+        run: Write-Host $env:COMMIT_MESSAGE
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.0
