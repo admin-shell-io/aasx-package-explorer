@@ -5,10 +5,11 @@ on:
     branches:
       - master
       - V20DataModel
-
+    types: [opened, synchronize, reopened, edited]
 jobs:
   Execute:
     runs-on: windows-latest
+    if: contains(github.event.pull_request.body, 'The workflow check-style was intentionally skipped.') == false
     steps:
       - uses: actions/checkout@master
 
