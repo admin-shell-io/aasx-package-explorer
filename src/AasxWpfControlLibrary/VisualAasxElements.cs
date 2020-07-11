@@ -906,20 +906,20 @@ namespace AasxPackageExplorer
             var ti = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
             parent.Members.Add(ti);
 
-            var elc = el.submodelElement as AdminShell.SubmodelElementCollection;
-            if (elc != null && elc.value != null)
+            // Recurse: SMC
+            if (el.submodelElement is AdminShell.SubmodelElementCollection elc && elc.value != null)
                 foreach (var elcc in elc.value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, elcc);
 
+            // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
-            var ele = el.submodelElement as AdminShell.Entity;
-            if (ele != null && ele.statements != null)
+            if (el.submodelElement is AdminShell.Entity ele && ele.statements != null)
                 foreach (var eles in ele.statements)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, eles);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ele, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 
-            var elo = el.submodelElement as AdminShell.Operation;
-            if (elo != null)
+            // Recurse: Operation
+            if (el.submodelElement is AdminShell.Operation elo)
             {
                 if (elo.inputVariable != null)
                     foreach (var vin in elo.inputVariable)
@@ -938,6 +938,11 @@ namespace AasxPackageExplorer
                                 ti, cache, env, el.submodelElement, vout,
                                 AdminShell.OperationVariable.Direction.InOut));
             }
+
+            // Recurse: AnnotatedRelationshipElement
+            if (el.submodelElement is AdminShell.AnnotatedRelationshipElement ela && ela.annotations != null)
+                foreach (var elaa in ela.annotations)
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ela, elaa);
         }
 
         public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(

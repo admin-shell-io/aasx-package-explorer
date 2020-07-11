@@ -5,5 +5,5 @@ echo This file is to be executed in a the data sub-folder of AasxGenerate.exe. I
 pause
 @echo on
 echo 
-copy ..\..\..\..\..\AasxSampleData\AasxGenerate_data\*.* .
-copy ..\..\..\..\..\AasxSampleData\AasxGenerate_usb\*.* .
+copy ..\..\..\..\..\..\aasx-sample-data\AasxGenerate_data\*.* .
+copy ..\..\..\..\..\..\aasx-sample-data\AasxGenerate_usb\*.* .
