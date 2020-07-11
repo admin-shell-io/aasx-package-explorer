@@ -1,6 +1,12 @@
 name: Check-commit-messages
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+    - '*'
+
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
   Execute:
