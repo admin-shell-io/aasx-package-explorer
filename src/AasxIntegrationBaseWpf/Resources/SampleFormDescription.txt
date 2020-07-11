@@ -1,0 +1,11 @@
+﻿Relase notes for this Forms Submodel
+====================================
+
+The following Qualifers can be used:
+
+FormIgnore			Ignore this SubmodelElement, don't generate JSON for it
+FormTitle			Title of the input field
+FormInfo			Smaller information text for the input field
+Multiplicity		One, ZeroToOne, ZeroToMany, OneToMany
+PresetValue			Pre-filled value of Property
+PresetMimeType		Pre-filled mime type of File

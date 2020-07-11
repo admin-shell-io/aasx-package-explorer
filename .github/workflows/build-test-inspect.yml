@@ -1,0 +1,70 @@
+name: Build-test-inspect
+
+on:
+  pull_request:
+    branches:
+      - master
+      - V20DataModel
+
+jobs:
+  Execute:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          vs-version: 15
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+
+      - name: Install .NET core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+
+      - name: Cache local nuget tools
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-local-nuget-tools
+        with:
+          path: tools
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}
+
+      - name: Cache global nuget packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-global-nuget-packages
+        with:
+          path: ~/.nuget/packages/
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallTools.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
+
+      - name: Install tools for build-test-inspect
+        working-directory: src
+        run: powershell .\InstallToolsForBuildTestInspect.ps1
+
+      - name: Install build dependencies
+        working-directory: src
+        run: powershell .\InstallBuildDependencies.ps1
+
+      - name: Build
+        working-directory: src
+        run: powershell .\Build.ps1
+
+      - name: Test
+        working-directory: src
+        run: powershell .\Test.ps1
+
+      - name: Cache inspect code
+        uses: actions/cache@v2
+        env:
+          cache-name: inspect-code
+        with:
+          path: artefacts/inspectcode-caches
+          key: ${{ env.cache-name }}-2020-07-06-T-14-40Z
+
+      - name: Inspect code
+        working-directory: src
+        run: powershell .\InspectCode.ps1

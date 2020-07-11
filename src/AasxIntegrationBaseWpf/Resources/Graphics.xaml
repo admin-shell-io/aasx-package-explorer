@@ -1,0 +1,73 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AasxIntegrationBase">
+
+<!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+
+    <Viewbox x:Key="IconDelete" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+        <Canvas Width="1000" Height="1000">
+            <Canvas.Resources/>
+            <!--Unknown tag: metadata-->
+            <!--Unknown tag: sodipodi:namedview-->
+            <Canvas>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="72.25301361" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                    <Path.Data>
+                        <PathGeometry Figures="M 150 150 850 850" FillRule="evenodd"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="72.25301361" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                    <Path.Data>
+                        <PathGeometry Figures="M 850 150 150 850" FillRule="evenodd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
+
+    <Viewbox x:Key="IconPencil" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+        <Canvas Width="1000" Height="1000">
+            <Canvas.Resources/>
+            <!--Unknown tag: metadata-->
+            <!--Unknown tag: sodipodi:namedview-->
+            <Canvas>
+                <Canvas>
+                    <Canvas.RenderTransform>
+                        <MatrixTransform Matrix="0.96010708 -0.93157321 0.96010708 0.93157321 -70.161602 -355.40721"/>
+                    </Canvas.RenderTransform>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4">
+                        <Path.Data>
+                            <PathGeometry Figures="m -424.34347 864.57372 -88.32918 -50.99688 -88.32918 -50.99689 88.32918 -50.99687 88.32919 -50.99688 0 101.99376 z" FillRule="NonZero"/>
+                        </Path.Data>
+                    </Path>
+                    <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-370.81158" Canvas.Top="657.7124" Width="412.75861" Height="209.73506" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+                    <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="97.31707" Canvas.Top="657.7124" Width="78.860367" Height="209.73506" Fill="#FF000000" StrokeThickness="30" StrokeMiterLimit="4"/>
+                </Canvas>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+
+    <Viewbox x:Key="FormSmaller" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+        <Canvas Width="1000" Height="1000">
+            <Canvas.Resources/>
+            <!--Unknown tag: metadata-->
+            <!--Unknown tag: sodipodi:namedview-->
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="60" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                <Path.Data>
+                    <PathGeometry Figures="m 135.23838 192.464 531.55015 0 c 20.3423 0 36.71894 18.46707 36.71894 41.40598 l 0 404.72443 c 0 22.93891 -16.37664 41.40597 -36.71894 41.40597 l -531.55015 0 c -20.3423 0 -36.718949 -18.46706 -36.718949 -41.40597 l 0 -404.72443 c 0 -22.93891 16.376649 -41.40598 36.718949 -41.40598 z" FillRule="NonZero"/>
+                </Path.Data>
+            </Path>
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="60" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                <Path.Data>
+                    <PathGeometry Figures="m 336.87938 555.50937 551.09398 0 c 21.09023 0 38.06901 9.45855 38.06901 21.20752 l 0 207.29386 c 0 11.74897 -16.97878 21.20753 -38.06901 21.20753 l -551.09398 0 c -21.09023 0 -38.06901 -9.45856 -38.06901 -21.20753 l 0 -207.29386 c 0 -11.74897 16.97878 -21.20752 38.06901 -21.20752 z" FillRule="NonZero"/>
+                </Path.Data>
+            </Path>
+        </Canvas>
+    </Viewbox>
+
+
+</ResourceDictionary>

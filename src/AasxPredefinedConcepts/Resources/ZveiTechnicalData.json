@@ -1,0 +1,1442 @@
+﻿{
+  "SM_TechnicalData": {
+    "hasDataSpecification": null,
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://admin-shell.io/tmp/SG2/TechnicalData/Submodel/1/0",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [
+      {
+        "semanticId": null,
+        "type": "FormTag",
+        "value": "TEC",
+        "valueId": null,
+        "modelType": {
+          "name": "Qualifier"
+        }
+      },
+      {
+        "semanticId": null,
+        "type": "FormTitle",
+        "value": "Technical data (sheet) model",
+        "valueId": null,
+        "modelType": {
+          "name": "Qualifier"
+        }
+      }
+    ],
+    "identification": {
+      "idType": "IRI",
+      "id": "www.company.com/ids/sm/8552_9161_4002_5836"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TechnicalData",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Instance",
+    "descriptions": [
+      {
+        "language": "DE",
+        "text": "Submodel für technische Daten eines Assets und zugehörige Konformitäten zu Produktklassifikationen"
+      },
+      {
+        "language": "EN",
+        "text": "Submodel containing techical data to the asset and associated product classificatons"
+      }
+    ]
+  },
+  "CD_GeneralInformation": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/GeneralInformation/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "GeneralInformation",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Generelle Informationen"
+                },
+                {
+                  "language": "en",
+                  "text": "General information"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "General information"
+                },
+                {
+                  "language": "DE",
+                  "text": "Generelle Informationen"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Generelle Informationen, zum Beispiel Bestell- und Herstellerinformationen"
+                },
+                {
+                  "language": "en",
+                  "text": "General information, for example ordering and manufacturer information"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ManufacturerName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ManufacturerName/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ManufacturerName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Herstellername"
+                },
+                {
+                  "language": "en",
+                  "text": "Manufacturer name"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Herstellername"
+                },
+                {
+                  "language": "DE",
+                  "text": "Manufacturer name"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": "string",
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+                },
+                {
+                  "language": "en",
+                  "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO677#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ManufacturerLogo": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ManufacturerLogo/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ManufacturerLogo",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Herstellerlogo-Datei"
+                },
+                {
+                  "language": "en",
+                  "text": "File with manufactuer logo"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Herstellerlogo"
+                },
+                {
+                  "language": "DE",
+                  "text": "Manufactuer logo"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Bilddatei für Logo des Herstellers im gebräuchlichem Format (.png, .jpg). "
+                },
+                {
+                  "language": "en",
+                  "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg). "
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ManufacturerProductDesignation": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ManufacturerProductDesignation/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ManufacturerProductDesignation",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Herstellerproduktbezeichnung"
+                },
+                {
+                  "language": "en",
+                  "text": "Manufacturer product designation"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Product designation"
+                },
+                {
+                  "language": "DE",
+                  "text": "Produktbezeichnung"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
+                },
+                {
+                  "language": "en",
+                  "text": "Short description of the product (short text)"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAW338#001",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ManufacturerPartNumber": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ManufacturerPartNumber/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ManufacturerPartNumber",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Herstellerartikelnummer"
+                },
+                {
+                  "language": "en",
+                  "text": "product article number of manufacturer"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Manufacturer order code"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerbestellcode"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "eindeutiger Bestellschlüssel des Herstellers"
+                },
+                {
+                  "language": "en",
+                  "text": "unique product identifier of the manufacturer"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO676#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ManufacturerOrderCode": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ManufacturerOrderCode/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ManufacturerOrderCode",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Eindeutiger Herstellerbestellcode"
+                },
+                {
+                  "language": "en",
+                  "text": "Unique manufacturer order code"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Manufacturer order code"
+                },
+                {
+                  "language": "DE",
+                  "text": "Herstellerbestellcode"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "eindeutiger Bestellschlüssel des Herstellers um exakt gleiches Produkt zu bestellen"
+                },
+                {
+                  "language": "en",
+                  "text": "unique product identifier of the manufacturer to order exact same produkt"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO676#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ProductImage": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ProductImage/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ProductImage",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Bilddatei für Produkt"
+                },
+                {
+                  "language": "en",
+                  "text": "Imagefile for product"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Product image"
+                },
+                {
+                  "language": "DE",
+                  "text": "Produktbild"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Bilddatei für das assozierte Produkt im gebräuchlichem Format (.png, .jpg). "
+                },
+                {
+                  "language": "en",
+                  "text": "Imagefile for associated product provided in common format (.png, .jpg). "
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ProductClassifications": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/ProductClassifications/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ProductClassifications",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Produktklassifizierungen"
+                },
+                {
+                  "language": "en",
+                  "text": "ProductClassifications"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "ProductClassification"
+                },
+                {
+                  "language": "DE",
+                  "text": "Produktklassifizierung"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Produktklassifizierungen durch Assoziation mit Produktklassen in gebräuchlichen Klassifizierungssystemen."
+                },
+                {
+                  "language": "en",
+                  "text": "Product classifications by association with product classes in common classification systems."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ProductClassificationItem": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/ProductClassificationItem/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "ProductClassificationItem",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Einzelne Produktklassifizierung"
+                },
+                {
+                  "language": "en",
+                  "text": "Single ProductClassification"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "ProductClassification"
+                },
+                {
+                  "language": "DE",
+                  "text": "Produktklassifizierung"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Einzelne Produktklassifizierung durch Assoziation mit einer Produktklasse"
+                },
+                {
+                  "language": "en",
+                  "text": "Single product classification by association with product class"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ClassificationSystem": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/ClassificationSystem/1/0"
+    },
+    "administration": null,
+    "idShort": "ClassificationSystem",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Klassifikationssystem"
+                },
+                {
+                  "language": "EN",
+                  "text": "Classification system"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Classification system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Klassifikationssystem"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Common name of the classification system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Gebräuchlicher Name für das Klassifikationssystem"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_SystemVersion": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/SystemVersion/1/0"
+    },
+    "administration": null,
+    "idShort": "SystemVersion",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Versionskennung des Klassifikationssystems"
+                },
+                {
+                  "language": "EN",
+                  "text": "Verison id  of the classification system"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Version class. system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Version Klass.-System"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Common version identifier of the used classification system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Gebräuchliche Versionskennung des genutzen Klassifikationssystems"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ProductClass": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/ProductClass/1/0"
+    },
+    "administration": null,
+    "idShort": "ProductClass",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Produktklasse im System"
+                },
+                {
+                  "language": "EN",
+                  "text": "Product class in system"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Product class"
+                },
+                {
+                  "language": "DE",
+                  "text": "Produktklasse "
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Class of the associated product in the classification system; according to the notation of the system"
+                },
+                {
+                  "language": "DE",
+                  "text": "Klasse des assoziierten Produktes im Klassifikationssystem; entsprechend der Notationsweise des Systems."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TechnicalProperties": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/TechnicalProperties/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "TechnicalProperties",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Technische und Produktmerkmale"
+                },
+                {
+                  "language": "en",
+                  "text": "Technical and product properties"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Properties"
+                },
+                {
+                  "language": "DE",
+                  "text": "Merkmale"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Einzelne Merkmale die das Produkt und die technischen Eigenschaften beschreiben"
+                },
+                {
+                  "language": "en",
+                  "text": "Individual characteristics that describe the product and its technical properties"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_NonstandardizedProperty": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/NonstandardizedProperty/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "NonstandardizedProperty",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Nichtstandardisiertes Merkmal"
+                },
+                {
+                  "language": "en",
+                  "text": "Nonstandardized property"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Nonstandardized property"
+                },
+                {
+                  "language": "DE",
+                  "text": "Nichtstandardisiertes Merkmal"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Merkmal, welches nicht über ein gebräuchliches Klassifikationssystem beschrieben ist"
+                },
+                {
+                  "language": "en",
+                  "text": "Property that is not described using a common classification system"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_MainSection": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/MainSection/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "MainSection",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Hauptsektion für Merkmale"
+                },
+                {
+                  "language": "en",
+                  "text": "Main section for properties"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Main section"
+                },
+                {
+                  "language": "DE",
+                  "text": "Hauptsektion"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Haupt-Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+                },
+                {
+                  "language": "en",
+                  "text": "Main subdivision possibility for properties. Can be named via idShort."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_SubSection": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/SubSection/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "SubSection",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Untersektion für Merkmale"
+                },
+                {
+                  "language": "en",
+                  "text": "Subsection for properties"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Subsection "
+                },
+                {
+                  "language": "DE",
+                  "text": "Untersektion "
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Untergeordnete Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+                },
+                {
+                  "language": "en",
+                  "text": "Subordinate subdivision possibility for properties. Can be named via idShort."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_FurtherInformation": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/FurtherInformation/1/0"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "FurtherInformation",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Weitere Informationen"
+                },
+                {
+                  "language": "en",
+                  "text": "Further information"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Further information"
+                },
+                {
+                  "language": "DE",
+                  "text": "Weitere Informationen"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "de",
+                  "text": "Weiterführende Informationen zum Produkt, der Gültigkeit der gemachten Angaben und zu diesem Datensatz"
+                },
+                {
+                  "language": "en",
+                  "text": "Further information on the product, the validity of the information provided and this data record"
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TextStatement": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/TextStatement/1/0"
+    },
+    "administration": null,
+    "idShort": "TextStatement",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Aussage des Herstellers als Text"
+                },
+                {
+                  "language": "EN",
+                  "text": "Statement by the manufacturer as text"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Valid on date"
+                },
+                {
+                  "language": "DE",
+                  "text": "Gültig am"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "STRING",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Statement in text form, e.g. scope of validity of the statements."
+                },
+                {
+                  "language": "DE",
+                  "text": "Aussage in Textform, etwa Gültigkeitsbereich der Aussagen."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ValidDate": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/tmp/SG2/TechnicalData/Section/ValidDate/1/0"
+    },
+    "administration": null,
+    "idShort": "ValidDate",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecificationContent": {
+          "dataSpecificationIEC61360": {
+            "preferredName": {
+              "langString": [
+                {
+                  "language": "DE",
+                  "text": "Informationen gültig am"
+                },
+                {
+                  "language": "EN",
+                  "text": "Information valid on date"
+                }
+              ]
+            },
+            "shortName": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Valid on date"
+                },
+                {
+                  "language": "DE",
+                  "text": "Gültig am"
+                }
+              ]
+            },
+            "unit": "",
+            "unitId": null,
+            "valueFormat": null,
+            "sourceOfDefinition": null,
+            "symbol": null,
+            "dataType": "DATE",
+            "definition": {
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "Denotes a date on which the data specified in the submodel was valid for the associated product. Approximately: Date of the last update of the data."
+                },
+                {
+                  "language": "DE",
+                  "text": "Bezeichnet ein Datum, an welchem die im Submodel genannten Daten für das assoziierte Produkt gültig waren. Etwa: Tag der letzten Aktualisierung der Daten."
+                }
+              ]
+            }
+          },
+          "dataSpecificationISO99999": null
+        },
+        "dataSpecification": {
+          "keys": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  }
+}

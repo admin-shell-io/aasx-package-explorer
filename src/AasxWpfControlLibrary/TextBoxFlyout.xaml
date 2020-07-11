@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="AasxPackageExplorer.TextBoxFlyout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="900" Loaded="UserControl_Loaded">
+
+<!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="Themes/Generic.xaml"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="OuterGrid" MaxHeight="400" MaxWidth="700">
+              
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MinHeight="30"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+        <Viewbox Grid.Row="0" Grid.Column="2" Margin="8,8,8,8" HorizontalAlignment="Right" VerticalAlignment="Top" MaxHeight="26">
+            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+        </Viewbox>
+
+        <Viewbox Grid.Row="1" Grid.Column="1" Margin="0,0,20,0" Stretch="Uniform" MaxHeight="80" VerticalAlignment="Center">
+            <!-- Source="/AasxWpfControlLibrary;component/Resources/msg_error.png" -->
+            <Image x:Name="ImageIcon" Height="80"/>
+        </Viewbox>
+
+        <Grid x:Name="InnerGrid" Grid.Column="2" Grid.Row="1" VerticalAlignment="Center">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" x:Name="LabelCaption" VerticalAlignment="Bottom" Foreground="White" FontSize="22">Enter Asset ID:</Label>
+            <TextBox Grid.Row="1" Grid.Column="0" x:Name="TextBoxText" Margin="4" FontSize="24" VerticalContentAlignment="Center">123456</TextBox>
+            <Button Grid.Row="1" Grid.Column="1" x:Name="ButtonOk" Style="{DynamicResource TranspRoundCorner}" Margin="4" Foreground="White" Width="40" FontSize="18" Click="ButtonOk_Click">OK</Button>
+        </Grid>
+
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
+        
+    </Grid>
+</UserControl>

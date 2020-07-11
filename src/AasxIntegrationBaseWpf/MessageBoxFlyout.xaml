@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="AasxIntegrationBase.MessageBoxFlyout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="900" Loaded="UserControl_Loaded">
+
+<!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
+The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
+The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
+The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="Themes/Generic.xaml"/>
+    </UserControl.Resources>
+
+    <Grid MaxHeight="400" MaxWidth="700">
+              
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MinHeight="30"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+        <!--
+        <Viewbox Grid.Row="0" Grid.Column="2" Margin="2" HorizontalAlignment="Right">
+            <Border x:Name="BorderClose" CornerRadius="6" BorderBrush="White" BorderThickness="1" Margin="1" MouseDown="BorderClose_MouseDown">
+                <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">X</Label>
+            </Border>
+        </Viewbox>
+        -->
+        <Viewbox Grid.Row="0" Grid.Column="2" Margin="0,8,8,0" HorizontalAlignment="Right">
+            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+        </Viewbox>
+
+        <Grid Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Viewbox Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Margin="0,0,20,0" Stretch="Fill" MaxHeight="80" VerticalAlignment="Center">
+                <!-- Source="/AasxIntegrationBaseWpf;component/Resources/msg_error.png" -->
+                <Image x:Name="ImageIcon" Height="80" />
+            </Viewbox>
+            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TextBlockTitle" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap">Title</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TextBlockMessage" Margin="4" FontSize="18" Foreground="White" Background="#10ffffff" HorizontalAlignment="Stretch" TextWrapping="Wrap" TextAlignment="Center">very long message</TextBlock>
+        </Grid>
+
+        <Viewbox Grid.Column="1" Grid.Row="3">
+            <StackPanel x:Name="StackPanelButtons"  Orientation="Horizontal">
+                <!--
+                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
+                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">PE</Label>
+                </Border>
+                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
+                    <Border.Background>
+                        <SolidColorBrush Color="#8888ff" Opacity="0.50"/>
+                    </Border.Background>
+                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">A</Label>
+                </Border>
+                <Border CornerRadius="3" BorderBrush="White" BorderThickness="1" Margin="1">
+                    <Border.Background>
+                        <SolidColorBrush Color="#8888ff" Opacity="0.20"/>
+                    </Border.Background>
+                    <Label Width="40" Height="40" Padding="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="22" Foreground="White">XX</Label>
+                </Border>
+                -->
+
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">A</Button>
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">BB</Button>
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">CC</Button>
+                <Button Style="{DynamicResource TranspRoundCorner}" Height="40" Width="40" Foreground="White" Margin="5,0,5,0">Hallo</Button>
+            </StackPanel>
+        </Viewbox>
+
+        <Border Grid.Row="0" Grid.RowSpan="5" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
+        
+    </Grid>
+</UserControl>

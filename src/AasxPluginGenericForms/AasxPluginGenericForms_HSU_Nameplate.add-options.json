@@ -1,0 +1,452 @@
+﻿{
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "HSU",
+      "FormTitle": "Nameplate Submodel of the HSU",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Submodel",
+        "FormInfo": "",
+        "PresetIdShort": "Nameplate",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://www.hsu-hh.de/aut/aas/nameplate",
+          "index": 0,
+          "idType": "IRI"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerName",
+            "FormInfo": "Original manufacturer of the equipment",
+            "PresetIdShort": "ManufacturerName",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO677#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ManufacturerTypName",
+            "FormInfo": "Name of the series or product type named by the manufacturer",
+            "PresetIdShort": "ManufacturerTypName",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAW338#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "PhysicalAddress",
+            "FormInfo": "One or multiple addresses relevant for customers to contact the manufacturer",
+            "PresetIdShort": "PhysicalAddress{0:00}",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://www.hsu-hh.de/aut/aas/physicaladdress",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "OneToMany",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "CountryCode",
+                "PresetIdShort": "CountryCode",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO730#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "Street",
+                "PresetIdShort": "Street",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/street",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "PostalCode",
+                "PresetIdShort": "PostalCode",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/postalcode",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "City",
+                "PresetIdShort": "City",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/city",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "StateCounty",
+                "PresetIdShort": "StateCounty",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://www.hsu-hh.de/aut/aas/statecounty",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "TypClass",
+            "PresetIdShort": "TypClass",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAU731#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SerialNo",
+            "PresetIdShort": "SerialNo",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "www.company.com/ids/cd/9544_4082_7091_8596",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": "JO43"
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "ChargeId",
+            "PresetIdShort": "ChargeId",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAQ196#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              ""
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "CountryOfOrigin",
+            "PresetIdShort": "CountryOfOrigin",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO841#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "YearOfConstruction",
+            "PresetIdShort": "YearOfConstruction",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAP906#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "integer"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Marking_CE",
+            "PresetIdShort": "Marking_CE",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://www.hsu-hh.de/aut/aas/productmarking",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "CEMarkingPresent",
+                "PresetIdShort": "CEMarkingPresent",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAX043#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "boolean"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormFile",
+                "FormTitle": "File",
+                "PresetIdShort": "File",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAD005#008",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Marking_CRUUS",
+            "PresetIdShort": "Marking_CRUUS",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://www.hsu-hh.de/aut/aas/productmarking",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "CRUUSLabelingPresent",
+                "PresetIdShort": "CRUUSLabelingPresent",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAR528#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "boolean"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormFile",
+                "FormTitle": "File",
+                "PresetIdShort": "File",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAD005#008",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Marking_RCM",
+            "PresetIdShort": "Marking_RCM",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://www.hsu-hh.de/aut/aas/productmarking",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "RCMLabelingPresent",
+                "PresetIdShort": "RCMLabelingPresent",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAR528#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "boolean"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormFile",
+                "FormTitle": "File",
+                "PresetIdShort": "File",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAD005#008",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

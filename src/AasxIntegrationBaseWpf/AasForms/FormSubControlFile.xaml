@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="AasxIntegrationBase.AasForms.FormSubControlFile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxIntegrationBase.AasForms"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="300" Loaded="UserControl_Loaded">
+    <Grid Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="24"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!--
+            <TextBox x:Name="TextBoxValue"  Grid.Row="0" Grid.Column="1" Text="My funny document" Margin="2" Visibility="Visible" VerticalContentAlignment="Center"/>
+            <ComboBox x:Name="ComboBoxValue" Grid.Row="0" Grid.Column="1" Text="My funny document" Background="LightGray" Margin="2" Visibility="Hidden"/>
+            -->
+            <TextBlock x:Name="TextBlockIndex" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" FontSize="8" VerticalAlignment="Top" Margin="0,1,4,0" Text="#1"/>
+            <Border x:Name="BorderTargetArea" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Background="LightBlue" BorderBrush="DarkBlue" BorderThickness="1" MinHeight="40" Margin="2">
+                <TextBlock x:Name="TextBlockTargetArea" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="10" Text="Drag a file to register for loading it!" />
+            </Border>
+            <Button x:Name="ButtonClear" Grid.Row="0" Grid.Column="2" Content="Clear" Padding="4,0,4,0" Margin="2"/>
+            <Button x:Name="ButtonSelect" Grid.Row="1" Grid.Column="2" Content="Select" Padding="4,0,4,0" Margin="2"/>
+        </Grid>
+    </Grid>
+</UserControl>

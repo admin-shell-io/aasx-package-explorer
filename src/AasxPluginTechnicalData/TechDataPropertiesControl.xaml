@@ -1,0 +1,211 @@
+﻿<UserControl x:Class="AasxPluginTechnicalData.TechDataPropertiesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxPluginTechnicalData"
+             xmlns:doc="clr-namespace:System.Windows.Documents;assembly=PresentationFramework"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+
+    <!-- styles declared for use in code -->
+    <!-- ReSharper disable Xaml.RedundantResource -->
+    
+    <UserControl.Resources>
+        
+        <Style x:Key="dataRowStyle" TargetType="{x:Type TableRowGroup}">
+        </Style>
+
+        <Style x:Key="ParaStyleSectionMain" TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="0,10,0,5"/>
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="ParaStyleSectionSub" TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="ParaStyleHeader" TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="2,0,2,0"/>
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="ParaStyleProperty" TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="2,0,2,0"/>
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Normal"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+        </Style>
+
+        <Style x:Key="CellStyleHeaderLeftmost" TargetType="{x:Type TableCell}">
+            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="BorderThickness" Value="1,1,1,1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+
+        <Style x:Key="CellStyleHeaderOther" TargetType="{x:Type TableCell}">
+            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="BorderThickness" Value="0,1,1,1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+
+        <Style x:Key="CellStylePropertyLeftmost" TargetType="{x:Type TableCell}">
+            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="BorderThickness" Value="1,0,1,1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+
+        <Style x:Key="CellStylePropertyOther" TargetType="{x:Type TableCell}">
+            <Setter Property="BorderBrush" Value="DarkGray" />
+            <Setter Property="BorderThickness" Value="0,0,1,1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+        
+    </UserControl.Resources>
+
+    <Grid Background="White" Margin="0">
+
+        <FlowDocumentScrollViewer x:Name="FlowDocViewer" Margin="0" BorderBrush="Black" BorderThickness="0">
+            <FlowDocument>
+
+                <Table CellSpacing="0" FontFamily="Arial" Margin="0">
+
+                    <Table.Columns>
+                        <TableColumn Width="2*"/>
+                        <TableColumn Width="1*" />
+                        <TableColumn Width="1*" />
+                    </Table.Columns>
+                    
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell Style="{StaticResource CellStyleHeaderLeftmost}">
+                                <Paragraph Style="{StaticResource ParaStyleHeader}">
+                                    <Run>Property</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStyleHeaderOther}">
+                                <Paragraph Style="{StaticResource ParaStyleHeader}">
+                                    <Run>Semantics</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStyleHeaderOther}">
+                                <Paragraph Style="{StaticResource ParaStyleHeader}">
+                                    <Run>Value</Run>
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell ColumnSpan="3" Padding="0,0,0,0">
+                                <Paragraph Style="{StaticResource ParaStyleSectionMain}">
+                                    <Run>Main Section</Run>
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell ColumnSpan="3" Padding="5,0,0,0">
+                                <Paragraph Style="{StaticResource ParaStyleSectionSub}">
+                                    <Run></Run>
+                                    <Run>Sub Section</Run>
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell Padding="15,0,0,0" Style="{StaticResource CellStylePropertyLeftmost}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Property</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStylePropertyOther}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Semantics</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStylePropertyOther}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Value</Run>
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell Padding="15,0,0,0" Style="{StaticResource CellStylePropertyLeftmost}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Property</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStylePropertyOther}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Semantics</Run>
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell Style="{StaticResource CellStylePropertyOther}">
+                                <Paragraph Style="{StaticResource ParaStyleProperty}">
+                                    <Run>Value</Run>
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+                </Table>
+                
+                <!--
+                <Section FontSize="12">
+                    <Paragraph>
+                        To be replaced by program section.
+                    </Paragraph>
+                </Section>
+                -->
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+
+        <!--
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2"/>
+        </Grid.ColumnDefinitions>
+        
+        <ItemsControl x:Name="ItemsControlProperties" Grid.Column="0" Grid.Row="0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
+        
+        -->
+    </Grid>
+</UserControl>

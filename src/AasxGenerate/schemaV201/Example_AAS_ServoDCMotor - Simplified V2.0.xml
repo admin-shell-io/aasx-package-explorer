@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aas:aasenv xmlns:aas="http://www.admin-shell.io/aas/2/0" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd">
+	<aas:assetAdministrationShells>
+		<aas:assetAdministrationShell>
+			<aas:idShort>
+				ExampleMotor
+			</aas:idShort>
+			<aas:category>CONSTANT</aas:category>
+			<aas:identification idType="IRI">
+				http://customer.com/aas/9175_7013_7091_9168
+			</aas:identification>
+			<aas:assetRef>
+				<aas:keys>
+					<aas:key idType="IRI" local="true" type="Asset">
+						http://customer.com/assets/KHBVZJSQKIY
+					</aas:key>
+				</aas:keys>
+			</aas:assetRef>
+
+			<aas:submodelRefs>
+				<aas:submodelRef>
+					<aas:keys>
+						<aas:key idType="IRI" local="true" type="Submodel">
+							http://i40.customer.com/instance/1/1/AC69B1CB44F07935
+						</aas:key>
+					</aas:keys>
+				</aas:submodelRef>
+				<aas:submodelRef>
+					<aas:keys>
+						<aas:key idType="IRI" local="true" type="Submodel">
+							http://i40.customer.com/type/1/1/1A7B62B529F19152
+						</aas:key>
+					</aas:keys>
+				</aas:submodelRef>
+				<aas:submodelRef>
+					<aas:keys>
+						<aas:key idType="IRI" local="true" type="Submodel">
+							http://i40.customer.com/type/1/1/7A7104BDAB57E184
+						</aas:key>
+					</aas:keys>
+				</aas:submodelRef>
+			</aas:submodelRefs>
+		</aas:assetAdministrationShell>
+	</aas:assetAdministrationShells>
+	<aas:assets>
+		<aas:asset>
+			<aas:idShort>
+				ServoDCMotor
+			</aas:idShort>
+			<aas:identification idType="IRI">
+				http://customer.com/assets/KHBVZJSQKIY
+			</aas:identification>
+			<aas:assetIdentificationModelRef>
+				<aas:keys/>
+			</aas:assetIdentificationModelRef>
+			<aas:billOfMaterialRef>
+				<aas:keys/>
+			</aas:billOfMaterialRef>
+			<aas:kind>Instance</aas:kind>
+		</aas:asset>
+	</aas:assets>
+		<aas:submodels>
+		<aas:submodel>
+			<aas:idShort>
+				Documentation
+			</aas:idShort>
+			<aas:category>
+				CONSTANT
+			</aas:category>
+			<aas:identification idType="IRI">
+				http://i40.customer.com/type/1/1/1A7B62B529F19152
+			</aas:identification>
+			<aas:kind>Instance</aas:kind>
+			<aas:qualifier/>
+			<aas:submodelElements>
+				<aas:submodelElement>
+					<aas:submodelElementCollection>
+						<aas:idShort>
+							OperatingManual
+						</aas:idShort>
+						<aas:kind>Instance</aas:kind>
+						<aas:semanticId>
+							<aas:keys>
+								<aas:key idType="IRI" local="true" type="ConceptDescription">
+									www.vdi2770.com/blatt1/Entwurf/Okt18/cd/Document
+								</aas:key>
+							</aas:keys>
+						</aas:semanticId>
+						<aas:value>
+							<aas:submodelElement>
+								<aas:file>
+									<aas:idShort>
+										DigitalFile_PDF
+									</aas:idShort>
+									<aas:category>
+										PARAMETER
+									</aas:category>
+									<aas:kind>Instance</aas:kind>
+									<aas:semanticId>
+										<aas:keys>
+											<aas:key idType="IRI" local="true" type="ConceptDescription">
+												http://vdi2770.com/blatt1/Entwurf/Okt18/cd/StoredDocumentRepresentation/DigitalFile
+											</aas:key>
+										</aas:keys>
+									</aas:semanticId>
+									<aas:mimeType>
+										application/pdf
+									</aas:mimeType>
+									<aas:value>
+										/aasx/OperatingManual.pdf
+									</aas:value>
+								</aas:file>
+							</aas:submodelElement>
+							<aas:submodelElement>
+								<aas:multiLanguageProperty>
+									<aas:idShort>
+										Title
+									</aas:idShort>
+									<aas:kind>Instance</aas:kind>
+									<aas:semanticId>
+										<aas:keys>
+											<aas:key idType="IRI" local="true" type="ConceptDescription">
+												http://vdi2770.com/blatt1/Entwurf/Okt18/cd/Description/Title
+											</aas:key>
+										</aas:keys>
+									</aas:semanticId>
+									<aas:value>
+										<aas:langString lang="EN">
+											Operating Manual
+										</aas:langString>
+									</aas:value>
+								</aas:multiLanguageProperty>
+							</aas:submodelElement>
+						</aas:value>
+						<aas:ordered>false</aas:ordered>
+						<aas:allowDuplicates>false</aas:allowDuplicates>
+					</aas:submodelElementCollection>
+				</aas:submodelElement>
+			</aas:submodelElements>
+		</aas:submodel>
+		<aas:submodel>
+			<aas:idShort>
+				TechnicalData
+			</aas:idShort>
+			<aas:category>
+				CONSTANT
+			</aas:category>
+			<aas:identification idType="IRI">
+				http://i40.customer.com/type/1/1/7A7104BDAB57E184
+			</aas:identification>
+			<aas:kind>Instance</aas:kind>
+			<aas:semanticId>
+				<aas:keys>
+					<aas:key idType="IRDI" local="false" type="GlobalReference">
+						0173-1#01-AFZ615#016
+					</aas:key>
+				</aas:keys>
+			</aas:semanticId>
+			<aas:submodelElements>
+				<aas:submodelElement>
+					<aas:property>
+						<aas:idShort>
+							MaxRotationSpeed
+						</aas:idShort>
+						<aas:category>
+							PARAMETER
+						</aas:category>
+						<aas:kind>Instance</aas:kind>
+						<aas:semanticId>
+							<aas:keys>
+								<aas:key idType="IRDI" local="true" type="ConceptDescription">
+									0173-1#02-BAA120#008
+								</aas:key>
+							</aas:keys>
+						</aas:semanticId>
+						<aas:valueType>
+							integer
+						</aas:valueType>
+						<aas:value>
+							5000
+						</aas:value>
+
+					</aas:property>
+				</aas:submodelElement>
+			</aas:submodelElements>
+		</aas:submodel>
+		<aas:submodel>
+			<aas:idShort>
+				OperationalData
+			</aas:idShort>		
+			<aas:category>
+				VARIABLE
+			</aas:category>
+			<aas:identification idType="IRI">
+				http://i40.customer.com/instance/1/1/AC69B1CB44F07935
+			</aas:identification>
+
+			<aas:kind>Instance</aas:kind>
+			<aas:semanticId>
+				<aas:keys/>
+			</aas:semanticId>
+			<aas:submodelElements>
+				<aas:submodelElement>
+					<aas:property>
+						<aas:idShort>
+							RotationSpeed
+						</aas:idShort>
+						<aas:category>
+							VARIABLE
+						</aas:category>
+						<aas:kind>Instance</aas:kind>
+						<aas:semanticId>
+							<aas:keys>
+								<aas:key idType="IRI" local="true" type="ConceptDescription">
+									http://customer.com/cd/1/1/18EBD56F6B43D895
+								</aas:key>
+							</aas:keys>
+						</aas:semanticId>
+						<aas:embeddedDataSpecification>
+							<aas:dataSpecification>
+								<aas:keys/>
+							</aas:dataSpecification>
+						</aas:embeddedDataSpecification>
+						<aas:valueType>
+							integer
+						</aas:valueType>
+						<aas:value>
+							4370
+						</aas:value>
+
+					</aas:property>
+				</aas:submodelElement>
+			</aas:submodelElements>
+		</aas:submodel>
+	</aas:submodels>
+		<aas:conceptDescriptions>
+		<aas:conceptDescription>
+			<aas:idShort>
+				MaxRotationSpeed
+			</aas:idShort>
+			<aas:category>PROPERTY</aas:category>
+			<aas:identification idType="IRDI">
+				0173-1#02-BAA120#008
+			</aas:identification>
+			<aas:administration>
+				<aas:version>2</aas:version>
+				<aas:revision>0</aas:revision>
+			</aas:administration>
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+						<IEC61360:dataType>REAL_MEASURE</IEC61360:dataType>
+						<IEC61360:definition>
+							<IEC61360:langString lang="de">
+								Höchste zulässige Drehzahl, mit welcher der Motor oder die Speiseinheit betrieben werden darf
+							</IEC61360:langString>
+							<IEC61360:langString lang="en">
+								Greatest permissible rotation speed with which the motor or feeding unit may be operated
+							</IEC61360:langString>
+						</IEC61360:definition>
+						<IEC61360:preferredName>
+							<IEC61360:langString lang="de">
+								max. Drehzahl
+							</IEC61360:langString>
+							<IEC61360:langString lang="en">
+								Max. rotation speed
+							</IEC61360:langString>
+						</IEC61360:preferredName>
+						<IEC61360:shortName>
+							<IEC61360:langString></IEC61360:langString>
+						</IEC61360:shortName>
+						<IEC61360:sourceOfDefinition/>
+						<IEC61360:unit>
+							1/min
+						</IEC61360:unit>
+						<IEC61360:unitId>
+							<IEC61360:keys>
+								<IEC61360:key idType="IRDI" local="false" type="GlobalReference">
+									0173-1#05-AAA650#002
+								</IEC61360:key>
+							</IEC61360:keys>
+						</IEC61360:unitId>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+			</aas:embeddedDataSpecification>
+			<aas:isCaseOf>
+				<aas:keys/>
+			</aas:isCaseOf>
+		</aas:conceptDescription>
+		<aas:conceptDescription>
+			<aas:idShort>
+				Title
+			</aas:idShort>		
+			<aas:category>PROPERTY</aas:category>
+			<aas:identification idType="IRI">
+				http://vdi2770.com/blatt1/Entwurf/Okt18/cd/Description/Title
+			</aas:identification>
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+						<IEC61360:dataType>STRING_TRANSLATABLE</IEC61360:dataType>
+						<IEC61360:definition>
+							<IEC61360:langString lang="DE">
+								Sprachabhängiger Titel des Dokuments.
+							</IEC61360:langString>
+						</IEC61360:definition>
+						<IEC61360:preferredName>
+							<IEC61360:langString lang="DE">
+								Titel
+							</IEC61360:langString>
+							<IEC61360:langString lang="EN">
+								Title
+							</IEC61360:langString>
+						</IEC61360:preferredName>
+						<IEC61360:shortName>
+							<IEC61360:langString lang="DE">
+								Titel
+							</IEC61360:langString>
+						</IEC61360:shortName>
+						<IEC61360:sourceOfDefinition/>
+						<IEC61360:unit/>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+				<aas:dataSpecification>
+					<aas:keys>
+						<aas:key idType="IRI" local="false" type="GlobalReference">
+							http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360
+						</aas:key>
+					</aas:keys>
+				</aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+		</aas:conceptDescription>
+		<aas:conceptDescription>
+			<aas:idShort>
+				RotationSpeed
+			</aas:idShort>
+			<aas:category>PROPERTY</aas:category>
+			<aas:identification idType="IRI">
+				http://customer.com/cd/1/1/18EBD56F6B43D895
+			</aas:identification>
+
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+						<IEC61360:dataType>REAL_MEASURE</IEC61360:dataType>
+						<IEC61360:definition>
+							<IEC61360:langString lang="DE">
+								Aktuelle Drehzahl, mit welcher der Motor oder die Speiseinheit betrieben wird
+							</IEC61360:langString>
+							<IEC61360:langString lang="EN">
+								Actual rotation speed with which the motor or feeding unit is operated
+							</IEC61360:langString>
+						</IEC61360:definition>
+						<IEC61360:preferredName>
+							<IEC61360:langString lang="DE">
+								Aktuelle Drehzahl
+							</IEC61360:langString>
+							<IEC61360:langString lang="EN">
+								Actual rotation speed
+							</IEC61360:langString>
+						</IEC61360:preferredName>
+						<IEC61360:shortName>
+							<IEC61360:langString lang="EN">
+								RotationSpeed
+							</IEC61360:langString>
+						</IEC61360:shortName>
+						<IEC61360:sourceOfDefinition/>
+						<IEC61360:unit>
+							1/min
+						</IEC61360:unit>
+						<IEC61360:unitId>
+							<IEC61360:keys>
+								<IEC61360:key idType="IRDI" local="false" type="GlobalReference">
+									0173-1#05-AAA650#002
+								</IEC61360:key>
+							</IEC61360:keys>
+						</IEC61360:unitId>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+				<aas:dataSpecification>
+					<aas:keys>
+						<aas:key idType="IRI" local="false" type="GlobalReference">
+							http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360
+						</aas:key>
+					</aas:keys>
+				</aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+		</aas:conceptDescription>
+		<aas:conceptDescription>
+			<aas:idShort>
+				Document
+			</aas:idShort>
+			<aas:category>
+				COLLECTION
+			</aas:category>
+			<aas:description>
+				<aas:langString/>
+			</aas:description>
+			<aas:identification idType="IRI">
+				http://vdi2770.com/blatt1/Entwurf/Okt18/cd/Document
+			</aas:identification>
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+						<IEC61360:dataType>URL</IEC61360:dataType>
+						<IEC61360:definition>
+							<IEC61360:langString lang="DE">
+								Feste und geordnete Menge von für die Verwendung durch Personen bestimmte Informationen, die verwaltet und als Einheit zwischen Benutzern und System ausgetauscht werden kann.
+							</IEC61360:langString>
+						</IEC61360:definition>
+						<IEC61360:preferredName>
+							<IEC61360:langString lang="DE">
+								Dokument
+							</IEC61360:langString>
+							<IEC61360:langString lang="EN">
+								Document
+							</IEC61360:langString>
+						</IEC61360:preferredName>
+						<IEC61360:shortName>
+							<IEC61360:langString lang="EN">
+								Document
+							</IEC61360:langString>
+						</IEC61360:shortName>
+						<IEC61360:sourceOfDefinition>
+							[ISO 15519-1:2010]
+						</IEC61360:sourceOfDefinition>
+						<IEC61360:unit/>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+				<aas:dataSpecification>
+					<aas:keys>
+						<aas:key idType="IRI" local="false" type="GlobalReference">
+							http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360
+						</aas:key>
+					</aas:keys>
+				</aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+
+		</aas:conceptDescription>
+		<aas:conceptDescription>
+			<aas:idShort>
+				DigitalFile
+			</aas:idShort>
+			<aas:category>
+				DOCUMENT
+			</aas:category>
+			<aas:identification idType="IRI">
+				http://vdi2770.com/blatt1/Entwurf/Okt18/cd/StoredDocumentRepresentation/DigitalFile
+			</aas:identification>
+			<aas:embeddedDataSpecification>
+				<aas:dataSpecificationContent>
+					<aas:dataSpecificationIEC61360>
+						<IEC61360:dataType>URL</IEC61360:dataType>
+						<IEC61360:definition>
+							<IEC61360:langString lang="DE">
+								Eine Datei, die die DocumentVersion repräsentiert. Neben der obligatorischen PDF/A Datei können weitere Dateien angegeben werden.
+							</IEC61360:langString>
+						</IEC61360:definition>
+						<IEC61360:preferredName>
+							<IEC61360:langString lang="DE">
+								Digitale Datei
+							</IEC61360:langString>
+						</IEC61360:preferredName>
+						<IEC61360:shortName>
+							<IEC61360:langString lang="DE">
+								digitale Datei
+							</IEC61360:langString>
+						</IEC61360:shortName>
+						<IEC61360:sourceOfDefinition/>
+						<IEC61360:unit/>
+					</aas:dataSpecificationIEC61360>
+				</aas:dataSpecificationContent>
+				<aas:dataSpecification>
+					<aas:keys>
+						<aas:key idType="IRI" local="false" type="GlobalReference">
+							http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360
+						</aas:key>
+					</aas:keys>
+				</aas:dataSpecification>
+			</aas:embeddedDataSpecification>
+		</aas:conceptDescription>
+	</aas:conceptDescriptions>
+</aas:aasenv>

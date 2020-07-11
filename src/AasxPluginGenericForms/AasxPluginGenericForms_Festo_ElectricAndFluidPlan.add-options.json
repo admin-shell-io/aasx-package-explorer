@@ -1,0 +1,79 @@
+﻿{
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "EFE",
+      "FormTitle": "Electric or fluid plan - Edit",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Submodel",
+        "FormInfo": "",
+        "PresetIdShort": "ElectricAndFluidPlan",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+          "type": "Submodel",
+          "local": false,
+          "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
+          "index": 0,
+          "idType": "IRI"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Electric or fluid plan files",
+            "FormInfo": "Section for plan files. Please fill with files from your electric or fuid wiring software",
+            "PresetIdShort": "PlanFiles",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "http://smart.festo.com/AAS/ConceptDescriptions/ElectricAndFluidPlan/PlanFiles/1/0",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormFile",
+                "FormTitle": "Plan file",
+                "PresetIdShort": "PlanFile{0:00}",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "http://smart.festo.com/AAS/ConceptDescriptions/ElectricAndFluidPlan/PlanFile/1/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "OneToMany",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "AAS model for electric or fluid plans",
+            "FormInfo": "AAS standardized representation of the plan files. Will be auto-generated.",
+            "PresetIdShort": "PlanEntities",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "http://smart.festo.com/AAS/ConceptDescriptions/ElectricAndFluidPlan/PlanEntities/1/0",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": []
+          }
+        ]
+      }
+    }
+  ]
+}

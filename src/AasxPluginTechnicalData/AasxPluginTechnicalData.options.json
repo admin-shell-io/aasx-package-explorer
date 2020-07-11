@@ -1,0 +1,15 @@
+﻿{
+  "Records": [
+    {
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://admin-shell.io/tmp/SG2/TechnicalData/Submodel/1/0",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    }
+  ]
+}
