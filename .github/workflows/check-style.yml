@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - master
-      - V20DataModel
     types: [opened, synchronize, reopened, edited]
+
 jobs:
   Execute:
     runs-on: windows-latest
