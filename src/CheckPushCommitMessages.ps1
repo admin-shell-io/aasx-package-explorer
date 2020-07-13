@@ -25,8 +25,6 @@ function Main
 
         Set-Location $PSScriptRoot
 
-        $
-
         # Get commit hashes not available in the master
         $hashesText = git log 'origin/master..HEAD' '--format=format:%H'|Out-String
 
@@ -46,7 +44,10 @@ function Main
             Write-Host "--- Verifying the message: ---"
             Write-Host $message
             Write-Host "---"
-            powershell -File OpinionatedCommitMessage.ps1 -message $message
+            powershell `
+                -File OpinionatedCommitMessage.ps1 `
+                -message $message `
+                -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
         }
     }
     finally
