@@ -6,17 +6,21 @@ The file `LICENSE.TXT` in the main folder of the repo is the leading license
 information, even if it does not show up in the Visual Studio solution. To
 update all dependent license files, manually start `src/CopyLicense.ps1`.
 
+Some plug-ins require a separate license. These separate licenses are given
+in `LICENSE-PLUGIN.txt` in the corresponding directory of the plug-in. 
+
 You should add a copyright note for each major contribution in the corresponding
 files:
 1) The copyright note should start with `Copyright (c)` followed by the time 
-   span of the contribution. 
-2) You should put the full name of the organization (*e.g.*, 
+   span of the contribution.
+    
+2) You should put the full name of the legal entity (*e.g.*, 
    `Phoenix Contact GmbH & Co. KG`); a simple name (Phoenix Contact) will *not* 
    do! 
-3) Each copyright note should indicate the contact in the angle brackets 
-   (*e.g.*, 
+3) Each copyright note should indicate the contact to the legal entity in the 
+   angle brackets (*e.g.*, 
   `<https://www.festo.com/net/de_de/Forms/web/contact_international>`).
-4) The author of the contribution is optional (unless the organization is a 
+4) The author of the contribution is optional (unless the contributor is a 
    private person, of course). If there are multiple authors, please indicate 
    only the organization and omit the individual contributors.
 5) All the copyrights of a file are joined into a single comment block 
@@ -34,6 +38,9 @@ Copyright (c) 2019-2020 PHOENIX CONTACT GmbH & Co. KG
 Author: Andreas Orzelski
 */
 ``` 
+
+Please make sure to add the copyright notes in the main [`LICENSE.txt`](
+LICENSE.txt) file as well and call `src/CopyLicense.ps1` on changes.
 
 ## Pull Requests
 
