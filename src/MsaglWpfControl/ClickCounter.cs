@@ -27,8 +27,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 using System;
-using WPoint = System.Windows.Point;
 using WDispatcherTimer = System.Windows.Threading.DispatcherTimer;
+using WPoint = System.Windows.Point;
 namespace Microsoft.Msagl.WpfGraphControl
 {
     internal class ClickCounter

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
-using QRCoder;
-using AdminShellNS;
-using System.Xml.Serialization;
-using ZXing;
-using System.Windows.Controls;
 using System.Windows;
-using System.Windows.Media.Imaging;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
+using AdminShellNS;
 using Newtonsoft.Json;
-using System.IO;
+using QRCoder;
+using ZXing;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>

@@ -149,7 +149,7 @@ Check the version of dotnet-format so that the code is always formatted in the s
 #>
 function AssertDotnetFormatVersion
 {
-    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "3.3.111304"
+    AssertDotnetToolVersion -packageID "dotnet-format" -expectedVersion "4.0.130203"
 }
 
 <#
@@ -159,6 +159,15 @@ Check the version of dead-csharp so that the dead code is always detected in the
 function AssertDeadCsharpVersion
 {
     AssertDotnetToolVersion -packageID "deadcsharp" -expectedVersion "1.0.0-beta4"
+}
+
+<#
+.Synopsis
+Check the version of doctest-csharp so that the code is always generated and checked in the same manner.
+#>
+function AssertDoctestCsharpVersion
+{
+    AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "1.0.0-pre1"
 }
 
 function FindInspectCode
@@ -228,6 +237,7 @@ Export-ModuleMember -Function `
      AssertDotnetToolVersion, `
      AssertDotnetFormatVersion, `
      AssertDeadCsharpVersion, `
+     AssertDoctestCsharpVersion, `
      FindMSBuild, `
      FindInspectCode, `
      FindNunit3Console, `

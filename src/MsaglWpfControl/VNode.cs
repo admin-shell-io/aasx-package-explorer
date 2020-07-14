@@ -2,29 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using WFrameworkElement = System.Windows.FrameworkElement;
-using WVisibility = System.Windows.Visibility;
-using WCornerRadius = System.Windows.CornerRadius;
-using WRect = System.Windows.Rect;
-using WBorder = System.Windows.Controls.Border;
-using WPanel = System.Windows.Controls.Panel;
-using WTextBlock = System.Windows.Controls.TextBlock;
-using WCanvas = System.Windows.Controls.Canvas;
-using WSweepDirection = System.Windows.Media.SweepDirection;
-using WArcSegment = System.Windows.Media.ArcSegment;
-using WGeometry = System.Windows.Media.Geometry;
-using WRotateTransform = System.Windows.Media.RotateTransform;
-using WEllipseGeometry = System.Windows.Media.EllipseGeometry;
-using WPathFigure = System.Windows.Media.PathFigure;
-using WPathGeometry = System.Windows.Media.PathGeometry;
-using WBrushes = System.Windows.Media.Brushes;
-using WBrush = System.Windows.Media.Brush;
-using WRectangle = System.Windows.Shapes.Rectangle;
-using WPath = System.Windows.Shapes.Path;
-using WSize = System.Windows.Size;
-using WMouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
-using WLineSegment = System.Windows.Media.LineSegment;
-
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Core.Layout;
 using Microsoft.Msagl.Drawing;
@@ -35,6 +12,28 @@ using MNode = Microsoft.Msagl.Drawing.Node;
 using MPoint = Microsoft.Msagl.Core.Geometry.Point;
 using MPolyline = Microsoft.Msagl.Core.Geometry.Curves.Polyline;
 using MShape = Microsoft.Msagl.Drawing.Shape;
+using WArcSegment = System.Windows.Media.ArcSegment;
+using WBorder = System.Windows.Controls.Border;
+using WBrush = System.Windows.Media.Brush;
+using WBrushes = System.Windows.Media.Brushes;
+using WCanvas = System.Windows.Controls.Canvas;
+using WCornerRadius = System.Windows.CornerRadius;
+using WEllipseGeometry = System.Windows.Media.EllipseGeometry;
+using WFrameworkElement = System.Windows.FrameworkElement;
+using WGeometry = System.Windows.Media.Geometry;
+using WLineSegment = System.Windows.Media.LineSegment;
+using WMouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
+using WPanel = System.Windows.Controls.Panel;
+using WPath = System.Windows.Shapes.Path;
+using WPathFigure = System.Windows.Media.PathFigure;
+using WPathGeometry = System.Windows.Media.PathGeometry;
+using WRect = System.Windows.Rect;
+using WRectangle = System.Windows.Shapes.Rectangle;
+using WRotateTransform = System.Windows.Media.RotateTransform;
+using WSize = System.Windows.Size;
+using WSweepDirection = System.Windows.Media.SweepDirection;
+using WTextBlock = System.Windows.Controls.TextBlock;
+using WVisibility = System.Windows.Visibility;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {

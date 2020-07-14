@@ -1,5 +1,4 @@
-﻿using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -20,8 +19,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using Newtonsoft.Json;
 using AasxPredefinedConcepts;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 // ReSharper disable InconsistentlySynchronizedField
 // checks and everything looks fine .. maybe .Count() is already treated as synchronized action?

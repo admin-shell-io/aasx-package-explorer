@@ -1,22 +1,22 @@
 ﻿using System;
-using Microsoft.IdentityModel.Tokens;
-using IdentityModel;
-using IdentityModel.Client;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using Newtonsoft.Json.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Clients;
-using System.IO;
-using System.Windows;
-using Jose;
-using System.Net;
-using System.Windows.Forms;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using Clients;
+using IdentityModel;
+using IdentityModel.Client;
+using Jose;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 // ReSharper disable All .. as this is code from others!
 
