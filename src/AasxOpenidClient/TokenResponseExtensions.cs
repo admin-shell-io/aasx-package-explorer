@@ -1,8 +1,8 @@
-﻿using IdentityModel;
+﻿using System;
+using System.Text;
+using IdentityModel;
 using IdentityModel.Client;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Text;
 
 namespace Clients
 {

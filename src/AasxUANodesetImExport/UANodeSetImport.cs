@@ -11,14 +11,14 @@ Copyright (c) 2020 Fraunhofer IOSB-INA Lemgo,
 Author: Jan Nicolas Weskamp
 */
 
-using AdminShellNS;
-using static AdminShellNS.AdminShellV20;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using AdminShellNS;
+using static AdminShellNS.AdminShellV20;
 
 // TODO: License
 // TODO Fraunhofer IOSB: Check ReSharper

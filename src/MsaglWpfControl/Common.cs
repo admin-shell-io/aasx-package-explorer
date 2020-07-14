@@ -1,11 +1,11 @@
-using WFrameworkElement = System.Windows.FrameworkElement;
-using WSolidColorBrush = System.Windows.Media.SolidColorBrush;
-using WMatrixTransform = System.Windows.Media.MatrixTransform;
-using WMatrix = System.Windows.Media.Matrix;
-using WColor = System.Windows.Media.Color;
-using WBrush = System.Windows.Media.Brush;
-using WPoint = System.Windows.Point;
 using MPoint = Microsoft.Msagl.Core.Geometry.Point;
+using WBrush = System.Windows.Media.Brush;
+using WColor = System.Windows.Media.Color;
+using WFrameworkElement = System.Windows.FrameworkElement;
+using WMatrix = System.Windows.Media.Matrix;
+using WMatrixTransform = System.Windows.Media.MatrixTransform;
+using WPoint = System.Windows.Point;
+using WSolidColorBrush = System.Windows.Media.SolidColorBrush;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {

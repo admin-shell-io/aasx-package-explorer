@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using AdminShellNS;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
 {

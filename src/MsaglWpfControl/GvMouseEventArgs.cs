@@ -26,12 +26,12 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-using WPoint = System.Windows.Point;
-using WIInputElement = System.Windows.IInputElement;
-using WMouseEventArgs = System.Windows.Input.MouseEventArgs;
-using WMouseButtonState = System.Windows.Input.MouseButtonState;
-using WMouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using Microsoft.Msagl.Drawing;
+using WIInputElement = System.Windows.IInputElement;
+using WMouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
+using WMouseButtonState = System.Windows.Input.MouseButtonState;
+using WMouseEventArgs = System.Windows.Input.MouseEventArgs;
+using WPoint = System.Windows.Point;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {

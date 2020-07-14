@@ -28,20 +28,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 using System;
 using System.Collections.Generic;
-using Visibility = System.Windows.Visibility;
-using WFrameworkElement = System.Windows.FrameworkElement;
-using WCanvas = System.Windows.Controls.Canvas;
-using WGeometry = System.Windows.Media.Geometry;
-using WStreamGeometry = System.Windows.Media.StreamGeometry;
-using WStreamGeometryContext = System.Windows.Media.StreamGeometryContext;
-using WSweepDirection = System.Windows.Media.SweepDirection;
-using WDoubleCollection = System.Windows.Media.DoubleCollection;
-using WBrush = System.Windows.Media.Brush;
-using WBrushes = System.Windows.Media.Brushes;
-using WSolidColorBrush = System.Windows.Media.SolidColorBrush;
-using WPath = System.Windows.Shapes.Path;
-using WSize = System.Windows.Size;
-using WColor = System.Windows.Media.Color;
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Core.Layout;
 using Microsoft.Msagl.Drawing;
@@ -52,6 +38,20 @@ using MLineSegment = Microsoft.Msagl.Core.Geometry.Curves.LineSegment;
 using MPoint = Microsoft.Msagl.Core.Geometry.Point;
 using MPolyline = Microsoft.Msagl.Core.Geometry.Curves.Polyline;
 using MRectangle = Microsoft.Msagl.Core.Geometry.Rectangle;
+using Visibility = System.Windows.Visibility;
+using WBrush = System.Windows.Media.Brush;
+using WBrushes = System.Windows.Media.Brushes;
+using WCanvas = System.Windows.Controls.Canvas;
+using WColor = System.Windows.Media.Color;
+using WDoubleCollection = System.Windows.Media.DoubleCollection;
+using WFrameworkElement = System.Windows.FrameworkElement;
+using WGeometry = System.Windows.Media.Geometry;
+using WPath = System.Windows.Shapes.Path;
+using WSize = System.Windows.Size;
+using WSolidColorBrush = System.Windows.Media.SolidColorBrush;
+using WStreamGeometry = System.Windows.Media.StreamGeometry;
+using WStreamGeometryContext = System.Windows.Media.StreamGeometryContext;
+using WSweepDirection = System.Windows.Media.SweepDirection;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {

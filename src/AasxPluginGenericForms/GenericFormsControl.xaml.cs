@@ -1,5 +1,4 @@
-﻿using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -20,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxPluginGenericForms

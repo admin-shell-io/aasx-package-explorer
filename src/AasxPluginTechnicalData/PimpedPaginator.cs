@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
-using System.Globalization;
-using System.IO;
 
 // see: https://www.codeproject.com/Articles/31834/FlowDocument-pagination-with-repeating-page-header
 

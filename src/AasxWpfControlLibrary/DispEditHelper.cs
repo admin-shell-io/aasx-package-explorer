@@ -10,9 +10,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AdminShellNS;
-using AasxGlobalLogging;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>

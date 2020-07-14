@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using AdminShellNS;
-using AasxIntegrationBase;
 using System.Windows.Data;
 using System.Windows.Threading;
+using AasxIntegrationBase;
+using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
 {

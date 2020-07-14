@@ -1,19 +1,18 @@
-﻿using AdminShellNS;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using System.Windows.Media;
+using AasxIntegrationBase.AasForms;
+using AdminShellNS;
+using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using ClosedXML.Excel;
-using System.Windows.Media;
-using AasxIntegrationBase.AasForms;
+using Newtonsoft.Json;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 

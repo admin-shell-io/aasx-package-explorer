@@ -1,11 +1,11 @@
-using WFrameworkElement = System.Windows.FrameworkElement;
-using WCanvas = System.Windows.Controls.Canvas;
-using WLine = System.Windows.Shapes.Line;
-using WBrushes = System.Windows.Media.Brushes;
-using WDoubleCollection = System.Windows.Media.DoubleCollection;
 using System;
 using System.Collections.Generic;
 using Microsoft.Msagl.Drawing;
+using WBrushes = System.Windows.Media.Brushes;
+using WCanvas = System.Windows.Controls.Canvas;
+using WDoubleCollection = System.Windows.Media.DoubleCollection;
+using WFrameworkElement = System.Windows.FrameworkElement;
+using WLine = System.Windows.Shapes.Line;
 
 namespace Microsoft.Msagl.WpfGraphControl
 {

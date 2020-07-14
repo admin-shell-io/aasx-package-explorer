@@ -1,8 +1,4 @@
-﻿using AasxIntegrationBase;
-using AdminShellNS;
-using AasxGlobalLogging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -11,6 +7,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using AasxGlobalLogging;
+using AasxIntegrationBase;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>

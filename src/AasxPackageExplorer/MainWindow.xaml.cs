@@ -1,23 +1,22 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.IO;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.Threading;
-using System.Text;
-
-using AdminShellNS;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AdminShellNS;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
