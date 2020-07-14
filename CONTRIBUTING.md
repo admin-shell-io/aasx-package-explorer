@@ -208,19 +208,29 @@ The dependencies of the solution are installed by:
 We still assume the current directory is `src/`. Besides scripts for building,
 we provide scripts to run pre-merge checks on your local machine.
 
-To run all the checks, run:
+To run all the checks:
 
 ```powershell
 .\Check.ps1
 ```
 
-To format the code in-place with `dotnet-format`, invoke:
+To format the code in-place with `dotnet-format`:
 
 ```powershell
 .\FormatCode.ps1
 ```
 
-To run the unit tests:
+We use [doctest-csharp](
+https://github.com/mristin/doctest-csharp
+) for [doctests](
+https://en.wikipedia.org/wiki/Doctest). To extract the doctests and generate 
+the corresponding unit tests:
+
+```powershell
+.\Doctest.ps1
+```
+
+To run all the unit tests:
 
 ```powershell
 .\Test.ps1

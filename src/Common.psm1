@@ -167,7 +167,7 @@ Check the version of doctest-csharp so that the code is always generated and che
 #>
 function AssertDoctestCsharpVersion
 {
-    AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "1.0.0-pre1"
+    AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "1.0.0-pre2"
 }
 
 function FindInspectCode
