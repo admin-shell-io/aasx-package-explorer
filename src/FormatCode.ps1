@@ -10,4 +10,4 @@ AssertDotnet
 AssertDotnetFormatVersion
 
 cd $PSScriptRoot
-dotnet format
+dotnet format --exclude "**/DocTest*.cs"

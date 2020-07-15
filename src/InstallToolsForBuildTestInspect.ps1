@@ -13,6 +13,8 @@ function Main {
        throw "Unable to find nuget.exe in your PATH"
     }
 
+    AssertDotnet
+
     $toolsDir = GetToolsDir
     New-Item -ItemType Directory -Force -Path $toolsDir
 
@@ -33,6 +35,9 @@ function Main {
 
     Write-Host "Installing Resharper CLI ..."
     nuget install JetBrains.ReSharper.CommandLineTools -Version 2020.1.2 -OutputDirectory $toolsDir
+
+    Write-Host "Restoring dotnet tools for the solution ..."
+    dotnet tool restore
 }
 
 Main
