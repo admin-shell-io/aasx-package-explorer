@@ -34,6 +34,13 @@ function Main
         /p:Configuration=$configuration `
         /p:Platform=x64 `
         /maxcpucount
+
+    $buildExitCode = $LASTEXITCODE
+    Write-Host "Build exit code: $buildExitCode"
+    if ($buildExitCode -ne 0)
+    {
+        throw "Build failed."
+    }
 }
 
 Main
