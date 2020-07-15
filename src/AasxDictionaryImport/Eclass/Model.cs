@@ -8,13 +8,16 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Windows;
 using System.Xml;
 using System.Xml.Linq;
+using AasxDictionaryImport.Model;
 using AasxPackageExplorer;
 using AdminShellNS;
 
@@ -40,14 +43,6 @@ namespace AasxDictionaryImport.Eclass
     /// <seealso href="https://wiki.eclass.eu/wiki/ISO_13584-32_ontoML"/>
     public class DataProvider : Model.DataProviderBase
     {
-        private static XNamespace Dic20 = "urn:eclass:xml-schema:dictionary:2.0";
-
-        private static XNamespace Dic30 = "urn:eclass:xml-schema:dictionary:3.0";
-
-        private static XNamespace Hea20 = "urn:eclass:xml-schema:header:2.0";
-
-        private static XNamespace Hea30 = "urn:eclass:xml-schema:header:3.0";
-
         /// <inheritdoc/>
         public override string Name => "ECLASS";
 
@@ -83,14 +78,14 @@ namespace AasxDictionaryImport.Eclass
                     {
                         // Verify that the root element is eclass_dictionary and find the header element for different
                         // schema versions
-                        if (reader.IsStartElement("eclass_dictionary", Dic30.NamespaceName))
+                        if (reader.IsStartElement("eclass_dictionary", Namespaces.Dic30.NamespaceName))
                         {
-                            if (!reader.ReadToDescendant("header", Hea30.NamespaceName))
+                            if (!reader.ReadToDescendant("header", Namespaces.Hea30.NamespaceName))
                                 return false;
                         }
-                        else if (reader.IsStartElement("eclass_dictionary", Dic20.NamespaceName))
+                        else if (reader.IsStartElement("eclass_dictionary", Namespaces.Dic20.NamespaceName))
                         {
-                            if (!reader.ReadToDescendant("header", Hea20.NamespaceName))
+                            if (!reader.ReadToDescendant("header", Namespaces.Hea20.NamespaceName))
                                 return false;
                         }
                         else
@@ -204,10 +199,6 @@ namespace AasxDictionaryImport.Eclass
     /// </summary>
     public class Context : Model.IDataContext
     {
-        private static XNamespace OntoML { get; } = "urn:iso:std:iso:is:13584:-32:ed-1:tech:xml-schema:ontoml";
-
-        private static XNamespace UnitsML { get; } = "urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-1.0";
-
         private readonly IDictionary<string, Element> _elements = new Dictionary<string, Element>();
 
         private readonly ICollection<string> _deprecatedElements = new List<string>();
@@ -239,12 +230,13 @@ namespace AasxDictionaryImport.Eclass
         {
             DataSource = dataSource;
 
-            var classes = document.Descendants(OntoML + "class").Select(e => new Class(this, e)).ToList();
+            var classes = document.Descendants(Namespaces.OntoML + "class").Select(e => new Class(this, e)).ToList();
             AddElements(classes);
             Classes = classes.Where(c => !c.IsDeprecated).ToList();
             AssignApplicationClasses();
+            AssignAspects(document.Descendants(Namespaces.OntoML + "a_posteriori_semantic_relationship"));
 
-            var properties = document.Descendants(OntoML + "property").Select(e => new Property(this, e)).ToList();
+            var properties = document.Descendants(Namespaces.OntoML + "property").Select(e => new Property(this, e)).ToList();
             AddElements(properties);
             if (units != null)
                 AssignUnits(properties, units);
@@ -255,8 +247,8 @@ namespace AasxDictionaryImport.Eclass
 
         private void LoadTranslations(XDocument document)
         {
-            LoadTranslations(document.Descendants(OntoML + "class"));
-            LoadTranslations(document.Descendants(OntoML + "property"));
+            LoadTranslations(document.Descendants(Namespaces.OntoML + "class"));
+            LoadTranslations(document.Descendants(Namespaces.OntoML + "property"));
         }
 
         private void LoadTranslations(IEnumerable<XElement> elements)
@@ -289,10 +281,10 @@ namespace AasxDictionaryImport.Eclass
         private IDictionary<string, string> LoadUnits(XDocument document)
         {
             var units = new Dictionary<string, string>();
-            foreach (var element in document.Descendants(UnitsML + "Unit"))
+            foreach (var element in document.Descendants(Namespaces.UnitsML + "Unit"))
             {
                 var data = element
-                    .Elements(UnitsML + "CodeListValue")
+                    .Elements(Namespaces.UnitsML + "CodeListValue")
                     .ToDictionary(e => e.Attributes("codeListName").FirstValue(),
                         e => e.Attributes("unitCodeValue").FirstValue());
                 if (data.TryGetValue("IRDI", out string irdi) && data.TryGetValue("SI code", out string siCode))
@@ -315,6 +307,22 @@ namespace AasxDictionaryImport.Eclass
                     if (ccls != null)
                         ccls.ApplicationClasses.Add(cls);
                 }
+            }
+        }
+
+        private void AssignAspects(IEnumerable<XElement> aspectRelations)
+        {
+            foreach (var aspectRelation in aspectRelations)
+            {
+                var applicationClassIrdi = aspectRelation.Elements("item").Attributes("class_ref").FirstValue();
+                var aspectIrdi = aspectRelation.Elements("model").Attributes("class_ref").FirstValue();
+                if (applicationClassIrdi.Length == 0 || aspectIrdi.Length == 0)
+                    continue;
+
+                var applicationClass = GetElement<Class>(applicationClassIrdi);
+                var aspect = GetElement<Class>(aspectIrdi);
+                if (applicationClass != null && aspect != null)
+                    applicationClass.Aspects.Add(aspect);
             }
         }
 
@@ -349,7 +357,7 @@ namespace AasxDictionaryImport.Eclass
             return null;
         }
 
-        private T? GetElement<T>(string id) where T : Element
+        public T? GetElement<T>(string id) where T : Element
         {
             if (_elements.TryGetValue(id, out Element e))
                 if (e is T t)
@@ -391,6 +399,18 @@ namespace AasxDictionaryImport.Eclass
         public MultiString Definition => GetMultiString("definition", "text");
 
         public string HierarchicalPosition => XElement.Elements("hierarchical_position").FirstValue();
+
+        public ICollection<string> Hierarchy
+        {
+            get
+            {
+                if (Parent == null || !(Parent is Element element))
+                    return new[] { Id }.ToList();
+                var hierarchy = element.Hierarchy;
+                hierarchy.Add(Id);
+                return hierarchy;
+            }
+        }
 
         /// <summary>
         /// Whether this element is deprecated.  If this property is true, this element
@@ -502,12 +522,24 @@ namespace AasxDictionaryImport.Eclass
         public ICollection<Class> ApplicationClasses { get; } = new List<Class>();
 
         /// <summary>
+        /// The aspects for this application class, or an empty list if this is an classification class.
+        /// </summary>
+        public ICollection<Class> Aspects { get; } = new List<Class>();
+
+        /// <summary>
         /// Creates a new Class object within the given context, backed by the given XML element.
         /// </summary>
         /// <param name="context">The context for this element</param>
         /// <param name="element">The XML element with the data for this element</param>
         public Class(Context context, XElement element) : base(context, element)
         {
+            if (IsAspect())
+                IsSelected = false;
+        }
+
+        private bool IsAspect()
+        {
+            return XElement.Attributes(Namespaces.Xsi + "type").FirstValue() == "ontoml:FUNCTIONAL_MODEL_CLASS_Type";
         }
 
         /// <inheritdoc/>
@@ -517,37 +549,69 @@ namespace AasxDictionaryImport.Eclass
             if (!IsSelected)
                 return false;
 
-            var submodel = Iec61360Utils.CreateSubmodel(env, adminShell, GetIec61360Data());
-            ImportSubmodelElementsInto(env, submodel);
-            return true;
+            if (ApplicationClasses.Count > 0)
+            {
+                return ApplicationClasses.Count(ac => ac.ImportSubmodelInto(env, adminShell)) > 0;
+            }
+            else
+            {
+                var submodel = Iec61360Utils.CreateSubmodel(env, adminShell, GetIec61360Data());
+                foreach (var child in Children)
+                {
+                    if (child is Class cls && cls.IsAspect())
+                    {
+                        cls.ImportSubmodelInto(env, adminShell);
+                    }
+                    else
+                    {
+                        child.ImportSubmodelElementsInto(env, submodel);
+                    }
+                }
+                return true;
+            }
         }
 
         /// <inheritdoc/>
         public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
             AdminShellV20.IManageSubmodelElements parent)
         {
-            return Children.Count(c => c.ImportSubmodelElementsInto(env, parent)) > 0;
+            if (!IsSelected)
+                return false;
+
+            var collection = Iec61360Utils.CreateCollection(env, GetIec61360Data());
+            foreach (var child in Children)
+                child.ImportSubmodelElementsInto(env, collection);
+            parent.Add(collection);
+            return true;
         }
 
         /// <inheritdoc/>
         protected override ICollection<Model.IElement> LoadChildren()
         {
-            if (ApplicationClasses.Count > 0)
-                // We assume that there is at most one application class per classification class, so we just transfer
-                // the children
+            if (ApplicationClasses.Count == 1)
                 return ApplicationClasses.First().LoadChildren(this);
-            return LoadChildren(this);
+            else if (ApplicationClasses.Count > 1)
+                return ApplicationClasses.Cast<Model.IElement>().ToList();
+
+            var children = new List<Model.IElement>();
+            children.AddRange(Aspects);
+            children.AddRange(LoadChildren(this));
+            return children;
         }
 
         private ICollection<Model.IElement> LoadChildren(Class parent)
         {
+            // We have to force the conversion to nun-nullable types using the ! operator because Where(e => e != null)
+            // still returns a nullable type, see https://github.com/dotnet/roslyn/issues/37468
             return XElement
                 .Elements("described_by")
                 .Elements("property")
                 .Attributes("property_ref")
                 .Select(a => Context.GetProperty(parent, a.Value))
                 .Where(p => p != null)
-                .Cast<Model.IElement>()
+                .Select(p => p!.ResolveReference())
+                .Where(e => e != null)
+                .Select(e => e!)
                 .ToList();
         }
     }
@@ -557,15 +621,16 @@ namespace AasxDictionaryImport.Eclass
     /// </summary>
     public class Property : Element
     {
-        private static XNamespace Xsi = "http://www.w3.org/2001/XMLSchema-instance";
-
         public MultiString ShortName => GetMultiString("short_name", "label");
 
-        public string Type => XElement.Elements("domain").Attributes(Xsi + "type").FirstValue();
+        public string Type => XElement.Elements("domain").Attributes(Namespaces.Xsi + "type").FirstValue();
 
         public string Unit { get; set; } = string.Empty;
 
         public string UnitIrdi => XElement.Elements("domain").Elements("unit").Attributes("unit_ref").FirstValue();
+
+        public string ClassReferenceIrdi
+            => XElement.Elements("domain").Elements("domain").Attributes("class_ref").FirstValue();
 
         /// <summary>
         /// Creates a new Property object within the given context, backed by the given XML element.
@@ -582,6 +647,26 @@ namespace AasxDictionaryImport.Eclass
             : base(property, parent)
         {
             Unit = property.Unit;
+        }
+
+        public bool IsClassReferenceType() => Type == "ontoml:CLASS_REFERENCE_TYPE_Type";
+
+        public Model.IElement? ResolveReference()
+        {
+            if (IsClassReferenceType())
+            {
+                if (Hierarchy.Contains(ClassReferenceIrdi))
+                {
+                    Console.WriteLine($"Circle detected!  Id = {Id}, ClassReferenceId = {ClassReferenceIrdi}, " +
+                        $"Hierarchy = {string.Join(" --> ", Hierarchy)}");
+                    Log.Singleton.Info("Circle detected during import");
+                }
+                else
+                {
+                    return Context.GetElement<Class>(ClassReferenceIrdi);
+                }
+            }
+            return this;
         }
 
         /// <inheritdoc/>
@@ -657,6 +742,23 @@ namespace AasxDictionaryImport.Eclass
             }
             return string.Empty;
         }
+    }
+
+    internal static class Namespaces
+    {
+        public static XNamespace Xsi = "http://www.w3.org/2001/XMLSchema-instance";
+
+        public static XNamespace OntoML { get; } = "urn:iso:std:iso:is:13584:-32:ed-1:tech:xml-schema:ontoml";
+
+        public static XNamespace UnitsML { get; } = "urn:oasis:names:tc:unitsml:schema:xsd:UnitsMLSchema-1.0";
+
+        public static XNamespace Dic20 = "urn:eclass:xml-schema:dictionary:2.0";
+
+        public static XNamespace Dic30 = "urn:eclass:xml-schema:dictionary:3.0";
+
+        public static XNamespace Hea20 = "urn:eclass:xml-schema:header:2.0";
+
+        public static XNamespace Hea30 = "urn:eclass:xml-schema:header:3.0";
     }
 
     internal static class Extensions
