@@ -4,7 +4,8 @@ This script generates the documentation for developers in the docdev directory.
 #>
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    GetToolsDir
+    GetToolsDir, `
+    CreateAndGetArtefactsDir
 
 
 function Main
@@ -25,6 +26,8 @@ function Main
                 "Did you install it using InstallDocdevDependencies.ps1?")
         }
 
+        $artefactsDir = CreateAndGetArtefactsDir
+
         $repoDir = Split-Path -Parent $PSScriptRoot
         $docfxProjectDir = Join-Path $repoDir "docdev" `
             | Join-Path -ChildPath "docfx_project"
@@ -36,7 +39,9 @@ function Main
             throw "docfx failed. See above for error logs."
         }
 
-        $siteDir = Join-Path $docfxProjectDir "_site"
+        $siteDir = Join-Path $artefactsDir "gh-pages" `
+            | Join-Path -ChildPath "devdoc"
+
         Write-Host "The documentation has been generated to: '$siteDir'"
         Write-Host "You can serve it locally with:"
         Write-Host "'$docfxExe' serve '$siteDir'"
