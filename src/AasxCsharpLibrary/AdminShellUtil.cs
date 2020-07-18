@@ -25,9 +25,12 @@ namespace AdminShellNS
             return string.Format(fmt, o);
         }
 
-        /// <code doctest="true">Assert.AreEqual("", AdminShellUtil.FilterFriendlyName(""));</code>
+        /// <summary>Creates a filter-friendly name from the source.</summary>
+        /// <example>
+        /// <code>Assert.AreEqual("", AdminShellUtil.FilterFriendlyName(""));</code>
         /// <code doctest="true">Assert.AreEqual("someName", AdminShellUtil.FilterFriendlyName("someName"));</code>
         /// <code doctest="true">Assert.AreEqual("some__name", AdminShellUtil.FilterFriendlyName("some!;name"));</code>
+        /// </example>
         public static string FilterFriendlyName(string src)
         {
             if (src == null)
@@ -35,12 +38,14 @@ namespace AdminShellNS
             return Regex.Replace(src, @"[^a-zA-Z0-9\-_]", "_");
         }
 
+        /// <example>
         /// <code doctest="true">Assert.IsFalse(AdminShellUtil.HasWhitespace(""));</code>
         /// <code doctest="true">Assert.IsTrue(AdminShellUtil.HasWhitespace(" "));</code>
         /// <code doctest="true">Assert.IsTrue(AdminShellUtil.HasWhitespace("aa bb"));</code>
         /// <code doctest="true">Assert.IsTrue(AdminShellUtil.HasWhitespace(" aabb"));</code>
         /// <code doctest="true">Assert.IsTrue(AdminShellUtil.HasWhitespace("aabb "));</code>
         /// <code doctest="true">Assert.IsFalse(AdminShellUtil.HasWhitespace("aabb"));</code>
+        /// </example>
         public static bool HasWhitespace(string src)
         {
             if (src == null)
