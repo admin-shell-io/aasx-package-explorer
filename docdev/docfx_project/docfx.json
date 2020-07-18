@@ -54,7 +54,7 @@
         ]
       }
     ],
-    "dest": "_site",
+    "dest": "../../artefacts/gh-pages/devdoc",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [

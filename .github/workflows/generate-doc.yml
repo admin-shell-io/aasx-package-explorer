@@ -1,0 +1,26 @@
+name: Generate-doc
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Execute:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install docdev dependencies
+        working-directory: src
+        run: powershell .\InstallDocdevDependencies.ps1
+
+      - name: Generate the docdev
+        working-directory: src
+        run: powershell .\GenerateDocdev.ps1
+
+      - name: Deploy to gh-pages 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: artefacts/gh-pages
