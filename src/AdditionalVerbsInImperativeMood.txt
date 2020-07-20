@@ -5,3 +5,4 @@ unwrap
 re-wrap
 undo
 re-do
+inline

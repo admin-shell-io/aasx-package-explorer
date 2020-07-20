@@ -55,7 +55,6 @@
     <Compile Include="AdminShellUtil.cs" />
     <Compile Include="AdminShell.cs" />
     <Compile Include="IAasxOnlineConnection.cs" />
-    <Compile Include="MultiTupleDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
