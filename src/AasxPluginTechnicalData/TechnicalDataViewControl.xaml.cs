@@ -13,9 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPluginTechnicalData.Tetra.Framework.WPF;
 using AasxPredefinedConcepts;
 using AdminShellNS;
-using Tetra.Framework.WPF;
 
 namespace AasxPluginTechnicalData
 {

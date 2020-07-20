@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 // see: https://www.codeproject.com/Articles/31834/FlowDocument-pagination-with-repeating-page-header
 
-namespace Tetra.Framework.WPF
+namespace AasxPluginTechnicalData.Tetra.Framework.WPF
 {
 
     /// <summary>
