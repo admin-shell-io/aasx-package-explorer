@@ -45,7 +45,7 @@ namespace AasxPluginGenericForms
 
         private ViewModel theViewModel = new ViewModel();
 
-        public class ViewModel : AasxUtilities.WpfViewModelBase
+        public class ViewModel : AasxIntegrationBase.WpfViewModelBase
         {
         }
 
@@ -123,7 +123,7 @@ namespace AasxPluginGenericForms
         #region REDRAW of contents
         //========================
 
-        private void TheViewModel_ViewModelChanged(AasxUtilities.WpfViewModelBase obj)
+        private void TheViewModel_ViewModelChanged(AasxIntegrationBase.WpfViewModelBase obj)
         {
         }
 

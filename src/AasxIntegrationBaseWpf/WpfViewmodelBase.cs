@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AasxUtilities
+namespace AasxIntegrationBase
 {
     public class WpfViewModelBase : INotifyPropertyChanged
     {
