@@ -4,7 +4,7 @@ using IdentityModel;
 using IdentityModel.Client;
 using Newtonsoft.Json.Linq;
 
-namespace Clients
+namespace AasxOpenIdClient
 {
     public static class TokenResponseExtensions
     {

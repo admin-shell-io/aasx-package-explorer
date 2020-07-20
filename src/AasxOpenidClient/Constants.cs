@@ -1,6 +1,6 @@
-﻿// ReSharper disable All .. as this is code from others!
+﻿// ReSharper disable All .. as this is code from others (adapted from IdentityServer4).
 
-namespace Clients
+namespace AasxOpenIdClient
 {
     public class Constants
     {

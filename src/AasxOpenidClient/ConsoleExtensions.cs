@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
-// ReSharper disable All .. as this is code from others!
+// ReSharper disable All .. as this is code from others (adapted from IdentityServer4).
 
-namespace Clients
+namespace AasxOpenIdClient
 {
     public static class ConsoleExtensions
     {

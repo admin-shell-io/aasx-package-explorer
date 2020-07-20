@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using Clients;
+using AasxOpenIdClient;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -18,9 +18,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-// ReSharper disable All .. as this is code from others!
+// ReSharper disable All .. as this is code from others (adapted from IdentityServer4).
 
-namespace AasxPrivateKeyJwtClient
+namespace AasxOpenIdClient
 {
     public class OpenIDClient
     {
