@@ -59,6 +59,10 @@ jobs:
         working-directory: src
         run: powershell .\Build.ps1
 
+      - name: Check that all Doctests are there
+        working-directory: src
+        run: powershell .\Doctest.ps1 -check
+
       - name: Test
         working-directory: src
         run: powershell .\Test.ps1
