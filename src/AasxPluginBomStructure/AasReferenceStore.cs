@@ -5,15 +5,30 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxUtils;
 using AdminShellNS;
 
 namespace AasxPluginBomStructure
 {
     public class AasReferenceStore
     {
-        private MultiTupleDictionary<uint, AdminShell.Referable> dict =
-            new MultiTupleDictionary<uint, AdminShellV20.Referable>();
+        private class MultiValueDictionary<K, V>
+        {
+            private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();
+            public void Add(K key, V value)
+            {
+                if (dict.TryGetValue(key, out var list))
+                    list.Add(value);
+                else
+                    dict.Add(key, new List<V> { value });
+            }
+
+            public bool ContainsKey(K key) => dict.ContainsKey(key);
+
+            public List<V> this[K key] => dict[key];
+        }
+
+        private MultiValueDictionary<uint, AdminShell.Referable> dict =
+            new MultiValueDictionary<uint, AdminShellV20.Referable>();
 
         private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
 

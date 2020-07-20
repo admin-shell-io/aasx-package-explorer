@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxUtils;
 using AdminShellNS;
 using Aml.Engine.CAEX;
 
@@ -45,9 +44,37 @@ namespace AasxAmlImExport
             return res;
         }
 
+        private class MultiValueDictionary<K, V>
+        {
+            private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();
+            public void Add(K key, V value)
+            {
+                if (dict.TryGetValue(key, out var list))
+                    list.Add(value);
+                else
+                    dict.Add(key, new List<V> { value });
+            }
+
+            public bool ContainsKey(K key) => dict.ContainsKey(key);
+
+            public List<V> this[K key] => dict[key];
+        }
+
         public class AmlParser
         {
             public AdminShellPackageEnv package = null;
+
+            private class TargetIdAction
+            {
+                public int TargetId;
+                public Action<InternalLinkType, int> Action;
+
+                public TargetIdAction(int targetId, Action<InternalLinkType, int> action)
+                {
+                    TargetId = targetId;
+                    Action = action;
+                }
+            }
 
             /// <summary>
             /// During parsing of internal elements, AAS entities can register themselves to be source or target
@@ -55,15 +82,27 @@ namespace AasxAmlImExport
             /// Key is the value of il.RefPartnerSide(A|B).
             /// Lambda will be called, checking if link is meaningful needs to be done inside.
             /// </summary>
-            private MultiTupleDictionary<
-                string, MultiTuple2<int, Action<InternalLinkType, int>>> registerForInternalLinks =
-                    new MultiTupleDictionary<string, MultiTuple2<int, Action<InternalLinkType, int>>>();
+            private MultiValueDictionary<string, TargetIdAction> registerForInternalLinks =
+                    new MultiValueDictionary<string, TargetIdAction>();
+
+            private class IeViewAmlTarget
+            {
+                public InternalElementType Ie;
+                public AdminShell.View View;
+                public CAEXObject AmlTarget;
+
+                public IeViewAmlTarget(InternalElementType ie, AdminShellV20.View view, CAEXObject amlTarget)
+                {
+                    Ie = ie;
+                    View = view;
+                    AmlTarget = amlTarget;
+                }
+            }
 
             /// <summary>
             /// Remember contained element refs for Views, to be assiciated later with AAS entities
             /// </summary>
-            private List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>> latePopoulationViews =
-                new List<MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>>();
+            private List<IeViewAmlTarget> latePopoulationViews = new List<IeViewAmlTarget>();
 
             /// <summary>
             /// Hold available all IDs of input AML
@@ -501,9 +540,7 @@ namespace AasxAmlImExport
                                     // shall exists.
                                     // This is not already the case, therefore store the AML IE / View Information
                                     // for later parsing
-                                    this.latePopoulationViews.Add(
-                                        new MultiTuple3<InternalElementType, AdminShell.View, CAEXObject>(
-                                            ie, view, el));
+                                    this.latePopoulationViews.Add(new IeViewAmlTarget(ie, view, el));
                                 }
                             }
 
@@ -620,7 +657,7 @@ namespace AasxAmlImExport
                     // to do so, register a link and attach the appropriate lambda
                     this.registerForInternalLinks.Add(
                         "" + ie.ID + ":" + "ReferableReference",
-                        new MultiTuple2<int, Action<InternalLinkType, int>>(
+                        new TargetIdAction(
                             targetId,
                             (il, ti) =>
                             {
@@ -1351,7 +1388,7 @@ namespace AasxAmlImExport
                                 var items = this.registerForInternalLinks[side];
                                 if (items != null)
                                     foreach (var it in items)
-                                        it.two?.Invoke(il, it.one);
+                                        it.Action?.Invoke(il, it.TargetId);
                             }
                         }
 
@@ -1367,17 +1404,14 @@ namespace AasxAmlImExport
             /// </summary>
             public void LatePopulateViews()
             {
-                foreach (var vtuple in this.latePopoulationViews)
+                foreach (var ieViewAmlTarget in this.latePopoulationViews)
                 {
                     // access
-                    var ie = vtuple.one;
-                    var view = vtuple.two;
-                    var amlTarget = vtuple.three;
-                    if (ie == null || view == null || amlTarget == null)
+                    if (ieViewAmlTarget.Ie == null || ieViewAmlTarget.View == null || ieViewAmlTarget.AmlTarget == null)
                         continue;
 
                     // we need to identify the target with respect to the AAS
-                    var aasTarget = matcher.GetAasObject(amlTarget);
+                    var aasTarget = matcher.GetAasObject(ieViewAmlTarget.AmlTarget);
                     if (aasTarget == null)
                         continue;
 
@@ -1386,7 +1420,7 @@ namespace AasxAmlImExport
                     aasTarget.CollectReferencesByParent(theref.Keys);
 
                     // add
-                    view.AddContainedElement(theref);
+                    ieViewAmlTarget.View.AddContainedElement(theref);
                 }
             }
 
