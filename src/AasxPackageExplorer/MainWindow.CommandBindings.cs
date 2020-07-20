@@ -780,12 +780,12 @@ namespace AasxPackageExplorer
                     {
                         thePackageEnv.Close();
                     }
-                    await AasxPrivateKeyJwtClient.OpenIDClient.Run(tag, value);
+                    await AasxOpenIdClient.OpenIDClient.Run(tag, value);
 
                     UiLoadPackageWithNew(
                         ref thePackageEnv,
-                        new AdminShellPackageEnv(AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx"),
-                        AasxPrivateKeyJwtClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                        new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                        AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     return;
                 }
 
