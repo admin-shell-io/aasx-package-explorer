@@ -281,10 +281,6 @@
       <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
       <Name>AasxIntegrationBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AasxLibrary\AasxLibrary.csproj">
-      <Project>{69824ef3-30f8-4c8a-874e-9b1f5873d25e}</Project>
-      <Name>AasxLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj">
       <Project>{7dfe2ecb-37c5-4697-8d8c-050ecafcf553}</Project>
       <Name>AasxMqttClient</Name>
@@ -304,6 +300,10 @@
     <ProjectReference Include="..\AasxRestServerLibrary\AasxRestServerLibrary.csproj">
       <Project>{967e60e3-d668-42a3-aa0b-1a031c20d871}</Project>
       <Name>AasxRestServerLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxSignature\AasxSignature.csproj">
+      <Project>{69824ef3-30f8-4c8a-874e-9b1f5873d25e}</Project>
+      <Name>AasxSignature</Name>
     </ProjectReference>
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj">
       <Project>{65783100-86da-4cf6-8066-1292b902b216}</Project>
