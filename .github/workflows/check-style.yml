@@ -52,3 +52,9 @@ jobs:
         working-directory: src
         run: powershell .\CheckDeadCode.ps1
         if: always()
+
+      - name: Check TODOs
+        working-directory: src
+        run: powershell .\CheckTodos.ps1
+        if: always()
+

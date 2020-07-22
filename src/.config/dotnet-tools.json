@@ -25,6 +25,12 @@
       "commands": [
         "doctest-csharp"
       ]
+    },
+    "opinionatedcsharptodos": {
+      "version": "1.0.0-pre1",
+      "commands": [
+        "opinionated-csharp-todos"
+      ]
     }
   }
 }

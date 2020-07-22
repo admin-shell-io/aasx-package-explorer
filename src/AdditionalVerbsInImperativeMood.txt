@@ -6,4 +6,6 @@ re-wrap
 undo
 re-do
 inline
+in-line
 assign
+standardize

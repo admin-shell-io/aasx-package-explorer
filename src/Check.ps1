@@ -11,6 +11,7 @@ Set-Location $PSScriptRoot
 .\CheckFormat.ps1
 .\CheckBiteSized.ps1
 .\CheckDeadCode.ps1
+.\CheckTodos.ps1
 .\Doctest.ps1 -check
 .\Build.ps1
 .\Test.ps1
