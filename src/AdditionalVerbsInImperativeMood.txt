@@ -6,3 +6,4 @@ re-wrap
 undo
 re-do
 inline
+assign

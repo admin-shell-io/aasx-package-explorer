@@ -188,21 +188,23 @@ namespace AasxAmlImExport
 
             public bool CheckForRoleClassOrRoleRequirements(SystemUnitClassType ie, string classPath)
             {
-                // TODO MICHA+M. WIEGAND: I dont understand the determinism behind that!
-                // WIEGAND: me, neither ;-)
-                // Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und
-                // RoleRequirement verwendet werden:
-                // In CAEX2.15(aktuelle AML Version und unsere AAS Mapping Version):
-                //   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre „mögliche Rolle
-                //     beschreiben(Drucker / Fax / kopierer)
-                //   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich für eine
-                //     Hauptrolle, die dann zum RoleRequirement wird und evtl. Nebenklassen die dann
-                //     SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur
-                //     ein RoleReuqirement erlaubt)
-                // InCAEX3.0(nächste AMl Version):
-                //   1.Wie bei CAEX2.15
-                //   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen
-                //     jeweils als RoleRequirement zugewiesen (in CAEX3 sind mehrere RoleReuqirements nun erlaubt)
+                /*
+                 TODO (MICHA+M. WIEGAND, 1970-01-01): I dont understand the determinism behind that!
+                 WIEGAND: me, neither ;-)
+                 Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und
+                 RoleRequirement verwendet werden:
+                 In CAEX2.15(aktuelle AML Version und unsere AAS Mapping Version):
+                   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre „mögliche Rolle
+                     beschreiben(Drucker / Fax / kopierer)
+                   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich für eine
+                     Hauptrolle, die dann zum RoleRequirement wird und evtl. Nebenklassen die dann
+                     SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur
+                     ein RoleReuqirement erlaubt)
+                 InCAEX3.0(nächste AMl Version):
+                   1.Wie bei CAEX2.15
+                   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen
+                     jeweils als RoleRequirement zugewiesen (in CAEX3 sind mehrere RoleReuqirements nun erlaubt)
+                */
 
                 // Remark: SystemUnitClassType is suitable for SysUnitClasses and InternalElements
 
@@ -1338,7 +1340,10 @@ namespace AasxAmlImExport
                                             var eds = new AdminShell.EmbeddedDataSpecification();
                                             cd.embeddedDataSpecification = eds;
 
-                                            // TODO: fill out eds.hasDataSpecification by using outer attributes
+                                            /*
+                                             TODO (Michael Hoffmeister, 1970-01-01): fill out 
+                                             eds.hasDataSpecification by using outer attributes
+                                            */
                                             var hds = FindAttributeValueByRefSemantic(
                                                 ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)

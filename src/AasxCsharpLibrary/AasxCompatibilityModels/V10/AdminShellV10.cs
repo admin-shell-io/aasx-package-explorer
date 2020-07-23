@@ -1847,7 +1847,7 @@ containedElements == null) return null; return containedElements[index];
             void System.IDisposable.Dispose() { }
             public void GetData() { }
             // from HasDataSpecification
-            // TODO: in V1.0, shall be a list of embeddedDataSpecification
+            // TODO (Michael Hoffmeister, 1970-01-01): in V1.0, shall be a list of embeddedDataSpecification
             [XmlElement(ElementName = "embeddedDataSpecification")]
             [JsonIgnore]
             public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
@@ -2591,7 +2591,7 @@ containedElements == null) return null; return containedElements[index];
 
             // from hasSemantics:
             [XmlElement(ElementName = "semanticId")]
-            // TODO: Qualifiers not working!
+            // TODO (Michael Hoffmeister, 1970-01-01): Qualifiers not working!
             // 190410: test-wise enable them again, everyhing works fine ..
             // [JsonIgnore]
             public SemanticId semanticId = null;
@@ -2954,7 +2954,7 @@ containedElements == null) return null; return containedElements[index];
                                 return FindReferableByReference(
                                     (smw.submodelElement as SubmodelElementCollection).value, rf, keyIndex + 1);
 
-                            // TODO: Operation
+                            // TODO (Michael Hoffmeister, 1970-01-01): Operation
 
                             // else:
                             return null;
@@ -3964,7 +3964,7 @@ containedElements == null) return null; return containedElements[index];
                     // load only XML
                     try
                     {
-                        // TODO: use aasenv serialzers here!
+                        // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
                         XmlSerializer serializer = new XmlSerializer(
                             typeof(AdminShellV10.AdministrationShellEnv), "http://www.admin-shell.io/aas/1/0");
                         TextReader reader = new StreamReader(fn);
@@ -3989,7 +3989,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         using (StreamReader file = System.IO.File.OpenText(fn))
                         {
-                            // TODO: use aasenv serialzers here!
+                            // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
                             JsonSerializer serializer = new JsonSerializer();
                             serializer.Converters.Add(new AdminShellV10.JsonAasxConverter("modelType", "name"));
                             this.aasenv = (AdministrationShellEnv)serializer.Deserialize(
@@ -4096,7 +4096,7 @@ containedElements == null) return null; return containedElements[index];
                 {
                     using (var file = new StringReader(content))
                     {
-                        // TODO: use aasenv serialzers here!
+                        // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.Converters.Add(new AdminShellV10.JsonAasxConverter("modelType", "name"));
                         this.aasenv = (AdministrationShellEnv)serializer.Deserialize(
@@ -4125,7 +4125,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         using (var s = new StreamWriter(this.fn))
                         {
-                            // TODO: use aasenv serialzers here!
+                            // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
                             var serializer = new XmlSerializer(typeof(AdminShellV10.AdministrationShellEnv));
                             var nss = new XmlSerializerNamespaces();
                             nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
@@ -4152,7 +4152,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         using (var sw = new StreamWriter(fn))
                         {
-                            // TODO: use aasenv serialzers here!
+                            // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
 
                             sw.AutoFlush = true;
 
