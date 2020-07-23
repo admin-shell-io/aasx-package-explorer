@@ -23,8 +23,8 @@ using System.Xml.Serialization;
 using AdminShellNS;
 using static AdminShellNS.AdminShellV20;
 
-// TODO: License
-// TODO Fraunhofer IOSB: Check ReSharper
+// TODO (Michael Hoffmeister, 1970-01-01): License
+// TODO (Michael Hoffmeister, 1970-01-01): Fraunhofer IOSB: Check ReSharper
 
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCast

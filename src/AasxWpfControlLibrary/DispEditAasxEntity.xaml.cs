@@ -2370,7 +2370,7 @@ namespace AasxPackageExplorer
                             helper.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
 
                         // dead-csharp off
-                        // TODO: add Sync to shortName
+                        // TODO (Michael Hoffmeister, 1970-01-01): add Sync to shortName
                         /*
                         helper.AddHintBubble(stack, hintMode, new [] {
                             new HintCheck( () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
@@ -2858,7 +2858,7 @@ namespace AasxPackageExplorer
                                         helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                             pcarel.annotations, smw2, wrapper);
 
-                                    // TODO: Operation mssing here?
+                                    // TODO (Michael Hoffmeister, 1970-01-01): Operation mssing here?
                                 }
                                 if ((int)buttonNdx == 3)
                                 {
@@ -2880,7 +2880,7 @@ namespace AasxPackageExplorer
                                         helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                             pcarel.annotations, smw2, wrapper);
 
-                                    // TODO: Operation mssing here?
+                                    // TODO (Michael Hoffmeister, 1970-01-01): Operation mssing here?
                                 }
                                 if ((int)buttonNdx == 4)
                                 {
@@ -4019,7 +4019,7 @@ namespace AasxPackageExplorer
                 else
                     helper.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
 
-                // TODO: ordered, allowDuplicates
+                // TODO (Michael Hoffmeister, 1970-01-01): ordered, allowDuplicates
 
                 // dead-csharp off
                 /* non-edit mode fails

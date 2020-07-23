@@ -2555,7 +2555,7 @@ namespace AdminShellNS
             void System.IDisposable.Dispose() { }
             public void GetData() { }
             // from HasDataSpecification
-            // TODO: in V1.0, shall be a list of embeddedDataSpecification
+            // TODO (Michael Hoffmeister, 1970-01-01): in V1.0, shall be a list of embeddedDataSpecification
             [XmlElement(ElementName = "embeddedDataSpecification")]
             [JsonIgnore]
             public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
@@ -3505,7 +3505,7 @@ namespace AdminShellNS
             public SemanticId semanticId = null;
 
             // this class
-            // TODO: check, if Json has Qualifiers or not
+            // TODO (Michael Hoffmeister, 1970-01-01): check, if Json has Qualifiers or not
 
             [MetaModelName("Qualifier.type")]
             [TextSearchable]

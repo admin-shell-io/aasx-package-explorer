@@ -298,7 +298,7 @@ namespace AasxAmlImExport
                     var a = AppendAttributeNameAndRole(
                         parent.Attribute, smep.idShort, AmlConst.Attributes.SME_Property, smep.value);
 
-                    // TODO: here is no equivalence to set a match!!
+                    // TODO (Michael Hoffmeister, 1970-01-01): here is no equivalence to set a match!!
 
                     // add some data underneath
                     SetReferable(a.Attribute, sme);
@@ -859,7 +859,7 @@ namespace AasxAmlImExport
             AdminShell.DataSpecificationIEC61360 source61360 = null;
             if (cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
                 source61360 = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
-            // TODO: source99999
+            // TODO (Michael Hoffmeister, 1970-01-01): source99999
 
             // decide which approach to take (1 or 2 IE)
             AttributeSequence dest61360 = null;
@@ -1038,10 +1038,12 @@ namespace AasxAmlImExport
             }
         }
 
-        // TODO:
-        //      * ConceptDescriptions - done
-        //      * Views
-        //      * Types -> SystemUnitClasses & linkings - done
+        /*
+        TODO (Michael Hoffmeister, 1970-01-01): Export tasks
+              * ConceptDescriptions - done
+              * Views
+              * Types -> SystemUnitClasses & linkings - done
+        */
 
         public static bool ExportTo(AdminShellPackageEnv package, string amlfn, bool tryUseCompactProperties = false)
         {
