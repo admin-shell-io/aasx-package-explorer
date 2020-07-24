@@ -1,5 +1,15 @@
 AASX Package Explorer
 =====================
+![Build-test-inspect](
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/Build-test-inspect/badge.svg
+) ![Check-style](
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-style/badge.svg
+) ![Check-commit-messages](
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-messages/badge.svg
+) ![Generate-docdev](
+https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
+) 
+
 AASX Package Explorer is a C# based viewer / editor for the 
 Asset Administration Shell.
 
