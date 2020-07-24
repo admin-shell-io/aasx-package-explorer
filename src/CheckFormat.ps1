@@ -1,4 +1,5 @@
 ﻿<#
+.SYNOPSIS
 This script checks the format of the code.
 #>
 
@@ -28,4 +29,5 @@ function Main
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
 <#
+.SYNOPSIS
 This script checks that the C# files are "bite sized": no long lines, not too long.
 #>
 
@@ -37,4 +38,5 @@ function Main {
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

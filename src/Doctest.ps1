@@ -24,65 +24,58 @@ function Main
         "bin" = $true
     }
 
-    Push-Location
     Set-Location $PSScriptRoot
 
     AssertDotnet
     AssertDoctestCsharpVersion
 
-    try
+    $srcDir = $PSScriptRoot
+
+    if($check)
     {
-        $srcDir = $PSScriptRoot
-
-        if($check)
-        {
-            Write-Host "Checking the doctests beneath: $srcDir"
-        }
-        else
-        {
-            Write-Host "Generating the doctests beneath: $srcDir"
-        }
-
-        $doctestableNames = @()
-
-        foreach($subdir in (Get-ChildItem -Path $srcDir -Directory))
-        {
-            $name = Split-Path -Path $subdir -Leaf
-            if($name.EndsWith(".Tests") -or ($excludes.ContainsKey($name) -and $excludes[$name]))
-            {
-                Write-Host "Ignored: $name"
-                continue;
-            }
-            $doctestableNames += $name
-        }
-
-        $doctestableNames = $doctestableNames | Sort-Object
-
-        $sep = [IO.Path]::DirectorySeparatorChar
-
-        $cmd = "dotnet"
-        $cmdArgs = @("doctest-csharp", "--input-output") + `
-                $doctestableNames + `
-                @("--excludes", "**${sep}obj${sep}**")
-
-        if($check)
-        {
-            $cmdArgs += "--check"
-        }
-
-        $quotedCmdArgs = $cmdArgs | % { "'$_'"}
-        Write-Host "Executing: $cmd $($quotedCmdArgs -Join " ")"
-
-        & $cmd $cmdArgs
-        if($LASTEXITCODE -ne 0)
-        {
-            throw "doctest-csharp failed; see the log above."
-        }
+        Write-Host "Checking the doctests beneath: $srcDir"
     }
-    finally
+    else
     {
-        Pop-Location
+        Write-Host "Generating the doctests beneath: $srcDir"
+    }
+
+    $doctestableNames = @()
+
+    foreach($subdir in (Get-ChildItem -Path $srcDir -Directory))
+    {
+        $name = Split-Path -Path $subdir -Leaf
+        if($name.EndsWith(".Tests") -or ($excludes.ContainsKey($name) -and $excludes[$name]))
+        {
+            Write-Host "Ignored: $name"
+            continue;
+        }
+        $doctestableNames += $name
+    }
+
+    $doctestableNames = $doctestableNames | Sort-Object
+
+    $sep = [IO.Path]::DirectorySeparatorChar
+
+    $cmd = "dotnet"
+    $cmdArgs = @("doctest-csharp", "--input-output") + `
+            $doctestableNames + `
+            @("--excludes", "**${sep}obj${sep}**")
+
+    if($check)
+    {
+        $cmdArgs += "--check"
+    }
+
+    $quotedCmdArgs = $cmdArgs | % { "'$_'"}
+    Write-Host "Executing: $cmd $($quotedCmdArgs -Join " ")"
+
+    & $cmd $cmdArgs
+    if($LASTEXITCODE -ne 0)
+    {
+        throw "doctest-csharp failed; see the log above."
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 <#
-.Description
+.DESCRIPTION
 This script copies the LICENSE.txt from the repository root in all
 the first-level subdirectories within `src/`.
 Please make sure to add the excludes and the includes to this script.
@@ -9,7 +9,7 @@ The includes trump the excludes.
 
 function Main
 {
-    param ($srcDir)
+    $srcDir = $PSScriptRoot
 
     Write-Host "The src directory is: $srcDir"
     $licenseTxt = Join-Path $srcDir "LICENSE.txt"
@@ -60,4 +60,5 @@ function Main
     }
 }
 
-Main($PSScriptRoot)
+Push-Location
+try { Main } finally { Pop-Location }

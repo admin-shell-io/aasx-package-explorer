@@ -1,5 +1,6 @@
 ﻿<#
-This script builds the solution. 
+.DESCRIPTION
+This script builds the solution.
 
 It is expected that you installed 
 the dev dependencies (with InstallDevDependenciesOnMV.ps1 or manually) 
@@ -43,4 +44,5 @@ function Main
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

@@ -13,23 +13,16 @@ function Main
 {
     AssertOpinionatedCsharpTodosVersion
 
-    Push-Location
-    try
+    Set-Location $PSScriptRoot
+    Write-Host "Inspecting the TODOs in the code..."
+    dotnet opinionated-csharp-todos `
+        --inputs '**/*.cs' `
+        --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**'
+    if($LASTEXITCODE -ne 0)
     {
-        Set-Location $PSScriptRoot
-        Write-Host "Inspecting the TODOs in the code..."
-        dotnet opinionated-csharp-todos `
-            --inputs '**/*.cs' `
-            --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**'
-        if($LASTEXITCODE -ne 0)
-        {
-            throw "Failed to validate the TODOs in the code."
-        }
-    }
-    finally
-    {
-        Pop-Location
+        throw "Failed to validate the TODOs in the code."
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

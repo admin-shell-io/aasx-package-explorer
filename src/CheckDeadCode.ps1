@@ -1,5 +1,6 @@
 <#
-This script checks the format of the code.
+.SYNOPSIS
+This script checks that there is no dead code in the comments.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -22,4 +23,5 @@ function Main
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

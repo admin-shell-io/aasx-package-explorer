@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 <#
-.Description
+.DESCRIPTION
 This script inspects all the individual subdirectories to check that
 they contain LICENSE.txt. It also checks that there are no conflicting
 LICENSE and LICENSE.TXT (mind the case) files.
@@ -8,7 +8,7 @@ LICENSE and LICENSE.TXT (mind the case) files.
 
 function Main
 {
-    param($srcDir)
+    $srcDir = $PSScriptRoot
 
     $includes = @($srcDir)
 
@@ -69,12 +69,12 @@ function Main
 
         $nl = [Environment]::NewLine
         $msg = $parts -Join $nl
-        Write-Host $msg
-        Exit 1
+        throw $msg
     }
 
     Write-Host "All subdirectories contain LICENSE.txt. "
     Write-Host "Mind that the content has not been checked."
 }
 
-Main($PSScriptRoot)
+Push-Location
+try { Main } finally { Pop-Location }

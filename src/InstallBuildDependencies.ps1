@@ -1,5 +1,5 @@
 ﻿<#
-.Synopsis
+.SYNOPSIS
 This script installs the dependencies necessary to build the solution.
 #>
 
@@ -15,12 +15,11 @@ function Main {
        throw "Unable to find nuget.exe in your PATH"
     }
 
-    Push-Location
-
     Set-Location $PSScriptRoot
 
     Write-Host "Restoring packages for the solution ..."
     nuget.exe restore AasxPackageExplorer.sln -PackagesDirectory packages
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }
