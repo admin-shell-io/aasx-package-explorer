@@ -76,5 +76,4 @@ function Main
     Write-Host "Mind that the content has not been checked."
 }
 
-Push-Location
-try { Main } finally { Pop-Location }
+$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }

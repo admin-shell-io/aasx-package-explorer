@@ -29,5 +29,4 @@ function Main
     }
 }
 
-Push-Location
-try { Main } finally { Pop-Location }
+$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
