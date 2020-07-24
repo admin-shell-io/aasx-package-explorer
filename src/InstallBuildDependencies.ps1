@@ -21,5 +21,4 @@ function Main {
     nuget.exe restore AasxPackageExplorer.sln -PackagesDirectory packages
 }
 
-Push-Location
-try { Main } finally { Pop-Location }
+$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }

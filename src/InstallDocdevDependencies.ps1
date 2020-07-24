@@ -25,5 +25,4 @@ function Main
     nuget install docfx.console -Version 2.56.1 -OutputDirectory $toolsDir
 }
 
-Push-Location
-try { Main } finally { Pop-Location }
+$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
