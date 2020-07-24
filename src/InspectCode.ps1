@@ -1,7 +1,6 @@
 ﻿<#
-This script inspects the code quality.
-
-It should be run after the build.
+.SYNOPSIS
+This script inspects the code quality after the build.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -23,8 +22,6 @@ function Main
 
     $cachesHome = Join-Path $artefactsDir "inspectcode-caches"
     New-Item -ItemType Directory -Force -Path "$cachesHome"|Out-Null
-
-    $excludePattern = '*\obj\*'
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
@@ -59,4 +56,6 @@ function Main
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }
+

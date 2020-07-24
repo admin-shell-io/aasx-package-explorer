@@ -39,7 +39,7 @@ function RenderBadges($ReportPath, $BadgeDir)
 
     $prefixes = $counts | Select-Object -ExpandProperty Keys | Sort-Object
 
-    $null = New-Item -ItemType Directory -Force -Path $BadgeDir
+    New-Item -ItemType Directory -Force -Path $BadgeDir|Out-Null
 
     foreach($prefix in $prefixes)
     {
@@ -182,7 +182,7 @@ function GenerateTaskList($ReportPath, $TaskListDir)
         throw "Failed to parse the report $ReportPath as JSON file: $($_.Exception)"
     }
 
-    $null = New-Item -ItemType Directory -Force -Path $TaskListDir
+    New-Item -ItemType Directory -Force -Path $TaskListDir|Out-Null
 
     $urlPrefix = "https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src"
     $byFile = TaskListByFile -Report $report -UrlPrefix $urlPrefix
@@ -197,40 +197,33 @@ function Main
 {
     AssertOpinionatedCsharpTodosVersion
 
-    Push-Location
-    try
+    Set-Location $PSScriptRoot
+
+    $artefactsDir = CreateAndGetArtefactsDir
+
+    $reportDir = $siteDir = Join-Path $artefactsDir "gh-pages" `
+        | Join-Path -ChildPath "todos"
+
+    New-Item -ItemType Directory -Force -Path $reportDir|Out-Null
+
+    $reportPath = Join-Path $reportDir "report.json"
+
+    Write-Host "Collecting the TODOs from the code..."
+    dotnet opinionated-csharp-todos `
+        --inputs '**/*.cs' `
+        --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**' `
+        --report-path $reportPath
+    if($LASTEXITCODE -ne 0)
     {
-        Set-Location $PSScriptRoot
-
-        $artefactsDir = CreateAndGetArtefactsDir
-
-        $reportDir = $siteDir = Join-Path $artefactsDir "gh-pages" `
-            | Join-Path -ChildPath "todos"
-
-        $null = New-Item -ItemType Directory -Force -Path $reportDir
-
-        $reportPath = Join-Path $reportDir "report.json"
-
-        Write-Host "Collecting the TODOs from the code..."
-        dotnet opinionated-csharp-todos `
-            --inputs '**/*.cs' `
-            --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**' `
-            --report-path $reportPath
-        if($LASTEXITCODE -ne 0)
-        {
-            throw "Failed to collect the TODOs in the code."
-        }
-
-        $badgeDir = Join-Path $reportDir "badges"
-        RenderBadges -ReportPath $reportPath -BadgeDir $badgeDir
-
-        $taskListDir = Join-Path $reportDir "task-list"
-        GenerateTaskList -ReportPath $reportPath -TaskListDir $taskListDir
+        throw "Failed to collect the TODOs in the code."
     }
-    finally
-    {
-        Pop-Location
-    }
+
+    $badgeDir = Join-Path $reportDir "badges"
+    RenderBadges -ReportPath $reportPath -BadgeDir $badgeDir
+
+    $taskListDir = Join-Path $reportDir "task-list"
+    GenerateTaskList -ReportPath $reportPath -TaskListDir $taskListDir
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

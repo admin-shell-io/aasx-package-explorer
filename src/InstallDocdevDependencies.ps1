@@ -17,21 +17,13 @@ function Main
        throw "Unable to find nuget.exe in your PATH"
     }
 
-    Push-Location
+    Set-Location $PSScriptRoot
+    $toolsDir = GetToolsDir
+    New-Item -ItemType Directory -Force -Path $toolsDir
 
-    try
-    {
-        Set-Location $PSScriptRoot
-        $toolsDir = GetToolsDir
-        New-Item -ItemType Directory -Force -Path $toolsDir
-
-        Write-Host "Installing DocFX 2.56.1 ..."
-        nuget install docfx.console -Version 2.56.1 -OutputDirectory $toolsDir
-    }
-    finally
-    {
-        Pop-Location
-    }
+    Write-Host "Installing DocFX 2.56.1 ..."
+    nuget install docfx.console -Version 2.56.1 -OutputDirectory $toolsDir
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

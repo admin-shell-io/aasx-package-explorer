@@ -1,7 +1,7 @@
 param(
     [Parameter(HelpMessage = "If set, only downloads the dependencies without actually installing them.")]
     [switch]
-    $dryRun = $false
+    $DryRun = $false
 )
 
 <#
@@ -50,7 +50,7 @@ function Main
            "--add", "Microsoft.VisualStudio.Component.NuGet.BuildTools",
            "--quiet", "--norestart")
 
-    if ($true -eq $dryRun)
+    if ($true -eq $DryRun)
     {
         $steps += "'$cmd' $( $cmdArgs -Join " " )"
     }
@@ -89,7 +89,7 @@ function Main
     }
 
     $nugetDir = Join-Path ${Env:ProgramFiles(x86)} "nuget"
-    if($true -eq $dryRun)
+    if($true -eq $DryRun)
     {
         $steps += "Copy nuget from $targetPath to: $nugetDir"
         $steps += "Add nuget directory to PATH: $nugetDir"
@@ -135,7 +135,7 @@ function Main
     }
 
     $cmd = $targetPath
-    if ($true -eq $dryRun)
+    if ($true -eq $DryRun)
     {
         $steps += "'$cmd' -Version 3.1.202"
     }
@@ -146,7 +146,7 @@ function Main
         & $cmd -Version 3.1.202
     }
 
-    if ($true -eq $dryRun)
+    if ($true -eq $DryRun)
     {
         $steps += "'$cmd' -Runtime dotnet -Version 3.1.4"
     }
@@ -157,7 +157,7 @@ function Main
         & $cmd -Runtime dotnet -Version 3.1.4
     }
 
-    if ($true -eq $dryRun)
+    if ($true -eq $DryRun)
     {
         Write-Host ""
         Write-Host "This was a just a dry run. Here are the steps if you want to execute them manually:"
@@ -169,4 +169,5 @@ function Main
     }
 }
 
-Main($dryRun)
+Push-Location
+try { Main } finally { Pop-Location }

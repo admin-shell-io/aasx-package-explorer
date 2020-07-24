@@ -1,4 +1,7 @@
-﻿# This script formats the code in-place.
+﻿<#
+.SYNOPSIS
+This script formats the code in-place.
+#>
 
 $ErrorActionPreference = "Stop"
 
@@ -6,8 +9,14 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
     AssertDotnetFormatVersion
 
-AssertDotnet
-AssertDotnetFormatVersion
+function Main
+{
+    AssertDotnet
+    AssertDotnetFormatVersion
 
-cd $PSScriptRoot
-dotnet format --exclude "**/DocTest*.cs"
+    Set-Location $PSScriptRoot
+    dotnet format --exclude "**/DocTest*.cs"
+}
+
+Push-Location
+try { Main } finally { Pop-Location }

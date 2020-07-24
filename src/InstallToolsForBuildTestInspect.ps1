@@ -1,5 +1,5 @@
 <#
-.Synopsis
+.SYNOPSIS
 This script installs the tools necessary to build and check the solution.
 #>
 
@@ -40,4 +40,5 @@ function Main {
     dotnet tool restore
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

@@ -1,9 +1,10 @@
 ﻿<#
+.SYNOPSIS
 This module contains common functions for continuous integration.
 #>
 
 <#
-.Synopsis
+.SYNOPSIS
 Join the path to the directory where build tools reside.
 #>
 function GetToolsDir
@@ -12,7 +13,7 @@ function GetToolsDir
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Search for MSBuild in the path and at expected locations using `vswhere.exe`.
 #>
 function FindMSBuild
@@ -70,7 +71,7 @@ function FindMSBuild
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Asserts that dotnet is on the path.
 #>
 function AssertDotnet
@@ -118,7 +119,7 @@ function FindDotnetToolVersion($PackageID) {
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Check the version of the given dotnet tool.
  #>
 function AssertDotnetToolVersion($PackageID, $ExpectedVersion) {
@@ -144,7 +145,7 @@ function AssertDotnetToolVersion($PackageID, $ExpectedVersion) {
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Check the version of dotnet-format so that the code is always formatted in the same manner.
 #>
 function AssertDotnetFormatVersion
@@ -153,7 +154,7 @@ function AssertDotnetFormatVersion
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Check the version of dead-csharp so that the dead code is always detected in the same manner.
 #>
 function AssertDeadCsharpVersion
@@ -162,7 +163,7 @@ function AssertDeadCsharpVersion
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Check the version of doctest-csharp so that the code is always generated and checked in the same manner.
 #>
 function AssertDoctestCsharpVersion
@@ -171,7 +172,7 @@ function AssertDoctestCsharpVersion
 }
 
 <#
-.Synopsis
+.SYNOPSIS
 Check the version of opinionated-csharp-todos so that the TODOs are always inspected in the same manner.
 #>
 function AssertOpinionatedCsharpTodosVersion

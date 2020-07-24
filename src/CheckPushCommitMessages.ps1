@@ -14,46 +14,38 @@ The local `HEAD` is compared against the `origin/master`.
 
 function Main
 {
-    Push-Location
-
-    try
+    if ($null -eq (Get-Command "git" -ErrorAction SilentlyContinue))
     {
-        if ($null -eq (Get-Command "git" -ErrorAction SilentlyContinue))
+        throw "Unable to find 'git' in your PATH"
+    }
+
+    Set-Location $PSScriptRoot
+
+    # Get commit hashes not available in the master
+    $hashesText = git log 'origin/master..HEAD' '--format=format:%H'|Out-String
+
+    [string[]]$hashes = $()
+    foreach($line in ($hashesText -Split "`n"))
+    {
+        $trimmed = $line.Trim()
+        if($trimmed.Length -gt 0)
         {
-            throw "Unable to find 'git' in your PATH"
-        }
-
-        Set-Location $PSScriptRoot
-
-        # Get commit hashes not available in the master
-        $hashesText = git log 'origin/master..HEAD' '--format=format:%H'|Out-String
-
-        [string[]]$hashes = $()
-        foreach($line in ($hashesText -Split "`n"))
-        {
-            $trimmed = $line.Trim()
-            if($trimmed.Length -gt 0)
-            {
-                $hashes += $trimmed
-            }
-        }
-
-        foreach($hash in $hashes)
-        {
-            $message = (git log --format=%B -n 1 $hash|Out-String).TrimEnd()
-            Write-Host "--- Verifying the message: ---"
-            Write-Host $message
-            Write-Host "---"
-            powershell `
-                -File OpinionatedCommitMessage.ps1 `
-                -message $message `
-                -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
+            $hashes += $trimmed
         }
     }
-    finally
+
+    foreach($hash in $hashes)
     {
-        Pop-Location
+        $message = (git log --format=%B -n 1 $hash|Out-String).TrimEnd()
+        Write-Host "--- Verifying the message: ---"
+        Write-Host $message
+        Write-Host "---"
+        powershell `
+            -File OpinionatedCommitMessage.ps1 `
+            -message $message `
+            -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
     }
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }

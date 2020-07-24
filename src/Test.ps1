@@ -1,4 +1,5 @@
-﻿<# 
+﻿<#
+.SYNOPSIS
 This script runs all the unit tests specified in the testDlls variable below.
 #>
 
@@ -40,7 +41,7 @@ function Main
         -register:user `
         -filter:"+[Aasx*]*"
 
-    if(!$?) {
+    if($LASTEXITCODE -ne 0) {
         throw "The unit test(s) failed."
     }
 
@@ -54,4 +55,5 @@ function Main
         -sourcedirs:$srcDir
 }
 
-Main
+Push-Location
+try { Main } finally { Pop-Location }
