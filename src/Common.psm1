@@ -170,6 +170,15 @@ function AssertDoctestCsharpVersion
     AssertDotnetToolVersion -packageID "doctestcsharp" -expectedVersion "1.0.0-pre2"
 }
 
+<#
+.Synopsis
+Check the version of opinionated-csharp-todos so that the TODOs are always inspected in the same manner.
+#>
+function AssertOpinionatedCsharpTodosVersion
+{
+    AssertDotnetToolVersion -packageID "opinionatedcsharptodos" -expectedVersion "1.0.0-pre1"
+}
+
 function FindInspectCode
 {
     $toolsDir = GetToolsDir
@@ -238,6 +247,7 @@ Export-ModuleMember -Function `
      AssertDotnetFormatVersion, `
      AssertDeadCsharpVersion, `
      AssertDoctestCsharpVersion, `
+     AssertOpinionatedCsharpTodosVersion, `
      FindMSBuild, `
      FindInspectCode, `
      FindNunit3Console, `

@@ -19,6 +19,10 @@ jobs:
         working-directory: src
         run: powershell .\GenerateDocdev.ps1
 
+      - name: Generate the TODO report
+        working-directory: src
+        run: powershell .\GenerateTodoReport.ps1
+
       - name: Deploy to gh-pages 🚀
         uses: peaceiris/actions-gh-pages@v3
         with:
