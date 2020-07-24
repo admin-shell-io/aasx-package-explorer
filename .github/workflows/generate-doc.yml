@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Install .NET core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+
       - name: Install docdev dependencies
         working-directory: src
         run: powershell .\InstallDocdevDependencies.ps1
