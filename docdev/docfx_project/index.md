@@ -8,8 +8,8 @@ Github repository: https://github.com/admin-shell-io/aasx-package-explorer.
 
 The documentation is split in two sections:
 
-* [Articles](articles/intro.md) explain how to set up & build the solution,
+* [Getting Started](getting-started/intro.md) explain how to set up & build the solution,
 run continuous integration and submit your contribution.
 
-* [API documentation](api/index.md) goes through the code base and presents 
+* [API Documentation](api/index.md) goes through the code base and presents 
   the documentation of individual code units (classes, methods *etc.*).
