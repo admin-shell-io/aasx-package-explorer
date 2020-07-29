@@ -10,7 +10,22 @@ https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-m
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
 ) [![CLA assistant](
 https://cla-assistant.io/readme/badge/admin-shell-io/aasx-package-explorer
-)](https://cla-assistant.io/admin-shell-io/aasx-package-explorer) 
+)](https://cla-assistant.io/admin-shell-io/aasx-package-explorer
+)
+
+[![TODOs](
+https://admin-shell-io.github.io/aasx-package-explorer/todos/badges/TODOs.svg
+)](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/gh-pages/todos/task-list/task-list-by-file.md
+) [![BUGs](
+https://admin-shell-io.github.io/aasx-package-explorer/todos/badges/BUGs.svg
+)](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/gh-pages/todos/task-list/task-list-by-file.md
+) [![HACKs](
+https://admin-shell-io.github.io/aasx-package-explorer/todos/badges/HACKs.svg
+)](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/gh-pages/todos/task-list/task-list-by-file.md
+)
 
 AASX Package Explorer is a C# based viewer / editor for the 
 Asset Administration Shell.
@@ -45,6 +60,10 @@ https://github.com/admin-shell-io/aasx-package-explorer/issues/new/choose).
 
 Contributing
 ------------
-If you want to contribute, see [CONTRIBUTING.md](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/CONTRIBUTING.md
+The latest documentation for developers is available [on this page](
+https://admin-shell-io.github.io/aasx-package-explorer/devdoc/
+).
+
+If you want to contribute in code, see [Section "Getting started"](
+https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/intro.html
 ).
