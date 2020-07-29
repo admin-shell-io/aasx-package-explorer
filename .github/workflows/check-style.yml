@@ -1,4 +1,4 @@
-name: Check-style
+name: Check-style-workflow
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  Execute:
+  Check-style:
     runs-on: windows-latest
     if: contains(github.event.pull_request.body, 'The workflow check-style was intentionally skipped.') == false
     steps:

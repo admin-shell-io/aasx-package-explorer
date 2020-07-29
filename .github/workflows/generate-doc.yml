@@ -1,4 +1,4 @@
-name: Generate-doc
+name: Generate-doc-workflow
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  Execute:
+  Generate-doc:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
