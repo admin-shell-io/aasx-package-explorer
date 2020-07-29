@@ -1302,7 +1302,7 @@ namespace AasxPackageExplorer
                         // save in current context
                         var currentI = 0 + i;
 
-                        // TODO (Michael Hoffmeister, 1970-01-01): Needs to be revisted
+                        // TODO (Michael Hoffmeister, 1970-01-01): Needs to be revisited
 
                         // type
                         var cbType = repo.RegisterControl(
