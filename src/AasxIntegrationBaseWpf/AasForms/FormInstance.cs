@@ -646,7 +646,6 @@ namespace AasxIntegrationBase.AasForms
             var smecSource = this.sourceSme as AdminShell.SubmodelElementCollection;
             if (smecSource != null)
             {
-                // TODO (Michael Hoffmeister, 1970-01-01): take over
                 if (this.PairInstances != null)
                     foreach (var pair in this.PairInstances)
                     {
@@ -766,7 +765,6 @@ namespace AasxIntegrationBase.AasForms
             var pSource = this.sourceSme as AdminShell.Property;
             if (p != null && Touched && pSource != null && editSource)
             {
-                // TODO (Michael Hoffmeister, 1970-01-01): MICHA
                 pSource.valueType = p.valueType;
                 pSource.value = p.value;
                 return false;
