@@ -1,4 +1,4 @@
-name: Check-commit-messages
+name: Check-commit-messages-workflow
 
 on: 
   push:
@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  Execute:
+  Check-commit-messages:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master

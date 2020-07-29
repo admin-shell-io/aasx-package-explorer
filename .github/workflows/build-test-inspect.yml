@@ -1,4 +1,4 @@
-name: Build-test-inspect
+name: Build-test-inspect-workflow
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  Execute:
+  Build-test-inspect:
     runs-on: windows-latest
     if: contains(github.event.pull_request.body, 'The workflow build-test-inspect was intentionally skipped.') == false
     steps:
