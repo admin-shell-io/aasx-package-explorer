@@ -6,6 +6,10 @@ on:
       - master
     types: [opened, synchronize, reopened, edited]
 
+  push:
+    branches:
+      - master
+
 jobs:
   Check-style:
     runs-on: windows-latest
