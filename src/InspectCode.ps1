@@ -48,7 +48,7 @@ function Main
         }
         if ($take -lt $issues.Count)
         {
-            Write-Hose "... and some more issues ($( $issues.Count ) in total)."
+            Write-Host "... and some more issues ($( $issues.Count ) in total)."
         }
 
         throw "There are $( $issues.Count ) InspectCode issue(s). " +      `
