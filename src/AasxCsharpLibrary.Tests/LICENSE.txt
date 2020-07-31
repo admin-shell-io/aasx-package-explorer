@@ -1,20 +1,43 @@
-Copyright (c) 2018-2020 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-Copyright (c) 2019-2020 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, author: Andreas Orzelski
-Copyright (c) 2019-2020 Fraunhofer IOSB-INA Lemgo, eine rechtlich nicht selbstaendige Einrichtung der Fraunhofer-Gesellschaft
-zur Foerderung der angewandten Forschung e.V.
-Copyright (c) 2020 Schneider Electric Automation GmbH <marco.mendes@se.com>, author: Marco Mendes
-This software is licensed under the Apache License 2.0 (Apache-2.0) (see below)
-The browser functionality is licensed under the cefSharp license (see below)
-The Newtonsoft.JSON serialization is licensed under the MIT License (MIT) (see below)
-The QR code generation is licensed under the MIT license (MIT) (see below)
-The Zxing.Net Dot Matrix Code (DMC) generation is licensed under the Apache License 2.0 (Apache-2.0) (see below)
-The Grapevine REST server framework is licensed under Apache License 2.0 (Apache-2.0) (see below)
-The AutomationML.Engine is licensed under the MIT license (MIT) (see below)
-The MQTT server and client is licensed under the MIT license (MIT) (see below)
+Copyright (c) 2018-2020 Festo AG & Co. KG
+<https://www.festo.com/net/de_de/Forms/web/contact_international>,
+author: Michael Hoffmeister
 
-This application is a sample application for demonstration of the features of the Administration Shell.
-It is not allowed for productive use. The implementation uses the concepts of the document "Details of the Asset 
-Administration Shell" published on www.plattform-i40.de which is licensed under Creative Commons CC BY-ND 3.0 DE.
+Copyright (c) 2019-2020 PHOENIX CONTACT GmbH & Co. KG
+<opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
+Copyright (c) 2019-2020 Fraunhofer IOSB-INA Lemgo,
+    eine rechtlich nicht selbstaendige Einrichtung der Fraunhofer-Gesellschaft
+    zur Foerderung der angewandten Forschung e.V.
+
+Copyright (c) 2020 Schneider Electric Automation GmbH
+<marco.mendes@se.com>,
+author: Marco Mendes
+
+This software is licensed under the Apache License 2.0 (Apache-2.0, see below).
+
+The browser functionality is licensed under the cefSharp license (see below).
+
+The Newtonsoft.JSON serialization is licensed under the MIT License
+(MIT, see below).
+
+The QR code generation is licensed under the MIT license (MIT, see below).
+
+The Zxing.Net Dot Matrix Code (DMC) generation is licensed under
+the Apache License 2.0 (Apache-2.0, see below).
+
+The Grapevine REST server framework is licensed under Apache License 2.0
+(Apache-2.0, see below).
+
+The AutomationML.Engine is licensed under the MIT license (MIT, see below).
+
+The MQTT server and client is licensed under the MIT license (MIT, see below).
+
+This application is a sample application for demonstration of the features of
+the Administration Shell. It is not allowed for productive use.
+The implementation uses the concepts of the document "Details of the Asset
+Administration Shell" published on www.plattform-i40.de which is licensed
+under Creative Commons CC BY-ND 3.0 DE.
 
 Apache License 2.0 (Apache-2.0)
 ===============================
@@ -481,20 +504,23 @@ The MIT License (MIT)
 
 Copyright 2017 AutomationML e.V.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
-associated documentation files (the "Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a 
+copy of this software and associated documentation files (the "Software"), 
+to deal in the Software without restriction, including without limitation 
+the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the 
+Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial 
-portions of the Software.
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+DEALINGS IN THE SOFTWARE.
 
 With respect to MQTTnet
 =======================
