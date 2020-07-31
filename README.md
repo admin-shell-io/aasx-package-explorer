@@ -8,6 +8,10 @@ https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-style/ba
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-messages/badge.svg
 ) ![Generate-docdev](
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
+) [![Coverage Status](
+https://coveralls.io/repos/github/admin-shell-io/aasx-package-explorer/badge.svg?branch=master
+)](
+https://coveralls.io/github/admin-shell-io/aasx-package-explorer?branch=master
 )
 
 [![TODOs](
