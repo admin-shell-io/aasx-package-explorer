@@ -8,9 +8,6 @@ https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-style/ba
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Check-commit-messages/badge.svg
 ) ![Generate-docdev](
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Generate-docdev/badge.svg
-) [![CLA assistant](
-https://cla-assistant.io/readme/badge/admin-shell-io/aasx-package-explorer
-)](https://cla-assistant.io/admin-shell-io/aasx-package-explorer
 )
 
 [![TODOs](
