@@ -233,10 +233,16 @@ function FindReportGenerator
     return $reportGenerator
 }
 
-function CreateAndGetArtefactsDir
+function GetArtefactsDir
 {
     $repoRoot = Split-Path $PSScriptRoot -Parent
     $artefactsDir = Join-Path $repoRoot "artefacts"
+    return $artefactsDir
+}
+
+function CreateAndGetArtefactsDir
+{
+    $artefactsDir = GetArtefactsDir
     New-Item -ItemType Directory -Force -Path "$artefactsDir"|Out-Null
     return $artefactsDir
 }
@@ -254,4 +260,5 @@ Export-ModuleMember -Function `
      FindNunit3Console, `
      FindOpenCoverConsole, `
      FindReportGenerator, `
+     GetArtefactsDir, `
      CreateAndGetArtefactsDir
