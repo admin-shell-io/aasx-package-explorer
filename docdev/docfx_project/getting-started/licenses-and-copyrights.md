@@ -2,7 +2,7 @@
 
 The file `LICENSE.TXT` in the main folder of the repo is the leading license
 information, even if it does not show up in the Visual Studio solution. To
-update all dependent license files, manually start `src/CopyLicense.ps1`.
+update all dependent license files, manually start `src\CopyLicense.ps1`.
 
 Some plug-ins require a separate license. These separate licenses are given
 in `LICENSE-PLUGIN.txt` in the corresponding directory of the plug-in. 
@@ -53,7 +53,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v2.0
 
 Please make sure to add the copyright notes in the main [`LICENSE.txt`](
 https://github.com/admin-shell-io/aasx-package-explorer/blob/master/LICENSE.txt
-) file as well and call `src/CopyLicense.ps1` on changes.
+) file as well and call `src\CopyLicense.ps1` on changes.
 The licenses of the dependencies have to be listed in the main LICENSE.txt as
 well.
 

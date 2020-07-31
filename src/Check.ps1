@@ -15,7 +15,7 @@ function Main
     .\CheckDeadCode.ps1
     .\CheckTodos.ps1
     .\Doctest.ps1 -check
-    .\Build.ps1
+    .\BuildForDebug.ps1
     .\Test.ps1
     .\InspectCode.ps1
 }

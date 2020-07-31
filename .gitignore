@@ -13,3 +13,9 @@ installation-dev-dependencies/
 
 # Build artefacts
 artefacts/
+
+# Sample AASXs
+sample-aasx/
+
+# ecl@ss with restricted license
+eclass/

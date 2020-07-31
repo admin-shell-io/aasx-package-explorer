@@ -13,5 +13,8 @@
 - name: Development Workflow
   href: development-workflow.md
 
+- name: Releasing
+  href: releasing.md
+
 - name: Troubleshooting
   href: troubleshooting.md
