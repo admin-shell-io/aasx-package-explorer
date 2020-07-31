@@ -13,8 +13,11 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnet, `
     AssertDotnetFormatVersion, `
     FindMSBuild, `
-    FindInspectCode, `
-    CreateAndGetArtefactsDir
+    FindInspectCode
+
+Import-Module (Join-Path $PSScriptRoot BuildCommon.psm1) -Function `
+    BuildConfiguration, `
+    BuildOutputPath
 
 function Main
 {
@@ -22,12 +25,12 @@ function Main
 
     Write-Host "Using MSBuild from: $msbuild"
 
-    $configuration = "Debug"
-    $artefactsDir = CreateAndGetArtefactsDir
-
-    $outputPath = Join-Path $artefactsDir (Join-Path "build" $configuration)
+    $configuration = BuildConfiguration
+    $outputPath = BuildOutputPath
 
     Write-Host "Building to: $outputPath"
+
+    New-Item -ItemType Directory -Force -Path $outputPath|Out-Null
 
     Set-Location $PSScriptRoot
     & $msbuild `

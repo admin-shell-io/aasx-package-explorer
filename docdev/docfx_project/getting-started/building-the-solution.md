@@ -40,3 +40,9 @@ The dependencies of the solution are installed by:
 ```powershell
 .\Build.ps1
 ```
+
+**Clean**. If you want to clean everything after the build, call:
+
+```powershell
+.\Clean.ps1
+```
