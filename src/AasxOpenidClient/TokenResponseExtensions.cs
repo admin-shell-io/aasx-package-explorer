@@ -4,6 +4,12 @@ using IdentityModel;
 using IdentityModel.Client;
 using Newtonsoft.Json.Linq;
 
+/*
+Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
+
+We adapted the code marginally and removed the parts that we do not use.
+*/
+
 namespace AasxOpenIdClient
 {
     public static class TokenResponseExtensions
