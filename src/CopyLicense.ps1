@@ -17,19 +17,22 @@ function Main
     # Excludes and includes need to be absolute paths.
 
     $excludes = @{
-    # Example:
     $( Join-Path $srcDir ".config" ) = $true
     $( Join-Path $srcDir ".idea" ) = $true
     $( Join-Path $srcDir "packages" ) = $true
     $( Join-Path $srcDir "bin" ) = $true
+
+    $( Join-Path $srcDir "AasxPluginBomStructure" ) = $true
+    $( Join-Path $srcDir "AasxPluginWebBrowser" ) = $true
+    $( Join-Path $srcDir "AasxPluginTechnicalData" ) = $true
+    $( Join-Path $srcDir "AasxPluginExportTable" ) = $true
+    $( Join-Path $srcDir "AasxPluginGenericForms" ) = $true
+    $( Join-Path $srcDir "AasxPluginDocumentShelf" ) = $true
     }
 
     $includes = @(
-    $( Join-Path $srcDir "AasxPluginWebBrowser/Resources" ),
-    $( Join-Path $srcDir "AasxPluginTechnicalData/Resources" ),
-    $( Join-Path $srcDir "AasxPluginExportTable/Resources" ),
-    $( Join-Path $srcDir "AasxPluginGenericForms/Resources" ),
-    $( Join-Path $srcDir "AasxPluginDocumentShelf/Resources" )
+    # Example:
+    # $( Join-Path $srcDir "SomeProject/Somesubdir" )
     )
 
     $acceptedDirs = @( )
