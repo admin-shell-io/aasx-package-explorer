@@ -32,7 +32,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("===============================================================");
 
                 var usedCds = new Dictionary<string, AdminShell.ConceptDescription>();
-                foreach (var sme in sm.submodelElements?.FindAll<AdminShell.SubmodelElement>())
+                foreach (var sme in sm.submodelElements?.FindDeep<AdminShell.SubmodelElement>())
                 {
                     // for SME, try to lookup CD
                     if (sme.semanticId == null)

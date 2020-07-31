@@ -17,7 +17,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
     
     <Grid>
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="tv1" Background="#FFE0E0E0" SelectedItemChanged="tv1_SelectedItemChanged" RequestBringIntoView="tv1_RequestBringIntoView">
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" SelectedItemChanged="TreeViewInner_SelectedItemChanged" 
+                  RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">
                     <Grid  Margin="2" Width="2000" Height="24">
@@ -38,7 +39,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             </TreeView.ItemTemplate>
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
-                    <EventSetter Event="RequestBringIntoView" Handler="tv1_RequestBringIntoView"/>
+                    <EventSetter Event="RequestBringIntoView" Handler="TreeViewElem_RequestBringIntoView"/>
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <!-- MIHO1 -->

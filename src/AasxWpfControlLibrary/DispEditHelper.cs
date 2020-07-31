@@ -1156,7 +1156,6 @@ namespace AasxPackageExplorer
             if (addPresetNames != null && addPresetKeys != null && addPresetNames.Length == addPresetKeys.Length)
                 presetNo = addPresetNames.Length;
 
-
             if (repo == null)
             {
                 // TODO (Michael Hoffmeister, 1970-01-01): possibly [Jump] button??

@@ -34,6 +34,10 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
 namespace AasxPackageExplorer
 {
+    public interface ITreeViewSelectable
+    {
+        bool IsSelected { get; set; }
+    }
 
     /// <summary>
     /// Interaktionslogik für DiplayAasxElements.xaml
@@ -48,6 +52,8 @@ namespace AasxPackageExplorer
         // Public events and properties
         //
 
+        public bool MultiSelect = false;
+
         public event EventHandler SelectedItemChanged = null;
 
         // Future use?
@@ -58,7 +64,7 @@ namespace AasxPackageExplorer
         {
             get
             {
-                return tv1.SelectedItem as VisualElementGeneric;
+                return treeViewInner.SelectedItem as VisualElementGeneric;
             }
         }
 
@@ -91,8 +97,8 @@ namespace AasxPackageExplorer
                 return;
             // VisualTreeHelper.GetChild(tv1, )
             displayedTreeViewLines[0].IsSelected = false;
-            EnumVisual(tv1, dataObject);
-            tv1.UpdateLayout();
+            EnumVisual(treeViewInner, dataObject);
+            treeViewInner.UpdateLayout();
         }
 
         /// <summary>
@@ -108,11 +114,11 @@ namespace AasxPackageExplorer
         {
             get
             {
-                return tv1.Background;
+                return treeViewInner.Background;
             }
             set
             {
-                tv1.Background = value;
+                treeViewInner.Background = value;
             }
         }
 
@@ -128,11 +134,11 @@ namespace AasxPackageExplorer
             InitializeComponent();
         }
 
-        private void tv1_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+        private void TreeViewElem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             base.BringIntoView();
 
-            var scrollViewer = tv1.Template.FindName("_tv_scrollviewer_", tv1) as ScrollViewer;
+            var scrollViewer = treeViewInner.Template.FindName("_tv_scrollviewer_", treeViewInner) as ScrollViewer;
             if (scrollViewer != null)
                 Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Loaded,
@@ -155,10 +161,14 @@ namespace AasxPackageExplorer
             preventSelectedItemChanged = true;
         }
 
-        private void tv1_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void TreeViewInner_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (sender != tv1 || preventSelectedItemChanged)
+            if (this.MultiSelect)
                 return;
+
+            if (sender != treeViewInner || preventSelectedItemChanged)
+                return;
+
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this, e);
         }
@@ -166,8 +176,8 @@ namespace AasxPackageExplorer
         public void Refresh()
         {
             preventSelectedItemChanged = true;
-            tv1.Items.Refresh();
-            tv1.UpdateLayout();
+            treeViewInner.Items.Refresh();
+            treeViewInner.UpdateLayout();
             preventSelectedItemChanged = false;
         }
 
@@ -320,8 +330,8 @@ namespace AasxPackageExplorer
 
         public void Clear()
         {
-            tv1.ItemsSource = null;
-            tv1.UpdateLayout();
+            treeViewInner.ItemsSource = null;
+            treeViewInner.UpdateLayout();
         }
 
         public void RebuildAasxElements(
@@ -371,8 +381,8 @@ namespace AasxPackageExplorer
             }
 
             // redraw
-            tv1.ItemsSource = displayedTreeViewLines;
-            tv1.UpdateLayout();
+            treeViewInner.ItemsSource = displayedTreeViewLines;
+            treeViewInner.UpdateLayout();
 
             // select 1st
             if (displayedTreeViewLines.Count > 0)
@@ -384,10 +394,225 @@ namespace AasxPackageExplorer
         // MIHO1
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender != tv1)
+            if (sender != treeViewInner)
                 return;
             if (DoubleClick != null)
                 DoubleClick(this, e);
+        }
+
+        //
+        // Extension to allow multi select
+        // see: https://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
+        //
+
+        // Used in shift selections
+        private TreeViewItem _lastItemSelected;
+        // Used when clicking on a selected item to check if we want to deselect it or to drag the current selection
+        private TreeViewItem _itemToCheck;
+
+
+        // may kick off the selection of multiple items (referring to 2nd function)
+        private void TreeViewInner_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!this.MultiSelect)
+                return;
+
+            // If clicking on the + of the tree
+            if (e.OriginalSource is Shape || e.OriginalSource is Grid || e.OriginalSource is Border)
+                return;
+
+            TreeViewItem item = this.GetTreeViewItemClicked((FrameworkElement)e.OriginalSource);
+
+            if (item != null && item.Header != null)
+            {
+                this.SelectedItemChangedHandler(item);
+            }
+        }
+
+        // Check done to avoid deselecting everything when clicking to drag
+        private void TreeViewInner_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!this.MultiSelect)
+                return;
+
+            if (_itemToCheck != null)
+            {
+                TreeViewItem item = this.GetTreeViewItemClicked((FrameworkElement)e.OriginalSource);
+
+                if (item != null && item.Header != null)
+                {
+                    if (!this.IsCtrlPressed)
+                    {
+                        GetTreeViewItems(true)
+                            .Select(t => t.Header)
+                            .Cast<ITreeViewSelectable>()
+                            .ToList()
+                            .ForEach(f => f.IsSelected = false);
+                        ((ITreeViewSelectable)_itemToCheck.Header).IsSelected = true;
+                        _lastItemSelected = _itemToCheck;
+                    }
+                    else
+                    {
+                        ((ITreeViewSelectable)_itemToCheck.Header).IsSelected = false;
+                        _lastItemSelected = null;
+                    }
+                }
+            }
+        }
+
+        // does the real multi select
+        private void SelectedItemChangedHandler(TreeViewItem item)
+        {
+            if (!this.MultiSelect)
+                return;
+
+            ITreeViewSelectable content = (ITreeViewSelectable)item.Header;
+
+            _itemToCheck = null;
+
+            if (content.IsSelected)
+            {
+                // Check it at the mouse up event to avoid deselecting everything when clicking to drag
+                _itemToCheck = item;
+            }
+            else
+            {
+                if (!this.IsCtrlPressed)
+                {
+                    GetTreeViewItems(true)
+                        .Select(t => t.Header)
+                        .Cast<ITreeViewSelectable>()
+                        .ToList()
+                        .ForEach(f => f.IsSelected = false);
+                }
+
+                if (this.IsShiftPressed && _lastItemSelected != null)
+                {
+                    foreach (TreeViewItem tempItem in GetTreeViewItemsBetween(_lastItemSelected, item))
+                    {
+                        ((ITreeViewSelectable)tempItem.Header).IsSelected = true;
+                        _lastItemSelected = tempItem;
+                    }
+                }
+                else
+                {
+                    content.IsSelected = true;
+                    _lastItemSelected = item;
+                    this.treeViewInner.Items.Refresh();
+                    this.treeViewInner.UpdateLayout();
+                }
+            }
+        }
+
+        // allow left + right keys
+
+        private bool IsCtrlPressed
+        {
+            get
+            {
+                return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            }
+        }
+
+        private bool IsShiftPressed
+        {
+            get
+            {
+                return Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+            }
+        }
+
+        // deliver certain intervals of items
+
+        private TreeViewItem GetTreeViewItemClicked(UIElement sender)
+        {
+            Point point = sender.TranslatePoint(new Point(0, 0), this.treeViewInner);
+            DependencyObject visualItem = this.treeViewInner.InputHitTest(point) as DependencyObject;
+            while (visualItem != null && !(visualItem is TreeViewItem))
+            {
+                visualItem = VisualTreeHelper.GetParent(visualItem);
+            }
+
+            return visualItem as TreeViewItem;
+        }
+
+        private IEnumerable<TreeViewItem> GetTreeViewItemsBetween(TreeViewItem start, TreeViewItem end)
+        {
+            List<TreeViewItem> items = this.GetTreeViewItems(false);
+
+            int startIndex = items.IndexOf(start);
+            int endIndex = items.IndexOf(end);
+
+            // It's possible that the start element has been removed after it was selected,
+            // I don't find a way to happen on the end but I add the code to handle the situation just in case
+            if (startIndex == -1 && endIndex == -1)
+            {
+                return new List<TreeViewItem>();
+            }
+            else if (startIndex == -1)
+            {
+                return new List<TreeViewItem>() { end };
+            }
+            else if (endIndex == -1)
+            {
+                return new List<TreeViewItem>() { start };
+            }
+            else
+            {
+                return startIndex > endIndex
+                    ? items.GetRange(endIndex, startIndex - endIndex + 1)
+                    : items.GetRange(startIndex, endIndex - startIndex + 1);
+            }
+        }
+
+        private List<TreeViewItem> GetTreeViewItems(bool includeCollapsedItems)
+        {
+            List<TreeViewItem> returnItems = new List<TreeViewItem>();
+
+            for (int index = 0; index < this.treeViewInner.Items.Count; index++)
+            {
+                TreeViewItem item = (TreeViewItem)this.treeViewInner.ItemContainerGenerator.ContainerFromIndex(index);
+                returnItems.Add(item);
+                if (includeCollapsedItems || item.IsExpanded)
+                {
+                    returnItems.AddRange(GetTreeViewItemItems(item, includeCollapsedItems));
+                }
+            }
+
+            return returnItems;
+        }
+
+        private static IEnumerable<TreeViewItem> GetTreeViewItemItems(
+            TreeViewItem treeViewItem, bool includeCollapsedItems)
+        {
+            List<TreeViewItem> returnItems = new List<TreeViewItem>();
+
+            for (int index = 0; index < treeViewItem.Items.Count; index++)
+            {
+                TreeViewItem item = (TreeViewItem)treeViewItem.ItemContainerGenerator.ContainerFromIndex(index);
+                if (item != null)
+                {
+                    returnItems.Add(item);
+                    if (includeCollapsedItems || item.IsExpanded)
+                    {
+                        returnItems.AddRange(GetTreeViewItemItems(item, includeCollapsedItems));
+                    }
+                }
+            }
+
+            return returnItems;
+        }
+
+        public void Test()
+        {
+            foreach (var x in treeViewInner.Items)
+                if (x is TreeViewItem tvi)
+                    // TODO (MIHO, 2020-07-21): was because of multi-select
+                    //// if (tvi.Header is ITreeViewSelectable tvih)
+                    tvi.IsSelected = true;
+
+            treeViewInner.Items.Refresh();
+            treeViewInner.UpdateLayout();
         }
     }
 }

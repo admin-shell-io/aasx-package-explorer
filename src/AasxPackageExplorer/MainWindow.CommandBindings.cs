@@ -391,6 +391,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "test")
             {
+                DisplayElements.Test();
             }
 
             if (cmd == "queryrepo")

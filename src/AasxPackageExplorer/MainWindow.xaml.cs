@@ -1032,6 +1032,12 @@ namespace AasxPackageExplorer
 
         public void FlyoutLoggingStart()
         {
+            if (flyoutLogMessages == null)
+            {
+                flyoutLogMessages = new List<StoredPrint>();
+                return;
+            }
+
             lock (flyoutLogMessages)
             {
                 flyoutLogMessages = new List<StoredPrint>();
@@ -1040,6 +1046,9 @@ namespace AasxPackageExplorer
 
         public void FlyoutLoggingStop()
         {
+            if (flyoutLogMessages == null)
+                return;
+
             lock (flyoutLogMessages)
             {
                 flyoutLogMessages = null;

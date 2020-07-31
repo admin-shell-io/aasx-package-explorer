@@ -398,6 +398,10 @@ namespace AdminShellNS
                 return IdentifierTypeNames[(int)t];
             }
 
+            public static string IRI = "IRI";
+            public static string IRDI = "IRDI";
+            public static string Custom = "Custom";
+
             // some helpers
 
             public static bool IsInKeyElements(string ke)
@@ -588,6 +592,22 @@ namespace AdminShellNS
                 var r = new Reference();
                 r.keys.Add(new Key(Key.GlobalReference, false, Identification.IRDI, irdi));
                 return r;
+            }
+
+            // additions
+
+            public static Reference operator +(Reference a, Key b)
+            {
+                var res = new Reference(a);
+                res.Keys?.Add(b);
+                return res;
+            }
+
+            public static Reference operator +(Reference a, Reference b)
+            {
+                var res = new Reference(a);
+                res.Keys?.AddRange(b?.Keys);
+                return res;
             }
 
             // further
@@ -3152,7 +3172,7 @@ namespace AdminShellNS
                     {
                         var sm = this.FindSubmodel(smr);
                         if (sm?.submodelElements != null)
-                            foreach (var x in sm.submodelElements.FindAll<T>(match))
+                            foreach (var x in sm.submodelElements.FindDeep<T>(match))
                                 yield return x;
                     }
                 }
@@ -3161,7 +3181,7 @@ namespace AdminShellNS
                     if (this.Submodels != null)
                         foreach (var sm in this.Submodels)
                             if (sm?.submodelElements != null)
-                                foreach (var x in sm.submodelElements.FindAll<T>(match))
+                                foreach (var x in sm.submodelElements.FindDeep<T>(match))
                                     yield return x;
                 }
             }
@@ -4208,7 +4228,7 @@ namespace AdminShellNS
 
             // better find functions
 
-            public IEnumerable<T> FindAll<T>(Predicate<T> match = null) where T : SubmodelElement
+            public IEnumerable<T> FindDeep<T>(Predicate<T> match = null) where T : SubmodelElement
             {
                 foreach (var smw in this)
                 {
@@ -4222,18 +4242,29 @@ namespace AdminShellNS
                             yield return current as T;
 
                     // dive into?
-                    if (current is SubmodelElementCollection)
+                    // TODO (MIHO, 2020-07-31): would be nice to use IEnumerateChildren for this ..
+                    if (current is SubmodelElementCollection smc)
                     {
-                        var smc = current as SubmodelElementCollection;
-                        foreach (var x in smc.value.FindAll<T>(match))
+                        foreach (var x in smc.value.FindDeep<T>(match))
                             yield return x;
                     }
 
-                    if (current is Operation)
+                    if (current is AnnotatedRelationshipElement are)
                     {
-                        var op = current as Operation;
+                        foreach (var x in are.annotations.FindDeep<T>(match))
+                            yield return x;
+                    }
+
+                    if (current is Entity ent)
+                    {
+                        foreach (var x in ent.statements.FindDeep<T>(match))
+                            yield return x;
+                    }
+
+                    if (current is Operation op)
+                    {
                         for (int i = 0; i < 2; i++)
-                            foreach (var x in Operation.GetWrappers(op[i]).FindAll<T>(match))
+                            foreach (var x in Operation.GetWrappers(op[i]).FindDeep<T>(match))
                                 yield return x;
                     }
                 }
