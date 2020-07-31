@@ -6,6 +6,28 @@ they contain LICENSE.txt. It also checks that there are no conflicting
 LICENSE and LICENSE.TXT (mind the case) files.
 #>
 
+function CheckLineLength($Path)
+{
+    $text = Get-Content -Path $Path
+    $lines = $text.Split(
+        @("`r`n", "`r", "`n"),
+        [StringSplitOptions]::None)
+
+    $errors = @()
+    for($i = 0; $i -lt $lines.Count; $i++)
+    {
+        $line = $lines[$i]
+        if($line.Length -gt 80)
+        {
+            $msg = "${Path}:$($i+1): Line exceeds the maximum of 80 characters: "
+            $msg += $line|ConvertTo-Json
+            $errors += $msg
+        }
+    }
+
+    return $errors
+}
+
 function Main
 {
     $srcDir = $PSScriptRoot
@@ -46,7 +68,12 @@ function Main
         $licenseTxt = Join-Path $dir "LICENSE.txt"
         if (!(Test-Path -LiteralPath $licenseTxt))
         {
-            $problems += "LICENSE.txt is missing in: $dir"
+            $problems += "${dir}: LICENSE.txt is missing."
+        }
+        else
+        {
+            $problems = $problems + (CheckLineLength -Path $licenseTxt)
+
         }
 
         foreach ($filename in @("LICENSE"))
@@ -54,7 +81,7 @@ function Main
             $unexpected = Join-Path $dir $filename
             if (Test-Path -LiteralPath $unexpected)
             {
-                $problems += "Unexpected ${filename}: $unexpected"
+                $problems += "${unexpected}: Unexpected file name ${filename}"
             }
         }
     }
