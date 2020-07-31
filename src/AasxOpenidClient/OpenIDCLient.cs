@@ -18,6 +18,12 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+/*
+Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
+
+We adapted the code marginally and removed the parts that we do not use.
+*/
+
 // ReSharper disable All .. as this is code from others (adapted from IdentityServer4).
 
 namespace AasxOpenIdClient
