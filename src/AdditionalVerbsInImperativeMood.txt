@@ -9,3 +9,4 @@ inline
 in-line
 assign
 standardize
+verbosify

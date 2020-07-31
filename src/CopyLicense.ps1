@@ -18,7 +18,10 @@ function Main
 
     $excludes = @{
     # Example:
-    # $( Join-Path $srcDir "AasxPluginBomStructure" ) = true
+    $( Join-Path $srcDir ".config" ) = $true
+    $( Join-Path $srcDir ".idea" ) = $true
+    $( Join-Path $srcDir "packages" ) = $true
+    $( Join-Path $srcDir "bin" ) = $true
     }
 
     $includes = @(
@@ -30,7 +33,7 @@ function Main
     )
 
     $acceptedDirs = @( )
-    foreach ($dir in $( Dir -Directory $srcDir|Select -Expand FullName ))
+    foreach ($dir in $( Get-ChildItem -Directory $srcDir|Select-Object -Expand FullName ))
     {
         if (!$excludes.ContainsKey($dir) -or !$excludes[$dir])
         {
@@ -52,11 +55,12 @@ function Main
         }
     }
 
-    Write-Host "Copying the license to:"
+    Write-Host "Copying the license from $licenseTxt to:"
     foreach ($dir in $acceptedDirs)
     {
-        Write-Host $dir
-        Copy-Item $licenseTxt -Destination $dir
+        $destination = Join-Path $dir "LICENSE.txt"
+        Write-Host $destination
+        Copy-Item $licenseTxt -Destination $destination
     }
 }
 
