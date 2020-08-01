@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AasxCompatibilityModels\V10\AdminShellV10.cs" />
+    <Compile Include="AdminShellCollections.cs" />
     <Compile Include="AdminShellConverters.cs" />
     <Compile Include="AdminShellPackageEnv.cs" />
     <Compile Include="AdminShellUtil.cs" />

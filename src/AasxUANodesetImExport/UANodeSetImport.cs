@@ -20,8 +20,7 @@ using System.Windows;
 using AdminShellNS;
 using static AdminShellNS.AdminShellV20;
 
-// TODO (Michael Hoffmeister, 1970-01-01): License
-// TODO (Michael Hoffmeister, 1970-01-01): Fraunhofer IOSB: Check ReSharper
+// TODO (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper settings to be OK
 
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCast

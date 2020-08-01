@@ -41,7 +41,7 @@
   ],
   "PluginDll": [
     {
-      "Path": "..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
+      "Path": "..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
       "Args": [],
       "Options": null
     },
@@ -64,19 +64,19 @@
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
+      "Path": "..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
@@ -120,13 +120,13 @@
           }
         ]
       }
-    },
+    }, 
     {
-      "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
+      "Path": "..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
       "Args": []
     }
   ],

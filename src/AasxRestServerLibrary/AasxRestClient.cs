@@ -54,7 +54,7 @@ namespace AasxRestServerLibrary
             {
                 var pi = WebRequest.GetSystemWebProxy();
                 /*
-                 TODO (Michael Hoffmeister, 1970-01-01): Andreas, check this. 
+                 TODO (Michael Hoffmeister, 2020-08-01): Andreas, check this. 
                  System.Net.WebProxy.GetDefaultProxy was deprecated.
                 */
                 this.proxy = (WebProxy)pi;

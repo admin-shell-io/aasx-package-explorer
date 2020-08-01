@@ -11,12 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCsharpLibrary", "AasxCs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxWpfControlLibrary", "AasxWpfControlLibrary\AasxWpfControlLibrary.csproj", "{EBAE658A-3ECE-4C98-89BC-F79809AB4A5E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Batches", "Batches", "{51449D7A-DA71-4E8D-A7F4-EDAAEE609479}"
-	ProjectSection(SolutionItems) = preProject
-		PrepareBuildPackages.bat = PrepareBuildPackages.bat
-		RmdirAllBinFolders.bat = RmdirAllBinFolders.bat
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxRestServerLibrary", "AasxRestServerLibrary\AasxRestServerLibrary.csproj", "{967E60E3-D668-42A3-AA0B-1A031C20D871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxRestConsoleServer", "AasxRestConsoleServer\AasxRestConsoleServer.csproj", "{6C45112D-B7F0-4463-BE6D-A8A2B5A547BF}"

@@ -2372,7 +2372,7 @@ namespace AasxPackageExplorer
                             helper.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
 
                         // dead-csharp off
-                        // TODO (Michael Hoffmeister, 1970-01-01): add Sync to shortName
+                        // TODO (Michael Hoffmeister, 2020-08-01): add Sync to shortName
                         /*
                         helper.AddHintBubble(stack, hintMode, new [] {
                             new HintCheck( () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
@@ -2860,7 +2860,7 @@ namespace AasxPackageExplorer
                                         helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                             pcarel.annotations, smw2, wrapper);
 
-                                    // TODO (Michael Hoffmeister, 1970-01-01): Operation mssing here?
+                                    // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
                                 }
                                 if ((int)buttonNdx == 3)
                                 {
@@ -2882,7 +2882,7 @@ namespace AasxPackageExplorer
                                         helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                             pcarel.annotations, smw2, wrapper);
 
-                                    // TODO (Michael Hoffmeister, 1970-01-01): Operation mssing here?
+                                    // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
                                 }
                                 if ((int)buttonNdx == 4)
                                 {
@@ -4020,38 +4020,6 @@ namespace AasxPackageExplorer
                     helper.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else
                     helper.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
-
-                // TODO (Michael Hoffmeister, 1970-01-01): ordered, allowDuplicates
-
-                // dead-csharp off
-                /* non-edit mode fails
-
-                var g = helper.AddSmallGrid(2, 2, new[] { "#", "*" });
-
-                helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "ordered: ");
-                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
-                    content: "(true e.g. for indexed array)", isChecked: smc.ordered),
-                        (o) =>
-                        {
-                            if (o is bool)
-                                smc.ordered = (bool)o;
-                            return new ModifyRepo.LambdaActionNone();
-                        });
-
-                helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "allowDuplicates: ");
-                repo.RegisterControl(helper.AddSmallCheckBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2),
-                    content: "(true for multiple same element)", isChecked: smc.allowDuplicates),
-                        (o) =>
-                        {
-                            if (o is bool)
-                                smc.allowDuplicates = (bool)o;
-                            return new ModifyRepo.LambdaActionNone();
-                        });
-
-                stack.Children.Add(g);
-
-                */
-                // dead-csharp on
 
                 helper.AddCheckBox(
                     stack, "ordered:", smc.ordered, " (true e.g. for indexed array)", (b) => { smc.ordered = b; });
