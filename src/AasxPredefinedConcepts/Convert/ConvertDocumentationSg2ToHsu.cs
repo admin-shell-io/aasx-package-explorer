@@ -30,6 +30,12 @@ namespace AasxPredefinedConcepts.Convert
                 res.Add(new ConvertOfferDocumentationSg2ToHsu(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Documentation SG2 to HSU"));
 
+            // TODO (MIHO, 2020-07-31): temporary have code to allow conversion of Festo MCAD / ECAD models as well
+            //// if (sm != null && true == sm.GetSemanticKey()?.Matches("Submodel", false, "IRI", 
+            ////       "http://smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0", AdminShell.Key.MatchMode.Relaxed))
+            ////     res.Add(new ConvertOfferDocumentationSg2ToHsu(this, 
+            ////       $"Convert Submodel '{"" + sm.idShort}' for Documentation SG2 to HSU"));
+
             return res;
         }
 
@@ -51,6 +57,7 @@ namespace AasxPredefinedConcepts.Convert
             var sm = currentReferable as AdminShell.Submodel;
             if (sm == null || sm.submodelElements == null ||
                     true != sm.GetSemanticKey()?.Matches(defsSg2.SM_VDI2770_Documentation.GetSemanticKey()))
+                /* TODO (MIHO, 2020-07-31): disable line above to allow more models, such as MCAD/ECAD */
                 return false;
 
             // convert in place: detach old SMEs, change semanticId

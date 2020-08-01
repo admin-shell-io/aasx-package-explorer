@@ -33,7 +33,7 @@ namespace AasxPackageExplorer
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
     }
 
-    public class VisualElementGeneric : INotifyPropertyChanged
+    public class VisualElementGeneric : INotifyPropertyChanged, ITreeViewSelectable
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
@@ -145,11 +145,13 @@ namespace AasxPackageExplorer
             get { return _isSelected; }
             set
             {
-                if (value != _isSelected)
-                {
-                    _isSelected = value;
-                    this.OnPropertyChanged("IsSelected");
-                }
+                //// if (value != _isSelected)
+                //// {
+                _isSelected = value;
+                //// }
+
+                // TODO (MIHO, 2020-07-31): check if commented out because of non-working multi-select?
+                //// ITreeViewSelectablethis.OnPropertyChanged("IsSelected");
             }
         }
 

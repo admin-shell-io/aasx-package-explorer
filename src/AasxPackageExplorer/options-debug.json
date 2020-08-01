@@ -27,7 +27,7 @@
   "BackupFiles": 10,
   "RestServerHost": "localhost",
   "RestServerPort": "1111",
-  "WriteAllOptionsFN": null,
+  "WriteDefaultOptionsFN": null /* "options-written.json" */,
   "IndirectLoadSave": true,
   "AccentColors": {},
   "Remarks": [

@@ -304,7 +304,6 @@ namespace AasxPackageExplorer
         /// If not null, will retrieved the options of all instantiated plugins and
         /// will write these into JSON option file
         /// </summary>
-        [JsonIgnore]
         public string WriteDefaultOptionsFN = null;
 
         /// <summary>

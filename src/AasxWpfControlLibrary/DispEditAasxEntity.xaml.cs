@@ -627,7 +627,8 @@ namespace AasxPackageExplorer
                                                         // get hold of suppl file infos?
                                                         if (srcSub.submodelElements != null)
                                                             foreach (var f in
-                                                                    srcSub.submodelElements.FindAll<AdminShell.File>())
+                                                                    srcSub.submodelElements.FindDeep<AdminShell.File>())
+                                                            {
                                                                 if (f != null && f.value != null &&
                                                                         f.value.StartsWith("/") &&
                                                                         !potentialSupplFilesToCopy
@@ -635,6 +636,7 @@ namespace AasxPackageExplorer
                                                                     potentialSupplFilesToCopy[
                                                                         f.value.ToLower().Trim()] =
                                                                             f.value.ToLower().Trim();
+                                                            }
 
                                                         // complicated new ids?
                                                         if (!createNewIds)
@@ -3595,7 +3597,7 @@ namespace AasxPackageExplorer
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return sme.semanticId == null || sme.semanticId.IsEmpty; },
+                            () => { return sme.semanticId == null; },
                             "The use of semanticId for SubmodelElements is mandatory! " +
                                 "Only by this means, an automatic system can identify and " +
                                 "understand the meaning of the SubmodelElements and, for example, " +
@@ -3989,7 +3991,7 @@ namespace AasxPackageExplorer
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                        stack, repo, rele.first, "Secind relation:", "Create data element!",
+                        stack, repo, rele.first, "Second relation:", "Create data element!",
                         v =>
                         {
                             rele.second = new AdminShell.Reference();
