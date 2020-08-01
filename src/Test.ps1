@@ -6,10 +6,10 @@ This script runs all the unit tests specified in the testDlls variable below.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    FindNunit3Console,  `
-     FindOpenCoverConsole,  `
-     CreateAndGetArtefactsDir,  `
-     FindReportGenerator
+    FindNunit3Console,     `
+        FindOpenCoverConsole,     `
+        CreateAndGetArtefactsDir,     `
+        FindReportGenerator
 
 function Main
 {
@@ -42,13 +42,14 @@ function Main
     & $openCoverConsole `
         -target:$nunit3Console `
         -targetargs:( `
-            "--noheader --shadowcopy=false " +  `
-             "--result=$testResultsPath " +  `
-             ($testDlls -Join " ")
-    ) `
+            "--noheader " +
+            "--shadowcopy=false " +
+            "--result=$testResultsPath " +
+            ($testDlls -Join " ") `
+        ) `
         -targetdir:$targetDir `
         -output:$coverageResultsPath `
-        -register:user `
+        -register:Path64 `
         -filter:"+[Aasx*]*"
 
     if ($LASTEXITCODE -ne 0)

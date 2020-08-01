@@ -17,11 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Debug
-        env:
-          COMMIT_MESSAGE: ${{ toJson(github.event.pull_request) }}
-        run: Write-Host $env:COMMIT_MESSAGE
-
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.0
         with:
@@ -59,6 +54,10 @@ jobs:
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1
 
+      - name: Install coveralls.net (to send test coverage)
+        working-directory: src
+        run: dotnet tool install coveralls.net
+
       - name: Build
         working-directory: src
         run: powershell .\BuildForDebug.ps1
@@ -70,6 +69,28 @@ jobs:
       - name: Test
         working-directory: src
         run: powershell .\Test.ps1
+
+      - name: Send to Coveralls
+        working-directory: src
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          $headRef = ${env:HEAD_REF}
+          if (${env:GITHUB_REF}.StartsWith("refs/pull/"))
+          {
+            $branch = $headRef -Replace 'refs/heads/', ''
+          }
+          else
+          {
+            $branch = ${env:GITHUB_REF} -replace 'refs/heads/', ''
+          }
+
+          $commit = $env:GITHUB_SHA
+
+          echo "Branch is: $branch"
+          echo "Commit is: $commit"
+          dotnet tool run csmacnz.Coveralls --opencover -i ..\artefacts\CoverageResults.xml --useRelativePaths --repoToken $env:COVERALLS_REPO_TOKEN --commitId $commit --commitBranch $branch
 
       - name: Cache inspect code
         uses: actions/cache@v2
