@@ -247,6 +247,11 @@ function CreateAndGetArtefactsDir
     return $artefactsDir
 }
 
+function GetSamplesDir
+{
+    return Join-Path (Split-Path $PSScriptRoot -Parent) "sample-aasx"
+}
+
 Export-ModuleMember -Function `
     GetToolsDir, `
      AssertDotnet, `
@@ -261,4 +266,5 @@ Export-ModuleMember -Function `
      FindOpenCoverConsole, `
      FindReportGenerator, `
      GetArtefactsDir, `
-     CreateAndGetArtefactsDir
+     CreateAndGetArtefactsDir, `
+     GetSamplesDir

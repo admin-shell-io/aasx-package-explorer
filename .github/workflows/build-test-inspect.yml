@@ -66,6 +66,18 @@ jobs:
         working-directory: src
         run: powershell .\Doctest.ps1 -check
 
+      - name: Cache sample AASXs
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-sample-aasx
+        with:
+          path: sample-aasx
+          key: ${{ env.cache-name }}-${{ hashFiles('src/DownloadSamples.ps1') }}-2020-08-01
+
+      - name: Download samples
+        working-directory: src
+        run: powershell .\DownloadSamples.ps1
+
       - name: Test
         working-directory: src
         run: powershell .\Test.ps1

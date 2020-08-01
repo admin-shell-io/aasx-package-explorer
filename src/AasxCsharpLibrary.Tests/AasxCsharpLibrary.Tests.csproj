@@ -51,6 +51,8 @@
     <Compile Include="DocTestAdminShellUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAdminShellUtil.cs" />
+    <Compile Include="TestLoadSaveChain.cs" />
+    <Compile Include="TemporaryDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
