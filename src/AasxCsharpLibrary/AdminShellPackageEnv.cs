@@ -227,7 +227,7 @@ namespace AdminShellNS
                 {
                     using (StreamReader file = System.IO.File.OpenText(fn))
                     {
-                        // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
+                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
                         this.aasenv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
@@ -347,7 +347,7 @@ namespace AdminShellNS
             {
                 using (var file = new StringReader(content))
                 {
-                    // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
                     this.aasenv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
@@ -386,7 +386,7 @@ namespace AdminShellNS
                 {
                     using (var s = new StreamWriter(this.fn))
                     {
-                        // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
+                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                         var nss = GetXmlDefaultNamespaces();
                         serializer.Serialize(s, this.aasenv, nss);
@@ -410,8 +410,7 @@ namespace AdminShellNS
                 {
                     using (var sw = new StreamWriter(fn))
                     {
-                        // TODO (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!
-
+                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         sw.AutoFlush = true;
 
                         JsonSerializer serializer = new JsonSerializer()

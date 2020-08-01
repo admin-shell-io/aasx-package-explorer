@@ -1158,7 +1158,7 @@ namespace AasxPackageExplorer
 
             if (repo == null)
             {
-                // TODO (Michael Hoffmeister, 1970-01-01): possibly [Jump] button??
+                // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??
             }
             else
             if (keys != null)
@@ -1301,7 +1301,7 @@ namespace AasxPackageExplorer
                         // save in current context
                         var currentI = 0 + i;
 
-                        // TODO (Michael Hoffmeister, 1970-01-01): Needs to be revisited
+                        // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
 
                         // type
                         var cbType = repo.RegisterControl(

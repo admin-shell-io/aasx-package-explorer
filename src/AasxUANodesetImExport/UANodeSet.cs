@@ -17,8 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-// TODO (Michael Hoffmeister, 1970-01-01): License
-// TODO (Michael Hoffmeister, 1970-01-01): Fraunhofer IOSB: Check ReSharper
+// TODO (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper to be OK
 
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantCast

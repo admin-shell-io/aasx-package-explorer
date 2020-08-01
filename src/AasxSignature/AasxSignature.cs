@@ -22,12 +22,14 @@ namespace AasxSignature
     /// </summary>
     public static class PackageHelper
     {
+        // TODO (Andreas Orzelski, 2020-08-01): The signature file and [Content_Types].xml can be tampered? 
+        // Is this an issue?
+
         /// <summary>
         /// Will sign all parts and relationships in the package (any modification will invalidate the signature)
         /// Will prompt the user to select a certificate to sign with.
         /// New files can be added to the package, but they will not be signed,
-        /// therefore easy to detect during verification.
-        /// TODO The signature file and [Content_Types].xml can be tampered? Is this an issue?
+        /// therefore easy to detect during verification.        
         /// </summary>
         /// <param name="packagePath"></param>
         /// <param name="storeName"></param>
@@ -170,7 +172,7 @@ namespace AasxSignature
                 using (Package.Open(packagePath, FileMode.Open, FileAccess.Read))
                 {
                     // If openend, I think that the package is according to the OPC standard
-                    // TODO (Michael Hoffmeister, 1970-01-01): Is package according to the Logical model of the AAS?
+                    // TODO (Andreas Orzelski, 2020-08-01): Is package according to the Logical model of the AAS?
                     // => use AdminShell logical model to compare
                 }
 
@@ -204,11 +206,11 @@ namespace AasxSignature
 
                 // If there are no signatures - OK, but must be mentioned in the result
 
-                // TODO (Michael Hoffmeister, 1970-01-01): is package sealed? => no other signatures can be added?
+                // TODO (Andreas Orzelski, 2020-08-01): is package sealed? => no other signatures can be added?
                 // All files are signed (except those that could not be signed). New files (unsigned) were added
 
                 /*
-                 TODO (Michael Hoffmeister, 1970-01-01): The information from the analysis
+                 TODO (Andreas Orzelski, 2020-08-01): The information from the analysis
                   -> return as an object (list of enums with the issues/warings???)
                 */
             }

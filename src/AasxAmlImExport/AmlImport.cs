@@ -44,21 +44,7 @@ namespace AasxAmlImExport
             return res;
         }
 
-        private class MultiValueDictionary<K, V>
-        {
-            private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();
-            public void Add(K key, V value)
-            {
-                if (dict.TryGetValue(key, out var list))
-                    list.Add(value);
-                else
-                    dict.Add(key, new List<V> { value });
-            }
 
-            public bool ContainsKey(K key) => dict.ContainsKey(key);
-
-            public List<V> this[K key] => dict[key];
-        }
 
         public class AmlParser
         {
@@ -189,7 +175,10 @@ namespace AasxAmlImExport
             public bool CheckForRoleClassOrRoleRequirements(SystemUnitClassType ie, string classPath)
             {
                 /*
-                 TODO (MICHA+M. WIEGAND, 1970-01-01): I dont understand the determinism behind that!
+                 HACK (MIHO, 2020-08-01): The check for role class or requirements is still questionable
+                 but seems to be correct (see below)
+
+                 Question MIHO: I dont understand the determinism behind that!
                  WIEGAND: me, neither ;-)
                  Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und
                  RoleRequirement verwendet werden:
@@ -1341,7 +1330,7 @@ namespace AasxAmlImExport
                                             cd.embeddedDataSpecification = eds;
 
                                             /*
-                                             TODO (Michael Hoffmeister, 1970-01-01): fill out 
+                                             TODO (Michael Hoffmeister, 2020-08-01): fill out 
                                              eds.hasDataSpecification by using outer attributes
                                             */
                                             var hds = FindAttributeValueByRefSemantic(
