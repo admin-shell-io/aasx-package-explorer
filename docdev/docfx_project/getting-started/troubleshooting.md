@@ -52,3 +52,13 @@ Studio's MSBuild executable instead of installing MSBuild using the
 `C:\Program Files (x86)\Microsoft Visual Studio\<Release>\<Edition>\MSBuild\Current\Bin`.  
 Make sure that this directory is listed in your `PATH` environment variable.
 
+## Using rulers in Visual Studio
+
+Please see this Stack Overflow question and answers if you want Visual Studio
+to show rulers (*e.g.*, at 120 characters):
+
+https://stackoverflow.com/questions/5887107/ruler-in-visual-studio
+
+In particular, we endorse this answer:
+
+https://stackoverflow.com/a/57904374/1600678
