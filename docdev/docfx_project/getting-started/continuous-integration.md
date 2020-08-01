@@ -6,18 +6,16 @@ machine as well as Github workflows to run remotely.
 
 ## Running Checks Locally
 
-Please change to the directory `src/`. 
-
 To run all the checks:
 
 ```powershell
-.\Check.ps1
+.src\Check.ps1
 ```
 
 To format the code in-place with `dotnet-format`:
 
 ```powershell
-.\FormatCode.ps1
+.\src\FormatCode.ps1
 ```
 
 We use [doctest-csharp](
@@ -27,13 +25,13 @@ https://en.wikipedia.org/wiki/Doctest). To extract the doctests and generate
 the corresponding unit tests:
 
 ```powershell
-.\Doctest.ps1
+.\src\Doctest.ps1
 ```
 
 To run all the unit tests:
 
 ```powershell
-.\Test.ps1
+.\src\Test.ps1
 ```
 
 ## Github Workflows

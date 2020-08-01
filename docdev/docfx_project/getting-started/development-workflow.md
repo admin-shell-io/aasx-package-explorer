@@ -70,16 +70,3 @@ gives you the list like this one:
 Listing tracked patterns
     *.png (.gitattributes)
 ```
-
-## Versioning
-
-We version based on the date of the release (*e.g.*, `2019-10-12`). 
-
-While we admit that such a versioning scheme is uninformative with respect to 
-number of new features, bugs fixed or critical changes, we found it too hard to 
-come up with a versioning scheme for a GUI program such as ours that would be 
-neither misleading nor confusing. Schemes like [semantic versioning](
-https://semver.org) work well for libraries or command-line tools where breaking
-changes and extensions are well-defined. However, a breaking change in a GUI is
-not as easily defined and much more subjective (*e.g.*, a breaking change for 
-one user is a minor improvement to another user).
