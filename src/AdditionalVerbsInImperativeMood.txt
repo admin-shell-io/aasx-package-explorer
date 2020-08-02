@@ -10,3 +10,4 @@ in-line
 assign
 standardize
 verbosify
+log

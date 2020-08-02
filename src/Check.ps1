@@ -5,19 +5,27 @@ This script runs all the pre-merge checks locally.
 
 $ErrorActionPreference = "Stop"
 
+function LogAndExecute($Expression)
+{
+    Write-Host "---"
+    Write-Host "Running: $Expression"
+    Write-Host "---"
+
+    Invoke-Expression $Expression
+}
+
 function Main
 {
-    Set-Location $PSScriptRoot
-    .\CheckPushCommitMessages.ps1
-    .\CheckLicenses.ps1
-    .\CheckFormat.ps1
-    .\CheckBiteSized.ps1
-    .\CheckDeadCode.ps1
-    .\CheckTodos.ps1
-    .\Doctest.ps1 -check
-    .\BuildForDebug.ps1
-    .\Test.ps1
-    .\InspectCode.ps1
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckPushCommitMessages.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckLicenses.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckFormat.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckBiteSized.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckDeadCode.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "CheckTodos.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "Doctest.ps1") -check"
+    LogAndExecute "$(Join-Path $PSScriptRoot "BuildForDebug.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "Test.ps1")"
+    LogAndExecute "$(Join-Path $PSScriptRoot "InspectCode.ps1")"
 }
 
 $previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
