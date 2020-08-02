@@ -150,17 +150,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 lic.shortLicense =
                     "The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).";
 
-                lic.longLicense = "";
-                using (var stream =
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "AasxPluginBomStructure.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        lic.longLicense += tr.ReadToEnd();
-                    }
-                }
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
             }

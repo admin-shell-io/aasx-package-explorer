@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -48,6 +49,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             Log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
+            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
             res.Add(new AasxPluginActionDescriptionBase("create-client", "Creates a OPC UA client and returns as plain object. Arguments: (string _endpointURL, bool _autoAccept, int _stopTimeout, string _userName, string _password)."));
             res.Add(new AasxPluginActionDescriptionBase("read-sme-value", "Reads a value and returns as plain object. Arguments: (UASampleClient client, string nodeName, int index)."));
             return res.ToArray();
@@ -55,7 +57,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            Log.Info("ActivatePlugin() called with action = {0}", "" + action);
+            if (action == "get-licenses")
+            {
+                var lic = new AasxPluginResultLicense();
+                lic.shortLicense =
+                    "This application uses the OPC Foundation .NET Standard stack. See: OPC REDISTRIBUTABLES Agreement of Use.";
+
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
+
+                return lic;
+            }
 
             if (action == "create-client")
             {

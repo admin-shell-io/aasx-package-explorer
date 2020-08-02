@@ -37,6 +37,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AasxPluginHelper.cs" />
     <Compile Include="AasxPluginInterface.cs" />
     <Compile Include="AasxPluginOptionsBase.cs" />
     <Compile Include="Extensions.cs" />

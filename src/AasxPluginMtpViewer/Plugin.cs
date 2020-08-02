@@ -129,15 +129,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense = "The AutomationML.Engine is licensed under the MIT license (MIT) (see below).";
 
-                lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AasxPluginMtpViewer.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        lic.longLicense += tr.ReadToEnd();
-                    }
-                }
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
             }

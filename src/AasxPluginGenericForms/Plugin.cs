@@ -166,16 +166,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var lic = new AasxPluginResultLicense();
                     lic.shortLicense = "";
 
-                    lic.longLicense = "";
-                    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "AasxPluginGenericForms.Resources.LICENSE.txt"))
-                    {
-                        if (stream != null)
-                        {
-                            TextReader tr = new StreamReader(stream);
-                            lic.longLicense += tr.ReadToEnd();
-                        }
-                    }
+                    lic.isStandardLicense = true;
+                    lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                        "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                     return lic;
                 }

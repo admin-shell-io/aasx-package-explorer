@@ -226,8 +226,14 @@ namespace AasxPackageExplorer
                     var x = pi.InvokeAction("get-licenses") as AasxPluginResultLicense;
                     if (x != null)
                     {
-                        res.shortLicense += x.shortLicense + "\n";
-                        res.longLicense += x.longLicense + "\n\n";
+                        if (x.shortLicense.HasContent())
+                            res.shortLicense += x.shortLicense + Environment.NewLine;
+
+                        if (!x.isStandardLicense && x.longLicense.HasContent())
+                        {
+                            res.longLicense += $"[{pi.name}]" + Environment.NewLine;
+                            res.longLicense += x.longLicense + Environment.NewLine + Environment.NewLine;
+                        }
                     }
                 }
                 catch { }

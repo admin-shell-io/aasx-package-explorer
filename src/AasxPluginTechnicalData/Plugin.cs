@@ -153,16 +153,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 lic.shortLicense =
                     "The application uses one class provided under The Code Project Open License (CPOL).";
 
-                lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                    "AasxPluginTechnicalData.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        lic.longLicense += tr.ReadToEnd();
-                    }
-                }
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
             }

@@ -80,8 +80,21 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultLicense : AasxPluginResultBase
     {
+        /// <summary>
+        /// License string (with <c>Environment.Newlines</c>) to be displayed in the splash screen
+        /// </summary>
         public string shortLicense = null;
+
+        /// <summary>
+        /// License text (with <c>Environment.Newlines</c>) to be displayed in About box.
+        /// </summary>
         public string longLicense = null;
+
+        /// <summary>
+        /// Set this to <c>true</c>, if the provided <c>longLicense</c> is identical to the LICENSE.txt
+        /// of the main application (AasxPackageExplorer)
+        /// </summary>
+        public bool isStandardLicense = false;
     }
 
     public class AasxPluginResultVisualExtension : AasxPluginResultBase

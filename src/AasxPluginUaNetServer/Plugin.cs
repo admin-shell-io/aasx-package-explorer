@@ -47,6 +47,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             logger.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
+            res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
             res.Add(new AasxPluginActionDescriptionBase("server-start", "Start OPC UA Server for AASX."));
             res.Add(new AasxPluginActionDescriptionBase("server-stop", "Stops server function."));
             return res.ToArray();
@@ -54,7 +55,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
-            // logger.Log("ActivatePlugin() called with action = {0}", action);
+            if (action == "get-licenses")
+            {
+                var lic = new AasxPluginResultLicense();
+                lic.shortLicense =
+                    "This application uses the OPC Foundation .NET Standard stack. See: OPC REDISTRIBUTABLES Agreement of Use.";
+
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
+
+                return lic;
+            }
 
             if (action == "server-stop")
                 this.stop = true;
