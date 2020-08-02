@@ -72,7 +72,7 @@ function Main
             ) `
             -targetdir:$targetDir `
             -output:$coverageResultsPath `
-            -register:user `
+            -register:Path64 `
             -filter:"+[Aasx*]*" `
             -returntargetcode
 
