@@ -1,0 +1,57 @@
+﻿<Window x:Class="WpfMtpVisuViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfMtpControl;assembly=WpfMtpControl"
+        mc:Ignorable="d"
+        Title="WPF MTP Viewer prototype" Height="350" Width="525" 
+        Loaded="Window_Loaded" DragEnter="Window_DragEnter" Drop="Window_Drop" AllowDrop="True"
+        SizeChanged="Window_SizeChanged">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <DockPanel Grid.Row="0">
+            <Button DockPanel.Dock="Right" x:Name="buttonConfig" Margin="2" Width="30" Click="Button_Click" FontWeight="Regular">&#x2699;</Button>
+            <Button DockPanel.Dock="Right" x:Name="buttonDataSourceDetails" FontSize="9" Margin="2" Click="Button_Click">Data</Button>
+            <TextBox x:Name="textBoxDataSourceStatus" Background="#404040" Foreground="LightGray" VerticalContentAlignment="Center" FontSize="9" Text="-"/>
+        </DockPanel>
+
+        <local:MtpVisuViewer Grid.Row="1" Grid.Column="0" x:Name="mtpVisu" />
+
+        <!-- Optional content: Data sources -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" x:Name="ScrollViewerDataSources" HorizontalScrollBarVisibility="Auto" Visibility="Collapsed">
+            <Grid x:Name="LayoutGrid" MinWidth="300">
+                <DataGrid  x:Name="DataGridDataSources" ItemsSource="{Binding}" Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Endpoint" Width="1*" Binding="{Binding DisplayEndpoint}"/>
+                        <DataGridTextColumn Header="Namespace" Width="1*" Binding="{Binding DisplayNamespace}"/>
+                        <DataGridTextColumn Header="Identifier" Width="3*" Binding="{Binding DisplayIdentifier}"/>
+                        <DataGridTextColumn Header="Value" Width="1*" Binding="{Binding DisplayValue}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Optional content: Report panel -->
+        <RichTextBox x:Name="RichTextReport" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"
+                     IsDocumentEnabled="true" IsReadOnly="True" Margin="0" Background="LightGray"
+                     HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
+
+        <TextBox Grid.Row="2" Grid.Column="0" x:Name="labelMessages" Background="LightGray" FontSize="9">(c) 2019 by Michael Hoffmeister, Festo AG &amp; Co. KG</TextBox>
+    </Grid>
+
+</Window>

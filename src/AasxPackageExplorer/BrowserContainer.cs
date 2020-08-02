@@ -46,7 +46,7 @@ namespace AasxPackageExplorer
 #elif WITHBROWSERPLUGIN
         private static Plugins.PluginInstance browserPlugin = null;
         private static Grid theOnscreenBrowser = null;
-        private string browserHandlesFiles = ".jpeg .jpg .png .bmp .pdf .xml .txt *";
+        private string browserHandlesFiles = ".jpeg .jpg .png .bmp .pdf .xml .txt .md *";
 
         private FakeBrowser theFallbackBrowser = null;
         private string fallbackBrowserHandlesFiles = ".jpeg .jpg .png .bmp";

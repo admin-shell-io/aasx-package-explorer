@@ -1,0 +1,10 @@
+﻿{  
+  "SymbolMappings": [
+    {
+      "EClassVersions": null,
+      "EClassClasses": "37010201",
+      "EClassIRDIs": null,
+      "SymbolDefault": "PNID_Festo.manual_valve_active-u-nozzled"
+    }
+  ]
+}
