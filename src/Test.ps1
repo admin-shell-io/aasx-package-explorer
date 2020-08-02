@@ -6,10 +6,11 @@ This script runs all the unit tests specified in the testDlls variable below.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    FindNunit3Console,     `
-        FindOpenCoverConsole,     `
-        CreateAndGetArtefactsDir,     `
-        FindReportGenerator
+    FindNunit3Console,  `
+    FindOpenCoverConsole,  `
+    CreateAndGetArtefactsDir,  `
+    FindReportGenerator, `
+    GetSamplesDir
 
 function Main
 {
@@ -26,6 +27,16 @@ function Main
 
     $targetDir = Join-Path $artefactsDir "build\Debug"
 
+    $samplesDir = GetSamplesDir
+    if(!(Test-Path $samplesDir))
+    {
+        throw ("The directory containing samples could not be found: " +
+                "$samplesDir; these samples are necessary to " +
+                "perform the integration tests.")
+    }
+
+
+
     # Relative to $targetDir
     $testDlls = @( "AasxCsharpLibrary.Tests.dll" )
 
@@ -39,22 +50,43 @@ function Main
         }
     }
 
-    & $openCoverConsole `
-        -target:$nunit3Console `
-        -targetargs:( `
-            "--noheader " +
-            "--shadowcopy=false " +
-            "--result=$testResultsPath " +
-            ($testDlls -Join " ") `
-        ) `
-        -targetdir:$targetDir `
-        -output:$coverageResultsPath `
-        -register:Path64 `
-        -filter:"+[Aasx*]*"
-
-    if ($LASTEXITCODE -ne 0)
+    if (Test-Path env:SAMPLE_AASX_DIR)
     {
-        throw "The unit test(s) failed."
+        $prevEnvSampleAasxDir = $env:SAMPLE_AASX_DIR
+    }
+    else
+    {
+        $prevEnvSampleAasxDir = $null
+    }
+
+    try
+    {
+        $env:SAMPLE_AASX_DIR = $samplesDir
+        & $openCoverConsole `
+            -target:$nunit3Console `
+            -targetargs:( `
+                "--noheader --shadowcopy=false " +
+                 "--result=$testResultsPath " +
+                 "--stoponerror " +
+                 ($testDlls -Join " ")
+            ) `
+            -targetdir:$targetDir `
+            -output:$coverageResultsPath `
+            -register:user `
+            -filter:"+[Aasx*]*" `
+            -returntargetcode
+
+        if ($LASTEXITCODE -ne 0)
+        {
+            throw "The unit test(s) failed."
+        }
+    }
+    finally
+    {
+        if ($null -ne $prevEnvSampleAasxDir)
+        {
+            $env:SAMPLE_AASX_DIR = $prevEnvSampleAasxDir
+        }
     }
 
     # Scripts are expected at the root of src/

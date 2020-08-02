@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace AsminShellNS.Tests
+namespace AdminShellNS.Tests
 {
     // ReSharper disable UnusedType.Global
     public class Test_EvalToNonNullString

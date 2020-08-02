@@ -141,7 +141,7 @@ namespace AdminShellNS
     /// This class encapsulates an AdminShellEnvironment and supplementary files into an AASX Package.
     /// Specifically has the capability to load, update and store .XML, .JSON and .AASX packages.
     /// </summary>
-    public class AdminShellPackageEnv
+    public class AdminShellPackageEnv : IDisposable
     {
         private string fn = "New Package";
 
@@ -1037,6 +1037,11 @@ namespace AdminShellNS
             this.openPackage = null;
             this.fn = "";
             this.aasenv = null;
+        }
+
+        public void Dispose()
+        {
+            Close();
         }
 
         public string MakePackageFileAvailableAsTempFile(string packageUri)

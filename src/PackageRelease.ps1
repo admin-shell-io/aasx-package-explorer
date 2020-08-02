@@ -12,7 +12,8 @@ This script packages files to be released.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    GetArtefactsDir
+    GetArtefactsDir, `
+    GetSamplesDir
 
 function PackageRelease($outputDir)
 {
@@ -26,7 +27,7 @@ function PackageRelease($outputDir)
                 "with BuildForRelease.ps1?")
     }
 
-    $samplesDir = Join-Path (Split-Path $PSScriptRoot -Parent) "sample-aasx"
+    $samplesDir = GetSamplesDir
 
     if (!(Test-Path $samplesDir))
     {
