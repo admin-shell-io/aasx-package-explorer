@@ -56,8 +56,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 + "bool _autoAccept, int _stopTimeout, string _userName, string _password)."));
             res.Add(new AasxPluginActionDescriptionBase("read-sme-value",
                 "Reads a value and returns as plain object. Arguments: (UASampleClient client, string nodeName, "
-                + "int index)."));
-            return res.ToArray();
+                + "int index)."));            return res.ToArray();
         }
 
         public AasxPluginResultBase ActivateAction(string action, params object[] args)
