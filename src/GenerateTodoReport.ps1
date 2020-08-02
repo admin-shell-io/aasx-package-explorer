@@ -1,6 +1,10 @@
 <#
 .SYNOPSIS
 This script renders various reports on TODOs in the code.
+
+.DESCRIPTION
+The script is a copy & paste from the recipes published in
+https://github.com/mristin/opinionated-csharp-todos
 #>
 
 $ErrorActionPreference = "Stop"
@@ -70,7 +74,91 @@ function RenderBadges($ReportPath, $BadgeDir)
 
 $nl = [Environment]::NewLine
 $todoRe = [Regex]::new(' \(([^)]+), ([0-9]{4}-[0-9]{2}-[0-9]{2})\): ')
-$suffixWhitespaceRe = [Regex]::new('^[ \t]*')
+
+function StripMarginFromSecondLineOn([string]$Text)
+{
+    $lines = $Text.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None)
+    if ($lines.Count -lt 2)
+    {
+        return $Text
+    }
+
+    if($lines.Count -eq 2)
+    {
+        $lines[1] = $lines[1].TrimStart()
+        return ($lines -Join $nl)
+    }
+
+    $minLength = $null
+    for($i = 1; $i -lt $lines.Length; $i++)
+    {
+        # Empty lines are ignored since IDEs sometimes strip them away and
+        # do not indent them with whitespace.
+        if ($lines[$i].Length -eq 0)
+        {
+            continue
+        }
+
+        if (($null -eq $minLength) -or ($lines[$i].Length -lt $minLength))
+        {
+            $minLength = $lines[$i].Length
+        }
+    }
+
+    if($null -eq $minLength)
+    {
+        # All lines from the second on were empty.
+        return $Text
+    }
+
+    $commonMarginLength = 0
+    $stop = $false
+    for($cursor = 0; !$stop -and ($cursor -lt $minLength); $cursor++)
+    {
+        $charAtCursor = $null
+
+        for($i = 1; !$stop -and ($i -lt $lines.Length); $i++)
+        {
+            # Skip empty lines, see the comment above
+            if ($lines[$i].Length -eq 0)
+            {
+                continue
+            }
+
+            if ($null -eq $charAtCursor)
+            {
+                $charAtCursor = $lines[$i][$cursor]
+                if (($charAtCursor -ne " ") -and ($charAtCursor -ne "`t"))
+                {
+                    $commonMarginLength = $cursor
+                    $stop = $true
+                }
+            }
+            else
+            {
+                if ($lines[$i][$cursor] -ne $charAtCursor)
+                {
+                    $commonMarginLength = $cursor
+                    $stop = $true
+                }
+            }
+        }
+    }
+
+    for($i = 1; $i -lt $lines.Length; $i++)
+    {
+        # Skip empty lines, see the comment above
+        if ($lines[$i].Length -eq 0)
+        {
+            continue
+        }
+        $lines[$i] = $lines[$i].Substring($commonMarginLength)
+    }
+
+    $result = $lines -Join $nl
+
+    return $result
+}
 
 function ParseSuffix($Suffix)
 {
@@ -82,46 +170,9 @@ function ParseSuffix($Suffix)
 
     $author = $mtch.Groups[1].Value
     $date = $mtch.Groups[2].Value
+
     $remainder = $Suffix.Substring($mtch.Value.Length)
-
-    $lines = $remainder.Split(@("`r`n", "`r", "`n"), [StringSplitOptions]::None)
-    if($lines.Count -lt 2)
-    {
-        $text = $remainder
-    }
-    elseif($lines.Count -eq 2)
-    {
-        $lines[1] = $lines[1].Trim()
-        $text = $lines -Join $nl
-    }
-    else
-    {
-        $wsMtch = $suffixWhitespaceRe.Match($lines[1])
-        if($wsMtch.Success)
-        {
-            $minMargin = $wsMtch.Value.Length
-
-            for($i=2; $i -lt $lines.Length; $i++)
-            {
-                $line = $lines[$i]
-
-                for($j = 0; ($j -lt $line.Length) -and ($j -lt $minMargin); $j++)
-                {
-                    $char = $line[$j]
-                    if($char -ne $wsMtch.Value[$j])
-                    {
-                        $minMargin = $j
-                    }
-                }
-            }
-        }
-
-        for($i = 1; $i -lt $lines.Length; $i++)
-        {
-            $lines[$i] = $lines[$i].Substring($minMargin)
-        }
-        $text = $lines -Join $nl
-    }
+    $text = StripMarginFromSecondLineOn -Text $remainder
 
     [hashtable]$result = @{ }
     $result.Author = $author
