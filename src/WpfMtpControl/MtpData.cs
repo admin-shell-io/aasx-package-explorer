@@ -1,7 +1,4 @@
-﻿using AasxUtils;
-using Aml.Engine.CAEX;
-using Mtp.DynamicInstances;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -10,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Aml.Engine.CAEX;
+using Mtp.DynamicInstances;
 using WpfMtpControl.DataSources;
 
 namespace WpfMtpControl
@@ -60,7 +59,8 @@ namespace WpfMtpControl
 
             public bool IsValid()
             {
-                if (x == null || y == null || width == null || height == null /* because of PxC || eVer == null */ || (eClass == null && eIrdi == null))
+                if (x == null || y == null || width == null || height == null /* because of PxC || eVer == null */
+                    || (eClass == null && eIrdi == null))
                     return false;
                 return true;
             }
@@ -93,7 +93,7 @@ namespace WpfMtpControl
             public string Name = "";
             public SystemUnitClassType Picture = null;
 
-            public Size TotalSize = new Size(0,0);
+            public Size TotalSize = new Size(0, 0);
 
             public List<MtpBaseObject> Objects = new List<MtpBaseObject>();
 
@@ -167,7 +167,8 @@ namespace WpfMtpControl
                     {
                         foreach (var ie2 in ie.InternalElement)
                         {
-                            if (ie2 != null && ie2.RefBaseSystemUnitPath?.Trim() == "MTPHMISUCLib/PortObject/Nozzle")
+                            if (ie2 != null
+                                && ie2.RefBaseSystemUnitPath?.Trim() == "MTPHMISUCLib/PortObject/Nozzle")
                             {
                                 // found nozzle with valid information?
                                 var nx = MtpAmlHelper.FindAttributeValueByNameFromDouble(ie2.Attribute, "X");
@@ -177,7 +178,8 @@ namespace WpfMtpControl
                                     nozzlePoints.Add(new Point(nx.Value, ny.Value));
                             }
 
-                            if (ie2 != null && ie2.RefBaseSystemUnitPath?.Trim() == "MTPHMISUCLib/PortObject/MeasurementPoint")
+                            if (ie2 != null
+                                && ie2.RefBaseSystemUnitPath?.Trim() == "MTPHMISUCLib/PortObject/MeasurementPoint")
                             {
                                 // found measurement point with valid information?
                                 var nx = MtpAmlHelper.FindAttributeValueByNameFromDouble(ie2.Attribute, "X");
@@ -218,26 +220,33 @@ namespace WpfMtpControl
                         // help improving this search
                         if (makeUpConfigRecs != null)
                         {
-                            makeUpConfigRecs.Add(new MtpSymbolMapRecord(vo.eVer, vo.eClass, vo.eIrdi, SymbolDefault: "{to be set}", Comment: "" + vo.Name + "," + vo.RefID));
+                            makeUpConfigRecs.Add(new MtpSymbolMapRecord(
+                                vo.eVer, vo.eClass, vo.eIrdi, SymbolDefault: "{to be set}",
+                                Comment: "" + vo.Name + "," + vo.RefID));
                         }
 
                         // TEST PxC
                         // vo.refID = null;
 
-                            // try find dynamic instances
-                        if (vo.refID != null && refIdToDynamicInstance != null && refIdToDynamicInstance.ContainsKey(vo.refID))
+                        // try find dynamic instances
+                        if (vo.refID != null && refIdToDynamicInstance != null
+                            && refIdToDynamicInstance.ContainsKey(vo.refID))
                         {
                             // try get the dynamic instance
                             var ieDI = refIdToDynamicInstance[vo.refID] as InternalElementType;
 
-                            if (ieDI != null && ieDI.RefBaseSystemUnitPath != null && ieDI.RefBaseSystemUnitPath.Trim().Length > 0)
+                            if (ieDI != null && ieDI.RefBaseSystemUnitPath != null
+                                && ieDI.RefBaseSystemUnitPath.Trim().Length > 0)
                             {
                                 var bsup = ieDI.RefBaseSystemUnitPath.Trim();
-                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView" || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView")
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView")
                                     vo.dynInstance = new MtpDiAnaView();
-                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView/AnaMon" || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/AnaMon")
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView/AnaMon"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/AnaMon")
                                     vo.dynInstance = new MtpDiAnaMon();
-                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinView" || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView")
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinView"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView")
                                     vo.dynInstance = new MtpDiBinView();
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl")
                                     vo.dynInstance = new MtpDiPIDCntl();
@@ -275,7 +284,8 @@ namespace WpfMtpControl
                         if (ec >= 301 && ec <= 302)
                         {
                             // get visual object
-                            to.visObj = objectLib.FindVisualObjectByName(new string[] { "Source_general", "Sink_general" }[ec - 301]);
+                            to.visObj = objectLib.FindVisualObjectByName(
+                                new string[] { "Source_general", "Sink_general" }[ec - 301]);
                         }
                     }
                 }
@@ -286,7 +296,7 @@ namespace WpfMtpControl
         }
 
         public void LoadStream(
-            MtpVisualObjectLib objectLib, IMtpDataSourceFactoryOpcUa dataSourceFactory, 
+            MtpVisualObjectLib objectLib, IMtpDataSourceFactoryOpcUa dataSourceFactory,
             MtpDataSourceSubscriber subscriber, Stream stream,
             MtpSymbolMapRecordList makeUpConfigRecs = null)
         {
@@ -310,7 +320,8 @@ namespace WpfMtpControl
             var pl = MtpAmlHelper.FindAllMtpPictures(doc.CAEXFile);
             foreach (var pi in pl)
             {
-                var p = MtpPicture.ParsePicture(objectLib, subscriber, refIdToDynamicInstance, pi.Item2, makeUpConfigRecs);
+                var p = MtpPicture.ParsePicture(objectLib, subscriber, refIdToDynamicInstance,
+                            pi.Item2, makeUpConfigRecs);
                 if (p != null)
                     this.PictureCollection.Add(pi.Item1, p);
             }

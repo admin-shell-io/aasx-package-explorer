@@ -32,7 +32,8 @@ namespace WpfMtpControl
             items[dataSourceItemId] = si;
         }
 
-        public void SubscribeToAmlIdRefWith<T>(Aml.Engine.CAEX.AttributeSequence aseq, string attrName, Action<ChangeType, object> action)
+        public void SubscribeToAmlIdRefWith<T>(
+            Aml.Engine.CAEX.AttributeSequence aseq, string attrName, Action<ChangeType, object> action)
         {
             var idRef = MtpAmlHelper.FindAttributeValueByName(aseq, attrName);
             if (idRef != null && idRef.Length > 0)

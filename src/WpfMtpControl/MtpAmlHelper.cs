@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using AasxUtils;
 using Aml.Engine.CAEX;
 using WpfMtpControl.DataSources;
 
@@ -38,20 +37,7 @@ namespace WpfMtpControl
 
         public static bool CheckForRoleClassOrRoleRequirements(SystemUnitClassType ie, string classPath)
         {
-            // TODO MICHA+M. WIEGAND: I dont understand the determinism behind that!
-            // WIEGAND: me, neither ;-)
-            // Wiegand:  ich hab mir von Prof.Drath nochmal erklären lassen, wie SupportedRoleClass und RoleRequirement verwendet werden:
-            // In CAEX2.15(aktuelle AML Version und unsere AAS Mapping Version):
-            //   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre „mögliche Rolle beschreiben(Drucker / Fax / kopierer)
-            //   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich für eine Hauptrolle, die dann zum RoleRequirement wird 
-            //     und evtl.Nebenklassen die dann SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur ein RoleReuqirement erlaubt)
-            // InCAEX3.0(nächste AMl Version):
-            //   1.Wie bei CAEX2.15
-            //   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen jeweils als RoleRequirement zugewiesen (in CAEX3 
-            //     sind mehrere RoleReuqirements nun erlaubt)
-
-            // Remark: SystemUnitClassType is suitable for SysUnitClasses and InternalElements
-
+            // HACK (MIHO, 2020-08-03): see equivalent function in AmlImport.cs; may be re-use
             if (ie is InternalElementType)
                 if (CheckForRole((ie as InternalElementType).RoleRequirements, classPath))
                     return true;
@@ -65,13 +51,15 @@ namespace WpfMtpControl
             if (a.RefSemantic != null)
                 foreach (var rf in a.RefSemantic)
                     if (rf.CorrespondingAttributePath != null && rf.CorrespondingAttributePath.Trim() != ""
-                        && rf.CorrespondingAttributePath.Trim().ToLower() == correspondingAttributePath.Trim().ToLower())
+                        && rf.CorrespondingAttributePath.Trim().ToLower()
+                           == correspondingAttributePath.Trim().ToLower())
                         // found!
                         return true;
             return false;
         }
 
-        public static AttributeType FindAttributeByRefSemantic(AttributeSequence aseq, string correspondingAttributePath)
+        public static AttributeType FindAttributeByRefSemantic(
+            AttributeSequence aseq, string correspondingAttributePath)
         {
             foreach (var a in aseq)
             {
@@ -88,7 +76,8 @@ namespace WpfMtpControl
             return null;
         }
 
-        public static string FindAttributeValueByRefSemantic(AttributeSequence aseq, string correspondingAttributePath)
+        public static string FindAttributeValueByRefSemantic(
+            AttributeSequence aseq, string correspondingAttributePath)
         {
             var a = FindAttributeByRefSemantic(aseq, correspondingAttributePath);
             return a?.Value;
@@ -159,7 +148,7 @@ namespace WpfMtpControl
                                 foreach (var ie4 in ie3.InternalElement)     // now ALWAYS an dynamic instance
                                 {
                                     var refID = MtpAmlHelper.FindAttributeValueByName(ie4.Attribute, "RefID");
-                                    if (refID != null && refID.Length>0)
+                                    if (refID != null && refID.Length > 0)
                                         res.Add(refID, ie4);
                                 }
 
@@ -167,7 +156,7 @@ namespace WpfMtpControl
             return res;
         }
 
-        public static void CreateDataSources (IMtpDataSourceFactoryOpcUa dataSourceFactory, CAEXFileType aml)
+        public static void CreateDataSources(IMtpDataSourceFactoryOpcUa dataSourceFactory, CAEXFileType aml)
         {
             // access
             if (dataSourceFactory == null || aml == null)
@@ -182,7 +171,8 @@ namespace WpfMtpControl
                                 foreach (var server in ie3.InternalElement)     // now on server
                                 {
                                     // check if server
-                                    if (server.RefBaseSystemUnitPath.Trim() != "MTPCommunicationSUCLib/ServerAssembly/OPCUAServer")
+                                    if (server.RefBaseSystemUnitPath.Trim() !=
+                                        "MTPCommunicationSUCLib/ServerAssembly/OPCUAServer")
                                         continue;
 
                                     // get attributes

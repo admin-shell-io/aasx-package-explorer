@@ -1,6 +1,4 @@
-﻿using AasxIntegrationBase;
-using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase;
+using AdminShellNS;
 using WpfMtpControl;
 
 namespace AasxPluginMtpViewer
@@ -83,7 +83,8 @@ namespace AasxPluginMtpViewer
 
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
-            var simIdFn = new AdminShell.Key("ConceptDescription", false, "IRI", "http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage");
+            var simIdFn = new AdminShell.Key("ConceptDescription", false,
+                "IRI", "http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage");
             this.activeMtpFileElem = theSubmodel?.submodelElements?.FindFirstSemanticIdAs<AdminShell.File>(simIdFn);
             var inputFn = this.activeMtpFileElem?.value;
             if (inputFn == null)
@@ -131,8 +132,10 @@ namespace AasxPluginMtpViewer
 
             // inside the Submodel .. look out for Relations
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/1/0/documentationReference
-            var relKey = new AdminShell.Key("ConceptDescription", false, "IRI", "http://www.admin-shell.io/mtp/1/0/documentationReference");
-            var searchRelation = this.theSubmodel?.submodelElements.FindDeep<AdminShell.RelationshipElement>((candidate) =>
+            var relKey = new AdminShell.Key("ConceptDescription", false,
+                "IRI", "http://www.admin-shell.io/mtp/1/0/documentationReference");
+            var searchRelation = this.theSubmodel?.submodelElements.FindDeep<AdminShell.RelationshipElement>(
+            (candidate) =>
             {
                 return true == candidate?.semanticId?.MatchesExactlyOneKey(relKey, AdminShell.Key.MatchMode.Relaxed);
             });
@@ -145,10 +148,14 @@ namespace AasxPluginMtpViewer
                 // do some "math"
                 var hit = false;
                 if (source.Name != null)
-                    hit = hit || rel.first.Matches(mtpFileElemReference + (new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, source.Name)),
+                    hit = hit || rel.first.Matches(mtpFileElemReference
+                        + (new AdminShell.Key(
+                            AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, source.Name)),
                         AdminShell.Key.MatchMode.Relaxed);
                 if (source.RefID != null)
-                    hit = hit || rel.first.Matches(mtpFileElemReference + (new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, source.RefID)),
+                    hit = hit || rel.first.Matches(mtpFileElemReference
+                        + (new AdminShell.Key(
+                            AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, source.RefID)),
                         AdminShell.Key.MatchMode.Relaxed);
 
                 // yes?

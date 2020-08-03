@@ -1,9 +1,9 @@
-﻿using Opc.Ua;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Opc.Ua;
 
 namespace AasOpcUaServer
 {
@@ -13,7 +13,8 @@ namespace AasOpcUaServer
         /// 4.	The cardinality of an association or aggregation is specified via OPC Modelling rules. 
         /// The OPC modelling rule “Optional” is used if the cardinality is Zero or 1. 
         /// The OPC modelling rule “Mandatory” is used if the cardinality is One. 
-        /// The OPC Modelling rule “OptionalPlaceholder” is used if the cardinality is zero, one or more than one element. 
+        /// The OPC Modelling rule “OptionalPlaceholder” is used if the cardinality is zero, 
+        /// one or more than one element. 
         /// The OPC Modelling rule “MandatoryPlaceholder” ” is used if the cardinality is one or more than one element.
         /// </summary>
         public enum ModellingRule { None, Optional, OptionalPlaceholder, Mandatory, MandatoryPlaceholder }
@@ -48,7 +49,8 @@ namespace AasOpcUaServer
         }
 
         /// <summary>
-        /// Helper to create an ObjectType-Node. Note: __NO__ NodeId is created by the default! Must be done by outer functionality!!
+        /// Helper to create an ObjectType-Node. Note: __NO__ NodeId is created by the default! 
+        /// Must be done by outer functionality!!
         /// </summary>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
         /// <param name="superTypeId">Base class or similar</param>
@@ -76,7 +78,8 @@ namespace AasOpcUaServer
         }
 
         /// <summary>
-        /// Helper to create an ReferenceType-Node. Note: __NO__ NodeId is created by the default! Must be done by outer functionality!!
+        /// Helper to create an ReferenceType-Node. Note: __NO__ NodeId is created by the default! 
+        /// Must be done by outer functionality!!
         /// </summary>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
         /// <param name="inverseName"></param>
@@ -103,7 +106,8 @@ namespace AasOpcUaServer
         }
 
         /// <summary>
-        /// Helper to create an Object-Node. Note: __NO__ NodeId is created by the default! Must be done by outer functionality!!
+        /// Helper to create an Object-Node. Note: __NO__ NodeId is created by the default! 
+        /// Must be done by outer functionality!!
         /// </summary>
         /// <param name="parent">Parent node</param>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>

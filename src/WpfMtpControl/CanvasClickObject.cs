@@ -13,7 +13,7 @@ namespace WpfMtpControl
         public object Tag;
 
         public virtual double Area { get { return 0.0; } }
-        public virtual bool CheckClick (double x, double y) { return false; }
+        public virtual bool CheckClick(double x, double y) { return false; }
     }
 
     public class CanvasClickObjectBox : CanvasClickObjectBase

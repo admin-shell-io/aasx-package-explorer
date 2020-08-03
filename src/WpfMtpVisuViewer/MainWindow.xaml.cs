@@ -1,6 +1,4 @@
-﻿using AasxIntegrationBase;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase;
+using Newtonsoft.Json;
 using WpfMtpControl;
 
 namespace WpfMtpVisuViewer
@@ -41,8 +41,9 @@ namespace WpfMtpVisuViewer
             dispatcherTimer.Start();
 
             // explicit
-            //textOpcUaClient = new AasOpcUaClient("opc.tcp://127.0.0.1:4840" /* "localhost:4840" */, _autoAccept: true, _stopTimeout : 99, _userName: "", _password: "");
-            //textOpcUaClient.Run();
+            /// textOpcUaClient = new AasOpcUaClient("opc.tcp://127.0.0.1:4840" /* "localhost:4840" */, 
+            /// _autoAccept: true, _stopTimeout : 99, _userName: "", _password: "");
+            /// textOpcUaClient.Run();
         }
 
         public void SetMessage(string fmt, params object[] args)
@@ -68,7 +69,8 @@ namespace WpfMtpVisuViewer
             if (textOpcUaClient != null && opcCounter % 20 == 0)
                 try
                 {
-                    var x = textOpcUaClient.ReadSubmodelElementValueAsString("|var|CODESYS Control Win V3.Application.SENSORS.L001.V", 2);
+                    var x = textOpcUaClient.ReadSubmodelElementValueAsString(
+                        "|var|CODESYS Control Win V3.Application.SENSORS.L001.V", 2);
                 }
                 catch
                 {
@@ -101,20 +103,24 @@ namespace WpfMtpVisuViewer
             this.activeMtpData = new WpfMtpControl.MtpData();
             this.hintsForConfigRecs = new MtpSymbolMapRecordList();
 
-            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.activeSubscriber, fn, makeUpConfigRecs: hintsForConfigRecs);
+            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.activeSubscriber, fn,
+                makeUpConfigRecs: hintsForConfigRecs);
             if (this.activeMtpData.PictureCollection.Count > 0)
                 mtpVisu.SetPicture(this.activeMtpData.PictureCollection.Values.ElementAt(0));
             mtpVisu.RedrawMtp();
             this.Title = "WPF MTP Viewer prototype - " + fn;
         }
 
-        private void Client_ItemChanged(WpfMtpControl.DataSources.IMtpDataSourceStatus dataSource, MtpVisuOpcUaClient.DetailItem itemRef, MtpVisuOpcUaClient.ItemChangeType changeType)
+        private void Client_ItemChanged(WpfMtpControl.DataSources.IMtpDataSourceStatus dataSource,
+            MtpVisuOpcUaClient.DetailItem itemRef, MtpVisuOpcUaClient.ItemChangeType changeType)
         {
-            if (dataSource == null || itemRef == null || itemRef.MtpSourceItemId == null || this.activeSubscriber == null)
+            if (dataSource == null || itemRef == null || itemRef.MtpSourceItemId == null
+                || this.activeSubscriber == null)
                 return;
 
             if (changeType == MtpVisuOpcUaClient.ItemChangeType.Value)
-                this.activeSubscriber.Invoke(itemRef.MtpSourceItemId, MtpDataSourceSubscriber.ChangeType.Value, itemRef.Value);
+                this.activeSubscriber.Invoke(itemRef.MtpSourceItemId, MtpDataSourceSubscriber.ChangeType.Value,
+                    itemRef.Value);
         }
 
         private WpfMtpControl.MtpSymbolLib theSymbolLib = null;
@@ -137,11 +143,13 @@ namespace WpfMtpVisuViewer
             this.theSymbolLib = new MtpSymbolLib();
 
             var ISO10628 = new ResourceDictionary();
-            ISO10628.Source = new Uri("pack://application:,,,/WpfMtpControl;component/Resources/PNID_DIN_EN_ISO_10628.xaml");
+            ISO10628.Source = new Uri(
+                "pack://application:,,,/WpfMtpControl;component/Resources/PNID_DIN_EN_ISO_10628.xaml");
             this.theSymbolLib.ImportResourceDicrectory("PNID_ISO10628", ISO10628);
 
             var FESTO = new ResourceDictionary();
-            FESTO.Source = new Uri("pack://application:,,,/WpfMtpControl;component/Resources/PNID_Festo.xaml");
+            FESTO.Source = new Uri(
+                "pack://application:,,,/WpfMtpControl;component/Resources/PNID_Festo.xaml");
             this.theSymbolLib.ImportResourceDicrectory("PNID_Festo", FESTO);
 
             // initialize visual object libraries
@@ -149,7 +157,8 @@ namespace WpfMtpVisuViewer
             activeVisualObjectLib.LoadStatic(this.theSymbolLib);
 
             // to find options
-            this.theOptions = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<MtpViewerStandaloneOptions>("WpfMtpVisuViewer", Assembly.GetExecutingAssembly());
+            this.theOptions = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<MtpViewerStandaloneOptions>(
+                "WpfMtpVisuViewer", Assembly.GetExecutingAssembly());
             if (this.theOptions != null && this.theOptions.SymbolMappings != null)
             {
                 activeVisualObjectLib.LoadFromSymbolMappings(this.theSymbolLib, this.theOptions.SymbolMappings);
@@ -159,14 +168,15 @@ namespace WpfMtpVisuViewer
             // load file
             try
             {
-                // LoadFile("Dosing.mtp");
-                // LoadFile("Manifest_PxC_Dosing.aml");
-                // LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
+                /// LoadFile("Dosing.mtp");
+                /// LoadFile("Manifest_PxC_Dosing.aml");
+                /// LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
                 LoadFile("Manifest_Sten1.aml");
 
                 SetMessage("MTP file loaded.");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 SetMessage("Exception: {0}", ex.Message);
             }
 
@@ -206,10 +216,11 @@ namespace WpfMtpVisuViewer
                     try
                     {
                         LoadFile(files[0]);
-                        }
-            catch (Exception ex) {
-                SetMessage("Exception: {0}", ex.Message);
-            }
+                    }
+                    catch (Exception ex)
+                    {
+                        SetMessage("Exception: {0}", ex.Message);
+                    }
                 }
             }
         }
@@ -268,13 +279,9 @@ namespace WpfMtpVisuViewer
             }
         }
 
-        private void AddToRichTextBox(RichTextBox rtb, string text, bool bold = false, double? fontSize = null, bool monoSpaced = false)
+        private void AddToRichTextBox(RichTextBox rtb, string text, bool bold = false, double? fontSize = null,
+            bool monoSpaced = false)
         {
-            //TextRange tr = new TextRange(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
-            //// tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushError);
-            //tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            //tr.Text = text + Environment.NewLine;
-
             var p = new Paragraph();
             if (bold)
                 p.FontWeight = FontWeights.Bold;
@@ -320,9 +327,11 @@ namespace WpfMtpVisuViewer
             if (this.hintsForConfigRecs != null)
             {
                 AddToRichTextBox(rtb, "Preformatted configuration records", bold: true, fontSize: 18);
-                AddToRichTextBox(rtb, "The following JSON elements could be pasted into the options file named 'AasxPluginMtpViewer.options.json'. "+
+                AddToRichTextBox(rtb,
+                    "The following JSON elements could be pasted into the options file named " + "" +
+                    "'AasxPluginMtpViewer.options.json'. " +
                     "Prior to pasting, an appropriate symbol full name needs to be choosen from above list. " +
-                    "For the eClass strings, multiples choices can be delimited by ';'. " + 
+                    "For the eClass strings, multiples choices can be delimited by ';'. " +
                     "For EClassVersions, 'null' disables version checking. " +
                     "Either EClassClasses or EClassIRDIs shall be different to 'null'.");
 

@@ -1,10 +1,4 @@
-﻿using AasOpcUaServer;
-using AasxUaNetServer;
-using AdminShellNS;
-using Opc.Ua;
-using Opc.Ua.Configuration;
-using Opc.Ua.Server;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,14 +6,21 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AasOpcUaServer;
+using AasxUaNetServer;
+using AdminShellNS;
+using Opc.Ua;
+using Opc.Ua.Configuration;
+using Opc.Ua.Server;
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-This software is licensed under the Eclipse Public License 2.0 (EPL-2.0) (see https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt).
+/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, 
+ * author: Michael Hoffmeister.
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
-    public class AasxPlugin : IAasxPluginInterface // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    public class AasxPlugin : IAasxPluginInterface
     {
         #region // Plug In
         private LogInstance logger = new LogInstance();
@@ -59,7 +60,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense =
-                    "This application uses the OPC Foundation .NET Standard stack. See: OPC REDISTRIBUTABLES Agreement of Use.";
+                    "This application uses the OPC Foundation .NET Standard stack. See: OPC REDISTRIBUTABLES "
+                    + "Agreement of Use.";
 
                 lic.isStandardLicense = true;
                 lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
@@ -76,8 +78,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // init
                 this.stop = false;
                 logger.Info("Starting OPC UA AASX Server. Based on the OPC Foundation UA Net Standard stack.");
-                logger.Info("Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister.");
-                logger.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal Community License (RCL).");
+                logger.Info("Copyright (c) 2018-2019 Festo AG & Co. KG " +
+                    "<https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister.");
+                logger.Info("Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal "
+                    + "Community License (RCL).");
                 logger.Info("See https://opcfoundation.org/license/rcl.html.");
 
                 // access AASX
@@ -112,7 +116,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         foreach (var ls in pluginArgs)
                             lstr += ls + " ";
                         logger.Info("{0}", lstr);
-                        
+
                         // parse
                         options.ParseArgs(pluginArgs);
                     }
@@ -121,9 +125,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // run the server
                 try
                 {
-                    this.server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: package, logger: logger, _serverOptions: options);
+                    this.server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: package,
+                        logger: logger, _serverOptions: options);
                     this.server.Run();
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     logger.Info("Exception whenn running server: {0}", ex.Message);
                 }
@@ -202,7 +208,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         }
     }
 
-    
+
 
     #endregion
 }

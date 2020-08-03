@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Shapes;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
-using System.IO;
+using System.Windows.Shapes;
 using System.Xml;
 
 namespace WpfMtpControl
@@ -21,7 +21,8 @@ namespace WpfMtpControl
         public string EClassVersions = "";
 
         /// <summary>
-        /// Applicable eClass Classes, delimited by ";". Only digits allow ("01024455"), If empty, then eClassIRDI shall be set.
+        /// Applicable eClass Classes, delimited by ";". Only digits allow ("01024455"), 
+        /// If empty, then eClassIRDI shall be set.
         /// </summary>
         public string EClassClasses = null;
 
@@ -61,8 +62,9 @@ namespace WpfMtpControl
 
         public MtpSymbolMapRecord() { }
 
-        public MtpSymbolMapRecord(string EClassVersions, string EClassClasses, string EClassIRDIs, 
-            string SymbolDefault, string SymbolActive = null, string SymbolIntermediate = null, string Comment = null, int Priority = 1)
+        public MtpSymbolMapRecord(string EClassVersions, string EClassClasses, string EClassIRDIs,
+            string SymbolDefault, string SymbolActive = null, string SymbolIntermediate = null,
+            string Comment = null, int Priority = 1)
         {
             this.EClassVersions = EClassVersions;
             this.EClassClasses = EClassClasses;
@@ -80,16 +82,16 @@ namespace WpfMtpControl
     }
 
     public class MtpVisualObjectRecord
-    {       
+    {
         /// <summary>
         /// Helpful name
         /// </summary>
         public string Name = "";
-        
+
         /// <summary>
         /// Applicable eClass Versions. If empty, then any!
         /// </summary>
-        public Dictionary<string,string> eClassVersions = null;
+        public Dictionary<string, string> eClassVersions = null;
 
         /// <summary>
         /// Applicable eClass Classes. Only digits allow ("01024455"), If empty, then eClassIRDI shall be set.
@@ -129,8 +131,10 @@ namespace WpfMtpControl
         /// <param name="Name">Name. Not used for matching.</param>
         /// <param name="XamlContent">XAML canvas or similar</param>
         /// <param name="eClassVersions">Applicable eClass Versions, delimited by ";". If empty, then any!</param>
-        /// <param name="eClassClasses">Applicable eClass Classes, delimited by ";". Only digits allow ("01024455"), If empty, then eClassIRDI shall be set.</param>
-        /// <param name="eClassIRDIs">Applicable eClass IRIDs, delimited by ";". If empty, then eClassClass shall be set.</param>
+        /// <param name="eClassClasses">Applicable eClass Classes, delimited by ";". Only digits allow ("01024455"), 
+        /// If empty, then eClassIRDI shall be set.</param>
+        /// <param name="eClassIRDIs">Applicable eClass IRIDs, delimited by ";". If empty, then eClassClass shall 
+        /// be set.</param>
         public MtpVisualObjectRecord(
             string Name,
             MtpSymbol Symbol,
@@ -195,54 +199,6 @@ namespace WpfMtpControl
             return justNumbers;
         }
 
-#if TO_BE_DELETED
-        //
-        // Evaluation of derived properties
-        //
-
-        /// <summary>
-        /// Nozzle positions found in the XAML shape
-        /// </summary>
-        public Point[] NozzlePos = null;
-
-        /// <summary>
-        /// Found label positions for the shape. Top=0, Right=1, Bottom=2, Left=3
-        /// </summary>
-        public Point[] LabelPos = null;
-
-        public void SetContent(object XamlContent)
-        {
-            // remember, shall be canavs
-            this.XamlContent = XamlContent;
-            if (this.XamlContent == null)
-                return;
-
-            // assume to be a canvas
-            var canvasContent = XamlContent as Canvas;
-            if (canvasContent == null)
-                return;
-
-            // very silly thing: clone canvas, as finding information elsewise does only first time accessing the content
-            // finding: is not required, indeed!
-            /*
-            var clonedCanvas = UIElementHelper.cloneElement(canvasContent as UIElement) as Canvas;
-            if (clonedCanvas == null)
-                return;
-            */
-
-            // find named nozzles
-            this.NozzlePos = UIElementHelper.FindIndexedTags(canvasContent, "Nozzle", extractShapes: false);
-
-            // find label positions
-            this.LabelPos = UIElementHelper.FindIndexedTags(canvasContent, "Label", extractShapes: false);
-        }
-#endif
-
-        //
-        // Utilities
-        // 
-
-
     }
 
     public class MtpVisualObjectLib
@@ -254,85 +210,55 @@ namespace WpfMtpControl
         /// </summary>
         public void LoadStatic(MtpSymbolLib syms)
         {
-#if TO_BE_DELETED
-            // access resource dictionaries ISO
-            var ISO10628 = new ResourceDictionary();
-            ISO10628.Source = new Uri("pack://application:,,,/WpfMtpControl;component/Resources/PNID_DIN_EN_ISO_10628.xaml");
-            // var x = ISO10628["Pressurized_vessel_horizontal"];
 
             // add elements
-            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_horizontal", ISO10628["Pressurized_vessel_horizontal"], 
-                eClassVersions: "10.1", eClassClasses: "99999999"));
-
-            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_vertical", ISO10628["Pressurized_vessel_vertical"], 
-                eClassClasses: "36020190;36030101"));
-
-            records.Add(new MtpVisualObjectRecord("Shutoff_Valve", ISO10628["Shutoff_Valve_nozzled"], 
-                eClassVersions: "10.1", eClassClasses: "37010201", placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles));
-
-            records.Add(new MtpVisualObjectRecord("Pump_general", ISO10628["Pump_general_nozzled"], 
-                eClassClasses: "36419090;3641", placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles));
-
-            records.Add(new MtpVisualObjectRecord("Sensor_general", ISO10628["Sensor_general"], 
-                eClassClasses: "27209090;27143121;27200492;27200600;27200200;27200589"));
-
-            records.Add(new MtpVisualObjectRecord("Controller_general", ISO10628["Sensor_general"],
-                eClassClasses: "27210790;27210101"));
-
-            records.Add(new MtpVisualObjectRecord("Source_general", ISO10628["Source_tagged"],
-                placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles, PreferredLabelAlignment: UIElementHelper.DrawToCanvasAlignment.North));
-
-            records.Add(new MtpVisualObjectRecord("Sink_general", ISO10628["Sink_tagged"], 
-                placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles, PreferredLabelAlignment: UIElementHelper.DrawToCanvasAlignment.South));
-
-            // access resource dictionaries FESTO
-            var FESTO = new ResourceDictionary();
-            FESTO.Source = new Uri("pack://application:,,,/WpfMtpControl;component/Resources/PNID_Festo.xaml");
-
-            records.Add(new MtpVisualObjectRecord("Control_Valve", FESTO["Control_Valve_nozzled"],
-                eClassClasses: "37010203", placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles));
-
-            records.Add(new MtpVisualObjectRecord("Manual_Valve", FESTO["Manual_Valve_nozzled"],
-                eClassClasses: "37010201", placement: MtpVisualObjectRecord.ObjectPlaceType.FitNozzles));
-
-            records.Add(new MtpVisualObjectRecord("Stirrer", FESTO["Stirrer_default"],
-                eClassClasses: "36090590", placement: MtpVisualObjectRecord.ObjectPlaceType.StretchToBoundingBox));
-#endif
-
-            // add elements
-            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_horizontal", syms["PNID_ISO10628.Pressurized_vessel_horizontal"],
+            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_horizontal",
+                syms["PNID_ISO10628.Pressurized_vessel_horizontal"],
                 eClassVersions: "10.1", eClassClasses: "99999999", prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_vertical", syms["PNID_ISO10628.Pressurized_vessel_vertical"],
+            records.Add(new MtpVisualObjectRecord("Pressurized_vessel_vertical",
+                syms["PNID_ISO10628.Pressurized_vessel_vertical"],
                 eClassClasses: "36020190;36030101", prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Shutoff_Valve", syms["PNID_ISO10628.Shutoff_Valve_nozzled"],
-                eClassVersions: "10.1", eClassClasses: "37010201", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
+            records.Add(new MtpVisualObjectRecord("Shutoff_Valve",
+                syms["PNID_ISO10628.Shutoff_Valve_nozzled"],
+                eClassVersions: "10.1", eClassClasses: "37010201",
+                placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Pump_general", syms["PNID_ISO10628.Pump_general_nozzled"],
+            records.Add(new MtpVisualObjectRecord("Pump_general",
+                syms["PNID_ISO10628.Pump_general_nozzled"],
                 eClassClasses: "36419090;3641", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Sensor_general", syms["PNID_ISO10628.Sensor_general"],
+            records.Add(new MtpVisualObjectRecord("Sensor_general",
+                syms["PNID_ISO10628.Sensor_general"],
                 eClassClasses: "27209090;27143121;27200492;27200600;27200200;27200589", prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Controller_general", syms["PNID_ISO10628.Sensor_general"],
+            records.Add(new MtpVisualObjectRecord("Controller_general",
+                syms["PNID_ISO10628.Sensor_general"],
                 eClassClasses: "27210790;27210101", prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Source_general", syms["PNID_ISO10628.Source_tagged"],
-                placement: MtpSymbol.SymbolPlaceType.FitNozzles, labelAlignment: UIElementHelper.DrawToCanvasAlignment.North, prio: 0));
+            records.Add(new MtpVisualObjectRecord("Source_general",
+                syms["PNID_ISO10628.Source_tagged"],
+                placement: MtpSymbol.SymbolPlaceType.FitNozzles,
+                labelAlignment: UIElementHelper.DrawToCanvasAlignment.North, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Sink_general", syms["PNID_ISO10628.Sink_tagged"],
-                placement: MtpSymbol.SymbolPlaceType.FitNozzles, labelAlignment: UIElementHelper.DrawToCanvasAlignment.South, prio: 0));
+            records.Add(new MtpVisualObjectRecord("Sink_general",
+                syms["PNID_ISO10628.Sink_tagged"],
+                placement: MtpSymbol.SymbolPlaceType.FitNozzles,
+                labelAlignment: UIElementHelper.DrawToCanvasAlignment.South, prio: 0));
 
             // access resource dictionaries FESTO
 
-            records.Add(new MtpVisualObjectRecord("Control_Valve", syms["PNID_Festo.Control_Valve_nozzled"],
+            records.Add(new MtpVisualObjectRecord("Control_Valve",
+                syms["PNID_Festo.Control_Valve_nozzled"],
                 eClassClasses: "37010203", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Manual_Valve", syms[/* "PNID_Festo.Manual_Valve_nozzled"*/ "PNID_Festo.manual_valve_active-u-nozzled"],
+            records.Add(new MtpVisualObjectRecord("Manual_Valve",
+                syms[/* "PNID_Festo.Manual_Valve_nozzled"*/ "PNID_Festo.manual_valve_active-u-nozzled"],
                 eClassClasses: "37010201", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Stirrer", syms["PNID_Festo.Stirrer_default"],
+            records.Add(new MtpVisualObjectRecord("Stirrer",
+                syms["PNID_Festo.Stirrer_default"],
                 eClassClasses: "36090590", placement: MtpSymbol.SymbolPlaceType.StretchToBoundingBox, prio: 0));
         }
 
@@ -363,7 +289,7 @@ namespace WpfMtpControl
             return null;
         }
 
-        public static bool MatchEclassClass (Dictionary<string, string> recClasses, string thisClass)
+        public static bool MatchEclassClass(Dictionary<string, string> recClasses, string thisClass)
         {
             // specified in record? .. if not, default: True
             if (recClasses == null || recClasses.Count < 1)
@@ -386,7 +312,8 @@ namespace WpfMtpControl
             return false;
         }
 
-        public MtpVisualObjectRecord FindVisualObjectByClass(string eClassVersion = null, string eClassClass = null, string eClassIRDI = null)
+        public MtpVisualObjectRecord FindVisualObjectByClass(
+            string eClassVersion = null, string eClassClass = null, string eClassIRDI = null)
         {
             // prepare input
             eClassClass = MtpVisualObjectRecord.FilterEclassClass(eClassClass);
@@ -412,13 +339,16 @@ namespace WpfMtpControl
                     continue;
 
                 // try to find negative events!
-                if (eClassVersion != null && eClassVersion.Length > 0 && rec.eClassVersions != null && !rec.eClassVersions.ContainsKey(eClassVersion))
+                if (eClassVersion != null && eClassVersion.Length > 0 && rec.eClassVersions != null
+                    && !rec.eClassVersions.ContainsKey(eClassVersion))
                     continue;
-                //if (eClassClass != null && eClassClass.Length > 0 && rec.eClassClasses != null && !rec.eClassClasses.ContainsKey(eClassClass))
-                //    continue;
+                /// if (eClassClass != null && eClassClass.Length > 0 && rec.eClassClasses != null 
+                ///    && !rec.eClassClasses.ContainsKey(eClassClass))
+                ///    continue;
                 if (!MatchEclassClass(rec.eClassClasses, eClassClass))
                     continue;
-                if (eClassIRDI != null && eClassIRDI.Length > 0 && rec.eClassIRDIs != null && !rec.eClassIRDIs.ContainsKey(eClassIRDI))
+                if (eClassIRDI != null && eClassIRDI.Length > 0 && rec.eClassIRDIs != null
+                    && !rec.eClassIRDIs.ContainsKey(eClassIRDI))
                     continue;
 
                 // check if better?

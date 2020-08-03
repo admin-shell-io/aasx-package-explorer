@@ -21,7 +21,7 @@ namespace WpfMtpControl.DataSources
     /// </summary>
     public class MtpDataSourceOpcUaItem
     {
-        public enum AccessType { Undefined, ReadOnly, WriteOnly, ReadWrite}
+        public enum AccessType { Undefined, ReadOnly, WriteOnly, ReadWrite }
 
         public string Identifier = "";
         public string Namespace = "";
@@ -36,7 +36,7 @@ namespace WpfMtpControl.DataSources
     public interface IMtpDataSourceFactoryOpcUa
     {
         MtpDataSourceOpcUaServer CreateOrUseUaServer(string Endpoint, bool allowReUse = false);
-        MtpDataSourceOpcUaItem CreateOrUseItem(MtpDataSourceOpcUaServer server, 
+        MtpDataSourceOpcUaItem CreateOrUseItem(MtpDataSourceOpcUaServer server,
             string Identifier, string Namespace, string Access, string mtpSourceItemId, bool allowReUse = false);
         void Tick(int ms);
     }

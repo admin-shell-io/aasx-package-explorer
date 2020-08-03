@@ -38,7 +38,8 @@ namespace WpfMtpControl
         /// <summary>
         /// Preferred label alignment
         /// </summary>
-        public UIElementHelper.DrawToCanvasAlignment PreferredLabelAlignment = UIElementHelper.DrawToCanvasAlignment.Centered;
+        public UIElementHelper.DrawToCanvasAlignment PreferredLabelAlignment
+            = UIElementHelper.DrawToCanvasAlignment.Centered;
 
         /// <summary>
         /// Object data of the symbol, expected to be XAML Canvas element.

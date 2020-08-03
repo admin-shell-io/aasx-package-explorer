@@ -15,7 +15,8 @@ namespace WpfMtpControl
     public class MtpVisuOpcUaClient : IMtpDataSourceFactoryOpcUa, IMtpDataSourceStatus
     {
         public enum ItemChangeType { Value }
-        public delegate void ItemChangedDelegate(IMtpDataSourceStatus dataSource, DetailItem itemRef, ItemChangeType changeType);
+        public delegate void ItemChangedDelegate(
+            IMtpDataSourceStatus dataSource, DetailItem itemRef, ItemChangeType changeType);
         public event ItemChangedDelegate ItemChanged = null;
 
         public ObservableCollection<DetailItem> Items = new ObservableCollection<DetailItem>();
@@ -54,7 +55,11 @@ namespace WpfMtpControl
             public object Value = null;
 
             private string displayValue = null;
-            public string DisplayValue{ get { return displayValue; } set { displayValue = value; OnPropertyChanged("DisplayValue"); } }
+            public string DisplayValue
+            {
+                get { return displayValue; }
+                set { displayValue = value; OnPropertyChanged("DisplayValue"); }
+            }
         }
 
         public class DetailServer : DataSources.MtpDataSourceOpcUaServer, IEquatable<DetailServer>
@@ -87,7 +92,9 @@ namespace WpfMtpControl
                     if (state == 0)
                     {
                         // try to initialize OPC UA server
-                        this.uaClient = new AasOpcUaClient(this.Endpoint, _autoAccept: true, _stopTimeout: 9999, _userName: this.User, _password: this.Password);
+                        this.uaClient = new AasOpcUaClient(
+                            this.Endpoint, _autoAccept: true, _stopTimeout: 9999, _userName: this.User,
+                            _password: this.Password);
                         this.uaClient.Run();
                         // go on for a checking state
                         nextState = 1;
@@ -137,14 +144,14 @@ namespace WpfMtpControl
                     // move?
                     if (nextState >= 0)
                         this.state = nextState;
-                }                
+                }
             }
 
-            private void OnNotification(Opc.Ua.Client.MonitoredItem item, Opc.Ua.Client.MonitoredItemNotificationEventArgs e)
+            private void OnNotification(
+                Opc.Ua.Client.MonitoredItem item, Opc.Ua.Client.MonitoredItemNotificationEventArgs e)
             {
                 foreach (var value in item.DequeueValues())
                 {
-                    // Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp, value.StatusCode);
                     if (this.nodeIdToItemRef != null && this.nodeIdToItemRef.ContainsKey(item.StartNodeId))
                     {
                         // get item ref
@@ -201,7 +208,7 @@ namespace WpfMtpControl
         }
 
         public MtpDataSourceOpcUaItem CreateOrUseItem(
-            MtpDataSourceOpcUaServer server, 
+            MtpDataSourceOpcUaServer server,
             string Identifier, string Namespace, string Access, string mtpSourceItemId,
             bool allowReUse = false)
         {

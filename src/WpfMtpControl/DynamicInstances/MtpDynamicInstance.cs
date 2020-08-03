@@ -1,5 +1,4 @@
-﻿using Aml.Engine.CAEX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Aml.Engine.CAEX;
 using WpfMtpControl;
 
 namespace Mtp.DynamicInstances
@@ -186,40 +186,98 @@ namespace Mtp.DynamicInstances
         // Remark: important to articulate all the properties with Get/Set for having Data Binding in place!!
         // TagName
         private string tagName = "";
-        public string TagName { get { return tagName; } set { tagName = value; RaisePropertyChanged("TagName"); } }
+        public string TagName
+        {
+            get { return tagName; }
+            set { tagName = value; RaisePropertyChanged("TagName"); }
+        }
 
         // TagDescription
         private string tagDescription = "";
-        public string TagDescription { get { return tagDescription; } set { tagDescription = value; RaisePropertyChanged("TagDescription"); } }
+        public string TagDescription
+        {
+            get { return tagDescription; }
+            set { tagDescription = value; RaisePropertyChanged("TagDescription"); }
+        }
     }
 
     public class MtpDiIndicatorElement : MtpDiDataAssembly
     {
         // WorstQualityCode
         private byte wqc = 0xff;
-        public byte WorstQualityCode { get { return wqc; } set { wqc = value; RaisePropertyChanged("WorstQualityCode"); RaisePropertyChanged("WorstQualityCodeText"); RaisePropertyChanged("WorstQualityCodeBrush"); } }
-        public string WorstQualityCodeText { get { return String.Format("#{0:X02}", wqc); } }
-        public Brush WorstQualityCodeBrush { get { if (wqc < 100) return Brushes.Red; if (wqc < 255) return Brushes.DarkOrange; return Brushes.Transparent; } }
+        public byte WorstQualityCode
+        {
+            get { return wqc; }
+            set
+            {
+                wqc = value; RaisePropertyChanged("WorstQualityCode");
+                RaisePropertyChanged("WorstQualityCodeText"); RaisePropertyChanged("WorstQualityCodeBrush");
+            }
+        }
+        public string WorstQualityCodeText
+        {
+            get { return String.Format("#{0:X02}", wqc); }
+        }
+        public Brush WorstQualityCodeBrush
+        {
+            get
+            {
+                if (wqc < 100) return Brushes.Red;
+                if (wqc < 255) return Brushes.DarkOrange;
+                return Brushes.Transparent;
+            }
+        }
     }
 
     public class MtpDiAnaView : MtpDiIndicatorElement
     {
         // Value
         private double valuex = 0.0;
-        public virtual double Value { get { return valuex; } set { valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent"); } }
-        public double ValuePercent { get { return (valuex - valueScaleLowLimit) / Math.Max(0.001, ValueScaleHighLimit - valueScaleLowLimit) * 100.0; } }
+        public virtual double Value
+        {
+            get { return valuex; }
+            set { valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent"); }
+        }
+        public double ValuePercent
+        {
+            get
+            {
+                return (valuex - valueScaleLowLimit)
+                  / Math.Max(0.001, ValueScaleHighLimit - valueScaleLowLimit) * 100.0;
+            }
+        }
 
         // ValueScaleLowLimit
         private double valueScaleLowLimit = 0.0;
-        public double ValueScaleLowLimit { get { return valueScaleLowLimit; } set { valueScaleLowLimit = value; RaisePropertyChanged("ValueScaleLowLimit"); RaisePropertyChanged("ValuePercent"); } }
+        public double ValueScaleLowLimit
+        {
+            get { return valueScaleLowLimit; }
+            set
+            {
+                valueScaleLowLimit = value; RaisePropertyChanged("ValueScaleLowLimit");
+                RaisePropertyChanged("ValuePercent");
+            }
+        }
 
         // ValueScaleHighLimit
         private double valueScaleHighLimit = 0.0;
-        public double ValueScaleHighLimit { get { return valueScaleHighLimit; } set { valueScaleHighLimit = value; RaisePropertyChanged("ValueScaleHighLimit"); RaisePropertyChanged("ValuePercent"); } }
+        public double ValueScaleHighLimit
+        {
+            get { return valueScaleHighLimit; }
+            set
+            {
+                valueScaleHighLimit = value; RaisePropertyChanged("ValueScaleHighLimit");
+                RaisePropertyChanged("ValuePercent");
+            }
+        }
 
         // ValueUnit
         private int valueUnit = 0;
-        public int ValueUnit { get { return valueUnit; } set { valueUnit = value; RaisePropertyChanged("ValueUnit"); RaisePropertyChanged("ValueUnitText"); } }
+        public int ValueUnit
+        {
+            get { return valueUnit; }
+            set { valueUnit = value; RaisePropertyChanged("ValueUnit"); RaisePropertyChanged("ValueUnitText"); }
+        }
         public string ValueUnitText { get { return this.FindUnitTextById(valueUnit); } }
 
         public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
@@ -227,20 +285,6 @@ namespace Mtp.DynamicInstances
             if (ie == null || subscriber == null)
                 return;
             this.TagName = "" + Name;
-
-            //var idRef = MtpAmlHelper.FindAttributeValueByName(ie.Attribute, "V");
-            //if (idRef != null && idRef.Length > 0 && subscriber != null)
-            //    subscriber.Subscribe(idRef, (ct, o) =>
-            //    {
-            //        if (ct == MtpDataSourceSubscriber.ChangeType.Value && o is float)
-            //            this.Value = (float)o;
-            //    });
-
-            //subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", (ct, o) =>
-            //{
-            //    if (ct == MtpDataSourceSubscriber.ChangeType.Value && o is float)
-            //        this.Value = (float)o;
-            //});
 
             subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", (ct, o) => { this.Value = (double)o; });
         }
@@ -329,8 +373,8 @@ namespace Mtp.DynamicInstances
 
             public LimitBand() { }
 
-            public LimitBand(double LimitValueLow, double LimitValueHigh, 
-                bool LimitEnableLow, bool LimitEnableHigh, 
+            public LimitBand(double LimitValueLow, double LimitValueHigh,
+                bool LimitEnableLow, bool LimitEnableHigh,
                 bool LimitActiveLow, bool LimitActiveHigh)
             {
                 this.LimitValueLow = LimitValueLow;
@@ -341,7 +385,7 @@ namespace Mtp.DynamicInstances
                 this.LimitActiveHigh = LimitActiveHigh;
             }
 
-            public bool EvalValueForLimitViolation (double value)
+            public bool EvalValueForLimitViolation(double value)
             {
                 this.LimitActiveLow = this.LimitEnableLow && value < this.LimitValueLow;
                 this.LimitActiveHigh = this.LimitEnableHigh && value > this.LimitValueHigh;
@@ -359,7 +403,7 @@ namespace Mtp.DynamicInstances
         // concept of violatedBand
 
         private int violatedBand = BandNone;
-        public int ViolatedBand { get { return violatedBand;  } }
+        public int ViolatedBand { get { return violatedBand; } }
 
         private string[] violatedBandText = new string[] { "TOL", "WARN", "ALRM" };
         public string ViolatedBandText
@@ -385,11 +429,14 @@ namespace Mtp.DynamicInstances
 
         // now: OVERIDE the getter/setter
 
-        public override double Value {
-            get {
+        public override double Value
+        {
+            get
+            {
                 return base.Value;
             }
-            set {
+            set
+            {
                 base.Value = value;
 
                 violatedBand = BandNone;
@@ -474,7 +521,8 @@ namespace Mtp.DynamicInstances
         public bool Value
         {
             get { return valState; }
-            set {
+            set
+            {
                 valState = value;
                 RaisePropertyChanged("Value");
                 RaisePropertyChanged("ValueTinyText");
@@ -545,19 +593,42 @@ namespace Mtp.DynamicInstances
             }
         }
 
-        public string ValueFalseText { get { if (!valState) { return "FALSE"; } else { return ""; } } }
-        public string ValueTrueText { get { if (!valState) { return ""; } else { return "TRUE"; } } }
+        public string ValueFalseText
+        {
+            get { if (!valState) { return "FALSE"; } else { return ""; } }
+        }
+        public string ValueTrueText
+        {
+            get { if (!valState) { return ""; } else { return "TRUE"; } }
+        }
 
-        public Brush ValueFalseBrush { get { if (!valState) { return Brushes.Red; } else { return Brushes.Transparent; } } }
-        public Brush ValueTrueBrush { get { if (!valState) { return Brushes.Transparent; } else { return Brushes.Green; } } }
-        public Brush ValueBrush { get { if (valState) { return Brushes.Green; } else { return Brushes.Red; } } }
+        public Brush ValueFalseBrush
+        {
+            get { if (!valState) { return Brushes.Red; } else { return Brushes.Transparent; } }
+        }
+        public Brush ValueTrueBrush
+        {
+            get { if (!valState) { return Brushes.Transparent; } else { return Brushes.Green; } }
+        }
+        public Brush ValueBrush
+        {
+            get { if (valState) { return Brushes.Green; } else { return Brushes.Red; } }
+        }
 
         // String replacements
         private string valState0 = "";
-        public string ValState0 { get { return valState0; } set { valState0 = value; RaisePropertyChanged("ValState0"); } }
+        public string ValState0
+        {
+            get { return valState0; }
+            set { valState0 = value; RaisePropertyChanged("ValState0"); }
+        }
 
         private string valState1 = "";
-        public string ValState1 { get { return valState1; } set { valState1 = value; RaisePropertyChanged("ValState1"); } }
+        public string ValState1
+        {
+            get { return valState1; }
+            set { valState1 = value; RaisePropertyChanged("ValState1"); }
+        }
 
         // Construct
 

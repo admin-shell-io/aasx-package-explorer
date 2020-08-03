@@ -10,13 +10,13 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-using Opc.Ua;
-using Opc.Ua.Client;
-using Opc.Ua.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using AdminShellNS;
+using Opc.Ua;
+using Opc.Ua.Client;
+using Opc.Ua.Configuration;
 
 namespace SampleClient
 {
@@ -32,7 +32,8 @@ namespace SampleClient
         string userName;
         string password;
 
-        public UASampleClient(string _endpointURL, bool _autoAccept, int _stopTimeout, string _userName, string _password)
+        public UASampleClient(string _endpointURL, bool _autoAccept, int _stopTimeout,
+            string _userName, string _password)
         {
             endpointURL = _endpointURL;
             autoAccept = _autoAccept;
@@ -108,12 +109,14 @@ namespace SampleClient
 
             if (haveAppCertificate)
             {
-                config.ApplicationUri = Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
+                config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
+                    config.SecurityConfiguration.ApplicationCertificate.Certificate);
                 if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
                 {
                     autoAccept = true;
                 }
-                config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
+                config.CertificateValidator.CertificateValidation +=
+                    new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
             else
             {
@@ -131,7 +134,8 @@ namespace SampleClient
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(userName, password), null);
+            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000,
+                new UserIdentity(userName, password), null);
 
             // register keep alive handler
             session.KeepAlive += Client_KeepAlive;
@@ -171,11 +175,13 @@ namespace SampleClient
         {
             foreach (var value in item.DequeueValues())
             {
-                Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp, value.StatusCode);
+                Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp,
+                    value.StatusCode);
             }
         }
 
-        private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
+        private static void CertificateValidator_CertificateValidation(CertificateValidator validator,
+            CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
@@ -195,7 +201,7 @@ namespace SampleClient
 
         {
             NodeId node = new NodeId(nodeName, (ushort)index);
-            return(session.ReadValue(node).ToString());
+            return (session.ReadValue(node).ToString());
         }
 
     }

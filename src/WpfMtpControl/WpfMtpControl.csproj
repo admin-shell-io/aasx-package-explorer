@@ -266,12 +266,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UserControl1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="AasOpcUaClient.cs" />
-    <Compile Include="AasOpcUaClientOld.cs" />
     <Compile Include="CanvasClickObject.cs" />
     <Compile Include="DataSources\MtpDataSourceOpcUa.cs" />
     <Compile Include="DynamicInstances\MtpDynamicInstance.cs" />
@@ -302,12 +297,7 @@
     <Compile Include="MtpVisuViewer.xaml.cs">
       <DependentUpon>MtpVisuViewer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MultiTupleDictionary.cs" />
     <Compile Include="UiElementHelper.cs" />
-    <Compile Include="UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -347,6 +337,11 @@
       <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
       <Name>AasxIntegrationBase</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
-// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/Samples/Opc.Ua.Sample/SampleServer.SampleModel.cs
+// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/
+// Samples/Opc.Ua.Sample/SampleServer.SampleModel.cs
 
 /* ========================================================================
  * Copyright (c) 2005-2019 The OPC Foundation, Inc. All rights reserved.

@@ -27,13 +27,13 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
+using System;
 using System.Collections.Generic;
-using Opc.Ua;
-using System.Reflection;
-using AdminShellNS;
 using System.Diagnostics;
 using System.IO;
-using System;
+using System.Reflection;
+using AdminShellNS;
+using Opc.Ua;
 using Opc.Ua.Sample;
 
 namespace AasOpcUaServer
@@ -51,7 +51,7 @@ namespace AasOpcUaServer
         /// Initializes the node manager.
         /// </summary>
         public AasModeManager(
-            Opc.Ua.Server.IServerInternal server, 
+            Opc.Ua.Server.IServerInternal server,
             ApplicationConfiguration configuration,
             AdminShellPackageEnv env,
             AasxUaServerOptions serverOptions = null)
@@ -64,7 +64,7 @@ namespace AasOpcUaServer
             List<string> namespaceUris = new List<string>();
             namespaceUris.Add("http://opcfoundation.org/UA/i4aas/");
             // namespaceUris.Add("http://opcfoundation.org/UA/i4aas/" + "instance/");
-            namespaceUris.Add("http://admin-shell.io/samples/i4aas/instance/") ;
+            namespaceUris.Add("http://admin-shell.io/samples/i4aas/instance/");
             NamespaceUris = namespaceUris;
 
             m_typeNamespaceIndex = Server.NamespaceUris.GetIndexOrAppend(namespaceUris[0]);
@@ -97,42 +97,6 @@ namespace AasOpcUaServer
             return new NodeId(id, m_typeNamespaceIndex);
         }
 
-        // MIHO: pointless
-        /*
-        public class NodeIdForDict : NodeId
-        {
-            public NodeIdForDict()
-                : base()
-            {
-            }
-
-            public NodeIdForDict(uint value, ushort namespaceIndex)
-                : base(value, namespaceIndex)
-            {
-            }
-
-            public bool Equals(NodeIdForDict other)
-            {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
-                return other.NamespaceIndex == this.NamespaceIndex && other.Identifier == this.Identifier;
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != typeof(NodeIdForDict)) return false;
-                return Equals((NodeIdForDict)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return this.NamespaceIndex.GetHashCode() + this.Identifier.GetHashCode();
-            }
-        }
-        */
-
         #region INodeManager Members
         /// <summary>
         /// Does any initialization required before the address space can be used.
@@ -158,108 +122,86 @@ namespace AasOpcUaServer
                     // builder.RootAAS = builder.CreateAddObject(null, "AASROOT");
                     builder.RootAAS = builder.CreateAddFolder(null, "AASROOT");
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
-                    this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false, builder.RootAAS.NodeId, externalReferences);
-                    this.AddExternalReferencePublic(builder.RootAAS.NodeId, ReferenceTypeIds.Organizes, true, new NodeId(85, 0), externalReferences);
+                    this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
+                        builder.RootAAS.NodeId, externalReferences);
+                    this.AddExternalReferencePublic(builder.RootAAS.NodeId, ReferenceTypeIds.Organizes, true,
+                        new NodeId(85, 0), externalReferences);
 
 
                     // Folders for DataSpecs
                     // DO NOT USE THIS FEATURE -> Data Spec are "under" the CDs
-                    // builder.RootDataSpecifications = builder.CreateAddFolder(builder.RootAAS, "DataSpecifications");
-                    // builder.RootDataSpecifications = builder.CreateAddObject(builder.RootAAS, "DataSpecifications");
+                    /// builder.RootDataSpecifications = builder.CreateAddFolder(
+                    /// builder.RootAAS, "DataSpecifications");
+                    /// builder.RootDataSpecifications = builder.CreateAddObject(
+                    /// builder.RootAAS, "DataSpecifications");
 
                     if (false)
                     {
                         // Folders for Concept Descriptions
-                        builder.RootConceptDescriptions = builder.CreateAddFolder(builder.RootAAS, "ConceptDescriptions");
+                        builder.RootConceptDescriptions = builder.CreateAddFolder(
+                            builder.RootAAS, "ConceptDescriptions");
 
                         // create missing dictionary entries
-                        builder.RootMissingDictionaryEntries = builder.CreateAddFolder(builder.RootAAS, "DictionaryEntries");
+                        builder.RootMissingDictionaryEntries = builder.CreateAddFolder(
+                            builder.RootAAS, "DictionaryEntries");
                     }
                     else
                     {
                         // create folder(s) under root
-                        var topOfDict = builder.CreateAddObject(null, "Dictionaries", referenceTypeFromParentId: null, typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        var topOfDict = builder.CreateAddObject(null, "Dictionaries",
+                            referenceTypeFromParentId: null,
+                            typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                         // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                         // 2253 = Objects?
-                        this.AddExternalReferencePublic(new NodeId(2253, 0), ReferenceTypeIds.HasComponent, false, topOfDict.NodeId, externalReferences);
-                        this.AddExternalReferencePublic(topOfDict.NodeId, ReferenceTypeIds.HasComponent, true, new NodeId(2253, 0), externalReferences);
+                        this.AddExternalReferencePublic(new NodeId(2253, 0),
+                            ReferenceTypeIds.HasComponent, false, topOfDict.NodeId, externalReferences);
+                        this.AddExternalReferencePublic(topOfDict.NodeId,
+                            ReferenceTypeIds.HasComponent, true, new NodeId(2253, 0), externalReferences);
 
                         // now, create a dictionary under ..
                         // Folders for Concept Descriptions
-                        builder.RootConceptDescriptions = builder.CreateAddObject(topOfDict, "ConceptDescriptions", referenceTypeFromParentId: ReferenceTypeIds.HasComponent, typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
-                        // builder.RootConceptDescriptions.AddReference(ReferenceTypeIds.HasTypeDefinition, false, builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        builder.RootConceptDescriptions = builder.CreateAddObject(topOfDict, "ConceptDescriptions",
+                            referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
+                            typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
 
                         // create missing dictionary entries
-                        builder.RootMissingDictionaryEntries = builder.CreateAddObject(topOfDict, "DictionaryEntries", referenceTypeFromParentId: ReferenceTypeIds.HasComponent, typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        builder.RootMissingDictionaryEntries = builder.CreateAddObject(topOfDict, "DictionaryEntries",
+                            referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
+                            typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                     }
 
                     // start process
                     builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
-
-                    // WOODOO
-                    /*
-                    // builder.AasTypes.Asset.CreateAddInstanceObject(x, env.AasEnv.Assets[0]);
-                    builder.AasTypes.AAS.CreateAddInstanceObject(aasRoot, thePackageEnv.AasEnv, thePackageEnv.AasEnv.AdministrationShells[0]);
-
-                    var y = new ReferenceTypeState();
-                    y.BrowseName = "HasDictionaryEntry";
-                    y.DisplayName = y.BrowseName.ToString();
-                    y.InverseName = "DictionaryEntryOf";
-                    y.Symmetric = false;
-                    y.IsAbstract = false;
-                    y.NodeId = this.NewType(this.SystemContext, y, 17597);
-                    // y.NodeId = new NodeId(17597, 0);
-                    this.AddPredefinedNode(this.SystemContext, y);
-                    this.AddExternalReference(new NodeId(32, 0), ReferenceTypeIds.HasSubtype, false, y.NodeId, externalReferences);
-                    */
                 }
 
                 // ensure the reverse refernces exist.
                 // AddReverseReferences(externalReferences);
 
-                if (theServerOptions != null && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
+                if (theServerOptions != null
+                    && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
                 {
                     try
                     {
                         // empty list
                         var nodesToExport = new NodeStateCollection();
-                        
+
                         // apply filter criteria
                         foreach (var y in this.PredefinedNodes)
                         {
                             var node = y.Value;
-                            if (theServerOptions.ExportFilterNamespaceIndex != null && !theServerOptions.ExportFilterNamespaceIndex.Contains(node.NodeId.NamespaceIndex))
+                            if (theServerOptions.ExportFilterNamespaceIndex != null
+                                && !theServerOptions.ExportFilterNamespaceIndex.Contains(node.NodeId.NamespaceIndex))
                                 continue;
                             nodesToExport.Add(node);
                         }
-                        
-                        // make sure that each element ( ns x id ) is only contained once
-                        // MIHO : pointless
-                        /*
-                        if (theServerOptions.FilterForSingleNodeIds)
-                        {
-                            var nodup = new List<NodeState>();
-                            foreach (var nte in nodesToExport)
-                            {
-                                var found = false;
-                                foreach (var e in nodup)
-                                    if (e.NodeId.NamespaceIndex == nte.NodeId.NamespaceIndex && e.NodeId.Identifier == nte.NodeId.Identifier)
-                                        found = true;
-                                if (!found)
-                                    nodup.Add(nte);
-                                else
-                                    ;
-                            }
-                            nodesToExport = new NodeStateCollection(nodup);
-                        }
-                        */
 
                         // export
                         Utils.Trace("Writing export file: " + theServerOptions.ExportFilename);
                         var stream = new StreamWriter(theServerOptions.ExportFilename);
-                        /*
-                        nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
-                        */
+
+                        /// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
+                        /// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
+
                         try
                         {
                             stream.Close();
@@ -273,13 +215,14 @@ namespace AasOpcUaServer
                             theServerOptions.FinalizeAction();
                         }
 
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Utils.Trace(ex, "When exporting to {0}", "" + theServerOptions.ExportFilename);
                     }
 
                     // shutdown ..
-                    
+
                 }
 
                 Debug.WriteLine("Done creating custom address space!");
@@ -293,16 +236,24 @@ namespace AasOpcUaServer
             var res = new NodeStateCollection();
 
             // Missing Object Types
-            res.Add(AasUaNodeHelper.CreateObjectType("BaseInterfaceType", ObjectTypeIds.BaseObjectType, new NodeId(17602, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryFolderType", ObjectTypeIds.FolderType, new NodeId(17591, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryEntryType", ObjectTypeIds.BaseObjectType, new NodeId(17589, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("UriDictionaryEntryType", new NodeId(17589, 0), new NodeId(17600, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("IrdiDictionaryEntryType", new NodeId(17589, 0), new NodeId(17598, 0)));
+            res.Add(AasUaNodeHelper.CreateObjectType("BaseInterfaceType",
+                ObjectTypeIds.BaseObjectType, new NodeId(17602, 0)));
+            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryFolderType",
+                ObjectTypeIds.FolderType, new NodeId(17591, 0)));
+            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryEntryType",
+                ObjectTypeIds.BaseObjectType, new NodeId(17589, 0)));
+            res.Add(AasUaNodeHelper.CreateObjectType("UriDictionaryEntryType",
+                new NodeId(17589, 0), new NodeId(17600, 0)));
+            res.Add(AasUaNodeHelper.CreateObjectType("IrdiDictionaryEntryType",
+                new NodeId(17589, 0), new NodeId(17598, 0)));
 
             // Missing Reference Types
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasDictionaryEntry", "DictionaryEntryOf", ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17597, 0)));
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasInterface", "InterfaceOf", ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17603, 0)));
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasAddIn", "AddInOf", ReferenceTypeIds.HasComponent, new NodeId(17604, 0)));
+            res.Add(AasUaNodeHelper.CreateReferenceType("HasDictionaryEntry", "DictionaryEntryOf",
+                ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17597, 0)));
+            res.Add(AasUaNodeHelper.CreateReferenceType("HasInterface", "InterfaceOf",
+                ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17603, 0)));
+            res.Add(AasUaNodeHelper.CreateReferenceType("HasAddIn", "AddInOf",
+                ReferenceTypeIds.HasComponent, new NodeId(17604, 0)));
 
             // deliver list
             return res;
@@ -321,7 +272,6 @@ namespace AasOpcUaServer
         protected override NodeStateCollection LoadPredefinedNodes(ISystemContext context)
         {
             NodeStateCollection predefinedNodes = new NodeStateCollection();
-            // predefinedNodes.LoadFromBinaryResource(context, "Opc.Ua.Sample.Boiler.Boiler.PredefinedNodes.uanodes", this.GetType().GetTypeInfo().Assembly, true);
             return predefinedNodes;
         }
 

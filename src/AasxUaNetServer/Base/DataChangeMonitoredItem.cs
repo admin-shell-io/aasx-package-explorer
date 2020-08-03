@@ -1,4 +1,5 @@
-// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/Samples/Opc.Ua.Sample/Base/DataChangeMonitoredItem.cs
+// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/
+// Samples/Opc.Ua.Sample/Base/DataChangeMonitoredItem.cs
 
 /* ========================================================================
  * Copyright (c) 2005-2019 The OPC Foundation, Inc. All rights reserved.
@@ -32,7 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Opc.Ua.Server; 
+using Opc.Ua.Server;
 
 namespace Opc.Ua.Sample
 {
@@ -111,10 +112,10 @@ namespace Opc.Ua.Sample
             m_filter = filter;
             m_range = 0;
             m_alwaysReportUpdates = alwaysReportUpdates;
-        
+
             if (range != null)
             {
-                m_range = range.High  - range.Low;
+                m_range = range.High - range.Low;
             }
 
             if (queueSize > 1)
@@ -156,7 +157,7 @@ namespace Opc.Ua.Sample
         /// </summary>
         public bool AlwaysReportUpdates
         {
-            get { return m_alwaysReportUpdates;  }
+            get { return m_alwaysReportUpdates; }
             set { m_alwaysReportUpdates = value; }
         }
 
@@ -181,7 +182,7 @@ namespace Opc.Ua.Sample
                         return 0;
                     }
 
-                    return (int)((m_nextSampleTime - now.Ticks)/TimeSpan.TicksPerMillisecond); 
+                    return (int)((m_nextSampleTime - now.Ticks) / TimeSpan.TicksPerMillisecond);
                 }
             }
         }
@@ -202,7 +203,7 @@ namespace Opc.Ua.Sample
         /// </summary>
         public double SamplingInterval
         {
-            get 
+            get
             {
                 lock (m_lock)
                 {
@@ -210,7 +211,7 @@ namespace Opc.Ua.Sample
                 }
             }
         }
-        
+
         /// <summary>
         /// Modifies the monitored item parameters,
         /// </summary>
@@ -222,7 +223,7 @@ namespace Opc.Ua.Sample
         {
             return Modify(diagnosticsMasks, timestampsToReturn, clientHandle, samplingInterval, 0, false, null, null);
         }
-        
+
         /// <summary>
         /// Modifies the monitored item parameters,
         /// </summary>
@@ -243,17 +244,17 @@ namespace Opc.Ua.Sample
                 m_clientHandle = clientHandle;
 
                 // subtract the previous sampling interval.
-                long oldSamplingInterval = (long)(m_samplingInterval*TimeSpan.TicksPerMillisecond);
+                long oldSamplingInterval = (long)(m_samplingInterval * TimeSpan.TicksPerMillisecond);
 
                 if (oldSamplingInterval < m_nextSampleTime)
                 {
                     m_nextSampleTime -= oldSamplingInterval;
                 }
-                
+
                 m_samplingInterval = samplingInterval;
 
                 // calculate the next sampling interval.                
-                long newSamplingInterval = (long)(m_samplingInterval*TimeSpan.TicksPerMillisecond);
+                long newSamplingInterval = (long)(m_samplingInterval * TimeSpan.TicksPerMillisecond);
 
                 if (m_samplingInterval > 0)
                 {
@@ -270,7 +271,7 @@ namespace Opc.Ua.Sample
 
                 if (range != null)
                 {
-                    m_range = range.High  - range.Low;
+                    m_range = range.High - range.Low;
                 }
 
                 // update the queue size.
@@ -292,7 +293,7 @@ namespace Opc.Ua.Sample
                 return ServiceResult.Good;
             }
         }
-                
+
         /// <summary>
         /// Called when the attribute being monitored changed. Reads and queues the value.
         /// </summary>
@@ -482,7 +483,7 @@ namespace Opc.Ua.Sample
                 result.RevisedSamplingInterval = m_samplingInterval;
                 result.RevisedQueueSize = 0;
                 result.FilterResult = null;
-                
+
                 if (m_queue != null)
                 {
                     result.RevisedQueueSize = m_queue.QueueSize;
@@ -527,7 +528,8 @@ namespace Opc.Ua.Sample
                 // check if value has changed.
                 if (!m_alwaysReportUpdates)
                 {
-                    if (!Opc.Ua.Server.MonitoredItem.ValueChanged(value, error, m_lastValue, m_lastError, m_filter, m_range))
+                    if (!Opc.Ua.Server.MonitoredItem.ValueChanged(value, error, m_lastValue, m_lastError,
+                            m_filter, m_range))
                     {
                         return;
                     }
@@ -544,7 +546,7 @@ namespace Opc.Ua.Sample
                     copy.SourcePicoseconds = value.SourcePicoseconds;
                     copy.ServerTimestamp = value.ServerTimestamp;
                     copy.ServerPicoseconds = value.ServerPicoseconds;
-                    
+
                     value = copy;
 
                     // ensure the data value matches the error status code.
@@ -581,8 +583,8 @@ namespace Opc.Ua.Sample
             {
                 m_semanticsChanged = true;
             }
-        }        
-                
+        }
+
         /// <summary>
         /// Sets a flag indicating that the structure of the monitored node has changed.
         /// </summary>
@@ -595,8 +597,8 @@ namespace Opc.Ua.Sample
             {
                 m_structureChanged = true;
             }
-        }    
-        
+        }
+
         /// <summary>
         /// Changes the monitoring mode.
         /// </summary>
@@ -619,7 +621,7 @@ namespace Opc.Ua.Sample
                 }
 
                 m_monitoringMode = monitoringMode;
-                
+
                 if (monitoringMode == MonitoringMode.Disabled)
                 {
                     m_readyToPublish = false;
@@ -644,8 +646,8 @@ namespace Opc.Ua.Sample
         private void IncrementSampleTime()
         {
             // update next sample time.
-            long now = DateTime.UtcNow.Ticks;            
-            long samplingInterval = (long)(m_samplingInterval*TimeSpan.TicksPerMillisecond);
+            long now = DateTime.UtcNow.Ticks;
+            long samplingInterval = (long)(m_samplingInterval * TimeSpan.TicksPerMillisecond);
 
             if (m_nextSampleTime > 0)
             {
@@ -653,7 +655,7 @@ namespace Opc.Ua.Sample
 
                 if (samplingInterval > 0 && delta >= 0)
                 {
-                    m_nextSampleTime += ((delta/samplingInterval)+1)*samplingInterval;                 
+                    m_nextSampleTime += ((delta / samplingInterval) + 1) * samplingInterval;
                 }
             }
 
@@ -667,7 +669,8 @@ namespace Opc.Ua.Sample
         /// <summary>
         /// Called by the subscription to publish any notification.
         /// </summary>
-        public bool Publish(OperationContext context, Queue<MonitoredItemNotification> notifications, Queue<DiagnosticInfo> diagnostics)
+        public bool Publish(OperationContext context,
+            Queue<MonitoredItemNotification> notifications, Queue<DiagnosticInfo> diagnostics)
         {
             lock (m_lock)
             {
@@ -683,11 +686,11 @@ namespace Opc.Ua.Sample
                 // update publish flag.
                 m_readyToPublish = false;
                 m_readyToTrigger = false;
-                                
+
                 // check if queuing is enabled.
                 if (m_queue == null)
                 {
-                    Publish(context, m_lastValue, m_lastError, notifications, diagnostics);                        
+                    Publish(context, m_lastValue, m_lastError, notifications, diagnostics);
                 }
                 else
                 {
@@ -696,22 +699,22 @@ namespace Opc.Ua.Sample
 
                     while (m_queue.Publish(out value, out error))
                     {
-                        Publish(context, value, error, notifications, diagnostics);     
+                        Publish(context, value, error, notifications, diagnostics);
                     }
                 }
 
                 return true;
             }
         }
-        
+
         /// <summary>
         /// Publishes a value.
         /// </summary>
         private void Publish(
-            OperationContext context, 
+            OperationContext context,
             DataValue value,
             ServiceResult error,
-            Queue<MonitoredItemNotification> notifications, 
+            Queue<MonitoredItemNotification> notifications,
             Queue<DiagnosticInfo> diagnostics)
         {
             // set semantics changed bit.
@@ -725,7 +728,7 @@ namespace Opc.Ua.Sample
                 if (error != null)
                 {
                     error = new ServiceResult(
-                        error.StatusCode.SetSemanticsChanged(true), 
+                        error.StatusCode.SetSemanticsChanged(true),
                         error.SymbolicId,
                         error.NamespaceUri,
                         error.LocalizedText,
@@ -735,7 +738,7 @@ namespace Opc.Ua.Sample
 
                 m_semanticsChanged = false;
             }
-            
+
             // set structure changed bit.
             if (m_structureChanged)
             {
@@ -747,7 +750,7 @@ namespace Opc.Ua.Sample
                 if (error != null)
                 {
                     error = new ServiceResult(
-                        error.StatusCode.SetStructureChanged(true), 
+                        error.StatusCode.SetStructureChanged(true),
                         error.SymbolicId,
                         error.NamespaceUri,
                         error.LocalizedText,
@@ -789,7 +792,7 @@ namespace Opc.Ua.Sample
             }
 
             diagnostics.Enqueue(diagnosticInfo);
-        }        
+        }
         #endregion
 
         #region Private Fields
@@ -814,8 +817,8 @@ namespace Opc.Ua.Sample
         private bool m_readyToPublish;
         private bool m_readyToTrigger;
         private bool m_alwaysReportUpdates;
-		private bool m_semanticsChanged;
-		private bool m_structureChanged;
+        private bool m_semanticsChanged;
+        private bool m_structureChanged;
         #endregion
     }
 }

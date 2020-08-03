@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Shapes;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
-using System.IO;
-using System.Xml;
-using AasxUtils;
 using System.Windows.Media;
-using System.Globalization;
+using System.Windows.Shapes;
+using System.Xml;
 
 namespace WpfMtpControl
 {
@@ -77,7 +76,9 @@ namespace WpfMtpControl
                 }
         }
 
-        private static void FindIndexedTagsIntern(System.Windows.DependencyObject parent, Dictionary<int, Point> namedNozzles, string matchHead, bool extractShapes = false)
+        private static void FindIndexedTagsIntern(
+            System.Windows.DependencyObject parent, Dictionary<int, Point> namedNozzles,
+            string matchHead, bool extractShapes = false)
         {
             // trivial
             if (parent == null || namedNozzles == null)
@@ -127,7 +128,8 @@ namespace WpfMtpControl
 
         }
 
-        public static Point[] FindIndexedTags(System.Windows.DependencyObject parent, string matchHead, bool extractShapes = false)
+        public static Point[] FindIndexedTags(
+            System.Windows.DependencyObject parent, string matchHead, bool extractShapes = false)
         {
             // find named nozzles
             var namedNozzles = new Dictionary<int, Point>();
@@ -156,7 +158,7 @@ namespace WpfMtpControl
         /// <summary>
         /// Computes center of gravity, returns null in case of any error.
         /// </summary>
-        public static Nullable<Point> ComputeCOG (Point[] pts)
+        public static Nullable<Point> ComputeCOG(Point[] pts)
         {
             if (pts == null || pts.Length < 1)
                 return null;
@@ -191,13 +193,14 @@ namespace WpfMtpControl
             return r;
         }
 
-        public static Point[] RescalePointsByRatioOfFEs (FrameworkElement original, FrameworkElement scaled, Point[] ptsOriginal)
+        public static Point[] RescalePointsByRatioOfFEs(
+            FrameworkElement original, FrameworkElement scaled, Point[] ptsOriginal)
         {
             if (original == null || scaled == null || ptsOriginal == null || ptsOriginal.Length < 1)
                 return null;
             var scaleFac = Math.Min(scaled.Width / original.Width, scaled.Height / original.Height);
             var ptsScaled = new Point[ptsOriginal.Length];
-            for (int i=0; i<ptsOriginal.Length;i++)
+            for (int i = 0; i < ptsOriginal.Length; i++)
             {
                 var x = (ptsOriginal[i].X - original.Width / 2) * scaleFac;
                 var y = (ptsOriginal[i].Y - original.Height / 2) * scaleFac;
@@ -208,7 +211,7 @@ namespace WpfMtpControl
 
         public class Transformation2D
         {
-            public double Scale, Rot, OfsX, OfsY ;
+            public double Scale, Rot, OfsX, OfsY;
             public Transformation2D() { }
             public Transformation2D(double Scale, double Rot, double OfsX, double OfsY)
             {
@@ -227,7 +230,7 @@ namespace WpfMtpControl
             var res = new Point[pts.Length];
 
             // 1 for 1
-            for (int i=0; i<pts.Length; i++)
+            for (int i = 0; i < pts.Length; i++)
             {
                 // around center ..
                 var x = pts[i].X - center.X;
@@ -267,12 +270,12 @@ namespace WpfMtpControl
             var strike = new bool[field.Length];
 
             // pts are leading
-            for (int pi=0; pi<pts.Length; pi++)
+            for (int pi = 0; pi < pts.Length; pi++)
             {
                 // find neareast neighbour
                 var nd = Double.MaxValue;
                 var nfi = -1;
-                for (int fi=0; fi<field.Length; fi++)
+                for (int fi = 0; fi < field.Length; fi++)
                     if (!strike[fi])
                     {
                         var dx = field[fi].X - pts[pi].X;
@@ -299,9 +302,9 @@ namespace WpfMtpControl
         }
 
         public static Transformation2D FindBestFitForFieldOfPoints(
-                    Point[] pts, Point[] field, 
-                    Transformation2D start, 
-                    double rangeScale, double rangeRot, double rangeXY, 
+                    Point[] pts, Point[] field,
+                    Transformation2D start,
+                    double rangeScale, double rangeRot, double rangeXY,
                     int steps, int iterations)
         {
             // setup
@@ -352,7 +355,8 @@ namespace WpfMtpControl
 
             // go into "recursion"
             var rm = 1.0 / steps;
-            var betterTrans = FindBestFitForFieldOfPoints(pts, field, bestTrans, rm * rangeScale, rm * rangeRot, rm * rangeXY, steps, iterations - 1);
+            var betterTrans = FindBestFitForFieldOfPoints(pts, field, bestTrans,
+                                rm * rangeScale, rm * rangeRot, rm * rangeXY, steps, iterations - 1);
 
             // result
             return bestTrans;
@@ -368,7 +372,8 @@ namespace WpfMtpControl
 
             public FontSettings() { }
 
-            public FontSettings(FontFamily fontFamily, FontStyle style, FontWeight weight, FontStretch stretch, double EmSize)
+            public FontSettings(
+                FontFamily fontFamily, FontStyle style, FontWeight weight, FontStretch stretch, double EmSize)
             {
                 this.FontFamily = fontFamily;
                 this.Style = style;
@@ -393,7 +398,7 @@ namespace WpfMtpControl
             }
         }
 
-        public static TextBlock CreateStickyLabel (FontSettings fontSettings, string text, double padding = 2.0)
+        public static TextBlock CreateStickyLabel(FontSettings fontSettings, string text, double padding = 2.0)
         {
             var size = fontSettings.MeasureString(text);
             var tb = new TextBlock();
@@ -426,7 +431,8 @@ namespace WpfMtpControl
             return DrawToCanvasAlignment.Centered;
         }
 
-        public static void DrawToCanvasAtPositionAligned(Canvas canvas, double x, double y, DrawToCanvasAlignment alignment, FrameworkElement fe)
+        public static void DrawToCanvasAtPositionAligned(
+            Canvas canvas, double x, double y, DrawToCanvasAlignment alignment, FrameworkElement fe)
         {
             if (canvas == null || fe == null)
                 return;

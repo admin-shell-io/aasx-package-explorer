@@ -3,7 +3,8 @@
   /* "AasxToLoad": "..\\..\\..\\..\\AasxGenerate\\bin\\Debug\\sample.aasx", */
   /* "AasxToLoad": "sample-hsu.aasx", */
   /* "AasxToLoad": "MTPsample.aasx", */
-  "AasxToLoad": "sample-generated-modified.aasx",
+  /* "AasxToLoad": "sample-generated-modified.aasx", */
+  "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,

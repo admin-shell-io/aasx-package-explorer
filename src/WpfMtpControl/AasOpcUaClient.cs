@@ -41,7 +41,8 @@ namespace WpfMtpControl
         string userName;
         string password;
 
-        public AasOpcUaClient(string _endpointURL, bool _autoAccept, int _stopTimeout, string _userName, string _password)
+        public AasOpcUaClient(string _endpointURL, bool _autoAccept,
+            int _stopTimeout, string _userName, string _password)
         {
             endpointURL = _endpointURL;
             autoAccept = _autoAccept;
@@ -75,7 +76,7 @@ namespace WpfMtpControl
                     }
                 }
                 catch
-                {                    
+                {
                 }
             };
             worker.RunWorkerCompleted += (s1, e1) =>
@@ -83,55 +84,6 @@ namespace WpfMtpControl
                 ;
             };
             worker.RunWorkerAsync();
-
-
-
-
-/*
-            try
-            {
-                runningTask = ConsoleSampleClient();
-                runningTask.Wait();
-                runningTask = null;
-            }
-            catch (Exception ex)
-            {
-                Utils.Trace("ServiceResultException:" + ex.Message);
-                Console.WriteLine("Exception: {0}", ex.Message);
-                Console.WriteLine("press any key to continue");
-                // Console.ReadKey();
-                return;
-            }
-
-            quitEvent = new ManualResetEvent(false);
-            */
-            /*
-            try
-            {
-                Console.CancelKeyPress += (sender, eArgs) =>
-                {
-                    quitEvent.Set();
-                    eArgs.Cancel = true;
-                };
-            }
-            catch
-            {
-            }
-            */
-
-            /*
-            // wait for timeout or Ctrl-C
-            quitEvent.WaitOne(clientRunTime);
-
-            // return error conditions
-            if (session.KeepAliveStopped)
-            {
-                exitCode = ExitCode.ErrorNoKeepAlive;
-                return;
-            }
-
-            exitCode = ExitCode.Ok;
-            */
         }
 
         public void Cancel()
@@ -180,12 +132,15 @@ namespace WpfMtpControl
 
             if (haveAppCertificate)
             {
-                config.ApplicationUri = Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
+                config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
+                    config.SecurityConfiguration.ApplicationCertificate.Certificate);
+
                 if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
                 {
                     autoAccept = true;
                 }
-                config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
+                config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(
+                    CertificateValidator_CertificateValidation);
             }
             else
             {
@@ -203,13 +158,14 @@ namespace WpfMtpControl
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(userName, password), null);
+            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000,
+                new UserIdentity(userName, password), null);
 
             // register keep alive handler
             session.KeepAlive += Client_KeepAlive;
 
             // ok
-            exitCode = AasOpcUaClientStatus.Running;            
+            exitCode = AasOpcUaClientStatus.Running;
         }
 
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
@@ -246,11 +202,13 @@ namespace WpfMtpControl
         {
             foreach (var value in item.DequeueValues())
             {
-                // Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp, value.StatusCode);
+                /// Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, 
+                /// value.SourceTimestamp, value.StatusCode);
             }
         }
 
-        private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
+        private static void CertificateValidator_CertificateValidation(
+            CertificateValidator validator, CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
@@ -309,16 +267,15 @@ namespace WpfMtpControl
             return (session.ReadValue(nid));
         }
 
-        public void SubscribeNodeIds(NodeId[] nids, MonitoredItemNotificationEventHandler handler, int publishingInteral = 1000)
+        public void SubscribeNodeIds(NodeId[] nids, MonitoredItemNotificationEventHandler handler,
+            int publishingInteral = 1000)
         {
             if (session == null || nids == null || !session.Connected || handler == null)
                 return;
 
-            // Console.WriteLine("Step 4 - Create a subscription. Set a faster publishing interval if you wish.");
-            var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInteral };
+            var subscription = new Subscription(session.DefaultSubscription)
+            { PublishingInterval = publishingInteral };
 
-            // Console.WriteLine("Step 5 - Add a list of items you wish to monitor to the subscription.");
-            // var list = new List<MonitoredItem> { new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=2258" } };
             foreach (var nid in nids)
             {
                 var mi = new MonitoredItem(subscription.DefaultItem);
@@ -326,8 +283,7 @@ namespace WpfMtpControl
                 mi.Notification += handler;
                 subscription.AddItem(mi);
             }
-            
-            // Console.WriteLine("Step 6 - Add the subscription to the session.");
+
             session.AddSubscription(subscription);
             subscription.Create();
         }

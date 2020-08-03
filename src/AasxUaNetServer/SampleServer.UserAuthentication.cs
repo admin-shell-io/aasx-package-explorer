@@ -1,4 +1,5 @@
-// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/Samples/Opc.Ua.Sample/SampleServer.UserAuthentication.cs
+// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/
+// SampleApplications/Samples/Opc.Ua.Sample/SampleServer.UserAuthentication.cs
 
 /* ========================================================================
  * Copyright (c) 2005-2019 The OPC Foundation, Inc. All rights reserved.
@@ -29,12 +30,12 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
-using Opc.Ua;
-using Opc.Ua.Server;
 using System;
 using System.IdentityModel.Selectors;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml;
+using Opc.Ua;
+using Opc.Ua.Server;
 
 namespace AasOpcUaServer
 {
@@ -45,7 +46,7 @@ namespace AasOpcUaServer
         /// Creates the objects used to validate the user identity tokens supported by the server.
         /// </summary>
         private void CreateUserIdentityValidators(ApplicationConfiguration configuration)
-        { 
+        {
             for (int ii = 0; ii < configuration.ServerConfiguration.UserTokenPolicies.Count; ii++)
             {
                 UserTokenPolicy policy = configuration.ServerConfiguration.UserTokenPolicies[ii];
@@ -80,7 +81,7 @@ namespace AasOpcUaServer
 
             // check for a user name token.
             UserNameIdentityToken userNameToken = args.NewIdentity as UserNameIdentityToken;
-            
+
             if (userNameToken != null)
             {
                 VerifyPassword(userNameToken.UserName, userNameToken.DecryptedPassword);
@@ -91,7 +92,7 @@ namespace AasOpcUaServer
 
             // check for x509 user token.
             X509IdentityToken x509Token = args.NewIdentity as X509IdentityToken;
-            
+
             if (x509Token != null)
             {
                 VerifyCertificate(x509Token.Certificate);
@@ -174,7 +175,7 @@ namespace AasOpcUaServer
             }
         }
         #endregion
-        
+
         #region Private Fields
         private X509CertificateValidator m_certificateValidator;
         #endregion 

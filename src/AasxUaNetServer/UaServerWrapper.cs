@@ -1,8 +1,10 @@
-﻿// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/SampleApplications/Samples/NetCoreConsoleServer/Program.cs
+﻿// SOURCE: https://github.com/OPCFoundation/UA-.NETStandard/blob/1.4.355.26/
+// SampleApplications/Samples/NetCoreConsoleServer/Program.cs
 // heavily modified
 
 // TODO (MIHO, 2020-08-02): Andreas to check license!
-// the (actual) Source is this: https://github.com/OPCFoundation/UA-.NETStandard/blob/master/Applications/ConsoleReferenceServer/Program.cs
+// the (actual) Source is this: https://github.com/OPCFoundation/UA-.NETStandard/blob/master/Applications/
+// ConsoleReferenceServer/Program.cs
 // it now features the MIT license!
 
 /* Copyright (c) 1996-2019 The OPC Foundation. All rights reserved.
@@ -17,12 +19,6 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-using AasOpcUaServer;
-using AasxIntegrationBase;
-using AdminShellNS;
-using Opc.Ua;
-using Opc.Ua.Configuration;
-using Opc.Ua.Server;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,10 +27,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AasOpcUaServer;
+using AasxIntegrationBase;
+using AdminShellNS;
+using Opc.Ua;
+using Opc.Ua.Configuration;
+using Opc.Ua.Server;
 
 namespace AasxUaNetServer
 {
-   
+
     public enum ExitCode : int
     {
         Ok = 0,
@@ -56,7 +58,9 @@ namespace AasxUaNetServer
         static AdminShellPackageEnv aasxEnv = null;
         static AasxUaServerOptions aasxServerOptions = null;
 
-        public UaServerWrapper(bool _autoAccept, int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null, AasxUaServerOptions _serverOptions = null)
+        public UaServerWrapper(
+            bool _autoAccept, int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null,
+            AasxUaServerOptions _serverOptions = null)
         {
             autoAccept = _autoAccept;
             aasxEnv = _aasxEnv;
@@ -83,7 +87,7 @@ namespace AasxUaNetServer
                 exitCode = ExitCode.ErrorServerException;
                 return;
             }
-           
+
             exitCode = ExitCode.Ok;
         }
 
@@ -119,7 +123,8 @@ namespace AasxUaNetServer
 
         public static ExitCode ExitCode { get => exitCode; }
 
-        private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
+        private static void CertificateValidator_CertificateValidation(
+            CertificateValidator validator, CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
             {
@@ -136,7 +141,7 @@ namespace AasxUaNetServer
         }
 
         private async Task ConsoleSampleServer()
-        {            
+        {
             ApplicationInstance application = new ApplicationInstance();
 
             application.ApplicationName = "OPC UA AASX Server";
@@ -162,11 +167,13 @@ namespace AasxUaNetServer
 
             if (!config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
             {
-                config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
+                config.CertificateValidator.CertificateValidation +=
+                    new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error /* | Utils.TraceMasks.Information */ | Utils.TraceMasks.StartStop /* | Utils.TraceMasks.StackTrace */);
+            Utils.SetTraceMask(Utils.TraceMasks.Error /* | Utils.TraceMasks.Information */
+                | Utils.TraceMasks.StartStop /* | Utils.TraceMasks.StackTrace */);
 
             // attach tracing?
             Utils.Tracing.TraceEventHandler += (sender, args) =>
@@ -179,9 +186,10 @@ namespace AasxUaNetServer
                     if (args.TraceMask == 2 || args.TraceMask == 8 || args.TraceMask == 16)
                         return;
 
-                    // var st = String.Format(args.Format, args.Arguments);
-                    var st = String.Format(args.Format, (args.Arguments != null ? args.Arguments : new string[] { "" }));
-                    this.Log.Info("[{0}] {1} {2} {3}", args.TraceMask, st, args.Message, args.Exception?.Message ?? "-");
+                    var st = String.Format(args.Format,
+                        (args.Arguments != null ? args.Arguments : new string[] { "" }));
+                    this.Log.Info("[{0}] {1} {2} {3}",
+                        args.TraceMask, st, args.Message, args.Exception?.Message ?? "-");
                 }
             };
 
@@ -219,7 +227,8 @@ namespace AasxUaNetServer
                 string item = String.Format("{0,9}:{1,20}:", reason, session.SessionDiagnostics.SessionName);
                 if (lastContact)
                 {
-                    item += String.Format("Last Event:{0:HH:mm:ss}", session.SessionDiagnostics.ClientLastContactTime.ToLocalTime());
+                    item += String.Format("Last Event:{0:HH:mm:ss}",
+                                session.SessionDiagnostics.ClientLastContactTime.ToLocalTime());
                 }
                 else
                 {

@@ -77,7 +77,8 @@ namespace AasOpcUaServer
                 if (arg == "-ns" && morearg > 0)
                 {
                     int i;
-                    if (Int32.TryParse(args[index + 1], out i)) {
+                    if (Int32.TryParse(args[index + 1], out i))
+                    {
                         if (this.ExportFilterNamespaceIndex == null)
                             this.ExportFilterNamespaceIndex = new List<ushort>();
                         this.ExportFilterNamespaceIndex.Add((ushort)i);

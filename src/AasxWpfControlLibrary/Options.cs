@@ -138,7 +138,7 @@ namespace AasxPackageExplorer
         public string PrefLicenseLong
         {
             get
-            {                
+            {
                 return AasxPluginHelper.LoadLicenseTxtFromAssemblyDir("LICENSE.txt", Assembly.GetEntryAssembly());
             }
         }
