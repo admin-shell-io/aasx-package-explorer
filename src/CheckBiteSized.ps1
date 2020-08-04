@@ -8,7 +8,7 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnetToolVersion
 
 function Main {
-    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "1.0.0-beta1"
+    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "1.0.0-beta2"
 
     Set-Location $PSScriptRoot
 
@@ -30,7 +30,8 @@ function Main {
             "MsaglWpfControl/VEdge.cs" `
             "MsaglWpfControl/VNode.cs" `
         --max-lines-in-file 100000 `
-        --max-line-length 120
+        --max-line-length 120 `
+        --ignore-lines-matching '[a-z]+://[^ \t]+$'
 
     if($LASTEXITCODE -ne 0)
     {
