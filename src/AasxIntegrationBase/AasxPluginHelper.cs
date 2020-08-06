@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace AasxIntegrationBase
 {
     public class AasxPluginHelper
