@@ -439,7 +439,6 @@ namespace AasOpcUaServer
             // re-use AASReferenceType for this
             this.typeObject = this.entityBuilder.AasTypes.Reference.GetTypeObject();
             // with some elements
-            // this was duplicate: this.CreateAddKeyElements(this.typeObject, CreateMode.Type);
             this.CreateAddReferenceElements(this.typeObject, CreateMode.Type);
         }
 
@@ -666,7 +665,8 @@ namespace AasOpcUaServer
             {
                 foreach (var cdd in aas.conceptDictionaries)
                 {
-                    // TODO: reference to CDs. They are stored sepaately
+                    // TODO (MIHO, 2020-08-06): check (again) if reference to CDs is done are shall be done
+                    // here. They are stored separately.
                 }
             }
 
@@ -951,12 +951,12 @@ namespace AasOpcUaServer
             // populate common attributes
             base.PopulateInstanceObject(o, prop);
 
-            // TODO: not sure if to add these
+            // TODO (MIHO, 2020-08-06): not sure if to add these
             this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, prop.valueId, "ValueId");
             this.entityBuilder.CreateAddPropertyState<string>(o, "ValueType",
                 DataTypeIds.String, "" + prop.valueType, defaultSettings: true);
 
-            // TODO: aim is to support many types natively
+            // aim is to support many types natively
             var vt = (prop.valueType ?? "").ToLower().Trim();
             if (vt == "boolean")
             {
@@ -1063,7 +1063,7 @@ namespace AasOpcUaServer
             : base(entityBuilder)
         {
             // create type object
-            // TODO: use the collection element of UA
+            // TODO (MIHO, 2020-08-06): use the collection element of UA?
             this.typeObject = this.entityBuilder.CreateAddObjectType("AASSubmodelElementCollectionType",
                 entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), preferredTypeNumId,
                 descriptionKey: "AAS:SubmodelElementCollection");
@@ -1321,8 +1321,8 @@ namespace AasOpcUaServer
 
             // indicate the Operation
             this.entityBuilder.CreateAddMethodState(this.typeObject, "Operation",
-                    inputArgs: null /* new Argument[] { }*/,
-                    outputArgs: null /* new Argument[] { }*/,
+                    inputArgs: null,
+                    outputArgs: null,
                     referenceTypeFromParentId: ReferenceTypeIds.HasComponent);
 
             // some elements
@@ -1356,7 +1356,7 @@ namespace AasOpcUaServer
                 {
                     var o2 = this.entityBuilder.CreateAddObject(o,
                         (i == 0) ? "OperationInputVariables" : "OperationOutputVariables",
-                        ReferenceTypeIds.HasComponent, /* TODO */ GetTypeObject().NodeId);
+                        ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
                     foreach (var opvar in opvarList)
                         if (opvar != null && opvar.value != null)
                             this.entityBuilder.AasTypes.SubmodelWrapper.CreateAddElements(
@@ -1372,13 +1372,13 @@ namespace AasOpcUaServer
                     if (op[i] != null)
                         foreach (var opvar in op[i])
                         {
-                            // TODO: decide to from where the name comes
+                            // TODO (MIHO, 2020-08-06): decide to from where the name comes
                             var name = "noname";
 
-                            // TODO: description: get "en" version is appropriate?
+                            // TODO (MIHO, 2020-08-06): description: get "en" version which is appropriate?
                             LocalizedText desc = new LocalizedText("");
 
-                            // TODO: parse UA data type out .. OK?
+                            // TODO (MIHO, 2020-08-06): parse UA data type out .. OK?
                             NodeId dataType = null;
                             if (opvar.value != null && opvar.value.submodelElement != null)
                             {
@@ -1387,7 +1387,7 @@ namespace AasOpcUaServer
                                     && opvar.value.submodelElement.idShort.Trim() != "")
                                     name = "" + opvar.value.submodelElement.idShort;
 
-                                // TODO: description: get "en" version is appropriate?
+                                // TODO (MIHO, 2020-08-06): description: get "en" version is appropriate?
                                 desc = AasUaUtils.GetBestUaDescriptionFromAasDescription(
                                     opvar.value.submodelElement.description);
 
@@ -1396,11 +1396,11 @@ namespace AasOpcUaServer
                                 var prop = opvar.value.submodelElement as AdminShell.Property;
                                 if (prop != null && prop.valueType != null)
                                 {
-                                    // TODO: this any better?
+                                    // TODO (MIHO, 2020-08-06): this any better?
                                     if (prop.idShort != null && prop.idShort.Trim() != "")
                                         name = "" + prop.idShort;
 
-                                    // TODO: description: get "en" version is appropriate?
+                                    // TODO (MIHO, 2020-08-06): description: get "en" version is appropriate?
                                     if (desc.Text == null || desc.Text == "")
                                         desc = AasUaUtils.GetBestUaDescriptionFromAasDescription(
                                             opvar.value.submodelElement.description);
@@ -1466,9 +1466,6 @@ namespace AasOpcUaServer
 
             if (mode == CreateMode.Type)
             {
-                //parent.AddReference(ReferenceTypeIds.HasComponent, false, this.GetTypeNodeId());
-                //return null;
-
                 // create only containing element with generic name
                 var o = this.entityBuilder.CreateAddObject(parent, "View",
                     ReferenceTypeIds.HasComponent, this.GetTypeNodeId(), modellingRule: modellingRule);
@@ -1739,7 +1736,7 @@ namespace AasOpcUaServer
             : base(entityBuilder)
         {
             // create type object
-            // TODO: make super classes for UriDictionaryEntryType..
+            // TODO (MIHO, 2020-08-06): check, if to make super classes for UriDictionaryEntryType?
             this.typeObjectIrdi = this.entityBuilder.CreateAddObjectType("AASIrdiConceptDescriptionType",
                 this.entityBuilder.AasTypes.IrdiDictionaryEntryType.GetTypeNodeId(), 0,
                 descriptionKey: "AAS:ConceptDescription");

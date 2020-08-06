@@ -88,11 +88,6 @@ namespace AasOpcUaServer
 
             // request notifications when the user identity is changed. all valid users are accepted by default.
             server.SessionManager.ImpersonateUser += new ImpersonateEventHandler(SessionManager_ImpersonateUser);
-
-            /*
-            if (theServerOptions != null && theServerOptions.FinalizeAction != null)
-                theServerOptions.FinalizeAction();
-            */
         }
 
         /// <summary>
@@ -145,10 +140,10 @@ namespace AasOpcUaServer
             if (x.NodeManagers.Count > 0)
             {
                 var cm = x.NodeManagers[0] as CustomNodeManager2;
-                /* MICHA
-                if (cm != null)
-                    cm.AasInjectedNodes = aasnm.GenerateInjectNodeStates();
-                */
+
+                /// (old) code for fixing node issued
+                /// if (cm != null)
+                ///    cm.AasInjectedNodes = aasnm.GenerateInjectNodeStates();
             }
 
             // ok
@@ -173,12 +168,12 @@ namespace AasOpcUaServer
             properties.BuildNumber = Utils.GetAssemblyBuildNumber();
             properties.BuildDate = Utils.GetAssemblyTimestamp();
 
-            // TBD - All applications have software certificates that need to added to the properties.
-
-            // for (int ii = 0; ii < certificates.Count; ii++)
-            // {
-            //    properties.SoftwareCertificates.Add(certificates[ii]);
-            // }
+            // TODO (MIHO, 2020-08-04): To be checked by Andreas. All applications have software certificates 
+            // that need to added to the properties.
+            /// for (int ii = 0; ii < certificates.Count; ii++)
+            /// {
+            ///    properties.SoftwareCertificates.Add(certificates[ii]);
+            /// }
 
             return properties;
         }

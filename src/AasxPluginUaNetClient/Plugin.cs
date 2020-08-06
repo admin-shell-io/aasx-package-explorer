@@ -11,18 +11,18 @@ using System.Windows.Forms;
  * Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>, author: Andreas Orzelski
 */
 
-/* For OPC Content:
+/* For OPC Content
 
 Copyright (c) 1996-2016, OPC Foundation. All rights reserved.
 The source code in this file is covered under a dual-license scenario:
  - RCL: for OPC Foundation members in good-standing
  - GPL V2: everybody else
 RCL license terms accompanied with this source code. See http://opcfoundation.org/License/RCL/1.00/
-GNU General Public License as published by the Free Software Foundation;
+GNU General Public License as published by the Free Software Foundation
 version 2 of the License are accompanied with this source code. See http://opcfoundation.org/License/GPLv2
 This source code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -82,8 +82,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "Copyright (c) 2018-2019 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, " +
                     "author: Andreas Orzelski\n\n" +
                     "Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal Community " +
-                    "License (RCL) \n" +
-                    "see https://opcfoundation.org/license/rcl.html",
+                    "License (RCL)\n" +                    "see https://opcfoundation.org/license/rcl.html",
                     "Plugin Notice"
                     );
 

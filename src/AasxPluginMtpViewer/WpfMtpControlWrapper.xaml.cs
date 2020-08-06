@@ -113,7 +113,7 @@ namespace AasxPluginMtpViewer
         {
             if (!".aml .zip .mtp".Contains(System.IO.Path.GetExtension(fn.Trim().ToLower())))
                 return;
-            // this.client = new WpfMtpControl.MtpVisuOpcUaClient();
+
             this.activeMtpData = new WpfMtpControl.MtpData();
             this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, null, null, fn);
             if (this.activeMtpData.PictureCollection.Count > 0)

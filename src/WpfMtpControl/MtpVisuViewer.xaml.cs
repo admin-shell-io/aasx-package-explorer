@@ -335,7 +335,10 @@ namespace WpfMtpControl
                                 sr.X - 2.0 - contentCogToMid.X * start.Scale,
                                 sr.Y - 2.0 - contentCogToMid.Y * start.Scale);
 
-                            // DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
+                            // for debugging?
+                            /// DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
+
+                            // draw
                             shape.Tag = vo;
                             DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height, shape);
 

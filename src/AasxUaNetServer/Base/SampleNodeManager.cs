@@ -582,23 +582,6 @@ namespace Opc.Ua.Sample
                 }
 
                 // add reference from supertype for type nodes.
-                /*
-                BaseTypeState type = source as BaseTypeState;
-
-                if (type != null && !NodeId.IsNull(type.SuperTypeId))
-                {
-                    if (!IsNodeIdInNamespace(type.SuperTypeId))
-                    {
-                        AddExternalReference(
-                            type.SuperTypeId,
-                            ReferenceTypeIds.HasSubtype,
-                            false,
-                            type.NodeId,
-                            externalReferences);
-                    }
-                }
-                */
-
                 IList<IReference> references = new List<IReference>();
                 source.GetReferences(SystemContext, references);
 
@@ -678,7 +661,7 @@ namespace Opc.Ua.Sample
             referencesToAdd.Add(referenceToAdd);
         }
 
-        // TODO: MIHO added this
+        // TODO (MIHO, 2020-08-06): check, if this is valid use of the SDK. MIHO added this
 
         public void AddExternalReferencePublic(
             NodeId sourceId,

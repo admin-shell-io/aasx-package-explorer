@@ -86,8 +86,6 @@ namespace WpfMtpControl
 
             var toExtract = new List<UIElement>();
 
-            // var xxx = System.Windows.LogicalTreeHelper.GetChildren(parent);
-
             // recurse visual tree
             int childrenCount = System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
@@ -105,7 +103,7 @@ namespace WpfMtpControl
                         if (m.Success)
                         {
                             var nid = Convert.ToInt32(m.Groups[1].ToString());
-                            // var pos = childEllipse.TranslatePoint(new Point(0, 0), relativeTo);
+
                             var x = Canvas.GetLeft(childEllipse) + childEllipse.Width / 2;
                             var y = Canvas.GetTop(childEllipse) + childEllipse.Height / 2;
                             if (nid > 0 && nid < 99)
@@ -310,7 +308,6 @@ namespace WpfMtpControl
             // setup
             if (pts == null || field == null || pts.Length < 1 || field.Length < 1 || start == null || iterations < 0)
                 return null;
-            // Transformation2D res = null;
 
             // systematicall apply disturbances
             // on the hierarchy: scale, rot (in degrees), ofsX, ofsY

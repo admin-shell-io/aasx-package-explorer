@@ -189,7 +189,8 @@ namespace WpfMtpControl
                                     foreach (var item in server.ExternalInterface)
                                     {
                                         // check fo item
-                                        // TODO: spec/example files seem not to be in a final state
+                                        // TODO (MIHO, 2020-08-06): spec/example files seem not to be in a final state
+                                        // check for the final role/class names to be used
                                         if (!item.RefBaseClassPath.Trim().Contains("OPCUAItem"))
                                             continue;
 

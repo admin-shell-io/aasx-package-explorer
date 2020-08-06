@@ -59,7 +59,8 @@ namespace WpfMtpControl
 
             public bool IsValid()
             {
-                if (x == null || y == null || width == null || height == null /* because of PxC || eVer == null */
+                // because of PxC temporarily disable check eVer == null
+                if (x == null || y == null || width == null || height == null
                     || (eClass == null && eIrdi == null))
                     return false;
                 return true;
@@ -224,9 +225,6 @@ namespace WpfMtpControl
                                 vo.eVer, vo.eClass, vo.eIrdi, SymbolDefault: "{to be set}",
                                 Comment: "" + vo.Name + "," + vo.RefID));
                         }
-
-                        // TEST PxC
-                        // vo.refID = null;
 
                         // try find dynamic instances
                         if (vo.refID != null && refIdToDynamicInstance != null

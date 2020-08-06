@@ -267,7 +267,7 @@ namespace AasOpcUaServer
                             else
                             {
                                 // just create the missing link
-                                // TODO: which namespace????
+                                // TODO (MIHO, 2020-08-06): check, which namespace shall be used
                                 var missingTarget = new ExpandedNodeId("" + targetId.id, 99);
                                 lax.uanode.AddReference(this.AasTypes.HasDictionaryEntry.GetTypeNodeId(), false,
                                     missingTarget);
@@ -321,7 +321,6 @@ namespace AasOpcUaServer
             x.Symmetric = false;
             x.IsAbstract = false;
             x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
-            // y.NodeId = new NodeId(17597, 0);
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
 
             // set Subtype reference

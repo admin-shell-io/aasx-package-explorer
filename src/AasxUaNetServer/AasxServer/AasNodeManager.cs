@@ -63,7 +63,6 @@ namespace AasOpcUaServer
 
             List<string> namespaceUris = new List<string>();
             namespaceUris.Add("http://opcfoundation.org/UA/i4aas/");
-            // namespaceUris.Add("http://opcfoundation.org/UA/i4aas/" + "instance/");
             namespaceUris.Add("http://admin-shell.io/samples/i4aas/instance/");
             NamespaceUris = namespaceUris;
 
@@ -93,7 +92,8 @@ namespace AasOpcUaServer
             uint id = preferredNumId;
             if (id == 0)
                 id = Utils.IncrementIdentifier(ref m_lastUsedTypeId);
-            // BUG: return new NodeId(preferredNumId, m_typeNamespaceIndex);
+            // this is thought to be a BUG in the OPCF code
+            /// return new NodeId(preferredNumId, m_typeNamespaceIndex);
             return new NodeId(id, m_typeNamespaceIndex);
         }
 
@@ -112,14 +112,14 @@ namespace AasOpcUaServer
             {
                 base.CreateAddressSpace(externalReferences);
 
-                // var env = new AdminShell.PackageEnv("Festo-USB-stick-sample-admin-shell.aasx");
+                // Note: might be helpful for debugging
+                /// var env = new AdminShell.PackageEnv("Festo-USB-stick-sample-admin-shell.aasx");
 
                 if (true)
                 {
                     var builder = new AasEntityBuilder(this, thePackageEnv, null, this.theServerOptions);
 
                     // Root of whole structure is special, needs to link to external reference
-                    // builder.RootAAS = builder.CreateAddObject(null, "AASROOT");
                     builder.RootAAS = builder.CreateAddFolder(null, "AASROOT");
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
@@ -174,8 +174,8 @@ namespace AasOpcUaServer
                     builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
                 }
 
-                // ensure the reverse refernces exist.
-                // AddReverseReferences(externalReferences);
+                // Try: ensure the reverse refernces exist.
+                /// AddReverseReferences(externalReferences);
 
                 if (theServerOptions != null
                     && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)

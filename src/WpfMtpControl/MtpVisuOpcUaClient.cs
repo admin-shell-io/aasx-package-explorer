@@ -217,7 +217,7 @@ namespace WpfMtpControl
                 return null;
             var ds = (server as DetailServer);
 
-            // TODO: remove HACK
+            // TODO (MIHO, 2020-08-06): remove this, if not required anymore
             if (!Identifier.Contains(".L001."))
                 return null;
 
@@ -268,7 +268,6 @@ namespace WpfMtpControl
             var i = 0;
             foreach (var s in this.servers)
             {
-                // numit += s.Items.Count;
                 servinfo += $"({i} {s.state},{s.msToNextState} ms) ";
                 i++;
             }
