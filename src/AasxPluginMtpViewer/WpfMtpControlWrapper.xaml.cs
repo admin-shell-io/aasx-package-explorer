@@ -148,7 +148,7 @@ namespace AasxPluginMtpViewer
                 // do some "math"
                 var hit = false;
                 if (source.Name != null)
-                    hit = hit || rel.first.Matches(mtpFileElemReference
+                    hit = rel.first.Matches(mtpFileElemReference
                         + (new AdminShell.Key(
                             AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, source.Name)),
                         AdminShell.Key.MatchMode.Relaxed);

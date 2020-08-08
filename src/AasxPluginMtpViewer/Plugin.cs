@@ -15,7 +15,9 @@ using Newtonsoft.Json;
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // ReSharper disable UnusedType.Global
     public class AasxPlugin : IAasxPluginInterface
+    // ReSharper enable UnusedType.Global
     {
         private LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
@@ -151,19 +153,19 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var cve = new AasxPluginResultBaseObject();
                 cve.strType = "True";
-                cve.obj = (Boolean)true;
+                cve.obj = true;
                 return cve;
             }
 
             if (action == "fill-panel-visual-extension" && this.viewerControl != null)
             {
                 // arguments
-                if (args.Length < 3)
+                if (args?.Length < 3)
                     return null;
 
                 // call
-                var resobj = AasxPluginMtpViewer.WpfMtpControlWrapper.FillWithWpfControls(args[0], args[1],
-                    this.options, this.eventStack, args[2]);
+                var resobj = AasxPluginMtpViewer.WpfMtpControlWrapper.FillWithWpfControls(args?[0], args?[1],
+                    this.options, this.eventStack, args?[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

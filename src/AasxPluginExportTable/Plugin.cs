@@ -216,7 +216,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     Log.Error(ex, "When exporting table, an error occurred");
                 }
 
-                fop.CloseFlyover();
+                fop?.CloseFlyover();
             }
 
             // default
