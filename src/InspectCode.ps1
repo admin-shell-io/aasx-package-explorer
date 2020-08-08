@@ -34,14 +34,43 @@ function Main
         AasxPackageExplorer.sln
 
     [xml]$inspection = Get-Content $codeInspectionPath
+
     $issues = $inspection.SelectNodes('//Issue')
     if ($issues.Count -ne 0)
     {
-        $take = 50
+        # Compute histogram of the issues
+
+        $histogram = @{}
+        foreach($issue in $issues)
+        {
+            $typeId = $issue.TypeId
+            if($histogram.ContainsKey($typeId))
+            {
+                $histogram[$typeId]++
+            }
+            else
+            {
+                $histogram[$typeId] = 1
+            }
+        }
+
+        Write-Host
+        Write-Host "The distribution of the issues:"
+        foreach($kv in $histogram.GetEnumerator()|Sort-Object Value -Descending)
+        {
+            Write-Host (" * {0,-60} {1,6}" -f ($kv.Key + ":"), $kv.Value)
+        }
+
+        # Display a couple of the issues
+
+        $take = 20
         if ($issues.Count -lt $take)
         {
             $take = $issues.Count
         }
+
+        Write-Host
+        Write-Host "The first $take issue(s):"
         for($i = 0; $i -lt $take; $i++)
         {
             Write-Host "Issue $( $i + 1 ) / $( $issues.Count ): $( $issues.Item($i).OuterXml )"
