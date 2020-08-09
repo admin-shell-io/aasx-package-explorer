@@ -107,9 +107,9 @@ namespace AasOpcUaServer
         }
 
         /// <summary>
-        /// Use this always to lookup node records from Indetifiable
+        /// Use this always to lookup node records from Indentifiable
         /// </summary>
-        /// <param name="referable"></param>
+        /// <param name="identification"></param>
         /// <returns></returns>
         public NodeRecord LookupNodeRecordFromIdentification(AdminShell.Identification identification)
         {
@@ -283,6 +283,7 @@ namespace AasOpcUaServer
         //// references
         //
 
+        // ReSharper disable once UnusedType.Global
         public class AasReference : IReference
         {
             // private members
@@ -393,6 +394,7 @@ namespace AasOpcUaServer
 
         public class AasVariableTypeState : BaseVariableTypeState
         {
+            // ReSharper disable once EmptyConstructor
             public AasVariableTypeState()
                 : base()
             { }
@@ -421,8 +423,10 @@ namespace AasOpcUaServer
         /// </summary>
         /// <param name="parent">Parent node</param>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
+        /// <param name="referenceTypeFromParentId"></param>
         /// <param name="typeDefinitionId">Type of the Object</param>
         /// <param name="modellingRule">Modeling Rule, if not None</param>
+        /// <param name="extraName"></param>
         /// <returns>The node</returns>
         public BaseObjectState CreateAddObject(
             NodeState parent,
@@ -441,21 +445,25 @@ namespace AasOpcUaServer
 
             if (referenceTypeFromParentId != null)
             {
-                parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
-                    x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
-                    x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                /// nodeMgr.AddReference(parentNodeId, new AasReference(referenceTypeId, false, x.NodeId));
+                if (parent != null)
+                {
+                    parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
+                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
+                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                }
+
+                //// nodeMgr.AddReference(parentNodeId, new AasReference(referenceTypeId, false, x.NodeId));
             }
 
-            /// if (typeDefinitionId != null)
-            /// {
-            ///     x.TypeDefinitionId = typeDefinitionId;
-            ///     x.AddReference(ReferenceTypeIds.HasTypeDefinition, false, typeDefinitionId);
-            ///     // nodeMgr.AddReference(x.NodeId, new AasReference(ReferenceTypeIds.HasTypeDefinition, false, 
-            ///     // typeDefinitionId));
-            /// }
+            //// if (typeDefinitionId != null)
+            //// {
+            ////     x.TypeDefinitionId = typeDefinitionId;
+            ////     x.AddReference(ReferenceTypeIds.HasTypeDefinition, false, typeDefinitionId);
+            ////     // nodeMgr.AddReference(x.NodeId, new AasReference(ReferenceTypeIds.HasTypeDefinition, false, 
+            ////     // typeDefinitionId));
+            //// }
 
             return x;
         }
@@ -504,6 +512,7 @@ namespace AasOpcUaServer
             x.DataType = dataTypeId;
             if (valueRank > -2)
                 x.ValueRank = valueRank;
+            // ReSharper disable once RedundantCast
             x.Value = (T)value;
             AasUaNodeHelper.CheckSetModellingRule(modellingRule, x);
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, x);
@@ -516,12 +525,14 @@ namespace AasOpcUaServer
             // set relations
             if (referenceTypeFromParentId != null)
             {
-                parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
-                    x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
-                    x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-
+                if (parent != null)
+                {
+                    parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
+                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
+                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                }
             }
             if (typeDefinitionId != null)
             {
@@ -553,11 +564,14 @@ namespace AasOpcUaServer
 
             if (referenceTypeFromParentId != null)
             {
-                parent.AddReference(referenceTypeFromParentId, false, m.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
-                    m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
-                    m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                if (parent != null)
+                {
+                    parent.AddReference(referenceTypeFromParentId, false, m.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
+                        m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
+                        m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                }
             }
 
             // can have inputs, outputs

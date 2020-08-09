@@ -54,8 +54,8 @@ namespace SampleClient
             {
                 Utils.Trace("ServiceResultException:" + ex.Message);
                 Console.WriteLine("Exception: {0}", ex.Message);
-                /// Console.WriteLine("press any key to continue");
-                /// Console.ReadKey();
+                //// Console.WriteLine("press any key to continue");
+                //// Console.ReadKey();
                 return;
             }
 
@@ -68,7 +68,8 @@ namespace SampleClient
                     eArgs.Cancel = true;
                 };
             }
-            catch
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
             {
             }
 
@@ -109,25 +110,19 @@ namespace SampleClient
                 throw new Exception("Application instance certificate invalid!");
             }
 
-            if (haveAppCertificate)
+            config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
+                config.SecurityConfiguration.ApplicationCertificate.Certificate);
+            if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
             {
-                config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
-                    config.SecurityConfiguration.ApplicationCertificate.Certificate);
-                if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-                {
-                    autoAccept = true;
-                }
-                config.CertificateValidator.CertificateValidation +=
-                    new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
+                autoAccept = true;
             }
-            else
-            {
-                Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
-            }
+            config.CertificateValidator.CertificateValidation +=
+                // ReSharper disable once RedundantDelegateCreation
+                new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
 
             Console.WriteLine("2 - Discover endpoints of {0}.", endpointURL);
             exitCode = ExitCode.ErrorDiscoverEndpoints;
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, true, 15000);
             Console.WriteLine("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
@@ -166,8 +161,12 @@ namespace SampleClient
                 return;
             }
 
-            session = reconnectHandler.Session;
-            reconnectHandler.Dispose();
+            if (reconnectHandler != null)
+            {
+                session = reconnectHandler.Session;
+                reconnectHandler.Dispose();
+            }
+
             reconnectHandler = null;
 
             Console.WriteLine("--- RECONNECTED ---");

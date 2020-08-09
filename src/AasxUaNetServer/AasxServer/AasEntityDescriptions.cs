@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace AasOpcUaServer
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AasEntityDescriptions
     {
         private static Dictionary<string, string> keyToDescription = new Dictionary<string, string>();

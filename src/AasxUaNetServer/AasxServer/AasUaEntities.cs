@@ -105,10 +105,13 @@ namespace AasOpcUaServer
 
             if (mode == CreateMode.Instance)
             {
-                this.entityBuilder.CreateAddPropertyState<string>(o, "IdType",
-                    DataTypeIds.String, "" + "" + identification.idType, defaultSettings: true);
-                this.entityBuilder.CreateAddPropertyState<string>(o, "Id",
-                    DataTypeIds.String, "" + "" + identification.id, defaultSettings: true);
+                if (identification != null)
+                {
+                    this.entityBuilder.CreateAddPropertyState<string>(o, "IdType",
+                        DataTypeIds.String, "" + "" + identification.idType, defaultSettings: true);
+                    this.entityBuilder.CreateAddPropertyState<string>(o, "Id",
+                        DataTypeIds.String, "" + "" + identification.id, defaultSettings: true);
+                }
             }
 
             return o;
@@ -247,7 +250,7 @@ namespace AasOpcUaServer
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, "Kind",
-                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind.kind, defaultSettings: true,
+                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind?.kind, defaultSettings: true,
                 modellingRule: modellingRule);
 
             return o;
@@ -270,7 +273,7 @@ namespace AasOpcUaServer
                 return null;
 
             var o = this.entityBuilder.CreateAddPropertyState<string>(parent, "Kind",
-                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind.kind, defaultSettings: true,
+                DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + kind?.kind, defaultSettings: true,
                 modellingRule: modellingRule);
 
             return o;
@@ -298,7 +301,7 @@ namespace AasOpcUaServer
 
             if (mode == CreateMode.Type || refdata?.category != null)
                 this.entityBuilder.CreateAddPropertyState<string>(parent, "Category",
-                    DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + refdata.category,
+                    DataTypeIds.String, (mode == CreateMode.Type) ? null : "" + refdata?.category,
                     defaultSettings: true, modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
             // No idShort as typically in the DisplayName of the node
@@ -307,7 +310,7 @@ namespace AasOpcUaServer
             {
                 // now, re-set the description on the parent
                 // ISSUE: only ONE language supported!
-                parent.Description = AasUaUtils.GetBestUaDescriptionFromAasDescription(refdata.description);
+                parent.Description = AasUaUtils.GetBestUaDescriptionFromAasDescription(refdata?.description);
             }
 
             return null;
@@ -348,7 +351,7 @@ namespace AasOpcUaServer
             else
             {
                 // default behaviour
-                var keyo = this.entityBuilder.CreateAddPropertyState<string[]>(parent, "Keys",
+                var keyo = this.entityBuilder?.CreateAddPropertyState<string[]>(parent, "Keys",
                     DataTypeIds.Structure, null, defaultSettings: true);
 
                 if (mode == CreateMode.Instance && keyo != null)
@@ -663,6 +666,7 @@ namespace AasOpcUaServer
             // make up CD dictionaries
             if (aas.conceptDictionaries != null && aas.conceptDictionaries.Count > 0)
             {
+                // ReSharper disable once UnusedVariable
                 foreach (var cdd in aas.conceptDictionaries)
                 {
                     // TODO (MIHO, 2020-08-06): check (again) if reference to CDs is done are shall be done
@@ -966,80 +970,69 @@ namespace AasOpcUaServer
             }
             else if (vt == "datetime" || vt == "datetimestamp" || vt == "time")
             {
-                DateTime dt;
                 if (DateTime.TryParse(prop.value, CultureInfo.InvariantCulture,
-                    DateTimeStyles.AssumeUniversal, out dt))
+                    DateTimeStyles.AssumeUniversal, out var dt))
                     this.entityBuilder.CreateAddPropertyState<Int64>(o, "Value",
                         DataTypeIds.DateTime, dt.ToFileTimeUtc(), defaultSettings: true);
             }
             else if (vt == "decimal" || vt == "integer" || vt == "long"
                      || vt == "nonpositiveinteger" || vt == "negativeinteger")
             {
-                Int64 v;
-                if (Int64.TryParse(prop.value, out v))
+                if (Int64.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int64>(o, "Value",
                         DataTypeIds.Int64, v, defaultSettings: true);
             }
             else if (vt == "int")
             {
-                Int32 v;
-                if (Int32.TryParse(prop.value, out v))
+                if (Int32.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int32>(o, "Value",
                         DataTypeIds.Int32, v, defaultSettings: true);
             }
             else if (vt == "short")
             {
-                Int16 v;
-                if (Int16.TryParse(prop.value, out v))
+                if (Int16.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Int16>(o, "Value",
                         DataTypeIds.Int16, v, defaultSettings: true);
             }
             else if (vt == "byte")
             {
-                SByte v;
-                if (SByte.TryParse(prop.value, out v))
+                if (SByte.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<SByte>(o, "Value",
                         DataTypeIds.Byte, v, defaultSettings: true);
             }
             else if (vt == "nonnegativeinteger" || vt == "positiveinteger" || vt == "unsignedlong")
             {
-                UInt64 v;
-                if (UInt64.TryParse(prop.value, out v))
+                if (UInt64.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt64>(o, "Value",
                         DataTypeIds.UInt64, v, defaultSettings: true);
             }
             else if (vt == "unsignedint")
             {
-                UInt32 v;
-                if (UInt32.TryParse(prop.value, out v))
+                if (UInt32.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt32>(o, "Value",
                         DataTypeIds.UInt32, v, defaultSettings: true);
             }
             else if (vt == "unsignedshort")
             {
-                UInt16 v;
-                if (UInt16.TryParse(prop.value, out v))
+                if (UInt16.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<UInt16>(o, "Value",
                         DataTypeIds.UInt16, v, defaultSettings: true);
             }
             else if (vt == "unsignedbyte")
             {
-                Byte v;
-                if (Byte.TryParse(prop.value, out v))
+                if (Byte.TryParse(prop.value, out var v))
                     this.entityBuilder.CreateAddPropertyState<Byte>(o, "Value",
                         DataTypeIds.Byte, v, defaultSettings: true);
             }
             else if (vt == "double")
             {
-                double v;
-                if (double.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out v))
+                if (double.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
                     this.entityBuilder.CreateAddPropertyState<double>(o, "Value",
                         DataTypeIds.Double, v, defaultSettings: true);
             }
             else if (vt == "float")
             {
-                float v;
-                if (float.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out v))
+                if (float.TryParse(prop.value, NumberStyles.Any, CultureInfo.InvariantCulture, out var v))
                     this.entityBuilder.CreateAddPropertyState<float>(o, "Value",
                         DataTypeIds.Float, v, defaultSettings: true);
             }
@@ -1072,6 +1065,7 @@ namespace AasOpcUaServer
                 descriptionKey: "AAS:SubmodelElementCollection");
 
             // some elements
+            // ReSharper disable once RedundantExplicitArrayCreation
             foreach (var o in new NodeState[] { this.typeObject /* , this.typeObjectOrdered */ })
             {
                 this.entityBuilder.CreateAddPropertyState<bool>(o, "AllowDuplicates",
@@ -1367,6 +1361,7 @@ namespace AasOpcUaServer
             // create a method?
             if (true)
             {
+                // ReSharper disable once RedundantExplicitArrayCreation
                 var args = new List<Argument>[] { new List<Argument>(), new List<Argument>() };
                 for (int i = 0; i < 2; i++)
                     if (op[i] != null)
@@ -1406,9 +1401,8 @@ namespace AasOpcUaServer
                                             opvar.value.submodelElement.description);
 
                                     // try convert type
-                                    Type sharpType;
                                     if (!AasUaUtils.AasValueTypeToUaDataType(
-                                        prop.valueType, out sharpType, out dataType))
+                                        prop.valueType, out var dummy, out dataType))
                                         dataType = null;
                                 }
                             }
@@ -1419,7 +1413,7 @@ namespace AasOpcUaServer
                             args[i].Add(a);
                         }
 
-                var opmeth = this.entityBuilder.CreateAddMethodState(o, "Operation",
+                var unused = this.entityBuilder.CreateAddMethodState(o, "Operation",
                     inputArgs: args[0].ToArray(),
                     outputArgs: args[1].ToArray(),
                     referenceTypeFromParentId: ReferenceTypeIds.HasComponent);
@@ -1756,6 +1750,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AasTypes.IAASIdentifiableType.GetTypeNodeId());
 
             // for each of them, add some elements
+            // ReSharper disable once RedundantExplicitArrayCreation
             foreach (var o in new NodeState[] { this.typeObjectIrdi, this.typeObjectUri, this.typeObjectCustom })
             {
                 // Referable
@@ -1815,6 +1810,7 @@ namespace AasOpcUaServer
                 var name = "ConceptDescription_" + Guid.NewGuid().ToString();
 
                 if (false)
+#pragma warning disable 162
                 {
                     // Conventional approach: build up a speaking name
                     // but: shall be target of "HasDictionaryEntry", therefore the __PURE__ identifications 
@@ -1831,6 +1827,7 @@ namespace AasOpcUaServer
                     }
                     name = AasUaUtils.ToOpcUaName(name);
                 }
+#pragma warning restore 162
                 else
                 {
                     // only identification (the type object will distinct between the id type)
@@ -1866,12 +1863,12 @@ namespace AasOpcUaServer
                     && cd.embeddedDataSpecification.dataSpecificationContent != null
                     && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
                 {
-                    var dso = this.entityBuilder.AasTypes.DataSpecificationIEC61360.CreateAddElements(
+                    var unused = this.entityBuilder.AasTypes.DataSpecificationIEC61360.CreateAddElements(
                         o, CreateMode.Instance,
                         cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360);
                 }
 
-                // remeber CD as NodeRecord
+                // remember CD as NodeRecord
                 this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, cd.identification));
 
                 return o;

@@ -64,6 +64,7 @@ namespace AasOpcUaServer
             List<string> namespaceUris = new List<string>();
             namespaceUris.Add("http://opcfoundation.org/UA/i4aas/");
             namespaceUris.Add("http://admin-shell.io/samples/i4aas/instance/");
+            // ReSharper disable once VirtualMemberCallInConstructor
             NamespaceUris = namespaceUris;
 
             m_typeNamespaceIndex = Server.NamespaceUris.GetIndexOrAppend(namespaceUris[0]);
@@ -93,7 +94,7 @@ namespace AasOpcUaServer
             if (id == 0)
                 id = Utils.IncrementIdentifier(ref m_lastUsedTypeId);
             // this is thought to be a BUG in the OPCF code
-            /// return new NodeId(preferredNumId, m_typeNamespaceIndex);
+            //// return new NodeId(preferredNumId, m_typeNamespaceIndex);
             return new NodeId(id, m_typeNamespaceIndex);
         }
 
@@ -113,7 +114,7 @@ namespace AasOpcUaServer
                 base.CreateAddressSpace(externalReferences);
 
                 // Note: might be helpful for debugging
-                /// var env = new AdminShell.PackageEnv("Festo-USB-stick-sample-admin-shell.aasx");
+                //// var env = new AdminShell.PackageEnv("Festo-USB-stick-sample-admin-shell.aasx");
 
                 if (true)
                 {
@@ -130,14 +131,17 @@ namespace AasOpcUaServer
 
                     // Folders for DataSpecs
                     // DO NOT USE THIS FEATURE -> Data Spec are "under" the CDs
-                    /// builder.RootDataSpecifications = builder.CreateAddFolder(
-                    /// builder.RootAAS, "DataSpecifications");
-                    /// builder.RootDataSpecifications = builder.CreateAddObject(
-                    /// builder.RootAAS, "DataSpecifications");
+                    //// builder.RootDataSpecifications = builder.CreateAddFolder(
+                    //// builder.RootAAS, "DataSpecifications");
+                    //// builder.RootDataSpecifications = builder.CreateAddObject(
+                    //// builder.RootAAS, "DataSpecifications");
 
                     if (false)
+                        // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable 162
                     {
                         // Folders for Concept Descriptions
+                        // ReSharper disable once HeuristicUnreachableCode
                         builder.RootConceptDescriptions = builder.CreateAddFolder(
                             builder.RootAAS, "ConceptDescriptions");
 
@@ -145,6 +149,7 @@ namespace AasOpcUaServer
                         builder.RootMissingDictionaryEntries = builder.CreateAddFolder(
                             builder.RootAAS, "DictionaryEntries");
                     }
+#pragma warning restore 162
                     else
                     {
                         // create folder(s) under root
@@ -175,7 +180,7 @@ namespace AasOpcUaServer
                 }
 
                 // Try: ensure the reverse refernces exist.
-                /// AddReverseReferences(externalReferences);
+                //// AddReverseReferences(externalReferences);
 
                 if (theServerOptions != null
                     && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
@@ -199,13 +204,14 @@ namespace AasOpcUaServer
                         Utils.Trace("Writing export file: " + theServerOptions.ExportFilename);
                         var stream = new StreamWriter(theServerOptions.ExportFilename);
 
-                        /// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
-                        /// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
+                        //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
+                        //// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
 
                         try
                         {
                             stream.Close();
                         }
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch { }
 
                         // stop afterwards
@@ -262,6 +268,7 @@ namespace AasOpcUaServer
         public void AddReference(NodeId node, IReference reference)
         {
             var dict = new Dictionary<NodeId, IList<IReference>>();
+            // ReSharper disable once RedundantExplicitArrayCreation
             dict.Add(node, new List<IReference>(new IReference[] { reference }));
             this.AddReferences(dict);
         }

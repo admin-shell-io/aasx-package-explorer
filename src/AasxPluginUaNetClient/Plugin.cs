@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // ReSharper disable once UnusedType.Global
     public class AasxPlugin : IAasxPluginInterface
     {
         private LogInstance Log = new LogInstance();
@@ -131,7 +132,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var Namespace = (int)args[2];
 
                 // make the call
-                var value = client.ReadSubmodelElementValue(nodeName, Namespace);
+                var value = client?.ReadSubmodelElementValue(nodeName, Namespace);
 
                 // return as plain object
                 var res = new AasxPluginResultBaseObject();

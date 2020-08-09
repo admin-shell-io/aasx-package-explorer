@@ -16,6 +16,7 @@ using Opc.Ua.Server;
 
 namespace Net46ConsoleServer
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     class Program
     {
         static void Main(string[] args)
@@ -36,11 +37,14 @@ namespace Net46ConsoleServer
             }
             Console.Error.WriteLine($"loading: {options.AasxToLoad} ..");
             var env = new AdminShellPackageEnv(options.AasxToLoad);
+            
+            // ReSharper disable HeuristicUnreachableCode
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (env == null)
             {
                 Console.Error.WriteLine($"Cannot open {options.AasxToLoad}. Aborting..");
             }
-
+ 
             // configure UA here a little bit
             ApplicationInstance.MessageDlg = new ApplicationMessageDlg();
 
@@ -84,7 +88,7 @@ namespace Net46ConsoleServer
         private string message = string.Empty;
         private bool ask = false;
 
-        public override void Message(string text, bool ask)
+        public override void Message(string text, bool ask = false)
         {
             this.message = text;
             this.ask = ask;
@@ -119,7 +123,8 @@ namespace Net46ConsoleServer
         }
     }
 
-    public enum ExitCode : int
+    // ReSharper disable once UnusedType.Global
+    public enum ExitCode
     {
         Ok = 0,
         ErrorServerNotStarted = 0x80,

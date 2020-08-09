@@ -94,7 +94,6 @@ namespace AasOpcUaServer
             if (!handles.ContainsKey(handle))
                 throw new InvalidOperationException("handle is unknown");
             handles.Remove(handle);
-            return;
         }
 
         public void SetPosition(UInt32 handle, UInt64 pos)
@@ -246,10 +245,10 @@ namespace AasOpcUaServer
 
                 // Open
                 instData.mOpen = this.entityBuilder.CreateAddMethodState(o, "Open",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("Mode", DataTypeIds.Byte, -1, "")
                     },
-                    outputArgs: new Argument[] {
+                    outputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, "")
                     }, referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
                     methodDeclarationId: MethodIds.FileType_Open, onCalled: this.OnMethodCalled);
@@ -258,7 +257,7 @@ namespace AasOpcUaServer
 
                 // Close
                 instData.mClose = this.entityBuilder.CreateAddMethodState(o, "Close",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, "")
                     },
                     outputArgs: null,
@@ -269,11 +268,11 @@ namespace AasOpcUaServer
 
                 // Read
                 instData.mRead = this.entityBuilder.CreateAddMethodState(o, "Read",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Length", DataTypeIds.Int32, -1, "")
                     },
-                    outputArgs: new Argument[] {
+                    outputArgs: new[] {
                         new Argument("Data", DataTypeIds.ByteString, -1, "")
                     }, referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
                     methodDeclarationId: MethodIds.FileType_Read, onCalled: this.OnMethodCalled);
@@ -282,7 +281,7 @@ namespace AasOpcUaServer
 
                 // Write
                 instData.mWrite = this.entityBuilder.CreateAddMethodState(o, "Write",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Data", DataTypeIds.ByteString, -1, "")
                     },
@@ -294,10 +293,10 @@ namespace AasOpcUaServer
 
                 // GetPosition
                 instData.mGetPosition = this.entityBuilder.CreateAddMethodState(o, "GetPosition",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                     },
-                    outputArgs: new Argument[] {
+                    outputArgs: new[] {
                         new Argument("Position", DataTypeIds.UInt64, -1, "")
                     },
                     referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
@@ -307,7 +306,7 @@ namespace AasOpcUaServer
 
                 // SetPosition
                 instData.mSetPosition = this.entityBuilder.CreateAddMethodState(o, "SetPosition",
-                    inputArgs: new Argument[] {
+                    inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Position", DataTypeIds.UInt64, -1, "")
                     },

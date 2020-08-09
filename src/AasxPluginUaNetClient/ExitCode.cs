@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SampleClient
 {
 
-    public enum ExitCode : int
+    public enum ExitCode
     {
         Ok = 0,
         ErrorCreateApplication = 0x11,

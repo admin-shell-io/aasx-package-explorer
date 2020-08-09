@@ -20,6 +20,7 @@ using Opc.Ua.Server;
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
+    // ReSharper disable once UnusedType.Global
     public class AasxPlugin : IAasxPluginInterface
     {
         #region // Plug In
@@ -145,9 +146,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                             this.server.Stop();
                         break;
                     }
-                    // MICHA TODO : Temporary disabled
-                    if (false && this.server != null && this.server.IsNotRunningAnymore())
-                        break;
+                    //// MICHA TODO : Temporary disabled
+                    //// if (false && this.server != null && this.server.IsNotRunningAnymore())
+                    ////    break;
                     System.Threading.Thread.Sleep(50);
                     if (i % 200 == 0)
                         logger.Info("Heartbeat {0} x 50ms ..", i);
@@ -180,7 +181,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             this.logger = logger;
         }
 
-        public override void Message(string text, bool ask)
+        public override void Message(string text, bool ask = false)
         {
             this.message = text;
             this.ask = ask;
