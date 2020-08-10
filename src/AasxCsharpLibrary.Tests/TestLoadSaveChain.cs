@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Environment = System.Environment;
 using InvalidOperationException = System.InvalidOperationException;
+using Path = System.IO.Path;
+using Xml = System.Xml;
 
 namespace AdminShellNS.Tests
 {
@@ -82,7 +84,7 @@ namespace AdminShellNS.Tests
         }
 
         [TestCase(".xml")]
-        public void Test(string extension)
+        public void TestLoadSaveLoadAssertEqual(string extension)
         {
             List<string> aasxPaths = SamplesAasxDir.ListAasxPaths();
 
@@ -110,6 +112,84 @@ namespace AdminShellNS.Tests
                         {
                             packageB.SaveAs(path2, writeFreshly: true);
                             AssertFilesEqual(path1, path2, aasxPath);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void TestLoadSaveXmlValidate()
+        {
+            // Load the schema
+
+            var xmlSchemaSet = new Xml.Schema.XmlSchemaSet();
+            xmlSchemaSet.XmlResolver = new Xml.XmlUrlResolver();
+
+            string schemaPath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory,
+                "Resources\\schemas\\xml\\AAS.xsd");
+
+            xmlSchemaSet.Add(null, schemaPath);
+
+            var schemaMessages = new List<string>();
+            xmlSchemaSet.ValidationEventHandler +=
+                (object sender, Xml.Schema.ValidationEventArgs e) => { schemaMessages.Add(e.Message); };
+            xmlSchemaSet.Compile();
+
+            if (schemaMessages.Count > 0)
+            {
+                var parts = new List<string> { $"Failed to compile the schema: {schemaPath}" };
+                parts.AddRange(schemaMessages);
+
+                throw new InvalidOperationException(string.Join(Environment.NewLine, parts));
+            }
+
+            // Load-Save-Validate
+
+            List<string> aasxPaths = SamplesAasxDir.ListAasxPaths();
+
+            using (var tmpDir = new TemporaryDirectory())
+            {
+                string tmpDirPath = tmpDir.Path;
+
+                foreach (string aasxPath in aasxPaths)
+                {
+                    using (var package = new AdminShellPackageEnv(aasxPath))
+                    {
+                        string name = Path.GetFileName(aasxPath);
+                        string outPath = System.IO.Path.Combine(tmpDirPath, $"{name}.converted.xml");
+
+                        package.SaveAs(outPath, writeFreshly: true);
+
+                        var settings = new Xml.XmlReaderSettings();
+                        settings.ValidationType = Xml.ValidationType.Schema;
+                        settings.Schemas = xmlSchemaSet;
+
+                        var messages = new List<string>();
+                        settings.ValidationEventHandler +=
+                            (object sender, Xml.Schema.ValidationEventArgs e) =>
+                            {
+                                messages.Add(e.Message);
+                            };
+
+                        using (var reader = Xml.XmlReader.Create(outPath, settings))
+                        {
+                            while (reader.Read())
+                            {
+                                // Invoke callbacks
+                            };
+
+                            if (messages.Count > 0)
+                            {
+                                var parts = new List<string>
+                                {
+                                    $"Failed to validate XML file exported from {aasxPath} to {outPath}:"
+                                };
+                                parts.AddRange(messages);
+
+                                throw new AssertionException(string.Join(Environment.NewLine, parts));
+                            }
                         }
                     }
                 }
