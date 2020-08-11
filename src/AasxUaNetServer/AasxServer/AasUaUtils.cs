@@ -9,6 +9,7 @@ using Opc.Ua;
 
 namespace AasOpcUaServer
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AasUaUtils
     {
         public static string ToOpcUaName(string input)
@@ -59,7 +60,7 @@ namespace AasOpcUaServer
         public static LocalizedText[] GetUaLocalizedTexts(IList<AdminShell.LangStr> ls)
         {
             if (ls == null || ls.Count < 1)
-                return new LocalizedText[] { new LocalizedText("", "") };
+                return new[] { new LocalizedText("", "") };
             var res = new LocalizedText[ls.Count];
             for (int i = 0; i < ls.Count; i++)
                 res[i] = new LocalizedText(ls[i].lang, ls[i].str);

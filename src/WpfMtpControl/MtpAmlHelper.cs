@@ -11,6 +11,7 @@ using WpfMtpControl.DataSources;
 
 namespace WpfMtpControl
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class MtpAmlHelper
     {
         public static bool CheckForRole(CAEXSequence<SupportedRoleClassType> seq, string refRoleClassPath)
@@ -111,8 +112,7 @@ namespace WpfMtpControl
             var astr = FindAttributeValueByName(aseq, name);
             if (astr == null)
                 return (null);
-            double res;
-            if (!double.TryParse(astr, NumberStyles.Any, CultureInfo.InvariantCulture, out res))
+            if (!double.TryParse(astr, NumberStyles.Any, CultureInfo.InvariantCulture, out var res))
                 return null;
             return res;
         }
@@ -200,6 +200,7 @@ namespace WpfMtpControl
                                         var ac = FindAttributeValueByName(item.Attribute, "Access");
 
                                         // create
+                                        // ReSharper disable once UnusedVariable
                                         var it = dataSourceFactory.CreateOrUseItem(serv, id, ns, ac, item.ID);
                                     }
                                 }
@@ -209,13 +210,14 @@ namespace WpfMtpControl
         public static double[] ConvertStringToDoubleArray(string input, char[] separator)
         {
             var pieces = input.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (pieces == null)
+                // ReSharper disable once HeuristicUnreachableCode
                 return null;
             var res = new List<double>();
             foreach (var p in pieces)
             {
-                double num;
-                if (!double.TryParse(p.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out num))
+                if (!double.TryParse(p.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
                     // fail immediately
                     return null;
                 res.Add(num);
@@ -228,14 +230,15 @@ namespace WpfMtpControl
         /// </summary>
         public static PointCollection PointCollectionFromString(string edgepath)
         {
-            var edges = edgepath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var edges = edgepath.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (edges == null || edges.Length < 2)
                 return null;
 
             var pc = new PointCollection();
             foreach (var e in edges)
             {
-                var coord = ConvertStringToDoubleArray(e, new char[] { ',' });
+                var coord = ConvertStringToDoubleArray(e, new[] { ',' });
                 if (coord != null && coord.Length == 2)
                     pc.Add(new Point(coord[0], coord[1]));
             }

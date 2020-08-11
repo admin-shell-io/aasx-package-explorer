@@ -30,6 +30,8 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
+// ReSharper disable all
+
 #define CUSTOM_NODE_MANAGER
 
 using System.Collections.Generic;
@@ -141,9 +143,9 @@ namespace AasOpcUaServer
             {
                 var cm = x.NodeManagers[0] as CustomNodeManager2;
 
-                /// (old) code for fixing node issued
-                /// if (cm != null)
-                ///    cm.AasInjectedNodes = aasnm.GenerateInjectNodeStates();
+                //// (old) code for fixing node issued
+                //// if (cm != null)
+                ////    cm.AasInjectedNodes = aasnm.GenerateInjectNodeStates();
             }
 
             // ok
@@ -170,10 +172,10 @@ namespace AasOpcUaServer
 
             // TODO (MIHO, 2020-08-04): To be checked by Andreas. All applications have software certificates 
             // that need to added to the properties.
-            /// for (int ii = 0; ii < certificates.Count; ii++)
-            /// {
-            ///    properties.SoftwareCertificates.Add(certificates[ii]);
-            /// }
+            //// for (int ii = 0; ii < certificates.Count; ii++)
+            //// {
+            ////    properties.SoftwareCertificates.Add(certificates[ii]);
+            //// }
 
             return properties;
         }

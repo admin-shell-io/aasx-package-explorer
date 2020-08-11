@@ -15,6 +15,7 @@ using System.Xml;
 
 namespace WpfMtpControl
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class UIElementHelper
     {
         public static UIElement cloneElement(UIElement orig)
@@ -110,6 +111,7 @@ namespace WpfMtpControl
                                 namedNozzles[nid] = new Point(x, y);
 
                             // extract?
+                            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                             if (extractShapes && child is UIElement)
                                 toExtract.Add(child as UIElement);
                         }
@@ -175,11 +177,12 @@ namespace WpfMtpControl
         /// </summary>
         public static Nullable<double> ComputeRadiusForCenterPointer(Point[] pts, Point cog)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (pts == null || pts.Length < 1 || cog == null)
                 return null;
 
             var r = 0.0;
-            for (int i = 0; i < pts.Length; i++)
+            for (int i = pts.Length - 1; i >= 0; i--)
             {
                 var xd = pts[i].X - cog.X;
                 var yd = pts[i].Y - cog.Y;
@@ -268,6 +271,7 @@ namespace WpfMtpControl
             var strike = new bool[field.Length];
 
             // pts are leading
+            // ReSharper disable once ForCanBeConvertedToForeach
             for (int pi = 0; pi < pts.Length; pi++)
             {
                 // find neareast neighbour
@@ -352,6 +356,7 @@ namespace WpfMtpControl
 
             // go into "recursion"
             var rm = 1.0 / steps;
+            // ReSharper disable once UnusedVariable
             var betterTrans = FindBestFitForFieldOfPoints(pts, field, bestTrans,
                                 rm * rangeScale, rm * rangeRot, rm * rangeXY, steps, iterations - 1);
 

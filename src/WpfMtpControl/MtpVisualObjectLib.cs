@@ -129,12 +129,15 @@ namespace WpfMtpControl
         /// Initialize a record.
         /// </summary>
         /// <param name="Name">Name. Not used for matching.</param>
-        /// <param name="XamlContent">XAML canvas or similar</param>
+        /// <param name="Symbol"></param>
         /// <param name="eClassVersions">Applicable eClass Versions, delimited by ";". If empty, then any!</param>
         /// <param name="eClassClasses">Applicable eClass Classes, delimited by ";". Only digits allow ("01024455"), 
         /// If empty, then eClassIRDI shall be set.</param>
         /// <param name="eClassIRDIs">Applicable eClass IRIDs, delimited by ";". If empty, then eClassClass shall 
         /// be set.</param>
+        /// <param name="placement"></param>
+        /// <param name="labelAlignment"></param>
+        /// <param name="prio"></param>
         public MtpVisualObjectRecord(
             string Name,
             MtpSymbol Symbol,
@@ -182,7 +185,8 @@ namespace WpfMtpControl
         {
             if (str == null)
                 return null;
-            var arr = str.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var arr = str.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (arr == null || arr.Length < 1)
                 return null;
             var res = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -342,9 +346,9 @@ namespace WpfMtpControl
                 if (eClassVersion != null && eClassVersion.Length > 0 && rec.eClassVersions != null
                     && !rec.eClassVersions.ContainsKey(eClassVersion))
                     continue;
-                /// if (eClassClass != null && eClassClass.Length > 0 && rec.eClassClasses != null 
-                ///    && !rec.eClassClasses.ContainsKey(eClassClass))
-                ///    continue;
+                //// if (eClassClass != null && eClassClass.Length > 0 && rec.eClassClasses != null 
+                ////    && !rec.eClassClasses.ContainsKey(eClassClass))
+                ////    continue;
                 if (!MatchEclassClass(rec.eClassClasses, eClassClass))
                     continue;
                 if (eClassIRDI != null && eClassIRDI.Length > 0 && rec.eClassIRDIs != null

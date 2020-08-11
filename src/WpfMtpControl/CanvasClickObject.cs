@@ -16,6 +16,7 @@ namespace WpfMtpControl
         public virtual bool CheckClick(double x, double y) { return false; }
     }
 
+    // ReSharper disable once UnusedType.Global
     public class CanvasClickObjectBox : CanvasClickObjectBase
     {
         public double X0, Y0, Width, Height;
@@ -37,6 +38,7 @@ namespace WpfMtpControl
         }
     }
 
+    // ReSharper disable once UnusedType.Global
     public class CanvasClickObjectList : List<CanvasClickObjectBase>
     {
         private static int CompareCanvasClickObject(CanvasClickObjectBase x, CanvasClickObjectBase y)

@@ -11,7 +11,7 @@ using Opc.Ua.Configuration;
 
 namespace WpfMtpControl
 {
-    public enum AasOpcUaClientStatus : int
+    public enum AasOpcUaClientStatus
     {
         Ok = 0,
         ErrorCreateApplication = 0x11,
@@ -56,6 +56,7 @@ namespace WpfMtpControl
         public void Run()
         {
             // start server as a worker (will start in the background)
+            // ReSharper disable once LocalVariableHidesMember
             var worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += (s1, e1) =>
@@ -77,6 +78,7 @@ namespace WpfMtpControl
                 }
                 catch
                 {
+                    // ignored
                 }
             };
             worker.RunWorkerCompleted += (s1, e1) =>
@@ -94,8 +96,10 @@ namespace WpfMtpControl
                     worker.CancelAsync();
                     worker.Dispose();
                 }
-                catch { }
-
+                catch
+                {
+                    // ignored
+                }
         }
 
         public void Close()
@@ -130,6 +134,7 @@ namespace WpfMtpControl
                 throw new Exception("Application instance certificate invalid!");
             }
 
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (haveAppCertificate)
             {
                 config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
@@ -139,16 +144,20 @@ namespace WpfMtpControl
                 {
                     autoAccept = true;
                 }
+                // ReSharper disable once RedundantDelegateCreation
                 config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(
                     CertificateValidator_CertificateValidation);
             }
             else
+                // ReSharper disable once HeuristicUnreachableCode
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
             }
 
             Console.WriteLine("2 - Discover endpoints of {0}.", endpointURL);
             exitCode = AasOpcUaClientStatus.ErrorDiscoverEndpoints;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
             Console.WriteLine("    Selected endpoint uses: {0}",
                 selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
@@ -191,8 +200,12 @@ namespace WpfMtpControl
                 return;
             }
 
-            session = reconnectHandler.Session;
-            reconnectHandler.Dispose();
+            if (reconnectHandler != null)
+            {
+                session = reconnectHandler.Session;
+                reconnectHandler.Dispose();
+            }
+
             reconnectHandler = null;
 
             Console.WriteLine("--- RECONNECTED ---");
@@ -200,10 +213,11 @@ namespace WpfMtpControl
 
         private static void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
         {
+            // ReSharper disable once UnusedVariable
             foreach (var value in item.DequeueValues())
             {
-                /// Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, 
-                /// value.SourceTimestamp, value.StatusCode);
+                //// Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, 
+                //// value.SourceTimestamp, value.StatusCode);
             }
         }
 

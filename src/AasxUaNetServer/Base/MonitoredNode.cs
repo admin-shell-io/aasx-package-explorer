@@ -30,6 +30,8 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
+// ReSharper disable all
+
 using System;
 using System.Collections.Generic;
 using System.Text;

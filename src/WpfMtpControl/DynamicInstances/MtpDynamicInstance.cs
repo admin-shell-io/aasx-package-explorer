@@ -235,6 +235,7 @@ namespace Mtp.DynamicInstances
         private double valuex = 0.0;
         public virtual double Value
         {
+            // ReSharper disable once UnusedMemberHierarchy.Global
             get { return valuex; }
             set { valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent"); }
         }
@@ -746,7 +747,10 @@ namespace Mtp.DynamicInstances
         public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
         {
             UserControl c = null;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+#pragma warning disable 162
             if (true || mtpWidth <= 50 || mtpHeight <= 40)
+#pragma warning restore 162
             {
                 var bvt = new MtpViewPIDCntlTiny();
                 c = bvt;
@@ -756,7 +760,10 @@ namespace Mtp.DynamicInstances
                 bvt.ButtonGo.Click += ButtonGo_Click;
             }
             else
+                // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable 162
             {
+                // ReSharper disable once HeuristicUnreachableCode
                 var bvl = new MtpViewBinViewLarge();
                 c = bvl;
                 c.Width = 130;
@@ -764,6 +771,7 @@ namespace Mtp.DynamicInstances
                 c.DataContext = this;
                 bvl.ButtonGo.Click += ButtonGo_Click;
             }
+#pragma warning restore 162
             Demo(2);
             return c;
         }

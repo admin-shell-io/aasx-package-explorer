@@ -55,8 +55,10 @@
             <Viewbox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                 <TextBlock FontSize="4" Padding="0" Foreground="White" TextWrapping="WrapWithOverflow" Text="{Binding Path=Value, Mode=OneWay}"/>
             </Viewbox>
+            <!-- ReSharper disable once Xaml.MissingGridIndex -->
             <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" Margin="0,1,0,1" Height="4" Value="{Binding Path=ValuePercent, Mode=OneWay}"/>
             <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" FontSize="8" Padding="0" Foreground="Green" Content="{Binding Path=ValueScaleLowLimit, Mode=OneWay}"/>
+            <!-- ReSharper disable once Xaml.IndexOutOfGridDefinition -->
             <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" FontSize="8" Padding="0" Foreground="Green" HorizontalContentAlignment="Right" Content="{Binding Path=ValueScaleHighLimit, Mode=OneWay}"/>
         </Grid>
     </Border>

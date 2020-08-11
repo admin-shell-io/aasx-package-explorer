@@ -33,6 +33,8 @@
             </Button>
 
             <!-- {Binding Path=Value, Mode=OneWay} -->
+            <!-- ReSharper disable Xaml.RedundantGridSpan -->
+            <!-- ReSharper disable once Xaml.IndexOutOfGridDefinition -->
             <Viewbox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="1" Margin="0,-1,0,0" HorizontalAlignment="Center">
                 <TextBlock FontSize="4" Padding="0" FontWeight="Bold" Margin="0" Foreground="White" 
                            Background="{Binding Path=ViolatedBandBrush, Mode=OneWay}" TextWrapping="WrapWithOverflow" Text="{Binding Path=Value, Mode=OneWay}" HorizontalAlignment="Center"/>

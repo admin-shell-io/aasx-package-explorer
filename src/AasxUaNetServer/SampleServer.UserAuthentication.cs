@@ -30,6 +30,8 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
+// ReSharper disable all
+
 using System;
 using System.IdentityModel.Selectors;
 using System.Security.Cryptography.X509Certificates;

@@ -21,6 +21,7 @@ namespace WpfMtpControl
 
         public ObservableCollection<DetailItem> Items = new ObservableCollection<DetailItem>();
 
+        // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
         public class DetailItem : MtpDataSourceOpcUaItem, IEquatable<DetailItem>, INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler PropertyChanged;
@@ -130,7 +131,10 @@ namespace WpfMtpControl
                                     nids.Add(ir.nid);
                                     this.nodeIdToItemRef.Add(ir.nid, ir);
                                 }
-                                catch { }
+                                catch
+                                {
+                                    // ignored
+                                }
                             }
 
                             // try add these
@@ -246,7 +250,7 @@ namespace WpfMtpControl
             if (doAdd)
             {
                 this.Items.Add(i);
-                ds.ItemRefs.Add(i);
+                ds?.ItemRefs.Add(i);
             }
             return i;
         }
@@ -264,6 +268,7 @@ namespace WpfMtpControl
         public string GetStatus()
         {
             var numit = this.Items.Count;
+            // ReSharper disable once NotAccessedVariable
             var servinfo = "";
             var i = 0;
             foreach (var s in this.servers)

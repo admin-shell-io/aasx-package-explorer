@@ -36,14 +36,15 @@ namespace WpfMtpVisuViewer
 
             // Timer for status
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            // ReSharper disable once RedundantDelegateCreation
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             dispatcherTimer.Start();
 
             // explicit
-            /// textOpcUaClient = new AasOpcUaClient("opc.tcp://127.0.0.1:4840" /* "localhost:4840" */, 
-            /// _autoAccept: true, _stopTimeout : 99, _userName: "", _password: "");
-            /// textOpcUaClient.Run();
+            //// textOpcUaClient = new AasOpcUaClient("opc.tcp://127.0.0.1:4840" /* "localhost:4840" */, 
+            //// _autoAccept: true, _stopTimeout : 99, _userName: "", _password: "");
+            //// textOpcUaClient.Run();
         }
 
         public void SetMessage(string fmt, params object[] args)
@@ -69,11 +70,13 @@ namespace WpfMtpVisuViewer
             if (textOpcUaClient != null && opcCounter % 20 == 0)
                 try
                 {
+                    // ReSharper disable once UnusedVariable
                     var x = textOpcUaClient.ReadSubmodelElementValueAsString(
                         "|var|CODESYS Control Win V3.Application.SENSORS.L001.V", 2);
                 }
                 catch
                 {
+                    // ignored
                 }
 
             if (textOpcUaClient != null && opcCounter % 100 == 0)
@@ -84,6 +87,7 @@ namespace WpfMtpVisuViewer
                 }
                 catch
                 {
+                    // ignored
                 }
         }
 
@@ -127,6 +131,7 @@ namespace WpfMtpVisuViewer
 
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
 
+        // ReSharper disable once ClassNeverInstantiated.Global
         public class MtpViewerStandaloneOptions : AasxIntegrationBase.AasxPluginOptionsBase
         {
             public WpfMtpControl.MtpSymbolMapRecordList SymbolMappings = new WpfMtpControl.MtpSymbolMapRecordList();
@@ -168,9 +173,9 @@ namespace WpfMtpVisuViewer
             // load file
             try
             {
-                /// LoadFile("Dosing.mtp");
-                /// LoadFile("Manifest_PxC_Dosing.aml");
-                /// LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
+                //// LoadFile("Dosing.mtp");
+                //// LoadFile("Manifest_PxC_Dosing.aml");
+                //// LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
                 LoadFile("Manifest_Sten1.aml");
 
                 SetMessage("MTP file loaded.");
@@ -211,7 +216,7 @@ namespace WpfMtpVisuViewer
 
                 // Assuming you have one file that you care about, pass it off to whatever
                 // handling code you have defined.
-                if (files.Length > 0)
+                if (files != null && files.Length > 0)
                 {
                     try
                     {

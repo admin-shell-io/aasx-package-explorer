@@ -98,7 +98,7 @@ namespace WpfMtpControl
         public Canvas ConstructContentObject(MtpVisualObjectRecord xaml)
         {
             var contentObject = xaml?.Symbol?.SymbolData as Canvas;
-            contentObject = UIElementHelper.cloneElement(contentObject as UIElement) as Canvas;
+            contentObject = UIElementHelper.cloneElement(contentObject) as Canvas;
             return contentObject;
         }
 
@@ -128,6 +128,7 @@ namespace WpfMtpControl
             FrameworkElement contentObject, double scale, double rotation, Point center)
         {
             // trivial
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (contentObject == null || center == null)
                 return null;
 
@@ -229,7 +230,7 @@ namespace WpfMtpControl
                     if (contentObject == null)
                         continue;
 
-                    contentObject = UIElementHelper.cloneElement(contentObject as UIElement) as Canvas;
+                    contentObject = UIElementHelper.cloneElement(contentObject) as Canvas;
 
                     // delete not necessary artifacts in the XAML
                     UIElementHelper.FindIndexedTags(contentObject, "Nozzle", extractShapes: true);
@@ -239,7 +240,8 @@ namespace WpfMtpControl
                     var dynInstanceVO = vo.dynInstance?.CreateVisualObject(vo.width.Value, vo.height.Value);
 
                     if (obj.Name == "V001")
-                        ;
+                    {
+                    }
 
                     //
                     // how to draw content?
@@ -296,12 +298,16 @@ namespace WpfMtpControl
 
                             // disturb it?
                             if (false)
+#pragma warning disable 162
+                                // ReSharper disable once HeuristicUnreachableCode
                             {
+                                // ReSharper disable once HeuristicUnreachableCode
                                 start.Rot += -15.0 + 30.0 * rnd.NextDouble();
                                 start.Scale *= 0.8 + 0.4 * rnd.NextDouble();
                                 start.OfsX += -5.0 + 10.0 * rnd.NextDouble();
                                 start.OfsY += -5.0 + 10.0 * rnd.NextDouble();
                             }
+#pragma warning restore 162
 
                             // improve it
                             var better = UIElementHelper.FindBestFitForFieldOfPoints(
@@ -310,7 +316,7 @@ namespace WpfMtpControl
                                 start = better;
 
                             // draw it
-                            UIElementHelper.ApplyMultiLabel(contentObject, new Tuple<string, string>[] {
+                            UIElementHelper.ApplyMultiLabel(contentObject, new[] {
                                 new Tuple<string, string>("%TAG%", "" + vo.Name)
                             });
                             var shape = ConstructDirectVO(contentObject, 1.0 * start.Scale, 1.0 * start.Rot,
@@ -336,7 +342,7 @@ namespace WpfMtpControl
                                 sr.Y - 2.0 - contentCogToMid.Y * start.Scale);
 
                             // for debugging?
-                            /// DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
+                            //// DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
 
                             // draw
                             shape.Tag = vo;
@@ -361,7 +367,7 @@ namespace WpfMtpControl
                                     vo.width.Value, vo.height.Value, ConstructRect(Brushes.Blue, 1.0));
 
                             // draw it
-                            UIElementHelper.ApplyMultiLabel(contentObject, new Tuple<string, string>[] {
+                            UIElementHelper.ApplyMultiLabel(contentObject, new[] {
                                 new Tuple<string, string>("%TAG%", "" + vo.Name)
                             });
                             var vb = ConstructViewboxVO(contentObject, vo.rotation.Value);
@@ -400,7 +406,7 @@ namespace WpfMtpControl
                     {
                         // get visual object
                         var contentObject = ConstructContentObject(to.visObj);
-                        UIElementHelper.ApplyMultiLabel(contentObject, new Tuple<string, string>[] {
+                        UIElementHelper.ApplyMultiLabel(contentObject, new[] {
                                 new Tuple<string, string>("%TAG%", "" + to.Name)
                             });
 
@@ -461,6 +467,7 @@ namespace WpfMtpControl
                                 // make bounding box Rect
                                 if (drawBoundingBoxes)
                                     DrawToCanvasAtPositionSize(canvas,
+                                        // ReSharper disable PossibleLossOfFraction
                                         to.x.Value - size / 2, to.y.Value - size / 2,
                                         size, size, ConstructRect(Brushes.DarkOrange, 1.0));
 

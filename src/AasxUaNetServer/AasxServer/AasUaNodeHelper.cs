@@ -7,6 +7,7 @@ using Opc.Ua;
 
 namespace AasOpcUaServer
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AasUaNodeHelper
     {
         /// <summary>
@@ -113,6 +114,7 @@ namespace AasOpcUaServer
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
         /// <param name="typeDefinitionId">Type of the Object</param>
         /// <param name="modellingRule">Modeling Rule, if not None</param>
+        /// <param name="extraName"></param>
         /// <returns>The node</returns>
         public static BaseObjectState CreateObject(
             NodeState parent,

@@ -101,7 +101,7 @@ namespace WpfMtpControl
                 return;
 
             // clone the canvas, as later accessing functionality shall not see Nozzles, Labels artifiacts in XAML
-            var clonedCanvas = UIElementHelper.cloneElement(canvasContent as UIElement) as Canvas;
+            var clonedCanvas = UIElementHelper.cloneElement(canvasContent) as Canvas;
             if (clonedCanvas == null)
                 return;
 
@@ -135,7 +135,7 @@ namespace WpfMtpControl
             foreach (var key in rd.Keys)
             {
                 // only take Canvas as symbol root element
-                if (rd[key] is Canvas cv)
+                if (rd[key] is Canvas)
                 {
                     // symbol
                     var sym = new MtpSymbol(LibName, rd, "" + key);

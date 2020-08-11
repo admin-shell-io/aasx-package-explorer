@@ -164,6 +164,7 @@ namespace WpfMtpControl
                     //
                     var nozzlePoints = new PointCollection();
                     var measurementPoints = new PointCollection();
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (ec >= 200 && ec <= 399)
                     {
                         foreach (var ie2 in ie.InternalElement)
@@ -193,7 +194,8 @@ namespace WpfMtpControl
                     }
 
                     if (ie.Name == "TI005")
-                        ;
+                    {
+                    }
 
                     //
                     // VisualObject
@@ -261,6 +263,7 @@ namespace WpfMtpControl
                     //
                     // Topology Object
                     //
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (ec >= 300 && ec <= 309)
                     {
                         // create object and parse
@@ -279,11 +282,12 @@ namespace WpfMtpControl
                         to.nozzlePoints = nozzlePoints;
 
                         // draw source / sink?
+                        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                         if (ec >= 301 && ec <= 302)
                         {
                             // get visual object
                             to.visObj = objectLib.FindVisualObjectByName(
-                                new string[] { "Source_general", "Sink_general" }[ec - 301]);
+                                new[] { "Source_general", "Sink_general" }[ec - 301]);
                         }
                     }
                 }
@@ -335,9 +339,7 @@ namespace WpfMtpControl
                 return;
 
             // check if we have a mtp-file, which needs to be unzipped
-            bool unzip = false;
-            if (fn.ToLower().EndsWith(".mtp") || fn.ToLower().EndsWith(".zip"))
-                unzip = true;
+            bool unzip = fn.ToLower().EndsWith(".mtp") || fn.ToLower().EndsWith(".zip");
 
             // easy?
             if (!unzip)

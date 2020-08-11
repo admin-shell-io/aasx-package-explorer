@@ -37,7 +37,7 @@ using Opc.Ua.Server;
 namespace AasxUaNetServer
 {
 
-    public enum ExitCode : int
+    public enum ExitCode
     {
         Ok = 0,
         ErrorServerNotStarted = 0x80,
@@ -168,6 +168,7 @@ namespace AasxUaNetServer
             if (!config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
             {
                 config.CertificateValidator.CertificateValidation +=
+                    // ReSharper disable once RedundantDelegateCreation
                     new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             }
 
@@ -187,6 +188,8 @@ namespace AasxUaNetServer
                         return;
 
                     var st = String.Format(args.Format,
+                        // ReSharper disable once CoVariantArrayConversion
+                        // ReSharper disable once RedundantExplicitArrayCreation
                         (args.Arguments != null ? args.Arguments : new string[] { "" }));
                     this.Log.Info("[{0}] {1} {2} {3}",
                         args.TraceMask, st, args.Message, args.Exception?.Message ?? "-");
@@ -205,6 +208,7 @@ namespace AasxUaNetServer
             await application.Start(server);
 
             // start the status thread
+            // ReSharper disable once RedundantDelegateCreation
             status = Task.Run(new Action(StatusThread));
 
             // print notification on session events
@@ -249,6 +253,7 @@ namespace AasxUaNetServer
                 if (DateTime.UtcNow - lastEventTime > TimeSpan.FromMilliseconds(6000))
                 {
                     IList<Session> sessions = server.CurrentInstance.SessionManager.GetSessions();
+                    // ReSharper disable once ForCanBeConvertedToForeach
                     for (int ii = 0; ii < sessions.Count; ii++)
                     {
                         Session session = sessions[ii];
