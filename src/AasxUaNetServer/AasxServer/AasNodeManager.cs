@@ -137,7 +137,7 @@ namespace AasOpcUaServer
                     //// builder.RootAAS, "DataSpecifications");
 
                     if (false)
-                        // ReSharper disable once HeuristicUnreachableCode
+                    // ReSharper disable once HeuristicUnreachableCode
 #pragma warning disable 162
                     {
                         // Folders for Concept Descriptions

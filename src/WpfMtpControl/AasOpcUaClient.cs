@@ -149,7 +149,7 @@ namespace WpfMtpControl
                     CertificateValidator_CertificateValidation);
             }
             else
-                // ReSharper disable once HeuristicUnreachableCode
+            // ReSharper disable once HeuristicUnreachableCode
             {
                 // ReSharper disable once HeuristicUnreachableCode
                 Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");

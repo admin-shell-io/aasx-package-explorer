@@ -760,7 +760,7 @@ namespace Mtp.DynamicInstances
                 bvt.ButtonGo.Click += ButtonGo_Click;
             }
             else
-                // ReSharper disable once HeuristicUnreachableCode
+            // ReSharper disable once HeuristicUnreachableCode
 #pragma warning disable 162
             {
                 // ReSharper disable once HeuristicUnreachableCode

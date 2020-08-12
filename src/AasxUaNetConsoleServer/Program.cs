@@ -37,14 +37,14 @@ namespace Net46ConsoleServer
             }
             Console.Error.WriteLine($"loading: {options.AasxToLoad} ..");
             var env = new AdminShellPackageEnv(options.AasxToLoad);
-            
+
             // ReSharper disable HeuristicUnreachableCode
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (env == null)
             {
                 Console.Error.WriteLine($"Cannot open {options.AasxToLoad}. Aborting..");
             }
- 
+
             // configure UA here a little bit
             ApplicationInstance.MessageDlg = new ApplicationMessageDlg();
 

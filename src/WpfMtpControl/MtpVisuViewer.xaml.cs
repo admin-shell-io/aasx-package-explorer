@@ -299,7 +299,7 @@ namespace WpfMtpControl
                             // disturb it?
                             if (false)
 #pragma warning disable 162
-                                // ReSharper disable once HeuristicUnreachableCode
+                            // ReSharper disable once HeuristicUnreachableCode
                             {
                                 // ReSharper disable once HeuristicUnreachableCode
                                 start.Rot += -15.0 + 30.0 * rnd.NextDouble();

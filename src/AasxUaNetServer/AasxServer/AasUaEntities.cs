@@ -1811,7 +1811,7 @@ namespace AasOpcUaServer
 
                 if (false)
 #pragma warning disable 162
-                    // ReSharper disable HeuristicUnreachableCode
+                // ReSharper disable HeuristicUnreachableCode
                 {
                     // Conventional approach: build up a speaking name
                     // but: shall be target of "HasDictionaryEntry", therefore the __PURE__ identifications 
