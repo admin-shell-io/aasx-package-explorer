@@ -1,0 +1,821 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:WpfMtpControl">
+
+    <!-- Hint: rename Name=\"\w+\" -->
+    <!-- <Viewbox x:Key="Pressurized_vessel_horizontal"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform"> -->
+
+    <!-- Remove transforms in InkScape -->
+    <!-- https://stackoverflow.com/questions/13329125/removing-transforms-in-svg-files -->
+
+
+    <Canvas x:Key="Shutoff_Valve_nozzled" x:Shared="false" Width="1000" Height="1000">
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="White"  StrokeThickness="27.41399384" Stroke="#FF000000">
+            <Path.Data>
+                <PathGeometry Figures="m 0.22921094 261.68456 0 486.20705 L 1001.8385 261.68456 l 0 486.20705 z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="934.5" Width="145.3" Canvas.Top="430.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-72.2" Width="145.3" Canvas.Top="434.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+    </Canvas>
+
+    <Canvas x:Key="Control_Valve_nozzled" x:Shared="false" Width="28" Height="22">
+        <!-- <Rectangle Canvas.Left="0" Canvas.Top="0" Width="28" Height="22" Stroke="Green" StrokeThickness="1"/> -->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M0 7V22l14-6V13L0 7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M28 7 14 13v3l14 6V7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M14 0A7 7 0 0 0 7 7H21a7 7 0 0 0-7-7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="#FF000000">
+            <Path.Data>
+                <PathGeometry Figures="M15 12.57141V7h6A7 7 0 0 0 7 7h6v5.57141L0 7V22l14-6 14 6V7ZM9.41754 5a4.99982 4.99982 0 0 1 9.16492 0ZM12 14.68121 2 18.96692V10.03308l10 4.28571Zm14 4.28571L16 14.68121v-.36242l10-4.28571Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.7" Width="5.5" Canvas.Top="11.8" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.4" Width="5.5" Canvas.Top="11.8" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+    <Canvas x:Key="Manual_Valve_nozzled" x:Shared="false" Width="28" Height="20">
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M1 19l12-6V12L1 6Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="White">
+            <Path.Data>
+                <PathGeometry Figures="M15 12v1l12 6V6Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Fill="#ff000000">
+            <Path.Data>
+                <PathGeometry Figures="M26 8.03308v8.93384L15.57715 12.5l.21069-.0903L26 8.03308m-24 0L12.21216 12.4097l.21069.0903L2 16.96692V8.03308M20 0H8V4h5v6.57141L0 5V20l14-6 14 6V5L15 10.57141V4h5V0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.8" Width="5.5" Canvas.Top="9.4" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.2" Width="5.5" Canvas.Top="9.5" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+    <Canvas x:Key="Stirrer_default" x:Shared="false" Width="25" Height="30">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="6" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF000000">
+            <Path.Data>
+                <PathGeometry Figures="M14 5.09839V0H11V5.09839A12.49569 12.49569 0 0 0 0 17.49994V17.5A12.5 12.5 0 1 0 14 5.09839ZM12.5 28A10.49351 10.49351 0 0 1 11 7.11981v8.73181L5 13.544V22H7V16.45605l13 5V13H18V18.544l-4-1.53846V7.11981A10.49351 10.49351 0 0 1 12.5 28Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+    
+    <!-- New elements -->
+    
+    <Canvas x:Key="axial_fan_active-u" x:Shared="false" Width="25" Height="30">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="6" Width="23" Height="23" Fill="#FF0091DC"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="11" Canvas.Top="6" Width="3" Height="5" Fill="#FFFFFFFF">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="180"/>
+                    <TranslateTransform X="25" Y="17"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M14 5.09839V0H11V5.09839a12.5 12.5 0 1 0 3 0ZM12.5 28A10.5 10.5 0 1 1 23 17.5 10.51188 10.51188 0 0 1 12.5 28Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M4.55371 14.35254a5.77918 5.77918 0 0 0 5.2428 5.41705A5.77522 5.77522 0 0 0 11.94043 26.833l.251.167h.60937l.252-.167a5.77873 5.77873 0 0 0 2.1446-7.05847 5.77447 5.77447 0 0 0 5.249-5.41712l.01953-.31054-.31348-.52247-.26172-.12988a5.78487 5.78487 0 0 0-7.38891 1.939 5.79433 5.79433 0 0 0-7.39233-1.94391l-.26172.12988-.31348.52246Zm7.94238 10.37109a3.76683 3.76683 0 0 1-.1427-5.27826c.04761-.01751.09369-.04071.141-.05951.04895.01954.09668.04352.146.06165a3.76872 3.76872 0 0 1-.14429 5.27612Zm2.89844-9.42773a3.80967 3.80967 0 0 1 2.94727-.36524 3.79148 3.79148 0 0 1-4.62891 2.75379c-.02942-.02637-.05487-.05622-.0849-.082A3.79574 3.79574 0 0 1 15.39453 15.2959ZM9.60547 15.291a3.79554 3.79554 0 0 1 1.76636 2.30615c-.03064.02618-.05719.05591-.08722.0827A3.79292 3.79292 0 0 1 6.6582 14.92578 3.79748 3.79748 0 0 1 9.60547 15.291Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="axial_fan_default-u" x:Shared="false" Width="25" Height="30">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="6" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M4.55371 14.35248a5.77918 5.77918 0 0 0 5.2428 5.41705A5.77522 5.77522 0 0 0 11.94043 26.833l.251.167h.60937l.252-.167a5.77873 5.77873 0 0 0 2.1446-7.05847 5.77447 5.77447 0 0 0 5.249-5.41712l.01953-.31055-.31348-.52246-.26172-.12988a5.78487 5.78487 0 0 0-7.38891 1.939 5.79433 5.79433 0 0 0-7.39233-1.94391l-.26172.12988-.31348.52246Zm7.94238 10.37109a3.76683 3.76683 0 0 1-.1427-5.27826c.04761-.01751.09369-.04071.141-.05951.04895.01953.09668.04352.146.06165a3.76872 3.76872 0 0 1-.14429 5.27612Zm2.89844-9.42773a3.80967 3.80967 0 0 1 2.94727-.36524 3.79148 3.79148 0 0 1-4.62891 2.75379c-.02942-.02637-.05487-.05622-.0849-.082A3.79574 3.79574 0 0 1 15.39453 15.29584ZM9.60547 15.291a3.79556 3.79556 0 0 1 1.76636 2.30616c-.03064.02618-.05719.05591-.08722.0827A3.79292 3.79292 0 0 1 6.6582 14.92572 3.79752 3.79752 0 0 1 9.60547 15.291Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M0 17.49994A12.5 12.5 0 0 0 12.49994 30H12.5A12.49576 12.49576 0 0 0 14 5.09833V-.00006H11V5.09833A12.49571 12.49571 0 0 0 0 17.49994ZM11 7.11975v4.88019h3V7.11975a10.5 10.5 0 1 1-3 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="certificate" x:Shared="false" Width="29" Height="27">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M29 0H0V19H15.53687a5.97988 5.97988 0 0 0 8.92626 0H29Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4" Canvas.Top="13" Width="8" Height="2" Fill="#FFA3B2BC"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4" Canvas.Top="9" Width="8" Height="2" Fill="#FFA3B2BC"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="4" Canvas.Top="4" Width="13" Height="2" Fill="#FFA3B2BC"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M24 15a4 4 0 1 1-4-4 4.00016 4.00016 0 0 1 4 4" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M20 21a5.95789 5.95789 0 0 1-4-1.557V27l4-4 4 4V19.44305A5.95812 5.95812 0 0 1 20 21" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M0 0V19H15.557a6.09816 6.09816 0 0 1-1.19055-2H2V2H27V17H25.63354A6.09816 6.09816 0 0 1 24.443 19H29V0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="compressor_active-u" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FF0091DC"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="17.00054" Canvas.Top="0.53757" Width="1.99892" Height="19.92486" Fill="#FFFFFFFF">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-17.51433"/>
+                    <TranslateTransform X="-2.32547" Y="5.90376"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.96243" Canvas.Top="9.50054" Width="19.92486" Height="1.99892" Fill="#FFFFFFFF">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-72.47443"/>
+                    <TranslateTransform X="-5.12054" Y="14.0132"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M2 12.5A10.5 10.5 0 1 1 12.5 23 10.51188 10.51188 0 0 1 2 12.5m-2 0A12.5 12.5 0 1 0 12.5 0 12.5 12.5 0 0 0 0 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="compressor_default-u" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M0 12.5A12.5 12.5 0 0 0 12.49994 25H12.5A12.5 12.5 0 0 0 25 12.5v-.00006A12.5 12.5 0 0 0 0 12.5ZM8.36761 2.85016 3.57977 18.0116A10.46814 10.46814 0 0 1 8.36761 2.85016ZM12.49994 23a10.46707 10.46707 0 0 1-7.42542-3.08362L10.679 2.169a9.89858 9.89858 0 0 1 3.64208 0l5.60444 17.74743A10.46725 10.46725 0 0 1 12.49994 23ZM23 12.5a10.422 10.422 0 0 1-1.57977 5.5116L16.63239 2.85016A10.51385 10.51385 0 0 1 23 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="control_valve_default-u-nozzled" x:Shared="false" Width="28" Height="22">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M0 7V22l14-6V13L0 7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M28 7 14 13v3l14 6V7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M14 0A7 7 0 0 0 7 7H21a7 7 0 0 0-7-7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M15 12.57141V7h6A7 7 0 0 0 7 7h6v5.57141L0 7V22l14-6 14 6V7ZM9.41754 5a4.99982 4.99982 0 0 1 9.16492 0ZM12 14.68121 2 18.96692V10.03308l10 4.28571Zm14 4.28571L16 14.68121v-.36242l10-4.28571Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.7" Width="5.5" Canvas.Top="11.8" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.4" Width="5.5" Canvas.Top="11.8" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="control_valve_open-u-nozzled" x:Shared="false" Width="28" Height="22">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M14 0A7 7 0 0 0 7 7H21a7 7 0 0 0-7-7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M0 7V22l14-6V13L0 7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="27 20 27 9 15 14 15 15 27 20" FillRule="NonZero" Fill="#FF0091DC"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="1 9 1 20 13 15 13 14 1 9" FillRule="NonZero" Fill="#FF0091DC"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M7 7h6v5.57141L0 7V22l14-6 14 6V7L15 12.57141V7h6A7 7 0 0 0 7 7ZM2 18.96692V10.03308l10 4.28571v.36242Zm24 0L16 14.68121v-.36242l10-4.28571ZM18.58246 5H9.41754a4.99982 4.99982 0 0 1 9.16492 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.6" Width="5.5" Canvas.Top="10.8" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.4" Width="5.5" Canvas.Top="10.9" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="control_valve_open_close-u-nozzled" x:Shared="false" Width="28" Height="22">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M14 0A7 7 0 0 0 7 7H21a7 7 0 0 0-7-7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M0 7V22l14-6V13L0 7Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="27 14 27 20 15 15 15 14 27 14" FillRule="NonZero" Fill="#FFFFFFFF"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="27 15 27 8 15 13 15 15 27 15" FillRule="NonZero" Fill="#FF0091DC"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="1 15 1 9 13 14 13 15 1 15" FillRule="NonZero" Fill="#FFFFFFFF"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="1 14 1 21 13 16 13 14 1 14" FillRule="NonZero" Fill="#FF0091DC"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M7 7h6v5.57141L0 7V22l14-6 14 6V7L15 12.57141V7h6A7 7 0 0 0 7 7ZM2 18.96692V10.03308l10 4.28571v.36242Zm24 0L16 14.68121v-.36242l10-4.28571ZM18.58246 5H9.41754a4.99982 4.99982 0 0 1 9.16492 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.4" Width="5.5" Canvas.Top="11.3" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.6" Width="5.5" Canvas.Top="11.4" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="fan_active" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M12.50006-.00006H12.5a12.5 12.5 0 1 0 .00006 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M20.44629 16.64746a5.778 5.778 0 0 0-5.243-5.41669A5.77513 5.77513 0 0 0 13.05957 4.167L12.80859 4h-.60937l-.252.167A5.77882 5.77882 0 0 0 9.80249 11.2251a5.77565 5.77565 0 0 0-5.24878 5.41748l-.01953.31054.31348.52247.26172.12988a5.78487 5.78487 0 0 0 7.38891-1.939 5.79433 5.79433 0 0 0 7.39233 1.94391l.26172-.12988.31348-.52246ZM9.60547 15.7041a3.80543 3.80543 0 0 1-2.94727.36524 3.79148 3.79148 0 0 1 4.62891-2.75379c.02942.02637.05487.05622.0849.082A3.79574 3.79574 0 0 1 9.60547 15.7041Zm3.04114-4.14947c-.04761.01751-.09363.04071-.14093.05944-.04895-.01953-.09674-.04345-.14612-.06164a3.76873 3.76873 0 0 1 .14435-5.27606 3.76683 3.76683 0 0 1 .1427 5.27826ZM15.39453 15.709a3.79554 3.79554 0 0 1-1.76636-2.30615c.03064-.02618.05719-.05591.08722-.0827a3.79292 3.79292 0 0 1 4.62641 2.75409A3.79748 3.79748 0 0 1 15.39453 15.709Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="fan_default" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M12.50006-.00006H12.5a12.5 12.5 0 1 0 .00006 0ZM12.5 23A10.5 10.5 0 1 1 23 12.5 10.51188 10.51188 0 0 1 12.5 23Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M20.44629 16.64746a5.778 5.778 0 0 0-5.243-5.41669A5.77513 5.77513 0 0 0 13.05957 4.167L12.80859 4h-.60937l-.252.167A5.77882 5.77882 0 0 0 9.80249 11.2251a5.77565 5.77565 0 0 0-5.24878 5.41748l-.01953.31054.31348.52247.26172.12988a5.78487 5.78487 0 0 0 7.38891-1.939 5.79433 5.79433 0 0 0 7.39233 1.94391l.26172-.12988.31348-.52246ZM9.60547 15.7041a3.80543 3.80543 0 0 1-2.94727.36524 3.79148 3.79148 0 0 1 4.62891-2.75379c.02942.02637.05487.05622.0849.082A3.79574 3.79574 0 0 1 9.60547 15.7041Zm3.04114-4.14947c-.04761.01751-.09363.04071-.14093.05944-.04895-.01953-.09674-.04345-.14612-.06164a3.76873 3.76873 0 0 1 .14435-5.27606 3.76683 3.76683 0 0 1 .1427 5.27826ZM15.39453 15.709a3.79554 3.79554 0 0 1-1.76636-2.30615c.03064-.02618.05719-.05591.08722-.0827a3.79292 3.79292 0 0 1 4.62641 2.75409A3.79748 3.79748 0 0 1 15.39453 15.709Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="filter-h" x:Shared="false" Width="27" Height="27">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-0.00002" Canvas.Top="-0.00001" Width="27.00003" Height="27.00003" Fill="#FFD8DCE1"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFF2F3F5">
+            <Path.Data>
+                <PathGeometry Figures="M22.211 24l-2.74449-2.74449 1.50731-1.50731 2.74449 2.74449Zm-5.489-5.489-2.744-2.74449 1.50731-1.50731 2.744 2.74449ZM11.2335 13.022 8.489 10.27806 9.99632 8.77075l2.74449 2.744Zm-5.489-5.48847-2.744-2.74449L4.50785 3.28176l2.744 2.74449Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="hand_armature-u" x:Shared="false" Width="28" Height="20">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="15 10.571 15 4 20 4 20 0 8 0 8 4 13 4 13 10.571 0 5 0 20 14 14 28 20 28 5 15 10.571" FillRule="NonZero" Fill="#FFD8DCE1"/>
+    </Canvas>
+
+
+    <Canvas x:Key="heat_exchanger-h" x:Shared="false" Width="27" Height="27">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-0.00002" Canvas.Top="-0.00001" Width="27" Height="26.99999" Fill="#FFD8DCE1"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="27 6 27 4 20.048 4 19.256 4.39 13.5 11.861 7.744 4.39 6.952 4 0 4 0 6 6.46 6 12.238 13.5 6.46 21 0 21 0 23 6.952 23 7.744 22.61 13.5 15.139 19.256 22.61 20.048 23 27 23 27 21 20.54 21 14.762 13.5 20.54 6 27 6" FillRule="NonZero" Fill="#FFF2F3F5"/>
+    </Canvas>
+
+
+    <Canvas x:Key="interlock_active" x:Shared="false" Width="28" Height="28">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M14 0 0 14 14 28 27.99991 14 14 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="13" Canvas.Top="8" Width="2" Height="2" Fill="#FFFFFFFF"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="15 17 15 12 13 12 13 17 11 17 11 19 18 19 18 17 15 17" FillRule="NonZero" Fill="#FFFFFFFF"/>
+    </Canvas>
+
+
+    <Canvas x:Key="interlock_default" x:Shared="false" Width="28" Height="28">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="5.1004" Canvas.Top="5.1004" Width="17.7992" Height="17.7992" Fill="#FFFFFFFF">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-45"/>
+                    <TranslateTransform X="-5.79899" Y="14"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M14 2.82843 25.17148 14 14 25.17157 2.82843 14 14 2.82843M14 0 0 14 14 28 27.99991 14 14 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="13" Canvas.Top="8" Width="2" Height="2" Fill="#FFA3B2BC"/>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="15 17 15 12 13 12 13 17 11 17 11 19 18 19 18 17 15 17" FillRule="NonZero" Fill="#FFA3B2BC"/>
+    </Canvas>
+
+
+    <Canvas x:Key="intersection-h" x:Shared="false" Width="33" Height="19">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFD8DCE1">
+            <Path.Data>
+                <PathGeometry Figures="M0 16.5V19H5V16.5a11.5 11.5 0 0 1 23 0V19h5V16.5a16.5 16.5 0 0 0-33 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="manual_valve_active-u-nozzled" x:Shared="false" Width="28" Height="20">
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M20 0H8V4h5v6.57141L0 5V20l14-6 14 6V5L15 10.57141V4h5V0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.8" Width="5.5" Canvas.Top="9.4" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.2" Width="5.5" Canvas.Top="9.5" Height="5.5"  StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="manual_valve_default-u-nozzled" x:Shared="false" Width="28" Height="20">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M1 19l12-6V12L1 6Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M15 12v1l12 6V6Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M26 8.03308v8.93384L15.57715 12.5l.21069-.0903L26 8.03308m-24 0L12.21216 12.4097l.21069.0903L2 16.96692V8.03308M20 0H8V4h5v6.57141L0 5V20l14-6 14 6V5L15 10.57141V4h5V0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.8" Width="5.5" Canvas.Top="9.4" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.2" Width="5.5" Canvas.Top="9.5" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="motor_active" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M12.5 0h0A12.5 12.5 0 0 0 0 12.5v0A12.50005 12.50005 0 0 0 12.5 25h0A12.50008 12.50008 0 0 0 25 12.5v0A12.5 12.5 0 0 0 12.5 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M18.99121 18H17V10l-3 8H11L8 10v8H6V7H9l3.5 9L16 7h2.99121Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="motor_default" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M12.5 2A10.5 10.5 0 1 1 2 12.5 10.5119 10.5119 0 0 1 12.5 2h0m0-2h0A12.5 12.5 0 0 0 0 12.5v0A12.50005 12.50005 0 0 0 12.5 25h0A12.50008 12.50008 0 0 0 25 12.5v0A12.5 12.5 0 0 0 12.5 0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M18.99121 18H17V10l-3 8H11L8 10v8H6V7H9l3.5 9L16 7h2.99121Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="on_off_valve_active-h-nozzled" x:Shared="false" Width="28" Height="15">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M14 6 0 0V15L14 9l14 6V0Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.6" Width="5.5" Canvas.Top="4.9" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.4" Width="5.5" Canvas.Top="4.9" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="on_off_valve_default-h-nozzled" x:Shared="false" Width="28" Height="15">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M1 14 13 8V7L1 1Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M15 7V8l12 6V1Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M14 6 0 0V15L14 9l14 6V0ZM12 7.68121 2 11.96692V3.03308L12 7.31879Zm14 4.28571L16 7.68121V7.31879L26 3.03308Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.6" Width="5.5" Canvas.Top="5" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="25.4" Width="5.5" Canvas.Top="5.1" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="piston" x:Shared="false" Width="7" Height="7">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="0 0 0 7 2 6 5 6 7 7 7 0 0 0" FillRule="NonZero" Fill="#FF333333"/>
+    </Canvas>
+
+
+    <Canvas x:Key="piston_rod" x:Shared="false" Width="7" Height="38">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="0 0 0 7 2 6 2 38 5 38 5 6 7 7 7 0 0 0" FillRule="NonZero" Fill="#FF333333"/>
+    </Canvas>
+
+
+    <Canvas x:Key="pump_active-u-nozzled" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FF0091DC">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-22.49996"/>
+                    <TranslateTransform X="-3.83202" Y="5.73503"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="23.8 15.4 22.2 16.6 12.5 3.667 2.8 16.6 1.2 15.4 12.5 0.333 23.8 15.4" FillRule="NonZero" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M2 12.5A10.5 10.5 0 1 1 12.5 23 10.51189 10.51189 0 0 1 2 12.5m-2 0A12.5 12.5 0 1 0 12.5 0 12.5 12.5 0 0 0 0 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="10" Width="5.5" Canvas.Top="21.9" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="9.6" Width="5.5" Canvas.Top="-2.8" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="pump_active-u" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="1" Width="23" Height="23" Fill="#FF0091DC">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-22.49996"/>
+                    <TranslateTransform X="-3.83202" Y="5.73503"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="23.8 15.4 22.2 16.6 12.5 3.667 2.8 16.6 1.2 15.4 12.5 0.333 23.8 15.4" FillRule="NonZero" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M2 12.5A10.5 10.5 0 1 1 12.5 23 10.51189 10.51189 0 0 1 2 12.5m-2 0A12.5 12.5 0 1 0 12.5 0 12.5 12.5 0 0 0 0 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="pump_default-u-nozzled" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="25" Height="25" Fill="#FFFFFFFF">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-22.49996"/>
+                    <TranslateTransform X="-3.83203" Y="5.73505"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M0 12.5V12.5A12.5 12.5 0 0 0 12.5 25H12.5A12.50066 12.50066 0 0 0 25 12.5V12.5a12.5 12.5 0 1 0-25 0Zm2 0A10.509 10.509 0 0 1 11.18155 2.092L2.142 14.14474A10.48311 10.48311 0 0 1 2 12.5ZM12.5 23A10.51569 10.51569 0 0 1 2.82175 16.5704L12.5 3.667l9.67822 12.90332A10.51566 10.51566 0 0 1 12.5 23ZM23 12.5a10.48114 10.48114 0 0 1-.142 1.64471L13.81851 2.092A10.50918 10.50918 0 0 1 23 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="10.2" Width="5.5" Canvas.Top="22.3" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="9.9" Width="5.5" Canvas.Top="-2.9" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="pump_default-u" x:Shared="false" Width="25" Height="25">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="0" Canvas.Top="0" Width="25" Height="25" Fill="#FFFFFFFF">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-22.49996"/>
+                    <TranslateTransform X="-3.83203" Y="5.73505"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M0 12.5V12.5A12.5 12.5 0 0 0 12.5 25H12.5A12.50066 12.50066 0 0 0 25 12.5V12.5a12.5 12.5 0 1 0-25 0Zm2 0A10.509 10.509 0 0 1 11.18155 2.092L2.142 14.14474A10.48311 10.48311 0 0 1 2 12.5ZM12.5 23A10.51569 10.51569 0 0 1 2.82175 16.5704L12.5 3.667l9.67822 12.90332A10.51566 10.51566 0 0 1 12.5 23ZM23 12.5a10.48114 10.48114 0 0 1-.142 1.64471L13.81851 2.092A10.50918 10.50918 0 0 1 23 12.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="stirrer_active-u" x:Shared="false" Width="25" Height="30">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="6" Width="23" Height="23" Fill="#FF0091DC"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M11 7.11981v8.73181L5 13.544V22H7V16.45605l13 5V13H18V18.544l-4-1.53846V7.11981Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+            <Path.Data>
+                <PathGeometry Figures="M14 5.09839V0H11V5.09839a12.5 12.5 0 1 0 3 0ZM12.5 28A10.5 10.5 0 1 1 23 17.5 10.51188 10.51188 0 0 1 12.5 28Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="stirrer_default-u" x:Shared="false" Width="25" Height="30">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1" Canvas.Top="6" Width="23" Height="23" Fill="#FFFFFFFF"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M14 5.09839V0H11V5.09839A12.49569 12.49569 0 0 0 0 17.49994V17.5A12.5 12.5 0 1 0 14 5.09839ZM12.5 28A10.49351 10.49351 0 0 1 11 7.11981v8.73181L5 13.544V22H7V16.45605l13 5V13H18V18.544l-4-1.53846V7.11981A10.49351 10.49351 0 0 1 12.5 28Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+
+    <Canvas x:Key="strainer-u" x:Shared="false" Width="25" Height="34">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="25 34 25 9 12.5 0 0 9 0 34 25 34" FillRule="NonZero" Fill="#FFD8DCE1"/>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="2.41672" Canvas.Top="17.23676" Width="8" Height="2" Fill="#FFF2F3F5">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-169.99998"/>
+                    <TranslateTransform X="9.56918" Y="37.31071"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="14.23442" Canvas.Top="19.32054" Width="8" Height="2" Fill="#FFF2F3F5">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform Angle="-169.99998"/>
+                    <TranslateTransform X="32.66318" Y="43.49874"/>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+    </Canvas>
+
+
+    <Canvas x:Key="three_way_valve-u-nozzled" x:Shared="false" Width="27" Height="21">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M1 19l11-5V13L1 8Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M15 13v1l11 5V8Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M12.5 12h2l5-11H7.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M15.96771 10.9032 21 0H6l5.03229 10.9032L0 6V21l13.5-6L27 21V6ZM17.87421 2l-4.15387 9h-.44068L9.12579 2ZM11.5 13.70026 2 17.92249v-8.845l9.5 4.22223ZM25 17.92249l-9.5-4.22223v-.40052L25 9.07751Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.7" Width="5.5" Canvas.Top="10" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="24.5" Width="5.5" Canvas.Top="10" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#3"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="10.6" Width="5.5" Canvas.Top="-2.7" Height="5.5" StrokeThickness="0.37247378" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+
+    <Canvas x:Key="three_way_valve-u" x:Shared="false" Width="27" Height="21">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M1 19l11-5V13L1 8Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M15 13v1l11 5V8Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF">
+            <Path.Data>
+                <PathGeometry Figures="M12.5 12h2l5-11H7.5Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFA3B2BC">
+            <Path.Data>
+                <PathGeometry Figures="M15.96771 10.9032 21 0H6l5.03229 10.9032L0 6V21l13.5-6L27 21V6ZM17.87421 2l-4.15387 9h-.44068L9.12579 2ZM11.5 13.70026 2 17.92249v-8.845l9.5 4.22223ZM25 17.92249l-9.5-4.22223v-.40052L25 9.07751Z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+</ResourceDictionary>

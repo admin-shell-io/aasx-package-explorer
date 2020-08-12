@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="Mtp.DynamicInstances.MtpViewAnaViewLarge"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mtp.DynamicInstances"
+             mc:Ignorable="d" 
+             d:DesignHeight="96" d:DesignWidth="130">
+    <Border Background="#202020" BorderThickness="1" BorderBrush="DarkGray" CornerRadius="3,3,3,3">
+        <Grid x:Name="viewGrid" Margin="2">
+            <Grid.RowDefinitions>
+                <!-- 0: Labels -->
+                <RowDefinition Height="Auto"/>
+                <!-- 1: TagName, TagDescription-->
+                <RowDefinition Height="20"/>
+                <!-- 2: Labels -->
+                <RowDefinition Height="Auto"/>
+                <!-- 3: Value -->
+                <RowDefinition Height="*"/>
+                <!-- 4: Gauge -->
+                <RowDefinition Height="Auto"/>
+                <!-- 5: Gauge Limits -->
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" FontSize="6" Padding="0" Foreground="Gray">Tag</Label>
+            <Label Grid.Row="0" Grid.Column="1" FontSize="6" Padding="0" Foreground="Gray">WQF</Label>
+            <TextBlock Grid.Row="1" Grid.Column="0" FontSize="14" Padding="0" Foreground="White" VerticalAlignment="Top" Text="{Binding Path=TagName, Mode=OneWay}"/>
+            <!-- <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" FontSize="6" Padding="0" Foreground="White" TextWrapping="WrapWithOverflow" TextTrimming="WordEllipsis" VerticalAlignment="Top">This is a very long description of everything and even more</TextBlock> -->
+            <Rectangle Grid.Row="1" Grid.Column="1" Fill="{Binding Path=WorstQualityCodeBrush, Mode=OneWay}" IsHitTestVisible="False"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" FontSize="8" Padding="0" Foreground="White" VerticalAlignment="Top" Text="{Binding Path=WorstQualityCodeText, Mode=OneWay}"/>
+            <Button x:Name="ButtonGo" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="2">
+                <Viewbox Stretch="Uniform" Height="20" Margin="0">
+                    <!-- see: http://modernuiicons.com/ -->
+                    <!--
+                    <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="appbar_shuffle" Width="76" Height="76" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                        <Path Width="47.5" Height="41.1667" Canvas.Left="14.25" Canvas.Top="17.4167" Stretch="Fill" Fill="#FF000000" Data="F1 M 14.25,45.9166L 20.5834,45.9167L 39.1874,23.75L 47.8958,23.75L 41.1667,17.4167L 51.4583,17.4167L 61.75,26.9166L 51.4583,36.4167L 41.1667,36.4167L 47.8958,30.0833L 41.1667,30.0833L 22.1667,52.25L 14.25,52.25L 14.25,45.9166 Z M 14.25,30.0833L 14.25,23.75L 22.1667,23.75L 29.6875,32.5243L 26.1226,36.6834L 20.5833,30.0833L 14.25,30.0833 Z M 41.1667,45.9167L 47.8958,45.9167L 41.1666,39.5833L 51.4583,39.5834L 61.75,49.0834L 51.4583,58.5833L 41.1666,58.5833L 47.8958,52.25L 39.1873,52.25L 31.9416,43.6167L 35.5684,39.3854L 41.1667,45.9167 Z "/>
+                    </Canvas>
+                    -->
+                    <Viewbox.RenderTransform>
+                        <ScaleTransform ScaleX="2" ScaleY="2" CenterX="10" CenterY="10"/>
+                    </Viewbox.RenderTransform>
+                    <Canvas xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Name="appbar_share_open" Width="76" Height="76" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                        <Path Width="41.1667" Height="31.6667" Canvas.Left="17.4167" Canvas.Top="22.1667" Stretch="Fill" Fill="#FF000000" Data="F1 M 38,33.25C 40.6234,33.25 42.75,35.3766 42.75,38C 42.75,40.6234 40.6234,42.75 38,42.75C 35.3766,42.75 33.25,40.6234 33.25,38C 33.25,35.3766 35.3767,33.25 38,33.25 Z M 38,22.1667C 41.5644,22.1667 44.8537,23.3445 47.5,25.3322L 47.5,28.5L 45.5208,30.4792L 43.8049,30.4792C 42.1995,29.2383 40.186,28.5 38,28.5C 33.3487,28.5 29.4781,31.8428 28.6596,36.2571L 26.9167,38L 17.4167,38L 17.4167,31.6667L 23.4842,31.6667C 25.9274,26.0746 31.5074,22.1667 38,22.1667 Z M 38,53.8334C 34.4356,53.8334 31.1462,52.6555 28.5,50.6679L 28.5,47.5L 30.4792,45.5208L 32.1951,45.5208C 33.8004,46.7617 35.814,47.5 37.9999,47.5C 42.6513,47.5 46.5219,44.1572 47.3404,39.7429L 49.0833,38.0001L 58.5833,38L 58.5833,44.3333L 52.5158,44.3333C 50.0726,49.9254 44.4926,53.8334 38,53.8334 Z "/>
+                    </Canvas>
+                </Viewbox>
+            </Button>
+            <Label Grid.Row="2" Grid.Column="0" FontSize="6" Padding="0" Foreground="Gray">Value</Label>
+            <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" FontSize="6" Padding="0" Foreground="White" Content="{Binding Path=ValueUnitText, Mode=OneWay}"/>
+            <Viewbox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                <TextBlock FontSize="4" Padding="0" Foreground="White" TextWrapping="WrapWithOverflow" Text="{Binding Path=Value, Mode=OneWay}"/>
+            </Viewbox>
+            <!-- ReSharper disable once Xaml.MissingGridIndex -->
+            <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" Margin="0,1,0,1" Height="4" Value="{Binding Path=ValuePercent, Mode=OneWay}"/>
+            <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" FontSize="8" Padding="0" Foreground="Green" Content="{Binding Path=ValueScaleLowLimit, Mode=OneWay}"/>
+            <!-- ReSharper disable once Xaml.IndexOutOfGridDefinition -->
+            <Label Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" FontSize="8" Padding="0" Foreground="Green" HorizontalContentAlignment="Right" Content="{Binding Path=ValueScaleHighLimit, Mode=OneWay}"/>
+        </Grid>
+    </Border>
+</UserControl>

@@ -37,6 +37,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AasxPluginHelper.cs" />
     <Compile Include="AasxPluginInterface.cs" />
     <Compile Include="AasxPluginOptionsBase.cs" />
     <Compile Include="Extensions.cs" />
@@ -47,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">

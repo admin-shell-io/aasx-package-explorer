@@ -107,16 +107,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense = "The browser functionality is licensed under the cefSharp license (see below).";
 
-                lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                    "AasxPluginWebBrowser.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        lic.longLicense += tr.ReadToEnd();
-                    }
-                }
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
             }
@@ -147,6 +140,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 this.browserGrid.Children.Add(this.theBrowser);
                 Grid.SetRow(this.theBrowser, 0);
                 Grid.SetColumn(this.theBrowser, 0);
+
+                // TODO (MIHO, 2020-08-02): when dragging the divider between elements tree and browser window,
+                // distortions can be seen (diagonal shifting of pixels). Interestingly, this problem was not
+                // appearant, when the browser was integrated within the main application and is new for the 
+                // plugin approach. Would be great if somebody would find a solution.
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

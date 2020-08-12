@@ -101,16 +101,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 lic.shortLicense = "The OpenXML SDK is under MIT license." + Environment.NewLine +
                     "The ClosedXML library is under MIT license.";
 
-                lic.longLicense = "";
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                    "AasxPluginExportTable.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        lic.longLicense += tr.ReadToEnd();
-                    }
-                }
+                lic.isStandardLicense = true;
+                lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
+                    "LICENSE.txt", Assembly.GetExecutingAssembly());
 
                 return lic;
             }
@@ -223,7 +216,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     Log.Error(ex, "When exporting table, an error occurred");
                 }
 
-                fop.CloseFlyover();
+                fop?.CloseFlyover();
             }
 
             // default

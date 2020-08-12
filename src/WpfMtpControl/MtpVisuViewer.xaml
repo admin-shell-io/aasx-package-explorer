@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="WpfMtpControl.MtpVisuViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WpfMtpControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="400">
+
+    <Grid x:Name="gridOuter" Background="#ffe0e0e0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <CheckBox DockPanel.Dock="Right" x:Name="checkboxDrawHP" Margin="2" VerticalContentAlignment="Center" IsChecked="False" Click="Button_Click">Handle Points</CheckBox>
+            <CheckBox DockPanel.Dock="Right" x:Name="checkboxDrawBB" Margin="2" VerticalContentAlignment="Center" IsChecked="False" Click="Button_Click" >Bounding Boxes</CheckBox>
+            <Button DockPanel.Dock="Right" x:Name="buttonZoomOut" Margin="2" Width="30" Click="Button_Click" FontWeight="ExtraBold">&#xff0d;</Button>
+            <Button DockPanel.Dock="Right" x:Name="buttonZoomFit" Margin="2" Width="30" Click="Button_Click" FontWeight="ExtraBold">&#x25a2;</Button>
+            <Button DockPanel.Dock="Right" x:Name="buttonZoomIn" Margin="2" Width="30" Click="Button_Click" FontWeight="ExtraBold">&#xff0b;</Button>
+            <Label></Label>
+        </DockPanel>
+
+        <!-- Main content -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+            <!-- ReSharper disable once Xaml.RedundantAttachedProperty -->
+            <Canvas Grid.Row="1" x:Name="canvasVisu" Height="400" Width="400" HorizontalAlignment="Left" Loaded="Canvas_Loaded" MouseDown="CanvasVisu_MouseDown">
+            </Canvas>
+        </ScrollViewer>
+               
+    </Grid>
+</UserControl>

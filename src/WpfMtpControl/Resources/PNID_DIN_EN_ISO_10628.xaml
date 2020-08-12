@@ -1,0 +1,268 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:WpfMtpControl">
+
+    <!-- Hint: rename Name=\"\w+\" -->
+    <!-- <Viewbox x:Key="Pressurized_vessel_horizontal"  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform"> -->
+
+    <!-- Remove transforms in InkScape -->
+    <!-- https://stackoverflow.com/questions/13329125/removing-transforms-in-svg-files -->
+       
+    <Canvas x:Key="Pressurized_vessel_horizontal" Width="53.206074" Height="28.55813">
+            <Canvas.Resources/>
+            <!--Unknown tag: sodipodi:namedview-->
+            <!--Unknown tag: metadata-->
+            <Canvas >
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="-8.7826626" Y="-19.382152"/>
+                </Canvas.RenderTransform>
+                <Canvas >
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="0.7774266" Stroke="#FF000000" StrokeMiterLimit="4">
+                        <Path.Data>
+                            <PathGeometry Figures="m 37.203241 13.364701 a 9.7440948 4.4291339 0 0 1 -9.827643 4.351666 9.7440948 4.4291339 0 0 1 -9.659062 -4.428965" FillRule="NonZero"/>
+                        </Path.Data>
+                        <Path.RenderTransform>
+                            <MatrixTransform Matrix="0 1.4093144 1.3090511 0 38.288033 -5.0381976"/>
+                        </Path.RenderTransform>
+                    </Path>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="1.0629921" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                        <Path.Data>
+                            <PathGeometry Figures="m 56.259141 19.921962 c -40.782784 0 -40.782784 0 -40.782784 0" FillRule="nonzero"/>
+                        </Path.Data>
+                    </Path>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="1.0629921" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                        <Path.Data>
+                            <PathGeometry Figures="m 56.259093 47.400826 c -40.79173 0 -40.79173 0 -40.79173 0" FillRule="nonzero"/>
+                        </Path.Data>
+                    </Path>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="0.75879848" Stroke="#FF000000" StrokeMiterLimit="4">
+                        <Path.Data>
+                            <PathGeometry Figures="m 37.204725 13.287402 a 9.7440948 4.4291339 0 0 1 -4.872047 3.835743 9.7440948 4.4291339 0 0 1 -9.744095 0 9.7440948 4.4291339 0 0 1 -4.872047 -3.835743" FillRule="NonZero"/>
+                        </Path.Data>
+                        <Path.RenderTransform>
+                            <MatrixTransform Matrix="0 1.4078308 -1.3939806 0 34.011027 -4.9974592"/>
+                        </Path.RenderTransform>
+                    </Path>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="0.06711151" Stroke="#FFFFFFFF" StrokeMiterLimit="4" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Opacity="1">
+                        <Path.Data>
+                            <PathGeometry Figures="m 14.932891 46.743222 c -2.366031 -0.658356 -4.288693 -4.607262 -4.90503 -10.074316 -0.1548419 -1.373476 -0.1540616 -4.693514 0.0014 -6.029348 0.571456 -4.90984 2.100693 -8.475448 4.177568 -9.740513 0.701775 -0.427464 -1.148718 -0.395047 21.530562 -0.377178 l 20.517038 0.01617 0.410374 0.220971 c 1.349412 0.726607 2.586685 2.815805 3.369566 5.689683 0.299188 1.098283 0.544365 2.457527 0.744558 4.127737 0.113175 0.94421 0.114065 5.09498 0.0013 6.12405 -0.527426 4.813778 -1.98101 8.462007 -3.871081 9.715715 -0.684991 0.454361 1.199651 0.417976 -21.325538 0.411732 -16.10449 -0.0045 -20.426094 -0.02219 -20.650745 -0.0847 z" FillRule="NonZero"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </Canvas>
+        </Canvas>
+
+    <Canvas x:Key="Pressurized_vessel_vertical" Width="28.55813" Height="53.206074">
+        <Canvas.Resources/>
+        <!--Unknown tag: sodipodi:namedview-->
+        <!--Unknown tag: metadata-->
+        <Canvas >
+            <Canvas.RenderTransform>
+                <TranslateTransform X="-21.118314" Y="-7.0468549"/>
+            </Canvas.RenderTransform>
+            <Canvas >
+                <Canvas.RenderTransform>
+                    <MatrixTransform Matrix="0 1 -1 0 69.058596 -1.7358077"/>
+                </Canvas.RenderTransform>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="0.7774266" Stroke="#FF000000" StrokeMiterLimit="4">
+                    <Path.Data>
+                        <PathGeometry Figures="m 37.203241 13.364701 a 9.7440948 4.4291339 0 0 1 -9.827643 4.351666 9.7440948 4.4291339 0 0 1 -9.659062 -4.428965" FillRule="NonZero"/>
+                    </Path.Data>
+                    <Path.RenderTransform>
+                        <MatrixTransform Matrix="0 1.4093144 1.3090511 0 38.288033 -5.0381976"/>
+                    </Path.RenderTransform>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="1.0629921" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 56.259141 19.921962 c -40.782784 0 -40.782784 0 -40.782784 0" FillRule="nonzero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="1.0629921" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 56.259093 47.400826 c -40.79173 0 -40.79173 0 -40.79173 0" FillRule="nonzero"/>
+                    </Path.Data>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="0.75879848" Stroke="#FF000000" StrokeMiterLimit="4">
+                    <Path.Data>
+                        <PathGeometry Figures="m 37.204725 13.287402 a 9.7440948 4.4291339 0 0 1 -4.872047 3.835743 9.7440948 4.4291339 0 0 1 -9.744095 0 9.7440948 4.4291339 0 0 1 -4.872047 -3.835743" FillRule="NonZero"/>
+                    </Path.Data>
+                    <Path.RenderTransform>
+                        <MatrixTransform Matrix="0 1.4078308 -1.3939806 0 34.011027 -4.9974592"/>
+                    </Path.RenderTransform>
+                </Path>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="0.06711151" Stroke="#FFFFFFFF" StrokeMiterLimit="4" StrokeStartLineCap="Square" StrokeEndLineCap="Square" Opacity="1">
+                    <Path.Data>
+                        <PathGeometry Figures="m 14.932891 46.743222 c -2.366031 -0.658356 -4.288693 -4.607262 -4.90503 -10.074316 -0.1548419 -1.373476 -0.1540616 -4.693514 0.0014 -6.029348 0.571456 -4.90984 2.100693 -8.475448 4.177568 -9.740513 0.701775 -0.427464 -1.148718 -0.395047 21.530562 -0.377178 l 20.517038 0.01617 0.410374 0.220971 c 1.349412 0.726607 2.586685 2.815805 3.369566 5.689683 0.299188 1.098283 0.544365 2.457527 0.744558 4.127737 0.113175 0.94421 0.114065 5.09498 0.0013 6.12405 -0.527426 4.813778 -1.98101 8.462007 -3.871081 9.715715 -0.684991 0.454361 1.199651 0.417976 -21.325538 0.411732 -16.10449 -0.0045 -20.426094 -0.02219 -20.650745 -0.0847 z" FillRule="NonZero"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Canvas>
+        <Label Canvas.Left="0" Canvas.Top="0" Width="28.55" Height="53.2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="8">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Shutoff_Valve" x:Shared="false" Width="100" Height="100">
+        <Canvas Canvas.Top="60" Canvas.Left="30" Width="37" Height="19.618034">
+            <Canvas.Resources/>
+            <!--Unknown tag: metadata-->
+            <!--Unknown tag: sodipodi:namedview-->
+            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  Stroke="#FF000000">
+                <Path.Data>
+                    <PathGeometry Figures="m 0.5 0.80901699 0 18.00000001 36 -18.00000001 0 18.00000001 z" FillRule="NonZero"/>
+                </Path.Data>
+            </Path>
+        </Canvas>
+        <Label Canvas.Left="0" Canvas.Top="0" Width="100" Height="55" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Pump_general" x:Shared="false" Width="100" Height="100">
+        <Viewbox Canvas.Top="60" Canvas.Left="30" Width="40" Height="40" Stretch="Uniform">
+            <Canvas  Width="2.06" Height="2.06">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="2" Y="2"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <!--Unknown tag: metadata-->
+                <!--Unknown tag: sodipodi:namedview-->
+                <Canvas >
+                    <Canvas.RenderTransform>
+                        <TranslateTransform X="-0.97" Y="-0.97"/>
+                    </Canvas.RenderTransform>
+                    <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-1" Canvas.Top="-1" Width="2" Height="2"  Fill="#FFFFFFFF" StrokeThickness="0.06" Stroke="#FF000000"/>
+                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  StrokeThickness="0.06" Stroke="#FF000000" StrokeLineJoin="Bevel">
+                        <Path.Data>
+                            <PathGeometry Figures="M 0 -1 1 0 0 1" FillRule="NonZero"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </Canvas>
+        </Viewbox>
+        <Label Canvas.Left="0" Canvas.Top="0" Width="100" Height="40" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Sensor_general" x:Shared="false" Width="100" Height="50">
+        <Viewbox Canvas.Top="0" Canvas.Left="00" Width="100" Height="50" Stretch="Uniform">
+            <Canvas Width="4.2743167" Height="2.04881">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="2" Y="2"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="0.04" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m -1.9884746 -0.988139 4.2627118 0.016949 m -3.2542372 1 c -0.5522847 0 -1 -0.4477153 -1 -1 0 -0.5522847 0.4477153 -1 1 -1 m 0 2 c -0.5522847 0 -1 -0.4477153 -1 -1 0 -0.5522847 0.4477153 -1 1 -1 L 1.2539831 -1.98 c 0.5522847 0 1 0.4477153 1 1 0 0.5522847 -0.4477153 1 -1 1 z" FillRule="evenodd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Viewbox>
+        <Label Canvas.Left="0" Canvas.Top="0" Width="100" Height="25" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Source_general" x:Shared="false" Width="100" Height="100">
+        <!-- Layout that way, that the aspect corrected symbol sits in the middle-->
+        <Viewbox Canvas.Top="25" Canvas.Left="00" Width="100" Height="50" Stretch="Uniform" HorizontalAlignment="Center">
+            <Canvas Width="6.1773181" Height="3.8164554" >
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="2" Y="2"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="0.25" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m -1.9704165 -1.9704165 6.102615 0 c 0 0 -0.5352767 1.27361552 -0.5352767 1.89983022 0 0.6262147 0.5352767 1.85745798 0.5352767 1.85745798 l -6.102615 0 z" FillRule="evenodd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Viewbox>
+        <Label Canvas.Left="-300" Canvas.Top="-300" Width="700" Height="325" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center" FontSize="32">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Sink_general" x:Shared="false" Width="100" Height="100">
+        <!-- Layout that way, that the aspect corrected symbol sits in the middle-->
+        <Viewbox Canvas.Top="25" Canvas.Left="00" Width="100" Height="50" Stretch="Uniform" HorizontalAlignment="Center">
+            <Canvas   Width="6.1773181" Height="3.8164554">
+                <Canvas.RenderTransform>
+                    <TranslateTransform X="2" Y="2"/>
+                </Canvas.RenderTransform>
+                <Canvas.Resources/>
+                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="0.25916703" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+                    <Path.Data>
+                        <PathGeometry Figures="m 4.1477346 -1.9704165 -5.4246489 0 -0.7020114 1.93372853 0.7189606 1.85745797 5.4076997 -0.033898 z" FillRule="evenodd"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Viewbox>
+        <Label Canvas.Left="-300" Canvas.Top="-300" Width="700" Height="325" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Center" FontSize="32">%TAG%</Label>
+    </Canvas>
+
+    <Canvas x:Key="Pump_general_nozzled_old" x:Shared="false" Width="40" Height="40">
+        <Canvas.RenderTransform>
+            <TranslateTransform X="2" Y="2"/>
+        </Canvas.RenderTransform>
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-2.1" Width="40.1" Canvas.Top="-1.9" Height="39.9"   Fill="#FFFFFFFF" StrokeThickness="1.2006489" Stroke="#FF000000"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   StrokeThickness="1.18982315" Stroke="#FF000000" StrokeLineJoin="Bevel">
+            <Path.Data>
+                <PathGeometry Figures="M 18.129474 -2.0862972 37.749905 17.956289 18.129474 37.998877" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="35.4" Width="5.8" Canvas.Top="15.1" Height="5.7"   StrokeThickness="0.39058441" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-4.8" Width="5.8" Canvas.Top="15.1" Height="5.7"   StrokeThickness="0.39058441" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+    </Canvas>
+
+    <Canvas x:Key="Pump_general_nozzled" x:Shared="false" Width="1000" Height="1000">
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1.7" Width="1003.5" Canvas.Top="0.7" Height="997.5"   Fill="#FFFFFFFF" StrokeThickness="30.016222" Stroke="#FF000000"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   StrokeThickness="29.74557877" Stroke="#FF000000" StrokeLineJoin="Bevel">
+            <Path.Data>
+                <PathGeometry Figures="M 507.93821 -3.23602 998.449 497.82864 507.93821 998.8933" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="934.5" Width="145.3" Canvas.Top="430.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-72.2" Width="145.3" Canvas.Top="434.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+    </Canvas>
+
+    <Canvas x:Key="Shutoff_Valve_nozzled" x:Shared="false" Width="1000" Height="1000">
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="27.41399384" Stroke="#FF000000">
+            <Path.Data>
+                <PathGeometry Figures="m 0.22921094 261.68456 0 486.20705 L 1001.8385 261.68456 l 0 486.20705 z" FillRule="NonZero"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="934.5" Width="145.3" Canvas.Top="430.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#2"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-72.2" Width="145.3" Canvas.Top="434.6" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+    </Canvas>
+
+    <Canvas x:Key="Sink_tagged" x:Shared="false" Width="1000" Height="1000">
+        <Canvas.Resources/> 
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="426.4" Width="145.3" Canvas.Top="1115.1" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#3"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="427.3" Width="145.3" Canvas.Top="428.2" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="30.24284744" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+            <Path.Data>
+                <PathGeometry Figures="m 1001.5706 184.98129 -892.76156 0 L -6.7245299 501.18342 111.59845 804.91385 1001.5706 799.37087 Z" FillRule="evenodd"/>
+            </Path.Data>
+        </Path>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1197.5" Width="145.3" Canvas.Top="429.8" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#2"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="427.4" Width="145.3" Canvas.Top="-316.9" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-372.7" Width="145.3" Canvas.Top="429.8" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#4"/>
+    </Canvas>
+
+    <Canvas x:Key="Source_tagged" x:Shared="false" Width="1000" Height="1000">
+        <Canvas.Resources/>
+        <!--Unknown tag: metadata-->
+        <!--Unknown tag: sodipodi:namedview-->
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="426.4" Width="145.3" Canvas.Top="1115.1" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#3"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="427.3" Width="145.3" Canvas.Top="428.2" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Nozzle#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1197.5" Width="145.3" Canvas.Top="429.8" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#2"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="427.4" Width="145.3" Canvas.Top="-316.9" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#1"/>
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="-372.7" Width="145.3" Canvas.Top="429.8" Height="143.7"   StrokeThickness="9.76461029" Stroke="#FFFF0000" StrokeMiterLimit="4" Tag="Label#4"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FFFFFFFF" StrokeThickness="30.27093124" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat">
+            <Path.Data>
+                <PathGeometry Figures="m -2.0976067 189.923 996.6802367 0 c 0 0 -87.42144 210.90688 -87.42144 314.60617 0 103.6992 87.42144 307.58941 87.42144 307.58941 l -996.6802367 0 z" FillRule="evenodd"/>
+            </Path.Data>
+        </Path>
+    </Canvas>
+
+</ResourceDictionary>

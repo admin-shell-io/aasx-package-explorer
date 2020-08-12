@@ -1,0 +1,1 @@
+Please see LICENSE.txt of the AASX Package Explorer main application.

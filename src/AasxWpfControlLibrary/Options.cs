@@ -139,19 +139,7 @@ namespace AasxPackageExplorer
         {
             get
             {
-                using (var stream =
-                    Assembly
-                        .GetExecutingAssembly()
-                        .GetManifestResourceStream("AasxWpfControlLibrary.Resources.LICENSE.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        string fileContents = tr.ReadToEnd();
-                        return (fileContents);
-                    }
-                }
-                return "";
+                return AasxPluginHelper.LoadLicenseTxtFromAssemblyDir("LICENSE.txt", Assembly.GetEntryAssembly());
             }
         }
 
@@ -159,7 +147,7 @@ namespace AasxPackageExplorer
         /// The current version string of the application. Use of Options as singleton.
         /// </summary>
         [JsonIgnore]
-        public string PrefVersion = "1.9.8.2";
+        public string PrefVersion = "1.9.8.3";
 
         /// <summary>
         /// This file shall be loaded at start of application

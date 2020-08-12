@@ -51,7 +51,7 @@ namespace AasxPackageExplorer
                 "Version: " + Options.Curr.PrefVersion + "\n" +
                 "Build date: " + Options.Curr.PrefBuildDate;
 
-            this.InfoBox.Text = Options.Curr.PrefLicenseLong;
+            this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + Options.Curr.PrefLicenseLong;
 
             // try to include plug-ins as well
             var lic = Plugins.CompileAllLicenses();

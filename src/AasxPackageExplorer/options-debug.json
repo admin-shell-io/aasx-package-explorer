@@ -3,7 +3,8 @@
   /* "AasxToLoad": "..\\..\\..\\..\\AasxGenerate\\bin\\Debug\\sample.aasx", */
   /* "AasxToLoad": "sample-hsu.aasx", */
   /* "AasxToLoad": "MTPsample.aasx", */
-  "AasxToLoad": "sample-generated-modified.aasx",
+  /* "AasxToLoad": "sample-generated-modified.aasx", */
+  "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -20,7 +21,7 @@
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 1000,
+  "SplashTime": 30000,
   "InternalBrowser": false,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
@@ -31,23 +32,16 @@
   "IndirectLoadSave": true,
   "AccentColors": {},
   "Remarks": [
-    "-arg",
-    "\"17a\"",
-    "\"final\"",
-    "Festo-USB-stick-sample-admin-shell-rest.aasx",
-    "test-aml-export2.aasx",
-    "..\\..\\..\\..\\..\\Sample_AAS\\Example_AAS_ServoDCMotor.aasx",
-    "..\\..\\..\\..\\..\\Sample_AAS\\Example_AAS_ForTesting_v07_with_reuse_submodel.aasx"
+    "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
     {
-      "Path": "..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
+      "Path": "..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
       "Args": [],
       "Options": null
     },
     {
-      /* "Path": "..\\..\\..\\..\\..\\AasxUaNetServerDevelop\\Net46AasxServerPlugin\\bin\\Debug\\Net46AasxServerPlugin.dll", */
-      "Path": "..\\..\\..\\..\\..\\AasxRestrictedPlugins\\AasxPluginUaNetServer\\bin\\Debug\\AasxPluginUaNetServer.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
         "-single-keys",
@@ -59,32 +53,41 @@
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxRestrictedPlugins\\AasxPluginOpcUaClient\\bin\\Debug\\AasxPluginOpcUaClient.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxMtpPlugin\\AasxPluginMtpViewer\\bin\\Debug\\AasxPluginMtpViewer.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\AasxPluginMtpViewer.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+      "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
+      "Args": []
+    },
+    /* Festo specific from here on */
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
       "Options": {
         "Records": [
@@ -103,7 +106,7 @@
       }
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
       "Args": [],
       "Options": {
         "Records": [
@@ -120,14 +123,6 @@
           }
         ]
       }
-    }, 
-    {
-      "Path": "..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\AasxPluginDocumentShelf.dll",
-      "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
-      "Args": []
     }
   ],
   "SecureConnectPresets": [
