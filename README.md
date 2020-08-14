@@ -1,5 +1,5 @@
-AASX Package Explorer
-=====================
+# AASX Package Explorer
+
 ![Build-test-inspect](
 https://github.com/admin-shell-io/aasx-package-explorer/workflows/Build-test-inspect/badge.svg
 ) ![Check-style](
@@ -48,19 +48,19 @@ We provide a couple of sample admin shells (packaged as .aasx) for you to
 test and play with the software at:
 http://www.admin-shell-io.com/samples/
 
-Installation
-------------
+## Installation
+
 We provide the binaries for Windows 10 in [the releases](
 https://github.com/admin-shell-io/aasx-package-explorer/releases). 
 
-Issues
-------
+## Issues
+
 If you want to request new features or report bugs, please 
 [create an issue](
 https://github.com/admin-shell-io/aasx-package-explorer/issues/new/choose). 
 
-Contributing
-------------
+## Contributing
+
 The latest documentation for developers is available [on this page](
 https://admin-shell-io.github.io/aasx-package-explorer/devdoc/
 ).
@@ -68,3 +68,24 @@ https://admin-shell-io.github.io/aasx-package-explorer/devdoc/
 If you want to contribute in code, see [Section "Getting started"](
 https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/intro.html
 ).
+
+## Other Open Source Implementations of AAS
+
+At the time of this writing (2020-08-14), we are aware of the following related
+implementations of asset administration shells (AAS):
+
+* **BaSyx** (https://projects.eclipse.org/projects/technology.basyx) provides
+  various modules to cover a broad scope of Industrie 4.0 (including AAS).
+  Hence its substantially more complex architecture. 
+  
+* **PyI40AAS** (https://git.rwth-aachen.de/acplt/pyi40aas) is a Python 
+  module for manipulating and validating AAS. 
+  
+* **SAP AAS Service** (https://github.com/SAP/i40-aas) provides a system based
+  on Docker images implementing the RAMI 4.0 reference architecture (including
+  AAS).
+
+In contrast to these projects, AASX Package Explorer covers only AAS,
+provides a graphical user interface (for less technically-savvy users) and 
+hopes to be the tool for experimenting with and demonstrating the potential of 
+AAS.
