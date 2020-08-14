@@ -23,11 +23,14 @@ function Main
     $( Join-Path $srcDir "bin" ) = $true
 
     $( Join-Path $srcDir "AasxPluginBomStructure" ) = $true
-    $( Join-Path $srcDir "AasxPluginWebBrowser" ) = $true
-    $( Join-Path $srcDir "AasxPluginTechnicalData" ) = $true
+    $( Join-Path $srcDir "AasxPluginDocumentShelf" ) = $true
     $( Join-Path $srcDir "AasxPluginExportTable" ) = $true
     $( Join-Path $srcDir "AasxPluginGenericForms" ) = $true
-    $( Join-Path $srcDir "AasxPluginDocumentShelf" ) = $true
+    $( Join-Path $srcDir "AasxPluginMtpViewer" ) = $true
+    $( Join-Path $srcDir "AasxPluginTechnicalData" ) = $true
+    $( Join-Path $srcDir "AasxPluginUaNetClient" ) = $true
+    $( Join-Path $srcDir "AasxPluginUaNetServer" ) = $true
+    $( Join-Path $srcDir "AasxPluginWebBrowser" ) = $true
     }
 
     $includes = @(
