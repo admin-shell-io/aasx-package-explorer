@@ -81,10 +81,13 @@ jobs:
           }
 
           $archives = Get-ChildItem $releaseDir -Filter *.zip
-          foreach($name in $archives)
+          foreach($archive in $archives)
           {
-              $path = Join-Path $releaseDir $name
+              $path = $archive.FullName
+              Write-Host "The path to the archive is: $path"
+
               $nameWoExt = [io.path]::GetFileNameWithoutExtension($path)
+              Write-Host "The name without extension is: $nameWoExt"
 
               $target = Join-Path $releaseDir ($nameWoExt + "." + $version + ".zip")
 
