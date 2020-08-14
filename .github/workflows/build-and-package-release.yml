@@ -25,6 +25,20 @@ jobs:
 
           $version = ${env:GITHUB_REF}.Substring($prefix.Length)
           Write-Host "The version is: $version"
+
+          if ($version.Contains("'"))
+          {
+              throw "Unexpected version containing a single quote: $version"
+          }
+          if ($version.Contains('"'))
+          {
+              throw "Unexpected version containing a double quote: $version"
+          }
+          if ($version.Contains(':'))
+          {
+              throw "Unexpected version containing a full colon: $version"
+          }
+
           Write-Output "::set-output name=version::$version"
 
 #      - name: Setup MSBuild
@@ -51,8 +65,8 @@ jobs:
       - name: Package
         working-directory: src
         run: |
-          $version = ${{ steps.inferVersion.outputs.version }}
-          Write-Host "Packaging for version: $version"
+          $version = '${{ steps.inferVersion.outputs.version }}'
+          Write-Host "Packaging for the version: $version"
           powershell .\PackageRelease.ps1 -version $version
 #
 #      - name: Upload latest-portable
