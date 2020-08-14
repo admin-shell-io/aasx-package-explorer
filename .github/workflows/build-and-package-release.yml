@@ -41,42 +41,36 @@ jobs:
 
           Write-Output "::set-output name=version::$version"
 
-#      - name: Setup MSBuild
-#        uses: microsoft/setup-msbuild@v1.0.0
-#        with:
-#          vs-version: 15
-#
-#      - name: Setup NuGet
-#        uses: NuGet/setup-nuget@v1.0.2
-#
-#      - name: Install .NET core
-#        uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: '3.1.100'
-#
-#      - name: Install build dependencies
-#        working-directory: src
-#        run: powershell .\InstallBuildDependencies.ps1
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          vs-version: 15
 
-#      - name: Build for release
-#        working-directory: src
-#        run: powershell .\BuildForRelease.ps1
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+
+      - name: Install .NET core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+
+      - name: Install build dependencies
+        working-directory: src
+        run: powershell .\InstallBuildDependencies.ps1
+
+      - name: Build for release
+        working-directory: src
+        run: powershell .\BuildForRelease.ps1
 
       - name: Package
         working-directory: src
         run: |
           $version = '${{ steps.inferVersion.outputs.version }}'
-          Write-Host "Packaging for the version: $version"
+          Write-Host "Packaging for the release version: $version"
           powershell .\PackageRelease.ps1 -version $version
-#
-#      - name: Upload latest-portable
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: portable.LATEST.alpha
-#          path: artefacts/release/LATEST.alpha/portable.zip
-#
-#      - name: Upload latest-portable-small
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: portable-small.LATEST.alpha
-#          path: artefacts/release/LATEST.alpha/portable-small.zip
+
+      - name: Uplodate release assets
+        uses: AButler/upload-release-assets@v2.0
+        with:
+          files: "artefacts/release/${{ steps.inferVersion.outputs.version }}/*.zip"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
