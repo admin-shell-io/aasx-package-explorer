@@ -74,3 +74,4 @@ jobs:
         with:
           files: "artefacts/release/${{ steps.inferVersion.outputs.version }}/*.zip"
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: "v${{ steps.inferVersion.outputs.version }}"
