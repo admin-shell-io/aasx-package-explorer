@@ -32,7 +32,8 @@ Please note that running the Github actions consumes limited resources (we have 
 per month available for CI on our current Github plan). You can manually disable workflows
 by appending the following lines to the body of the pull request:
 * `The workflow build-test-inspect was intentionally skipped.`
-* `The workflow check-style was intentionally skipped.`.
+* `The workflow check-style was intentionally skipped.`
+* `The workflow check-release was intentionally skipped.`
 
 For an example, see [this pull request](
 https://github.com/admin-shell-io/aasx-package-explorer/pull/94
