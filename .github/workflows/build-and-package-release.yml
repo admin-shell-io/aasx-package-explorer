@@ -1,7 +1,4 @@
 name: Build-and-package-release-workflow
-# TODO (mristin, 2020-08-14): this script is in a debug state.
-# We need to merge it unfinished and release on github in order to complete it.
-# Please be careful when looking at these commits.
 
 on:
   push:
@@ -69,7 +66,22 @@ jobs:
           Write-Host "Packaging for the release version: $version"
           powershell .\PackageRelease.ps1 -version $version
 
-      - name: Uplodate release assets
+          # Rename so that the users always know which version they downloaded
+
+          $releaseDir = "artefacts\release\$version"
+          $archives = Get-ChildItem $releaseDir -Filter *.zip
+          foreach($name in $archives)
+          {
+              $path = Join-Path $releaseDir $name
+              $nameWoExt = [io.path]::GetFileNameWithoutExtension($path)
+
+              $target = Join-Path $releaseDir ($nameWoExt + "." + $version + ".zip")
+
+              Write-Host "Moving: $path -> $target"
+              Move-Item -Path $path -Destination $target
+          }
+
+      - name: Upload release assets
         uses: AButler/upload-release-assets@v2.0
         with:
           files: "artefacts/release/${{ steps.inferVersion.outputs.version }}/*.zip"
