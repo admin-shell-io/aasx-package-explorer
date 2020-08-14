@@ -67,10 +67,19 @@ jobs:
           powershell .\PackageRelease.ps1 -version $version
 
       - name: Rename the release assets
+        working-directory: ./
         run: |
-          # Rename so that the users always know which version they downloaded
+          Write-Host "Current working directory: $(Get-Location)"
 
-          $releaseDir = "artefacts\release\$version"
+          $version = '${{ steps.inferVersion.outputs.version }}'
+          $releaseDir = Join-Path $(Get-Location) "artefacts\release\$version"
+          Write-Host "Release directory: $releaseDir"
+
+          if (!(Test-Path $releaseDir))
+          {
+              throw "The release directory does not exist: $releaseDir"
+          }
+
           $archives = Get-ChildItem $releaseDir -Filter *.zip
           foreach($name in $archives)
           {
