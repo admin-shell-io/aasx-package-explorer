@@ -1,0 +1,68 @@
+name: Build-and-package-release-workflow
+# TODO (mristin, 2020-08-14): this script is in a debug state.
+# We need to merge it unfinished and release on github in order to complete it.
+# Please be careful when looking at these commits.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  Build-and-package-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Infer the version from the github ref
+        id: inferVersion
+        run: |
+          $prefix = "refs/tags/v"
+          if (!${env:GITHUB_REF}.StartsWith($prefix))
+          {
+              throw "Unexpected GITHUB_REF: ${env:GITHUB_REF}"
+          }
+
+          $version = ${env:GITHUB_REF}.Substring($prefix.Length)
+          Write-Host "The version is: $version"
+          Write-Output "::set-output name=version::$version"
+
+#      - name: Setup MSBuild
+#        uses: microsoft/setup-msbuild@v1.0.0
+#        with:
+#          vs-version: 15
+#
+#      - name: Setup NuGet
+#        uses: NuGet/setup-nuget@v1.0.2
+#
+#      - name: Install .NET core
+#        uses: actions/setup-dotnet@v1
+#        with:
+#          dotnet-version: '3.1.100'
+#
+#      - name: Install build dependencies
+#        working-directory: src
+#        run: powershell .\InstallBuildDependencies.ps1
+
+#      - name: Build for release
+#        working-directory: src
+#        run: powershell .\BuildForRelease.ps1
+
+      - name: Package
+        working-directory: src
+        run: |
+          $version = ${{ steps.inferVersion.outputs.version }}
+          Write-Host "Packaging for version: $version"
+          powershell .\PackageRelease.ps1 -version $version
+#
+#      - name: Upload latest-portable
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: portable.LATEST.alpha
+#          path: artefacts/release/LATEST.alpha/portable.zip
+#
+#      - name: Upload latest-portable-small
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: portable-small.LATEST.alpha
+#          path: artefacts/release/LATEST.alpha/portable-small.zip
