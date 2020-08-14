@@ -85,7 +85,7 @@ implementations of asset administration shells (AAS):
   on Docker images implementing the RAMI 4.0 reference architecture (including
   AAS).
 
-In contrast to these projects, AASX Package Explorer covers only AAS,
-provides a graphical user interface (for less technically-savvy users) and 
-hopes to be the tool for experimenting with and demonstrating the potential of 
-AAS.
+While these projects try to implement a wider scope of programatic features,
+AASX Package Explorer, in contrast, is a tool with graphical user interface 
+meant for experimenting and demonstrating the potential of asset administration
+shells targeting tech-savvy and less technically-inclined users alike.
