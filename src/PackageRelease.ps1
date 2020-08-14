@@ -12,8 +12,7 @@ This script packages files to be released.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    GetArtefactsDir, `
-    GetSamplesDir
+    GetArtefactsDir
 
 function PackageRelease($outputDir)
 {
@@ -25,22 +24,6 @@ function PackageRelease($outputDir)
         throw ("The build directory with the release does " +
                 "not exist: $buildDir; did you build the solution " +
                 "with BuildForRelease.ps1?")
-    }
-
-    $samplesDir = GetSamplesDir
-
-    if (!(Test-Path $samplesDir))
-    {
-        throw ("The samples directory does not exist: $samplesDir; " +
-                "did you download the samples with DownloadSamples.ps1?")
-    }
-
-    $eclassDir = Join-Path (Split-Path $PSScriptRoot -Parent) "eclass"
-
-    if (!(Test-Path $eclassDir))
-    {
-        throw ("The eclass directory does not exist: $eclassDir; " +
-                "did you copy the restricted ecl@ss files there manually?")
     }
 
     Write-Host "Packaging to: $outputDir"
@@ -89,58 +72,14 @@ function PackageRelease($outputDir)
         -Recurse `
         -Destination $pluginsWebbrowserDir
 
-    <#
-    TODO (mristin, 2020-08-01): plugins-restricted are expected to be merged
-    into the solution soon (next 1-2 months). The copy commands should come
-    here.
-    #>
-
-    Write-Host "* Copyng samples from $samplesDir ..."
-    Copy-Item -Path $samplesDir -Recurse -Destination $outputDir
-
-    Write-Host "* Copyng eclass from $eclassDir ..."
-    Copy-Item -Path $eclassDir -Recurse -Destination $outputDir
-
     # ---
 
-    $archPath = Join-Path $outputDir "portable-restricted-eclass.zip"
+    $archPath = Join-Path $outputDir "portable.zip"
     Write-Host "* Packaging: $archPath"
     [string[]]$paths = @(
     (Join-Path $outputDir "AasxPackageExplorer"),
     (Join-Path $outputDir "plugins-open"),
-    (Join-Path $outputDir "plugins-webbrowser"),
-    $eclassDir,
-    $samplesDir
-    )
-
-    Compress-Archive -Path $paths -DestinationPath $archPath
-
-    # ---
-
-    $archPath = Join-Path $outputDir "portable-restricted.zip"
-    Write-Host "* Packaging: $archPath"
-    [string[]]$paths = @(
-    (Join-Path $outputDir "AasxPackageExplorer"),
-    (Join-Path $outputDir "plugins-open"),
-    (Join-Path $outputDir "plugins-webbrowser"),
-    <#
-    TODO (mristin, 20-08-01): The restricted plug-ins are missing here.
-    Please add them once they are available in the solution.
-    #>
-    $samplesDir
-    )
-
-    Compress-Archive -Path $paths -DestinationPath $archPath
-
-    # ---
-
-    $archPath = Join-Path $outputDir "portable-open.zip"
-    Write-Host "* Packaging: $archPath"
-    [string[]]$paths = @(
-    (Join-Path $outputDir "AasxPackageExplorer"),
-    (Join-Path $outputDir "plugins-open"),
-    (Join-Path $outputDir "plugins-webbrowser"),
-    $samplesDir
+    (Join-Path $outputDir "plugins-webbrowser")
     )
 
     Compress-Archive -Path $paths -DestinationPath $archPath
@@ -152,7 +91,6 @@ function PackageRelease($outputDir)
     [string[]]$paths = @(
     (Join-Path $outputDir "AasxPackageExplorer"),
     (Join-Path $outputDir "plugins-open")
-    # Samples are removed on purpose from the small release.
     )
 
     Compress-Archive -Path $paths -DestinationPath $archPath
