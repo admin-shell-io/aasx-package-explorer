@@ -111,15 +111,19 @@ function Main
     }
 
     $versionRe = [Regex]::new(
-            '^[0-9]{2}-(0[1-9]|11|12)-(0[1-9]|1[1-9]|2[1-9]|3[0-1])' +
-                    '(\.(pre|post)[0-9]+)?$')
+            '^[0-9]{4}-(0[1-9]|11|12)-(0[1-9]|1[1-9]|2[1-9]|3[0-1])' +
+                    '(\.(alpha|beta))?$')
 
-    if (!$versionRe.IsMatch($version))
+    $latestVersionRe = [Regex]::new('^LATEST(\.(alpha|beta))?$')
+
+    if ((!$latestVersionRe.IsMatch($version)) -and
+            (!$versionRe.IsMatch($version)))
     {
         throw ("Unexpected version; " +
-                "expected year-month-day (*e.g.*, 19-10-23) followed by " +
-                "an optional pre/post tag (*e.g.*, 19-10-23.pre3), " +
-                "but got: $version")
+                "expected either year-month-day (*e.g.*, 2019-10-23) " +
+                "followed by an optional maturity tag " +
+                "(*e.g.*, 2019-10-23.alpha) " +
+                "or LATEST, but got: $version")
     }
 
     $outputDir = Join-Path $( GetArtefactsDir ) "release" `
