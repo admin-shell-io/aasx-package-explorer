@@ -110,7 +110,7 @@ namespace AdminShellNS
             // read V1.0?
             if (nsuri != null && nsuri.Trim() == "http://www.admin-shell.io/aas/1/0")
             {
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
                 XmlSerializer serializer = new XmlSerializer(
                     typeof(AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv),
                     "http://www.admin-shell.io/aas/1/0");
