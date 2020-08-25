@@ -41,7 +41,7 @@ http://admin-shell-io.com/screencasts/.
 
 For further information about the Asset Administration Shell, see the 
 publication [Details of the Asset Administration Shell](
-https://www.plattform-i40.de/I40/Redaktion/EN/Downloads/Publikation/2018-details-of-the-asset-administration-shell.html
+https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-Asset-Administration-Shell-Part1.html
 ) by Platform I4.0.
 
 We provide a couple of sample admin shells (packaged as .aasx) for you to 
