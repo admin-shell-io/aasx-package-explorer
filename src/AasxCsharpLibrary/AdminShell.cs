@@ -29,6 +29,12 @@ The QR code generation is under the MIT license (see https://github.com/codebude
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
 */
 
+/*
+ * If no compatibility to V1.0 is required, a define 
+ *      DoNotUseAasxCompatibilityModels
+ * can be used
+ */
+
 namespace AdminShellNS
 {
     /// <summary>
@@ -73,7 +79,7 @@ namespace AdminShellNS
                 this.id = src.id;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Identification(AasxCompatibilityModels.AdminShellV10.Identification src)
             {
                 this.idType = src.idType;
@@ -148,7 +154,7 @@ namespace AdminShellNS
                 this.revision = src.revision;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Administration(AasxCompatibilityModels.AdminShellV10.Administration src)
             {
                 this.version = src.version;
@@ -225,7 +231,7 @@ namespace AdminShellNS
                 this.value = src.value;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Key(AasxCompatibilityModels.AdminShellV10.Key src)
             {
                 this.type = src.type;
@@ -534,7 +540,7 @@ namespace AdminShellNS
                         keys.Add(new Key(k));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Reference(AasxCompatibilityModels.AdminShellV10.Reference src)
             {
                 if (src != null)
@@ -550,7 +556,7 @@ namespace AdminShellNS
                         keys.Add(new Key(k));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Reference(AasxCompatibilityModels.AdminShellV10.SemanticId src)
             {
                 if (src != null)
@@ -722,7 +728,7 @@ namespace AdminShellNS
 
             public AssetAdministrationShellRef(Reference src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public AssetAdministrationShellRef(AasxCompatibilityModels.AdminShellV10.Reference src) : base(src) { }
 #endif
 
@@ -743,7 +749,7 @@ namespace AdminShellNS
 
             public AssetRef(AssetRef src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public AssetRef(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
 #endif
 
@@ -771,7 +777,7 @@ namespace AdminShellNS
 
             public SubmodelRef(Reference src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public SubmodelRef(AasxCompatibilityModels.AdminShellV10.SubmodelRef src) : base(src) { }
 #endif
 
@@ -808,7 +814,7 @@ namespace AdminShellNS
 
             public ConceptDescriptionRef(ConceptDescriptionRef src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ConceptDescriptionRef(
                 AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRef src) : base(src) { }
 #endif
@@ -837,7 +843,7 @@ namespace AdminShellNS
 
             public DataSpecificationRef(DataSpecificationRef src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.DataSpecificationRef src) : base(src) { }
 #endif
 
@@ -876,7 +882,7 @@ namespace AdminShellNS
                         this.conceptDescriptions.Add(new ConceptDescriptionRef(cdr));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ConceptDescriptionRefs(AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRefs src)
             {
                 if (src.conceptDescriptions != null)
@@ -895,7 +901,7 @@ namespace AdminShellNS
 
             public ContainedElementRef(ContainedElementRef src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ContainedElementRef(AasxCompatibilityModels.AdminShellV10.ContainedElementRef src) : base(src) { }
 #endif
 
@@ -930,7 +936,7 @@ namespace AdminShellNS
                     reference.Add(new Reference(r));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public HasDataSpecification(AasxCompatibilityModels.AdminShellV10.HasDataSpecification src)
             {
                 foreach (var r in src.reference)
@@ -965,7 +971,7 @@ namespace AdminShellNS
                         this.reference.Add(new ContainedElementRef(r));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ContainedElements(AasxCompatibilityModels.AdminShellV10.ContainedElements src)
             {
                 if (src.reference != null)
@@ -1022,7 +1028,7 @@ namespace AdminShellNS
                 this.str = src.str;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public LangStr(AasxCompatibilityModels.AdminShellV10.LangStr src)
             {
                 this.lang = src.lang;
@@ -1109,7 +1115,7 @@ namespace AdminShellNS
                         langString.Add(new LangStr(ls));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Description(AasxCompatibilityModels.AdminShellV10.Description src)
             {
                 if (src != null)
@@ -1153,7 +1159,7 @@ namespace AdminShellNS
                 kind = src.kind;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public AssetKind(AasxCompatibilityModels.AdminShellV10.Kind src)
             {
                 kind = src.kind;
@@ -1205,7 +1211,7 @@ namespace AdminShellNS
                 kind = src.kind;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ModelingKind(AasxCompatibilityModels.AdminShellV10.Kind src)
             {
                 kind = src.kind;
@@ -1247,7 +1253,7 @@ namespace AdminShellNS
 
             public SemanticId(Reference src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public SemanticId(AasxCompatibilityModels.AdminShellV10.SemanticId src)
                 : base(src)
             {
@@ -1398,7 +1404,7 @@ namespace AdminShellNS
                     this.description = new Description(src.description);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Referable(AasxCompatibilityModels.AdminShellV10.Referable src)
             {
                 if (src == null)
@@ -1623,7 +1629,7 @@ namespace AdminShellNS
                     this.administration = new Administration(src.administration);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Identifiable(AasxCompatibilityModels.AdminShellV10.Identifiable src)
                 : base(src)
             {
@@ -1734,7 +1740,7 @@ namespace AdminShellNS
                 }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public AdministrationShell(AasxCompatibilityModels.AdminShellV10.AdministrationShell src)
                 : base(src)
             {
@@ -1910,7 +1916,7 @@ namespace AdminShellNS
                 }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Asset(AasxCompatibilityModels.AdminShellV10.Asset src)
                 : base(src)
             {
@@ -2020,7 +2026,7 @@ namespace AdminShellNS
                     this.containedElements = new ContainedElements(src.containedElements);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public View(AasxCompatibilityModels.AdminShellV10.View src)
                 : base(src)
             {
@@ -2123,7 +2129,7 @@ namespace AdminShellNS
                         this.views.Add(new View(v));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Views(AasxCompatibilityModels.AdminShellV10.Views src)
             {
                 if (src != null && src.views != null)
@@ -2188,7 +2194,7 @@ namespace AdminShellNS
                         this.langString.Add(new LangStr(ls));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             // not available in V1.0
 #endif
             public LangStringSet(string lang, string str)
@@ -2265,7 +2271,7 @@ namespace AdminShellNS
                         this.langString.Add(new LangStr(ls));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public LangStringSetIEC61360(AasxCompatibilityModels.AdminShellV10.LangStringIEC61360 src)
             {
                 if (src.langString != null)
@@ -2346,7 +2352,7 @@ namespace AdminShellNS
                         this.keys.Add(new Key(k));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public UnitId(AasxCompatibilityModels.AdminShellV10.UnitId src)
             {
                 if (src.keys != null)
@@ -2450,7 +2456,7 @@ namespace AdminShellNS
                     this.definition = new LangStringSetIEC61360(src.definition);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public DataSpecificationIEC61360(AasxCompatibilityModels.AdminShellV10.DataSpecificationIEC61360 src)
             {
                 if (src.preferredName != null)
@@ -2523,7 +2529,7 @@ namespace AdminShellNS
                     this.dataSpecificationIEC61360 = new DataSpecificationIEC61360(src.dataSpecificationIEC61360);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public DataSpecificationContent(AasxCompatibilityModels.AdminShellV10.DataSpecificationContent src)
             {
                 if (src.dataSpecificationIEC61360 != null)
@@ -2551,7 +2557,7 @@ namespace AdminShellNS
                     this.dataSpecificationContent = new DataSpecificationContent(src.dataSpecificationContent);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public EmbeddedDataSpecification(AasxCompatibilityModels.AdminShellV10.EmbeddedDataSpecification src)
             {
                 if (src.hasDataSpecification != null)
@@ -2628,7 +2634,7 @@ namespace AdminShellNS
                     }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ConceptDescription(AasxCompatibilityModels.AdminShellV10.ConceptDescription src)
                 : base(src)
             {
@@ -2839,7 +2845,7 @@ namespace AdminShellNS
                     this.conceptDescriptionsRefs = new ConceptDescriptionRefs(src.conceptDescriptionsRefs);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ConceptDictionary(AasxCompatibilityModels.AdminShellV10.ConceptDictionary src)
             {
                 if (src.conceptDescriptionsRefs != null)
@@ -2929,7 +2935,7 @@ namespace AdminShellNS
 
             public AdministrationShellEnv() { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public AdministrationShellEnv(AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv src)
             {
                 if (src.AdministrationShells != null)
@@ -3566,7 +3572,7 @@ namespace AdminShellNS
                     this.valueId = new Reference(src.valueId);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Qualifier(AasxCompatibilityModels.AdminShellV10.Qualifier src)
             {
                 if (src.semanticId != null)
@@ -3617,7 +3623,7 @@ namespace AdminShellNS
 
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public QualifierCollection(
                 List<AasxCompatibilityModels.AdminShellV10.Qualifier> src, bool shallowCopy = false)
 
@@ -3760,7 +3766,7 @@ namespace AdminShellNS
                 }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public SubmodelElement(AasxCompatibilityModels.AdminShellV10.SubmodelElement src)
                 : base(src)
             {
@@ -3961,7 +3967,7 @@ namespace AdminShellNS
                     this.submodelElement = new Entity(src as Entity);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public SubmodelElementWrapper(
                 AasxCompatibilityModels.AdminShellV10.SubmodelElement src, bool shallowCopy = false)
             {
@@ -4641,7 +4647,7 @@ namespace AdminShellNS
                 }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Submodel(AasxCompatibilityModels.AdminShellV10.Submodel src, bool shallowCopy = false)
                 : base(src)
             {
@@ -4854,7 +4860,7 @@ namespace AdminShellNS
 
             public DataElement(DataElement src) : base(src) { }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public DataElement(AasxCompatibilityModels.AdminShellV10.DataElement src)
                 : base(src)
             { }
@@ -4929,7 +4935,7 @@ namespace AdminShellNS
                     src.valueId = new Reference(src.valueId);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Property(AasxCompatibilityModels.AdminShellV10.Property src)
                 : base(src)
             {
@@ -5011,7 +5017,7 @@ namespace AdminShellNS
                     src.valueId = new Reference(src.valueId);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             // not available in V1.0
 #endif
 
@@ -5104,7 +5110,7 @@ namespace AdminShellNS
                 this.max = src.max;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             // not available in V1.0
 #endif
 
@@ -5162,7 +5168,7 @@ namespace AdminShellNS
                 this.value = src.value;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Blob(AasxCompatibilityModels.AdminShellV10.Blob src)
                 : base(src)
             {
@@ -5226,7 +5232,7 @@ namespace AdminShellNS
                 this.value = src.value;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public File(AasxCompatibilityModels.AdminShellV10.File src)
                 : base(src)
             {
@@ -5304,7 +5310,7 @@ namespace AdminShellNS
                     this.value = new Reference(src.value);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public ReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
                 : base(src)
             {
@@ -5363,7 +5369,7 @@ namespace AdminShellNS
                     this.second = new Reference(src.second);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public RelationshipElement(AasxCompatibilityModels.AdminShellV10.RelationshipElement src)
                 : base(src)
             {
@@ -5600,7 +5606,7 @@ namespace AdminShellNS
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public SubmodelElementCollection(
                 AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection src, bool shallowCopy = false)
                 : base(src)
@@ -5700,7 +5706,7 @@ namespace AdminShellNS
                 this.value = new SubmodelElementWrapper(src.value.submodelElement, shallowCopy);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public OperationVariable(
                 AasxCompatibilityModels.AdminShellV10.OperationVariable src, bool shallowCopy = false)
             {
@@ -5861,7 +5867,7 @@ namespace AdminShellNS
                     }
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             public Operation(AasxCompatibilityModels.AdminShellV10.Operation src)
                 : base(src)
             {
@@ -5981,7 +5987,7 @@ namespace AdminShellNS
                 this.assetRef = assetRef;
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             // not available in V1.0
 #endif
 
@@ -6068,7 +6074,7 @@ namespace AdminShellNS
                     this.observed = new Reference(src.observed);
             }
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
             // not available in V1.0
 #endif
 
