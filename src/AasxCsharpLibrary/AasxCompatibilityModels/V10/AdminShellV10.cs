@@ -29,7 +29,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
 // ReSharper disable All .. as this is legacy code!
 
-#if UseAasxCompatibilityModels
+#if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels
 {
@@ -1735,7 +1735,6 @@ containedElements == null) return null; return containedElements[index];
             public List<LangStr> sourceOfDefinition = new List<LangStr>();
             public string symbol = null;
             public string dataType = "";
-            // public List<LangStr> definition = new List<LangStr>();
             public LangStringIEC61360 definition = new LangStringIEC61360();
 
             // getter / setters
@@ -1869,11 +1868,6 @@ containedElements == null) return null; return containedElements[index];
                         embeddedDataSpecification = value[0];
                 }
             }
-
-
-            // old
-            // [XmlElement(ElementName="conceptDefinitionRef")]
-            // public Reference conceptDefinitionRef = null ;
 
             // this class
             [XmlIgnore]
@@ -2068,7 +2062,7 @@ containedElements == null) return null; return containedElements[index];
             public string schemaLocation =
                 "http://www.admin-shell.io/aas/1/0 AAS.xsd http://www.admin-shell.io/IEC61360/1/0 IEC61360.xsd";
 
-            // [XmlElement(ElementName="assetAdministrationShells")]
+            /// [XmlElement(ElementName="assetAdministrationShells")]
             [XmlIgnore] // will be ignored, anyway
             private List<AdministrationShell> administrationShells = new List<AdministrationShell>();
             [XmlIgnore] // will be ignored, anyway
@@ -2211,27 +2205,6 @@ containedElements == null) return null; return containedElements[index];
                 // uups
                 return null;
             }
-
-            /* OLD VERSION. OPC UA -> inadequate for finding all References
-            public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
-            {
-                // first index needs to exist ..
-                if (rf == null || keyIndex >= rf.Count)
-                    return null;
-
-                // .. and point to an Submodel
-                if (rf[keyIndex].type.Trim().ToLower() != Key.Submodel.Trim().ToLower())
-                    return null;
-
-                // ok, search Submodel
-                var sm = this.FindSubmodel(new Identification(rf[keyIndex].idType, rf[keyIndex].value));
-                if (sm == null)
-                    return null;
-
-                // go inside
-                return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 1);
-            }
-            */
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
             {
@@ -2593,14 +2566,11 @@ containedElements == null) return null; return containedElements[index];
             [XmlElement(ElementName = "semanticId")]
             // TODO (Michael Hoffmeister, 1970-01-01): Qualifiers not working!
             // 190410: test-wise enable them again, everyhing works fine ..
-            // [JsonIgnore]
             public SemanticId semanticId = null;
+
             // this class
-            // [JsonIgnore]
             public string qualifierType = null;
-            // [JsonIgnore]
             public string qualifierValue = null;
-            // [JsonIgnore]
             public Reference qualifierValueId = null;
 
             // constructors
@@ -3014,18 +2984,6 @@ containedElements == null) return null; return containedElements[index];
             public List<SubmodelElementWrapper> submodelElements = null;
             [XmlIgnore]
             [JsonProperty(PropertyName = "submodelElements")]
-            /*
-            public IEnumerator<SubmodelElement> JsonSubmodelElements
-            {
-                get
-                {
-                    if (submodelElements == null)
-                        yield return null;
-                    foreach (var smew in submodelElements)
-                        yield return smew.submodelElement;
-                }
-            }
-            */
             public SubmodelElement[] JsonSubmodelElements
             {
                 get
@@ -3050,7 +3008,6 @@ containedElements == null) return null; return containedElements[index];
                     }
                 }
             }
-            // public List<SubmodelElement> JsonSubmodelElements = new List<SubmodelElement>();
 
             // getter / setter
 
@@ -3537,21 +3494,6 @@ containedElements == null) return null; return containedElements[index];
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "value")]
-            /*
-            public IEnumerator<SubmodelElement> JsonValue
-            {
-                get
-                {
-                    /*
-                    if (value == null)
-                        yield return null;
-                    var sme = new Property();
-                    sme.idShort = "test";
-                    yield return sme;
-                    yield break;
-                }
-            }
-            */
             public SubmodelElement[] JsonValue
             {
                 get
@@ -3576,7 +3518,6 @@ containedElements == null) return null; return containedElements[index];
                     }
                 }
             }
-            // public List<SubmodelElement> JsonSubmodelElements = new List<SubmodelElement>();
 
             // further members
             public bool ordered = false;
@@ -3702,7 +3643,6 @@ containedElements == null) return null; return containedElements[index];
             [XmlIgnore]
             // MICHA 190504: enabled JSON operation variables!
             [JsonProperty(PropertyName = "in")]
-            // [JsonIgnore]
             public OperationVariable[] JsonValueIn
             {
                 get { return valueIn?.ToArray(); }
@@ -3712,7 +3652,6 @@ containedElements == null) return null; return containedElements[index];
             [XmlIgnore]
             [JsonProperty(PropertyName = "out")]
             // MICHA 190504: enabled JSON operation variables!
-            // [JsonIgnore]
             public OperationVariable[] JsonValueOut
             {
                 get { return valueOut?.ToArray(); }
