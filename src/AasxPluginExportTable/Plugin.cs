@@ -99,7 +99,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense = "The OpenXML SDK is under MIT license." + Environment.NewLine +
-                    "The ClosedXML library is under MIT license.";
+                    "The ClosedXML library is under MIT license." + Environment.NewLine +
+                    "The ExcelNumberFormat number parser is licensed under the MIT license." + Environment.NewLine +
+                    "The FastMember reflection access is licensed under Apache License 2.0 (Apache - 2.0).";
 
                 lic.isStandardLicense = true;
                 lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(

@@ -103,7 +103,13 @@ namespace AasxPackageExplorer
             "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
             "The Grapevine REST server framework is licensed " +
             "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The AutomationML.Engine is licensed under the MIT license (MIT).";
+            "The AutomationML.Engine is licensed under the MIT license (MIT)." +
+            "The MQTT server and client is licensed " +
+            "under the MIT license (MIT)." + Environment.NewLine +
+            "The IdentityModel OpenID client is licensed " +
+            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
+            "The jose-jwt object signing and encryption is licensed " +
+            "under the MIT license (MIT).";
 
         /// <summary>
         /// The last build date of the application. Based on a resource file. Use of Options as singleton.
