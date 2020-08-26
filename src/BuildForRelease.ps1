@@ -44,7 +44,10 @@ function Main
         "AasxPluginDocumentShelf",
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
+        "AasxPluginMtpViewer",
         "AasxPluginTechnicalData",
+        "AasxPluginUaNetClient",
+        "AasxPluginUaNetServer",
         "AasxPluginWebBrowser"
         )
 
