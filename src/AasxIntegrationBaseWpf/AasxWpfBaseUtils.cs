@@ -69,6 +69,34 @@ namespace AasxIntegrationBase
             return foundChild;
         }
 
+        public static T FindChildLogicalTree<T>(DependencyObject parent, string childName)
+           where T : DependencyObject
+        {
+            // Confirm parent and childName are valid.
+            if (parent == null || string.IsNullOrEmpty(childName))
+                return null;
+
+            // loop
+            foreach (var child in LogicalTreeHelper.GetChildren(parent))
+            {
+                // directly found?
+                var frameworkElement = child as FrameworkElement;
+                // If the child's name is set for search
+                if (frameworkElement != null && frameworkElement.Name == childName)
+                {
+                    // if the child's name is of the request name
+                    return (T)child;
+                }
+
+                // try recursion
+                var found = FindChildLogicalTree<T>(child as DependencyObject, childName);
+                if (found != null)
+                    return found;                
+            }
+
+            return null;
+        }
+
         public static int CountHeadingSpaces(string line)
         {
             if (line == null)

@@ -21,7 +21,7 @@
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 30000,
+  "SplashTime": 1000,
   "InternalBrowser": false,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
@@ -90,7 +90,7 @@
     /* Festo specific from here on */
     /*
     {
-      "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
       "Options": {
         "Records": [
@@ -109,7 +109,7 @@
       }
     },
     {
-      "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
       "Args": [],
       "Options": {
         "Records": [

@@ -43,9 +43,11 @@ namespace AasxPackageExplorer
         #region Members
         // ============
 
+        public AasxFileRepository theFileRepository = null;
 
         public AdminShellPackageEnv thePackageEnv = new AdminShellPackageEnv();
         public AdminShellPackageEnv thePackageAux = null;
+
         private string showContentPackageUri = null;
         private VisualElementGeneric currentEntityForUpdate = null;
         private IFlyoutControl currentFlyoutControl = null;
@@ -211,7 +213,88 @@ namespace AasxPackageExplorer
                 return;
             }
             Log.Info("AASX {0} loaded.", info);
+        }
 
+        public AasxFileRepository UiLoadFileRepository(string fn)
+        {
+            try
+            {
+                Log.Info($"Loading aasx file repository {Options.Curr.AasxRepositoryFn} ..");
+                var fr = AasxFileRepository.Load(fn);
+
+                if (fr != null)
+                    return fr;
+                else
+                    Log.Info($"File not found when auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"When auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+            }
+
+            return null;
+        }
+
+        public void UiSetFileRepository (AasxFileRepository repo)
+        {
+            if (repo == null)
+            {
+                // disable completely
+                this.theFileRepository = null;
+                this.RepoControl.FileRepository = this.theFileRepository;
+                this.RepoControl.Visibility = Visibility.Collapsed;
+                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
+                    this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(0.0);
+            }
+            else
+            {
+                // enable, what has been stored
+                this.theFileRepository = repo;
+                this.RepoControl.FileRepository = this.theFileRepository;
+                this.RepoControl.Visibility = Visibility.Visible;
+                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
+                    this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(this.ColumnAasRepoGrid.ActualHeight / 2);
+            }
+        }
+
+        private void RepoControl_Drop(object sender, DragEventArgs e)
+        {
+            // Appearantly you need to figure out if OriginalSource would have handled the Drop?
+            if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                if (files != null && files.Length > 0)
+                    foreach (var fn in files)
+                    {
+                        // repo?
+                        var ext = Path.GetExtension(fn).ToLower();
+                        if (ext == ".json")
+                        {
+                            // try handle as repository
+                            var fr = UiLoadFileRepository(fn);
+                            if (fr != null)
+                                UiSetFileRepository(fr);
+                            // handled
+                            e.Handled = true;
+                            // no more!
+                            return;
+                        }
+
+                        // aasx?
+                        if (ext == ".aasx")
+                        {
+                            // add?
+                            this.theFileRepository?.AddByAasxFn(fn);
+
+                            // handled, but may be more to come ..
+                            e.Handled = true;
+                        }
+                    }
+            }
         }
 
         public void PrepareDispEditEntity(
@@ -428,6 +511,61 @@ namespace AasxPackageExplorer
             // attach result search
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
 
+            // start with empty repository and load, if given by options
+            AasxFileRepository fr = null;
+            if (true)
+            {
+                fr = AasxFileRepository.CreateDemoData();
+            }
+            if (Options.Curr.AasxRepositoryFn.HasContent())
+            {
+                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                if (fr2 != null)
+                    fr = fr2;
+            }
+            UiSetFileRepository(fr);
+
+            // query repo
+            this.RepoControl.FileDoubleClick += (fi) =>
+            {
+                // which file?
+                var fn = this.theFileRepository?.GetFullFilename(fi);
+                if (fn == null)
+                    return;
+
+                // safety?
+                if (!(MenuItemFileRepoLoadWoPrompt.IsChecked == true))
+                {
+                    // ask double question
+                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                            "Load file from AASX file repository?",
+                            "AASX File Repository",
+                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                        return;
+                }
+
+                // start animation
+                this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                // try load ..
+                try
+                {
+                    var pkg = LoadPackageFromFile(fn);
+                    UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"When auto-loading {fn}");
+                }
+            };
+            this.RepoControl.QueryClick += () =>
+            {
+                this.CommandBinding_GeneralDispatch("filerepoquery");
+            };
+
+            // initialze menu
+            MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
+
             // Last task here ..
             Log.Info("Application started ..");
 
@@ -446,6 +584,7 @@ namespace AasxPackageExplorer
                     Log.Error(ex, $"When auto-loading {fn}");
                 }
             }
+            
         }
 
         private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
@@ -603,7 +742,65 @@ namespace AasxPackageExplorer
                                 if (bo == null && thePackageAux != null && thePackageAux.AasEnv != null)
                                     bo = thePackageAux.AasEnv.FindReferableByReference(work);
 
-                                // yes?
+                                // if not, may look into the AASX file repo
+                                if (bo == null && this.theFileRepository != null)
+                                {
+                                    // find?
+                                    AasxFileRepository.FileItem fi = null;
+                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
+                                        fi = this.theFileRepository.FindByAssetId(work[0].value.Trim());
+                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
+                                        fi = this.theFileRepository.FindByAasId(work[0].value.Trim());
+
+                                    // which file?
+                                    var fn = this.theFileRepository?.GetFullFilename(fi);
+                                    if (fn == null)
+                                        return;
+
+                                    // try load (in the background/ RAM first..
+                                    AdminShellPackageEnv pkg = null;
+                                    try
+                                    {
+                                        Log.Info($"Auto-load AASX file from repository {fn}");
+                                        pkg = LoadPackageFromFile(fn);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Error(ex, $"When auto-loading {fn}");
+                                    }
+
+                                    // if successfull ..
+                                    if (pkg != null)
+                                    {
+                                        // .. try find business object!
+                                        bo = pkg.AasEnv.FindReferableByReference(work);
+
+                                        // only proceed, if business object was found .. else: close directly
+                                        if (bo == null)
+                                            pkg.Close();
+                                        else
+                                        {
+                                            // make sure the user wants to change
+                                            if (!(MenuItemFileRepoLoadWoPrompt.IsChecked == true))
+                                            {
+                                                // ask double question
+                                                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                                                        "Load file from AASX file repository?",
+                                                        "AASX File Repository",
+                                                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                                                    return;
+                                            }
+
+                                            // start animation
+                                            this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                                            // activate
+                                            UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                                        }
+                                    }
+                                }
+
+                                // still yes?
                                 if (bo != null)
                                 {
                                     // try to look up in visual elements
@@ -1303,5 +1500,6 @@ namespace AasxPackageExplorer
                     DispEditEntityPanel.ClearHighlight();
             }
         }
+
     }
 }
