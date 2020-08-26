@@ -26,24 +26,11 @@ function PackageRelease($outputDir)
                 "with BuildForRelease.ps1?")
     }
 
-    Write-Host "Packaging to: $outputDir"
-    New-Item -ItemType Directory -Force -Path $outputDir|Out-Null
+    ##
+    # Define plugins
+    ##
 
-
-    Write-Host "* Copying AasxPackageExplorer ..."
-    Copy-Item `
-        -Path (Join-Path $buildDir "AasxPackageExplorer") `
-        -Recurse `
-        -Destination $outputDir
-
-    Write-Host "* Copying README-packages.md ..."
-
-    Copy-Item `
-        -Path (Join-Path $PSScriptRoot "README-packages.md") `
-        -Destination (Join-Path $outputDir "AasxPackageExplorer")
-
-    Write-Host "* Copying plugins-open ..."
-    $pluginsOpen = $(
+    $portableSmallPlugins = $(
     "AasxPluginBomStructure",
     "AasxPluginDocumentShelf",
     "AasxPluginExportTable",
@@ -51,51 +38,70 @@ function PackageRelease($outputDir)
     "AasxPluginTechnicalData"
     )
 
-    $pluginsOpenDir = Join-Path $outputDir "plugins-open"
-    New-Item -ItemType Directory -Force -Path $pluginsOpenDir|Out-Null
+    $portablePlugins = $portableSmallPlugins.Clone()
+    $portablePlugins += "AasxPluginWebBrowser"
 
-    foreach ($plugin in $pluginsOpen)
+    function MakePackage($identifier, $plugins)
     {
-        Write-Host "  * Copying $plugin"
+        $destinationDir = Join-Path $outputDir $identifier
 
+        Write-Host ("Making the package $($identifier|ConvertTo-Json) to: " +
+            $destinationDir)
+
+        Write-Host "* Packaging to: $destinationDir"
+        New-Item -ItemType Directory -Force -Path $destinationDir|Out-Null
+
+        ##
+        # AASX Package Explorer
+        ##
+
+        Write-Host "* Copying AasxPackageExplorer to: $destinationDir"
         Copy-Item `
-            -Path (Join-Path $buildDir $plugin) `
+            -Path (Join-Path $buildDir "AasxPackageExplorer") `
             -Recurse `
-            -Destination $pluginsOpenDir
+            -Destination $destinationDir
+
+        $aasxPEDir = Join-Path $destinationDir "AasxPackageExplorer"
+
+        Write-Host "* Copying README-packages.md to: $aasxPEDir"
+        Copy-Item `
+            -Path (Join-Path $PSScriptRoot "README-packages.md") `
+            -Destination $aasxPEDir
+
+        ##
+        # Plug-ins
+        ##
+
+        $pluginsDir = Join-Path $aasxPEDir "plugins"
+        New-Item -ItemType Directory -Force -Path $pluginsDir|Out-Null
+
+        foreach ($plugin in $plugins)
+        {
+            Write-Host "* Copying $plugin to: $pluginsDir"
+            Copy-Item `
+                -Path (Join-Path $buildDir $plugin) `
+                -Recurse `
+                -Destination $pluginsDir
+        }
+
+        ##
+        # Compress
+        ##
+
+        $archPath = Join-Path $outputDir "$identifier.zip"
+        Write-Host "* Compressing: $archPath"
+        Compress-Archive `
+            -Path (Join-Path $destinationDir "AasxPackageExplorer") `
+            -DestinationPath $archPath
     }
 
-    Write-Host "* Copying plugins-webbrowser ..."
-    $pluginsWebbrowserDir = Join-Path $outputDir "plugins-webbrowser"
-    New-Item -ItemType Directory -Force -Path $pluginsWebbrowserDir|Out-Null
-    Copy-Item `
-        -Path (Join-Path $buildDir "AasxPluginWebBrowser") `
-        -Recurse `
-        -Destination $pluginsWebbrowserDir
+    ##
+    # Make packages
+    ##
 
-    # ---
+    MakePackage -identifier "portable" -plugins $portablePlugins
 
-    $archPath = Join-Path $outputDir "portable.zip"
-    Write-Host "* Packaging: $archPath"
-    [string[]]$paths = @(
-    (Join-Path $outputDir "AasxPackageExplorer"),
-    (Join-Path $outputDir "plugins-open"),
-    (Join-Path $outputDir "plugins-webbrowser")
-    )
-
-    Compress-Archive -Path $paths -DestinationPath $archPath
-
-    # ---
-
-    $archPath = Join-Path $outputDir "portable-small.zip"
-    Write-Host "* Packaging: $archPath"
-    [string[]]$paths = @(
-    (Join-Path $outputDir "AasxPackageExplorer"),
-    (Join-Path $outputDir "plugins-open")
-    )
-
-    Compress-Archive -Path $paths -DestinationPath $archPath
-
-    # ---
+    MakePackage -identifier "portable-small" -plugins $portableSmallPlugins
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.
