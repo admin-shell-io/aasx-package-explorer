@@ -29,13 +29,16 @@ function PackageRelease($outputDir)
     ##
     # Define plugins
     ##
-
+    
     $portableSmallPlugins = $(
     "AasxPluginBomStructure",
     "AasxPluginDocumentShelf",
     "AasxPluginExportTable",
     "AasxPluginGenericForms",
-    "AasxPluginTechnicalData"
+    "AasxPluginMtpViewer",
+    "AasxPluginTechnicalData",
+    "AasxPluginUaNetClient",
+    "AasxPluginUaNetServer"
     )
 
     $portablePlugins = $portableSmallPlugins.Clone()
