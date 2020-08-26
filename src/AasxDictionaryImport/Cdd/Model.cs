@@ -141,6 +141,29 @@ namespace AasxDictionaryImport.Cdd
         {
             return Classes.Select(cls => new ClassWrapper(this, cls)).ToList<Model.IElement>();
         }
+
+        /// <inheritdoc/>
+        public ICollection<Model.IElement> LoadSubmodelElements()
+        {
+            var elements = new List<Model.IElement>();
+            foreach (var element in _elements.Values)
+            {
+                var w = CreateElementWrapper(this, element);
+                if (w != null)
+                    elements.Add(w);
+            }
+            return elements;
+        }
+
+        private static Model.IElement? CreateElementWrapper(Context context, Element element)
+        {
+            if (element is Class cls)
+                return new ClassWrapper(context, cls, null);
+            else if (element is Property property)
+                return new PropertyWrapper(context, property, null);
+            else
+                return null;
+        }
     }
 
     /// <summary>
@@ -232,6 +255,17 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
+        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+           AdminShell.IManageSubmodelElements parent)
+        {
+            // If we wanted to import the class, we would typically use the submodel import
+            // instead.  Therefore we import the children instead.
+            var importer = new Importer(env, Context);
+            // We use Count() > 0 instead of Any() to make sure that every element is imported
+            return Children.Count(c => importer.ImportSubmodelElements(c, parent)) > 0;
+        }
+
+        /// <inheritdoc/>
         public override Dictionary<string, string> GetDetails()
         {
             var dict = base.GetDetails();
@@ -278,7 +312,7 @@ namespace AasxDictionaryImport.Cdd
         /// <param name="context">The current data context</param>
         /// <param name="property">The wrapped IEC CDD property</param>
         /// <param name="parent">The parent element</param>
-        public PropertyWrapper(Context context, Property property, Model.IElement parent)
+        public PropertyWrapper(Context context, Property property, Model.IElement? parent)
             : base(context, property, parent)
         {
             Reference<Class>? reference = property.DataType.GetClassReference();
@@ -298,6 +332,13 @@ namespace AasxDictionaryImport.Cdd
             dict.Add("Data Type", Element.RawDataType);
             dict.Add("Format", Element.Format);
             return dict;
+        }
+
+        /// <inheritdoc/>
+        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+           AdminShell.IManageSubmodelElements parent)
+        {
+            return new Importer(env, Context).ImportSubmodelElements(this, parent);
         }
 
         protected override ICollection<Model.IElement> LoadChildren()
