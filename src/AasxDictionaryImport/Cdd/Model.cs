@@ -50,6 +50,12 @@ namespace AasxDictionaryImport.Cdd
         private Context? _context;
 
         /// <summary>
+        /// Determines whether all available IEC CDD attributes should be imported into the AAS environment, or whether
+        /// the import should be restricted to the free attributes (default).
+        /// </summary>
+        public bool ImportAllAttributes { get; set; } = false;
+
+        /// <summary>
         /// Creates a new IEC CDD DataSource object.
         /// </summary>
         /// <param name="dataProvider">The IEC CDD data provider</param>
