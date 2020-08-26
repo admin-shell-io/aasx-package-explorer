@@ -196,6 +196,8 @@ namespace AasxDictionaryImport
 
                     if (ClassViewControl.Items.Count > 0)
                         ClassViewControl.SelectedItem = ClassViewControl.Items[0];
+                    CheckBoxAllIecCddAttributes.Visibility = (source.DataProvider is Cdd.DataProvider) ?
+                        Visibility.Visible : Visibility.Hidden;
                 }
                 catch (Model.ImportException ex)
                 {
@@ -249,6 +251,24 @@ namespace AasxDictionaryImport
                 var dialog = new ElementDetailsDialog(element);
                 dialog.Show();
                 dialog.Activate();
+            }
+        }
+
+        private void CheckBoxAllIecCddAttributes_Click(object sender, RoutedEventArgs e)
+        {
+            if (ComboBoxSource.SelectedItem is Cdd.DataSource source)
+                source.ImportAllAttributes = CheckBoxAllIecCddAttributes.IsChecked == true;
+
+            if (CheckBoxAllIecCddAttributes.IsChecked == true)
+            {
+                if (MessageBox.Show(
+                    "Only the free IEC CDD attributes may be used without restrictions. Please read the End User " +
+                    "License Agreement for IEC Common Data Dictionary (CDD) for more information. Do you want to " +
+                    "open the EULA now?",
+                    "IEC CDD Import", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("https://cdd.iec.ch/CDD/iec61360/iec61360.nsf/License?openPage");
+                }
             }
         }
     }

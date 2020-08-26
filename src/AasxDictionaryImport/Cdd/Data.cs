@@ -76,14 +76,17 @@ namespace AasxDictionaryImport.Cdd
         /// <summary>
         /// Returns the IEC 61360 attributes for this element.
         /// </summary>
+        /// <param name="all">Whether all attributes or only the free attributes should be used</param>
         /// <returns>The IEC 61360 data for this element</returns>
-        public virtual Iec61360Data GetIec61360Data()
+        public virtual Iec61360Data GetIec61360Data(bool all)
         {
-            return new Iec61360Data(FormatIrdi(Code, Version))
+            var data = new Iec61360Data(FormatIrdi(Code, Version))
             {
                 PreferredName = PreferredName,
-                Definition = Definition
             };
+            if (all)
+                data.Definition = Definition;
+            return data;
         }
 
         /// <summary>
@@ -266,10 +269,11 @@ namespace AasxDictionaryImport.Cdd
             return properties;
         }
 
-        public override Iec61360Data GetIec61360Data()
+        public override Iec61360Data GetIec61360Data(bool all)
         {
-            var data = base.GetIec61360Data();
-            data.DefinitionSource = DefinitionSource;
+            var data = base.GetIec61360Data(all);
+            if (all)
+                data.DefinitionSource = DefinitionSource;
             return data;
         }
 
@@ -328,16 +332,19 @@ namespace AasxDictionaryImport.Cdd
             return new Property(this, dataType);
         }
 
-        public override Iec61360Data GetIec61360Data()
+        public override Iec61360Data GetIec61360Data(bool all)
         {
-            var data = base.GetIec61360Data();
-            data.ShortName = ShortName;
-            data.DefinitionSource = DefinitionSource;
-            data.Symbol = Symbol;
+            var data = base.GetIec61360Data(all);
             data.Unit = PrimaryUnit;
             data.UnitIrdi = UnitCode;
-            data.DataType = RawDataType;
             data.DataFormat = Format;
+            data.Symbol = Symbol;
+            if (all)
+            {
+                data.ShortName = ShortName;
+                data.DefinitionSource = DefinitionSource;
+                data.DataType = RawDataType;
+            }
             return data;
         }
 

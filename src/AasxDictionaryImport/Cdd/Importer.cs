@@ -32,6 +32,7 @@ namespace AasxDictionaryImport.Cdd
     {
         private readonly AdminShellV20.AdministrationShellEnv _env;
         private readonly Context _context;
+        private readonly bool _all;
 
         /// <summary>
         /// Creates a new IEC CDD Importer.
@@ -42,6 +43,7 @@ namespace AasxDictionaryImport.Cdd
         {
             _env = env;
             _context = context;
+            _all = context.DataSource.ImportAllAttributes;
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace AasxDictionaryImport.Cdd
             if (!cls.IsSelected)
                 return false;
 
-            var submodel = Iec61360Utils.CreateSubmodel(_env, adminShell, cls.Element.GetIec61360Data());
+            var submodel = Iec61360Utils.CreateSubmodel(_env, adminShell, cls.Element.GetIec61360Data(_all));
             AddProperties(submodel, cls.Children);
             return true;
         }
@@ -108,7 +110,7 @@ namespace AasxDictionaryImport.Cdd
         private AdminShellV20.SubmodelElementCollection CreatePropertyCollection(Class cls,
             IEnumerable<Model.IElement> properties)
         {
-            var collection = Iec61360Utils.CreateCollection(_env, cls.GetIec61360Data());
+            var collection = Iec61360Utils.CreateCollection(_env, cls.GetIec61360Data(_all));
             AddProperties(collection, properties);
             return collection;
         }
@@ -132,7 +134,7 @@ namespace AasxDictionaryImport.Cdd
         private AdminShellV20.SubmodelElementCollection CreateAggregateCollection(
             PropertyWrapper wrapper, AggregateType aggregateType)
         {
-            var collection = Iec61360Utils.CreateCollection(_env, wrapper.Element.GetIec61360Data());
+            var collection = Iec61360Utils.CreateCollection(_env, wrapper.Element.GetIec61360Data(_all));
 
             if (wrapper.Children.Count == 1)
             {
@@ -156,7 +158,7 @@ namespace AasxDictionaryImport.Cdd
 
         private AdminShellV20.SubmodelElementCollection CreateLevelCollection(Property property, LevelType levelType)
         {
-            var data = property.GetIec61360Data();
+            var data = property.GetIec61360Data(_all);
             var collection = Iec61360Utils.CreateCollection(_env, data);
 
             foreach (var levelValue in levelType.Types)
@@ -170,7 +172,7 @@ namespace AasxDictionaryImport.Cdd
 
         private AdminShellV20.Property CreateProperty(Property property)
         {
-            return Iec61360Utils.CreateProperty(_env, property.GetIec61360Data(),
+            return Iec61360Utils.CreateProperty(_env, property.GetIec61360Data(_all),
                 GetValueType(property.DataType));
         }
 
