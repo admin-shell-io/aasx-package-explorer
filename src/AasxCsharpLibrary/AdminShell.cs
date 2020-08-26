@@ -2196,7 +2196,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Asset : Identifiable
+        public class Asset : Identifiable, IGetReference
         {
             // for JSON only
             [XmlIgnore]
@@ -2272,13 +2272,18 @@ namespace AdminShellNS
 
             // Getter & setters
 
-            public AssetRef GetReference()
+            public AssetRef GetAssetReference()
             {
                 var r = new AssetRef();
                 r.Keys.Add(
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
+            }
+
+            public Reference GetReference()
+            {
+                return (Reference)GetAssetReference();
             }
 
             public override string GetElementName()
@@ -3032,21 +3037,7 @@ namespace AdminShellNS
                 return eds;
             }
 
-            // compatibility layer
-            // TODO (MIHO, 2020-09-01): In a version beyond V2.0.1, the following can be deleted
-
-            [XmlElement(ElementName = "hasDataSpecification")]
-            [JsonProperty(PropertyName = "hasDataSpecification")]
-            public DataSpecificationRef CompatHasDataSpecification
-            {
-                set
-                {
-                    this.dataSpecification = value;
-                }
-            }
-        }
-
-        public class ConceptDescription : Identifiable, System.IDisposable, IFindAllReferences
+        public class ConceptDescription : Identifiable, System.IDisposable
         {
             // for JSON only
             [XmlIgnore]
@@ -3163,7 +3154,7 @@ namespace AdminShellNS
                 return Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id);
             }
 
-            public ConceptDescriptionRef GetReference()
+            public ConceptDescriptionRef GetCdReference()
             {
                 var r = new ConceptDescriptionRef();
                 r.Keys.Add(
@@ -3721,6 +3712,58 @@ namespace AdminShellNS
 
                 foreach (var r in this.FindAllReferable())
                     if (r != null && p(r))
+                        yield return r;
+            }
+
+            public IEnumerable<Referable> FindAllReferable()
+            {
+                if (this.AdministrationShells != null)
+                    foreach (var aas in this.AdministrationShells)
+                        if (aas != null)
+                        {
+                            // AAS itself
+                            yield return aas;
+
+                            // Views
+                            if (aas.views?.views != null)
+                                foreach (var view in aas.views.views)
+                                    yield return view;
+                        }
+
+                if (this.Assets != null)
+                    foreach (var asset in this.Assets)
+                        if (asset != null)
+                            yield return asset;
+
+                if (this.Submodels != null)
+                    foreach (var sm in this.Submodels)
+                        if (sm != null)
+                        {
+                            yield return sm;
+
+                            // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
+                            var allsme = new List<SubmodelElement>();
+                            sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
+                            {
+                                allsme.Add(sme);
+                            });
+                            foreach (var sme in allsme)
+                                yield return sme;
+                        }
+
+                if (this.ConceptDescriptions != null)
+                    foreach (var cd in this.ConceptDescriptions)
+                        if (cd != null)
+                            yield return cd;
+            }
+
+            public IEnumerable<Referable> FindAllReferable(Predicate<Referable> p)
+            {
+                if (p == null)
+                    yield break;
+
+                foreach (var r in this.FindAllReferable())
+                    if (r!= null && p(r))
                         yield return r;
             }
 
@@ -5281,7 +5324,7 @@ namespace AdminShellNS
                 var sme = new T()
                 {
                     idShort = ids,
-                    semanticId = new SemanticId(cd.GetReference())
+                    semanticId = new SemanticId(cd.GetCdReference())
                 };
                 if (category != null)
                     sme.category = category;
@@ -5570,7 +5613,6 @@ namespace AdminShellNS
             }
 
             // Recursing
-
 
             public void RecurseOnSubmodelElements(
                 object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)

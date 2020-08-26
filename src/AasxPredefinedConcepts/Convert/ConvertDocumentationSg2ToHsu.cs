@@ -108,7 +108,7 @@ namespace AasxPredefinedConcepts.Convert
                     // Document Item
                     using (var smcHsuDoc = AdminShell.SubmodelElementCollection.CreateNew("" + smcDoc.idShort,
                                 smcDoc.category,
-                                AdminShell.Key.GetFromRef(defsHsu.CD_DocumentationItem.GetReference())))
+                                AdminShell.Key.GetFromRef(defsHsu.CD_DocumentationItem.GetCdReference())))
                     {
                         // Document itself
                         smcHsuDoc.description = smcDoc.description;

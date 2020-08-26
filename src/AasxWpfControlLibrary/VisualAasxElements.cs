@@ -164,7 +164,7 @@ namespace AasxPackageExplorer
         }
 
         //
-        //
+        // Descendent management
         //
 
         private bool SearchForDescendentAndCallIfFound(

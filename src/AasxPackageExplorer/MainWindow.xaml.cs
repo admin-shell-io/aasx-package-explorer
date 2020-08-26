@@ -832,7 +832,7 @@ namespace AasxPackageExplorer
                                 // show ve
                                 DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
                                 // remember in history
-                                ButtonHistory.Push(veFound);
+                                ButtonHistory.Push(veFound, new[] { this.thePackageEnv, this.thePackageAux });
                                 // fake selection
                                 RedrawElementView();
                                 DisplayElements.Refresh();
@@ -936,14 +936,17 @@ namespace AasxPackageExplorer
             MainTimer_HandlePlugins();
         }
 
-        private void ButtonHistory_ObjectRequested(object sender, VisualElementGeneric ve)
+        private void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
         {
             // be careful
             try
             {
-                if (ve != null)
+                // try access visual element directly?
+                var ve = hi?.VisualElement;
+                if (ve != null && DisplayElements.Contains(ve))
                 {
-                    // show ve
+                    // is directly contain in actual tree
+                    // show it
                     if (DisplayElements.TrySelectVisualElement(ve, wishExpanded: true))
                     {
                         // fake selection
@@ -951,6 +954,12 @@ namespace AasxPackageExplorer
                         DisplayElements.Refresh();
                         ContentTakeOver.IsEnabled = false;
                     }
+                }
+
+                // no? .. is there a way to another file?
+                if (hi?.ReferableFilename != null && hi?.ReferableReference != null)
+                {
+                    ;
                 }
             }
             catch (Exception ex)
@@ -1056,7 +1065,7 @@ namespace AasxPackageExplorer
             // try identify the business object
             if (DisplayElements.SelectedItem != null)
             {
-                ButtonHistory.Push(DisplayElements.SelectedItem);
+                ButtonHistory.Push(DisplayElements.SelectedItem, new[] { this.thePackageEnv, this.thePackageAux });
             }
 
             // redraw view

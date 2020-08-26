@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdminShellNS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,21 @@ using System.Windows.Shapes;
 
 namespace AasxPackageExplorer
 {
+    public class VisualElementHistoryItem
+    {
+        public VisualElementGeneric VisualElement = null;
+        public string ReferableFilename = null;
+        public string ReferableReference = null;
+
+        public VisualElementHistoryItem(VisualElementGeneric VisualElement, 
+            string ReferableFilename = null, string ReferableReference = null)
+        {
+            this.VisualElement = VisualElement;
+            this.ReferableFilename = ReferableFilename;
+            this.ReferableReference = ReferableReference;
+        }
+    }
+
     /// <summary>
     /// Interaktionslogik für VisualElementHistoryControl.xaml
     /// </summary>
@@ -22,9 +38,9 @@ namespace AasxPackageExplorer
     {
         // members
 
-        public event EventHandler<VisualElementGeneric> VisualElementRequested = null;
+        public event EventHandler<VisualElementHistoryItem> VisualElementRequested = null;
 
-        private List<VisualElementGeneric> history = new List<VisualElementGeneric>();
+        private List<VisualElementHistoryItem> history = new List<VisualElementHistoryItem>();
 
         // init
 
@@ -50,11 +66,37 @@ namespace AasxPackageExplorer
             buttonBack.IsEnabled = false;
         }
 
-        public void Push(VisualElementGeneric ve)
+        public void Push(VisualElementGeneric ve, AdminShellPackageEnv[] packages = null)
         {
+            // check, if ve identifies a Referable, to which a symbolic link can be done ..
+            string fn = null;
+            string refstr = null;
+            var mdo = ve?.GetDereferencedMainDataObject();
+            if (packages?.Length > 0 && mdo != null && mdo is AdminShell.Referable && mdo is AdminShell.IGetReference)
+            {
+                // TODO (MIHO, 2020-08-26): this is not elegant; access to the package could be by ve itself!
+
+                // in which package is the main data object
+                AdminShellPackageEnv pFound = null;
+                foreach (var p in packages)
+                    if (p?.AasEnv != null)
+                        foreach (var foundRf in p.AasEnv.FindAllReferable((rf) => { return rf == mdo; }))
+                        {
+                            // found something!
+                            pFound = p;
+                            break;
+                        }
+
+                if (pFound != null)
+                {
+                    fn = pFound.Filename;
+                    refstr = (mdo as AdminShell.IGetReference).GetReference()?.ToString();
+                }
+            }
+
             // add, only if not already there
-            if (history.Count < 1 || history[history.Count - 1] != ve)
-                history.Add(ve);
+            if (history.Count < 1 || history[history.Count - 1].VisualElement != ve)
+                history.Add(new VisualElementHistoryItem(ve, fn, refstr));
 
             // is enabled
             buttonBack.IsEnabled = true;

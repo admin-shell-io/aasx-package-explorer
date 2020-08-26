@@ -201,8 +201,43 @@ namespace AasxPackageExplorer
         #region Elememt view drawing / handling
 
         //
-        // Element View Drawing
+        // Element management
         //
+
+        private IEnumerable<VisualElementGeneric> FindAllVisualElementInternal(VisualElementGeneric root)
+        {
+            yield return root;
+            if (root?.Members != null)
+                foreach (var m in root.Members)
+                    foreach (var e in FindAllVisualElementInternal(m))
+                        yield return e;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement()
+        {
+            if (displayedTreeViewLines == null)
+                yield break;
+            foreach (var tvl in displayedTreeViewLines)
+                foreach (var e in FindAllVisualElementInternal(tvl))
+                    yield return e;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement(Predicate<VisualElementGeneric> p)
+        {
+            if (p == null)
+                yield break;
+
+            foreach (var e in this.FindAllVisualElement())
+                if (p(e))
+                    yield return e;
+        }
+
+        public bool Contains(VisualElementGeneric ve)
+        {
+            foreach (var e in FindAllVisualElement((o) => { return ve == o; }))
+                return true;
+            return false;
+        }
 
         private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject)
         {
@@ -327,6 +362,10 @@ namespace AasxPackageExplorer
             }
             return false;
         }
+
+        //
+        // Element View Drawing
+        //
 
         public void Clear()
         {

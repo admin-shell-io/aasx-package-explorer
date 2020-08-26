@@ -65,36 +65,36 @@ namespace AasxPluginDocumentShelf
             if (opt.SemIdDocumentation != null)
                 opt.AllowSubmodelSemanticIds.Add(opt.SemIdDocumentation);
 
-            opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentClassId = preDefs.CD_VDI2770_DocumentClassId?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentClassName = preDefs.CD_VDI2770_DocumentClassName?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentClassId = preDefs.CD_VDI2770_DocumentClassId?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentClassName = preDefs.CD_VDI2770_DocumentClassName?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentClassificationSystem =
-                preDefs.CD_VDI2770_DocumentClassificationSystem?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdOrganizationName = preDefs.CD_VDI2770_OrganizationName?.GetReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_DocumentClassificationSystem?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdOrganizationName = preDefs.CD_VDI2770_OrganizationName?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdOrganizationOfficialName =
-                preDefs.CD_VDI2770_OrganizationOfficialName?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentVersion = preDefs.CD_VDI2770_DocumentVersion?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdLanguage = preDefs.CD_VDI2770_Language?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdTitle = preDefs.CD_VDI2770_Title?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDate = preDefs.CD_VDI2770_Date?.GetReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_OrganizationOfficialName?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentVersion = preDefs.CD_VDI2770_DocumentVersion?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdLanguage = preDefs.CD_VDI2770_Language?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdTitle = preDefs.CD_VDI2770_Title?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDate = preDefs.CD_VDI2770_Date?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentVersionIdValue =
-                preDefs.CD_VDI2770_DocumentVersionIdValue?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDigitalFile = preDefs.CD_VDI2770_DigitalFile?.GetReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_DocumentVersionIdValue?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDigitalFile = preDefs.CD_VDI2770_DigitalFile?.GetCdReference()?.GetAsExactlyOneKey();
 
             opt.FormVdi2770 = CreateVdi2770TemplateDesc(opt);
 
             /* new, Birgit */
-            opt.SemIdDocumentId = preDefs.CD_VDI2770_DocumentId?.GetReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentId = preDefs.CD_VDI2770_DocumentId?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdIsPrimaryDocumentId =
-                preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentVersionId = preDefs.CD_VDI2770_DocumentVersionId?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdSummary = preDefs.CD_VDI2770_Summary?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdKeywords = preDefs.CD_VDI2770_Keywords?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdStatusValue = preDefs.CD_VDI2770_StatusValue?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdRole = preDefs.CD_VDI2770_Role?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdDomainId = preDefs.CD_VDI2770_DomainId?.GetReference()?.GetAsExactlyOneKey();
-            opt.SemIdReferencedObject = preDefs.CD_VDI2770_ReferencedObject?.GetReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentVersionId = preDefs.CD_VDI2770_DocumentVersionId?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdSummary = preDefs.CD_VDI2770_Summary?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdKeywords = preDefs.CD_VDI2770_Keywords?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdStatusValue = preDefs.CD_VDI2770_StatusValue?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdRole = preDefs.CD_VDI2770_Role?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDomainId = preDefs.CD_VDI2770_DomainId?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdReferencedObject = preDefs.CD_VDI2770_ReferencedObject?.GetCdReference()?.GetAsExactlyOneKey();
 
             return opt;
         }
