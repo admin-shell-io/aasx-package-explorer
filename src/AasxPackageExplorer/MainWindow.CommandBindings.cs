@@ -431,6 +431,9 @@ namespace AasxPackageExplorer
             if (cmd == "opcuaimportnodeset")
                 CommandBinding_OpcUaImportNodeSet();
 
+            if (cmd == "importsubmodel")
+                CommandBinding_ImportSubmodel();
+
             if (cmd == "importaml")
                 CommandBinding_ImportAML();
 
@@ -1452,6 +1455,44 @@ namespace AasxPackageExplorer
                 }
             }
 
+        }
+
+        public void CommandBinding_ImportSubmodel()
+        {
+            VisualElementAdminShell ve = null;
+            if (DisplayElements.SelectedItem != null)
+            {
+                if (DisplayElements.SelectedItem is VisualElementAdminShell)
+                {
+                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+                }
+                else
+                {
+                    MessageBoxFlyoutShow("Please select the administration shell for the submodel import.",
+                        "Submodel Import", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            var dataChanged = false;
+            try
+            {
+                if (ve != null && ve.theEnv != null && ve.theAas != null)
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
+                else
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(thePackageEnv.AasEnv);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "An error occurred during the submodel import.");
+            }
+
+            if (dataChanged)
+            {
+                Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                RestartUIafterNewPackage();
+                Mouse.OverrideCursor = null;
+            }
         }
 
         public void CommandBinding_ImportAML()
