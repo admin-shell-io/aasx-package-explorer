@@ -16,6 +16,7 @@ author: Marco Mendes
 
 Copyright (c) 2020 SICK AG <info@sick.de>
 
+<<<<<<< HEAD
 The AASX Package Explorer is licensed under the Apache License 2.0
 (Apache-2.0, see below).
 
@@ -34,6 +35,9 @@ conditions.
 
 The components below are used in AASX Package Explorer.
 The related licenses are listed for information purposes only.
+=======
+This software is licensed under the Apache License 2.0 (Apache-2.0, see below).
+>>>>>>> 67f9b132e7fddc0264899c66be5c736ba0f3cac5
 
 The browser functionality is licensed under the cefSharp license (see below).
 
@@ -52,8 +56,18 @@ The AutomationML.Engine is licensed under the MIT license (MIT, see below).
 
 The MQTT server and client is licensed under the MIT license (MIT, see below).
 
+<<<<<<< HEAD
 The ClosedXML Excel reader/writer is licensed under the MIT license (MIT,
 see below).
+=======
+The ExcelDataReder is licensed under the MIT license (MIT) (see below)
+
+This application is a sample application for demonstration of the features of
+the Administration Shell. It is not allowed for productive use.
+The implementation uses the concepts of the document "Details of the Asset
+Administration Shell" published on www.plattform-i40.de which is licensed
+under Creative Commons CC BY-ND 3.0 DE.
+>>>>>>> 67f9b132e7fddc0264899c66be5c736ba0f3cac5
 
 The CountryFlag WPF control is licensed under the Code Project Open License
 (CPOL, see below).
@@ -593,6 +607,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+<<<<<<< HEAD
 
 With resepct to ClosedXML
 =========================
@@ -912,6 +927,8 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+=======
+>>>>>>> 67f9b132e7fddc0264899c66be5c736ba0f3cac5
 With resepect to ExcelDataReader
 ================================
 
@@ -937,4 +954,8 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+<<<<<<< HEAD
 SOFTWARE.
+=======
+SOFTWARE.
+>>>>>>> 67f9b132e7fddc0264899c66be5c736ba0f3cac5
