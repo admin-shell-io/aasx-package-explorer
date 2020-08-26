@@ -56,7 +56,7 @@ jobs:
 
       - name: Install coveralls.net (to send test coverage)
         working-directory: src
-        run: dotnet tool install coveralls.net
+        run: dotnet tool install coveralls.net --version 2.0.0-beta0002
 
       - name: Build
         working-directory: src
