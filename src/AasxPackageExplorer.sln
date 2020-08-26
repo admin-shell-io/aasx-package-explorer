@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCsharpLibrary.Tests", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseCode", "BaseCode", "{DDA9C372-F8ED-4099-A53C-01B9333FD985}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxDictionaryImport.Tests", "AasxDictionaryImport.Tests\AasxDictionaryImport.Tests.csproj", "{B540EBF4-C026-45A4-9721-909AF0CC14C1}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalLibs", "FunctionalLibs", "{F9AE9D23-200C-455B-B14E-2EF20B13432E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{66D730EB-B9D7-4C3A-8954-0F86240AD612}"
@@ -857,6 +859,8 @@ Global
 		{232852C2-358B-4577-9D29-1E48ED75C342}.ReleaseWithoutCEF|x64.Build.0 = Release|Any CPU
 		{232852C2-358B-4577-9D29-1E48ED75C342}.ReleaseWithoutCEF|x86.ActiveCfg = Release|Any CPU
 		{232852C2-358B-4577-9D29-1E48ED75C342}.ReleaseWithoutCEF|x86.Build.0 = Release|Any CPU
+		{B540EBF4-C026-45A4-9721-909AF0CC14C1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B540EBF4-C026-45A4-9721-909AF0CC14C1}.Debug|x64.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
