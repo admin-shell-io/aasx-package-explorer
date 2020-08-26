@@ -37,8 +37,11 @@ function Main
 
 
 
-    # Relative to $targetDir
-    $testDlls = @( "AasxCsharpLibrary.Tests.dll" )
+    # Glob test DLLs relative to $targetDir
+    $testDlls = Get-ChildItem `
+        -Path (Join-Path $targetDir "*.Tests.dll") `
+        -File `
+        -Name
 
     foreach ($testDll in $testDlls)
     {
