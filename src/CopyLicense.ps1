@@ -9,10 +9,12 @@ The includes trump the excludes.
 
 function Main
 {
-    $srcDir = $PSScriptRoot
+    $rootDir = Split-Path -Parent $PSScriptRoot
 
-    Write-Host "The src directory is: $srcDir"
-    $licenseTxt = Join-Path $srcDir "LICENSE.txt"
+    $licenseTxt = Join-Path $rootDir "LICENSE.txt"
+    Write-Host "The master LICENSE.txt is: $licenseTxt"
+
+    $srcDir = $PSScriptRoot
 
     # Excludes and includes need to be absolute paths.
 
@@ -34,8 +36,7 @@ function Main
     }
 
     $includes = @(
-    # Example:
-    # $( Join-Path $srcDir "SomeProject/Somesubdir" )
+    $srcDir
     )
 
     $acceptedDirs = @( )
@@ -47,7 +48,7 @@ function Main
         }
         else
         {
-            Write-Host "The subdirectory is exluded intentionally: $dir"
+            Write-Host "The subdirectory is intentionally exluded: $dir"
         }
     }
 
