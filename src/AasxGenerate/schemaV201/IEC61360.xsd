@@ -28,10 +28,12 @@
             <element maxOccurs="1" minOccurs="0" name="sourceOfDefinition" type="string" />
             <element maxOccurs="1" minOccurs="0" name="symbol" type="string" />
             <element maxOccurs="1" minOccurs="0" name="dataType" type="IEC61360:dataTypeIEC61360_t"/>
-			<element maxOccurs="1" minOccurs="0" name="definition" type="IEC61360:langStringSet_t"/>			<element maxOccurs="1" minOccurs="0" name="valueFormat" type="string"/>
+			<element maxOccurs="1" minOccurs="0" name="definition" type="IEC61360:langStringSet_t"/>
+			<element maxOccurs="1" minOccurs="0" name="valueFormat" type="string"/>
             <element maxOccurs="1" minOccurs="0" name="valueList" type="IEC61360:valueList_t" />
             <element maxOccurs="1" minOccurs="0" name="value" type="IEC61360:valueDataType_t" />
-            <element maxOccurs="1" minOccurs="0" name="valueId" type="IEC61360:reference_t"/>			<element maxOccurs="unbounded" minOccurs="0" name="levelType" type="IEC61360:levelType_t"/>
+            <element maxOccurs="1" minOccurs="0" name="valueId" type="IEC61360:reference_t"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="levelType" type="IEC61360:levelType_t"/>
 		</choice>
 	</complexType>
 	<complexType name="key_t">

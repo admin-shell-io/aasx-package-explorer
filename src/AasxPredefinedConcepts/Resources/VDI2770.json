@@ -42,9 +42,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -101,15 +98,12 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
                   "text": "DocumentId"
                 }
-              ]
+              ]              
             },
             "unit": "",
             "unitId": null,
@@ -160,9 +154,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -219,9 +210,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -498,11 +486,7 @@
                 {
                   "language": "DE",
                   "text": "Version des Dokuments"
-                }
-              ]
-            },
-            "shortName": {
-              "langString": [
+                },
                 {
                   "language": "EN",
                   "text": "DocumentVersion"
@@ -694,9 +678,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -753,9 +734,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -812,9 +790,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN",
@@ -872,12 +847,9 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
-                  "language": "EN?",
+                  "language": "EN",
                   "text": "DocumentId"
                 }
               ]
@@ -931,12 +903,9 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
-                  "language": "EN?",
+                  "language": "EN",
                   "text": "IsPrimaryDocumentId"
                 }
               ]
@@ -995,12 +964,9 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
-                  "language": "EN?",
+                  "language": "EN",
                   "text": "DocumentVersionId"
                 }
               ]
@@ -1054,9 +1020,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN?",
@@ -1115,14 +1078,6 @@
             "preferredName": {
               "langString": [
                 {
-                  "language": "",
-                  "text": ""
-                }
-              ]
-            },
-            "shortName": {
-              "langString": [
-                {
                   "language": "EN?",
                   "text": "KeyWords"
                 }
@@ -1164,9 +1119,6 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
               "langString": [
                 {
                   "language": "EN?",
@@ -1234,14 +1186,6 @@
                 }
               ]
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Role"
-                }
-              ]
-            },
             "unit": "",
             "unitId": null,
             "valueFormat": null,
@@ -1285,13 +1229,10 @@
             "preferredName": {
               "langString": [
                 {
-                  "language": "",
-                  "text": ""
+                  "language": "EN",
+                  "text": "DocumentDomainId"
                 }
               ]
-            },
-            "shortName": {
-              "langString": []
             },
             "unit": "",
             "unitId": null,
@@ -1337,10 +1278,12 @@
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
             "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": []
+              "langString": [
+                {
+                  "language": "EN",
+                  "text": "ReferencedObject"
+                }
+              ]
             },
             "unit": "",
             "unitId": null,

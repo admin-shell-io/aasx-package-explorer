@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
+
 using AasxAmlImExport;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
@@ -1224,7 +1226,7 @@ namespace AasxGenerate
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.NullValueHandling = NullValueHandling.Ignore;
                 serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-                serializer.Formatting = Formatting.Indented;
+                serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
                 using (JsonWriter writer = new JsonTextWriter(sw))
                 {
                     serializer.Serialize(writer, aasenv1);
@@ -1556,7 +1558,7 @@ namespace AasxGenerate
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.NullValueHandling = NullValueHandling.Ignore;
                 serializer.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
-                serializer.Formatting = Formatting.Indented;
+                serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
                 using (JsonWriter writer = new JsonTextWriter(sw))
                 {
                     serializer.Serialize(writer, aasenv1);
@@ -1583,6 +1585,64 @@ namespace AasxGenerate
                 package3.Close();
             }
 #endif
+        }
+
+        static void Validate(string fn)
+        {
+            // see: AasxCsharpLibrary.Tests/TestLoadSave.cs
+
+            // Load the schema
+
+            var xmlSchemaSet = new System.Xml.Schema.XmlSchemaSet();
+            xmlSchemaSet.XmlResolver = new System.Xml.XmlUrlResolver();
+
+            string schemaPath = ".\\schemaV201\\AAS.xsd";
+            xmlSchemaSet.Add(null, schemaPath);
+
+            var schemaMessages = new List<string>();
+            xmlSchemaSet.ValidationEventHandler +=
+                (object sender, System.Xml.Schema.ValidationEventArgs e) => { schemaMessages.Add(e.Message); };
+            xmlSchemaSet.Compile();
+
+            if (schemaMessages.Count > 0)
+            {
+                var parts = new List<string> { $"Failed to compile the schema: {schemaPath}" };
+                parts.AddRange(schemaMessages);
+
+                throw new InvalidOperationException(string.Join(Environment.NewLine, parts));
+            }
+
+            // Load-Save-Validate
+            var settings = new System.Xml.XmlReaderSettings();
+            settings.ValidationType = System.Xml.ValidationType.Schema;
+            settings.Schemas = xmlSchemaSet;
+
+            var messages = new List<string>();
+            settings.ValidationEventHandler +=
+                (object sender, System.Xml.Schema.ValidationEventArgs e) =>
+                {
+                    messages.Add(e.Message);
+                };
+
+            using (var reader = System.Xml.XmlReader.Create(fn, settings))
+            {
+                while (reader.Read())
+                {
+                    // Invoke callbacks
+                };
+
+                if (messages.Count > 0)
+                {
+                    var parts = new List<string>
+                    {
+                        $"Failed to validate XML file {fn}:"
+                    };
+                    parts.AddRange(messages);
+
+                    throw new InvalidOperationException(string.Join(Environment.NewLine, parts));
+                }
+            }
+
         }
 
         static void Main(string[] args)
@@ -1729,6 +1789,33 @@ namespace AasxGenerate
                         {
                             Console.Error.WriteLine(
                                 "While loading package {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
+                            Environment.Exit(-1);
+                        }
+
+                    if (args[ai].Trim().ToLower() == "validate")
+                        try
+                        {
+                            // execute
+                            var fn = args[ai + 1].Trim();
+                            
+                            if (fn.ToLower().EndsWith(".xml"))
+                            {
+                                Console.Error.WriteLine("Validating file {0} against XSD in schemaV201\\. ..", fn);
+                                Validate(fn);
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine("Do not know to handle {0}. Aborting.", fn);
+                            }
+
+                            // next command
+                            ai += 2;
+                            continue;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine(
+                                "While validating {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
                 }

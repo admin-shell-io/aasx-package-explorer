@@ -2396,9 +2396,13 @@ namespace AdminShellNS
                 "DATE" };
 
             // members
+            // TODO (MIHO, 2020-08-27): According to spec, cardinality is [1..1][1..n]
+            // these cardinalities are NOT MAINTAINED in ANY WAY by the system
             public LangStringSetIEC61360 preferredName = new LangStringSetIEC61360();
 
-            public LangStringSetIEC61360 shortName = new LangStringSetIEC61360();
+            // TODO (MIHO, 2020-08-27): According to spec, cardinality is [0..1][1..n]
+            // these cardinalities are NOT MAINTAINED in ANY WAY by the system
+            public LangStringSetIEC61360 shortName = null;
 
             [MetaModelName("DataSpecificationIEC61360.unit")]
             [TextSearchable]
@@ -2426,7 +2430,10 @@ namespace AdminShellNS
             [TextSearchable]
             [CountForHash]
             public string dataType = "";
-            public LangStringSetIEC61360 definition = new LangStringSetIEC61360();
+
+            // TODO (MIHO, 2020-08-27): According to spec, cardinality is [0..1][1..n]
+            // these cardinalities are NOT MAINTAINED in ANY WAY by the system
+            public LangStringSetIEC61360 definition = null;
 
             // getter / setters
 
@@ -2483,7 +2490,9 @@ namespace AdminShellNS
             {
                 var d = new DataSpecificationIEC61360();
                 if (preferredName != null)
+                {
                     d.preferredName.langString = LangStr.CreateManyFromStringArray(preferredName);
+                }
                 d.shortName = new LangStringSetIEC61360("EN?", shortName);
                 d.unit = unit;
                 d.unitId = unitId;
@@ -2492,7 +2501,11 @@ namespace AdminShellNS
                 d.symbol = symbol;
                 d.dataType = dataType;
                 if (definition != null)
+                {
+                    if (d.definition == null)
+                        d.definition = new LangStringSetIEC61360();
                     d.definition.langString = LangStr.CreateManyFromStringArray(definition);
+                }
                 return (d);
             }
         }
