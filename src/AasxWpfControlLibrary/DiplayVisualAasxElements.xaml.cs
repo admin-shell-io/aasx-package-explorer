@@ -239,7 +239,8 @@ namespace AasxPackageExplorer
             return false;
         }
 
-        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject)
+        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject,
+            bool alsoDereferenceObjects = false)
         {
             if (tvl == null || dataObject == null)
                 return null;
@@ -257,27 +258,40 @@ namespace AasxPackageExplorer
             if (tvl.GetMainDataObject() == dataObject)
                 return tvl;
 
+            // extended?
+            if (alsoDereferenceObjects && tvl.GetDereferencedMainDataObject() == dataObject)
+                return tvl;
+
             // recursion
             foreach (var mem in tvl.Members)
             {
-                var x = SearchInListOfVisualElements(mem, dataObject);
+                var x = SearchInListOfVisualElements(mem, dataObject, alsoDereferenceObjects);
                 if (x != null)
                     return x;
             }
             return null;
         }
 
-        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject)
+        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false)
         {
             if (displayedTreeViewLines == null)
                 return null;
             foreach (var tvl in displayedTreeViewLines)
             {
-                var x = SearchInListOfVisualElements(tvl, dataObject);
+                var x = SearchInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects);
                 if (x != null)
                     return x;
             }
             return null;
+        }
+
+        public VisualElementGeneric GetDefaultVisualElement()
+        {
+            if (displayedTreeViewLines == null || displayedTreeViewLines.Count < 1)
+                return null;
+
+            return displayedTreeViewLines[0];
         }
 
         public bool TrySelectMainDataObject(object dataObject, bool wishExpanded)

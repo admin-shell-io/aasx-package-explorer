@@ -709,6 +709,68 @@ namespace AasxPackageExplorer
             }
         }
 
+        private AdminShell.Referable LoadFromFilerepository(AasxFileRepository.FileItem fi, 
+            AdminShell.Reference requireReferable = null)
+        {
+            // access
+            if (this.theFileRepository == null)
+                return null;
+
+            // which file?
+            var fn = this.theFileRepository?.GetFullFilename(fi);
+            if (fn == null)
+                return null;
+
+            // try load (in the background/ RAM first..
+            AdminShellPackageEnv pkg = null;
+            try
+            {
+                Log.Info($"Auto-load AASX file from repository {fn}");
+                pkg = LoadPackageFromFile(fn);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"When auto-loading {fn}");
+            }
+
+            // if successfull ..
+            if (pkg != null)
+            {
+                // .. try find business object!
+                AdminShell.Referable bo = null;
+                if (requireReferable != null)
+                    bo = pkg.AasEnv.FindReferableByReference(requireReferable);
+
+                // only proceed, if business object was found .. else: close directly
+                if (requireReferable != null && bo == null)
+                    pkg.Close();
+                else
+                {
+                    // make sure the user wants to change
+                    if (!(MenuItemFileRepoLoadWoPrompt.IsChecked == true))
+                    {
+                        // ask double question
+                        if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                                "Load file from AASX file repository?",
+                                "AASX File Repository",
+                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            return null;
+                    }
+
+                    // start animation
+                    this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                    // activate
+                    UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                }
+
+                // return bo to focus
+                return bo;
+            }
+
+            return null;
+        }
+
         private void MainTimer_HandlePlugins()
         {
             // check if a plug-in has some work to do ..
@@ -752,52 +814,7 @@ namespace AasxPackageExplorer
                                     if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
                                         fi = this.theFileRepository.FindByAasId(work[0].value.Trim());
 
-                                    // which file?
-                                    var fn = this.theFileRepository?.GetFullFilename(fi);
-                                    if (fn == null)
-                                        return;
-
-                                    // try load (in the background/ RAM first..
-                                    AdminShellPackageEnv pkg = null;
-                                    try
-                                    {
-                                        Log.Info($"Auto-load AASX file from repository {fn}");
-                                        pkg = LoadPackageFromFile(fn);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Error(ex, $"When auto-loading {fn}");
-                                    }
-
-                                    // if successfull ..
-                                    if (pkg != null)
-                                    {
-                                        // .. try find business object!
-                                        bo = pkg.AasEnv.FindReferableByReference(work);
-
-                                        // only proceed, if business object was found .. else: close directly
-                                        if (bo == null)
-                                            pkg.Close();
-                                        else
-                                        {
-                                            // make sure the user wants to change
-                                            if (!(MenuItemFileRepoLoadWoPrompt.IsChecked == true))
-                                            {
-                                                // ask double question
-                                                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
-                                                        "Load file from AASX file repository?",
-                                                        "AASX File Repository",
-                                                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
-                                                    return;
-                                            }
-
-                                            // start animation
-                                            this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
-
-                                            // activate
-                                            UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
-                                        }
-                                    }
+                                    bo = LoadFromFilerepository(fi, work);
                                 }
 
                                 // still yes?
@@ -832,11 +849,17 @@ namespace AasxPackageExplorer
                                 // show ve
                                 DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
                                 // remember in history
-                                ButtonHistory.Push(veFound, new[] { this.thePackageEnv, this.thePackageAux });
+                                ButtonHistory.Push(veFound);
                                 // fake selection
                                 RedrawElementView();
                                 DisplayElements.Refresh();
                                 ContentTakeOver.IsEnabled = false;
+                            }
+                            else
+                            {
+                                // everything is in default state, bush adequate button history
+                                var veTop = this.DisplayElements.GetDefaultVisualElement();
+                                ButtonHistory.Push(veTop);
                             }
                         }
                         catch (Exception ex)
@@ -953,13 +976,65 @@ namespace AasxPackageExplorer
                         RedrawElementView();
                         DisplayElements.Refresh();
                         ContentTakeOver.IsEnabled = false;
+
+                        // done
+                        return;
                     }
                 }
 
                 // no? .. is there a way to another file?
-                if (hi?.ReferableFilename != null && hi?.ReferableReference != null)
+                if (this.theFileRepository != null && hi?.ReferableAasId?.id != null && hi?.ReferableReference != null)
                 {
                     ;
+
+                    // try lookup file in file repository
+                    var fi = this.theFileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
+                    if (fi == null)
+                    {
+                        Log.Error($"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
+                        return;
+                    }
+
+                    // load it (safe)
+                    AdminShell.Referable bo = null;
+                    try
+                    {
+                        bo = LoadFromFilerepository(fi, hi.ReferableReference);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
+                    }
+
+                    // still proceed?
+                    VisualElementGeneric veFocus = null;
+                    if (bo != null && this.DisplayElements != null)
+                    {
+                        veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo, 
+                            alsoDereferenceObjects: true);
+                        if (veFocus == null)
+                        {
+                            Log.Error($"Cannot lookup requested element within loaded file from repository.");
+                            return;
+                        }
+                    }
+
+                    // if successful, try to display it
+                    try
+                    {
+                        // show ve
+                        DisplayElements.TrySelectVisualElement(veFocus, wishExpanded: true);
+                        // remember in history
+                        ButtonHistory.Push(veFocus);
+                        // fake selection
+                        RedrawElementView();
+                        DisplayElements.Refresh();
+                        ContentTakeOver.IsEnabled = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "While displaying element requested by back button.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -1065,7 +1140,7 @@ namespace AasxPackageExplorer
             // try identify the business object
             if (DisplayElements.SelectedItem != null)
             {
-                ButtonHistory.Push(DisplayElements.SelectedItem, new[] { this.thePackageEnv, this.thePackageAux });
+                ButtonHistory.Push(DisplayElements.SelectedItem);
             }
 
             // redraw view

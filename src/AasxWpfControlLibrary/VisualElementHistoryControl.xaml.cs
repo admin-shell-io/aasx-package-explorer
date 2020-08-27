@@ -19,14 +19,14 @@ namespace AasxPackageExplorer
     public class VisualElementHistoryItem
     {
         public VisualElementGeneric VisualElement = null;
-        public string ReferableFilename = null;
-        public string ReferableReference = null;
+        public AdminShell.Identification ReferableAasId = null;
+        public AdminShell.Reference ReferableReference = null;
 
-        public VisualElementHistoryItem(VisualElementGeneric VisualElement, 
-            string ReferableFilename = null, string ReferableReference = null)
+        public VisualElementHistoryItem(VisualElementGeneric VisualElement,
+            AdminShell.Identification ReferableAasId = null, AdminShell.Reference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
-            this.ReferableFilename = ReferableFilename;
+            this.ReferableAasId = ReferableAasId;
             this.ReferableReference = ReferableReference;
         }
     }
@@ -66,37 +66,36 @@ namespace AasxPackageExplorer
             buttonBack.IsEnabled = false;
         }
 
-        public void Push(VisualElementGeneric ve, AdminShellPackageEnv[] packages = null)
+        public void Push(VisualElementGeneric ve)
         {
-            // check, if ve identifies a Referable, to which a symbolic link can be done ..
-            string fn = null;
-            string refstr = null;
-            var mdo = ve?.GetDereferencedMainDataObject();
-            if (packages?.Length > 0 && mdo != null && mdo is AdminShell.Referable && mdo is AdminShell.IGetReference)
+            // access
+            if (ve == null)
+                return;
+
+            // for ve, try to find the AAS (in the parent hierarchy)
+            var veAas = ve?.FindAllParents((v) => { return v is VisualElementAdminShell; }).FirstOrDefault();
+
+            // for ve, find the Referable to be ve or superordinate ..
+            var veRef = ve?.FindAllParents((v) => {
+                var derefdo = v?.GetDereferencedMainDataObject();
+                return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
+            }).FirstOrDefault();
+
+            // check, if ve can identify a Referable, to which a symbolic link can be done ..
+            AdminShell.Identification aasid = null;
+            AdminShell.Reference refref = null;
+
+            if (veAas != null && veRef != null)
             {
-                // TODO (MIHO, 2020-08-26): this is not elegant; access to the package could be by ve itself!
+                aasid = (veAas as VisualElementAdminShell)?.theAas?.identification;
 
-                // in which package is the main data object
-                AdminShellPackageEnv pFound = null;
-                foreach (var p in packages)
-                    if (p?.AasEnv != null)
-                        foreach (var foundRf in p.AasEnv.FindAllReferable((rf) => { return rf == mdo; }))
-                        {
-                            // found something!
-                            pFound = p;
-                            break;
-                        }
-
-                if (pFound != null)
-                {
-                    fn = pFound.Filename;
-                    refstr = (mdo as AdminShell.IGetReference).GetReference()?.ToString();
-                }
+                var derefdo = veRef?.GetDereferencedMainDataObject();
+                refref = (derefdo as AdminShell.IGetReference).GetReference();
             }
 
             // add, only if not already there
             if (history.Count < 1 || history[history.Count - 1].VisualElement != ve)
-                history.Add(new VisualElementHistoryItem(ve, fn, refstr));
+                history.Add(new VisualElementHistoryItem(ve, aasid, refref));
 
             // is enabled
             buttonBack.IsEnabled = true;

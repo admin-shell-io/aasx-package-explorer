@@ -31,6 +31,7 @@
   "WriteDefaultOptionsFN": null /* "options-written.json" */,
   "IndirectLoadSave": true,
   "AccentColors": {},
+  "LoadWithoutPrompt": true,
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
