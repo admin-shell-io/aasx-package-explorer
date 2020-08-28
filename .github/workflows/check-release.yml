@@ -46,30 +46,16 @@ jobs:
 
       - name: Package
         working-directory: src
-        run: |
-          powershell .\PackageRelease.ps1 -version LATEST.alpha
-          $timestamp = '${{ steps.setTimestamp.outputs.timestamp }}'
-
-          # Add a timestamp to make it easier for users to identify different
-          # versions
-
-          $latestDir = "..\artefacts\release\LATEST.alpha"
-          Move-Item `
-                -Path (Join-Path $latestDir "portable.zip") `
-                -Destination (Join-Path $latestDir "portable.$timestamp.zip")
-
-          Move-Item `
-                -Path (Join-Path $latestDir "portable-small.zip") `
-                -Destination (Join-Path $latestDir "portable-small.$timestamp.zip")
+        run: powershell .\PackageRelease.ps1 -version LATEST.alpha
 
       - name: Upload latest-portable
         uses: actions/upload-artifact@v2
         with:
-          name: portable.LATEST.alpha
-          path: artefacts/release/LATEST.alpha/portable.${{ steps.setTimestamp.outputs.timestamp }}.zip
+          name: portable.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/portable.zip
 
       - name: Upload latest-portable-small
         uses: actions/upload-artifact@v2
         with:
-          name: portable-small.LATEST.alpha
-          path: artefacts/release/LATEST.alpha/portable-small.${{ steps.setTimestamp.outputs.timestamp }}.zip
+          name: portable-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/portable-small.zip
