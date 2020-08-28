@@ -30,7 +30,7 @@ function PackageRelease($outputDir)
     # Define plugins
     ##
     
-    $portableSmallPlugins = $(
+    $smallPlugins = $(
     "AasxPluginBomStructure",
     "AasxPluginDocumentShelf",
     "AasxPluginExportTable",
@@ -41,8 +41,8 @@ function PackageRelease($outputDir)
     "AasxPluginUaNetServer"
     )
 
-    $portablePlugins = $portableSmallPlugins.Clone()
-    $portablePlugins += "AasxPluginWebBrowser"
+    $allPlugins = $smallPlugins.Clone()
+    $allPlugins += "AasxPluginWebBrowser"
 
     function MakePackage($identifier, $plugins)
     {
@@ -102,9 +102,9 @@ function PackageRelease($outputDir)
     # Make packages
     ##
 
-    MakePackage -identifier "portable" -plugins $portablePlugins
+    MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
 
-    MakePackage -identifier "portable-small" -plugins $portableSmallPlugins
+    MakePackage -identifier "aasx-package-explorer-small" -plugins $smallPlugins
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.
