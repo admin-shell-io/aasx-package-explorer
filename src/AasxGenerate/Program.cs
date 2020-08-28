@@ -42,7 +42,7 @@ namespace AasxGenerate
 
             // CONCEPTS
             var cdGroup = AdminShellV20.ConceptDescription.CreateNew(
-                "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
+                "CadItem", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
             aasenv.ConceptDescriptions.Add(cdGroup);
             cdGroup.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "CAD Dateieinheit", "EN", "CAD file item" },
@@ -54,7 +54,7 @@ namespace AasxGenerate
             );
 
             var cdFile = AdminShellV20.ConceptDescription.CreateNew(
-                "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
+                "File", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "Enthaltene CAD Datei", "EN", "Embedded CAD file" },
@@ -65,7 +65,7 @@ namespace AasxGenerate
             );
 
             var cdFormat = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-ZAA120#007");
+                "FileFormat", AdminShellV20.Identification.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
                 preferredNames: new[] { "DE", "Filetype CAD", "EN", "Filetype CAD" },
@@ -154,7 +154,7 @@ namespace AasxGenerate
                     // DOCUMENT ID
                     cd = preDefs.CD_VDI2770_DocumentId;
                     using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultShortName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args.GetHashCode();
@@ -164,7 +164,7 @@ namespace AasxGenerate
                     // Is Primary
                     cd = preDefs.CD_VDI2770_IsPrimaryDocumentId;
                     using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultShortName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "boolean";
                         p.value = "true";
@@ -174,7 +174,7 @@ namespace AasxGenerate
                     // DOCUMENT CLASS ID
                     cd = preDefs.CD_VDI2770_DocumentClassId;
                     using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultShortName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args[0];
@@ -185,7 +185,7 @@ namespace AasxGenerate
                     // DOCUMENT CLASS NAME
                     cd = preDefs.CD_VDI2770_DocumentClassName;
                     using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultShortName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
                     {
                         p.valueType = "string";
                         p.value = "" + args[1];
@@ -195,7 +195,7 @@ namespace AasxGenerate
                     // CLASS SYS
                     cd = preDefs.CD_VDI2770_DocumentClassificationSystem;
                     using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultShortName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
                     {
                         p0.Add(p);
                         p.valueType = "string";
@@ -215,7 +215,7 @@ namespace AasxGenerate
                         var lngs = args[4].Split(',');
                         for (int i = 0; i < lngs.Length; i++)
                             using (var p = AdminShellV20.Property.CreateNew(
-                                cd.GetDefaultShortName() + $"{i + 1:00}", "CONSTANT",
+                                cd.GetDefaultPreferredName() + $"{i + 1:00}", "CONSTANT",
                                 AdminShellV20.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
@@ -226,7 +226,7 @@ namespace AasxGenerate
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -237,7 +237,7 @@ namespace AasxGenerate
                         // TITLE
                         cd = preDefs.CD_VDI2770_Title;
                         using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -249,7 +249,7 @@ namespace AasxGenerate
                         // SUMMARY
                         cd = preDefs.CD_VDI2770_Summary;
                         using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -261,7 +261,7 @@ namespace AasxGenerate
                         // TITLE
                         cd = preDefs.CD_VDI2770_Keywords;
                         using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -273,7 +273,7 @@ namespace AasxGenerate
                         // SET DATE
                         cd = preDefs.CD_VDI2770_Date;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -284,7 +284,7 @@ namespace AasxGenerate
                         // STATUS
                         cd = preDefs.CD_VDI2770_StatusValue;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -295,7 +295,7 @@ namespace AasxGenerate
                         // ROLE
                         cd = preDefs.CD_VDI2770_Role;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -306,7 +306,7 @@ namespace AasxGenerate
                         // ORGANIZATION
                         cd = preDefs.CD_VDI2770_OrganizationName;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -317,7 +317,7 @@ namespace AasxGenerate
                         // ORGANIZATION OFFICIAL
                         cd = preDefs.CD_VDI2770_OrganizationOfficialName;
                         using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultShortName(), "CONSTANT",
+                            cd.GetDefaultPreferredName(), "CONSTANT",
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
@@ -331,7 +331,7 @@ namespace AasxGenerate
                             // physical file
                             cd = preDefs.CD_VDI2770_DigitalFile;
                             using (var p = AdminShellV20.File.CreateNew(
-                                cd.GetDefaultShortName(), "CONSTANT",
+                                cd.GetDefaultPreferredName(), "CONSTANT",
                                 AdminShellV20.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
@@ -344,7 +344,7 @@ namespace AasxGenerate
                             // URL
                             cd = preDefs.CD_VDI2770_DigitalFile;
                             using (var p = AdminShellV20.File.CreateNew(
-                                cd.GetDefaultShortName(), "CONSTANT",
+                                cd.GetDefaultPreferredName(), "CONSTANT",
                                 AdminShellV20.Key.GetFromRef(cd.GetReference())))
                             {
                                 p1.Add(p);
@@ -403,7 +403,7 @@ namespace AasxGenerate
 
             // CONCEPT: Manufacturer
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-AAO677#001"))
+                "Manufacturer", AdminShellV20.Identification.IRDI, "0173-1#02-AAO677#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -417,7 +417,7 @@ namespace AasxGenerate
                 );
 
                 var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "string";
                 p.value = "Example company Ltd.";
@@ -425,7 +425,7 @@ namespace AasxGenerate
 
             // CONCEPT: Width
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-BAF016#005"))
+                "Width", AdminShellV20.Identification.IRDI, "0173-1#02-BAF016#005"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -443,7 +443,7 @@ namespace AasxGenerate
                 );
 
                 var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "48";
@@ -451,7 +451,7 @@ namespace AasxGenerate
 
             // CONCEPT: Height
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-BAA020#008"))
+                "Height", AdminShellV20.Identification.IRDI, "0173-1#02-BAA020#008"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -470,7 +470,7 @@ namespace AasxGenerate
                 );
 
                 var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "56";
@@ -478,7 +478,7 @@ namespace AasxGenerate
 
             // CONCEPT: Depth
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+                "Depth", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -496,7 +496,7 @@ namespace AasxGenerate
                 );
 
                 var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "11.9";
@@ -504,7 +504,7 @@ namespace AasxGenerate
 
             // CONCEPT: Weight
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-AAS627#001"))
+                "Weight", AdminShellV20.Identification.IRDI, "0173-1#02-AAS627#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -519,7 +519,7 @@ namespace AasxGenerate
 
                 // as designed
                 var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.AddQualifier("life cycle qual", "SPEC",
                     AdminShellV20.KeyList.CreateNew(
@@ -533,7 +533,7 @@ namespace AasxGenerate
 
                 // as produced
                 var p2 = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
                     AdminShellV20.KeyList.CreateNew(
@@ -548,7 +548,7 @@ namespace AasxGenerate
 
             // CONCEPT: Material
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+                "Material", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -562,7 +562,7 @@ namespace AasxGenerate
                 );
 
                 var p = AdminShellV20.ReferenceElement.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.value = p.value = AdminShellV20.Reference.CreateNew(
                     AdminShellV20.Key.CreateNew(
@@ -591,6 +591,7 @@ namespace AasxGenerate
 
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+                "DocuName", 
                 idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -606,7 +607,7 @@ namespace AasxGenerate
                     "EN", "legally valid designation of the natural or judicial person..." }
                 );
 
-                var p = AdminShellV20.MultiLanguageProperty.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
+                var p = AdminShellV20.MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                             AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.value.Add("EN", "An english value.");
@@ -616,6 +617,7 @@ namespace AasxGenerate
 
             // CONCEPT: Range
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+                "VoltageRange", 
                 idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -631,7 +633,7 @@ namespace AasxGenerate
                     "EN", "very precisely limited voltage range..." }
                 );
 
-                var p = AdminShellV20.Range.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
+                var p = AdminShellV20.Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                             AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
                 p.min = "11.5";
@@ -641,6 +643,7 @@ namespace AasxGenerate
 
             // CONCEPT: AnnotatedRelationship
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+                "VerConn", 
                 idType: AdminShellV20.Identification.IRDI,  // immer IRDI für eCl@ss
                 id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei eCl@ss
             {
@@ -657,7 +660,7 @@ namespace AasxGenerate
                 );
 
                 var ar = AdminShellV20.AnnotatedRelationshipElement.CreateNew(
-                    cd.GetDefaultShortName(), "PARAMETER",
+                    cd.GetDefaultPreferredName(), "PARAMETER",
                     AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(ar);
                 ar.first = sme1.GetReference();
@@ -924,6 +927,7 @@ namespace AasxGenerate
             // CONCEPT: SetMode
             var theOp = new AdminShellV20.Operation();
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+                "SetMode", 
                 idType: AdminShellV20.Identification.IRDI,
                 id: "0173-1#02-AAS999#001"))
             {
@@ -943,6 +947,7 @@ namespace AasxGenerate
 
             // CONCEPT: Mode
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+                "mode", 
                 idType: AdminShellV20.Identification.IRDI,
                 id: "0173-1#02-AAX777#002"))
             {
@@ -957,7 +962,7 @@ namespace AasxGenerate
                     "EN", "Preset in optimal case for the energy saving mode" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(cd.GetDefaultShortName(), "PARAMETER",
+                var p = AdminShellV20.Property.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                             AdminShellV20.Key.GetFromRef(cd.GetReference()));
 
                 var ovp = new AdminShellV20.OperationVariable(p);
@@ -1151,7 +1156,7 @@ namespace AasxGenerate
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShellV20.AdministrationShell.CreateNew(
-                    "IRI", repo.CreateOneTimeId(), "1", "0");
+                    "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShellV20.AssetAdministrationShellRef(
                     new AdminShellV20.Key(
                         "AssetAdministrationShell", false, "IRI",
@@ -1397,7 +1402,7 @@ namespace AasxGenerate
             {
 
                 // ASSET
-                var asset1 = new AdminShellV20.Asset();
+                var asset1 = new AdminShellV20.Asset("Asset_3s7plfdrs35");
                 aasenv1.Assets.Add(asset1);
                 asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
                 asset1.AddDescription("EN", "USB Stick");
@@ -1442,7 +1447,7 @@ namespace AasxGenerate
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShellV20.AdministrationShell.CreateNew(
-                    "IRI", repo.CreateOneTimeId(), "1", "0");
+                    "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShellV20.AssetAdministrationShellRef(
                     new AdminShellV20.Key("AssetAdministrationShell", false, "IRI",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
@@ -1854,7 +1859,7 @@ namespace AasxGenerate
                         }
 
                         // next command
-                        Console.Out.WriteLine("Tested.");
+                        Console.Out.WriteLine("Checked.");
                         ai += 1;
                         continue;
                     }

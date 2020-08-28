@@ -10,36 +10,26 @@ namespace AdminShellNS
         Hint, Warning, SpecViolation, SchemaViolation
     }
 
-    public enum AasValidationFinding {
-        Unknown,
-        ReferableNoIdShort,
-        CdMissingPreferredName,
-        CdEmptyShortName,
-        CdEmptyDefinition
-    }
-
     public class AasValidationRecord
     {
         public AasValidationSeverity Severity = AasValidationSeverity.Hint;
         public AdminShell.Referable Source = null;
-        public AasValidationFinding Finding = AasValidationFinding.Unknown;
         public string Message = "";
 
         public Action Fix = null;
 
         public AasValidationRecord(AasValidationSeverity Severity, AdminShell.Referable Source, 
-            AasValidationFinding Finding, string Message, Action Fix = null)
+            string Message, Action Fix = null)
         {
             this.Severity = Severity;
             this.Source = Source;
-            this.Finding = Finding;
             this.Message = Message;
             this.Fix = Fix;
         }
 
         public override string ToString()
         {
-            return $"[{Severity.ToString()}] in {""+Source?.ToString()}: {Finding.ToString()} -> {"" + Message}";
+            return $"[{Severity.ToString()}] in {""+Source?.ToString()}: {"" + Message}";
         }
     }
 

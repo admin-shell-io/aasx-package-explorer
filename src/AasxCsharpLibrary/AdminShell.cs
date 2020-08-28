@@ -1393,6 +1393,11 @@ namespace AdminShellNS
 
             public Referable() { }
 
+            public Referable(string idShort)
+            {
+                this.idShort = idShort;
+            }
+
             public Referable(Referable src)
             {
                 if (src == null)
@@ -1480,6 +1485,11 @@ namespace AdminShellNS
                 if (this.idShort == null || this.idShort.Trim().Length < 1)
                     return ("<no idShort!>");
                 return this.idShort.Trim();
+            }
+
+            public override string ToString()
+            {
+                return "" + this.idShort;
             }
 
             // hash functionality
@@ -1616,7 +1626,6 @@ namespace AdminShellNS
                 if (this.idShort == null || this.idShort.Trim() == "")
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SpecViolation, this,
-                        AasValidationFinding.ReferableNoIdShort,
                         "Referable: missing idShort",
                         () => {
                             this.idShort = "TO_FIX";
@@ -1635,6 +1644,8 @@ namespace AdminShellNS
             // constructors
 
             public Identifiable() : base() { }
+
+            public Identifiable(string idShort) : base(idShort) { }
 
             public Identifiable(Identifiable src)
                 : base(src)
@@ -1681,6 +1692,10 @@ namespace AdminShellNS
                 return AdminShellUtil.FilterFriendlyName(this.idShort);
             }
 
+            public override string ToString()
+            {
+                return ("" + identification?.ToString() + " " + administration?.ToString()).Trim();
+            }
         }
 
         public class JsonModelTypeWrapper
@@ -1727,6 +1742,8 @@ namespace AdminShellNS
             // constructors
 
             public AdministrationShell() { }
+
+            public AdministrationShell(string idShort) : base(idShort) { }
 
             public AdministrationShell(AdministrationShell src)
                 : base(src)
@@ -1788,9 +1805,10 @@ namespace AdminShellNS
 #endif
 
             public static AdministrationShell CreateNew(
-                string idType, string id, string version = null, string revision = null)
+                string idShort, string idType, string id, string version = null, string revision = null)
             {
                 var s = new AdministrationShell();
+                s.idShort = idShort;
                 if (version != null)
                     s.SetAdminstration(version, revision);
                 s.identification.idType = idType;
@@ -1919,6 +1937,8 @@ namespace AdminShellNS
             // constructors
 
             public Asset() { }
+
+            public Asset(string idShort) : base(idShort) { }
 
             public Asset(Asset src)
                 : base(src)
@@ -2546,7 +2566,6 @@ namespace AdminShellNS
                     || this.preferredName.langString.Count < 1)
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
-                        AasValidationFinding.CdMissingPreferredName,
                         "ConceptDescription: missing preferredName",
                         () => {
                             this.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
@@ -2557,7 +2576,6 @@ namespace AdminShellNS
                     || this.shortName.langString.Count < 1))
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
-                        AasValidationFinding.CdEmptyShortName,
                         "ConceptDescription: existing shortName with missing langString",
                         () => {
                             this.shortName = null;
@@ -2567,7 +2585,6 @@ namespace AdminShellNS
                     || this.definition.langString.Count < 1))
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
-                        AasValidationFinding.CdEmptyShortName,
                         "ConceptDescription: existing definition with missing langString",
                         () => {
                             this.definition = null;
@@ -2723,11 +2740,10 @@ namespace AdminShellNS
 #endif
 
             public static ConceptDescription CreateNew(
-                string idType, string id, string version = null, string revision = null, string idShort = null)
+                string idShort, string idType, string id, string version = null, string revision = null)
             {
                 var cd = new ConceptDescription();
-                if (idShort != null)
-                    cd.idShort = idShort;
+                cd.idShort = idShort;
                 cd.identification.idType = idType;
                 cd.identification.id = id;
                 if (version != null)
@@ -3676,8 +3692,7 @@ namespace AdminShellNS
                 foreach (var rec in records)
                 {
                     // access 
-                    if (rec == null || rec.Fix == null
-                        || rec.Finding == AasValidationFinding.Unknown || rec.Source == null)
+                    if (rec == null || rec.Fix == null || rec.Source == null)
                         continue;
 
                     // minimal safety measure

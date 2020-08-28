@@ -41,7 +41,6 @@
       {
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
-            /*
             "preferredName": {
               "langString": [
                 {
@@ -50,7 +49,6 @@
                 }
               ]
             },
-            */
             "unit": "",
             "unitId": null,
             "valueFormat": null,
