@@ -1833,7 +1833,7 @@ namespace AasxGenerate
                         }
 
                         // validate
-                        var recs = AdminShellValidate.ValidateAll(package?.AasEnv);
+                        var recs = package?.AasEnv?.ValidateAll();
                         if (recs == null)
                         {
                             Console.Out.WriteLine("Validation returned null .. error .. Aborting!");
@@ -1848,7 +1848,7 @@ namespace AasxGenerate
                             if (args[ai].Trim().ToLower() == "check+fix")
                             {
                                 Console.Out.WriteLine($"Fixing all records..");
-                                var i = AdminShellValidate.AutoFix(package?.AasEnv, recs);
+                                var i = package.AasEnv.AutoFix(recs);
                                 Console.Out.WriteLine($".. gave result {i}.");
                             }
                         }

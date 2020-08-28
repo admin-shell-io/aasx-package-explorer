@@ -47,6 +47,7 @@ namespace AdminShellNS
     {
     }
 
+#if dcdscdsc
     public class AdminShellValidate
     {
         private static void ValidateReferable(AasValidationRecordList results, AdminShell.Referable rf)
@@ -60,7 +61,7 @@ namespace AdminShellNS
                 results.Add(new AasValidationRecord(
                     AasValidationSeverity.SpecViolation, rf,
                     AasValidationFinding.ReferableNoIdShort,
-                    "Referable: missing isShort",
+                    "Referable: missing idShort",
                     () => {
                         rf.idShort = "TO_FIX";
                     }));
@@ -112,56 +113,8 @@ namespace AdminShellNS
             }
         }
 
-        public static AasValidationRecordList ValidateAll(AdminShell.AdministrationShellEnv env)
-        {
-            // access
-            if (env == null)
-                return null;
-
-            // collect results
-            var results = new AasValidationRecordList();
-
-            // all entities
-            if (env.ConceptDescriptions != null)
-                foreach (var cd in env.ConceptDescriptions)
-                    ValidateCD(results, cd);
-
-            // give back
-            return results;
-        }
-
-        public static int AutoFix(AdminShell.AdministrationShellEnv env, IEnumerable<AasValidationRecord> records)
-        {
-            // access
-            if (env == null || records == null)
-                return -1;
-
-            // collect Referables (expensive safety measure)
-            var allowedReferables = env.FindAllReferable().ToList();
-
-            // go thru records
-            int res = 0;
-            foreach (var rec in records)
-            {
-                // access 
-                if (rec == null || rec.Fix == null 
-                    || rec.Finding == AasValidationFinding.Unknown || rec.Source == null)
-                    continue;
-
-                // minimal safety measure
-                if (!allowedReferables.Contains(rec.Source))
-                    continue;
-
-                // apply fix
-                res++;
-                try
-                {
-                    rec.Fix.Invoke();
-                } catch { res--; }
-            }
-
-            // return number of applied fixes
-            return res;
-        }
+        
     }
+
+#endif
 }

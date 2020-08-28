@@ -1281,6 +1281,11 @@ namespace AdminShellNS
             void AddChild(SubmodelElementWrapper smw);
         }
 
+        public interface IValidateEntity
+        {
+            void Validate(AasValidationRecordList results);
+        }
+
         /// <summary>
         /// This attribute indicates, that it should e.g. serialized in JSON.
         /// </summary>
@@ -1336,7 +1341,7 @@ namespace AdminShellNS
         {
         }
 
-        public class Referable
+        public class Referable : IValidateEntity
         {
 
             // members
@@ -1597,6 +1602,25 @@ namespace AdminShellNS
                 foreach (var hb in hashBytes)
                     sb.Append(hb.ToString("X2"));
                 return sb.ToString();
+            }
+
+            // validation
+
+            public virtual void Validate(AasValidationRecordList results)
+            {
+                // access
+                if (results == null)
+                    return;
+
+                // check
+                if (this.idShort == null || this.idShort.Trim() == "")
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SpecViolation, this,
+                        AasValidationFinding.ReferableNoIdShort,
+                        "Referable: missing idShort",
+                        () => {
+                            this.idShort = "TO_FIX";
+                        }));
             }
         }
 
@@ -2508,6 +2532,47 @@ namespace AdminShellNS
                 }
                 return (d);
             }
+
+            // validation
+
+            public void Validate(AasValidationRecordList results, ConceptDescription cd)
+            {
+                // access
+                if (results == null || cd == null)
+                    return;
+
+                // check IEC61360 spec
+                if (this.preferredName == null || this.preferredName.langString == null
+                    || this.preferredName.langString.Count < 1)
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SchemaViolation, cd,
+                        AasValidationFinding.CdMissingPreferredName,
+                        "ConceptDescription: missing preferredName",
+                        () => {
+                            this.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
+                                AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
+                        }));
+
+                if (this.shortName != null && (this.shortName.langString == null
+                    || this.shortName.langString.Count < 1))
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SchemaViolation, cd,
+                        AasValidationFinding.CdEmptyShortName,
+                        "ConceptDescription: existing shortName with missing langString",
+                        () => {
+                            this.shortName = null;
+                        }));
+
+                if (this.definition != null && (this.definition.langString == null
+                    || this.definition.langString.Count < 1))
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SchemaViolation, cd,
+                        AasValidationFinding.CdEmptyShortName,
+                        "ConceptDescription: existing definition with missing langString",
+                        () => {
+                            this.definition = null;
+                        }));
+            }
         }
 
         // ReSharper disable ClassNeverInstantiated.Global .. class is important to show potential for ISO!
@@ -2779,6 +2844,22 @@ namespace AdminShellNS
             public static IDisposable CreateNew()
             {
                 throw new NotImplementedException();
+            }
+
+            // validation
+
+            public override void Validate(AasValidationRecordList results)
+            {
+                // access
+            if (results == null)
+                    return;
+
+                // check CD itself
+                base.Validate(results);
+
+                // check IEC61360 spec
+                var ds = this.embeddedDataSpecification.dataSpecificationContent?.dataSpecificationIEC61360;
+                ds?.Validate(results, this);
             }
         }
 
@@ -3563,6 +3644,56 @@ namespace AdminShellNS
                     }
 
                 // ok
+                return res;
+            }
+
+            // Validation
+
+            public AasValidationRecordList ValidateAll()
+            {
+                // collect results
+                var results = new AasValidationRecordList();
+
+                // all entities
+                foreach (var rf in this.FindAllReferable())
+                    rf.Validate(results);
+
+                // give back
+                return results;
+            }
+
+            public int AutoFix(IEnumerable<AasValidationRecord> records)
+            {
+                // access
+                if (records == null)
+                    return -1;
+
+                // collect Referables (expensive safety measure)
+                var allowedReferables = this.FindAllReferable().ToList();
+
+                // go thru records
+                int res = 0;
+                foreach (var rec in records)
+                {
+                    // access 
+                    if (rec == null || rec.Fix == null
+                        || rec.Finding == AasValidationFinding.Unknown || rec.Source == null)
+                        continue;
+
+                    // minimal safety measure
+                    if (!allowedReferables.Contains(rec.Source))
+                        continue;
+
+                    // apply fix
+                    res++;
+                    try
+                    {
+                        rec.Fix.Invoke();
+                    }
+                    catch { res--; }
+                }
+
+                // return number of applied fixes
                 return res;
             }
         }
