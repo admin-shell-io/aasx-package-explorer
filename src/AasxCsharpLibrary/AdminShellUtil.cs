@@ -20,7 +20,7 @@ namespace AdminShellNS
 
         public static string EvalToNonEmptyString(string fmt, string o, string elseString = "")
         {
-            if (o == "")
+            if (o == null || o == "")
                 return elseString;
             return string.Format(fmt, o);
         }

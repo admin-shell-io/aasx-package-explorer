@@ -3086,6 +3086,58 @@ namespace AdminShellNS
                         yield return sm;
             }
 
+            public IEnumerable<Referable> FindAllReferable()
+            {
+                if (this.AdministrationShells != null)
+                    foreach (var aas in this.AdministrationShells)
+                        if (aas != null)
+                        {
+                            // AAS itself
+                            yield return aas;
+
+                            // Views
+                            if (aas.views?.views != null)
+                                foreach (var view in aas.views.views)
+                                    yield return view;
+                        }
+
+                if (this.Assets != null)
+                    foreach (var asset in this.Assets)
+                        if (asset != null)
+                            yield return asset;
+
+                if (this.Submodels != null)
+                    foreach (var sm in this.Submodels)
+                        if (sm != null)
+                        {
+                            yield return sm;
+
+                            // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
+                            var allsme = new List<SubmodelElement>();
+                            sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
+                            {
+                                allsme.Add(sme);
+                            });
+                            foreach (var sme in allsme)
+                                yield return sme;
+                        }
+
+                if (this.ConceptDescriptions != null)
+                    foreach (var cd in this.ConceptDescriptions)
+                        if (cd != null)
+                            yield return cd;
+            }
+
+            public IEnumerable<Referable> FindAllReferable(Predicate<Referable> p)
+            {
+                if (p == null)
+                    yield break;
+
+                foreach (var r in this.FindAllReferable())
+                    if (r != null && p(r))
+                        yield return r;
+            }
+
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
             {
                 // first index needs to exist ..

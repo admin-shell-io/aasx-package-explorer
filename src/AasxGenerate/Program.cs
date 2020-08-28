@@ -1098,7 +1098,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While parsing preferences: " + ex.Message);
+                Console.Out.Write("While parsing preferences: " + ex.Message);
                 Environment.Exit(-1);
             }
 
@@ -1111,7 +1111,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While accessing IRI repository: " + ex.Message);
+                Console.Out.Write("While accessing IRI repository: " + ex.Message);
                 Environment.Exit(-1);
             }
 
@@ -1169,7 +1169,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While building AAS: {0} at {1}", ex.Message, ex.StackTrace);
+                Console.Out.Write("While building AAS: {0} at {1}", ex.Message, ex.StackTrace);
                 Environment.Exit(-1);
             }
 
@@ -1191,7 +1191,7 @@ namespace AasxGenerate
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
             }
@@ -1209,7 +1209,7 @@ namespace AasxGenerate
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
 
@@ -1294,7 +1294,7 @@ namespace AasxGenerate
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
             }
@@ -1373,7 +1373,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While parsing preferences: " + ex.Message);
+                Console.Out.Write("While parsing preferences: " + ex.Message);
                 Environment.Exit(-1);
             }
 
@@ -1386,7 +1386,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While accessing IRI repository: " + ex.Message);
+                Console.Out.Write("While accessing IRI repository: " + ex.Message);
                 Environment.Exit(-1);
             }
 
@@ -1462,7 +1462,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While building AAS: {0} at {1}", ex.Message, ex.StackTrace);
+                Console.Out.Write("While building AAS: {0} at {1}", ex.Message, ex.StackTrace);
                 Environment.Exit(-1);
             }
 
@@ -1490,7 +1490,7 @@ namespace AasxGenerate
             }
             catch (Exception ex)
             {
-                Console.Error.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
+                Console.Out.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
                 Environment.Exit(-1);
             }
 
@@ -1523,7 +1523,7 @@ namespace AasxGenerate
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
             }
@@ -1541,7 +1541,7 @@ namespace AasxGenerate
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.Write("While test serializing XML: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
 
@@ -1621,7 +1621,7 @@ namespace AasxGenerate
             settings.ValidationEventHandler +=
                 (object sender, System.Xml.Schema.ValidationEventArgs e) =>
                 {
-                    messages.Add(e.Message);
+                    messages.Add("" + e.Exception.LineNumber + "," + e.Exception.LinePosition + ":" + e.Message);
                 };
 
             using (var reader = System.Xml.XmlReader.Create(fn, settings))
@@ -1647,13 +1647,13 @@ namespace AasxGenerate
 
         static void Main(string[] args)
         {
-            Console.Error.WriteLine(
+            Console.Out.WriteLine(
                 "AAS and OPC Writer v0.5. (c) 2019 Michael Hoffmeister, Festo AG & Co. KG. See LICENSE.TXT.");
 
             if (args.Length < 1)
             {
                 // Default
-                Console.Error.WriteLine(@"Help: AasxGenerate <cmd> [args] <cmd> [args] ..
+                Console.Out.WriteLine(@"Help: AasxGenerate <cmd> [args] <cmd> [args] ..
       gen [fn]             = generates package within RAM. Filename points to init json-file. Internal fn = *
       load [fn]            = loads filename to RAM. Extensions: .xml, .json, .aasx, .aml
       save [fn]            = saves RAM to filename. Extensions: .xml, .json, .aasx, .aml
@@ -1666,12 +1666,12 @@ namespace AasxGenerate
                 {
                     var tstpackage = GeneratePackage();
                     TestSerialize(tstpackage);
-                    Console.Error.WriteLine("Writing sample-admin-shell.aasx ..");
+                    Console.Out.WriteLine("Writing sample-admin-shell.aasx ..");
                     tstpackage.SaveAs("sample-admin-shell.aasx");
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine("While testing: {0} at {1}", ex.Message, ex.StackTrace);
+                    Console.Out.WriteLine("While testing: {0} at {1}", ex.Message, ex.StackTrace);
                     Environment.Exit(-1);
                 }
             }
@@ -1691,13 +1691,13 @@ namespace AasxGenerate
                             package = GeneratePackage(fn);
 
                             // next command
-                            Console.Error.WriteLine("Package generated.");
+                            Console.Out.WriteLine("Package generated.");
                             ai += 2;
                             continue;
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine("While generating package: {0} at {1}", ex.Message, ex.StackTrace);
+                            Console.Out.WriteLine("While generating package: {0} at {1}", ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
 
@@ -1707,7 +1707,7 @@ namespace AasxGenerate
                         {
                             // execute
                             var fn = args[ai + 1].Trim();
-                            Console.Error.WriteLine("Loading package {0} ..", fn);
+                            Console.Out.WriteLine("Loading package {0} ..", fn);
                             if (fn.EndsWith(".aml"))
                             {
                                 package = new AdminShellPackageEnv();
@@ -1719,13 +1719,13 @@ namespace AasxGenerate
                             }
 
                             // next command
-                            Console.Error.WriteLine("Package {0} loaded.", fn);
+                            Console.Out.WriteLine("Package {0} loaded.", fn);
                             ai += 2;
                             continue;
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine(
+                            Console.Out.WriteLine(
                                 "While loading package {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
@@ -1736,13 +1736,13 @@ namespace AasxGenerate
                             // check
                             if (package == null)
                             {
-                                Console.Error.WriteLine("Package is null!");
+                                Console.Out.WriteLine("Package is null!");
                                 Environment.Exit(-1);
                             }
 
                             // execute
                             var fn = args[ai + 1].Trim();
-                            Console.Error.WriteLine("Writing package {0} ..", fn);
+                            Console.Out.WriteLine("Writing package {0} ..", fn);
                             if (fn.EndsWith(".aml"))
                             {
                                 AmlExport.ExportTo(package, fn, tryUseCompactProperties: false);
@@ -1754,13 +1754,13 @@ namespace AasxGenerate
                             }
 
                             // next command
-                            Console.Error.WriteLine("Package {0} written.", fn);
+                            Console.Out.WriteLine("Package {0} written.", fn);
                             ai += 2;
                             continue;
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine(
+                            Console.Out.WriteLine(
                                 "While loading package {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
@@ -1771,23 +1771,23 @@ namespace AasxGenerate
                             // check
                             if (package == null)
                             {
-                                Console.Error.WriteLine("Package is null!");
+                                Console.Out.WriteLine("Package is null!");
                                 Environment.Exit(-1);
                             }
 
                             // execute
                             var fn = args[ai + 1].Trim();
-                            Console.Error.WriteLine("Exporting to file {0} ..", fn);
+                            Console.Out.WriteLine("Exporting to file {0} ..", fn);
                             AasFormUtils.ExportAsTemplate(package, fn);
 
                             // next command
-                            Console.Error.WriteLine("Package {0} written.", fn);
+                            Console.Out.WriteLine("Package {0} written.", fn);
                             ai += 2;
                             continue;
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine(
+                            Console.Out.WriteLine(
                                 "While loading package {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
@@ -1800,12 +1800,12 @@ namespace AasxGenerate
                             
                             if (fn.ToLower().EndsWith(".xml"))
                             {
-                                Console.Error.WriteLine("Validating file {0} against XSD in schemaV201\\. ..", fn);
+                                Console.Out.WriteLine("Validating file {0} against XSD in schemaV201\\. ..", fn);
                                 Validate(fn);
                             }
                             else
                             {
-                                Console.Error.WriteLine("Do not know to handle {0}. Aborting.", fn);
+                                Console.Out.WriteLine("Do not know to handle {0}. Aborting.", fn);
                             }
 
                             // next command
@@ -1814,7 +1814,7 @@ namespace AasxGenerate
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine(
+                            Console.Out.WriteLine(
                                 "While validating {0}: {1} at {2}", args[ai + 1], ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
@@ -1823,13 +1823,49 @@ namespace AasxGenerate
                 // without arguments
                 if (true)
                 {
+                    if (args[ai].Trim().ToLower() == "check" || args[ai].Trim().ToLower() == "check+fix")
+                    {
+                        // check
+                        if (package == null)
+                        {
+                            Console.Out.WriteLine("Package is null!");
+                            Environment.Exit(-1);
+                        }
+
+                        // validate
+                        var recs = AdminShellValidate.ValidateAll(package?.AasEnv);
+                        if (recs == null)
+                        {
+                            Console.Out.WriteLine("Validation returned null .. error .. Aborting!");
+                        }
+                        else
+                        {
+                            Console.Out.WriteLine($"Found {recs.Count} records:");
+                            foreach (var rec in recs)
+                                Console.Out.WriteLine(rec.ToString());
+
+                            // fix?
+                            if (args[ai].Trim().ToLower() == "check+fix")
+                            {
+                                Console.Out.WriteLine($"Fixing all records..");
+                                var i = AdminShellValidate.AutoFix(package?.AasEnv, recs);
+                                Console.Out.WriteLine($".. gave result {i}.");
+                            }
+                        }
+
+                        // next command
+                        Console.Out.WriteLine("Tested.");
+                        ai += 1;
+                        continue;
+                    }
+
                     if (args[ai].Trim().ToLower() == "test")
                         try
                         {
                             // check
                             if (package == null)
                             {
-                                Console.Error.WriteLine("Package is null!");
+                                Console.Out.WriteLine("Package is null!");
                                 Environment.Exit(-1);
                             }
 
@@ -1856,17 +1892,18 @@ namespace AasxGenerate
 
                             // test debug
                             foreach (var fr in sr.foundResults)
-                                Console.Error.WriteLine(
+                                Console.Out.WriteLine(
                                     "{0}|{1} = {2}", fr.qualifiedNameHead, fr.metaModelName, fr.foundText);
                             Console.ReadLine();
 
                             // next command
-                            Console.Error.WriteLine("Tested.");
+                            Console.Out.WriteLine("Tested.");
                             ai += 1;
+                            continue;
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine("While testing: {0} at {1}", ex.Message, ex.StackTrace);
+                            Console.Out.WriteLine("While testing: {0} at {1}", ex.Message, ex.StackTrace);
                             Environment.Exit(-1);
                         }
                 }

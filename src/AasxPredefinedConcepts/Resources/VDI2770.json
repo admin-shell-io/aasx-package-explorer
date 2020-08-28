@@ -41,6 +41,7 @@
       {
         "dataSpecificationContent": {
           "dataSpecificationIEC61360": {
+            /*
             "preferredName": {
               "langString": [
                 {
@@ -49,6 +50,7 @@
                 }
               ]
             },
+            */
             "unit": "",
             "unitId": null,
             "valueFormat": null,
@@ -1088,10 +1090,7 @@
             "valueFormat": null,
             "sourceOfDefinition": null,
             "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": []
-            }
+            "dataType": "STRING"
           },
           "dataSpecificationISO99999": null
         },
@@ -1239,10 +1238,7 @@
             "valueFormat": null,
             "sourceOfDefinition": null,
             "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": []
-            }
+            "dataType": "STRING"
           },
           "dataSpecificationISO99999": null
         },

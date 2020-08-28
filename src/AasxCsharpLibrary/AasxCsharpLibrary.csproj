@@ -55,6 +55,7 @@
     <Compile Include="AdminShellPackageEnv.cs" />
     <Compile Include="AdminShellUtil.cs" />
     <Compile Include="AdminShell.cs" />
+    <Compile Include="AdminShellValidate.cs" />
     <Compile Include="IAasxOnlineConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
