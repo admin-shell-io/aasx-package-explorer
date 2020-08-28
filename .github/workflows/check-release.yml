@@ -48,14 +48,14 @@ jobs:
         working-directory: src
         run: powershell .\PackageRelease.ps1 -version LATEST.alpha
 
-      - name: Upload latest-portable
+      - name: Upload latest
         uses: actions/upload-artifact@v2
         with:
-          name: portable.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
-          path: artefacts/release/LATEST.alpha/portable.zip
+          name: aasx-package-explorer.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer.zip
 
-      - name: Upload latest-portable-small
+      - name: Upload latest small
         uses: actions/upload-artifact@v2
         with:
-          name: portable-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
-          path: artefacts/release/LATEST.alpha/portable-small.zip
+          name: aasx-package-explorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-small.zip
