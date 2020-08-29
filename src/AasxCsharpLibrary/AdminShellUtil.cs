@@ -106,6 +106,39 @@ namespace AdminShellNS
             }
         }
 
+        public enum ConstantFoundEnum { No, AnyCase, ExactCase }
+
+        public static ConstantFoundEnum CheckIfInConstantStringArray(string[] arr, string str)
+        {
+            if (arr == null || str == null)
+                return ConstantFoundEnum.No;
+
+            bool anyCaseFound = false;
+            bool exactCaseFound = false;
+            foreach (var a in arr)
+            {
+                anyCaseFound = anyCaseFound || str.ToLower() == a.ToLower();
+                exactCaseFound = exactCaseFound || str == a;
+            }
+            if (exactCaseFound)
+                return ConstantFoundEnum.ExactCase;
+            if (anyCaseFound)
+                return ConstantFoundEnum.AnyCase;
+            return ConstantFoundEnum.No;
+        }
+
+        public static string CorrectCasingForConstantStringArray(string[] arr, string str)
+        {
+            if (arr == null || str == null)
+                return str;
+
+            foreach (var a in arr)
+                if (str.ToLower() == a.ToLower())
+                    return a;
+
+            return str;
+        }
+
         //
         //
         //

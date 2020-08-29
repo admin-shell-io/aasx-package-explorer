@@ -389,18 +389,20 @@ namespace AdminShellNS
             // Resharper enable MemberHidesStaticFromOuterClass
 
             public static string[] IdentifierTypeNames = new string[] {
-                Identification.IdShort, "Custom", Identification.IRDI, Identification.IRI };
+                Identification.IdShort, "FragmentId", "Custom", Identification.IRDI, Identification.IRI };
 
-            public enum IdentifierType { IdShort = 0, Custom, IRDI, IRI };
+            public enum IdentifierType { IdShort = 0, FragmentId, Custom, IRDI, IRI };
 
             public static string GetIdentifierTypeName(IdentifierType t)
             {
                 return IdentifierTypeNames[(int)t];
             }
 
-            public static string IRI = "IRI";
-            public static string IRDI = "IRDI";
+            public static string IdShort = "IdShort";
+            public static string FragmentId = "FragmentId";
             public static string Custom = "Custom";
+            public static string IRDI = "IRDI";
+            public static string IRI = "IRI";
 
             // some helpers
 
@@ -436,6 +438,78 @@ namespace AdminShellNS
                 return this.Matches(key.type, key.local, key.idType, key.value, matchMode);
             }
 
+            // validation
+
+            public static AasValidationAction Validate(AasValidationRecordList results, Key k, Referable container)
+            {
+                // access
+                if (results == null || container == null)
+                    return AasValidationAction.No;
+
+                var res = AasValidationAction.No;
+
+                // check
+                if (k == null)
+                {
+                    // violation case
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SpecViolation, container,
+                        "Key: is null",
+                        () =>
+                        {
+                            res = AasValidationAction.ToBeDeleted;
+                        }));
+                }
+                else
+                {
+                    // check IdType
+                    var idf = AdminShellUtil.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
+                    if (idf == AdminShellUtil.ConstantFoundEnum.No)
+                        // violation case
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SchemaViolation, container,
+                            "Key: idType is not in allowed enumeration values",
+                            () =>
+                            {
+                                k.idType = Custom;
+                            }));
+                    if (idf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                        // violation case
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SchemaViolation, container,
+                            "Key: idType in wrong casing",
+                            () =>
+                            {
+                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                    IdentifierTypeNames, k.idType);
+                            }));
+
+                    // check type
+                    var tf = AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
+                    if (tf == AdminShellUtil.ConstantFoundEnum.No)
+                        // violation case
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SchemaViolation, container,
+                            "Key: type is not in allowed enumeration values",
+                            () =>
+                            {
+                                k.type = GlobalReference;
+                            }));
+                    if (tf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                        // violation case
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SchemaViolation, container,
+                            "Key: type in wrong casing",
+                            () =>
+                            {
+                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                    KeyElements, k.type);
+                            }));
+                }
+
+                // may give result "to be deleted"
+                return res; 
+            }
         }
 
         public class KeyList : List<Key>
@@ -475,6 +549,29 @@ namespace AdminShellNS
                 foreach (var k in this)
                     res += k.ToString(format) + delimiter;
                 return res.TrimEnd(',');
+            }
+
+            // validation
+
+            public static void Validate(AasValidationRecordList results, KeyList kl, 
+                Referable container)
+            {
+                // access
+                if (results == null || kl == null || container == null)
+                    return;
+
+                // iterate thru
+                var idx = 0;
+                while (idx < kl.Count)
+                {
+                    var act = Key.Validate(results, kl[idx], container);
+                    if (act == AasValidationAction.ToBeDeleted)
+                    {
+                        kl.RemoveAt(idx);
+                        continue;
+                    }
+                    idx++;
+                }
             }
         }
 
@@ -1180,21 +1277,25 @@ namespace AdminShellNS
 
         public class ModelingKind
         {
+            // constnts
+            public static string Template = "Template";
+            public static string Instance = "Instance";
+
             [MetaModelName("ModelingKind.kind")]
             [TextSearchable]
             [XmlText]
             [CountForHash]
-            public string kind = "Instance";
+            public string kind = Instance;
 
             // getters / setters
 
             [XmlIgnore]
             [JsonIgnore]
-            public bool IsInstance { get { return kind == null || kind.Trim().ToLower() == "instance"; } }
+            public bool IsInstance { get { return kind == null || kind.Trim().ToLower() == Instance.ToLower(); } }
 
             [XmlIgnore]
             [JsonIgnore]
-            public bool IsTemplate { get { return kind != null && kind.Trim().ToLower() == "template"; } }
+            public bool IsTemplate { get { return kind != null && kind.Trim().ToLower() == Template.ToLower(); } }
 
             // constructors / creators
 
@@ -1219,14 +1320,65 @@ namespace AdminShellNS
 
             public static ModelingKind CreateAsTemplate()
             {
-                var res = new ModelingKind() { kind = "Template" };
+                var res = new ModelingKind() { kind = Template };
                 return res;
             }
 
             public static ModelingKind CreateAsInstance()
             {
-                var res = new ModelingKind() { kind = "Instance" };
+                var res = new ModelingKind() { kind = Instance };
                 return res;
+            }
+
+            // validation
+
+            public static void Validate(AasValidationRecordList results, ModelingKind mk, Referable container)
+            {
+                // access
+                if (results == null || container == null)
+                    return;
+
+                // check
+                if (mk == null || mk.kind == null)
+                {
+                    // warning
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.Warning, container,
+                        "ModelingKind: is null",
+                        () =>
+                        {
+                        }));
+                }
+                else
+                {
+                    var k = mk.kind.Trim();
+                    var kl = k.ToLower();
+                    if (kl != Template.ToLower() && kl != Instance.ToLower())
+                    {
+                        // violation case
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SchemaViolation, container,
+                            $"ModelingKind: enumeration value neither {Template} nor {Instance}",
+                            () =>
+                            {
+                                mk.kind = Instance;
+                            }));
+                    } 
+                    else if (k != Template && k != Instance)
+                    {
+                        // warning
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.Warning, container,
+                            "ModelingKind: enumeration value in wrong casing",
+                            () =>
+                            {
+                                if (kl == Template.ToLower())
+                                    mk.kind = Template;
+                                else
+                                    mk.kind = Instance;
+                            }));
+                    }
+                }
             }
         }
 
@@ -1371,6 +1523,12 @@ namespace AdminShellNS
                 }
                 set
                 {
+                    if (value == null)
+                    {
+                        description = null;
+                        return;
+                    }
+
                     if (description == null)
                         description = new Description();
                     description.langString = value;
@@ -1629,6 +1787,15 @@ namespace AdminShellNS
                         "Referable: missing idShort",
                         () => {
                             this.idShort = "TO_FIX";
+                        }));
+
+                if (this.description != null && (this.description.langString == null
+                    || this.description.langString.Count < 1))
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SchemaViolation, this,
+                        "Referable: existing description with missing langString",
+                        () => {
+                            this.description = null;
                         }));
             }
         }
@@ -2015,12 +2182,13 @@ namespace AdminShellNS
 
             // members
 
-            // from hasSemanticId:
-            [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = null;
             // from hasDataSpecification
             [XmlElement(ElementName = "hasDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
+
+            // from hasSemanticId:
+            [XmlElement(ElementName = "semanticId")]
+            public SemanticId semanticId = null;
 
             // from this very class
             [JsonIgnore]
@@ -2147,6 +2315,19 @@ namespace AdminShellNS
             {
                 var ci = ToCaptionInfo();
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
+            }
+
+            // validation
+
+            public override void Validate(AasValidationRecordList results)
+            {
+                // access
+                if (results == null)
+                    return;
+
+                // check
+                base.Validate(results);
+                KeyList.Validate(results, semanticId?.Keys, this);
             }
         }
 
@@ -2867,7 +3048,7 @@ namespace AdminShellNS
             public override void Validate(AasValidationRecordList results)
             {
                 // access
-            if (results == null)
+                if (results == null)
                     return;
 
                 // check CD itself
@@ -3914,13 +4095,10 @@ namespace AdminShellNS
             // from hasDataSpecification:
             [XmlElement(ElementName = "hasDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
-            // from hasSemantics:
-            [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = null;
-            // from hasKind:
+            // from HasKind
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
-            public ModelingKind kind = null;
+            public ModelingKind kind = new ModelingKind();
             [XmlIgnore]
             [JsonProperty(PropertyName = "kind")]
             public string JsonKind
@@ -3938,6 +4116,9 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
+            // from hasSemanticId:
+            [XmlElement(ElementName = "semanticId")]
+            public SemanticId semanticId = new SemanticId();
             // from Qualifiable:
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
@@ -4092,6 +4273,20 @@ namespace AdminShellNS
             public virtual string ValueAsText(string defaultLang = null)
             {
                 return "";
+            }
+
+            // validation
+
+            public override void Validate(AasValidationRecordList results)
+            {
+                // access
+                if (results == null)
+                    return;
+
+                // check
+                base.Validate(results);
+                ModelingKind.Validate(results, kind, this);
+                KeyList.Validate(results, semanticId?.Keys, this);
             }
         }
 
@@ -4770,9 +4965,6 @@ namespace AdminShellNS
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
             public ModelingKind kind = new ModelingKind();
-            // from hasSemanticId:
-            [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = new SemanticId();
             [XmlIgnore]
             [JsonProperty(PropertyName = "kind")]
             public string JsonKind
@@ -4790,6 +4982,9 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
+            // from hasSemanticId:
+            [XmlElement(ElementName = "semanticId")]
+            public SemanticId semanticId = new SemanticId();            
             // from Qualifiable:
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
@@ -5038,6 +5233,19 @@ namespace AdminShellNS
                 return this.submodelElements.CreateSMEForIdShort<T>(idShort, category, idxTemplate, maxNum, addSme);
             }
 
+            // validation
+
+            public override void Validate(AasValidationRecordList results)
+            {
+                // access
+                if (results == null)
+                    return;
+
+                // check
+                base.Validate(results);
+                ModelingKind.Validate(results, kind, this);
+                KeyList.Validate(results, semanticId?.Keys, this);
+            }
         }
 
         //

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- This version of the XSD was taken directly from aas-specs on 2020-08-26. -->
 <schema elementFormDefault="qualified" targetNamespace="http://www.admin-shell.io/IEC61360/2/0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0">
 	<attributeGroup name="keyTypes">
 		<attribute name="identifierType" use="optional">

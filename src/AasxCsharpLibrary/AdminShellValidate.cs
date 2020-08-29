@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace AdminShellNS
 {
-    public enum AasValidationSeverity {
+    public enum AasValidationSeverity
+    {
         Hint, Warning, SpecViolation, SchemaViolation
+    }
+
+    public enum AasValidationAction
+    {
+        No, ToBeDeleted
     }
 
     public class AasValidationRecord
