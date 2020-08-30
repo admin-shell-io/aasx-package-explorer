@@ -78,12 +78,6 @@ namespace AasxPluginMtpViewer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            /*
-            // init library
-            activeVisualObjectLib = new WpfMtpControl.MtpVisualObjectLib();
-            activeVisualObjectLib.LoadStatic(null);
-            */
-
             // initialize symbol library
             this.theSymbolLib = new MtpSymbolLib();
 
