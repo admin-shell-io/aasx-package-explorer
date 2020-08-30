@@ -219,11 +219,11 @@ namespace AasxAmlImExport
 
         private static void SetHasDataSpecification(AttributeSequence aseq, AdminShell.HasDataSpecification ds)
         {
-            if (aseq == null || ds == null || ds.reference == null || ds.reference.Count < 1)
+            if (aseq == null || ds == null || ds.Count < 1)
                 return;
-            foreach (var r in ds.reference)
+            foreach (var r in ds)
                 AppendAttributeNameAndRole(
-                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef, ToAmlReference(r));
+                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef, ToAmlReference(r?.dataSpecification));
         }
 
         private static void SetQualifiers(
@@ -850,15 +850,15 @@ namespace AasxAmlImExport
                 AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
 
             // which data spec as reference
-            if (cd.embeddedDataSpecification.dataSpecification != null)
-                AppendAttributeNameAndRole(
-                    aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
-                    ToAmlReference(cd.embeddedDataSpecification.dataSpecification));
+            if (cd.embeddedDataSpecification != null)
+                foreach (var eds in cd.embeddedDataSpecification)
+                    if (eds.dataSpecification != null)
+                        AppendAttributeNameAndRole(
+                            aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
+                            ToAmlReference(eds.dataSpecification));
 
             // which data spec to take as source?
-            AdminShell.DataSpecificationIEC61360 source61360 = null;
-            if (cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
-                source61360 = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
+            var source61360 = cd.embeddedDataSpecification?.IEC61360Content;
             // TODO (Michael Hoffmeister, 2020-08-01): If further data specifications exist (in future), add here
 
             // decide which approach to take (1 or 2 IE)

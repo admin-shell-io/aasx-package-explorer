@@ -344,7 +344,7 @@ namespace AasxAmlImExport
                         {
                             if (res == null)
                                 res = new AdminShell.HasDataSpecification();
-                            res.reference.Add(r);
+                            res.Add(new AdminShell.EmbeddedDataSpecification(r));
                         }
                     }
 

@@ -988,7 +988,8 @@ namespace AasxUANodesetImExport
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
-                    data.reference.Add(createReference(findNode(_ref.Value)));
+                    data.Add(
+                        new EmbeddedDataSpecification(createReference(findNode(_ref.Value))));
                 }
             }
             return data;

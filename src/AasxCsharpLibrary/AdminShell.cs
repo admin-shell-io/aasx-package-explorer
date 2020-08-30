@@ -934,8 +934,12 @@ namespace AdminShellNS
 
             public DataSpecificationRef(DataSpecificationRef src) : base(src) { }
 
+            public DataSpecificationRef(Reference src) : base(src) { }
+
 #if !DoNotUseAasxCompatibilityModels
             public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.DataSpecificationRef src) : base(src) { }
+
+            public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.Reference src) : base(src) { }
 #endif
 
             // further methods
@@ -1013,6 +1017,7 @@ namespace AdminShellNS
             }
         }
 
+#if __not_valid_anymore
         [XmlType(TypeName = "hasDataSpecification")]
         public class HasDataSpecification
         {
@@ -1035,6 +1040,62 @@ namespace AdminShellNS
             }
 #endif
         }
+#else
+        // Note: In versions prior to V2.0.1, the SDK has "HasDataSpecification" containing only a Reference.
+        // Iv 2.0.1, theoretically each entity with HasDataSpecification could also conatin a 
+        // EmbeddedDataSpecification. 
+
+        [XmlType(TypeName = "hasDataSpecification")]
+        public class HasDataSpecification : List<EmbeddedDataSpecification>
+        {
+            public HasDataSpecification() { }
+
+            public HasDataSpecification(HasDataSpecification src)
+            {
+                foreach (var r in src)
+                    this.Add(new EmbeddedDataSpecification(r));
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            public HasDataSpecification(AasxCompatibilityModels.AdminShellV10.HasDataSpecification src)
+            {
+                foreach (var r in src.reference)
+                    this.Add(new EmbeddedDataSpecification(r));
+            }
+#endif
+
+            // make some explicit and easy to use getter, setters
+
+            public DataSpecificationIEC61360 IEC61360Content
+            {
+                get
+                {
+                    foreach (var eds in this)
+                        if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
+                            return eds.dataSpecificationContent.dataSpecificationIEC61360;
+                    return null;
+                }
+                set
+                {
+                    // search existing first?
+                    foreach (var eds in this)
+                        if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
+                        {
+                            // replace this
+                            /* TODO (MIHO, 2020-08-30): this does not prevent the corner case, that we could have
+                             * multiple dataSpecificationIEC61360 in this list, which would be an error */
+                            eds.dataSpecificationContent.dataSpecificationIEC61360 = value;
+                            return;
+                        }
+                    // no? .. add!
+                    var edsnew = new EmbeddedDataSpecification();
+                    edsnew.dataSpecificationContent.dataSpecificationIEC61360 = value;
+                    this.Add(edsnew);
+                }
+            }
+
+        }
+#endif
 
         [XmlType(TypeName = "ContainedElements")]
         public class ContainedElements
@@ -2005,7 +2066,7 @@ namespace AdminShellNS
                     hasDataSpecification = new HasDataSpecification();
                 var r = new Reference();
                 r.Keys.Add(k);
-                hasDataSpecification.reference.Add(r);
+                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
             }
 
             public override string GetElementName()
@@ -2257,7 +2318,7 @@ namespace AdminShellNS
                     hasDataSpecification = new HasDataSpecification();
                 var r = new Reference();
                 r.Keys.Add(k);
-                hasDataSpecification.reference.Add(r);
+                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
             }
 
             public void AddContainedElement(Key k)
@@ -2812,8 +2873,8 @@ namespace AdminShellNS
         {
             // members
 
-            public DataSpecificationContent dataSpecificationContent = new DataSpecificationContent();
-            public DataSpecificationRef dataSpecification = new DataSpecificationRef();
+            public DataSpecificationContent dataSpecificationContent = null;
+            public DataSpecificationRef dataSpecification = null;
 
             // constructors
 
@@ -2827,6 +2888,12 @@ namespace AdminShellNS
                     this.dataSpecificationContent = new DataSpecificationContent(src.dataSpecificationContent);
             }
 
+            public EmbeddedDataSpecification(Reference src)
+            {
+                if (src != null)
+                    this.dataSpecification = new DataSpecificationRef(src);
+            }
+
 #if !DoNotUseAasxCompatibilityModels
             public EmbeddedDataSpecification(AasxCompatibilityModels.AdminShellV10.EmbeddedDataSpecification src)
             {
@@ -2834,6 +2901,12 @@ namespace AdminShellNS
                     this.dataSpecification = new DataSpecificationRef(src.hasDataSpecification);
                 if (src.dataSpecificationContent != null)
                     this.dataSpecificationContent = new DataSpecificationContent(src.dataSpecificationContent);
+            }
+
+            public EmbeddedDataSpecification(AasxCompatibilityModels.AdminShellV10.Reference src)
+            {
+                if (src != null)
+                    this.dataSpecification = new DataSpecificationRef(src);
             }
 #endif
         }
@@ -2851,9 +2924,21 @@ namespace AdminShellNS
             void System.IDisposable.Dispose() { }
             public void GetData() { }
             // from HasDataSpecification
+
+#if __not_anymore
+
             [XmlElement(ElementName = "embeddedDataSpecification")]
             [JsonIgnore]
             public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
+#else
+            // According to Spec V2.0.1, a ConceptDescription might feature alos multiple data specifications
+            /* TODO (MIHO, 2020-08-30): align wording of the member ("embeddedDataSpecification") with the 
+             * wording of the other entities ("hasDataSpecification") */
+            [XmlElement(ElementName = "embeddedDataSpecification")]
+            [JsonIgnore]
+            public HasDataSpecification embeddedDataSpecification = null;
+#endif
+
             [XmlIgnore]
             [JsonProperty(PropertyName = "embeddedDataSpecifications")]
             public EmbeddedDataSpecification[] JsonEmbeddedDataSpecifications
@@ -4093,7 +4178,7 @@ namespace AdminShellNS
             void System.IDisposable.Dispose() { }
             public void GetData() { }
             // from hasDataSpecification:
-            [XmlElement(ElementName = "hasDataSpecification")]
+            [XmlElement(ElementName = "embeddedDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
             // from HasKind
             [XmlElement(ElementName = "kind")]
@@ -5151,7 +5236,7 @@ namespace AdminShellNS
                     hasDataSpecification = new HasDataSpecification();
                 var r = new Reference();
                 r.Keys.Add(k);
-                hasDataSpecification.reference.Add(r);
+                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
             }
 
             public SubmodelElementWrapper FindSubmodelElementWrapper(string idShort)
@@ -6511,5 +6596,5 @@ namespace AdminShellNS
 
     }
 
-    #endregion
+#endregion
 }
