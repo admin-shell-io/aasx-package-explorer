@@ -1477,6 +1477,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+#if !DoNotUseAasxDictionaryImport
             var dataChanged = false;
             try
             {
@@ -1496,6 +1497,7 @@ namespace AasxPackageExplorer
                 RestartUIafterNewPackage();
                 Mouse.OverrideCursor = null;
             }
+#endif
         }
 
         public void CommandBinding_ImportSubmodelElements()
@@ -1519,6 +1521,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
+#if !DoNotUseAasxDictionaryImport
             var dataChanged = false;
             try
             {
@@ -1535,6 +1538,7 @@ namespace AasxPackageExplorer
                 RestartUIafterNewPackage();
                 Mouse.OverrideCursor = null;
             }
+#endif
         }
 
         public void CommandBinding_ImportAML()
