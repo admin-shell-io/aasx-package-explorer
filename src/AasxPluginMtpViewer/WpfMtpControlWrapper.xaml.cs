@@ -28,6 +28,7 @@ namespace AasxPluginMtpViewer
         private AasxPluginMtpViewer.MtpViewerOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
+        private WpfMtpControl.MtpSymbolLib theSymbolLib = null;
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
         private WpfMtpControl.MtpData activeMtpData = null;
 
@@ -77,9 +78,22 @@ namespace AasxPluginMtpViewer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            // init library
+            // initialize symbol library
+            this.theSymbolLib = new MtpSymbolLib();
+
+            var ISO10628 = new ResourceDictionary();
+            ISO10628.Source = new Uri(
+                "pack://application:,,,/WpfMtpControl;component/Resources/PNID_DIN_EN_ISO_10628.xaml");
+            this.theSymbolLib.ImportResourceDicrectory("PNID_ISO10628", ISO10628);
+
+            var FESTO = new ResourceDictionary();
+            FESTO.Source = new Uri(
+                "pack://application:,,,/WpfMtpControl;component/Resources/PNID_Festo.xaml");
+            this.theSymbolLib.ImportResourceDicrectory("PNID_Festo", FESTO);
+
+            // initialize visual object libraries
             activeVisualObjectLib = new WpfMtpControl.MtpVisualObjectLib();
-            activeVisualObjectLib.LoadStatic(null);
+            activeVisualObjectLib.LoadStatic(this.theSymbolLib);
 
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
