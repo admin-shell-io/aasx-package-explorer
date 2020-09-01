@@ -253,6 +253,7 @@ namespace AasOpcUaServer
                                 // create missing object
                                 var miss = this.CreateAddObject(
                                     this.RootMissingDictionaryEntries,
+                                    AasUaBaseEntity.CreateMode.Instance,
                                     targetId.id,
                                     ReferenceTypeIds.HasComponent,
                                     this.AasTypes.ConceptDescription.GetTypeObjectFor(targetId)?.NodeId);
@@ -311,7 +312,8 @@ namespace AasOpcUaServer
         //// Reference types
         //
 
-        public ReferenceTypeState CreateAddReferenceType(string browseDisplayName, string inverseName,
+        public ReferenceTypeState CreateAddReferenceType(
+            string browseDisplayName, string inverseName,
             uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null)
         {
             // create node itself
@@ -321,7 +323,7 @@ namespace AasOpcUaServer
             x.InverseName = inverseName;
             x.Symmetric = false;
             x.IsAbstract = false;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
 
             // set Subtype reference
@@ -337,12 +339,12 @@ namespace AasOpcUaServer
         //// Folders
         //
 
-        public FolderState CreateAddFolder(NodeState parent, string browseDisplayName)
+        public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode, NodeState parent, string browseDisplayName)
         {
             var x = new FolderState(parent);
             x.BrowseName = browseDisplayName;
             x.DisplayName = browseDisplayName;
-            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
             x.TypeDefinitionId = ObjectTypeIds.FolderType;
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             if (parent != null)
@@ -353,14 +355,15 @@ namespace AasOpcUaServer
         //// DataTypes
         //
 
-        public DataTypeState CreateAddDataType(string browseDisplayName, NodeId superTypeId, uint preferredNumId = 0)
+        public DataTypeState CreateAddDataType(
+            string browseDisplayName, NodeId superTypeId, uint preferredNumId = 0)
         {
             var x = new DataTypeState();
             x.BrowseName = "" + browseDisplayName;
             x.DisplayName = "" + browseDisplayName;
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             return x;
         }
@@ -384,7 +387,8 @@ namespace AasOpcUaServer
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             var x = AasUaNodeHelper.CreateObjectType(browseDisplayName, superTypeId, descriptionKey: descriptionKey);
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
+                x, preferredNumId);
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             return x;
         }
@@ -408,7 +412,8 @@ namespace AasOpcUaServer
             x.DisplayName = "" + browseDisplayName;
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
+                x, preferredNumId);
 
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             return x;
@@ -429,7 +434,7 @@ namespace AasOpcUaServer
         /// <param name="extraName"></param>
         /// <returns>The node</returns>
         public BaseObjectState CreateAddObject(
-            NodeState parent,
+            NodeState parent, AasUaBaseEntity.CreateMode mode,
             string browseDisplayName,
             NodeId referenceTypeFromParentId = null,
             NodeId typeDefinitionId = null,
@@ -438,7 +443,7 @@ namespace AasOpcUaServer
         {
             var x = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId: typeDefinitionId,
                         modellingRule: modellingRule, extraName: extraName);
-            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
@@ -487,7 +492,8 @@ namespace AasOpcUaServer
         /// <param name="modellingRule">Modeling Rule, if not None</param>
         /// <returns>NodeState</returns>
         public PropertyState<T> CreateAddPropertyState<T>(
-            NodeState parent, string browseDisplayName,
+            NodeState parent, AasUaBaseEntity.CreateMode mode,
+            string browseDisplayName,
             NodeId dataTypeId, T value,
             NodeId referenceTypeFromParentId = null,
             NodeId typeDefinitionId = null,
@@ -515,7 +521,7 @@ namespace AasOpcUaServer
             // ReSharper disable once RedundantCast
             x.Value = (T)value;
             AasUaNodeHelper.CheckSetModellingRule(modellingRule, x);
-            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
 
             // add Node
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
@@ -542,7 +548,9 @@ namespace AasOpcUaServer
             return x;
         }
 
-        public MethodState CreateAddMethodState(NodeState parent, string browseDisplayName,
+        public MethodState CreateAddMethodState(
+            NodeState parent, AasUaBaseEntity.CreateMode mode,
+            string browseDisplayName,
             Argument[] inputArgs = null, Argument[] outputArgs = null, NodeId referenceTypeFromParentId = null,
             NodeId methodDeclarationId = null, GenericMethodCalledEventHandler onCalled = null)
         {
@@ -551,7 +559,7 @@ namespace AasOpcUaServer
             m.BrowseName = "" + browseDisplayName;
             m.DisplayName = "" + browseDisplayName;
             m.Description = new LocalizedText("en", browseDisplayName);
-            m.NodeId = nodeMgr.New(nodeMgr.SystemContext, m);
+            m.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, m);
             if (methodDeclarationId != null)
                 m.MethodDeclarationId = methodDeclarationId;
 
@@ -584,7 +592,7 @@ namespace AasOpcUaServer
 
                 // make a property for this
                 var prop = CreateAddPropertyState<Argument[]>(
-                    m,
+                    m, mode,
                     (i == 0) ? "InputArguments" : "OutputArguments",
                     DataTypeIds.Argument,
                     arguments,
