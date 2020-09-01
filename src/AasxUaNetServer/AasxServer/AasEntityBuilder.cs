@@ -428,6 +428,7 @@ namespace AasOpcUaServer
         /// functionality!!
         /// </summary>
         /// <param name="parent">Parent node</param>
+        /// <param name="mode">Type or instance name space</param>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
         /// <param name="referenceTypeFromParentId"></param>
         /// <param name="typeDefinitionId">Type of the Object</param>
@@ -483,6 +484,7 @@ namespace AasOpcUaServer
         /// </summary>
         /// <typeparam name="T">C# type of the proprty</typeparam>
         /// <param name="parent">Parent node</param>
+        /// <param name="mode">Type or instance name space</param>
         /// <param name="browseDisplayName">Name displayed in the node tree</param>
         /// <param name="dataTypeId">Data type, such as String.. Given by DataTypeIds...</param>
         /// <param name="value">Value of the type T or Null</param>
