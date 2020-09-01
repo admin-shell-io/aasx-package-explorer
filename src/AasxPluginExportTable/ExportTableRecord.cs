@@ -479,7 +479,7 @@ namespace AasxPluginExportTable
                             for (int icoi = 0; icoi < cd.IsCaseOf.Count; icoi++)
                                 repReference(head, $"isCaseOf[{icoi}]", cd.IsCaseOf[icoi]);
 
-                        var iec = cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360;
+                        var iec = cd.GetIEC61360();
                         if (iec != null)
                         {
                             //-2- CD.{preferredName[@en..], shortName[@en..], anyName, unit, unitId,

@@ -35,6 +35,7 @@
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
+    /*
     {
       "Path": "..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
       "Args": [],
@@ -57,6 +58,7 @@
       "Args": [],
       "Options": null
     },
+    */
     {
       "Path": "..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
       "Args": []
@@ -86,6 +88,7 @@
       "Args": []
     },
     /* Festo specific from here on */
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
@@ -124,6 +127,7 @@
         ]
       }
     }
+    */
   ],
   "SecureConnectPresets": [
     {

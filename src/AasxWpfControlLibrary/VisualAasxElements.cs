@@ -606,20 +606,9 @@ namespace AasxPackageExplorer
                     {
                         if (this.cachedCD == null)
                             this.cachedCD = this.theEnv.FindConceptDescription(sme.semanticId.Keys);
-                        if (this.cachedCD != null && this.cachedCD.embeddedDataSpecification != null &&
-                                this.cachedCD
-                                    .embeddedDataSpecification
-                                    .dataSpecificationContent != null &&
-                                this.cachedCD
-                                    .embeddedDataSpecification
-                                    .dataSpecificationContent
-                                    .dataSpecificationIEC61360 != null)
+                        var iecprop = this.cachedCD?.GetIEC61360();
+                        if (iecprop != null)
                         {
-                            var iecprop = this.cachedCD
-                                .embeddedDataSpecification
-                                .dataSpecificationContent
-                                .dataSpecificationIEC61360;
-
                             if (iecprop.unit != null && iecprop.unit != "")
                                 this.Info += " [" + iecprop.unit + "]";
                         }

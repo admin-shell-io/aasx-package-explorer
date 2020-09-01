@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
     // Helpers
     //
 
-    public class DispEditHelper
+    public class DispEditHelperBasics
     {
         //
         // Members
@@ -479,7 +479,7 @@ namespace AasxPackageExplorer
             StackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null,
             string[] auxButtonToolTips = null,
@@ -497,7 +497,7 @@ namespace AasxPackageExplorer
             StackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null,
@@ -729,7 +729,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
-                Func<object, ModifyRepo.LambdaAction> action = null)
+                Func<int, ModifyRepo.LambdaAction> action = null)
         {
             // access 
             if (repo == null || action == null || actionStr == null)
@@ -800,7 +800,7 @@ namespace AasxPackageExplorer
 
         public void AddAction(
             StackPanel view, string key, string actionStr, ModifyRepo repo = null,
-            Func<object, ModifyRepo.LambdaAction> action = null)
+            Func<int, ModifyRepo.LambdaAction> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
@@ -1412,7 +1412,7 @@ namespace AasxPackageExplorer
 
         public bool SafeguardAccess(
             StackPanel view, ModifyRepo repo, object data, string key, string actionStr,
-            Func<object, ModifyRepo.LambdaAction> action)
+            Func<int, ModifyRepo.LambdaAction> action)
         {
             if (repo != null && data == null)
                 AddAction(view, key, actionStr, repo, action);
@@ -1488,30 +1488,28 @@ namespace AasxPackageExplorer
                 stack, label, new[] { "Move up", "Move down", "Delete" }, repo,
                 (buttonNdx) =>
                 {
-                    if (buttonNdx is int)
+                    if (buttonNdx == 0)
                     {
-                        if ((int)buttonNdx == 0)
-                        {
-                            MoveElementInListUpwards<T>(list, entity);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                        }
-
-                        if ((int)buttonNdx == 1)
-                        {
-                            MoveElementInListDownwards<T>(list, entity);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                        }
-
-                        if ((int)buttonNdx == 2)
-                            if (this.flyoutProvider != null &&
-                                    MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
-                                        "Delete selected entity? This operation can not be reverted!", "AASX",
-                                        MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                            {
-                                var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
-                            }
+                        MoveElementInListUpwards<T>(list, entity);
+                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
+
+                    if ((int)buttonNdx == 1)
+                    {
+                        MoveElementInListDownwards<T>(list, entity);
+                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                    }
+
+                    if ((int)buttonNdx == 2)
+                        if (this.flyoutProvider != null &&
+                                MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                                    "Delete selected entity? This operation can not be reverted!", "AASX",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        {
+                            var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                        }
+                    
                     return new ModifyRepo.LambdaActionNone();
                 });
         }
@@ -1525,32 +1523,30 @@ namespace AasxPackageExplorer
                     stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo,
                     (buttonNdx) =>
                     {
-                        if (buttonNdx is int)
+                        if ((int)buttonNdx == 0)
+                            qualifiers.Add(new AdminShell.Qualifier());
+
+                        if ((int)buttonNdx == 1)
                         {
-                            if ((int)buttonNdx == 0)
-                                qualifiers.Add(new AdminShell.Qualifier());
-
-                            if ((int)buttonNdx == 1)
+                            if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
+                                return new ModifyRepo.LambdaActionNone();
+                            try
                             {
-                                if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
-                                    return new ModifyRepo.LambdaActionNone();
-                                try
-                                {
-                                    var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                                    var uc = new SelectQualifierPresetFlyout(fullfn);
-                                    flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.ResultQualifier != null)
-                                        qualifiers.Add(uc.ResultQualifier);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
-                                }
+                                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                                var uc = new SelectQualifierPresetFlyout(fullfn);
+                                flyoutProvider.StartFlyoverModal(uc);
+                                if (uc.ResultQualifier != null)
+                                    qualifiers.Add(uc.ResultQualifier);
                             }
-
-                            if ((int)buttonNdx == 2 && qualifiers.Count > 0)
-                                qualifiers.RemoveAt(qualifiers.Count - 1);
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                            }
                         }
+
+                        if ((int)buttonNdx == 2 && qualifiers.Count > 0)
+                            qualifiers.RemoveAt(qualifiers.Count - 1);
+                        
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     });
             }

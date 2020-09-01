@@ -1819,11 +1819,9 @@ namespace AasOpcUaServer
                     // Conventional approach: build up a speaking name
                     // but: shall be target of "HasDictionaryEntry", therefore the __PURE__ identifications 
                     // need to be the name!
-                    if (cd.embeddedDataSpecification != null
-                        && cd.embeddedDataSpecification.dataSpecificationContent != null
-                        && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                    if (cd.GetIEC61360() != null)
                     {
-                        var ds = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
+                        var ds = cd.GetIEC61360();
                         if (ds.shortName != null)
                             name = ds.shortName.GetDefaultStr();
                         if (cd.identification != null)
@@ -1858,19 +1856,20 @@ namespace AasOpcUaServer
                     foreach (var ico in cd.IsCaseOf)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
                             o, CreateMode.Instance, ico, "IsCaseOf");
-                // HasDataSpecification
-                if (cd.embeddedDataSpecification != null && cd.embeddedDataSpecification.dataSpecification != null)
+
+                // HasDataSpecification solely under the viewpoint of IEC61360
+                var eds = cd.embeddedDataSpecification?.IEC61360;
+                if (eds != null)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, cd.embeddedDataSpecification.dataSpecification, "DataSpecification");
+                        o, CreateMode.Instance, eds.dataSpecification, "DataSpecification");
 
                 // data specification is a child
-                if (cd.embeddedDataSpecification != null
-                    && cd.embeddedDataSpecification.dataSpecificationContent != null
-                    && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                var ds61360 = cd.embeddedDataSpecification?.IEC61360Content;
+                if (ds61360 != null)
                 {
                     var unused = this.entityBuilder.AasTypes.DataSpecificationIEC61360.CreateAddElements(
                         o, CreateMode.Instance,
-                        cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360);
+                        ds61360);
                 }
 
                 // remember CD as NodeRecord

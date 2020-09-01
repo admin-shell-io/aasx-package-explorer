@@ -500,7 +500,7 @@ namespace AasxPackageExplorer
             var res = new AdminShell.ConceptDescription();
 
             var ds = new AdminShell.DataSpecificationIEC61360();
-            res.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 = ds;
+            res.embeddedDataSpecification.IEC61360Content = ds;
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)

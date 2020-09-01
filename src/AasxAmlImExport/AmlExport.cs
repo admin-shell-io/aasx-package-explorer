@@ -871,12 +871,12 @@ namespace AasxAmlImExport
                 {
                     var eds = AppendAttributeNameAndRole(
                         aseqOuter, "dataSpecification", AmlConst.Attributes.CD_EmbeddedDataSpecification);
-                    if (cd.embeddedDataSpecification.dataSpecificationContent != null)
+                    if (source61360 != null)
                     {
                         var dsc = AppendAttributeNameAndRole(
                             eds.Attribute, "dataSpecificationContent",
                             AmlConst.Attributes.CD_DataSpecificationContent);
-                        if (cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                        if (source61360 != null)
                         {
                             // create attribute branch for CD contents
                             var dsc61360 = AppendAttributeNameAndRole(

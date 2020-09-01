@@ -724,8 +724,12 @@ namespace AasxUANodesetImExport
             Administration admin = new Administration();
             Identification iden = new Identification();
 
-            desc.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName =
+            var esc = EmbeddedDataSpecification.CreateIEC61360WithContent();
+            esc.dataSpecificationContent.dataSpecificationIEC61360.shortName =
                 new LangStringSetIEC61360("EN?", makePretty(name));
+
+            desc.embeddedDataSpecification = new HasDataSpecification();
+            desc.embeddedDataSpecification.Add(esc);
 
 
             foreach (Reference _ref in node.References)
@@ -770,6 +774,8 @@ namespace AasxUANodesetImExport
             //DataSpecificationIEC61360
             //  -> many, many parameters
 
+            var dsc = desc.GetIEC61360();
+
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -781,29 +787,17 @@ namespace AasxUANodesetImExport
                             if (_refref.ReferenceType == "HasProperty")
                             {
                                 UAVariable var = (UAVariable)findNode(_refref.Value);
-                                if (var.BrowseName == "1:DataType")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .dataType = var.Value.InnerText;
+                                if (var.BrowseName == "1:DataType" && dsc != null)
+                                    dsc.dataType = var.Value.InnerText;
 
-                                if (var.BrowseName == "1:Symbol")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .symbol = var.Value.InnerText;
+                                if (var.BrowseName == "1:Symbol" && dsc != null)
+                                    dsc.symbol = var.Value.InnerText;
 
-                                if (var.BrowseName == "1:Unit")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .unit = var.Value.InnerText;
+                                if (var.BrowseName == "1:Unit" && dsc != null)
+                                    dsc.unit = var.Value.InnerText;
 
-                                if (var.BrowseName == "1:ValueFormat")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .valueFormat = var.Value.InnerText;
+                                if (var.BrowseName == "1:ValueFormat" && dsc != null)
+                                    dsc.valueFormat = var.Value.InnerText;
 
                                 if (var.BrowseName == "1:IdShort ") desc.idShort = var.Value.InnerText;
                                 if (var.BrowseName == "1:Category ") desc.category = var.Value.InnerText;
@@ -811,18 +805,12 @@ namespace AasxUANodesetImExport
                             else if (_refref.ReferenceType == "HasComponent")
                             {
                                 UANode obj = findNode(_refref.Value);
-                                if (obj.BrowseName == "1:Definition")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .definition
+                                if (obj.BrowseName == "1:Definition" && dsc != null)
+                                    dsc.definition
                                         .langString = getDescription(obj);
 
-                                if (obj.BrowseName == "1:PreferredName")
-                                    desc.embeddedDataSpecification
-                                        .dataSpecificationContent
-                                        .dataSpecificationIEC61360
-                                        .preferredName
+                                if (obj.BrowseName == "1:PreferredName" && dsc != null)
+                                    dsc.preferredName
                                         .langString = getDescription(obj);
                             }
                         }

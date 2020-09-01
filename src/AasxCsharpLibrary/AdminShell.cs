@@ -1056,6 +1056,12 @@ namespace AdminShellNS
                     this.Add(new EmbeddedDataSpecification(r));
             }
 
+            public HasDataSpecification(IEnumerable<EmbeddedDataSpecification> src)
+            {
+                foreach (var r in src)
+                    this.Add(new EmbeddedDataSpecification(r));
+            }
+
 #if !DoNotUseAasxCompatibilityModels
             public HasDataSpecification(AasxCompatibilityModels.AdminShellV10.HasDataSpecification src)
             {
@@ -1064,29 +1070,58 @@ namespace AdminShellNS
             }
 #endif
 
-            // make some explicit and easy to use getter, setters
+            // make some explicit and easy to use getter, setters            
 
-            public DataSpecificationIEC61360 IEC61360Content
+            [XmlIgnore]
+            [JsonIgnore]
+            public EmbeddedDataSpecification IEC61360
             {
                 get
                 {
                     foreach (var eds in this)
-                        if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
-                            return eds.dataSpecificationContent.dataSpecificationIEC61360;
+                        if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null
+                            || eds?.dataSpecification?.MatchesExactlyOneKey(
+                                DataSpecificationIEC61360.GetKey(), Key.MatchMode.Identification) == true)
+                            return eds;
                     return null;
                 }
                 set
                 {
                     // search existing first?
-                    foreach (var eds in this)
-                        if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
-                        {
-                            // replace this
-                            /* TODO (MIHO, 2020-08-30): this does not prevent the corner case, that we could have
-                             * multiple dataSpecificationIEC61360 in this list, which would be an error */
-                            eds.dataSpecificationContent.dataSpecificationIEC61360 = value;
-                            return;
-                        }
+                    var eds = this.IEC61360;                    
+                    if (eds != null)
+                    {
+                        // replace this
+                        /* TODO (MIHO, 2020-08-30): this does not prevent the corner case, that we could have
+                            * multiple dataSpecificationIEC61360 in this list, which would be an error */
+                        this.Remove(eds);
+                        this.Add(value);
+                        return;
+                    }
+
+                    // no? .. add!
+                    this.Add(value);
+                }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public DataSpecificationIEC61360 IEC61360Content
+            {
+                get
+                {
+                    return this.IEC61360?.dataSpecificationContent?.dataSpecificationIEC61360;
+                }
+                set
+                {
+                    // search existing first?
+                    var eds = this.IEC61360;
+                    if (eds != null)
+                    {
+                        // replace this
+                        eds.dataSpecificationContent.dataSpecificationIEC61360 = value;
+                        return;
+                    }
                     // no? .. add!
                     var edsnew = new EmbeddedDataSpecification();
                     edsnew.dataSpecificationContent.dataSpecificationIEC61360 = value;
@@ -2795,6 +2830,15 @@ namespace AdminShellNS
                 return (d);
             }
 
+            // "constants"
+
+            public static Key GetKey()
+            {
+                return Key.CreateNew(
+                            "GlobalReference", false, "IRI",
+                            "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360");
+            }
+
             // validation
 
             public void Validate(AasValidationRecordList results, ConceptDescription cd)
@@ -2847,7 +2891,7 @@ namespace AdminShellNS
 
             // members
 
-            public DataSpecificationIEC61360 dataSpecificationIEC61360 = new DataSpecificationIEC61360();
+            public DataSpecificationIEC61360 dataSpecificationIEC61360 = null;
             public DataSpecificationISO99999 dataSpecificationISO99999 = null;
 
             // constructors
@@ -2880,6 +2924,14 @@ namespace AdminShellNS
 
             public EmbeddedDataSpecification() { }
 
+            public EmbeddedDataSpecification(
+                DataSpecificationRef dataSpecification, 
+                DataSpecificationContent dataSpecificationContent)
+            {
+                this.dataSpecification = dataSpecification;
+                this.dataSpecificationContent = dataSpecificationContent;
+            }
+
             public EmbeddedDataSpecification(EmbeddedDataSpecification src)
             {
                 if (src.dataSpecification != null)
@@ -2909,6 +2961,31 @@ namespace AdminShellNS
                     this.dataSpecification = new DataSpecificationRef(src);
             }
 #endif
+
+            public static EmbeddedDataSpecification CreateIEC61360WithContent()
+            {
+                var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
+
+                eds.dataSpecification.Keys.Add(DataSpecificationIEC61360.GetKey());
+
+                eds.dataSpecificationContent.dataSpecificationIEC61360 =
+                    AdminShell.DataSpecificationIEC61360.CreateNew();
+
+                return eds;
+            }
+
+            // compatibility layer
+            // TODO (MIHO, 2020-09-01): In a version beyond V2.0.1, the following can be deleted
+
+            [XmlElement(ElementName = "hasDataSpecification")]
+            [JsonProperty(PropertyName = "hasDataSpecification")]
+            public DataSpecificationRef CompatHasDataSpecification
+            {
+                set
+                {
+                    this.dataSpecification = value;
+                }
+            }
         }
 
         public class ConceptDescription : Identifiable, System.IDisposable
@@ -2945,13 +3022,11 @@ namespace AdminShellNS
             {
                 get
                 {
-                    if (embeddedDataSpecification == null)
-                        return null;
-                    return new[] { embeddedDataSpecification };
+                    return this.embeddedDataSpecification.ToArray();
                 }
                 set
                 {
-                    embeddedDataSpecification = (value == null) ? null : value[0];
+                    embeddedDataSpecification = new HasDataSpecification(value);
                 }
             }
 
@@ -2979,7 +3054,7 @@ namespace AdminShellNS
                 : base(src)
             {
                 if (src.embeddedDataSpecification != null)
-                    this.embeddedDataSpecification = new EmbeddedDataSpecification(src.embeddedDataSpecification);
+                    this.embeddedDataSpecification = new HasDataSpecification(src.embeddedDataSpecification);
                 if (src.isCaseOf != null)
                     foreach (var ico in src.isCaseOf)
                     {
@@ -2994,7 +3069,10 @@ namespace AdminShellNS
                 : base(src)
             {
                 if (src.embeddedDataSpecification != null)
-                    this.embeddedDataSpecification = new EmbeddedDataSpecification(src.embeddedDataSpecification);
+                {
+                    this.embeddedDataSpecification = new HasDataSpecification();
+                    this.embeddedDataSpecification.Add(new EmbeddedDataSpecification(src.embeddedDataSpecification));
+                }
                 if (src.IsCaseOf != null)
                     foreach (var ico in src.IsCaseOf)
                     {
@@ -3036,12 +3114,14 @@ namespace AdminShellNS
                 return r;
             }
 
+            /*
             public Key GetGlobalDataSpecRef()
             {
                 if (embeddedDataSpecification.dataSpecification.Count != 1)
                     return null;
                 return (embeddedDataSpecification.dataSpecification[0]);
             }
+            */
 
             public void SetIEC61360Spec(
                 string[] preferredNames = null,
@@ -3055,15 +3135,19 @@ namespace AdminShellNS
                 string[] definition = null
             )
             {
-                this.embeddedDataSpecification = new EmbeddedDataSpecification();
-                this.embeddedDataSpecification.dataSpecification.Keys.Add(
+                var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
+                eds.dataSpecification.Keys.Add(
                     Key.CreateNew(
                         "GlobalReference", false, "IRI",
                         "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
-                this.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 =
+                eds.dataSpecificationContent.dataSpecificationIEC61360 =
                     AdminShell.DataSpecificationIEC61360.CreateNew(
                         preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
                         dataType, definition);
+
+                this.embeddedDataSpecification = new HasDataSpecification();
+                this.embeddedDataSpecification.Add(eds);
+
                 this.AddIsCaseOf(
                     Reference.CreateNew(
                         new Key("ConceptDescription", false, this.identification.idType, this.identification.id)));
@@ -3071,24 +3155,71 @@ namespace AdminShellNS
 
             public DataSpecificationIEC61360 GetIEC61360()
             {
-                if (embeddedDataSpecification != null &&
-                    embeddedDataSpecification.dataSpecificationContent != null &&
-                    embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
-                    return embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
-                return null;
+                return this.embeddedDataSpecification?.IEC61360Content;
+            }
+
+            // as experimental approach, forward the IEC getter/sett of hasDataSpec directly
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public EmbeddedDataSpecification IEC61360DataSpec
+            {
+                get
+                {
+                    return this.embeddedDataSpecification?.IEC61360;
+                }
+                set
+                {
+                    // add embeddedDataSpecification first?
+                    if (this.embeddedDataSpecification == null)
+                        this.embeddedDataSpecification = new HasDataSpecification();
+                    this.embeddedDataSpecification.IEC61360 = value;
+                }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public DataSpecificationIEC61360 IEC61360Content
+            {
+                get
+                {
+                    return this.embeddedDataSpecification?.IEC61360Content;
+                }
+                set
+                {
+                    // add embeddedDataSpecification first?
+                    if (this.embeddedDataSpecification == null)
+                        this.embeddedDataSpecification = new HasDataSpecification();
+
+                    // check, if e IEC61360 can be found
+                    var eds = this.embeddedDataSpecification.IEC61360;
+
+                    // if already there, update
+                    if (eds != null)
+                    {
+                        eds.dataSpecificationContent = new DataSpecificationContent();
+                        eds.dataSpecificationContent.dataSpecificationIEC61360 = value;
+                        return;
+                    }
+
+                    // no: add a full record
+                    eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
+                    eds.dataSpecificationContent.dataSpecificationIEC61360 = value;
+                    this.embeddedDataSpecification.Add(eds);
+                }
             }
 
             public string GetDefaultPreferredName(string defaultLang = null)
             {
                 return "" +
-                    embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?
+                    GetIEC61360()?
                         .preferredName?.GetDefaultStr(defaultLang);
             }
 
             public string GetDefaultShortName(string defaultLang = null)
             {
                 return "" +
-                    embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360?
+                    GetIEC61360()?
                         .shortName?.GetDefaultStr(defaultLang);
             }
 
@@ -3140,7 +3271,7 @@ namespace AdminShellNS
                 base.Validate(results);
 
                 // check IEC61360 spec
-                var ds = this.embeddedDataSpecification.dataSpecificationContent?.dataSpecificationIEC61360;
+                var ds = this.GetIEC61360();
                 ds?.Validate(results, this);
             }
         }
@@ -4965,10 +5096,8 @@ namespace AdminShellNS
 
                 // try to potentially figure out idShort
                 var ids = cd.idShort;
-                if (ids == null && cd.embeddedDataSpecification != null &&
-                    cd.embeddedDataSpecification.dataSpecificationContent != null &&
-                    cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
-                    ids = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360.shortName?
+                if (ids == null && cd.GetIEC61360() != null)
+                    ids = cd.GetIEC61360().shortName?
                         .GetDefaultStr();
                 if (idShort != null)
                     ids = idShort;
