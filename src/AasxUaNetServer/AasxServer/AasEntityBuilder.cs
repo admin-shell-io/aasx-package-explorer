@@ -339,7 +339,8 @@ namespace AasOpcUaServer
         //// Folders
         //
 
-        public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode, NodeState parent, string browseDisplayName)
+        public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode,
+            NodeState parent, string browseDisplayName)
         {
             var x = new FolderState(parent);
             x.BrowseName = browseDisplayName;
