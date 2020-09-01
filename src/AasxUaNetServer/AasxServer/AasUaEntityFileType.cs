@@ -211,7 +211,7 @@ namespace AasOpcUaServer
             if (mode == CreateMode.Type)
             {
                 var o = this.entityBuilder.CreateAddObject(
-                            parent, "File", ReferenceTypeIds.HasComponent, ObjectTypeIds.FileType);
+                            parent, mode, "File", ReferenceTypeIds.HasComponent, ObjectTypeIds.FileType);
                 return o;
             }
             else
@@ -224,27 +224,27 @@ namespace AasOpcUaServer
 
                 // containing element
                 var o = this.entityBuilder.CreateAddObject(
-                            parent, "File", ReferenceTypeIds.HasComponent, ObjectTypeIds.FileType);
+                            parent, mode, "File", ReferenceTypeIds.HasComponent, ObjectTypeIds.FileType);
 
 
                 // this first information is to provide a "off-the-shelf" size information; a Open() will re-new this
                 var fileLen = Convert.ToUInt64(package.GetStreamSizeFromPackage(file.value));
 
                 // populate attributes from the spec
-                this.entityBuilder.CreateAddPropertyState<string>(o, "MimeType",
+                this.entityBuilder.CreateAddPropertyState<string>(o, mode, "MimeType",
                     DataTypeIds.String, file.mimeType, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
-                instData.nodeOpenCount = this.entityBuilder.CreateAddPropertyState<UInt16>(o, "OpenCount",
+                instData.nodeOpenCount = this.entityBuilder.CreateAddPropertyState<UInt16>(o, mode, "OpenCount",
                     DataTypeIds.UInt16, 0, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
-                instData.nodeSize = this.entityBuilder.CreateAddPropertyState<UInt64>(o, "Size",
+                instData.nodeSize = this.entityBuilder.CreateAddPropertyState<UInt64>(o, mode, "Size",
                     DataTypeIds.UInt64, fileLen, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType,
                     valueRank: -1);
-                this.entityBuilder.CreateAddPropertyState<bool>(o, "UserWritable",
+                this.entityBuilder.CreateAddPropertyState<bool>(o, mode, "UserWritable",
                     DataTypeIds.Boolean, true, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
-                this.entityBuilder.CreateAddPropertyState<bool>(o, "Writable",
+                this.entityBuilder.CreateAddPropertyState<bool>(o, mode, "Writable",
                     DataTypeIds.Boolean, true, ReferenceTypeIds.HasProperty, VariableTypeIds.PropertyType);
 
                 // Open
-                instData.mOpen = this.entityBuilder.CreateAddMethodState(o, "Open",
+                instData.mOpen = this.entityBuilder.CreateAddMethodState(o, mode, "Open",
                     inputArgs: new[] {
                         new Argument("Mode", DataTypeIds.Byte, -1, "")
                     },
@@ -256,7 +256,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AddNodeStateAnnotation(instData.mOpen, instData);
 
                 // Close
-                instData.mClose = this.entityBuilder.CreateAddMethodState(o, "Close",
+                instData.mClose = this.entityBuilder.CreateAddMethodState(o, mode, "Close",
                     inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, "")
                     },
@@ -267,7 +267,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AddNodeStateAnnotation(instData.mClose, instData);
 
                 // Read
-                instData.mRead = this.entityBuilder.CreateAddMethodState(o, "Read",
+                instData.mRead = this.entityBuilder.CreateAddMethodState(o, mode, "Read",
                     inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Length", DataTypeIds.Int32, -1, "")
@@ -280,7 +280,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AddNodeStateAnnotation(instData.mRead, instData);
 
                 // Write
-                instData.mWrite = this.entityBuilder.CreateAddMethodState(o, "Write",
+                instData.mWrite = this.entityBuilder.CreateAddMethodState(o, mode, "Write",
                     inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Data", DataTypeIds.ByteString, -1, "")
@@ -292,7 +292,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AddNodeStateAnnotation(instData.mWrite, instData);
 
                 // GetPosition
-                instData.mGetPosition = this.entityBuilder.CreateAddMethodState(o, "GetPosition",
+                instData.mGetPosition = this.entityBuilder.CreateAddMethodState(o, mode, "GetPosition",
                     inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                     },
@@ -305,7 +305,7 @@ namespace AasOpcUaServer
                 this.entityBuilder.AddNodeStateAnnotation(instData.mGetPosition, instData);
 
                 // SetPosition
-                instData.mSetPosition = this.entityBuilder.CreateAddMethodState(o, "SetPosition",
+                instData.mSetPosition = this.entityBuilder.CreateAddMethodState(o, mode, "SetPosition",
                     inputArgs: new[] {
                         new Argument("FileHandle", DataTypeIds.UInt32, -1, ""),
                         new Argument("Position", DataTypeIds.UInt64, -1, "")

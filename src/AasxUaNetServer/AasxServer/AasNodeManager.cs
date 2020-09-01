@@ -81,21 +81,33 @@ namespace AasOpcUaServer
         /// <param name="context">The context.</param>
         /// <param name="node">The node.</param>
         /// <returns>The new NodeId.</returns>
-        public override NodeId New(ISystemContext context, NodeState node)
+        public NodeId New(ISystemContext context, AasUaBaseEntity.CreateMode mode, NodeState node)
         {
-            uint id = Utils.IncrementIdentifier(ref m_lastUsedId);
-            return new NodeId(id, m_namespaceIndex);
+            if (mode == AasUaBaseEntity.CreateMode.Type)
+            {
+                uint id = Utils.IncrementIdentifier(ref m_lastUsedId);
+                return new NodeId(id, m_typeNamespaceIndex);
+            }
+            else
+            {
+                uint id = Utils.IncrementIdentifier(ref m_lastUsedId);
+                return new NodeId(id, m_namespaceIndex);
+            }
         }
         #endregion
 
-        public NodeId NewType(ISystemContext context, NodeState node, uint preferredNumId = 0)
+        public NodeId NewType(ISystemContext context, AasUaBaseEntity.CreateMode mode,
+            NodeState node, uint preferredNumId = 0)
         {
             uint id = preferredNumId;
             if (id == 0)
                 id = Utils.IncrementIdentifier(ref m_lastUsedTypeId);
             // this is thought to be a BUG in the OPCF code
             //// return new NodeId(preferredNumId, m_typeNamespaceIndex);
-            return new NodeId(id, m_typeNamespaceIndex);
+            if (mode == AasUaBaseEntity.CreateMode.Type)
+                return new NodeId(id, m_typeNamespaceIndex);
+            else
+                return new NodeId(id, m_namespaceIndex);
         }
 
         #region INodeManager Members
@@ -121,7 +133,7 @@ namespace AasOpcUaServer
                     var builder = new AasEntityBuilder(this, thePackageEnv, null, this.theServerOptions);
 
                     // Root of whole structure is special, needs to link to external reference
-                    builder.RootAAS = builder.CreateAddFolder(null, "AASROOT");
+                    builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, null, "AASROOT");
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
                         builder.RootAAS.NodeId, externalReferences);
@@ -143,17 +155,20 @@ namespace AasOpcUaServer
                         // Folders for Concept Descriptions
                         // ReSharper disable once HeuristicUnreachableCode
                         builder.RootConceptDescriptions = builder.CreateAddFolder(
+                            AasUaBaseEntity.CreateMode.Instance,
                             builder.RootAAS, "ConceptDescriptions");
 
                         // create missing dictionary entries
                         builder.RootMissingDictionaryEntries = builder.CreateAddFolder(
+                            AasUaBaseEntity.CreateMode.Instance,
                             builder.RootAAS, "DictionaryEntries");
                     }
 #pragma warning restore 162
                     else
                     {
                         // create folder(s) under root
-                        var topOfDict = builder.CreateAddObject(null, "Dictionaries",
+                        var topOfDict = builder.CreateAddObject(null,
+                            AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
                             referenceTypeFromParentId: null,
                             typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                         // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
@@ -165,12 +180,14 @@ namespace AasOpcUaServer
 
                         // now, create a dictionary under ..
                         // Folders for Concept Descriptions
-                        builder.RootConceptDescriptions = builder.CreateAddObject(topOfDict, "ConceptDescriptions",
+                        builder.RootConceptDescriptions = builder.CreateAddObject(topOfDict,
+                            AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "ConceptDescriptions",
                             referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
                             typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
 
                         // create missing dictionary entries
-                        builder.RootMissingDictionaryEntries = builder.CreateAddObject(topOfDict, "DictionaryEntries",
+                        builder.RootMissingDictionaryEntries = builder.CreateAddObject(topOfDict,
+                            AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "DictionaryEntries",
                             referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
                             typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                     }
