@@ -616,7 +616,8 @@ namespace AasOpcUaServer
                 extraName = "AssetAdministrationShell:" + aas.idShort;
                 browseName = aas.idShort;
             }
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, browseName, ReferenceTypeIds.HasComponent,
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
+                browseName, ReferenceTypeIds.HasComponent,
                 GetTypeObject().NodeId, extraName: extraName);
 
             // register node record
@@ -735,7 +736,8 @@ namespace AasOpcUaServer
                     return null;
 
                 // containing element
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "" + sm.idShort, ReferenceTypeIds.HasComponent,
+                var o = this.entityBuilder.CreateAddObject(parent, mode,
+                    "" + sm.idShort, ReferenceTypeIds.HasComponent,
                     GetTypeObject().NodeId, extraName: "Submodel:" + sm.idShort);
 
                 // register node record
@@ -882,7 +884,8 @@ namespace AasOpcUaServer
             if (mode == CreateMode.Type)
             {
                 // create only containing element (base type) with generic name
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "SubmodelElement", ReferenceTypeIds.HasComponent,
+                var o = this.entityBuilder.CreateAddObject(parent, mode,
+                    "SubmodelElement", ReferenceTypeIds.HasComponent,
                     this.entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), modellingRule: modellingRule);
                 return o;
             }
@@ -1087,7 +1090,8 @@ namespace AasOpcUaServer
             var to = GetTypeObject().NodeId;
             if (coll.ordered && this.typeObjectOrdered != null)
                 to = this.typeObjectOrdered.NodeId;
-            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance, "" + coll.idShort, ReferenceTypeIds.HasComponent, to);
+            var o = this.entityBuilder.CreateAddObject(parent, CreateMode.Instance,
+                "" + coll.idShort, ReferenceTypeIds.HasComponent, to);
 
             // populate common attributes
             base.PopulateInstanceObject(o, coll);
@@ -1115,7 +1119,8 @@ namespace AasOpcUaServer
         {
             // create type object
             this.typeObject = this.entityBuilder.CreateAddObjectType("AASFileType",
-                entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(), preferredTypeNumId, descriptionKey: "AAS:File");
+                entityBuilder.AasTypes.SubmodelElement.GetTypeNodeId(),
+                preferredTypeNumId, descriptionKey: "AAS:File");
 
             // some elements
             this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "MimeType",
@@ -1597,38 +1602,47 @@ namespace AasOpcUaServer
                 modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
             // add some more elements
-            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type, "PreferredName",
+            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type,
+                "PreferredName",
                 DataTypeIds.LocalizedText,
                 value: null, defaultSettings: true, valueRank: 1,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
 
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "ShortName",
+            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type,
+                "ShortName",
                 DataTypeIds.String, value: null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
 
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Unit",
+            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type,
+                "Unit",
                 DataTypeIds.String, value: null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(this.typeObject, CreateMode.Type, null, "UnitId",
+            this.entityBuilder.AasTypes.Reference.CreateAddElements(this.typeObject, CreateMode.Type, null,
+                "UnitId",
                 modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
-            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type, "SourceOfDefinition",
+            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type,
+                "SourceOfDefinition",
                 DataTypeIds.LocalizedText,
                 value: null, defaultSettings: true, valueRank: 1,
                 modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
 
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Symbol", DataTypeIds.String,
+            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type,
+                "Symbol", DataTypeIds.String,
                 value: null, defaultSettings: true, modellingRule: AasUaNodeHelper.ModellingRule.Optional);
 
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "DataType", DataTypeIds.String,
+            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type,
+                "DataType", DataTypeIds.String,
                 value: null, defaultSettings: true, modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
 
-            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type, "Definition",
+            this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(this.typeObject, CreateMode.Type,
+                "Definition",
                 DataTypeIds.LocalizedText, value: null, defaultSettings: true, valueRank: 1,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
 
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "ValueFormat",
+            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type,
+                "ValueFormat",
                 DataTypeIds.String, value: null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
         }
