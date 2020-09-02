@@ -109,6 +109,36 @@ namespace AasOpcUaServer
             else
                 return new NodeId(id, m_namespaceIndex);
         }
+        
+        public void SaveNodestateCollectionAsNodeSet2(ISystemContext context, NodeStateCollection nsc, Stream stream, bool filterSingleNodeIds)
+        {
+            Opc.Ua.Export.UANodeSet nodeSet = new Opc.Ua.Export.UANodeSet();
+            nodeSet.LastModified = DateTime.UtcNow;
+            nodeSet.LastModifiedSpecified = true;
+
+            foreach (var n in nsc)
+                nodeSet.Export(context, n);
+
+            if (filterSingleNodeIds)
+            {
+                // MIHO: There might be DOUBLE nodeIds in the the set!!!!!!!!!! WTF!!!!!!!!!!!!!
+                // Brutally eliminate them
+                var nodup = new List<Opc.Ua.Export.UANode>();
+                foreach (var it in nodeSet.Items)
+                {
+                    var found = false;
+                    foreach (var it2 in nodup)
+                        if (it.NodeId == it2.NodeId)
+                            found = true;
+                    if (found)
+                        continue;
+                    nodup.Add(it);
+                }
+                nodeSet.Items = nodup.ToArray();
+            }
+
+            nodeSet.Write(stream);
+        }
 
         #region INodeManager Members
         /// <summary>
@@ -223,6 +253,10 @@ namespace AasOpcUaServer
 
                         //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
                         //// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
+
+                        // nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
+                        SaveNodestateCollectionAsNodeSet2(this.SystemContext, nodesToExport, stream.BaseStream,
+                            theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
 
                         try
                         {
