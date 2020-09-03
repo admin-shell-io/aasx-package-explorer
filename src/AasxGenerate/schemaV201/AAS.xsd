@@ -390,13 +390,12 @@
 	</complexType>
 	<complexType name="submodel_t">
 		<sequence>
-      <!-- MIHO: moved hasDataSpecification to be 2nd in order -->
       <group ref="aas:identifiable"/>
-      <group ref="aas:hasDataSpecification"/>
       <group ref="aas:hasKind"></group>
 			<group ref="aas:hasSemantics"></group>
 			<group ref="aas:qualifiable"/>
-			<element name="submodelElements" type="aas:submodelElements_t"/>
+      <group ref="aas:hasDataSpecification"/>
+      <element name="submodelElements" type="aas:submodelElements_t"/>
 		</sequence>
 	</complexType>
 	<complexType name="submodelElement_t">
@@ -413,15 +412,12 @@
 	</complexType>
 	<complexType name="submodelElementAbstract_t">
 		<sequence>
-      <!-- MIHO: the spec says: hasDataSpecification, hasKind, hasSemantics, qualifiable (and referable) -->
-      <!-- (but referable HAS TO BE the topmost!) -->
-      <!-- MIHO: moved hasDataSpecification to be 2nd in order -->
 			<group ref="aas:referable"/>
-      <group ref="aas:hasDataSpecification"/>
       <group ref="aas:hasKind"/>
 			<group ref="aas:hasSemantics"/>			
 			<group ref="aas:qualifiable"/>
-		</sequence>
+      <group ref="aas:hasDataSpecification"/>
+    </sequence>
 	</complexType>
 	<complexType name="submodelElementCollection_t">
 		<complexContent>
@@ -457,9 +453,8 @@
 	<complexType name="view_t">
 		<sequence>
 			<group ref="aas:referable"/>
-      <!-- MIHO: moved hasDataSpecification to be 2nd in order -->
-      <group ref="aas:hasDataSpecification"/>
       <group ref="aas:hasSemantics"/>
+      <group ref="aas:hasDataSpecification"/>
       <element name="containedElements" type="aas:containedElements_t" ></element>
 		</sequence>
 	</complexType>

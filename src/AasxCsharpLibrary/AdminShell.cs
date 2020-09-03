@@ -2278,13 +2278,13 @@ namespace AdminShellNS
 
             // members
 
-            // from hasDataSpecification
-            [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
-
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = null;
+
+            // from hasDataSpecification
+            [XmlElement(ElementName = "hasDataSpecification")]
+            public HasDataSpecification hasDataSpecification = null;
 
             // from this very class
             [JsonIgnore]
@@ -3022,7 +3022,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    return this.embeddedDataSpecification.ToArray();
+                    return this.embeddedDataSpecification?.ToArray();
                 }
                 set
                 {
@@ -4308,9 +4308,7 @@ namespace AdminShellNS
             // do this in order to be IDisposable, that is: suitable for (using)
             void System.IDisposable.Dispose() { }
             public void GetData() { }
-            // from hasDataSpecification:
-            [XmlElement(ElementName = "embeddedDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+
             // from HasKind
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
@@ -4332,14 +4330,20 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
+
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();
+
             // from Qualifiable:
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
             [JsonProperty(PropertyName = "constraints")]
             public QualifierCollection qualifiers = null;
+
+            // from hasDataSpecification:
+            [XmlElement(ElementName = "embeddedDataSpecification")]
+            public HasDataSpecification hasDataSpecification = null;
 
             // getter / setter
 
@@ -5172,9 +5176,7 @@ namespace AdminShellNS
             // do this in order to be IDisposable, that is: suitable for (using)
             void System.IDisposable.Dispose() { }
             public void GetData() { }
-            // from hasDataSpecification:
-            [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+
             // from HasKind
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
@@ -5196,13 +5198,19 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
+
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();            
+
             // from Qualifiable:
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
             public QualifierCollection qualifiers = null;
+
+            // from hasDataSpecification:
+            [XmlElement(ElementName = "hasDataSpecification")]
+            public HasDataSpecification hasDataSpecification = null;
 
             // from this very class
             [JsonIgnore]

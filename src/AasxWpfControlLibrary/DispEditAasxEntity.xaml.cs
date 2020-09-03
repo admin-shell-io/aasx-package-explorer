@@ -174,7 +174,7 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityReferable(stack, asset, categoryUsual: false);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            helper.DisplayOrEditEntityHasDataSpecification(stack, asset.hasDataSpecification,
+            helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, asset.hasDataSpecification,
                 (ds) => { asset.hasDataSpecification = ds; });
 
             // Identifiable
@@ -908,7 +908,7 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityReferable(stack, aas, categoryUsual: false);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            helper.DisplayOrEditEntityHasDataSpecification(stack, aas.hasDataSpecification,
+            helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.hasDataSpecification,
                 (ds) => { aas.hasDataSpecification = ds; });
 
             // Identifiable
@@ -1205,10 +1205,6 @@ namespace AasxPackageExplorer
                 // Referable
                 helper.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
-                // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-                helper.DisplayOrEditEntityHasDataSpecification(stack, submodel.hasDataSpecification,
-                (ds) => { submodel.hasDataSpecification = ds; });
-
                 // Identifiable
                 helper.DisplayOrEditEntityIdentifiable(
                     stack, submodel,
@@ -1218,7 +1214,15 @@ namespace AasxPackageExplorer
                     null,
                     checkForIri: submodel.kind != null && submodel.kind.IsInstance);
 
-                // semantic Id
+                // HasKind
+                helper.DisplayOrEditEntityModelingKind(
+                    stack, submodel.kind,
+                    (k) => { submodel.kind = k; },
+                    instanceExceptionStatement:
+                        "Exception: if you want to declare a Submodel, which is been standardised " +
+                        "by you or a standardisation body.");
+
+                // HasSemanticId
                 helper.DisplayOrEditEntitySemanticId(stack, submodel.semanticId,
                     (o) => { submodel.semanticId = o; },
                     "The semanticId may be either a reference to a submodel " +
@@ -1226,18 +1230,14 @@ namespace AasxPackageExplorer
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).");
 
-                // Kind
-                helper.DisplayOrEditEntityModelingKind(
-                    stack, submodel.kind,
-                    (k) => { submodel.kind = k; },
-                    instanceExceptionStatement: 
-                        "Exception: if you want to declare a Submodel, which is been standardised " +
-                        "by you or a standardisation body.");
-
-                // qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
+                // Qualifiable: qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
                 helper.DisplayOrEditEntityQualifierCollection(
                     stack, submodel.qualifiers,
                     (q) => { submodel.qualifiers = q; });
+
+                // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+                helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.hasDataSpecification,
+                (ds) => { submodel.hasDataSpecification = ds; });
 
             }
         }
@@ -1347,11 +1347,25 @@ namespace AasxPackageExplorer
             // joint header for data spec ref and content
             helper.AddGroup(stack, "HasDataSpecification:", levelColors[1][0], levelColors[1][1]);
 
+            // check, if there is a IEC61360 content amd, subsequently, also a according data specification
+            var esc = cd.IEC61360DataSpec;
+            helper.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return esc != null && (esc.dataSpecification == null 
+                            || !esc.dataSpecification.MatchesExactlyOneKey(
+                                AdminShell.DataSpecificationIEC61360.GetKey())); },
+                        "IEC61360 content present, but data specification missing. Please add according reference.",
+                        breakIfTrue: true),
+                });
+
             // use the normal module to edit ALL data specifications
-            helper.DisplayOrEditEntityHasDataSpecification(stack, cd.embeddedDataSpecification,
+            helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.embeddedDataSpecification,
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
-                addPresetKeys: new[] { AdminShell.DataSpecificationIEC61360.GetKey() });
+                addPresetKeys: new[] { AdminShell.DataSpecificationIEC61360.GetKey() },
+                dataSpecRefsAreUsual: true);
 
             // the IEC61360 Content
 
@@ -2012,20 +2026,7 @@ namespace AasxPackageExplorer
                                     var clone = env.CopySubmodelElementAndCD(
                                         rve.theEnv, mdo as AdminShell.SubmodelElement, copyCD: true,
                                         shallowCopy: buttonNdx == 0);
-                                    // dead-csharp off
-                                    /*
-                                        * TO BE DELETED, if SMWC works..
-                                    if (listOfSMEW == null)
-                                    {
-                                        listOfSMEW = new List<AdminShell.SubmodelElementWrapper>();
-                                        if (sme is AdminShell.SubmodelElementCollection)
-                                            (sme as AdminShell.SubmodelElementCollection).value = listOfSMEW;
-                                        if (sme is AdminShell.Entity)
-                                            (sme as AdminShell.Entity).statements = listOfSMEW;
-                                    }
-                                    listOfSMEW.Add(clone);
-                                    */
-                                    // dead-csharp on
+
                                     if (sme is AdminShell.SubmodelElementCollection smesmc)
                                         smesmc.value.Add(clone);
                                     if (sme is AdminShell.Entity smeent)
@@ -2251,56 +2252,32 @@ namespace AasxPackageExplorer
                     $"Submodel Element ({"" + sme?.GetElementName()})",
                     levelColors[0][0], levelColors[0][1]);
 
-                helper.AddGroup(stack, "Referable members:", levelColors[1][0], levelColors[1][1]);
-
-                helper.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return sme.idShort == null || sme.idShort.Length < 1; },
-                            "idShort is mandatory for SubmodelElements. " +
-                                "It is a short, unique identifier that is unique just in its context, " +
-                                "its name space. It is not required to be unique " +
-                                "over multiple SubmodelElementCollections.",
-                            breakIfTrue: true),
-                        new HintCheck(
-                            () =>
-                            {
-                                if (sme.idShort == null) return false;
-                                return !AdminShellUtil.ComplyIdShort(sme.idShort);
-                            },
-                            "idShort shall only feature letters, digits, underscore ('_'); " +
-                                "starting mandatory with a letter..")
-                    });
-                helper.AddKeyValueRef(
-                    stack, "idShort", sme, ref sme.idShort, null, repo,
-                    v => { sme.idShort = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitle: "Sync",
-                    auxButtonToolTip: "Copy (if target is empty) idShort " +
-                        "to concept desctiption idShort and shortName.",
-                    auxButtonLambda: (v) =>
-                    {
-                        if (sme.semanticId != null && sme.semanticId.Count > 0)
+                // Referable
+                helper.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
+                    injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
+                        auxTitles: new[] { "Sync" },
+                        auxToolTips: new[] { "Copy (if target is empty) idShort " +
+                        "to concept desctiption idShort and shortName." },
+                        auxActions: (buttonNdx) =>
                         {
-                            var cd = env.FindConceptDescription(sme.semanticId.Keys);
-                            if (cd != null)
+                            if (sme.semanticId != null && sme.semanticId.Count > 0)
                             {
-                                if (cd.idShort == null || cd.idShort.Trim() == "")
-                                    cd.idShort = sme.idShort;
+                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                if (cd != null)
+                                {
+                                    if (cd.idShort == null || cd.idShort.Trim() == "")
+                                        cd.idShort = sme.idShort;
 
-                                var ds = cd.IEC61360Content;
-                                if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
-                                    ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sme.idShort);
+                                    var ds = cd.IEC61360Content;
+                                    if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
+                                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sme.idShort);
 
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
                             }
-                        }
-                        return new ModifyRepo.LambdaActionNone();
-                    });
-
-                helper.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
+                            return new ModifyRepo.LambdaActionNone();
+                        }),
+                    addHintsCategory: new[] {
                         new HintCheck(
                             () =>
                             {
@@ -2320,49 +2297,12 @@ namespace AasxPackageExplorer
                                 "i.e. its value is a runtime value. ",
                            severityLevel: HintCheck.Severity.Notice)
                     });
-                helper.AddKeyValueRef(
-                    stack, "category", sme, ref sme.category, null, repo,
-                    v => { sme.category = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    comboBoxItems: AdminShell.Referable.ReferableCategoryNames,
-                    comboBoxIsEditable: true);
-
-                helper.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () =>
-                            {
-                                return sme.description == null || sme.description.langString == null ||
-                                    sme.description.langString.Count < 1;
-                            },
-                            "The use of an description is recommended to allow " +
-                                "the consumer of an SubmodelElement to understand the nature of it.",
-                            breakIfTrue: true,
-                            severityLevel: HintCheck.Severity.Notice),
-                        new HintCheck(
-                            () => { return sme.description.langString.Count < 2; },
-                            "Consider having description in multiple langauges.",
-                            severityLevel: HintCheck.Severity.Notice)
-                    });
-
-                if (helper.SafeguardAccess(
-                        stack, repo, sme.description, "description:", "Create data element!",
-                        v =>
-                        {
-                            sme.description = new AdminShell.Description();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
-                        }))
-                    helper.AddKeyListLangStr(stack, "description", sme.description.langString, repo);
-
-                // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-                helper.DisplayOrEditEntityHasDataSpecification(stack, sme.hasDataSpecification,
-                (ds) => { sme.hasDataSpecification = ds; });
 
                 // Kind
                 helper.DisplayOrEditEntityModelingKind(stack, sme.kind,
                     (k) => { sme.kind = k; });
 
-                // Semantic Id
+                // HasSemanticId
                 helper.DisplayOrEditEntitySemanticId(stack, sme.semanticId,
                     (sid) => { sme.semanticId = sid; },
                     "The use of semanticId for SubmodelElements is mandatory! " +
@@ -2374,10 +2314,14 @@ namespace AasxPackageExplorer
                     "a company / consortia repository.",
                     checkForCD: true);
 
-                // qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
+                // Qualifiable: qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
                 helper.DisplayOrEditEntityQualifierCollection(
                     stack, sme.qualifiers,
                     (q) => { sme.qualifiers = q; });
+
+                // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+                helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.hasDataSpecification,
+                (ds) => { sme.hasDataSpecification = ds; });
 
                 //
                 // ConceptDescription <- via semantic ID ?!
@@ -2877,63 +2821,8 @@ namespace AasxPackageExplorer
                 stack.Children.Add(g);
             }
 
-            helper.AddGroup(stack, "Referable members:", levelColors[1][0], levelColors[1][1]);
-
-            helper.AddHintBubble(
-                stack, hintMode,
-                new[] {
-                    new HintCheck(
-                        () => { return view.idShort == null || view.idShort.Length < 1; },
-                        "idShort is mandatory for SubmodelElements. " +
-                            "It is a short, unique identifier that is unique just in its context, its name space.",
-                        breakIfTrue: true),
-                    new HintCheck(
-                        () => {
-                            if (view.idShort == null) return false;
-                            return !AdminShellUtil.ComplyIdShort(view.idShort);
-                        },
-                        "idShort shall only feature letters, digits, underscore ('_'); " +
-                            "starting mandatory with a letter..")
-                });
-            helper.AddKeyValueRef(
-                stack, "idShort", view, ref view.idShort, null, repo,
-                v => { view.idShort = v as string; return new ModifyRepo.LambdaActionNone(); });
-
-            helper.AddHintBubble(
-                stack, hintMode,
-                new HintCheck(
-                    () => { return view.category != null && view.category.Trim().Length >= 1; },
-                    "The use of category is unusual here.",
-                    severityLevel: HintCheck.Severity.Notice));
-
-            helper.AddKeyValueRef(
-                stack, "category", view, ref view.category, null, repo,
-                v => { view.category = v as string; return new ModifyRepo.LambdaActionNone(); },
-                comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
-
-            helper.AddHintBubble(
-                stack, hintMode,
-                new[] {
-                    new HintCheck(
-                        () => {
-                            return view.description == null || view.description.langString == null ||
-                                view.description.langString.Count < 1;
-                        },
-                        "The use of an description is recommended to allow the consumer " +
-                            "of an view to understand the nature of it.",
-                        breakIfTrue: true, severityLevel: HintCheck.Severity.Notice),
-                    new HintCheck(
-                        () => { return view.description.langString.Count < 2; },
-                        "Consider having description in multiple langauges.", severityLevel: HintCheck.Severity.Notice)
-                });
-            if (helper.SafeguardAccess(
-                    stack, repo, view.description, "description:", "Create data element!",
-                    v =>
-                    {
-                        view.description = new AdminShell.Description();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
-                    }))
-                helper.AddKeyListLangStr(stack, "description", view.description.langString, repo);
+            // Referable
+            helper.DisplayOrEditEntityReferable(stack, view, categoryUsual: false);
 
             // HasSemantics
             helper.DisplayOrEditEntitySemanticId(stack, view.semanticId,
@@ -2941,8 +2830,8 @@ namespace AasxPackageExplorer
                 "Only by adding this, a computer can distinguish, for what the view is really meant for.",
                 checkForCD: false);
 
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            helper.DisplayOrEditEntityHasDataSpecification(stack, view.hasDataSpecification,
+            // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, view.hasDataSpecification,
                 (ds) => { view.hasDataSpecification = ds; });
 
         }

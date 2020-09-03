@@ -81,11 +81,15 @@ namespace AasxPackageExplorer
         public void DisplayOrEditEntityReferable(StackPanel stack,
             AdminShell.Referable referable,
             DispEditInjectAction injectToIdShort = null,
+            HintCheck[] addHintsCategory = null,
             bool categoryUsual = false)
         {
             // access
             if (stack == null || referable == null)
                 return;
+
+            // members
+            this.AddGroup(stack, "Referable:", levelColors[1][0], levelColors[1][1]);
 
             // members
             this.AddHintBubble(stack, hintMode, new[] {
@@ -115,6 +119,7 @@ namespace AasxPackageExplorer
                     new HintCheck(() => { return referable.category != null && referable.category.Trim().Length >= 1; },
                     "The use of category is unusual here.", severityLevel: HintCheck.Severity.Notice));
 
+            this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
             this.AddKeyValueRef(
                 stack, "category", referable, ref referable.category, null, repo,
                 v => { referable.category = v as string; return new ModifyRepo.LambdaActionNone(); },
@@ -128,7 +133,7 @@ namespace AasxPackageExplorer
                             return referable.description == null || referable.description.langString == null ||
                                 referable.description.langString.Count < 1;
                         },
-                        "The use of an description is recommended to allow the consumer of an referable " +
+                        "The use of an description is recommended to allow the consumer of an Referable " +
                             "to understand the nature of it.",
                         breakIfTrue: true,
                         severityLevel: HintCheck.Severity.Notice),
@@ -171,7 +176,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Identifiable members:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Identifiable:", levelColors[1][0], levelColors[1][1]);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -264,16 +269,23 @@ namespace AasxPackageExplorer
         // Data Specification
         //
 
-        public void DisplayOrEditEntityHasDataSpecification(StackPanel stack,
+        public void DisplayOrEditEntityHasDataSpecificationReferences(StackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null)
+            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
+            bool dataSpecRefsAreUsual = false)
         {
             // access
             if (stack == null)
                 return;
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => { return !dataSpecRefsAreUsual && hasDataSpecification != null; },
+                    "Check if a data specification is appropriate here.",
+                    breakIfTrue: true,
+                    severityLevel: HintCheck.Severity.Notice) });
             if (this.SafeguardAccess(
                     stack, this.repo, hasDataSpecification, "DataSpecification:", "Create data element!",
                     v =>
@@ -282,7 +294,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
             {
-                this.AddGroup(stack, "DataSpecification (Reference):", levelColors[1][0], levelColors[1][1]);
+                this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors[1][0], levelColors[1][1]);
 
                 if (editMode)
                 {
@@ -466,6 +478,8 @@ namespace AasxPackageExplorer
                 return;
 
             // members
+            this.AddGroup(stack, "Semantic ID:", levelColors[1][0], levelColors[1][1]);
+
             this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -481,7 +495,7 @@ namespace AasxPackageExplorer
                                     "within the respective repository.",
                                 severityLevel: HintCheck.Severity.Notice)
                     });
-            this.AddGroup(stack, "Semantic ID", levelColors[1][0], levelColors[1][1]);
+
             if (this.SafeguardAccess(
                     stack, repo, semanticId, "semanticId:", "Create data element!",
                     v =>
@@ -508,7 +522,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Qualifiable", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Qualifiable:", levelColors[1][0], levelColors[1][1]);
 
             if (this.SafeguardAccess(
                 stack, repo, qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",
@@ -518,7 +532,6 @@ namespace AasxPackageExplorer
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
             {
-                this.AddGroup(stack, "Qualifier", levelColors[1][0], levelColors[1][1]);
                 this.QualifierHelper(stack, repo, qualifiers);
             }
 

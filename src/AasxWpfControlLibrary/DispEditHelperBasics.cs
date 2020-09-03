@@ -1796,5 +1796,26 @@ namespace AasxPackageExplorer
             AddHintBubble(view, hintMode, new[] { hint });
         }
 
+        public T[] ConcatArrays<T>(IEnumerable<T> a, IEnumerable<T> b)
+        {
+            if (a == null || b == null)
+                return null;
+
+            if (a == null)
+                return b.ToArray();
+
+            if (b == null)
+                return a.ToArray();
+
+            var l = new List<T>();
+            l.AddRange(a);
+            l.AddRange(b);
+            return l.ToArray();
+        }
+
+        public HintCheck[] ConcatHintChecks(IEnumerable<HintCheck> a, IEnumerable<HintCheck> b)
+        {
+            return ConcatArrays<HintCheck>(a, b);
+        }
     }
 }
