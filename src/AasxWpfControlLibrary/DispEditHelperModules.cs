@@ -279,10 +279,14 @@ namespace AasxPackageExplorer
             if (stack == null)
                 return;
 
+            // members
+            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors[1][0], levelColors[1][1]);
+
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return !dataSpecRefsAreUsual && hasDataSpecification != null; },
+                    () => { return !dataSpecRefsAreUsual && hasDataSpecification != null
+                        && hasDataSpecification.Count > 0; },
                     "Check if a data specification is appropriate here.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice) });
@@ -294,8 +298,6 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
             {
-                this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors[1][0], levelColors[1][1]);
-
                 if (editMode)
                 {
                     // let the user control the number of references
