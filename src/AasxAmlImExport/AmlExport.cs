@@ -223,7 +223,8 @@ namespace AasxAmlImExport
                 return;
             foreach (var r in ds)
                 AppendAttributeNameAndRole(
-                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef, ToAmlReference(r?.dataSpecification));
+                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef,
+                    ToAmlReference(r?.dataSpecification));
         }
 
         private static void SetQualifiers(

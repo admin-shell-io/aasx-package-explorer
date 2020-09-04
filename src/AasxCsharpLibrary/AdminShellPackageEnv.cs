@@ -363,7 +363,7 @@ namespace AdminShellNS
             return true;
         }
 
-        public enum PreferredFormat { None, Xml, Json };
+        public enum SerializationFormat { None, Xml, Json };
 
         public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
         {
@@ -375,7 +375,7 @@ namespace AdminShellNS
             return nss;
         }
 
-        public bool SaveAs(string fn, bool writeFreshly = false, PreferredFormat prefFmt = PreferredFormat.None,
+        public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
                 MemoryStream useMemoryStream = null)
         {
             if (fn.ToLower().EndsWith(".xml"))
@@ -384,13 +384,17 @@ namespace AdminShellNS
                 this.fn = fn;
                 try
                 {
-                    using (var s = new StreamWriter(this.fn))
-                    {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                        var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, this.aasenv, nss);
-                    }
+                    Stream s = (useMemoryStream != null) ? (Stream) useMemoryStream
+                        : File.Open(fn, FileMode.Create, FileAccess.Write);
+
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
+                    var nss = GetXmlDefaultNamespaces();
+                    serializer.Serialize(s, this.aasenv, nss);
+
+                    // close?
+                    if (useMemoryStream == null)
+                        s.Close();
                 }
                 catch (Exception ex)
                 {
@@ -519,8 +523,8 @@ namespace AdminShellNS
                         var name = System.IO.Path.GetFileNameWithoutExtension(
                             specPart.Uri.ToString()).ToLower().Trim();
                         var ext = System.IO.Path.GetExtension(specPart.Uri.ToString()).ToLower().Trim();
-                        if ((ext == ".json" && prefFmt == PreferredFormat.Xml)
-                             || (ext == ".xml" && prefFmt == PreferredFormat.Json)
+                        if ((ext == ".json" && prefFmt == SerializationFormat.Xml)
+                             || (ext == ".xml" && prefFmt == SerializationFormat.Json)
                              || (name.StartsWith("aasenv-with-no-id")))
                         {
                             // try kill specpart
@@ -543,7 +547,7 @@ namespace AdminShellNS
                         if (this.aasenv.AdministrationShells.Count > 0)
                             frn = this.aasenv.AdministrationShells[0].GetFriendlyName() ?? frn;
                         var aas_spec_fn = "/aasx/#/#.aas";
-                        if (prefFmt == PreferredFormat.Json)
+                        if (prefFmt == SerializationFormat.Json)
                             aas_spec_fn += ".json";
                         else
                             aas_spec_fn += ".xml";

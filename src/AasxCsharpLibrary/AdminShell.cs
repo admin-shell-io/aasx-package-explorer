@@ -431,6 +431,13 @@ namespace AdminShellNS
                 return false;
             }
 
+            public bool Matches(Identification id)
+            {
+                if (id == null)
+                    return false;
+                return this.Matches(Key.GlobalReference, false, id.idType, id.id, MatchMode.Identification);
+            }
+
             public bool Matches(Key key, MatchMode matchMode = MatchMode.Strict)
             {
                 if (key == null)
@@ -508,7 +515,7 @@ namespace AdminShellNS
                 }
 
                 // may give result "to be deleted"
-                return res; 
+                return res;
             }
         }
 
@@ -553,7 +560,7 @@ namespace AdminShellNS
 
             // validation
 
-            public static void Validate(AasValidationRecordList results, KeyList kl, 
+            public static void Validate(AasValidationRecordList results, KeyList kl,
                 Referable container)
             {
                 // access
@@ -1088,7 +1095,7 @@ namespace AdminShellNS
                 set
                 {
                     // search existing first?
-                    var eds = this.IEC61360;                    
+                    var eds = this.IEC61360;
                     if (eds != null)
                     {
                         // replace this
@@ -1459,7 +1466,7 @@ namespace AdminShellNS
                             {
                                 mk.kind = Instance;
                             }));
-                    } 
+                    }
                     else if (k != Template && k != Instance)
                     {
                         // warning
@@ -1881,7 +1888,8 @@ namespace AdminShellNS
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SpecViolation, this,
                         "Referable: missing idShort",
-                        () => {
+                        () =>
+                        {
                             this.idShort = "TO_FIX";
                         }));
 
@@ -1890,7 +1898,8 @@ namespace AdminShellNS
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, this,
                         "Referable: existing description with missing langString",
-                        () => {
+                        () =>
+                        {
                             this.description = null;
                         }));
             }
@@ -1968,7 +1977,11 @@ namespace AdminShellNS
             public JsonModelTypeWrapper(string name = "") { this.name = name; }
         }
 
-        public class AdministrationShell : Identifiable
+        public interface IFindAllReferences {
+            IEnumerable<Reference> FindAllReferences();
+        }
+
+        public class AdministrationShell : Identifiable, IFindAllReferences
         {
             // for JSON only
             [XmlIgnore]
@@ -2157,6 +2170,20 @@ namespace AdminShellNS
                 this.submodelRefs.Add(newref);
             }
 
+            public IEnumerable<Reference> FindAllReferences()
+            {
+                // Submodel references
+                if (this.submodelRefs != null)
+                    foreach (var r in this.submodelRefs)
+                        yield return r;
+
+                // Views
+                if (this.views?.views != null)
+                    foreach (var vw in this.views.views)
+                        if (vw?.containedElements?.reference != null)
+                            foreach (var r in vw.containedElements.reference)
+                                yield return r;
+            }
         }
 
         public class Asset : Identifiable
@@ -2267,6 +2294,13 @@ namespace AdminShellNS
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
             }
 
+            public IEnumerable<Reference> FindAllReferences()
+            {
+                if (this.assetIdentificationModelRef != null)
+                    yield return this.assetIdentificationModelRef;
+                if (this.billOfMaterialRef != null)
+                    yield return this.billOfMaterialRef;
+            }
         }
 
         public class View : Referable
@@ -2836,7 +2870,7 @@ namespace AdminShellNS
             {
                 return Key.CreateNew(
                             "GlobalReference", false, "IRI",
-                            "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360");
+                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
             }
 
             // validation
@@ -2853,7 +2887,8 @@ namespace AdminShellNS
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: missing preferredName",
-                        () => {
+                        () =>
+                        {
                             this.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
                                 AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
                         }));
@@ -2863,7 +2898,8 @@ namespace AdminShellNS
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: existing shortName with missing langString",
-                        () => {
+                        () =>
+                        {
                             this.shortName = null;
                         }));
 
@@ -2872,7 +2908,8 @@ namespace AdminShellNS
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: existing definition with missing langString",
-                        () => {
+                        () =>
+                        {
                             this.definition = null;
                         }));
             }
@@ -2925,7 +2962,7 @@ namespace AdminShellNS
             public EmbeddedDataSpecification() { }
 
             public EmbeddedDataSpecification(
-                DataSpecificationRef dataSpecification, 
+                DataSpecificationRef dataSpecification,
                 DataSpecificationContent dataSpecificationContent)
             {
                 this.dataSpecification = dataSpecification;
@@ -2988,7 +3025,7 @@ namespace AdminShellNS
             }
         }
 
-        public class ConceptDescription : Identifiable, System.IDisposable
+        public class ConceptDescription : Identifiable, System.IDisposable, IFindAllReferences
         {
             // for JSON only
             [XmlIgnore]
@@ -3113,15 +3150,6 @@ namespace AdminShellNS
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
             }
-
-            /*
-            public Key GetGlobalDataSpecRef()
-            {
-                if (embeddedDataSpecification.dataSpecification.Count != 1)
-                    return null;
-                return (embeddedDataSpecification.dataSpecification[0]);
-            }
-            */
 
             public void SetIEC61360Spec(
                 string[] preferredNames = null,
@@ -3271,8 +3299,49 @@ namespace AdminShellNS
                 base.Validate(results);
 
                 // check IEC61360 spec
-                var ds = this.GetIEC61360();
-                ds?.Validate(results, this);
+                var eds61360 = this.IEC61360DataSpec;
+                if (eds61360 != null)
+                {
+                    // check data spec
+                    if (eds61360.dataSpecification == null ||
+                        !(eds61360.dataSpecification.MatchesExactlyOneKey(DataSpecificationIEC61360.GetKey())))
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SpecViolation, this,
+                            "HasDataSpecification: data specification content set to IEC61360, but no " +
+                            "data specification reference set!",
+                            () =>
+                            {
+                                eds61360.dataSpecification = new DataSpecificationRef(
+                                    new Reference(
+                                        DataSpecificationIEC61360.GetKey()));
+                            }));
+
+                    // validate content
+                    if (eds61360.dataSpecificationContent?.dataSpecificationIEC61360 == null)
+                    {
+                        results.Add(new AasValidationRecord(
+                            AasValidationSeverity.SpecViolation, this,
+                            "HasDataSpecification: data specification reference set to IEC61360, but no "+
+                            "data specification content set!",
+                            () =>
+                            {
+                                eds61360.dataSpecificationContent = new DataSpecificationContent();
+                                eds61360.dataSpecificationContent.dataSpecificationIEC61360 = 
+                                new DataSpecificationIEC61360();
+                            }));
+                    }
+                    else
+                    {
+                        // validate
+                        eds61360.dataSpecificationContent.dataSpecificationIEC61360.Validate(results, this);
+                    }
+                }
+            }
+
+            // more find
+
+            public IEnumerable<Reference> FindAllReferences() {
+                yield break;
             }
         }
 
@@ -3379,7 +3448,7 @@ namespace AdminShellNS
         }
 
         [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/2/0")]
-        public class AdministrationShellEnv
+        public class AdministrationShellEnv : IFindAllReferences
         {
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
             public string schemaLocation =
@@ -3752,6 +3821,29 @@ namespace AdminShellNS
                 return (FindConceptDescription(l));
             }
 
+            public IEnumerable<Reference> FindAllReferences()
+            {
+                if (this.AdministrationShells != null)
+                    foreach (var aas in this.AdministrationShells)
+                        foreach (var r in aas.FindAllReferences())
+                            yield return r;
+
+                if (this.Assets != null)
+                    foreach (var asset in this.Assets)
+                        foreach (var r in asset.FindAllReferences())
+                            yield return r;
+
+                if (this.Submodels != null)
+                    foreach (var sm in this.Submodels)
+                        foreach (var r in sm.FindAllReferences())
+                            yield return r;
+
+                if (this.ConceptDescriptions != null)
+                    foreach (var cd in this.ConceptDescriptions)
+                        foreach (var r in cd.FindAllReferences())
+                            yield return r;
+            }
+
             // creators
 
             private void CopyConceptDescriptionsFrom(
@@ -3877,6 +3969,56 @@ namespace AdminShellNS
                         sme.semanticId[0].idType = newId.idType;
                         sme.semanticId[0].value = newId.id;
                     }
+
+                    // seems fine
+                    return true;
+                }
+
+                if (typeof(T) == typeof(Submodel))
+                {
+                    // check, if exist or not exist
+                    var smOld = FindSubmodel(oldId);
+                    if (smOld == null || FindSubmodel(newId) != null)
+                        return false;
+
+                    // recurse all possible Referenes in the aas env
+                    foreach (var r in this.FindAllReferences())
+                        if (r != null)
+                            for (int i=0; i<r.Count; i++)
+                                if (r[i].Matches(Key.Submodel, false, oldId.idType, oldId.id, Key.MatchMode.Relaxed))
+                                {
+                                    // directly replace
+                                    r[i].idType = newId.idType;
+                                    r[i].value = newId.id;
+                                }
+
+                    // rename old Submodel
+                    smOld.identification = newId;
+
+                    // seems fine
+                    return true;
+                }
+
+                if (typeof(T) == typeof(Asset))
+                {
+                    // check, if exist or not exist
+                    var assetOld = FindAsset(oldId);
+                    if (assetOld == null || FindAsset(newId) != null)
+                        return false;
+
+                    // recurse all possible Referenes in the aas env
+                    foreach (var r in this.FindAllReferences())
+                        if (r != null)
+                            for (int i = 0; i < r.Count; i++)
+                                if (r[i].Matches(Key.Asset, false, oldId.idType, oldId.id, Key.MatchMode.Relaxed))
+                                {
+                                    // directly replace
+                                    r[i].idType = newId.idType;
+                                    r[i].value = newId.id;
+                                }
+
+                    // rename old Submodel
+                    assetOld.identification = newId;
 
                     // seems fine
                     return true;
@@ -4310,7 +4452,7 @@ namespace AdminShellNS
             public void GetData() { }
 
             // from HasKind
-            [XmlElement(ElementName = "kind")]
+            [XmlElement(ElementName = "kkind")]
             [JsonIgnore]
             public ModelingKind kind = new ModelingKind();
             [XmlIgnore]
@@ -4712,7 +4854,7 @@ namespace AdminShellNS
                 if (submodelElement == null)
                     return ("Null");
                 if (submodelElement is AdminShell.Property) return ("Prop");
-                if (submodelElement is AdminShell.MultiLanguageProperty) return ("Lang");
+                if (submodelElement is AdminShell.MultiLanguageProperty) return ("MLP");
                 if (submodelElement is AdminShell.Range) return ("Rang");
                 if (submodelElement is AdminShell.File) return ("File");
                 if (submodelElement is AdminShell.Blob) return ("Blob");
@@ -4721,7 +4863,7 @@ namespace AdminShellNS
                 // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
                 if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
                 if (submodelElement is AdminShell.Capability) return ("Cap");
-                if (submodelElement is AdminShell.SubmodelElementCollection) return ("Coll");
+                if (submodelElement is AdminShell.SubmodelElementCollection) return ("SMC");
                 if (submodelElement is AdminShell.Operation) return ("Opr");
                 if (submodelElement is AdminShell.Entity) return ("Ent");
                 if (submodelElement is AdminShell.BasicEvent) return ("Evt");
@@ -5164,7 +5306,7 @@ namespace AdminShellNS
         }
 
         public class Submodel : Identifiable, IManageSubmodelElements,
-                                    System.IDisposable, IGetReference, IEnumerateChildren
+                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences
         {
             // for JSON only
             [XmlIgnore]
@@ -5201,7 +5343,7 @@ namespace AdminShellNS
 
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = new SemanticId();            
+            public SemanticId semanticId = new SemanticId();
 
             // from Qualifiable:
             [XmlArray("qualifier")]
@@ -5209,7 +5351,7 @@ namespace AdminShellNS
             public QualifierCollection qualifiers = null;
 
             // from hasDataSpecification:
-            [XmlElement(ElementName = "hasDataSpecification")]
+            [XmlElement(ElementName = "embeddedDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
 
             // from this very class
@@ -5467,6 +5609,33 @@ namespace AdminShellNS
                 base.Validate(results);
                 ModelingKind.Validate(results, kind, this);
                 KeyList.Validate(results, semanticId?.Keys, this);
+            }
+
+            // find
+
+            public IEnumerable<Reference> FindAllReferences()
+            {
+                // not nice: use temp list
+                var temp = new List<Reference>();
+
+                // recurse
+                this.RecurseOnSubmodelElements(null, (state, parents, sme) =>
+                {
+                    if (sme is ReferenceElement re)
+                        if (re.value != null)
+                            temp.Add(re.value);
+                    if (sme is RelationshipElement rl)
+                    {
+                        if (rl.first != null)
+                            temp.Add(rl.first);
+                        if (rl.second != null)
+                            temp.Add(rl.second);
+                    }
+                });
+
+                // now, give back
+                foreach (var r in temp)
+                    yield return r;
             }
         }
 
@@ -6733,5 +6902,5 @@ namespace AdminShellNS
 
     }
 
-#endregion
+    #endregion
 }

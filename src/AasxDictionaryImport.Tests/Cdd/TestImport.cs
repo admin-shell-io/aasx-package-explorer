@@ -80,7 +80,7 @@ namespace AasxDictionaryImport.Cdd.Tests
             var p3Element = c2Coll.value[0].submodelElement;
             Assert.That(p3Element, Is.TypeOf<AdminShellV20.Property>());
             Assert.That(p3Element.idShort, Is.EqualTo("TestProperty1"));
-            // TODO (Robin,2020-09-03): please check
+            // TODO (Robin, 2020-09-03): please check
             Assert.That(p3Element.hasDataSpecification, Is.Not.Null);
             Assert.That(p3Element.hasDataSpecification, Has.Count.EqualTo(1));
 
@@ -94,7 +94,7 @@ namespace AasxDictionaryImport.Cdd.Tests
             var p4Element = c3Coll.value[0].submodelElement;
             Assert.That(p4Element, Is.TypeOf<AdminShellV20.Property>());
             Assert.That(p4Element.idShort, Is.EqualTo("TestProperty2"));
-            // TODO (Robin,2020-09-03): please check
+            // TODO (Robin, 2020-09-03): please check
             Assert.That(p4Element.hasDataSpecification, Is.Not.Null);
             Assert.That(p4Element.hasDataSpecification, Has.Count.EqualTo(1));
         }

@@ -118,7 +118,7 @@ namespace AasxPackageExplorer
         // Highlighting
         //
 
-        public void HightligtStateElement(FrameworkElement fe, bool highlighted)
+        public void HighligtStateElement(FrameworkElement fe, bool highlighted)
         {
             // access
             if (fe == null)
@@ -203,14 +203,14 @@ namespace AasxPackageExplorer
             {
                 if (this.lastHighlightedField == null)
                     return;
-                HightligtStateElement(this.lastHighlightedField, highlighted: false);
+                HighligtStateElement(this.lastHighlightedField, highlighted: false);
             }
             catch { }
             // ReSharper enable EmptyGeneralCatchClause
         }
 
         //
-        // small widget hanlding
+        // small widget handling
         //
 
         public Grid AddSmallGrid(int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
@@ -584,7 +584,7 @@ namespace AasxPackageExplorer
                 if (cb != null && this.highlightField != null && valueHash != null &&
                         this.highlightField.fieldHash == valueHash.Value &&
                         (containingObject == null || containingObject == this.highlightField.containingObject))
-                    this.HightligtStateElement(cb, true);
+                    this.HighligtStateElement(cb, true);
             }
             else
             {
@@ -597,7 +597,7 @@ namespace AasxPackageExplorer
                 if (tb != null && this.highlightField != null && valueHash != null &&
                         this.highlightField.fieldHash == valueHash.Value &&
                         (containingObject == null || containingObject == this.highlightField.containingObject))
-                    this.HightligtStateElement(tb, true);
+                    this.HighligtStateElement(tb, true);
             }
 
             if (auxButton)
@@ -911,7 +911,7 @@ namespace AasxPackageExplorer
                         if (tbLang != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].lang.GetHashCode() &&
                                 (this.highlightField.containingObject == langStr[currentI]))
-                            this.HightligtStateElement(tbLang, true);
+                            this.HighligtStateElement(tbLang, true);
 
                         // str
                         var tbStr = AddSmallTextBoxTo(
@@ -929,7 +929,7 @@ namespace AasxPackageExplorer
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].str.GetHashCode() &&
                                 (this.highlightField.containingObject == langStr[currentI]))
-                            this.HightligtStateElement(tbStr, true);
+                            this.HighligtStateElement(tbStr, true);
 
                         // button [-]
                         repo.RegisterControl(
@@ -1325,7 +1325,7 @@ namespace AasxPackageExplorer
                         if (cbType != null && this.highlightField != null && keys[currentI].type != null &&
                                 this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(cbType, true);
+                            this.HighligtStateElement(cbType, true);
 
                         // local
                         repo.RegisterControl(
@@ -1363,7 +1363,7 @@ namespace AasxPackageExplorer
                         if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
                                 this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(cbIdType, true);
+                            this.HighligtStateElement(cbIdType, true);
 
                         // value
                         var tbValue = AddSmallTextBoxTo(
@@ -1383,7 +1383,7 @@ namespace AasxPackageExplorer
                         if (tbValue != null && this.highlightField != null && keys[currentI].value != null &&
                                 this.highlightField.fieldHash == keys[currentI].value.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(tbValue, true);
+                            this.HighligtStateElement(tbValue, true);
 
                         // button [-]
                         repo.RegisterControl(
@@ -1509,7 +1509,7 @@ namespace AasxPackageExplorer
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
                         }
-                    
+
                     return new ModifyRepo.LambdaActionNone();
                 });
         }
@@ -1546,7 +1546,7 @@ namespace AasxPackageExplorer
 
                         if ((int)buttonNdx == 2 && qualifiers.Count > 0)
                             qualifiers.RemoveAt(qualifiers.Count - 1);
-                        
+
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     });
             }

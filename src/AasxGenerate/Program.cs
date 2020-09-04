@@ -591,7 +591,7 @@ namespace AasxGenerate
 
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "DocuName", 
+                "DocuName",
                 idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -617,7 +617,7 @@ namespace AasxGenerate
 
             // CONCEPT: Range
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "VoltageRange", 
+                "VoltageRange",
                 idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
                 id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei eCl@ss
             {
@@ -643,7 +643,7 @@ namespace AasxGenerate
 
             // CONCEPT: AnnotatedRelationship
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "VerConn", 
+                "VerConn",
                 idType: AdminShellV20.Identification.IRDI,  // immer IRDI für eCl@ss
                 id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei eCl@ss
             {
@@ -927,7 +927,7 @@ namespace AasxGenerate
             // CONCEPT: SetMode
             var theOp = new AdminShellV20.Operation();
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "SetMode", 
+                "SetMode",
                 idType: AdminShellV20.Identification.IRDI,
                 id: "0173-1#02-AAS999#001"))
             {
@@ -947,7 +947,7 @@ namespace AasxGenerate
 
             // CONCEPT: Mode
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "mode", 
+                "mode",
                 idType: AdminShellV20.Identification.IRDI,
                 id: "0173-1#02-AAX777#002"))
             {
@@ -1802,16 +1802,25 @@ namespace AasxGenerate
                         {
                             // execute
                             var fn = args[ai + 1].Trim();
-                            
+                            var recs = new AasValidationRecordList();
+
                             if (fn.ToLower().EndsWith(".xml"))
                             {
                                 Console.Out.WriteLine("Validating file {0} against XSD in schemaV201\\. ..", fn);
-                                Validate(fn);
+                                // Validate(fn);
+
+                                var stream = File.Open(fn, FileMode.Open, FileAccess.Read);
+                                AasSchemaValidation.ValidateXML(recs, stream);
                             }
                             else
                             {
                                 Console.Out.WriteLine("Do not know to handle {0}. Aborting.", fn);
                             }
+
+                            // list recs
+                            Console.Out.WriteLine($"Found {recs.Count} issues:");
+                            foreach (var r in recs)
+                                Console.Out.WriteLine(r.ToString());
 
                             // next command
                             ai += 2;

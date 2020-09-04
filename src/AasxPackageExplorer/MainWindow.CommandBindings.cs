@@ -84,6 +84,12 @@ namespace AasxPackageExplorer
             return res;
         }
 
+        private void CommandExecution_RedrawAll()
+        {
+            // redraw everything
+            RedrawAllAasxElements();
+            RedrawElementView();
+        }
 
         private void CommandBinding_GeneralDispatch(string cmd)
         {
@@ -99,9 +105,8 @@ namespace AasxPackageExplorer
                         ClearAllViews();
                         // create new AASX package
                         thePackageEnv = new AdminShellPackageEnv();
-                        // redraw everything
-                        RedrawAllAasxElements();
-                        RedrawElementView();
+                        // redraw
+                        CommandExecution_RedrawAll();
                     }
                     catch (Exception ex)
                     {
@@ -175,9 +180,9 @@ namespace AasxPackageExplorer
                     try
                     {
                         // preferred format
-                        var prefFmt = AdminShellPackageEnv.PreferredFormat.None;
+                        var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
                         if (dlg.FilterIndex == 2)
-                            prefFmt = AdminShellPackageEnv.PreferredFormat.Json;
+                            prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
                         // save
                         RememberForInitialDirectory(dlg.FileName);
                         thePackageEnv.SaveAs(dlg.FileName, prefFmt: prefFmt);
@@ -229,7 +234,7 @@ namespace AasxPackageExplorer
                     {
                         PackageHelper.SignAll(dlg.FileName);
                     }
-                    if (cmd == "validate")
+                    if (cmd == "validatecertificate")
                     {
                         PackageHelper.Validate(dlg.FileName);
                     }
@@ -495,6 +500,94 @@ namespace AasxPackageExplorer
 
             if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward")
                 CommandBinding_ToolsFind(cmd);
+
+            if (cmd == "checkandfix")
+                CommandBinding_CheckAndFix();
+        }
+
+        public void CommandBinding_CheckAndFix()
+        {
+            // work on package
+            var msgBoxHeadline = "Check, validate and fix ..";
+            var env = this.thePackageEnv?.AasEnv;
+            if (env == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No package/ environment open. Aborting.", msgBoxHeadline,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // try to get results
+            AasValidationRecordList recs = null;
+            try
+            {
+                // validate (logically)
+                recs = env.ValidateAll();
+
+                // validate as XML
+                var ms = new MemoryStream();
+                this.thePackageEnv.SaveAs("noname.xml", true, AdminShellPackageEnv.SerializationFormat.Xml, ms);
+                ms.Flush();
+                ms.Position = 0;
+                AasSchemaValidation.ValidateXML(recs, ms);
+                ms.Close();
+            } catch (Exception ex) {
+                Log.Error(ex, "Checking model contents");
+                MessageBoxFlyoutShow(
+                    "Error while checking model contents. Aborting.", msgBoxHeadline,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // could be nothing
+            if (recs.Count < 1)
+            {
+                MessageBoxFlyoutShow(
+                   "No issues found. Done.", msgBoxHeadline,
+                   MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // prompt for this list
+            var uc = new ShowValidationResultsFlyout();
+            uc.ValidationItems = recs;
+            this.StartFlyoverModal(uc);
+            if (uc.FixSelected)
+            {
+                // fix
+                var fixes = recs.FindAll((r) =>
+                {
+                    var res = uc.DoHint && r.Severity == AasValidationSeverity.Hint
+                        || uc.DoWarning && r.Severity == AasValidationSeverity.Warning
+                        || uc.DoSpecViolation && r.Severity == AasValidationSeverity.SpecViolation
+                        || uc.DoSchemaViolation && r.Severity == AasValidationSeverity.SchemaViolation;
+                    return res;
+                });
+
+                int done = 0;
+                try
+                {
+                    done = env.AutoFix(fixes);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Fixing model contents");
+                    MessageBoxFlyoutShow(
+                        "Error while fixing issues. Aborting.", msgBoxHeadline,
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // info
+                MessageBoxFlyoutShow(
+                   $"Corresponding {done} issues were fixed. Please check the changes and consider saving " +
+                   "with a new filename.", msgBoxHeadline,
+                   MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // redraw
+                CommandExecution_RedrawAll();
+            }
         }
 
         public void CommandBinding_ConnectSecure()

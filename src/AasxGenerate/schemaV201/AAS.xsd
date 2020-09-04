@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This version of the XSD was taken directly from aas-specs on 2020-08-26. -->
-<!-- One modification is tagged with: MIHO. -->
 <schema elementFormDefault="qualified" targetNamespace="http://www.admin-shell.io/aas/2/0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:aas="http://www.admin-shell.io/aas/2/0" xmlns:abac="http://www.admin-shell.io/aas/abac/2/0" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0" xmlns:Q1="http://www.admin-shell.io/aas/2/0">
 	<import namespace="http://www.admin-shell.io/aas/abac/2/0" schemaLocation="AAS_ABAC.xsd"/>
 	<import namespace="http://www.admin-shell.io/IEC61360/2/0" schemaLocation="IEC61360.xsd"/>
@@ -329,11 +327,11 @@
 	</complexType>
 	<complexType name="qualifier_t">
 		<sequence>
-      <group ref="aas:hasSemantics"/> <!-- MIHO: moved this ABOVE the elements -->
 			<element maxOccurs="1" minOccurs="1" name="type" type="aas:qualifierType_t"/>
 			<element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
 			<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
-			<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>			
+			<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
+			<group ref="aas:hasSemantics"/>
 		</sequence>
 	</complexType>
 	<complexType name="qualifierType_t">
@@ -390,12 +388,12 @@
 	</complexType>
 	<complexType name="submodel_t">
 		<sequence>
-      <group ref="aas:identifiable"/>
-      <group ref="aas:hasKind"></group>
+			<group ref="aas:identifiable"/>
+			<group ref="aas:hasKind"></group>
 			<group ref="aas:hasSemantics"></group>
 			<group ref="aas:qualifiable"/>
-      <group ref="aas:hasDataSpecification"/>
-      <element name="submodelElements" type="aas:submodelElements_t"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element name="submodelElements" type="aas:submodelElements_t"/>
 		</sequence>
 	</complexType>
 	<complexType name="submodelElement_t">
@@ -413,11 +411,11 @@
 	<complexType name="submodelElementAbstract_t">
 		<sequence>
 			<group ref="aas:referable"/>
-      <group ref="aas:hasKind"/>
+			<group ref="aas:hasKind"/>
 			<group ref="aas:hasSemantics"/>			
 			<group ref="aas:qualifiable"/>
-      <group ref="aas:hasDataSpecification"/>
-    </sequence>
+			<group ref="aas:hasDataSpecification"/>
+		</sequence>
 	</complexType>
 	<complexType name="submodelElementCollection_t">
 		<complexContent>
@@ -453,9 +451,9 @@
 	<complexType name="view_t">
 		<sequence>
 			<group ref="aas:referable"/>
-      <group ref="aas:hasSemantics"/>
-      <group ref="aas:hasDataSpecification"/>
-      <element name="containedElements" type="aas:containedElements_t" ></element>
+			<group ref="aas:hasSemantics"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element name="containedElements" type="aas:containedElements_t" ></element>
 		</sequence>
 	</complexType>
 	<complexType name="views_t">

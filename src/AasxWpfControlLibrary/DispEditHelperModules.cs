@@ -153,7 +153,8 @@ namespace AasxPackageExplorer
                     new HintCheck(
                         () =>
                         {
-                            return referable.description.langString == null || referable.description.langString.Count < 1;
+                            return referable.description.langString == null
+                            || referable.description.langString.Count < 1;
                         },
                         "Please add some descriptions in your main languages here to help consumers " +
                             "of your Administration shell to understand your intentions."));
@@ -206,7 +207,11 @@ namespace AasxPackageExplorer
             {
                 this.AddKeyValueRef(
                     stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
-                    v => { identifiable.identification.idType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v =>
+                    {
+                        identifiable.identification.idType = v as string;
+                        return new ModifyRepo.LambdaActionNone();
+                    },
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
 
                 this.AddKeyValueRef(
@@ -256,12 +261,22 @@ namespace AasxPackageExplorer
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "version", identifiable.administration, ref identifiable.administration.version, null, repo,
-                    v => { identifiable.administration.version = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    stack, "version", identifiable.administration, ref identifiable.administration.version,
+                    null, repo,
+                    v =>
+                    {
+                        identifiable.administration.version = v as string;
+                        return new ModifyRepo.LambdaActionNone();
+                    });
 
                 this.AddKeyValueRef(
-                    stack, "revision", identifiable.administration, ref identifiable.administration.revision, null, repo,
-                    v => { identifiable.administration.revision = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    stack, "revision", identifiable.administration, ref identifiable.administration.revision,
+                    null, repo,
+                    v =>
+                    {
+                        identifiable.administration.revision = v as string;
+                        return new ModifyRepo.LambdaActionNone();
+                    });
             }
         }
 

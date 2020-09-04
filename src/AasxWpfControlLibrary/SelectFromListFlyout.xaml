@@ -44,7 +44,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <ListBox x:Name="ListBoxPresets" Grid.Row="2" Grid.Column="1" Margin="5,10,5,10" Background="#c0202030" Foreground="White" FontWeight="Bold" FontSize="16" ScrollViewer.VerticalScrollBarVisibility="Auto" MouseDoubleClick="ListBoxPresets_MouseDoubleClick">
         </ListBox>
 
-        <Button x:Name="ButtonSelect" IsDefault="True" Grid.Row="4" Grid.Column="1" Content="Select!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
-
+        <DockPanel x:Name="ButtonsPanel" Grid.Row="4" Grid.Column="1">
+            <Button x:Name="ButtonSelect" IsDefault="True" Content="Select!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="ButtonSelect_Click"/>
+        </DockPanel>
     </Grid>
 </UserControl>

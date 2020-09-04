@@ -92,6 +92,9 @@
     <Compile Include="ProgressBarFlyout.xaml.cs">
       <DependentUpon>ProgressBarFlyout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ShowValidationResultsFlyout.xaml.cs">
+      <DependentUpon>ShowValidationResultsFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SelectFromListFlyout.xaml.cs">
       <DependentUpon>SelectFromListFlyout.xaml</DependentUpon>
     </Compile>
@@ -148,6 +151,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ProgressBarFlyout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ShowValidationResultsFlyout.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

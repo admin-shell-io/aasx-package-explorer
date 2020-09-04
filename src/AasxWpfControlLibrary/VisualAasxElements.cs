@@ -392,7 +392,7 @@ namespace AasxPackageExplorer
             this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
             this.TagFg = Brushes.White;
 
-            this.TagString = "Sub";
+            this.TagString = "SM";
             RefreshFromMainData();
             RestoreFromCache();
         }
@@ -444,7 +444,7 @@ namespace AasxPackageExplorer
             this.TagBg = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070")); ;
             this.TagFg = Brushes.White;
 
-            this.TagString = "SUB";
+            this.TagString = "SM";
             RefreshFromMainData();
             RestoreFromCache();
         }

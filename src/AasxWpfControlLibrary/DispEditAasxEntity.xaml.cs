@@ -58,6 +58,11 @@ namespace AasxPackageExplorer
 
         private CopyPasteBuffer theCopyPaste = null;
 
+        static string PackageSourcePath = "";
+        static string PackageTargetFn = "";
+        static string PackageTargetDir = "/aasx";
+        static bool PackageEmbedAsThumbnail = false;
+
         #region Public events and properties
         //
         // Public events and properties
@@ -167,7 +172,7 @@ namespace AasxPackageExplorer
 
                     if (helper.flyoutProvider != null) helper.flyoutProvider.CloseFlyover();
                 }
-               return new ModifyRepo.LambdaActionNone();
+                return new ModifyRepo.LambdaActionNone();
             });
 
             // Referable
@@ -182,7 +187,7 @@ namespace AasxPackageExplorer
                 stack, asset,
                 Options.Curr.TemplateIdAsset,
                 new DispEditHelperModules.DispEditInjectAction(
-                new string[] { "Input" },
+                new string[] { "Input", "Rename" },
                 (i) =>
                 {
                     if (i == 0)
@@ -198,9 +203,43 @@ namespace AasxPackageExplorer
                                 asset.identification.id = uc.Text;
                                 return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
                             }
-                        }                        
+                        }
+                    }
+                    if (i == 1)
+                    {
+                        var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
+                        uc.Text = asset.identification.id;
+                        if (helper.flyoutProvider != null)
+                        {
+                            helper.flyoutProvider.StartFlyoverModal(uc);
+                            if (uc.Result)
+                            {
+                                var res = false;
+
+                                // ReSharper disable EmptyGeneralCatchClause
+                                try
+                                {
+                                    res = env.RenameIdentifiable<AdminShell.Asset>(
+                                        asset.identification,
+                                        new AdminShell.Identification(
+                                            asset.identification.idType, uc.Text));
+                                }
+                                catch { }
+                                // ReSharper enable EmptyGeneralCatchClause
+
+                                if (!res)
+                                    helper.flyoutProvider.MessageBoxFlyoutShow(
+                                     "The renaming of the Submodel or some referring elements " +
+                                        "has not performed successfully! Please review your inputs and " +
+                                        "the AAS structure for any inconsistencies.",
+                                        "Warning",
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return new ModifyRepo.LambdaActionRedrawAllElements(asset);
+                            }
+                        }
                     }
                     return new ModifyRepo.LambdaActionNone();
+                            
                 }),
                 checkForIri: true);
 
@@ -228,11 +267,6 @@ namespace AasxPackageExplorer
         // --- AAS Env
         //
         //
-
-        static string PackageSourcePath = "";
-        static string PackageTargetFn = "";
-        static string PackageTargetDir = "/aasx";
-        static bool PackageEmbedAsThumbnail = false;
 
         public void DisplayOrEditAasEntityAasEnv(
             AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env,
@@ -294,7 +328,7 @@ namespace AasxPackageExplorer
                     stack, "Entities:", new[] { "Add Asset", "Add AAS", "Add ConceptDescription" }, repo,
                     (buttonNdx) =>
                     {
-                        if (buttonNdx== 0)
+                        if (buttonNdx == 0)
                         {
                             var asset = new AdminShell.Asset();
                             env.Assets.Add(asset);
@@ -314,7 +348,7 @@ namespace AasxPackageExplorer
                             env.ConceptDescriptions.Add(cd);
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -492,7 +526,7 @@ namespace AasxPackageExplorer
                                     }
                                 }
                             }
-                            
+
                             return new ModifyRepo.LambdaActionNone();
                         });
                 }
@@ -530,7 +564,7 @@ namespace AasxPackageExplorer
                                     }
                                 }
                             }
-                            
+
                             return new ModifyRepo.LambdaActionNone();
                         });
                 }
@@ -683,27 +717,27 @@ namespace AasxPackageExplorer
                 helper.AddAction(stack, "Action", new[] { "Delete" }, repo, (buttonNdx) =>
                {
                    if (buttonNdx == 0)
-                        if (helper.flyoutProvider != null &&
-                            MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "Delete selected entity? This operation can not be reverted!", "AASX",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                        {
-                            try
-                            {
-                                package.DeleteSupplementaryFile(psf);
-                                Log.Info(
-                                "Added {0} to pending package items to be deleted. " +
-                                    "A save-operation might be required.", PackageSourcePath);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, "Deleting file in package");
-                            }
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
-                            nextFocus: VisualElementEnvironmentItem.GiveDataObject(
-                                VisualElementEnvironmentItem.ItemType.Package));
-                        }
-                   
+                       if (helper.flyoutProvider != null &&
+                           MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                               "Delete selected entity? This operation can not be reverted!", "AASX",
+                               MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                       {
+                           try
+                           {
+                               package.DeleteSupplementaryFile(psf);
+                               Log.Info(
+                               "Added {0} to pending package items to be deleted. " +
+                                   "A save-operation might be required.", PackageSourcePath);
+                           }
+                           catch (Exception ex)
+                           {
+                               Log.Error(ex, "Deleting file in package");
+                           }
+                           return new ModifyRepo.LambdaActionRedrawAllElements(
+                           nextFocus: VisualElementEnvironmentItem.GiveDataObject(
+                               VisualElementEnvironmentItem.ItemType.Package));
+                       }
+
                    return new ModifyRepo.LambdaActionNone();
                });
             }
@@ -808,7 +842,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
 
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -823,7 +857,7 @@ namespace AasxPackageExplorer
                     new[] { "Copy single entity ", "Copy recursively" }, repo,
                     (buttonNdx) =>
                     {
-                       if (buttonNdx == 0 || buttonNdx == 1)
+                        if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
                             package.AasEnv, "SubmodelRef", package: package,
@@ -886,8 +920,8 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                       
-                       return new ModifyRepo.LambdaActionNone();
+
+                        return new ModifyRepo.LambdaActionNone();
                     });
 
                 // let the user control the number of entities
@@ -899,8 +933,8 @@ namespace AasxPackageExplorer
                         aas.AddView(view);
                         return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: view);
                     }
-                    
-                   return new ModifyRepo.LambdaActionNone();
+
+                    return new ModifyRepo.LambdaActionNone();
                 });
             }
 
@@ -915,7 +949,7 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityIdentifiable(
                 stack, aas,
                 Options.Curr.TemplateIdAas,
-                null, 
+                null,
                 checkForIri: true);
 
             // use some asset reference
@@ -1128,7 +1162,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -1162,7 +1196,7 @@ namespace AasxPackageExplorer
                                 env, (smref != null) ? (object)smref : (object)submodel, targets);
                             // ReSharper enable RedundantCast
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -1208,10 +1242,48 @@ namespace AasxPackageExplorer
                 // Identifiable
                 helper.DisplayOrEditEntityIdentifiable(
                     stack, submodel,
-                    (submodel.kind.kind.Trim().ToLower() == "template") 
+                    (submodel.kind.kind.Trim().ToLower() == "template")
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
-                    null,
+                    new DispEditHelperModules.DispEditInjectAction(
+                        new string[] { "Rename" },
+                        (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
+                                uc.Text = submodel.identification.id;
+                                if (helper.flyoutProvider != null)
+                                {
+                                    helper.flyoutProvider.StartFlyoverModal(uc);
+                                    if (uc.Result)
+                                    {
+                                        var res = false;
+
+                                        // ReSharper disable EmptyGeneralCatchClause
+                                        try
+                                        {
+                                            res = env.RenameIdentifiable<AdminShell.Submodel>(
+                                                submodel.identification,
+                                                new AdminShell.Identification(
+                                                    submodel.identification.idType, uc.Text));
+                                        }
+                                        catch { }
+                                        // ReSharper enable EmptyGeneralCatchClause
+
+                                        if (!res)
+                                            helper.flyoutProvider.MessageBoxFlyoutShow(
+                                             "The renaming of the Submodel or some referring elements " + 
+                                                "has not performed successfully! Please review your inputs and " +
+                                                "the AAS structure for any inconsistencies.",
+                                                "Warning",
+                                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                                        return new ModifyRepo.LambdaActionRedrawAllElements(smref);
+                                    }
+                                }
+                            }
+                            return new ModifyRepo.LambdaActionNone();
+                        }),
                     checkForIri: submodel.kind != null && submodel.kind.IsInstance);
 
                 // HasKind
@@ -1230,7 +1302,8 @@ namespace AasxPackageExplorer
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).");
 
-                // Qualifiable: qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
+                // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
+                // That is: multiple x multiple keys!
                 helper.DisplayOrEditEntityQualifierCollection(
                     stack, submodel.qualifiers,
                     (q) => { submodel.qualifiers = q; });
@@ -1264,14 +1337,14 @@ namespace AasxPackageExplorer
 
             // Referable
             helper.DisplayOrEditEntityReferable(
-                stack, cd, 
+                stack, cd,
                 new DispEditHelperModules.DispEditInjectAction(
-                    new[] {"Sync"},
-                    new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort."},
+                    new[] { "Sync" },
+                    new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
                     (v) =>
                     {
                         ModifyRepo.LambdaAction la = new ModifyRepo.LambdaActionNone();
-                        if ((int) v != 0)
+                        if ((int)v != 0)
                             return la;
 
                         var ds = cd.GetIEC61360();
@@ -1353,7 +1426,7 @@ namespace AasxPackageExplorer
                 stack, hintMode,
                 new[] {
                     new HintCheck(
-                        () => { return esc != null && (esc.dataSpecification == null 
+                        () => { return esc != null && (esc.dataSpecification == null
                             || !esc.dataSpecification.MatchesExactlyOneKey(
                                 AdminShell.DataSpecificationIEC61360.GetKey())); },
                         "IEC61360 content present, but data specification missing. Please add according reference.",
@@ -1383,14 +1456,14 @@ namespace AasxPackageExplorer
                         breakIfTrue: true),
                 });
             if (helper.SafeguardAccess(
-                    stack, repo, cd.IEC61360Content, "embeddedDataSpecification:", 
+                    stack, repo, cd.IEC61360Content, "embeddedDataSpecification:",
                     "Create IEC61360 data specification content",
                     v =>
                     {
                         cd.IEC61360Content = new AdminShell.DataSpecificationIEC61360();
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
-            {               
+            {
                 helper.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.IEC61360Content);
             }
         }
@@ -1546,7 +1619,7 @@ namespace AasxPackageExplorer
                                         }
                                     }
                                 }
-                                
+
                                 return new ModifyRepo.LambdaActionNone();
                             });
                     }
@@ -1770,7 +1843,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawAllElements(
                                 nextFocus: smw2.submodelElement, isExpanded: true);
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
             }
@@ -1910,7 +1983,7 @@ namespace AasxPackageExplorer
                             // redraw
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -1933,7 +2006,7 @@ namespace AasxPackageExplorer
                         {
                             helper.ImportEclassCDsForTargets(env, sme, targets);
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -2036,7 +2109,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
             }
@@ -2140,7 +2213,7 @@ namespace AasxPackageExplorer
                                     }
                                 }
                             }
-                            
+
                             return new ModifyRepo.LambdaActionNone();
                         });
 
@@ -2238,7 +2311,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -2314,7 +2387,8 @@ namespace AasxPackageExplorer
                     "a company / consortia repository.",
                     checkForCD: true);
 
-                // Qualifiable: qualifiers are MULTIPLE structures with possible references. That is: multiple x multiple keys!
+                // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
+                // That is: multiple x multiple keys!
                 helper.DisplayOrEditEntityQualifierCollection(
                     stack, sme.qualifiers,
                     (q) => { sme.qualifiers = q; });
@@ -2806,7 +2880,7 @@ namespace AasxPackageExplorer
                             }
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: view);
                         }
-                        
+
                         return new ModifyRepo.LambdaActionNone();
                     });
             }

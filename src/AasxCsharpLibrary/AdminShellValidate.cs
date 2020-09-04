@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace AdminShellNS
 {
     public enum AasValidationSeverity
     {
-        Hint, Warning, SpecViolation, SchemaViolation
+        Hint, Warning, SpecViolation, SchemaViolation, Serialization
     }
 
     public enum AasValidationAction
     {
         No, ToBeDeleted
+    }
+
+    public class AasValidationStringRecord
+    {
+        public string Severity = "";
+        public string Source = "";
+
     }
 
     public class AasValidationRecord
@@ -24,7 +34,7 @@ namespace AdminShellNS
 
         public Action Fix = null;
 
-        public AasValidationRecord(AasValidationSeverity Severity, AdminShell.Referable Source, 
+        public AasValidationRecord(AasValidationSeverity Severity, AdminShell.Referable Source,
             string Message, Action Fix = null)
         {
             this.Severity = Severity;
@@ -35,82 +45,119 @@ namespace AdminShellNS
 
         public override string ToString()
         {
-            return $"[{Severity.ToString()}] in {""+Source?.ToString()}: {"" + Message}";
+            return $"[{Severity.ToString()}] in {"" + Source?.ToString()}: {"" + Message}";
         }
+
+        public string DisplaySeverity { get { return "" + Severity.ToString(); } }
+        public string DisplaySource { get { return "" + ((Source != null) ? Source.ToString() 
+                    : "(whole content)"); } }
+        public string DisplayMessage { get { return "" + Message?.ToString(); } }
     }
 
     public class AasValidationRecordList : List<AasValidationRecord>
     {
     }
 
-#if dcdscdsc
-    public class AdminShellValidate
+    public class AasSchemaValidation
     {
-        private static void ValidateReferable(AasValidationRecordList results, AdminShell.Referable rf)
+        public enum SerializationFormat { XML, JSON }
+
+        public static string[] GetSchemaResources(SerializationFormat fmt)
         {
-            // access
-            if (results == null || rf == null)
-                return;
-
-            // check
-            if (rf.idShort == null || rf.idShort.Trim() == "")
-                results.Add(new AasValidationRecord(
-                    AasValidationSeverity.SpecViolation, rf,
-                    AasValidationFinding.ReferableNoIdShort,
-                    "Referable: missing idShort",
-                    () => {
-                        rf.idShort = "TO_FIX";
-                    }));
-        }
-
-        private static void ValidateCD(AasValidationRecordList results, AdminShell.ConceptDescription cd)
-        {
-            // access
-            if (results == null || cd == null)
-                return;
-
-            // check CD itself
-            ValidateReferable(results, cd);
-
-            // check IEC61360 spec
-            var ds = cd?.embeddedDataSpecification.dataSpecificationContent?.dataSpecificationIEC61360;
-            if (ds != null)
+            if (fmt == SerializationFormat.XML)
             {
-                if (ds.preferredName == null || ds.preferredName.langString == null
-                    || ds.preferredName.langString.Count < 1)
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd, 
-                        AasValidationFinding.CdMissingPreferredName, 
-                        "ConceptDescription: missing preferredName",
-                        () => {
-                            ds.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
-                                AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
-                        }));
-
-                if (ds.shortName != null && ( ds.shortName.langString == null
-                    || ds.shortName.langString.Count < 1))
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
-                        AasValidationFinding.CdEmptyShortName,
-                        "ConceptDescription: existing shortName with missing langString",
-                        () => {
-                            ds.shortName = null;
-                        }));
-
-                if (ds.definition != null && (ds.definition.langString == null
-                    || ds.definition.langString.Count < 1))
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
-                        AasValidationFinding.CdEmptyShortName,
-                        "ConceptDescription: existing definition with missing langString",
-                        () => {
-                            ds.definition = null;
-                        }));
+                return new[]
+                {
+                "AdminShellNS.Resources.schemaV201.AAS.xsd",
+                "AdminShellNS.Resources.schemaV201.AAS_ABAC.xsd",
+                "AdminShellNS.Resources.schemaV201.IEC61360.xsd"
+            };
             }
+            return null;
         }
 
-        
-    }
+        public static int ValidateXML(AasValidationRecordList recs, Stream xmlContent)
+        {
+            // see: AasxCsharpLibrary.Tests/TestLoadSave.cs
+            var newRecs = new AasValidationRecordList();
 
-#endif
+            // access
+            if (recs == null || xmlContent == null)
+                return -1;
+
+            // Load the schema files
+            var files = GetSchemaResources(SerializationFormat.XML);
+            if (files == null)
+                return -1;
+
+            var xmlSchemaSet = new System.Xml.Schema.XmlSchemaSet();
+            xmlSchemaSet.XmlResolver = new System.Xml.XmlUrlResolver();
+
+            try
+            {
+                Assembly myAssembly = Assembly.GetExecutingAssembly();
+                foreach (var schemaFn in files)
+                {
+                    using (Stream schemaStream = myAssembly.GetManifestResourceStream(schemaFn))
+                    {
+                        using (XmlReader schemaReader = XmlReader.Create(schemaStream))
+                        {
+                            xmlSchemaSet.Add(null, schemaReader);
+                        }
+                    }
+                }
+            } catch (Exception ex)
+            {
+                throw new FileNotFoundException("ValidateXML: Error accessing embedded resource schema files: " +
+                    ex.Message);
+            }
+
+            // set up messages
+            xmlSchemaSet.ValidationEventHandler += (object sender, System.Xml.Schema.ValidationEventArgs e) => {
+                newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null, "" + e.Message));
+            };
+
+            // compile
+            try { 
+                xmlSchemaSet.Compile();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("ValidateXML: Error compiling schema files: " +
+                    ex.Message);
+            }
+
+            if (newRecs.Count > 0)
+            {
+                var parts = new List<string> { $"Failed to compile the schema files:" };
+                parts.AddRange(newRecs.Select<AasValidationRecord, string>((r) => r.Message));
+                throw new InvalidOperationException(string.Join(Environment.NewLine, parts));
+            }
+
+            // load/ validate on same records
+            var settings = new System.Xml.XmlReaderSettings();
+            settings.ValidationType = System.Xml.ValidationType.Schema;
+            settings.Schemas = xmlSchemaSet;
+
+            settings.ValidationEventHandler +=
+                (object sender, System.Xml.Schema.ValidationEventArgs e) =>
+                {
+                    newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, 
+                        null, "XML: " + e.Message));
+                };
+
+            // use the xml stream
+            using (var reader = System.Xml.XmlReader.Create(xmlContent, settings))
+            {
+                while (reader.Read())
+                {
+                    // Invoke callbacks
+                };
+            }
+
+            // result
+            recs.AddRange(newRecs);
+            return newRecs.Count;
+        }
+    }
 }
