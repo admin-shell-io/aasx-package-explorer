@@ -12,3 +12,4 @@ standardize
 verbosify
 log
 integrate
+enhance
