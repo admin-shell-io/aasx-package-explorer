@@ -40,8 +40,7 @@ function Main
         Write-Host "--- Verifying the message: ---"
         Write-Host $message
         Write-Host "---"
-        powershell `
-            -File OpinionatedCommitMessage.ps1 `
+        & ./OpinionatedCommitMessage.ps1 `
             -message $message `
             -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
     }
