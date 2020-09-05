@@ -1010,11 +1010,11 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().definition.langString, "Definition")));
+                    CreateLangStrContainer(concept.GetIEC61360().definition, "Definition")));
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().preferredName.langString, "PreferredName")));
+                    CreateLangStrContainer(concept.GetIEC61360().preferredName, "PreferredName")));
 
             refs.Add(
                 CreateReference(

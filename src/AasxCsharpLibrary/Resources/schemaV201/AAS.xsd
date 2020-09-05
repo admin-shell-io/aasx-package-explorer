@@ -327,11 +327,12 @@
 	</complexType>
 	<complexType name="qualifier_t">
 		<sequence>
+      <!-- MIHO: because of Referable, move this to top! -->
+      <group ref="aas:hasSemantics"/>
 			<element maxOccurs="1" minOccurs="1" name="type" type="aas:qualifierType_t"/>
 			<element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
 			<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
 			<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
-			<group ref="aas:hasSemantics"/>
 		</sequence>
 	</complexType>
 	<complexType name="qualifierType_t">

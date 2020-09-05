@@ -1678,13 +1678,13 @@ namespace AasOpcUaServer
                 if (ds.preferredName != null && ds.preferredName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "PreferredName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.preferredName?.langString),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.preferredName),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.shortName != null && ds.shortName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "ShortName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.shortName?.langString),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.shortName),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.unit != null)
@@ -1709,7 +1709,7 @@ namespace AasOpcUaServer
 
                 if (ds.definition != null && ds.definition.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "Definition",
-                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition?.langString),
+                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.valueFormat != null)

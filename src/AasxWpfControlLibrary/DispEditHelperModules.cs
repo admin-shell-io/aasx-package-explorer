@@ -587,7 +587,7 @@ namespace AasxPackageExplorer
                         dsiec.preferredName = new AdminShell.LangStringSetIEC61360();
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName.langString, repo);
+                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName, repo);
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -611,7 +611,7 @@ namespace AasxPackageExplorer
                         dsiec.shortName = new AdminShell.LangStringSetIEC61360();
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "shortName", dsiec.shortName.langString, repo);
+                this.AddKeyListLangStr(stack, "shortName", dsiec.shortName, repo);
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -727,7 +727,7 @@ namespace AasxPackageExplorer
                         dsiec.definition = new AdminShell.LangStringSetIEC61360();
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "definition", dsiec.definition.langString, repo);
+                this.AddKeyListLangStr(stack, "definition", dsiec.definition, repo);
         }
 
         //

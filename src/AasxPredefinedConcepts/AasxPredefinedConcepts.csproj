@@ -77,5 +77,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\VDI2770.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="README\Old_JSON_ConceptDescriptions.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

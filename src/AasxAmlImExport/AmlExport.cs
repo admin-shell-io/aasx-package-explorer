@@ -901,10 +901,10 @@ namespace AasxAmlImExport
 
                 // specific data
                 SetLangStr(
-                    dest61360, source61360.preferredName?.langString, "preferredName",
+                    dest61360, source61360.preferredName, "preferredName",
                     AmlConst.Attributes.CD_DSC61360_PreferredName);
                 SetLangStr(
-                    dest61360, source61360.shortName?.langString, "shortName",
+                    dest61360, source61360.shortName, "shortName",
                     AmlConst.Attributes.CD_DSC61360_ShortName);
                 if (source61360.unit != null)
                     AppendAttributeNameAndRole(
@@ -928,7 +928,7 @@ namespace AasxAmlImExport
                     AppendAttributeNameAndRole(
                         dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, source61360.dataType);
                 SetLangStr(
-                    dest61360, source61360.definition?.langString, "definition",
+                    dest61360, source61360.definition, "definition",
                     AmlConst.Attributes.CD_DSC61360_Definition);
             }
         }

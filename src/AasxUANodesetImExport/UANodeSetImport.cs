@@ -806,12 +806,10 @@ namespace AasxUANodesetImExport
                             {
                                 UANode obj = findNode(_refref.Value);
                                 if (obj.BrowseName == "1:Definition" && dsc != null)
-                                    dsc.definition
-                                        .langString = getDescription(obj);
+                                    dsc.definition = new LangStringSetIEC61360(getDescription(obj));
 
                                 if (obj.BrowseName == "1:PreferredName" && dsc != null)
-                                    dsc.preferredName
-                                        .langString = getDescription(obj);
+                                    dsc.preferredName = new LangStringSetIEC61360(getDescription(obj));
                             }
                         }
                     }

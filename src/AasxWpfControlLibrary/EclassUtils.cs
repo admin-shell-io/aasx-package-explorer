@@ -580,14 +580,14 @@ namespace AasxPackageExplorer
                 {
                     if (ds.preferredName == null)
                         ds.preferredName = new AdminShell.LangStringSetIEC61360();
-                    ds.preferredName.langString.Add(ls);
+                    ds.preferredName.Add(ls);
                 });
 
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
                 {
                     if (ds.definition == null)
                         ds.definition = new AdminShell.LangStringSetIEC61360();
-                    ds.definition.langString.Add(ls);
+                    ds.definition.Add(ls);
                 });
 
                 // <domain xsi:type="ontoml:REAL_MEASURE_TYPE_Type">
@@ -620,7 +620,7 @@ namespace AasxPackageExplorer
                     if (ds.preferredName != null && !ds.preferredName.IsEmpty)
                     {
                         var found = false;
-                        foreach (var pn in ds.preferredName.langString)
+                        foreach (var pn in ds.preferredName)
                         {
                             // let have "en" always have precedence!
                             if (found && !pn.lang.ToLower().Trim().Contains("en"))

@@ -291,7 +291,7 @@ namespace AasxDictionaryImport
             {
                 var value = Get(lang);
                 if (value.Length > 0)
-                    set.langString.Add(new AdminShellV20.LangStr(lang, value));
+                    set.Add(new AdminShellV20.LangStr(lang, value));
             }
             return set;
         }

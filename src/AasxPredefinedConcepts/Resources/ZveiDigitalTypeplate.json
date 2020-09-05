@@ -42,47 +42,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Herstellername"
-                },
-                {
-                  "language": "EN",
-                  "text": "Manufacturer Name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Herstellername"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Manufacturer Name"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
-                },
-                {
-                  "language": "EN",
-                  "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Manufacturer Name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Manufacturer Name"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+            },
+            {
+              "language": "EN",
+              "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -106,47 +98,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Manufacturer product designation"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerproduktbezeichnung"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Manufacturer product designation"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ManufacturerTypName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
-                },
-                {
-                  "language": "EN",
-                  "text": "Short description of the product (short text)"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Herstellerproduktbezeichnung"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ManufacturerTypName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Kurze Beschreibung des Produktes (Kurztext)"
+            },
+            {
+              "language": "EN",
+              "text": "Short description of the product (short text)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -170,47 +154,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "PhysicalAddress"
-                },
-                {
-                  "language": "DE",
-                  "text": "Physische Adresse"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "PhysicalAddress"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "PhysicalAddress"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sammlung für reale physische Adresse"
-                },
-                {
-                  "language": "EN",
-                  "text": "Collection for real physical address"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Physische Adresse"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "PhysicalAddress"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sammlung für reale physische Adresse"
+            },
+            {
+              "language": "EN",
+              "text": "Collection for real physical address"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -237,47 +213,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Landeskennung"
-                },
-                {
-                  "language": "EN",
-                  "text": "Country code"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Landeskennung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Country code"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Vereinbartes Merkmal zur eindeutigen Identifizierung eines Landes"
-                },
-                {
-                  "language": "EN",
-                  "text": "agreed upon symbol for unambiguous identification of a country"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Country code"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Country code"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Vereinbartes Merkmal zur eindeutigen Identifizierung eines Landes"
+            },
+            {
+              "language": "EN",
+              "text": "agreed upon symbol for unambiguous identification of a country"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -301,47 +269,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Strasse"
-                },
-                {
-                  "language": "EN",
-                  "text": "Street"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Strasse"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Street"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Name der Strasse und Hausnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "Street name and house number"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Street"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Street"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Name der Strasse und Hausnummer"
+            },
+            {
+              "language": "EN",
+              "text": "Street name and house number"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -365,47 +325,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Zip"
-                },
-                {
-                  "language": "DE",
-                  "text": "Postleitzahl"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Zip"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "PostalCode"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "ZIP code of address"
-                },
-                {
-                  "language": "DE",
-                  "text": "Postleitzahl der Anschrift"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Postleitzahl"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "PostalCode"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "ZIP code of address"
+            },
+            {
+              "language": "DE",
+              "text": "Postleitzahl der Anschrift"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -429,47 +381,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Ort"
-                },
-                {
-                  "language": "EN",
-                  "text": "City/town"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Ort"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "City/town"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Town or city of the company"
-                },
-                {
-                  "language": "DE",
-                  "text": "Ortsangabe"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "City/town"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "City/town"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Town or city of the company"
+            },
+            {
+              "language": "DE",
+              "text": "Ortsangabe"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -493,47 +437,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "state/county"
-                },
-                {
-                  "language": "DE",
-                  "text": "Bundesland"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "state/county"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "StateCounty"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Bundesland"
-                },
-                {
-                  "language": "EN",
-                  "text": "state/county"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Bundesland"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "StateCounty"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Bundesland"
+            },
+            {
+              "language": "EN",
+              "text": "state/county"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -557,47 +493,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Manufacturer product family"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerproduktfamilie"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Manufacturer product family"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "TypClass"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "2. Ebene einer 3 stufigen herstellerspezifischen Produkthierarchie"
-                },
-                {
-                  "language": "EN",
-                  "text": "2nd level of a 3 level manufacturer specific product hierarchy"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Herstellerproduktfamilie"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "TypClass"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "2. Ebene einer 3 stufigen herstellerspezifischen Produkthierarchie"
+            },
+            {
+              "language": "EN",
+              "text": "2nd level of a 3 level manufacturer specific product hierarchy"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -621,47 +549,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Serial number"
-                },
-                {
-                  "language": "DE",
-                  "text": "Seriennummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Serial number"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "InstanceId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "eindeutige Zahlen- und Buchstabenkombination mit der das Gerät nach seiner Herstellung identifiziert ist"
-                },
-                {
-                  "language": "EN",
-                  "text": "unique combination of numbers and letters used to identify the device once it has been manufactured"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Seriennummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "InstanceId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "eindeutige Zahlen- und Buchstabenkombination mit der das Gerät nach seiner Herstellung identifiziert ist"
+            },
+            {
+              "language": "EN",
+              "text": "unique combination of numbers and letters used to identify the device once it has been manufactured"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -685,47 +605,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Batch number"
-                },
-                {
-                  "language": "DE",
-                  "text": "Chargen-Nummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Batch number"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ChargeId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eine vom Hersteller eines Stoffes vergebene Nummer zur Identifikation einer Charge"
-                },
-                {
-                  "language": "EN",
-                  "text": "Number assigned by the manufacturer of a material to identify the manufacturer's batch"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Chargen-Nummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ChargeId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eine vom Hersteller eines Stoffes vergebene Nummer zur Identifikation einer Charge"
+            },
+            {
+              "language": "EN",
+              "text": "Number assigned by the manufacturer of a material to identify the manufacturer's batch"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -749,47 +661,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Produkt Ursprungsland"
-                },
-                {
-                  "language": "EN",
-                  "text": "Product country of origin"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Produkt Ursprungsland"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "CountryOfOrigin"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Land in dem das Produkt hergestellt wurde (Hersteller Land)"
-                },
-                {
-                  "language": "EN",
-                  "text": "Country in which the product is manufactured (manufacturer country)"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Product country of origin"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "CountryOfOrigin"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Land in dem das Produkt hergestellt wurde (Hersteller Land)"
+            },
+            {
+              "language": "EN",
+              "text": "Country in which the product is manufactured (manufacturer country)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -813,47 +717,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Year of construction"
-                },
-                {
-                  "language": "DE",
-                  "text": "Baujahr"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Year of construction"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "YearOfConstruction"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Jahreszahl als Datumsangabe für die Fertigstellung des Objektes"
-                },
-                {
-                  "language": "EN",
-                  "text": "Year as completion date of object"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Baujahr"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "YearOfConstruction"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Jahreszahl als Datumsangabe für die Fertigstellung des Objektes"
+            },
+            {
+              "language": "EN",
+              "text": "Year as completion date of object"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -877,47 +773,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Produktkennzeichnung"
-                },
-                {
-                  "language": "EN",
-                  "text": "Product Marking"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Produktkennzeichnung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ProductMarking"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sammlungsdatei für Produktkennzeichnung"
-                },
-                {
-                  "language": "EN",
-                  "text": "Collection file for product marking"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Product Marking"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ProductMarking"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sammlungsdatei für Produktkennzeichnung"
+            },
+            {
+              "language": "EN",
+              "text": "Collection file for product marking"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -941,47 +829,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "CE-Kennzeichnung vorhanden"
-                },
-                {
-                  "language": "EN",
-                  "text": "CE- qualification present"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "CE-Kennzeichnung vorhanden"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "CEMarkingPresent"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "BOOLEAN",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "whether CE- qualification is present"
-                },
-                {
-                  "language": "DE",
-                  "text": "Angabe, ob CE-Kennzeichnung vorhanden ist"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "CE- qualification present"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "CEMarkingPresent"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "BOOLEAN",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "whether CE- qualification is present"
+            },
+            {
+              "language": "DE",
+              "text": "Angabe, ob CE-Kennzeichnung vorhanden ist"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1005,47 +885,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Enthaltene Doku. Datei"
-                },
-                {
-                  "language": "EN",
-                  "text": "Embedded Doc. file"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Enthaltene Doku. Datei"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "File"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
-                },
-                {
-                  "language": "EN",
-                  "text": "Reference/ BLOB to embedded documentation file."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Embedded Doc. file"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "File"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
+            },
+            {
+              "language": "EN",
+              "text": "Reference/ BLOB to embedded documentation file."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -1077,47 +949,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": " Kennzeichnung (RCM) vorhanden"
-                },
-                {
-                  "language": "EN",
-                  "text": "RCM labeling present"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": " Kennzeichnung (RCM) vorhanden"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "CRUUSLabelingPresent"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "BOOLEAN",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "indication whether the product is equipped with a specified RCM labeling"
-                },
-                {
-                  "language": "DE",
-                  "text": "Angabe, ob das Produkt mit einer spezifizierten RCM-Kennzeichnung ausgestattet ist"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "RCM labeling present"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "CRUUSLabelingPresent"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "BOOLEAN",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "indication whether the product is equipped with a specified RCM labeling"
+            },
+            {
+              "language": "DE",
+              "text": "Angabe, ob das Produkt mit einer spezifizierten RCM-Kennzeichnung ausgestattet ist"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1171,47 +1035,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "GLN of manufacturer"
-                },
-                {
-                  "language": "DE",
-                  "text": "GLN des Herstellers"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "GLN of manufacturer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "GLN of manufacturer"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "international eindeutige Nummer für den Geräte- oder Produkthersteller sowie für den Standort"
-                },
-                {
-                  "language": "EN",
-                  "text": "internationally unique identification number for the manufacturer of the device or the product and for the physical location"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "GLN des Herstellers"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "GLN of manufacturer"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "international eindeutige Nummer für den Geräte- oder Produkthersteller sowie für den Standort"
+            },
+            {
+              "language": "EN",
+              "text": "internationally unique identification number for the manufacturer of the device or the product and for the physical location"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1235,47 +1091,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Supplier of the identifier"
-                },
-                {
-                  "language": "DE",
-                  "text": "Anbieter der Identifikationsnummer für Hersteller"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Supplier of the identifier"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Supplier of the identifier"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
-                },
-                {
-                  "language": "DE",
-                  "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Anbieter der Identifikationsnummer für Hersteller"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Supplier of the identifier"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
+            },
+            {
+              "language": "DE",
+              "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1299,47 +1147,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "product article number of manufacturer"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerartikelnummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "product article number of manufacturer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "MAN_PROD_NUM"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "eindeutiger Bestellschlüssel des Herstellers"
-                },
-                {
-                  "language": "EN",
-                  "text": "unique product identifier of the manufacturer"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Herstellerartikelnummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "MAN_PROD_NUM"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "eindeutiger Bestellschlüssel des Herstellers"
+            },
+            {
+              "language": "EN",
+              "text": "unique product identifier of the manufacturer"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1368,47 +1208,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Manufacturer product description"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerproduktbeschreibung"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Manufacturer product description"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Manufacturer product description"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
-                },
-                {
-                  "language": "EN",
-                  "text": "Description of the product, it's technical features and implementation if needed (long text)"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Herstellerproduktbeschreibung"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Manufacturer product description"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
+            },
+            {
+              "language": "EN",
+              "text": "Description of the product, it's technical features and implementation if needed (long text)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1435,47 +1267,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "name of supplier"
-                },
-                {
-                  "language": "DE",
-                  "text": "Lieferantenname"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "name of supplier"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "name of supplier"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Name des Lieferanten, welcher dem Kunden ein Produkt oder eine Dienstleistung bereitstellt"
-                },
-                {
-                  "language": "EN",
-                  "text": "name of supplier which provides the customer with a product or a service"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Lieferantenname"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "name of supplier"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Name des Lieferanten, welcher dem Kunden ein Produkt oder eine Dienstleistung bereitstellt"
+            },
+            {
+              "language": "EN",
+              "text": "name of supplier which provides the customer with a product or a service"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1499,47 +1323,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "GLN of supplier"
-                },
-                {
-                  "language": "DE",
-                  "text": "GLN des Lieferanten"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "GLN of supplier"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "GLN of supplier"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "international eindeutige Nummer für den Geräte- oder Produktlieferanten sowie für den Standort"
-                },
-                {
-                  "language": "EN",
-                  "text": "internationally unique identification number for the supplier of the device or the product and for the physical location"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "GLN des Lieferanten"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "GLN of supplier"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "international eindeutige Nummer für den Geräte- oder Produktlieferanten sowie für den Standort"
+            },
+            {
+              "language": "EN",
+              "text": "internationally unique identification number for the supplier of the device or the product and for the physical location"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1563,47 +1379,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "SupplierIdProvider"
-                },
-                {
-                  "language": "DE",
-                  "text": "Anbieter der Identifikationsnummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "SupplierIdProvider"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SupplierIdProvider"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Anbieter der Identifikationsnummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SupplierIdProvider"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "DUNS-Nr., Lieferantennummer oder andere Nummer zur Identifikation eines Anbieters bzw. Lieferanten der Identifikationsnummer"
+            },
+            {
+              "language": "EN",
+              "text": "DUNS-no., supplier number, or other number as identifier of an offeror or supplier of the identification"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1627,47 +1435,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "product article number of supplier"
-                },
-                {
-                  "language": "DE",
-                  "text": "Lieferantenartikelnummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "product article number of supplier"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "product article number of supplier"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "eindeutiger Bestellschlüssel des Lieferanten"
-                },
-                {
-                  "language": "EN",
-                  "text": "unique product order identifier of the supplier"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Lieferantenartikelnummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "product article number of supplier"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "eindeutiger Bestellschlüssel des Lieferanten"
+            },
+            {
+              "language": "EN",
+              "text": "unique product order identifier of the supplier"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1691,47 +1491,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Supplier product designation"
-                },
-                {
-                  "language": "DE",
-                  "text": "Lieferantenproduktbezeichnung"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Supplier product designation"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SupplierTypName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
-                },
-                {
-                  "language": "EN",
-                  "text": "Short description of the product (short text)"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Lieferantenproduktbezeichnung"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SupplierTypName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Kurze Beschreibung des Produktes (Kurztext)"
+            },
+            {
+              "language": "EN",
+              "text": "Short description of the product (short text)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1755,47 +1547,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Supplier product description"
-                },
-                {
-                  "language": "DE",
-                  "text": "Lieferantenproduktbeschreibung"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Supplier product description"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Supplier product description"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
-                },
-                {
-                  "language": "EN",
-                  "text": "Description of the product, it's technical features and implementation if needed (long text)"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Lieferantenproduktbeschreibung"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Supplier product description"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Beschreibung des Produktes, seiner technischen Eigenschaften und ggf. seiner Anwendung (Langtext)"
+            },
+            {
+              "language": "EN",
+              "text": "Description of the product, it's technical features and implementation if needed (long text)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1819,47 +1603,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "classification system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Klassifizierungssystem"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "classification system"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ClassificationSystem"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Klassifizierungssystem"
-                },
-                {
-                  "language": "EN",
-                  "text": "Classification System"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Klassifizierungssystem"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ClassificationSystem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Klassifizierungssystem"
+            },
+            {
+              "language": "EN",
+              "text": "Classification System"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1883,47 +1659,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "SecondaryKeyTyp"
-                },
-                {
-                  "language": "DE",
-                  "text": "Typnummer des IT Systems"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "SecondaryKeyTyp"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SecondaryKeyTyp"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Führende technische ID im IT System des Typs"
-                },
-                {
-                  "language": "EN",
-                  "text": "SecondaryKeyTyp"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Typnummer des IT Systems"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SecondaryKeyTyp"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Führende technische ID im IT System des Typs"
+            },
+            {
+              "language": "EN",
+              "text": "SecondaryKeyTyp"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1947,47 +1715,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "TypThumbnail"
-                },
-                {
-                  "language": "DE",
-                  "text": "Vorschaubild"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "TypThumbnail"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "TypThumbnail"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Darstellung des Produkttyps in kleinem Format"
-                },
-                {
-                  "language": "EN",
-                  "text": "Small picture of the product type"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Vorschaubild"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "TypThumbnail"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Darstellung des Produkttyps in kleinem Format"
+            },
+            {
+              "language": "EN",
+              "text": "Small picture of the product type"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2011,47 +1771,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "AssetId"
-                },
-                {
-                  "language": "DE",
-                  "text": "Asset ID"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "AssetId"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "AssetId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Global eindeutige ID eines Asset, die machienenlesbar oder durch Menschen lesbar ist."
-                },
-                {
-                  "language": "EN",
-                  "text": "Global unique ID of an asset, which can be read by both human and machine."
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Asset ID"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "AssetId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Global eindeutige ID eines Asset, die machienenlesbar oder durch Menschen lesbar ist."
+            },
+            {
+              "language": "EN",
+              "text": "Global unique ID of an asset, which can be read by both human and machine."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2075,47 +1827,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "SecondaryKeyInstance"
-                },
-                {
-                  "language": "DE",
-                  "text": "Instanznummer des IT Systems"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "SecondaryKeyInstance"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SecondaryKeyInstance"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Führende technische ID im IT System der Instanz"
-                },
-                {
-                  "language": "EN",
-                  "text": "SecondaryKeyInstance"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Instanznummer des IT Systems"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SecondaryKeyInstance"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Führende technische ID im IT System der Instanz"
+            },
+            {
+              "language": "EN",
+              "text": "SecondaryKeyInstance"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2139,47 +1883,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Date of manufacture"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellungsdatum"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Date of manufacture"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Date of manufacture"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "DATE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Datum, ab der der Herstellungs- und/oder Entstehungsprozess abgeschlossen ist bzw. ab dem eine Dienstleistung vollständig erbracht ist"
-                },
-                {
-                  "language": "EN",
-                  "text": "Date from which the production and / or development process is completed or from which a service is provided completely"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Herstellungsdatum"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Date of manufacture"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Datum, ab der der Herstellungs- und/oder Entstehungsprozess abgeschlossen ist bzw. ab dem eine Dienstleistung vollständig erbracht ist"
+            },
+            {
+              "language": "EN",
+              "text": "Date from which the production and / or development process is completed or from which a service is provided completely"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2203,47 +1939,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DeviceRevision"
-                },
-                {
-                  "language": "DE",
-                  "text": "DeviceRevision"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DeviceRevision"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DeviceRevision"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "DeviceRevision"
-                },
-                {
-                  "language": "EN",
-                  "text": "DeviceRevision"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "DeviceRevision"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DeviceRevision"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "DeviceRevision"
+            },
+            {
+              "language": "EN",
+              "text": "DeviceRevision"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2267,47 +1995,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "SoftwareRevision"
-                },
-                {
-                  "language": "EN",
-                  "text": "SoftwareRevision"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "SoftwareRevision"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SoftwareRevision"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "SoftwareRevision"
-                },
-                {
-                  "language": "EN",
-                  "text": "SoftwareRevision"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "SoftwareRevision"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SoftwareRevision"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "SoftwareRevision"
+            },
+            {
+              "language": "EN",
+              "text": "SoftwareRevision"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2331,47 +2051,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "HardwareRevision"
-                },
-                {
-                  "language": "EN",
-                  "text": "HardwareRevision"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "HardwareRevision"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "HardwareRevision"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "HardwareRevision"
-                },
-                {
-                  "language": "EN",
-                  "text": "HardwareRevision"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "HardwareRevision"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "HardwareRevision"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "HardwareRevision"
+            },
+            {
+              "language": "EN",
+              "text": "HardwareRevision"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2395,47 +2107,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "QrCode"
-                },
-                {
-                  "language": "EN",
-                  "text": "QrCode"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "QrCode"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "QrCode"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "In dem QRCode ist die URL, die die Instanz des Assets genau beschreibt, hinterlegt."
-                },
-                {
-                  "language": "EN",
-                  "text": "QrCode"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "QrCode"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "QrCode"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "In dem QRCode ist die URL, die die Instanz des Assets genau beschreibt, hinterlegt."
+            },
+            {
+              "language": "EN",
+              "text": "QrCode"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2459,47 +2163,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Contact Info"
-                },
-                {
-                  "language": "DE",
-                  "text": "Kontakt Info"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Contact Info"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "OrganisationContactInfo"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sammlung für die allgemeinen Kontaktdaten"
-                },
-                {
-                  "language": "EN",
-                  "text": "Collection for general contact data"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Kontakt Info"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "OrganisationContactInfo"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sammlung für die allgemeinen Kontaktdaten"
+            },
+            {
+              "language": "EN",
+              "text": "Collection for general contact data"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2523,47 +2219,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Rolle"
-                },
-                {
-                  "language": "EN",
-                  "text": "Role"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Rolle"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Role"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Angabe zur Spezifizierung der Rolle, die die Organisation aus ContactInfo einnimmt"
-                },
-                {
-                  "language": "EN",
-                  "text": "Information to specify the role which the organisation of ContactInfo plays"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Role"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Role"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Angabe zur Spezifizierung der Rolle, die die Organisation aus ContactInfo einnimmt"
+            },
+            {
+              "language": "EN",
+              "text": "Information to specify the role which the organisation of ContactInfo plays"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2587,47 +2275,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Emailadresse"
-                },
-                {
-                  "language": "EN",
-                  "text": "Email address"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Emailadresse"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Email"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Emailadresse"
-                },
-                {
-                  "language": "EN",
-                  "text": "Email address"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Email address"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Email"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Emailadresse"
+            },
+            {
+              "language": "EN",
+              "text": "Email address"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2651,47 +2331,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Internetadresse"
-                },
-                {
-                  "language": "EN",
-                  "text": "Internet address"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Internetadresse"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "URL"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "stated as link to a home page. The home page is the starting page or table of contents of a web site with offerings. It usually has the name index.htm or index.html"
-                },
-                {
-                  "language": "DE",
-                  "text": "Angabe als Link, um in eine Homepage zu gelangen. die Homepage ist die Start- beziehungsweise die Inhaltsseite eines Web-Angebots. Meistens trägt sie den Namen index.htm oder index.html"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Internet address"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "URL"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "stated as link to a home page. The home page is the starting page or table of contents of a web site with offerings. It usually has the name index.htm or index.html"
+            },
+            {
+              "language": "DE",
+              "text": "Angabe als Link, um in eine Homepage zu gelangen. die Homepage ist die Start- beziehungsweise die Inhaltsseite eines Web-Angebots. Meistens trägt sie den Namen index.htm oder index.html"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2715,47 +2387,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Telefonnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "telephone number"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Telefonnummer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Phone"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "vollständige Telefonnummer unter der ein Geschäftspartner erreichbar ist"
-                },
-                {
-                  "language": "EN",
-                  "text": "complete telephone number to be called to reach a business partner"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "telephone number"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Phone"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "vollständige Telefonnummer unter der ein Geschäftspartner erreichbar ist"
+            },
+            {
+              "language": "EN",
+              "text": "complete telephone number to be called to reach a business partner"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2779,47 +2443,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Fax"
-                },
-                {
-                  "language": "EN",
-                  "text": "Fax"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Fax"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Fax"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Faxnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "Fax number"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Fax"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Fax"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Faxnummer"
+            },
+            {
+              "language": "EN",
+              "text": "Fax number"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2855,47 +2511,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Firmenlogo"
-                },
-                {
-                  "language": "EN",
-                  "text": "CompanyLogo"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Firmenlogo"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "CompanyLogo"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Firmenlogo"
-                },
-                {
-                  "language": "EN",
-                  "text": "CompanyLogo"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "CompanyLogo"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "CompanyLogo"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Firmenlogo"
+            },
+            {
+              "language": "EN",
+              "text": "CompanyLogo"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -2949,47 +2597,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumentationsgruppe"
-                },
-                {
-                  "language": "EN",
-                  "text": "Documentation item"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dokumentationsgruppe"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentationItem"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Gruppe von Merkmalen, die Zugriff gibt auf eine Dokumentation für ein Asset, beispielhaft struktuiert nach VDI 2770."
-                },
-                {
-                  "language": "EN",
-                  "text": "Collection of properties, which gives access to documentation of an asset, structured exemplary-wise according to VDI 2770."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Documentation item"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentationItem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Gruppe von Merkmalen, die Zugriff gibt auf eine Dokumentation für ein Asset, beispielhaft struktuiert nach VDI 2770."
+            },
+            {
+              "language": "EN",
+              "text": "Collection of properties, which gives access to documentation of an asset, structured exemplary-wise according to VDI 2770."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3013,47 +2653,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumententyp"
-                },
-                {
-                  "language": "EN",
-                  "text": "Document Type"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dokumententyp"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentType"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Festlegung des Typs des Dokuments im Sinne der DIN EN 82045-1: a) Single (Einzeldokument) b) Aggregate (Sammeldokument) c) DocumentSet (Dokumentensatz) d) CompoundDoc (Mischdokument)"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Document Type"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentType"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Festlegung des Typs des Dokuments im Sinne der DIN EN 82045-1: a) Single (Einzeldokument) b) Aggregate (Sammeldokument) c) DocumentSet (Dokumentensatz) d) CompoundDoc (Mischdokument)"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3077,47 +2709,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Domain-Nummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "DomainId"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Domain-Nummer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DomainId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Kennung oder Kennzeichen einer Domäne, in der eine DocumentId eineindeutig ist."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "DomainId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DomainId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Kennung oder Kennzeichen einer Domäne, in der eine DocumentId eineindeutig ist."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3141,47 +2765,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Nummerntyp"
-                },
-                {
-                  "language": "EN",
-                  "text": "IdType"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Nummerntyp"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "IdType"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Besitzt ein Dokument mehrere Identifikationsnummern, muss mithilfe dieser Eigenschaft die führende ID angegeben werden. Der Wert „Primary“ ist für diese ID zu setzen."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "IdType"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "IdType"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Besitzt ein Dokument mehrere Identifikationsnummern, muss mithilfe dieser Eigenschaft die führende ID angegeben werden. Der Wert „Primary“ ist für diese ID zu setzen."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3205,47 +2821,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentId"
-                },
-                {
-                  "language": "DE",
-                  "text": "Dokumenten-Nummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentId"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Die Dokument ID stellt eine eindeutige Identifizierung des Dokuments innerhalb einer Domäne sicher."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Dokumenten-Nummer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Die Dokument ID stellt eine eindeutige Identifizierung des Dokuments innerhalb einer Domäne sicher."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3269,47 +2877,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "DocumentDomainId"
-                },
-                {
-                  "language": "EN",
-                  "text": "DocumentDomainId"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "DocumentDomainId"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentDomainId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Kennung oder Kennzeichen einer Domäne"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "DocumentDomainId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentDomainId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Kennung oder Kennzeichen einer Domäne"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3333,47 +2933,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Rolle"
-                },
-                {
-                  "language": "EN",
-                  "text": "Role"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Rolle"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Role"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste: Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Role"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Role"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste: Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3397,47 +2989,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Organisation ID"
-                },
-                {
-                  "language": "EN",
-                  "text": "Organisation ID"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Organisation ID"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "OrganisationId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "eindeutige ID für die Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Organisation ID"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "OrganisationId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "eindeutige ID für die Organisation"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3461,47 +3045,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "OrganisationName"
-                },
-                {
-                  "language": "EN",
-                  "text": "OrganisationName"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "OrganisationName"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "OrganisationName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "gebräuchliche Bezeichnung für die Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "OrganisationName"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "OrganisationName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "gebräuchliche Bezeichnung für die Organisation"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3525,47 +3101,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Offizieller Name der Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "Organisation Official Name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Offizieller Name der Organisation"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "OrganisationOfficialName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "offizieller Name der Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Organisation Official Name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "OrganisationOfficialName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "offizieller Name der Organisation"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3589,47 +3157,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Beschreibung"
-                },
-                {
-                  "language": "EN",
-                  "text": "Description"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Beschreibung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Description"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Beschreibung für die nächste übergeordnete Collection"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Description"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Description"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Beschreibung für die nächste übergeordnete Collection"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3653,47 +3213,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumenten-Teilnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "DocumentPartId"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dokumenten-Teilnummer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentPartId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Ist das Dokument ein zusammengesetztes Dokument, können mithilfe dieser Eigenschaft eindeutige Dokumententeile IDs eingetragen werden, um das Dokument von den anderen Dokumenten zu unterscheiden."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "DocumentPartId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentPartId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Ist das Dokument ein zusammengesetztes Dokument, können mithilfe dieser Eigenschaft eindeutige Dokumententeile IDs eingetragen werden, um das Dokument von den anderen Dokumenten zu unterscheiden."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3717,47 +3269,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumentkategorie"
-                },
-                {
-                  "language": "EN",
-                  "text": "Document category"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dokumentkategorie"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocCategory"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumentkategorie nach VDI 2770:2018/10"
-                },
-                {
-                  "language": "EN",
-                  "text": "Document category after VDI 2770:2018/10"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Document category"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocCategory"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Dokumentkategorie nach VDI 2770:2018/10"
+            },
+            {
+              "language": "EN",
+              "text": "Document category after VDI 2770:2018/10"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3781,47 +3325,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Klassenname"
-                },
-                {
-                  "language": "EN",
-                  "text": "Class Name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Klassenname"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ClassName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Liste von sprachabhängigen Namen zur ClassId. Für die Klassennamen nach VDI 2770 müssen die Werte aus Tabelle 1 in Abschnitt 8.5 angewendet werden."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Class Name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ClassName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Liste von sprachabhängigen Namen zur ClassId. Für die Klassennamen nach VDI 2770 müssen die Werte aus Tabelle 1 in Abschnitt 8.5 angewendet werden."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3845,47 +3381,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Klassifizierungssystem"
-                },
-                {
-                  "language": "EN",
-                  "text": "classification system"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Klassifizierungssystem"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ClassificationSystem"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss „VDI2770:2018“ verwenden werden."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "classification system"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ClassificationSystem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss „VDI2770:2018“ verwenden werden."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3909,47 +3437,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dokumenten-Versionsnummer"
-                },
-                {
-                  "language": "EN",
-                  "text": "DocumentVersionId"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dokumenten-Versionsnummer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentVersionId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Identifikationsnummer zur Dokumenten-version. Verweist ein Document (siehe Anhang C1.1, Eigenschaft DocumentVersion) auf diese Dokumentenversion, muss die Kombination aus DocumentId und DocumentVersionId eindeutig sein."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "DocumentVersionId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentVersionId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Identifikationsnummer zur Dokumenten-version. Verweist ein Document (siehe Anhang C1.1, Eigenschaft DocumentVersion) auf diese Dokumentenversion, muss die Kombination aus DocumentId und DocumentVersionId eindeutig sein."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -3973,47 +3493,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sprachenschlüssel"
-                },
-                {
-                  "language": "EN",
-                  "text": "LanguageCode"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Sprachenschlüssel"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "LanguageCode"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Angabe eines Sprachcodes gemäss ISO 639-1 oder -2"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "LanguageCode"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "LanguageCode"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Angabe eines Sprachcodes gemäss ISO 639-1 oder -2"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4037,47 +3549,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Titel"
-                },
-                {
-                  "language": "EN",
-                  "text": "Title"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Titel"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "VDI2770_Title"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "sprachabhängiger Titel des Dokuments"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Title"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "VDI2770_Title"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "sprachabhängiger Titel des Dokuments"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4101,47 +3605,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Zusammenfassung"
-                },
-                {
-                  "language": "EN",
-                  "text": "Summary"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Zusammenfassung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Summary"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Summary"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Summary"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4165,47 +3661,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Schlagwörter"
-                },
-                {
-                  "language": "EN",
-                  "text": "Keywords"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Schlagwörter"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Keywords"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "sprachabhängige, durch Komma getrennte Liste von Schlagwörtern"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Keywords"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Keywords"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "sprachabhängige, durch Komma getrennte Liste von Schlagwörtern"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4229,47 +3717,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Statuswert"
-                },
-                {
-                  "language": "EN",
-                  "text": "StatusValue"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Statuswert"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "StatusValue"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden. InReview (in Prüfung), Released (freigegeben)"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "StatusValue"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "StatusValue"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden. InReview (in Prüfung), Released (freigegeben)"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4293,47 +3773,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Erstellungsdatum"
-                },
-                {
-                  "language": "EN",
-                  "text": "Set Date"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Erstellungsdatum"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "SetDate"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe DIN ISO 8601)."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Set Date"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "SetDate"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe DIN ISO 8601)."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4357,47 +3829,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Zweck"
-                },
-                {
-                  "language": "EN",
-                  "text": "Purpose"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Zweck"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Purpose"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Hier kann ein Zweck zum Meilenstein angegeben werden, z. B. „zur Weiterleitung an den Kunden“."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Purpose"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Purpose"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Hier kann ein Zweck zum Meilenstein angegeben werden, z. B. „zur Weiterleitung an den Kunden“."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4421,47 +3885,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Prozedur"
-                },
-                {
-                  "language": "EN",
-                  "text": "Procedure"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Prozedur"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "BasedOnProcedure"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "textueller Bezug auf ein Verfahren, das der Festlegung dieses Status zugrunde liegt"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Procedure"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "BasedOnProcedure"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "textueller Bezug auf ein Verfahren, das der Festlegung dieses Status zugrunde liegt"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4485,47 +3941,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Kommentar"
-                },
-                {
-                  "language": "EN",
-                  "text": "Comments"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Kommentar"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Comments"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "textuelle Bemerkungen und Anmerkungen zum Status"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Comments"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Comments"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "textuelle Bemerkungen und Anmerkungen zum Status"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4549,47 +3997,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Typ"
-                },
-                {
-                  "language": "EN",
-                  "text": "Type"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Typ"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Type"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Für Type des Objekts muss immer Product angegeben werden."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Type"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "Type"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Für Type des Objekts muss immer Product angegeben werden."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4613,47 +4053,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "RefType"
-                },
-                {
-                  "language": "EN",
-                  "text": "RefType"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "RefType"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "RefType"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Angabe einer Typisierung zur Kennung des technischen Objekts. Folgende Werte sind möglich, ProductId (Produktnummer), SerialId (Seriennummer)"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "RefType"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "RefType"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Angabe einer Typisierung zur Kennung des technischen Objekts. Folgende Werte sind möglich, ProductId (Produktnummer), SerialId (Seriennummer)"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4677,47 +4109,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "ObjectId"
-                },
-                {
-                  "language": "EN",
-                  "text": "ObjectId"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "ObjectId"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "ObjectId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Angabe der Identifikationsnummer zum Objekt"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "ObjectId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "ObjectId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Angabe der Identifikationsnummer zum Objekt"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4741,47 +4165,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "ID der Datei"
-                },
-                {
-                  "language": "EN",
-                  "text": "File ID"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "ID der Datei"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "FileId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "eindeutige ID für die Datei"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "File ID"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "FileId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "eindeutige ID für die Datei"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4805,47 +4221,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Dateiname"
-                },
-                {
-                  "language": "EN",
-                  "text": "File name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Dateiname"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "FileName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Name der Datei inkl. einer Dateiendung (sofern vorhanden) Es ist nicht notwendig, einen Pfad für die Datei anzugeben."
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "File name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "FileName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Name der Datei inkl. einer Dateiendung (sofern vorhanden) Es ist nicht notwendig, einen Pfad für die Datei anzugeben."
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4869,47 +4277,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Datei Format"
-                },
-                {
-                  "language": "EN",
-                  "text": "File format"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Datei Format"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "FileFormat"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Angabe eines Media Typs gemäß der Liste der IANA"
-                },
-                {
-                  "language": "EN",
-                  "text": "TBD"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "File format"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "FileFormat"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Angabe eines Media Typs gemäß der Liste der IANA"
+            },
+            {
+              "language": "EN",
+              "text": "TBD"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -4933,47 +4333,39 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Enthaltene Doku. Datei"
-                },
-                {
-                  "language": "EN",
-                  "text": "Embedded Doc. file"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Enthaltene Doku. Datei"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "File"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
-                },
-                {
-                  "language": "EN",
-                  "text": "Reference/ BLOB to embedded documentation file."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Embedded Doc. file"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "File"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Verweis/ BLOB auf enthaltene Dokumentations-Datei."
+            },
+            {
+              "language": "EN",
+              "text": "Reference/ BLOB to embedded documentation file."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [

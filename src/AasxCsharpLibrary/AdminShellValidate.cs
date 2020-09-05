@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
@@ -10,6 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace AdminShellNS
 {
@@ -125,7 +125,8 @@ namespace AdminShellNS
             // set up messages
             xmlSchemaSet.ValidationEventHandler += (object sender, System.Xml.Schema.ValidationEventArgs e) =>
             {
-                newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null, "" + e.Message));
+                newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null,
+                    "" + e?.Exception?.LineNumber + ", " + e?.Exception?.LinePosition + ": " + e?.Message));
             };
 
             // compile
@@ -154,8 +155,8 @@ namespace AdminShellNS
             settings.ValidationEventHandler +=
                 (object sender, System.Xml.Schema.ValidationEventArgs e) =>
                 {
-                    newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization,
-                        null, "XML: " + e.Message));
+                    newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null,
+                    "XML: " + e?.Exception?.LineNumber + ", " + e?.Exception?.LinePosition + ": " + e?.Message));
                 };
 
             // use the xml stream
@@ -259,9 +260,9 @@ namespace AdminShellNS
 
             // validate
             IList<ValidationError> errors;
-            bool valid = false;
-            try {
-                valid = json.IsValid(schema, out errors);
+            try
+            {
+                json.IsValid(schema, out errors);
             }
             catch (Exception ex)
             {
@@ -272,7 +273,7 @@ namespace AdminShellNS
             // re-format messages
             if (errors != null)
                 foreach (var ve in errors)
-                    AddRecordToList(recs, ve, depth: 0);
+                    AddRecordToList(newRecs, ve, depth: 0);
 
             // result
             recs.AddRange(newRecs);

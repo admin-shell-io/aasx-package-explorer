@@ -1251,6 +1251,15 @@ namespace AdminShellNS
 
         public class ListOfLangStr : List<LangStr>
         {
+            public ListOfLangStr() { }
+
+            public ListOfLangStr(ListOfLangStr src)
+            {
+                if (src != null)
+                    foreach (var ls in src)
+                        this.Add(ls);
+            }
+
             public string GetDefaultStr(string defaultLang = null)
             {
                 // start
@@ -2590,35 +2599,25 @@ namespace AdminShellNS
         /// <summary>
         /// Multiple lang string for the IEC61360 namespace
         /// </summary>
-        public class LangStringSetIEC61360
+        public class LangStringSetIEC61360 : ListOfLangStr
         {
-
-            // members
-
-            [XmlElement(ElementName = "langString", Namespace = "http://www.admin-shell.io/IEC61360/2/0")]
-            public ListOfLangStr langString = new ListOfLangStr();
 
             // getters / setters
 
             [XmlIgnore]
             [JsonIgnore]
-            public bool IsEmpty { get { return langString == null || langString.Count < 1; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public int Count { get { if (langString == null) return 0; return langString.Count; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public LangStr this[int index] { get { return langString[index]; } }
+            public bool IsEmpty { get { return this.Count < 1; } }
 
             // constructors
 
             public LangStringSetIEC61360() { }
 
+            public LangStringSetIEC61360(ListOfLangStr lol) : base(lol) { }
+
             public LangStringSetIEC61360(LangStringSetIEC61360 src)
             {
-                if (src.langString != null)
-                    foreach (var ls in src.langString)
-                        this.langString.Add(new LangStr(ls));
+                foreach (var ls in src)
+                    this.Add(new LangStr(ls));
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -2626,14 +2625,14 @@ namespace AdminShellNS
             {
                 if (src.langString != null)
                     foreach (var ls in src.langString)
-                        this.langString.Add(new LangStr(ls));
+                        this.Add(new LangStr(ls));
             }
 #endif
             public LangStringSetIEC61360(string lang, string str)
             {
                 if (str == null || str.Trim() == "")
                     return;
-                this.langString.Add(new LangStr(lang, str));
+                this.Add(new LangStr(lang, str));
             }
 
             // converter
@@ -2643,16 +2642,10 @@ namespace AdminShellNS
                 var res = new LangStringSetIEC61360();
                 if (src != null)
                     foreach (var ls in src)
-                        res.langString.Add(new LangStr(ls));
+                        res.Add(new LangStr(ls));
                 return res;
             }
 
-            // single string representation
-
-            public string GetDefaultStr(string defaultLang = null)
-            {
-                return this.langString?.GetDefaultStr(defaultLang);
-            }
         }
 
         public class UnitId
@@ -2847,7 +2840,7 @@ namespace AdminShellNS
                 var d = new DataSpecificationIEC61360();
                 if (preferredName != null)
                 {
-                    d.preferredName.langString = LangStr.CreateManyFromStringArray(preferredName);
+                    d.preferredName = new LangStringSetIEC61360(LangStr.CreateManyFromStringArray(preferredName));
                 }
                 d.shortName = new LangStringSetIEC61360("EN?", shortName);
                 d.unit = unit;
@@ -2860,7 +2853,7 @@ namespace AdminShellNS
                 {
                     if (d.definition == null)
                         d.definition = new LangStringSetIEC61360();
-                    d.definition.langString = LangStr.CreateManyFromStringArray(definition);
+                    d.definition = new LangStringSetIEC61360(LangStr.CreateManyFromStringArray(definition));
                 }
                 return (d);
             }
@@ -2883,8 +2876,7 @@ namespace AdminShellNS
                     return;
 
                 // check IEC61360 spec
-                if (this.preferredName == null || this.preferredName.langString == null
-                    || this.preferredName.langString.Count < 1)
+                if (this.preferredName == null || this.preferredName.Count < 1)
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: missing preferredName",
@@ -2894,8 +2886,7 @@ namespace AdminShellNS
                                 AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
                         }));
 
-                if (this.shortName != null && (this.shortName.langString == null
-                    || this.shortName.langString.Count < 1))
+                if (this.shortName != null && this.shortName.Count < 1)
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: existing shortName with missing langString",
@@ -2904,14 +2895,28 @@ namespace AdminShellNS
                             this.shortName = null;
                         }));
 
-                if (this.definition != null && (this.definition.langString == null
-                    || this.definition.langString.Count < 1))
+                if (this.definition != null && this.definition.Count < 1)
                     results.Add(new AasValidationRecord(
                         AasValidationSeverity.SchemaViolation, cd,
                         "ConceptDescription: existing definition with missing langString",
                         () =>
                         {
                             this.definition = null;
+                        }));
+
+                // check data type
+                string foundDataType = null;
+                if (this.dataType != null)
+                    foreach (var dtn in DataTypeNames)
+                        if (this.dataType.Trim() == dtn.Trim())
+                            foundDataType = this.dataType;
+                if (foundDataType == null)
+                    results.Add(new AasValidationRecord(
+                        AasValidationSeverity.SchemaViolation, cd,
+                        "ConceptDescription: dataType does not match allowed enumeration values",
+                        () =>
+                        {
+                            this.dataType = "STRING";
                         }));
             }
         }
@@ -2955,7 +2960,22 @@ namespace AdminShellNS
         {
             // members
 
+            [JsonIgnore]
             public DataSpecificationContent dataSpecificationContent = null;
+
+            [XmlIgnore]
+            [JsonProperty("dataSpecificationContent")]
+            public DataSpecificationIEC61360 JsonWrongDataSpec61360
+            {
+                get { return dataSpecificationContent?.dataSpecificationIEC61360; }
+                set
+                {
+                    if (dataSpecificationContent == null)
+                        dataSpecificationContent = new DataSpecificationContent();
+                    dataSpecificationContent.dataSpecificationIEC61360 = value;
+                }
+            }
+
             public DataSpecificationRef dataSpecification = null;
 
             // constructors
@@ -4455,7 +4475,7 @@ namespace AdminShellNS
             public void GetData() { }
 
             // from HasKind
-            [XmlElement(ElementName = "kkind")]
+            [XmlElement(ElementName = "kind")]
             [JsonIgnore]
             public ModelingKind kind = new ModelingKind();
             [XmlIgnore]
