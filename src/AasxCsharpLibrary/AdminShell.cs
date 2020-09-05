@@ -1977,7 +1977,8 @@ namespace AdminShellNS
             public JsonModelTypeWrapper(string name = "") { this.name = name; }
         }
 
-        public interface IFindAllReferences {
+        public interface IFindAllReferences
+        {
             IEnumerable<Reference> FindAllReferences();
         }
 
@@ -3321,12 +3322,12 @@ namespace AdminShellNS
                     {
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SpecViolation, this,
-                            "HasDataSpecification: data specification reference set to IEC61360, but no "+
+                            "HasDataSpecification: data specification reference set to IEC61360, but no " +
                             "data specification content set!",
                             () =>
                             {
                                 eds61360.dataSpecificationContent = new DataSpecificationContent();
-                                eds61360.dataSpecificationContent.dataSpecificationIEC61360 = 
+                                eds61360.dataSpecificationContent.dataSpecificationIEC61360 =
                                 new DataSpecificationIEC61360();
                             }));
                     }
@@ -3340,7 +3341,8 @@ namespace AdminShellNS
 
             // more find
 
-            public IEnumerable<Reference> FindAllReferences() {
+            public IEnumerable<Reference> FindAllReferences()
+            {
                 yield break;
             }
         }
@@ -3451,6 +3453,7 @@ namespace AdminShellNS
         public class AdministrationShellEnv : IFindAllReferences
         {
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
+            [JsonIgnore]
             public string schemaLocation =
                 "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
 
@@ -3984,7 +3987,7 @@ namespace AdminShellNS
                     // recurse all possible Referenes in the aas env
                     foreach (var r in this.FindAllReferences())
                         if (r != null)
-                            for (int i=0; i<r.Count; i++)
+                            for (int i = 0; i < r.Count; i++)
                                 if (r[i].Matches(Key.Submodel, false, oldId.idType, oldId.id, Key.MatchMode.Relaxed))
                                 {
                                     // directly replace

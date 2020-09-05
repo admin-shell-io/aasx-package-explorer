@@ -1494,13 +1494,13 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
 
-                    if ((int)buttonNdx == 1)
+                    if (buttonNdx == 1)
                     {
                         MoveElementInListDownwards<T>(list, entity);
                         return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
 
-                    if ((int)buttonNdx == 2)
+                    if (buttonNdx == 2)
                         if (this.flyoutProvider != null &&
                                 MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
                                     "Delete selected entity? This operation can not be reverted!", "AASX",
@@ -1523,10 +1523,10 @@ namespace AasxPackageExplorer
                     stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo,
                     (buttonNdx) =>
                     {
-                        if ((int)buttonNdx == 0)
+                        if (buttonNdx == 0)
                             qualifiers.Add(new AdminShell.Qualifier());
 
-                        if ((int)buttonNdx == 1)
+                        if (buttonNdx == 1)
                         {
                             if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
                                 return new ModifyRepo.LambdaActionNone();
@@ -1544,7 +1544,7 @@ namespace AasxPackageExplorer
                             }
                         }
 
-                        if ((int)buttonNdx == 2 && qualifiers.Count > 0)
+                        if (buttonNdx == 2 && qualifiers.Count > 0)
                             qualifiers.RemoveAt(qualifiers.Count - 1);
 
                         return new ModifyRepo.LambdaActionRedrawEntity();
@@ -1798,7 +1798,7 @@ namespace AasxPackageExplorer
 
         public T[] ConcatArrays<T>(IEnumerable<T> a, IEnumerable<T> b)
         {
-            if (a == null || b == null)
+            if (a == null && b == null)
                 return null;
 
             if (a == null)

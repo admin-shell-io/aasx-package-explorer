@@ -877,14 +877,12 @@ namespace AasxAmlImExport
                         var dsc = AppendAttributeNameAndRole(
                             eds.Attribute, "dataSpecificationContent",
                             AmlConst.Attributes.CD_DataSpecificationContent);
-                        if (source61360 != null)
-                        {
-                            // create attribute branch for CD contents
-                            var dsc61360 = AppendAttributeNameAndRole(
-                                dsc.Attribute, "dataSpecificationIEC61360",
-                                AmlConst.Attributes.CD_DataSpecification61360);
-                            dest61360 = dsc61360.Attribute;
-                        }
+
+                        // create attribute branch for CD contents
+                        var dsc61360 = AppendAttributeNameAndRole(
+                            dsc.Attribute, "dataSpecificationIEC61360",
+                            AmlConst.Attributes.CD_DataSpecification61360);
+                        dest61360 = dsc61360.Attribute;
                     }
                 }
             }

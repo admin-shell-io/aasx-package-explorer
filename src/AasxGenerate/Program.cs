@@ -1650,6 +1650,8 @@ namespace AasxGenerate
 
         }
 
+        // ReSharper disable RedundantJumpStatement
+
         static void Main(string[] args)
         {
             Console.Out.WriteLine(
@@ -1806,11 +1808,20 @@ namespace AasxGenerate
 
                             if (fn.ToLower().EndsWith(".xml"))
                             {
-                                Console.Out.WriteLine("Validating file {0} against XSD in schemaV201\\. ..", fn);
-                                // Validate(fn);
-
+                                Console.Out.WriteLine("Validating file {0} against XSD ..", fn);
+#if __obsolete
+                                Validate(fn);
+#else
                                 var stream = File.Open(fn, FileMode.Open, FileAccess.Read);
                                 AasSchemaValidation.ValidateXML(recs, stream);
+#endif
+                            }
+                            else
+                            if (fn.ToLower().EndsWith(".json"))
+                            {
+                                Console.Out.WriteLine("Validating file {0} against JSON ..", fn);
+                                var stream = File.Open(fn, FileMode.Open, FileAccess.Read);
+                                AasSchemaValidation.ValidateJSON(recs, stream);
                             }
                             else
                             {

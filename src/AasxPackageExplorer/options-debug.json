@@ -86,7 +86,7 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
       "Args": []
-    },
+    }
     /* Festo specific from here on */
     /*
     {

@@ -532,7 +532,9 @@ namespace AasxPackageExplorer
                 ms.Position = 0;
                 AasSchemaValidation.ValidateXML(recs, ms);
                 ms.Close();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log.Error(ex, "Checking model contents");
                 MessageBoxFlyoutShow(
                     "Error while checking model contents. Aborting.", msgBoxHeadline,

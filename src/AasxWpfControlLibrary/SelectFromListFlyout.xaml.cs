@@ -103,6 +103,7 @@ namespace AasxPackageExplorer
                 foreach (var txt in this.AlternativeSelectButtons)
                 {
                     var b = new Button();
+                    b.Content = "" + txt;
                     b.Foreground = Brushes.White;
                     b.FontSize = 18;
                     b.Padding = new Thickness(4);

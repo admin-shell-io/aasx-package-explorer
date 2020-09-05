@@ -82,7 +82,7 @@ namespace AasxPackageExplorer
             this.DoHint = this.CheckBoxHint.IsChecked == true;
             this.DoWarning = this.CheckBoxWarning.IsChecked == true;
             this.DoSpecViolation = this.CheckBoxSpecViolation.IsChecked == true;
-            this.DoSchemaViolation= this.CheckBoxSchemaViolation.IsChecked == true;
+            this.DoSchemaViolation = this.CheckBoxSchemaViolation.IsChecked == true;
             ControlClosed?.Invoke();
         }
 

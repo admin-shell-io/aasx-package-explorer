@@ -326,7 +326,7 @@ namespace AasxPackageExplorer
                                     new AdminShell.EmbeddedDataSpecification(
                                         new AdminShell.DataSpecificationRef()));
 
-                            if ((int)buttonNdx == 1 && hasDataSpecification.Count > 0)
+                            if (buttonNdx == 1 && hasDataSpecification.Count > 0)
                                 hasDataSpecification.RemoveAt(
                                     hasDataSpecification.Count - 1);
 
@@ -335,8 +335,7 @@ namespace AasxPackageExplorer
                 }
 
                 // now use the normal mechanism to deal with editMode or not ..
-                if (hasDataSpecification != null && hasDataSpecification != null &&
-                        hasDataSpecification.Count > 0)
+                if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                         if (hasDataSpecification[i].dataSpecification != null)

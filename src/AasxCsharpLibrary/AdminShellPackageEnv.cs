@@ -384,7 +384,7 @@ namespace AdminShellNS
                 this.fn = fn;
                 try
                 {
-                    Stream s = (useMemoryStream != null) ? (Stream) useMemoryStream
+                    Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
                         : File.Open(fn, FileMode.Create, FileAccess.Write);
 
                     // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer

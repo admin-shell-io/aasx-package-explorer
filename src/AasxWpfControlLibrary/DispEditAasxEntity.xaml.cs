@@ -187,7 +187,7 @@ namespace AasxPackageExplorer
                 stack, asset,
                 Options.Curr.TemplateIdAsset,
                 new DispEditHelperModules.DispEditInjectAction(
-                new string[] { "Input", "Rename" },
+                new[] { "Input", "Rename" },
                 (i) =>
                 {
                     if (i == 0)
@@ -239,7 +239,7 @@ namespace AasxPackageExplorer
                         }
                     }
                     return new ModifyRepo.LambdaActionNone();
-                            
+
                 }),
                 checkForIri: true);
 
@@ -1246,7 +1246,7 @@ namespace AasxPackageExplorer
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
                     new DispEditHelperModules.DispEditInjectAction(
-                        new string[] { "Rename" },
+                        new[] { "Rename" },
                         (i) =>
                         {
                             if (i == 0)
@@ -1273,7 +1273,7 @@ namespace AasxPackageExplorer
 
                                         if (!res)
                                             helper.flyoutProvider.MessageBoxFlyoutShow(
-                                             "The renaming of the Submodel or some referring elements " + 
+                                             "The renaming of the Submodel or some referring elements " +
                                                 "has not performed successfully! Please review your inputs and " +
                                                 "the AAS structure for any inconsistencies.",
                                                 "Warning",
@@ -1373,7 +1373,7 @@ namespace AasxPackageExplorer
                 stack, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(
-                new string[] { "Rename" },
+                new[] { "Rename" },
                 (i) =>
                 {
                     if (i == 0)
