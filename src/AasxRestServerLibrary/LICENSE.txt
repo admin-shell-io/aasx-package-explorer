@@ -77,7 +77,8 @@ The ExcelDataReader is licensed under the MIT license (MIT, see below).
 The OPC UA Example Code of OPC UA Standard is licensed under the MIT license
 (MIT, see below).
 
-The MSAGL (Microsoft Automatic Graph Layout) is licensed under the MIT license (MIT) (see below)
+The MSAGL (Microsoft Automatic Graph Layout) is licensed under the MIT license
+(MIT) (see below)
 
 
 -------------------------------------------------------------------------------
