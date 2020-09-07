@@ -303,6 +303,7 @@ namespace AdminShellNS
 
             public static string[] KeyElements = new string[] {
             "GlobalReference",
+            "FragmentReference",
             "AccessPermissionRule",
             "Asset",
             "AssetAdministrationShell",
@@ -381,6 +382,7 @@ namespace AdminShellNS
             // use this in list to designate the GlobalReference
             // Resharper disable MemberHidesStaticFromOuterClass
             public static string GlobalReference = "GlobalReference";
+            public static string FragmentReference = "FragmentReference";
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
@@ -401,8 +403,6 @@ namespace AdminShellNS
             public static string IdShort = "IdShort";
             public static string FragmentId = "FragmentId";
             public static string Custom = "Custom";
-            public static string IRDI = "IRDI";
-            public static string IRI = "IRI";
 
             // some helpers
 
