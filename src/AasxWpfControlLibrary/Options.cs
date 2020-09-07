@@ -96,7 +96,6 @@ namespace AasxPackageExplorer
         [JsonIgnore]
         public string PrefLicenseShort =
             "This software is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The browser functionality is licensed under the cefSharp license." + Environment.NewLine +
             "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
             "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
             "The Zxing.Net Dot Matrix Code (DMC) generation is licensed " +
