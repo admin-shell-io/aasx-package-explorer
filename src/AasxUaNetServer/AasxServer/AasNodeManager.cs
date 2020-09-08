@@ -109,8 +109,9 @@ namespace AasOpcUaServer
             else
                 return new NodeId(id, m_namespaceIndex);
         }
-        
-        public void SaveNodestateCollectionAsNodeSet2(ISystemContext context, NodeStateCollection nsc, Stream stream, bool filterSingleNodeIds)
+
+        public void SaveNodestateCollectionAsNodeSet2(ISystemContext context, NodeStateCollection nsc, Stream stream,
+            bool filterSingleNodeIds)
         {
             Opc.Ua.Export.UANodeSet nodeSet = new Opc.Ua.Export.UANodeSet();
             nodeSet.LastModified = DateTime.UtcNow;
@@ -254,7 +255,7 @@ namespace AasOpcUaServer
                         //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
                         //// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
 
-                        // nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
+                        //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
                         SaveNodestateCollectionAsNodeSet2(this.SystemContext, nodesToExport, stream.BaseStream,
                             theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
 
