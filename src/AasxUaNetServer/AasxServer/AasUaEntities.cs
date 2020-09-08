@@ -1728,7 +1728,7 @@ namespace AasOpcUaServer
                         DataTypeIds.String, value: ds.dataType, defaultSettings: true);
 
                 if (ds.definition != null && ds.definition.Count > 0)
-                    this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "Definition",
+                    this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, mode, "Definition",
                         DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition),
                         defaultSettings: true, valueRank: 1);
 
