@@ -79,6 +79,7 @@ namespace AasOpcUaServer
         /// Creates the NodeId for the specified node.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="mode">Type or instance</param>
         /// <param name="node">The node.</param>
         /// <returns>The new NodeId.</returns>
         public NodeId New(ISystemContext context, AasUaBaseEntity.CreateMode mode, NodeState node)
