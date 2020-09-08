@@ -117,8 +117,15 @@ namespace AasxDictionaryImport
             AdminShellV20.Submodel submodel, Iec61360Data data)
         {
             var cd = CreateConceptDescription(env, data);
-            submodel.hasDataSpecification = new AdminShellV20.HasDataSpecification();
-            submodel.hasDataSpecification.reference.Add(cd.GetReference());
+
+            // cd should already contain IEC61360Spec; add data spec
+            // TODO (Robin, 2020-09-03): MIHO is not sure, if the data spec reference is correct; please check
+            var eds = cd.IEC61360DataSpec;
+            if (eds != null)
+            {
+                eds.dataSpecification = new AdminShellV20.DataSpecificationRef(cd.GetReference());
+            }
+
             submodel.semanticId = new AdminShellV20.SemanticId(cd.GetReference());
         }
 
@@ -126,23 +133,36 @@ namespace AasxDictionaryImport
             AdminShellV20.SubmodelElement submodelElement, Iec61360Data data)
         {
             var cd = CreateConceptDescription(env, data);
-            submodelElement.hasDataSpecification = new AdminShellV20.HasDataSpecification();
-            submodelElement.hasDataSpecification.reference.Add(cd.GetReference());
+
+            // cd should already contain IEC61360Spec; add data spec
+            // TODO (Robin, 2020-09-03): MIHO is not sure, if the data spec reference is correct; please check
+            var eds = cd.IEC61360DataSpec;
+            if (eds != null)
+            {
+                eds.dataSpecification = new AdminShellV20.DataSpecificationRef(cd.GetReference());
+            }
+
             submodelElement.semanticId = new AdminShellV20.SemanticId(cd.GetReference());
         }
 
         private static AdminShellV20.ConceptDescription CreateConceptDescription(
             AdminShellV20.AdministrationShellEnv env, Iec61360Data data)
         {
-            var cd = AdminShellV20.ConceptDescription.CreateNew(AdminShellV20.Identification.IRDI, data.Irdi,
-                idShort: data.IdShort);
-            cd.embeddedDataSpecification = new AdminShellV20.EmbeddedDataSpecification()
-            {
-                dataSpecificationContent = new AdminShellV20.DataSpecificationContent()
-                {
-                    dataSpecificationIEC61360 = data.ToDataSpecification(),
-                },
-            };
+            var cd = AdminShellV20.ConceptDescription.CreateNew(
+                data.IdShort, AdminShellV20.Identification.IRDI, data.Irdi);
+
+            // TODO (Robin, 2020-09-03): check this code
+            cd.IEC61360Content = data.ToDataSpecification();
+            // dead-csharp off
+            //cd.embeddedDataSpecification = new AdminShellV20.EmbeddedDataSpecification()
+            //{
+            //    dataSpecificationContent = new AdminShellV20.DataSpecificationContent()
+            //    {
+            //        dataSpecificationIEC61360 = data.ToDataSpecification(),
+            //    },
+            //};
+            // dead-csharp on
+
             cd.AddIsCaseOf(AdminShellV20.Reference.CreateIrdiReference(data.Irdi));
             env.ConceptDescriptions.Add(cd);
             return cd;
@@ -271,7 +291,7 @@ namespace AasxDictionaryImport
             {
                 var value = Get(lang);
                 if (value.Length > 0)
-                    set.langString.Add(new AdminShellV20.LangStr(lang, value));
+                    set.Add(new AdminShellV20.LangStr(lang, value));
             }
             return set;
         }

@@ -73,6 +73,7 @@
     <Compile Include="AasxFileRepository.cs" />
     <Compile Include="AasxPrintFunctions.cs" />
     <Compile Include="BMEcatTools.cs" />
+    <Compile Include="DispEditHelperModules.cs" />
     <Compile Include="EclassUtils.cs" />
     <Compile Include="SecureConnectFlyout.xaml.cs">
       <DependentUpon>SecureConnectFlyout.xaml</DependentUpon>
@@ -90,6 +91,9 @@
     </Compile>
     <Compile Include="ProgressBarFlyout.xaml.cs">
       <DependentUpon>ProgressBarFlyout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ShowValidationResultsFlyout.xaml.cs">
+      <DependentUpon>ShowValidationResultsFlyout.xaml</DependentUpon>
     </Compile>
     <Compile Include="SelectFromListFlyout.xaml.cs">
       <DependentUpon>SelectFromListFlyout.xaml</DependentUpon>
@@ -150,6 +154,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ShowValidationResultsFlyout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SelectFromListFlyout.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -176,7 +184,7 @@
     <Compile Include="DispEditAasxEntity.xaml.cs">
       <DependentUpon>DispEditAasxEntity.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DispEditHelper.cs" />
+    <Compile Include="DispEditHelperBasics.cs" />
     <Compile Include="FakeBrowser.xaml.cs">
       <DependentUpon>FakeBrowser.xaml</DependentUpon>
     </Compile>

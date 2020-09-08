@@ -69,6 +69,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
@@ -76,6 +77,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\VDI2770.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README\Old_JSON_ConceptDescriptions.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -153,9 +153,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense = "The CountryFlag library (NuGet) is licensed under the MIT license (MIT).";
-                lic.shortLicense += Environment.NewLine +
-                    "This software executes a potential file 'convert.exe', " +
-                    "which is similar to ImageMagic, without deploying the file.";
 
                 lic.isStandardLicense = true;
                 lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(

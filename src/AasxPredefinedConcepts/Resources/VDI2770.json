@@ -40,34 +40,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Document"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": "[ISO 15519-1:2010]",
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Feste und geordnete Menge von für die Verwendung durch Personen bestimmte Informationen, die verwaltet und als Einheit zwischen Benutzern und System ausgetauscht werden kann."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Document"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Feste und geordnete Menge von für die Verwendung durch Personen bestimmte Informationen, die verwaltet und als Einheit zwischen Benutzern und System ausgetauscht werden kann."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -83,7 +74,7 @@
       }
     ],
     "isCaseOf": null,
-    "descriptions": []
+    "descriptions": null
   },
   "CD_VDI2770_DocumentIdValue": {
     "identification": {
@@ -99,34 +90,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": "",
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "die eigentliche Identifikationsnummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "",
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "die eigentliche Identifikationsnummer"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -158,34 +140,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentClassId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eindeutige ID der Klasse in einer Klassifikation."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eindeutige ID der Klasse in einer Klassifikation."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -217,34 +190,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentClassName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Liste von sprachabhängigen Namen zur ClassId. "
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassName"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Liste von sprachabhängigen Namen zur ClassId. "
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -276,43 +240,35 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Classification System"
-                },
-                {
-                  "language": "DE",
-                  "text": "Klassifikationssystem"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Classification System"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentClassificationSystem"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss \"VDI2770:2018\" verwenden werden."
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Klassifikationssystem"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassificationSystem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss \"VDI2770:2018\" verwenden werden."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -344,43 +300,35 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "gebräuchliche Bezeichnung für Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "organization name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "gebräuchliche Bezeichnung für Organisation"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "OrganizationName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Die gebräuchliche Bezeichnung für die Organisation."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "organization name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "OrganizationName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Die gebräuchliche Bezeichnung für die Organisation."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -412,43 +360,35 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "offizieller Name der Organisation"
-                },
-                {
-                  "language": "EN",
-                  "text": "official name of the organization"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "offizieller Name der Organisation"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "OrganizationOfficialName"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Der offizielle Namen der Organisation."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "official name of the organization"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "OrganizationOfficialName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Der offizielle Namen der Organisation."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -492,39 +432,29 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Version des Dokuments"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Version des Dokuments"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentVersion"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Zu jedem Dokument muss eine Menge von mindestens einer Dokumentenversion existieren. Es können auch mehrere Dokumentenversionen ausgeliefert werden."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "DocumentVersion"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Zu jedem Dokument muss eine Menge von mindestens einer Dokumentenversion existieren. Es können auch mehrere Dokumentenversionen ausgeliefert werden."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -556,43 +486,35 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Language"
-                },
-                {
-                  "language": "DE",
-                  "text": "Sprache"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Language"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Language"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eine Liste der im Dokument verwendeten Sprachen."
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Sprache"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Language"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eine Liste der im Dokument verwendeten Sprachen."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -624,43 +546,35 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Title"
-                },
-                {
-                  "language": "DE",
-                  "text": "Titel"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Title"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Title"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sprachabhängiger Titel des Dokuments."
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Titel"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Title"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sprachabhängiger Titel des Dokuments."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -692,34 +606,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "SetDate"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "DATE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde. Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe ISO 8601)."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "SetDate"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde. Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe ISO 8601)."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -751,34 +656,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DocumentVersionId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Verschiedene Versionen eines Dokuments müssen eindeutig identifizierbar sein. Die DocumentVersionId stellt eine innerhalb einer Domäne eindeutige Versionsidentifikationsnummer dar."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentVersionId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Verschiedene Versionen eines Dokuments müssen eindeutig identifizierbar sein. Die DocumentVersionId stellt eine innerhalb einer Domäne eindeutige Versionsidentifikationsnummer dar."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -810,34 +706,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "DigitalFile"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Eine Datei, die die DocumentVersion repräsentiert. Neben der obligatorischen PDF/A Datei können weitere Dateien angegeben werden."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DigitalFile"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eine Datei, die die DocumentVersion repräsentiert. Neben der obligatorischen PDF/A Datei können weitere Dateien angegeben werden."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -870,34 +757,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": "",
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "die eigentliche Identifikationsnummer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "",
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "die eigentliche Identifikationsnummer"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -929,34 +807,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "IsPrimaryDocumentId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "BOOLEAN",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "is the primary document id of the document"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "IsPrimaryDocumentId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "BOOLEAN",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "is the primary document id of the document"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -993,34 +862,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "DocumentVersionId"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Verschiedene Versionen eines Dokuments müssen eindeutig identifizierbar sein. Die DocumentVersionId stellt eine innerhalb einer Domäne eindeutige Versionsidentifikationsnummer dar."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentVersionId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Verschiedene Versionen eines Dokuments müssen eindeutig identifizierbar sein. Die DocumentVersionId stellt eine innerhalb einer Domäne eindeutige Versionsidentifikationsnummer dar."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -1052,34 +912,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Summary"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING_TRANSLATABLE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "Summary"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -1111,34 +962,19 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "",
-                  "text": ""
-                }
-              ]
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "KeyWords"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": []
+
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "KeyWords"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING"
         },
         "dataSpecification": {
           "keys": []
@@ -1162,34 +998,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "StatusValue"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "DATE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden: InReview (in Prüfung), Released (freigegeben)"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "StatusValue"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden: InReview (in Prüfung), Released (freigegeben)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": [
@@ -1221,43 +1048,29 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Role"
-                },
-                {
-                  "language": "DE",
-                  "text": "Rolle"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Role"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN?",
-                  "text": "Role"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste. Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
-                }
-              ]
+            {
+              "language": "DE",
+              "text": "Rolle"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste. Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1281,29 +1094,19 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "",
-                  "text": ""
-                }
-              ]
-            },
-            "shortName": {
-              "langString": []
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": []
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentDomainId"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING"
         },
         "dataSpecification": {
           "keys": [
@@ -1335,29 +1138,25 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": []
-            },
-            "shortName": {
-              "langString": []
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Liste von IDs für ein Objekt, auf das sich das Dokument bezieht."
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "ReferencedObject"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Liste von IDs für ein Objekt, auf das sich das Dokument bezieht."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []

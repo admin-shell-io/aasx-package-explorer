@@ -11,3 +11,4 @@ assign
 standardize
 verbosify
 log
+integrate

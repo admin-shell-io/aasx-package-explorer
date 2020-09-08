@@ -59,6 +59,8 @@ namespace AasxPackageExplorer
 
         public List<SelectFromListFlyoutItem> ListOfItems = null;
 
+        public string[] AlternativeSelectButtons = null;
+
         public int ResultIndex = -1;
         public SelectFromListFlyoutItem ResultItem = null;
 
@@ -93,6 +95,22 @@ namespace AasxPackageExplorer
             ListBoxPresets.Items.Clear();
             foreach (var loi in this.ListOfItems)
                 ListBoxPresets.Items.Add("" + loi.Text);
+
+            // alternative buttons
+            if (this.AlternativeSelectButtons != null)
+            {
+                this.ButtonsPanel.Children.Clear();
+                foreach (var txt in this.AlternativeSelectButtons)
+                {
+                    var b = new Button();
+                    b.Content = "" + txt;
+                    b.Foreground = Brushes.White;
+                    b.FontSize = 18;
+                    b.Padding = new Thickness(4);
+                    b.Margin = new Thickness(4);
+                    this.ButtonsPanel.Children.Add(b);
+                }
+            }
         }
 
         private bool PrepareResult()

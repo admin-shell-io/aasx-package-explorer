@@ -363,7 +363,7 @@ namespace AdminShellNS
             return true;
         }
 
-        public enum PreferredFormat { None, Xml, Json };
+        public enum SerializationFormat { None, Xml, Json };
 
         public static XmlSerializerNamespaces GetXmlDefaultNamespaces()
         {
@@ -375,22 +375,28 @@ namespace AdminShellNS
             return nss;
         }
 
-        public bool SaveAs(string fn, bool writeFreshly = false, PreferredFormat prefFmt = PreferredFormat.None,
-                MemoryStream useMemoryStream = null)
+        public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
+                MemoryStream useMemoryStream = null, bool saveOnlyCopy = false)
         {
             if (fn.ToLower().EndsWith(".xml"))
             {
                 // save only XML
-                this.fn = fn;
+                if (!saveOnlyCopy)
+                    this.fn = fn;
                 try
                 {
-                    using (var s = new StreamWriter(this.fn))
-                    {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                        var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, this.aasenv, nss);
-                    }
+                    Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
+                        : File.Open(fn, FileMode.Create, FileAccess.Write);
+
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
+                    var nss = GetXmlDefaultNamespaces();
+                    serializer.Serialize(s, this.aasenv, nss);
+                    s.Flush();
+
+                    // close?
+                    if (useMemoryStream == null)
+                        s.Close();
                 }
                 catch (Exception ex)
                 {
@@ -405,24 +411,33 @@ namespace AdminShellNS
             {
                 // save only JSON
                 // this funcitonality is a initial test
-                this.fn = fn;
+                if (!saveOnlyCopy)
+                    this.fn = fn;
                 try
                 {
-                    using (var sw = new StreamWriter(fn))
-                    {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        sw.AutoFlush = true;
+                    Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
+                        : File.Open(fn, FileMode.Create, FileAccess.Write);
 
-                        JsonSerializer serializer = new JsonSerializer()
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                            Formatting = Newtonsoft.Json.Formatting.Indented
-                        };
-                        using (JsonWriter writer = new JsonTextWriter(sw))
-                        {
-                            serializer.Serialize(writer, this.aasenv);
-                        }
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    JsonSerializer serializer = new JsonSerializer()
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                        Formatting = Newtonsoft.Json.Formatting.Indented
+                    };
+                    var sw = new StreamWriter(s);
+                    var writer = new JsonTextWriter(sw);
+                    serializer.Serialize(writer, this.aasenv);
+                    writer.Flush();
+                    sw.Flush();
+                    s.Flush();
+
+                    // close?
+                    if (useMemoryStream == null)
+                    {
+                        writer.Close();
+                        sw.Close();
+                        s.Close();
                     }
                 }
                 catch (Exception ex)
@@ -519,8 +534,8 @@ namespace AdminShellNS
                         var name = System.IO.Path.GetFileNameWithoutExtension(
                             specPart.Uri.ToString()).ToLower().Trim();
                         var ext = System.IO.Path.GetExtension(specPart.Uri.ToString()).ToLower().Trim();
-                        if ((ext == ".json" && prefFmt == PreferredFormat.Xml)
-                             || (ext == ".xml" && prefFmt == PreferredFormat.Json)
+                        if ((ext == ".json" && prefFmt == SerializationFormat.Xml)
+                             || (ext == ".xml" && prefFmt == SerializationFormat.Json)
                              || (name.StartsWith("aasenv-with-no-id")))
                         {
                             // try kill specpart
@@ -543,7 +558,7 @@ namespace AdminShellNS
                         if (this.aasenv.AdministrationShells.Count > 0)
                             frn = this.aasenv.AdministrationShells[0].GetFriendlyName() ?? frn;
                         var aas_spec_fn = "/aasx/#/#.aas";
-                        if (prefFmt == PreferredFormat.Json)
+                        if (prefFmt == SerializationFormat.Json)
                             aas_spec_fn += ".json";
                         else
                             aas_spec_fn += ".xml";

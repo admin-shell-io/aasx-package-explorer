@@ -62,7 +62,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var lic = new AasxPluginResultLicense();
                 lic.shortLicense =
                     "This application uses the OPC Foundation .NET Standard stack. See: OPC REDISTRIBUTABLES "
-                    + "Agreement of Use.";
+                    + "Agreement of Use." + Environment.NewLine +
+                    "The OPC UA Example Code of OPC UA Standard is licensed under the MIT license (MIT).";
 
                 lic.isStandardLicense = true;
                 lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
