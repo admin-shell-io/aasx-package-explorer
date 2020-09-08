@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using Newtonsoft.Json;
@@ -173,33 +174,9 @@ namespace AdminShellNS
             return newRecs.Count;
         }
 
-        private static void AddRecordToList(AasValidationRecordList recs, ValidationError ve, int depth = 0)
+        public static int ValidateJSONAlternative(AasValidationRecordList recs, Stream jsonContent)
         {
-            // access
-            if (recs == null || ve == null)
-                return;
-
-            // add rec itself
-            var level = "";
-            if (depth > 0)
-                level = "+-";
-            for (int i = 1; i < depth; i++)
-                level = "  " + level;
-
-            recs.Add(new AasValidationRecord(
-                    AasValidationSeverity.Serialization,
-                    null,
-                    $"JSON {ve.LineNumber,5},{ve.LinePosition,3}: {level}{ve.Message}"));
-
-            // recurse
-            if (ve.ChildErrors != null)
-                foreach (var ce in ve.ChildErrors)
-                    AddRecordToList(recs, ce, depth + 1);
-        }
-
-        public static int ValidateJSON(AasValidationRecordList recs, Stream jsonContent)
-        {
-            // see: https://www.newtonsoft.com/json/help/html/JsonSchema.htm
+            // see: https://github.com/RicoSuter/NJsonSchema/wiki/JsonSchemaValidator
             var newRecs = new AasValidationRecordList();
 
             // access
@@ -212,7 +189,7 @@ namespace AdminShellNS
             if (files == null || files.Length != 1)
                 return -1;
 
-            JSchema schema = null;
+            NJsonSchema.JsonSchema schema = null;
 
             try
             {
@@ -223,10 +200,9 @@ namespace AdminShellNS
                     {
                         using (var streamReader = new StreamReader(schemaStream))
                         {
-                            using (var schemaReader = new JsonTextReader(streamReader))
-                            {
-                                schema = JSchema.Load(schemaReader);
-                            }
+                            var allTxt = streamReader.ReadToEnd();
+                            schema = NJsonSchema.JsonSchema.FromJsonAsync(allTxt).GetAwaiter().GetResult();
+                            break;
                         }
                     }
                 }
@@ -237,16 +213,21 @@ namespace AdminShellNS
                     ex.Message);
             }
 
+            if (schema == null)
+            {
+                throw new FileNotFoundException("ValidateJSON: Schema not found properly.");
+            }
+
+            // create validator
+            var validator = new NJsonSchema.Validation.JsonSchemaValidator();
+
             // load the JSON content
-            JObject json = null;
+            string jsonTxt = null;
             try
             {
                 using (var streamReader = new StreamReader(jsonContent))
                 {
-                    using (var jsonReader = new JsonTextReader(streamReader))
-                    {
-                        json = JObject.Load(jsonReader);
-                    }
+                    jsonTxt = streamReader.ReadToEnd();
                 }
             }
             catch (Exception ex)
@@ -255,14 +236,14 @@ namespace AdminShellNS
                     ex.Message);
             }
 
-            if (json == null)
+            if (jsonTxt == null || jsonTxt == "")
                 throw new InvalidOperationException("ValidateJSON: Error loading JSON content gave null.");
 
             // validate
-            IList<ValidationError> errors;
+            ICollection<NJsonSchema.Validation.ValidationError> errors;
             try
             {
-                json.IsValid(schema, out errors);
+                errors = validator.Validate(jsonTxt, schema);
             }
             catch (Exception ex)
             {
@@ -273,7 +254,12 @@ namespace AdminShellNS
             // re-format messages
             if (errors != null)
                 foreach (var ve in errors)
-                    AddRecordToList(newRecs, ve, depth: 0);
+                {
+                    var msg = ("" + ve.ToString());
+                    msg = Regex.Replace(msg, @"\s+", " ");
+                    newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null,
+                        $"JSON: {ve.LineNumber,5},{ve.LinePosition:3}: {msg}"));
+                }
 
             // result
             recs.AddRange(newRecs);

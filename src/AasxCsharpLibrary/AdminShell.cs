@@ -4486,7 +4486,7 @@ namespace AdminShellNS
                 {
                     if (kind == null)
                         return null;
-                    return kind.kind;
+                    return "XXX" + kind.kind;
                 }
                 set
                 {

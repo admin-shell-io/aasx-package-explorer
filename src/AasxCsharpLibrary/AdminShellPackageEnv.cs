@@ -376,12 +376,13 @@ namespace AdminShellNS
         }
 
         public bool SaveAs(string fn, bool writeFreshly = false, SerializationFormat prefFmt = SerializationFormat.None,
-                MemoryStream useMemoryStream = null)
+                MemoryStream useMemoryStream = null, bool saveOnlyCopy = false)
         {
             if (fn.ToLower().EndsWith(".xml"))
             {
                 // save only XML
-                this.fn = fn;
+                if (!saveOnlyCopy)
+                    this.fn = fn;
                 try
                 {
                     Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
@@ -391,6 +392,7 @@ namespace AdminShellNS
                     var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                     var nss = GetXmlDefaultNamespaces();
                     serializer.Serialize(s, this.aasenv, nss);
+                    s.Flush();
 
                     // close?
                     if (useMemoryStream == null)
@@ -409,24 +411,33 @@ namespace AdminShellNS
             {
                 // save only JSON
                 // this funcitonality is a initial test
-                this.fn = fn;
+                if (!saveOnlyCopy)
+                    this.fn = fn;
                 try
                 {
-                    using (var sw = new StreamWriter(fn))
-                    {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        sw.AutoFlush = true;
+                    Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
+                        : File.Open(fn, FileMode.Create, FileAccess.Write);
 
-                        JsonSerializer serializer = new JsonSerializer()
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                            Formatting = Newtonsoft.Json.Formatting.Indented
-                        };
-                        using (JsonWriter writer = new JsonTextWriter(sw))
-                        {
-                            serializer.Serialize(writer, this.aasenv);
-                        }
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    JsonSerializer serializer = new JsonSerializer()
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                        Formatting = Newtonsoft.Json.Formatting.Indented
+                    };
+                    var sw = new StreamWriter(s);
+                    var writer = new JsonTextWriter(sw);
+                    serializer.Serialize(writer, this.aasenv);
+                    writer.Flush();
+                    sw.Flush();
+                    s.Flush();
+
+                    // close?
+                    if (useMemoryStream == null)
+                    {
+                        writer.Close();
+                        sw.Close();
+                        s.Close();
                     }
                 }
                 catch (Exception ex)

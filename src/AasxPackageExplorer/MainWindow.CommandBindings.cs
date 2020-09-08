@@ -527,11 +527,21 @@ namespace AasxPackageExplorer
 
                 // validate as XML
                 var ms = new MemoryStream();
-                this.thePackageEnv.SaveAs("noname.xml", true, AdminShellPackageEnv.SerializationFormat.Xml, ms);
+                this.thePackageEnv.SaveAs("noname.xml", true, AdminShellPackageEnv.SerializationFormat.Xml, ms,
+                    saveOnlyCopy: true);
                 ms.Flush();
                 ms.Position = 0;
                 AasSchemaValidation.ValidateXML(recs, ms);
                 ms.Close();
+
+                // validate as JSON
+                var ms2 = new MemoryStream();
+                this.thePackageEnv.SaveAs("noname.json", true, AdminShellPackageEnv.SerializationFormat.Json, ms2,
+                    saveOnlyCopy: true);
+                ms2.Flush();
+                ms2.Position = 0;
+                AasSchemaValidation.ValidateJSONAlternative(recs, ms2);
+                ms2.Close();
             }
             catch (Exception ex)
             {

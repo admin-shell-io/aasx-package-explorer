@@ -1821,7 +1821,7 @@ namespace AasxGenerate
                             {
                                 Console.Out.WriteLine("Validating file {0} against JSON ..", fn);
                                 var stream = File.Open(fn, FileMode.Open, FileAccess.Read);
-                                AasSchemaValidation.ValidateJSON(recs, stream);
+                                AasSchemaValidation.ValidateJSONAlternative(recs, stream);
                             }
                             else
                             {
