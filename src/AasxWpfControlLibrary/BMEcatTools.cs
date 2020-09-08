@@ -134,7 +134,7 @@ namespace AasxPackageExplorer
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
                                     using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                        AdminShell.Identification.IRDI, FT_ID))
+                                        "" + attribute_label_id, AdminShell.Identification.IRDI, FT_ID))
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -306,7 +306,7 @@ namespace AasxPackageExplorer
                                             }
 
                                             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                                AdminShell.Identification.IRDI, FT_ID))
+                                               "" + extendedname, AdminShell.Identification.IRDI, FT_ID))
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(

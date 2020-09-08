@@ -344,7 +344,7 @@ namespace AasxAmlImExport
                         {
                             if (res == null)
                                 res = new AdminShell.HasDataSpecification();
-                            res.reference.Add(r);
+                            res.Add(new AdminShell.EmbeddedDataSpecification(r));
                         }
                     }
 
@@ -1327,7 +1327,7 @@ namespace AasxAmlImExport
                                         {
                                             // embedded data spec for the SDK
                                             var eds = new AdminShell.EmbeddedDataSpecification();
-                                            cd.embeddedDataSpecification = eds;
+                                            cd.embeddedDataSpecification.Add(eds);
 
                                             /*
                                              TODO (Michael Hoffmeister, 2020-08-01): fill out 

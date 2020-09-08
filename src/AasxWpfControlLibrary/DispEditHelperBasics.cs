@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
     // Helpers
     //
 
-    public class DispEditHelper
+    public class DispEditHelperBasics
     {
         //
         // Members
@@ -118,7 +118,7 @@ namespace AasxPackageExplorer
         // Highlighting
         //
 
-        public void HightligtStateElement(FrameworkElement fe, bool highlighted)
+        public void HighligtStateElement(FrameworkElement fe, bool highlighted)
         {
             // access
             if (fe == null)
@@ -203,14 +203,14 @@ namespace AasxPackageExplorer
             {
                 if (this.lastHighlightedField == null)
                     return;
-                HightligtStateElement(this.lastHighlightedField, highlighted: false);
+                HighligtStateElement(this.lastHighlightedField, highlighted: false);
             }
             catch { }
             // ReSharper enable EmptyGeneralCatchClause
         }
 
         //
-        // small widget hanlding
+        // small widget handling
         //
 
         public Grid AddSmallGrid(int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
@@ -479,7 +479,7 @@ namespace AasxPackageExplorer
             StackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null,
             string[] auxButtonToolTips = null,
@@ -497,7 +497,7 @@ namespace AasxPackageExplorer
             StackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null,
@@ -584,7 +584,7 @@ namespace AasxPackageExplorer
                 if (cb != null && this.highlightField != null && valueHash != null &&
                         this.highlightField.fieldHash == valueHash.Value &&
                         (containingObject == null || containingObject == this.highlightField.containingObject))
-                    this.HightligtStateElement(cb, true);
+                    this.HighligtStateElement(cb, true);
             }
             else
             {
@@ -597,7 +597,7 @@ namespace AasxPackageExplorer
                 if (tb != null && this.highlightField != null && valueHash != null &&
                         this.highlightField.fieldHash == valueHash.Value &&
                         (containingObject == null || containingObject == this.highlightField.containingObject))
-                    this.HightligtStateElement(tb, true);
+                    this.HighligtStateElement(tb, true);
             }
 
             if (auxButton)
@@ -729,7 +729,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
-                Func<object, ModifyRepo.LambdaAction> action = null)
+                Func<int, ModifyRepo.LambdaAction> action = null)
         {
             // access 
             if (repo == null || action == null || actionStr == null)
@@ -800,7 +800,7 @@ namespace AasxPackageExplorer
 
         public void AddAction(
             StackPanel view, string key, string actionStr, ModifyRepo repo = null,
-            Func<object, ModifyRepo.LambdaAction> action = null)
+            Func<int, ModifyRepo.LambdaAction> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
@@ -911,7 +911,7 @@ namespace AasxPackageExplorer
                         if (tbLang != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].lang.GetHashCode() &&
                                 (this.highlightField.containingObject == langStr[currentI]))
-                            this.HightligtStateElement(tbLang, true);
+                            this.HighligtStateElement(tbLang, true);
 
                         // str
                         var tbStr = AddSmallTextBoxTo(
@@ -929,7 +929,7 @@ namespace AasxPackageExplorer
                         if (tbStr != null && this.highlightField != null &&
                                 this.highlightField.fieldHash == langStr[currentI].str.GetHashCode() &&
                                 (this.highlightField.containingObject == langStr[currentI]))
-                            this.HightligtStateElement(tbStr, true);
+                            this.HighligtStateElement(tbStr, true);
 
                         // button [-]
                         repo.RegisterControl(
@@ -1325,7 +1325,7 @@ namespace AasxPackageExplorer
                         if (cbType != null && this.highlightField != null && keys[currentI].type != null &&
                                 this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(cbType, true);
+                            this.HighligtStateElement(cbType, true);
 
                         // local
                         repo.RegisterControl(
@@ -1363,7 +1363,7 @@ namespace AasxPackageExplorer
                         if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
                                 this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(cbIdType, true);
+                            this.HighligtStateElement(cbIdType, true);
 
                         // value
                         var tbValue = AddSmallTextBoxTo(
@@ -1383,7 +1383,7 @@ namespace AasxPackageExplorer
                         if (tbValue != null && this.highlightField != null && keys[currentI].value != null &&
                                 this.highlightField.fieldHash == keys[currentI].value.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
-                            this.HightligtStateElement(tbValue, true);
+                            this.HighligtStateElement(tbValue, true);
 
                         // button [-]
                         repo.RegisterControl(
@@ -1412,7 +1412,7 @@ namespace AasxPackageExplorer
 
         public bool SafeguardAccess(
             StackPanel view, ModifyRepo repo, object data, string key, string actionStr,
-            Func<object, ModifyRepo.LambdaAction> action)
+            Func<int, ModifyRepo.LambdaAction> action)
         {
             if (repo != null && data == null)
                 AddAction(view, key, actionStr, repo, action);
@@ -1488,30 +1488,28 @@ namespace AasxPackageExplorer
                 stack, label, new[] { "Move up", "Move down", "Delete" }, repo,
                 (buttonNdx) =>
                 {
-                    if (buttonNdx is int)
+                    if (buttonNdx == 0)
                     {
-                        if ((int)buttonNdx == 0)
-                        {
-                            MoveElementInListUpwards<T>(list, entity);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                        }
-
-                        if ((int)buttonNdx == 1)
-                        {
-                            MoveElementInListDownwards<T>(list, entity);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                        }
-
-                        if ((int)buttonNdx == 2)
-                            if (this.flyoutProvider != null &&
-                                    MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
-                                        "Delete selected entity? This operation can not be reverted!", "AASX",
-                                        MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                            {
-                                var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
-                            }
+                        MoveElementInListUpwards<T>(list, entity);
+                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
+
+                    if (buttonNdx == 1)
+                    {
+                        MoveElementInListDownwards<T>(list, entity);
+                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                    }
+
+                    if (buttonNdx == 2)
+                        if (this.flyoutProvider != null &&
+                                MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                                    "Delete selected entity? This operation can not be reverted!", "AASX",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        {
+                            var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                        }
+
                     return new ModifyRepo.LambdaActionNone();
                 });
         }
@@ -1525,32 +1523,30 @@ namespace AasxPackageExplorer
                     stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo,
                     (buttonNdx) =>
                     {
-                        if (buttonNdx is int)
+                        if (buttonNdx == 0)
+                            qualifiers.Add(new AdminShell.Qualifier());
+
+                        if (buttonNdx == 1)
                         {
-                            if ((int)buttonNdx == 0)
-                                qualifiers.Add(new AdminShell.Qualifier());
-
-                            if ((int)buttonNdx == 1)
+                            if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
+                                return new ModifyRepo.LambdaActionNone();
+                            try
                             {
-                                if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
-                                    return new ModifyRepo.LambdaActionNone();
-                                try
-                                {
-                                    var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                                    var uc = new SelectQualifierPresetFlyout(fullfn);
-                                    flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.ResultQualifier != null)
-                                        qualifiers.Add(uc.ResultQualifier);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
-                                }
+                                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                                var uc = new SelectQualifierPresetFlyout(fullfn);
+                                flyoutProvider.StartFlyoverModal(uc);
+                                if (uc.ResultQualifier != null)
+                                    qualifiers.Add(uc.ResultQualifier);
                             }
-
-                            if ((int)buttonNdx == 2 && qualifiers.Count > 0)
-                                qualifiers.RemoveAt(qualifiers.Count - 1);
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                            }
                         }
+
+                        if (buttonNdx == 2 && qualifiers.Count > 0)
+                            qualifiers.RemoveAt(qualifiers.Count - 1);
+
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     });
             }
@@ -1800,5 +1796,26 @@ namespace AasxPackageExplorer
             AddHintBubble(view, hintMode, new[] { hint });
         }
 
+        public T[] ConcatArrays<T>(IEnumerable<T> a, IEnumerable<T> b)
+        {
+            if (a == null && b == null)
+                return null;
+
+            if (a == null)
+                return b.ToArray();
+
+            if (b == null)
+                return a.ToArray();
+
+            var l = new List<T>();
+            l.AddRange(a);
+            l.AddRange(b);
+            return l.ToArray();
+        }
+
+        public HintCheck[] ConcatHintChecks(IEnumerable<HintCheck> a, IEnumerable<HintCheck> b)
+        {
+            return ConcatArrays<HintCheck>(a, b);
+        }
     }
 }

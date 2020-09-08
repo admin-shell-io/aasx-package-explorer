@@ -479,19 +479,19 @@ namespace AasxPluginExportTable
                             for (int icoi = 0; icoi < cd.IsCaseOf.Count; icoi++)
                                 repReference(head, $"isCaseOf[{icoi}]", cd.IsCaseOf[icoi]);
 
-                        var iec = cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360;
+                        var iec = cd.GetIEC61360();
                         if (iec != null)
                         {
                             //-2- CD.{preferredName[@en..], shortName[@en..], anyName, unit, unitId,
                             // sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
-                            repListOfLangStr(head + "preferredName", iec.preferredName?.langString);
-                            repListOfLangStr(head + "shortName", iec.shortName?.langString);
+                            repListOfLangStr(head + "preferredName", iec.preferredName);
+                            repListOfLangStr(head + "shortName", iec.shortName);
                             rep(head + "unit", "" + iec.unit);
                             repReference(head, "unitId", AdminShell.Reference.CreateNew(iec.unitId?.Keys));
                             rep(head + "sourceOfDefinition", "" + iec.sourceOfDefinition);
                             rep(head + "symbol", "" + iec.symbol);
                             rep(head + "dataType", "" + iec.dataType);
-                            repListOfLangStr(head + "definition", iec.definition?.langString);
+                            repListOfLangStr(head + "definition", iec.definition);
                             rep(head + "valueFormat", "" + iec.valueFormat);
 
                             // do a bit for anyName

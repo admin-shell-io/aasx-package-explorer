@@ -1010,11 +1010,11 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().definition.langString, "Definition")));
+                    CreateLangStrContainer(concept.GetIEC61360().definition, "Definition")));
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().preferredName.langString, "PreferredName")));
+                    CreateLangStrContainer(concept.GetIEC61360().preferredName, "PreferredName")));
 
             refs.Add(
                 CreateReference(
@@ -1116,9 +1116,9 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShellV20.Reference _ref in data.reference)
+            foreach (var _ref in data)
             {
-                refs.Add(CreateReference("HasComponent", CreateReference(_ref)));
+                refs.Add(CreateReference("HasComponent", CreateReference(_ref?.dataSpecification)));
             }
 
             obj.References = refs.ToArray();

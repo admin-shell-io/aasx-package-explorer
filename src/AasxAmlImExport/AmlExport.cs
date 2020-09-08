@@ -219,11 +219,12 @@ namespace AasxAmlImExport
 
         private static void SetHasDataSpecification(AttributeSequence aseq, AdminShell.HasDataSpecification ds)
         {
-            if (aseq == null || ds == null || ds.reference == null || ds.reference.Count < 1)
+            if (aseq == null || ds == null || ds.Count < 1)
                 return;
-            foreach (var r in ds.reference)
+            foreach (var r in ds)
                 AppendAttributeNameAndRole(
-                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef, ToAmlReference(r));
+                    aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef,
+                    ToAmlReference(r?.dataSpecification));
         }
 
         private static void SetQualifiers(
@@ -850,15 +851,15 @@ namespace AasxAmlImExport
                 AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
 
             // which data spec as reference
-            if (cd.embeddedDataSpecification.dataSpecification != null)
-                AppendAttributeNameAndRole(
-                    aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
-                    ToAmlReference(cd.embeddedDataSpecification.dataSpecification));
+            if (cd.embeddedDataSpecification != null)
+                foreach (var eds in cd.embeddedDataSpecification)
+                    if (eds.dataSpecification != null)
+                        AppendAttributeNameAndRole(
+                            aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
+                            ToAmlReference(eds.dataSpecification));
 
             // which data spec to take as source?
-            AdminShell.DataSpecificationIEC61360 source61360 = null;
-            if (cd.embeddedDataSpecification?.dataSpecificationContent?.dataSpecificationIEC61360 != null)
-                source61360 = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
+            var source61360 = cd.embeddedDataSpecification?.IEC61360Content;
             // TODO (Michael Hoffmeister, 2020-08-01): If further data specifications exist (in future), add here
 
             // decide which approach to take (1 or 2 IE)
@@ -871,19 +872,17 @@ namespace AasxAmlImExport
                 {
                     var eds = AppendAttributeNameAndRole(
                         aseqOuter, "dataSpecification", AmlConst.Attributes.CD_EmbeddedDataSpecification);
-                    if (cd.embeddedDataSpecification.dataSpecificationContent != null)
+                    if (source61360 != null)
                     {
                         var dsc = AppendAttributeNameAndRole(
                             eds.Attribute, "dataSpecificationContent",
                             AmlConst.Attributes.CD_DataSpecificationContent);
-                        if (cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
-                        {
-                            // create attribute branch for CD contents
-                            var dsc61360 = AppendAttributeNameAndRole(
-                                dsc.Attribute, "dataSpecificationIEC61360",
-                                AmlConst.Attributes.CD_DataSpecification61360);
-                            dest61360 = dsc61360.Attribute;
-                        }
+
+                        // create attribute branch for CD contents
+                        var dsc61360 = AppendAttributeNameAndRole(
+                            dsc.Attribute, "dataSpecificationIEC61360",
+                            AmlConst.Attributes.CD_DataSpecification61360);
+                        dest61360 = dsc61360.Attribute;
                     }
                 }
             }
@@ -902,10 +901,10 @@ namespace AasxAmlImExport
 
                 // specific data
                 SetLangStr(
-                    dest61360, source61360.preferredName?.langString, "preferredName",
+                    dest61360, source61360.preferredName, "preferredName",
                     AmlConst.Attributes.CD_DSC61360_PreferredName);
                 SetLangStr(
-                    dest61360, source61360.shortName?.langString, "shortName",
+                    dest61360, source61360.shortName, "shortName",
                     AmlConst.Attributes.CD_DSC61360_ShortName);
                 if (source61360.unit != null)
                     AppendAttributeNameAndRole(
@@ -929,7 +928,7 @@ namespace AasxAmlImExport
                     AppendAttributeNameAndRole(
                         dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, source61360.dataType);
                 SetLangStr(
-                    dest61360, source61360.definition?.langString, "definition",
+                    dest61360, source61360.definition, "definition",
                     AmlConst.Attributes.CD_DSC61360_Definition);
             }
         }

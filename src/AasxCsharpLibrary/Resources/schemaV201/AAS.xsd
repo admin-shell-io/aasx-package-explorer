@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="qualified" targetNamespace="http://www.admin-shell.io/aas/2/0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:aas="http://www.admin-shell.io/aas/2/0" xmlns:abac="http://www.admin-shell.io/aas/abac/2/0" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0" xmlns:Q1="http://www.admin-shell.io/aas/2/0">
+	<import namespace="http://www.admin-shell.io/aas/abac/2/0" schemaLocation="AAS_ABAC.xsd"/>
+	<import namespace="http://www.admin-shell.io/IEC61360/2/0" schemaLocation="IEC61360.xsd"/>
+	<attributeGroup name="keyTypes">
+		<attribute name="identifierType" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="Custom"/>
+					<enumeration value="IRDI"/>
+					<enumeration value="IRI"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="localKeyType" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="idShort"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</attributeGroup>
+	<complexType name="aasenv_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="assetAdministrationShells" type="aas:assetAdministrationShells_t" />
+			<element maxOccurs="1" minOccurs="0" name="assets" type="aas:assets_t"/>
+			<element maxOccurs="1" minOccurs="0" name="submodels" type="aas:submodels_t" />
+			<element maxOccurs="1" minOccurs="0" name="conceptDescriptions" type="aas:conceptDescriptions_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="administration_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="version" type="string" />
+			<element maxOccurs="1" minOccurs="0" name="revision" type="string"/>
+		</sequence>
+	</complexType>
+	<complexType name="asset_t">
+		<sequence>
+			<group ref="aas:identifiable"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element maxOccurs="1" minOccurs="0" name="assetIdentificationModelRef" type="aas:reference_t"/>
+			<element maxOccurs="1" minOccurs="0" name="billOfMaterialRef" type="aas:reference_t"/>
+			<element maxOccurs="1" minOccurs="0" name="kind" type="aas:assetKind_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="assetAdministrationShell_t">
+		<sequence>
+			<group ref="aas:identifiable"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element maxOccurs="1" minOccurs="0" name="derivedFrom" type="aas:reference_t" />
+			<element maxOccurs="1" minOccurs="1" name="assetRef" type="aas:reference_t" />
+			<element maxOccurs="1" minOccurs="0" name="submodelRefs" type="aas:submodelRefs_t" />
+			<element maxOccurs="1" minOccurs="0" name="views" type="aas:views_t" />
+			<element maxOccurs="1" minOccurs="0" name="conceptDictionaries" type="aas:conceptDictionaries_t"/>
+			<element maxOccurs="1" minOccurs="0" name="security" type="abac:security_t" />
+        </sequence>
+	</complexType>
+	<complexType name="assetAdministrationShells_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="assetAdministrationShell" type="aas:assetAdministrationShell_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="assets_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="asset" type="aas:asset_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="basicEvent_t">
+		<complexContent>
+			<extension base="aas:eventAbstract_t">
+				<sequence>
+					<element maxOccurs="1" minOccurs="1" name="observed" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="blob_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="value" type="aas:blobType_t"/>
+					<element maxOccurs="1" minOccurs="1" name="mimeType" type="string"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="blobType_t">
+		<simpleContent>
+			<extension base="base64Binary"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="conceptDescription_t">
+		<sequence>
+			<group ref="aas:identifiable"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="isCaseOf" type="aas:reference_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="conceptDescriptionRefs_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="conceptDescriptionRef" type="aas:reference_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="conceptDescriptions_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="conceptDescription" type="aas:conceptDescription_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="conceptDictionaries_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="conceptDictionary" type="aas:conceptDictionary_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="conceptDictionary_t">
+		<sequence>
+			<group ref="aas:referable" />
+			<element name="conceptDescriptionRefs" type="aas:conceptDescriptionRefs_t"></element>
+		</sequence>
+	</complexType>
+	<complexType name="constraint_t">
+		<choice>
+			<element maxOccurs="1" minOccurs="0" name="formula" type="aas:formula_t"/>
+			<element maxOccurs="1" minOccurs="0" name="qualifier" type="aas:qualifier_t"/>
+		</choice>
+	</complexType>
+	<complexType name="containedElements_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="containedElementRef" type="aas:reference_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="dataSpecificationContent_t">
+		<choice>
+			<element name="dataSpecificationIEC61360" type="IEC61360:dataSpecificationIEC61630_t"/>
+		</choice>
+	</complexType>
+	<complexType name="dataTypeDef_t">
+		<simpleContent>
+			<extension base="string"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="embeddedDataSpecification_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="dataSpecificationContent" type="aas:dataSpecificationContent_t" />
+			<element maxOccurs="1" minOccurs="0" name="dataSpecification" type="aas:reference_t"/>
+        </sequence>
+	</complexType>
+	<complexType name="entity_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+                    <element name="statements" type="aas:submodelElements_t"/>
+                    <element name="entityType">
+						<simpleType>
+							<restriction base="aas:entityType_t">
+								<enumeration value="CoManagedEntity" />
+								<enumeration value="SelfManagedEntity" />
+							</restriction>
+						</simpleType>
+					</element>
+                    <element name="assetRef" type="aas:reference_t" minOccurs="0" maxOccurs="1"/>
+
+
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="eventAbstract_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t"/>
+		</complexContent>
+	</complexType>
+	<complexType name="file_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element name="mimeType" type="string"/>
+					<element name="value" type="aas:pathType_t" minOccurs="0" maxOccurs="1"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="formula_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="dependsOnRefs" type="aas:references_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="identification_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="idType" use="optional">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="Custom"/>
+							<enumeration value="IRDI"/>
+							<enumeration value="IRI"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="identifier_t">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="id" type="string"/>
+			<element maxOccurs="1" minOccurs="1" name="idType" type="aas:identifierType_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="idPropertyDefinition_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="idType" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="idShort_t">
+		<simpleContent>
+			<extension base="string"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="key_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="idType">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="Custom"/>
+							<enumeration value="FragmentId"/>
+							<enumeration value="IdShort"/>
+							<enumeration value="IRDI"/>
+							<enumeration value="IRI"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+				<attribute name="local" type="boolean"/>
+				<attribute name="type">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="AccessPermissionRule"/>
+							<enumeration value="AnnotatedRelationshipElement"/>
+							<enumeration value="Asset"/>
+							<enumeration value="AssetAdministrationShell"/>
+							<enumeration value="BasicEvent"/>
+							<enumeration value="Blob"/>
+							<enumeration value="Capability"/>
+							<enumeration value="ConceptDescription"/>
+							<enumeration value="ConceptDictionary"/>
+							<enumeration value="DataElement"/>
+							<enumeration value="Entity"/>
+							<enumeration value="Event"/>
+							<enumeration value="File"/>
+							<enumeration value="FragmentReference"/>
+							<enumeration value="GlobalReference"/>
+							<enumeration value="MultiLanguageProperty"/>
+							<enumeration value="Operation"/>
+							<enumeration value="Property"/>
+							<enumeration value="Range"/>
+							<enumeration value="ReferenceElement"/>
+							<enumeration value="RelationshipElement"/>
+							<enumeration value="Submodel"/>
+							<enumeration value="SubmodelElement"/>
+							<enumeration value="SubmodelElementCollection"/>
+							<enumeration value="View"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="keys_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" ref="aas:key"/>
+		</sequence>
+	</complexType>
+	<complexType name="langString_t">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="lang" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="langStringSet_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="langString" type="aas:langString_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="multiLanguageProperty_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
+					<element maxOccurs="1" minOccurs="0" name="value" type="aas:langStringSet_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="operation_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0" name="inputVariable" type="aas:operationVariable_t"/>
+					<element maxOccurs="unbounded" minOccurs="0" name="outputVariable" type="aas:operationVariable_t"/>
+					<element maxOccurs="unbounded" minOccurs="0" name="inoutputVariable" type="aas:operationVariable_t"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="operationVariable_t">
+		<sequence>
+			<element name="value" type="aas:submodelElement_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="pathType_t">
+		<simpleContent>
+			<extension base="string"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="property_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
+					<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
+					<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="qualifier_t">
+		<sequence>
+      <!-- MIHO: because of Referable, move this to top! -->
+      <group ref="aas:hasSemantics"/>
+			<element maxOccurs="1" minOccurs="1" name="type" type="aas:qualifierType_t"/>
+			<element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t"/>
+			<element maxOccurs="1" minOccurs="0" name="valueId" type="aas:reference_t"/>
+			<element maxOccurs="1" minOccurs="0" name="value" type="aas:valueDataType_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="qualifierType_t">
+		<simpleContent>
+			<extension base="string"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="range_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+                    <element maxOccurs="1" minOccurs="1" name="valueType" type="aas:dataTypeDef_t" />
+                    <element maxOccurs="1" minOccurs="0" name="min" type="aas:valueDataType_t" />
+                    <element maxOccurs="1" minOccurs="0" name="max" type="aas:valueDataType_t"/>
+
+
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="reference_t">
+		<sequence>
+			<element name="keys" type="aas:keys_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="referenceElement_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element name="value" type="aas:reference_t" minOccurs="0" maxOccurs="1"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="references_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="reference" type="aas:reference_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="relationshipElement_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element name="first" type="aas:reference_t"/>
+					<element name="second" type="aas:reference_t"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="semanticId_t">
+		<complexContent>
+			<extension base="aas:reference_t"/>
+		</complexContent>
+	</complexType>
+	<complexType name="submodel_t">
+		<sequence>
+			<group ref="aas:identifiable"/>
+			<group ref="aas:hasKind"></group>
+			<group ref="aas:hasSemantics"></group>
+			<group ref="aas:qualifiable"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element name="submodelElements" type="aas:submodelElements_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="submodelElement_t">
+		<choice>
+			<group ref="aas:dataElement" />
+			<element name="annotatedRelationshipElement" type="aas:annotatedRelationshipElement_t"/>
+			<element name="basicEvent" type="aas:basicEvent_t"/>
+			<element name="capability" type="aas:submodelElementAbstract_t"/>
+			<element name="entity" type="aas:entity_t"/>
+			<element name="operation" type="aas:operation_t"/>
+			<element name="relationshipElement" type="aas:relationshipElement_t"/>
+			<element name="submodelElementCollection" type="aas:submodelElementCollection_t"/>
+		</choice>
+	</complexType>
+	<complexType name="submodelElementAbstract_t">
+		<sequence>
+			<group ref="aas:referable"/>
+			<group ref="aas:hasKind"/>
+			<group ref="aas:hasSemantics"/>			
+			<group ref="aas:qualifiable"/>
+			<group ref="aas:hasDataSpecification"/>
+		</sequence>
+	</complexType>
+	<complexType name="submodelElementCollection_t">
+		<complexContent>
+			<extension base="aas:submodelElementAbstract_t">
+				<sequence>
+					<element name="value" type="aas:submodelElements_t"/>
+					<element name="ordered" type="boolean"/>
+					<element name="allowDuplicates" type="boolean"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="submodelElements_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="submodelElement" type="aas:submodelElement_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="submodelRefs_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="submodelRef" type="aas:reference_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="submodels_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="submodel" type="aas:submodel_t"/>
+		</sequence>
+	</complexType>
+	<complexType name="valueDataType_t">
+		<simpleContent>
+			<extension base="anySimpleType"/>
+		</simpleContent>
+	</complexType>
+	<complexType name="view_t">
+		<sequence>
+			<group ref="aas:referable"/>
+			<group ref="aas:hasSemantics"/>
+			<group ref="aas:hasDataSpecification"/>
+			<element name="containedElements" type="aas:containedElements_t" ></element>
+		</sequence>
+	</complexType>
+	<complexType name="views_t">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="view" type="aas:view_t"/>
+		</sequence>
+	</complexType>
+	<element name="aasenv" type="aas:aasenv_t"/>
+	<element name="key" type="aas:key_t"/>
+	<group name="hasDataSpecification">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="embeddedDataSpecification" type="aas:embeddedDataSpecification_t"/>
+		</sequence>
+	</group>
+	<group name="hasKind">
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="kind" type="aas:modelingKind_t"/>
+		</sequence>
+	</group>
+	<group name="hasSemantics">
+		<sequence>
+			<element minOccurs="0" name="semanticId" type="aas:semanticId_t"/>
+		</sequence>
+	</group>
+	<group name="identifiable">
+		<sequence>
+			<group ref="aas:referable"/>
+			<element maxOccurs="1" minOccurs="1" name="identification" type="aas:identification_t" />
+			<element maxOccurs="1" minOccurs="0" name="administration" type="aas:administration_t" />
+		</sequence>
+	</group>
+	<group name="referable">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="idShort" type="aas:idShort_t" />
+			<element maxOccurs="1" minOccurs="0" name="category" type="string"/>
+			<element maxOccurs="1" minOccurs="0" name="description" type="aas:langStringSet_t"/>
+			<element maxOccurs="1" minOccurs="0" name="parent" type="aas:reference_t"/>
+        </sequence>
+	</group>
+	<group name="qualifiable">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="qualifier" type="aas:constraint_t"/>
+		</sequence>
+	</group>
+	<simpleType name="assetKind_t">
+		<restriction base="string">
+			<enumeration value="Instance"/>
+			<enumeration value="Template"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="entityType_t">
+		<restriction base="string"/>
+	</simpleType>
+	<simpleType name="identifierType_t">
+		<restriction base="string">
+			<enumeration value="Custom"/>
+			<enumeration value="IRDI"/>
+			<enumeration value="IRI"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="modelingKind_t">
+		<restriction base="string">
+			<enumeration value="Instance"/>
+			<enumeration value="Template"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="annotatedRelationshipElement_t">
+		<complexContent>
+			<extension base="aas:relationshipElement_t">
+			<sequence>
+			<element name="annotations" type="aas:dataElements_t"/>
+			</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<group name="dataElement">
+		<choice>
+			<element name="multiLanguageProperty" type="aas:multiLanguageProperty_t"/>
+			<element name="property" type="aas:property_t"/>
+			<element name="range" type="aas:range_t"/>
+			<element name="blob" type="aas:blob_t"/>
+			<element name="file" type="aas:file_t"/>
+			<element name="referenceElement" type="aas:referenceElement_t"/>
+		</choice>
+	</group>
+
+	<complexType name="dataElements_t">
+		<sequence>
+			<element name="dataElement" type="aas:dataElementAbstract_t" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="dataElementAbstract_t">
+        <group ref="aas:dataElement"></group>
+    </complexType>
+</schema>

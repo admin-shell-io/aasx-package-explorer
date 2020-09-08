@@ -74,51 +74,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Generelle Informationen"
-                },
-                {
-                  "language": "en",
-                  "text": "General information"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Generelle Informationen"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "General information"
-                },
-                {
-                  "language": "DE",
-                  "text": "Generelle Informationen"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Generelle Informationen, zum Beispiel Bestell- und Herstellerinformationen"
-                },
-                {
-                  "language": "en",
-                  "text": "General information, for example ordering and manufacturer information"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "General information"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "General information"
+            },
+            {
+              "language": "DE",
+              "text": "Generelle Informationen"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Generelle Informationen, zum Beispiel Bestell- und Herstellerinformationen"
+            },
+            {
+              "language": "en",
+              "text": "General information, for example ordering and manufacturer information"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -145,51 +137,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Herstellername"
-                },
-                {
-                  "language": "en",
-                  "text": "Manufacturer name"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Herstellername"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Herstellername"
-                },
-                {
-                  "language": "DE",
-                  "text": "Manufacturer name"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": "string",
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
-                },
-                {
-                  "language": "en",
-                  "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Manufacturer name"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Herstellername"
+            },
+            {
+              "language": "DE",
+              "text": "Manufacturer name"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": "string",
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+            },
+            {
+              "language": "en",
+              "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -228,51 +212,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Herstellerlogo-Datei"
-                },
-                {
-                  "language": "en",
-                  "text": "File with manufactuer logo"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Herstellerlogo-Datei"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Herstellerlogo"
-                },
-                {
-                  "language": "DE",
-                  "text": "Manufactuer logo"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Bilddatei für Logo des Herstellers im gebräuchlichem Format (.png, .jpg). "
-                },
-                {
-                  "language": "en",
-                  "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg). "
-                }
-              ]
+            {
+              "language": "en",
+              "text": "File with manufactuer logo"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Herstellerlogo"
+            },
+            {
+              "language": "DE",
+              "text": "Manufactuer logo"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Bilddatei für Logo des Herstellers im gebräuchlichem Format (.png, .jpg). "
+            },
+            {
+              "language": "en",
+              "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg). "
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -299,51 +275,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Herstellerproduktbezeichnung"
-                },
-                {
-                  "language": "en",
-                  "text": "Manufacturer product designation"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Herstellerproduktbezeichnung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Product designation"
-                },
-                {
-                  "language": "DE",
-                  "text": "Produktbezeichnung"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Kurze Beschreibung des Produktes (Kurztext)"
-                },
-                {
-                  "language": "en",
-                  "text": "Short description of the product (short text)"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Manufacturer product designation"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Product designation"
+            },
+            {
+              "language": "DE",
+              "text": "Produktbezeichnung"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Kurze Beschreibung des Produktes (Kurztext)"
+            },
+            {
+              "language": "en",
+              "text": "Short description of the product (short text)"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -382,51 +350,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Herstellerartikelnummer"
-                },
-                {
-                  "language": "en",
-                  "text": "product article number of manufacturer"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Herstellerartikelnummer"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Manufacturer order code"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerbestellcode"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "eindeutiger Bestellschlüssel des Herstellers"
-                },
-                {
-                  "language": "en",
-                  "text": "unique product identifier of the manufacturer"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "product article number of manufacturer"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Manufacturer order code"
+            },
+            {
+              "language": "DE",
+              "text": "Herstellerbestellcode"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "eindeutiger Bestellschlüssel des Herstellers"
+            },
+            {
+              "language": "en",
+              "text": "unique product identifier of the manufacturer"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -465,51 +425,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Eindeutiger Herstellerbestellcode"
-                },
-                {
-                  "language": "en",
-                  "text": "Unique manufacturer order code"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Eindeutiger Herstellerbestellcode"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Manufacturer order code"
-                },
-                {
-                  "language": "DE",
-                  "text": "Herstellerbestellcode"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "eindeutiger Bestellschlüssel des Herstellers um exakt gleiches Produkt zu bestellen"
-                },
-                {
-                  "language": "en",
-                  "text": "unique product identifier of the manufacturer to order exact same produkt"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Unique manufacturer order code"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Manufacturer order code"
+            },
+            {
+              "language": "DE",
+              "text": "Herstellerbestellcode"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "eindeutiger Bestellschlüssel des Herstellers um exakt gleiches Produkt zu bestellen"
+            },
+            {
+              "language": "en",
+              "text": "unique product identifier of the manufacturer to order exact same produkt"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -548,51 +500,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Bilddatei für Produkt"
-                },
-                {
-                  "language": "en",
-                  "text": "Imagefile for product"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Bilddatei für Produkt"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Product image"
-                },
-                {
-                  "language": "DE",
-                  "text": "Produktbild"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Bilddatei für das assozierte Produkt im gebräuchlichem Format (.png, .jpg). "
-                },
-                {
-                  "language": "en",
-                  "text": "Imagefile for associated product provided in common format (.png, .jpg). "
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Imagefile for product"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Product image"
+            },
+            {
+              "language": "DE",
+              "text": "Produktbild"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Bilddatei für das assozierte Produkt im gebräuchlichem Format (.png, .jpg). "
+            },
+            {
+              "language": "en",
+              "text": "Imagefile for associated product provided in common format (.png, .jpg). "
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -619,51 +563,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Produktklassifizierungen"
-                },
-                {
-                  "language": "en",
-                  "text": "ProductClassifications"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Produktklassifizierungen"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "ProductClassification"
-                },
-                {
-                  "language": "DE",
-                  "text": "Produktklassifizierung"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Produktklassifizierungen durch Assoziation mit Produktklassen in gebräuchlichen Klassifizierungssystemen."
-                },
-                {
-                  "language": "en",
-                  "text": "Product classifications by association with product classes in common classification systems."
-                }
-              ]
+            {
+              "language": "en",
+              "text": "ProductClassifications"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "ProductClassification"
+            },
+            {
+              "language": "DE",
+              "text": "Produktklassifizierung"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Produktklassifizierungen durch Assoziation mit Produktklassen in gebräuchlichen Klassifizierungssystemen."
+            },
+            {
+              "language": "en",
+              "text": "Product classifications by association with product classes in common classification systems."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -690,51 +626,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Einzelne Produktklassifizierung"
-                },
-                {
-                  "language": "en",
-                  "text": "Single ProductClassification"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Einzelne Produktklassifizierung"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "ProductClassification"
-                },
-                {
-                  "language": "DE",
-                  "text": "Produktklassifizierung"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Einzelne Produktklassifizierung durch Assoziation mit einer Produktklasse"
-                },
-                {
-                  "language": "en",
-                  "text": "Single product classification by association with product class"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Single ProductClassification"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "ProductClassification"
+            },
+            {
+              "language": "DE",
+              "text": "Produktklassifizierung"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Einzelne Produktklassifizierung durch Assoziation mit einer Produktklasse"
+            },
+            {
+              "language": "en",
+              "text": "Single product classification by association with product class"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -758,51 +686,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Klassifikationssystem"
-                },
-                {
-                  "language": "EN",
-                  "text": "Classification system"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Klassifikationssystem"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Classification system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Klassifikationssystem"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Common name of the classification system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Gebräuchlicher Name für das Klassifikationssystem"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Classification system"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Classification system"
+            },
+            {
+              "language": "DE",
+              "text": "Klassifikationssystem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Common name of the classification system"
+            },
+            {
+              "language": "DE",
+              "text": "Gebräuchlicher Name für das Klassifikationssystem"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -826,51 +746,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Versionskennung des Klassifikationssystems"
-                },
-                {
-                  "language": "EN",
-                  "text": "Verison id  of the classification system"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Versionskennung des Klassifikationssystems"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Version class. system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Version Klass.-System"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Common version identifier of the used classification system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Gebräuchliche Versionskennung des genutzen Klassifikationssystems"
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Verison id  of the classification system"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Version class. system"
+            },
+            {
+              "language": "DE",
+              "text": "Version Klass.-System"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Common version identifier of the used classification system"
+            },
+            {
+              "language": "DE",
+              "text": "Gebräuchliche Versionskennung des genutzen Klassifikationssystems"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -894,51 +806,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Produktklasse im System"
-                },
-                {
-                  "language": "EN",
-                  "text": "Product class in system"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Produktklasse im System"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Product class"
-                },
-                {
-                  "language": "DE",
-                  "text": "Produktklasse "
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Class of the associated product in the classification system; according to the notation of the system"
-                },
-                {
-                  "language": "DE",
-                  "text": "Klasse des assoziierten Produktes im Klassifikationssystem; entsprechend der Notationsweise des Systems."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Product class in system"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Product class"
+            },
+            {
+              "language": "DE",
+              "text": "Produktklasse "
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Class of the associated product in the classification system; according to the notation of the system"
+            },
+            {
+              "language": "DE",
+              "text": "Klasse des assoziierten Produktes im Klassifikationssystem; entsprechend der Notationsweise des Systems."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -965,51 +869,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Technische und Produktmerkmale"
-                },
-                {
-                  "language": "en",
-                  "text": "Technical and product properties"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Technische und Produktmerkmale"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Properties"
-                },
-                {
-                  "language": "DE",
-                  "text": "Merkmale"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Einzelne Merkmale die das Produkt und die technischen Eigenschaften beschreiben"
-                },
-                {
-                  "language": "en",
-                  "text": "Individual characteristics that describe the product and its technical properties"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Technical and product properties"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Properties"
+            },
+            {
+              "language": "DE",
+              "text": "Merkmale"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Einzelne Merkmale die das Produkt und die technischen Eigenschaften beschreiben"
+            },
+            {
+              "language": "en",
+              "text": "Individual characteristics that describe the product and its technical properties"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1036,51 +932,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Nichtstandardisiertes Merkmal"
-                },
-                {
-                  "language": "en",
-                  "text": "Nonstandardized property"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Nichtstandardisiertes Merkmal"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Nonstandardized property"
-                },
-                {
-                  "language": "DE",
-                  "text": "Nichtstandardisiertes Merkmal"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Merkmal, welches nicht über ein gebräuchliches Klassifikationssystem beschrieben ist"
-                },
-                {
-                  "language": "en",
-                  "text": "Property that is not described using a common classification system"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Nonstandardized property"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Nonstandardized property"
+            },
+            {
+              "language": "DE",
+              "text": "Nichtstandardisiertes Merkmal"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Merkmal, welches nicht über ein gebräuchliches Klassifikationssystem beschrieben ist"
+            },
+            {
+              "language": "en",
+              "text": "Property that is not described using a common classification system"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1107,51 +995,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Hauptsektion für Merkmale"
-                },
-                {
-                  "language": "en",
-                  "text": "Main section for properties"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Hauptsektion für Merkmale"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Main section"
-                },
-                {
-                  "language": "DE",
-                  "text": "Hauptsektion"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Haupt-Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
-                },
-                {
-                  "language": "en",
-                  "text": "Main subdivision possibility for properties. Can be named via idShort."
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Main section for properties"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Main section"
+            },
+            {
+              "language": "DE",
+              "text": "Hauptsektion"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Haupt-Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+            },
+            {
+              "language": "en",
+              "text": "Main subdivision possibility for properties. Can be named via idShort."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1178,51 +1058,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Untersektion für Merkmale"
-                },
-                {
-                  "language": "en",
-                  "text": "Subsection for properties"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Untersektion für Merkmale"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Subsection "
-                },
-                {
-                  "language": "DE",
-                  "text": "Untersektion "
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Untergeordnete Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
-                },
-                {
-                  "language": "en",
-                  "text": "Subordinate subdivision possibility for properties. Can be named via idShort."
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Subsection for properties"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Subsection "
+            },
+            {
+              "language": "DE",
+              "text": "Untersektion "
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Untergeordnete Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+            },
+            {
+              "language": "en",
+              "text": "Subordinate subdivision possibility for properties. Can be named via idShort."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1249,51 +1121,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Weitere Informationen"
-                },
-                {
-                  "language": "en",
-                  "text": "Further information"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Weitere Informationen"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Further information"
-                },
-                {
-                  "language": "DE",
-                  "text": "Weitere Informationen"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "de",
-                  "text": "Weiterführende Informationen zum Produkt, der Gültigkeit der gemachten Angaben und zu diesem Datensatz"
-                },
-                {
-                  "language": "en",
-                  "text": "Further information on the product, the validity of the information provided and this data record"
-                }
-              ]
+            {
+              "language": "en",
+              "text": "Further information"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Further information"
+            },
+            {
+              "language": "DE",
+              "text": "Weitere Informationen"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Weiterführende Informationen zum Produkt, der Gültigkeit der gemachten Angaben und zu diesem Datensatz"
+            },
+            {
+              "language": "en",
+              "text": "Further information on the product, the validity of the information provided and this data record"
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1317,51 +1181,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Aussage des Herstellers als Text"
-                },
-                {
-                  "language": "EN",
-                  "text": "Statement by the manufacturer as text"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Aussage des Herstellers als Text"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Valid on date"
-                },
-                {
-                  "language": "DE",
-                  "text": "Gültig am"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "STRING",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Statement in text form, e.g. scope of validity of the statements."
-                },
-                {
-                  "language": "DE",
-                  "text": "Aussage in Textform, etwa Gültigkeitsbereich der Aussagen."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Statement by the manufacturer as text"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Valid on date"
+            },
+            {
+              "language": "DE",
+              "text": "Gültig am"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Statement in text form, e.g. scope of validity of the statements."
+            },
+            {
+              "language": "DE",
+              "text": "Aussage in Textform, etwa Gültigkeitsbereich der Aussagen."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []
@@ -1385,51 +1241,43 @@
     "embeddedDataSpecifications": [
       {
         "dataSpecificationContent": {
-          "dataSpecificationIEC61360": {
-            "preferredName": {
-              "langString": [
-                {
-                  "language": "DE",
-                  "text": "Informationen gültig am"
-                },
-                {
-                  "language": "EN",
-                  "text": "Information valid on date"
-                }
-              ]
+
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Informationen gültig am"
             },
-            "shortName": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Valid on date"
-                },
-                {
-                  "language": "DE",
-                  "text": "Gültig am"
-                }
-              ]
-            },
-            "unit": "",
-            "unitId": null,
-            "valueFormat": null,
-            "sourceOfDefinition": null,
-            "symbol": null,
-            "dataType": "DATE",
-            "definition": {
-              "langString": [
-                {
-                  "language": "EN",
-                  "text": "Denotes a date on which the data specified in the submodel was valid for the associated product. Approximately: Date of the last update of the data."
-                },
-                {
-                  "language": "DE",
-                  "text": "Bezeichnet ein Datum, an welchem die im Submodel genannten Daten für das assoziierte Produkt gültig waren. Etwa: Tag der letzten Aktualisierung der Daten."
-                }
-              ]
+            {
+              "language": "EN",
+              "text": "Information valid on date"
             }
-          },
-          "dataSpecificationISO99999": null
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Valid on date"
+            },
+            {
+              "language": "DE",
+              "text": "Gültig am"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "EN",
+              "text": "Denotes a date on which the data specified in the submodel was valid for the associated product. Approximately: Date of the last update of the data."
+            },
+            {
+              "language": "DE",
+              "text": "Bezeichnet ein Datum, an welchem die im Submodel genannten Daten für das assoziierte Produkt gültig waren. Etwa: Tag der letzten Aktualisierung der Daten."
+            }
+          ]
         },
         "dataSpecification": {
           "keys": []

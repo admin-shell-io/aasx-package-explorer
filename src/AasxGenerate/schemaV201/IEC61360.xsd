@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- This version of the XSD was taken directly from aas-specs on 2020-08-26. -->
 <schema elementFormDefault="qualified" targetNamespace="http://www.admin-shell.io/IEC61360/2/0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:IEC61360="http://www.admin-shell.io/IEC61360/2/0">
 	<attributeGroup name="keyTypes">
 		<attribute name="identifierType" use="optional">
@@ -28,10 +29,12 @@
             <element maxOccurs="1" minOccurs="0" name="sourceOfDefinition" type="string" />
             <element maxOccurs="1" minOccurs="0" name="symbol" type="string" />
             <element maxOccurs="1" minOccurs="0" name="dataType" type="IEC61360:dataTypeIEC61360_t"/>
-			<element maxOccurs="1" minOccurs="0" name="definition" type="IEC61360:langStringSet_t"/>			<element maxOccurs="1" minOccurs="0" name="valueFormat" type="string"/>
+			<element maxOccurs="1" minOccurs="0" name="definition" type="IEC61360:langStringSet_t"/>
+			<element maxOccurs="1" minOccurs="0" name="valueFormat" type="string"/>
             <element maxOccurs="1" minOccurs="0" name="valueList" type="IEC61360:valueList_t" />
             <element maxOccurs="1" minOccurs="0" name="value" type="IEC61360:valueDataType_t" />
-            <element maxOccurs="1" minOccurs="0" name="valueId" type="IEC61360:reference_t"/>			<element maxOccurs="unbounded" minOccurs="0" name="levelType" type="IEC61360:levelType_t"/>
+            <element maxOccurs="1" minOccurs="0" name="valueId" type="IEC61360:reference_t"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="levelType" type="IEC61360:levelType_t"/>
 		</choice>
 	</complexType>
 	<complexType name="key_t">

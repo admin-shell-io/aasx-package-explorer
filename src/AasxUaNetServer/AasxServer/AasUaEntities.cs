@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using Opc.Ua;
 
+// TODO (MIHO, 2020-08-29): The UA mapping needs to be overworked in order to comply the joint aligment with I4AAS
+// TODO (MIHO, 2020-08-29): The UA mapping needs to be checked for the "new" HasDataSpecification strcuture of V2.0.1
+
 namespace AasOpcUaServer
 {
     public class AasUaBaseEntity
@@ -546,10 +549,10 @@ namespace AasOpcUaServer
                 // HasKind
                 this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.kind);
                 // HasDataSpecification
-                if (asset.hasDataSpecification != null && asset.hasDataSpecification.reference != null)
-                    foreach (var ds in asset.hasDataSpecification.reference)
+                if (asset.hasDataSpecification != null && asset.hasDataSpecification != null)
+                    foreach (var ds in asset.hasDataSpecification)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds, "DataSpecification");
+                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
                 // own attributes
                 this.entityBuilder.AasTypes.Reference.CreateAddElements(
                     o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
@@ -630,10 +633,10 @@ namespace AasOpcUaServer
             this.entityBuilder.AasTypes.Administration.CreateAddElements(
                 o, CreateMode.Instance, aas.administration);
             // HasDataSpecification
-            if (aas.hasDataSpecification != null && aas.hasDataSpecification.reference != null)
-                foreach (var ds in aas.hasDataSpecification.reference)
+            if (aas.hasDataSpecification != null && aas.hasDataSpecification != null)
+                foreach (var ds in aas.hasDataSpecification)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, ds, "DataSpecification");
+                        o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
             // own attributes
             this.entityBuilder.AasTypes.Reference.CreateAddElements(
                 o, CreateMode.Instance, aas.derivedFrom, "DerivedFrom");
@@ -756,10 +759,10 @@ namespace AasOpcUaServer
                 this.entityBuilder.AasTypes.ModelingKind.CreateAddElements(
                     o, CreateMode.Instance, sm.kind);
                 // HasDataSpecification
-                if (sm.hasDataSpecification != null && sm.hasDataSpecification.reference != null)
-                    foreach (var ds in sm.hasDataSpecification.reference)
+                if (sm.hasDataSpecification != null && sm.hasDataSpecification != null)
+                    foreach (var ds in sm.hasDataSpecification)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds, "DataSpecification");
+                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
                 // Qualifiable
                 if (sm.qualifiers != null)
                     foreach (var q in sm.qualifiers)
@@ -845,10 +848,10 @@ namespace AasOpcUaServer
             this.entityBuilder.AasTypes.ModelingKind.CreateAddElements(
                 o, CreateMode.Instance, sme.kind);
             // HasDataSpecification
-            if (sme.hasDataSpecification != null && sme.hasDataSpecification.reference != null)
-                foreach (var ds in sme.hasDataSpecification.reference)
+            if (sme.hasDataSpecification != null && sme.hasDataSpecification != null)
+                foreach (var ds in sme.hasDataSpecification)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, ds, "DataSpecification");
+                        o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
             // Qualifiable
             if (sme.qualifiers != null)
                 foreach (var q in sme.qualifiers)
@@ -1486,10 +1489,10 @@ namespace AasOpcUaServer
                 this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
                     o, CreateMode.Instance, view.semanticId, "SemanticId");
                 // HasDataSpecification
-                if (view.hasDataSpecification != null && view.hasDataSpecification.reference != null)
-                    foreach (var ds in view.hasDataSpecification.reference)
+                if (view.hasDataSpecification != null && view.hasDataSpecification != null)
+                    foreach (var ds in view.hasDataSpecification)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds, "DataSpecification");
+                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
 
                 // contained elements
                 for (int i = 0; i < view.Count; i++)
@@ -1675,13 +1678,13 @@ namespace AasOpcUaServer
                 if (ds.preferredName != null && ds.preferredName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "PreferredName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.preferredName?.langString),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.preferredName),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.shortName != null && ds.shortName.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "ShortName",
                         DataTypeIds.LocalizedText,
-                        value: AasUaUtils.GetUaLocalizedTexts(ds.shortName?.langString),
+                        value: AasUaUtils.GetUaLocalizedTexts(ds.shortName),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.unit != null)
@@ -1706,7 +1709,7 @@ namespace AasOpcUaServer
 
                 if (ds.definition != null && ds.definition.Count > 0)
                     this.entityBuilder.CreateAddPropertyState<LocalizedText[]>(o, "Definition",
-                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition?.langString),
+                        DataTypeIds.LocalizedText, value: AasUaUtils.GetUaLocalizedTexts(ds.definition),
                         defaultSettings: true, valueRank: 1);
 
                 if (ds.valueFormat != null)
@@ -1816,11 +1819,9 @@ namespace AasOpcUaServer
                     // Conventional approach: build up a speaking name
                     // but: shall be target of "HasDictionaryEntry", therefore the __PURE__ identifications 
                     // need to be the name!
-                    if (cd.embeddedDataSpecification != null
-                        && cd.embeddedDataSpecification.dataSpecificationContent != null
-                        && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                    if (cd.GetIEC61360() != null)
                     {
-                        var ds = cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360;
+                        var ds = cd.GetIEC61360();
                         if (ds.shortName != null)
                             name = ds.shortName.GetDefaultStr();
                         if (cd.identification != null)
@@ -1855,19 +1856,20 @@ namespace AasOpcUaServer
                     foreach (var ico in cd.IsCaseOf)
                         this.entityBuilder.AasTypes.Reference.CreateAddElements(
                             o, CreateMode.Instance, ico, "IsCaseOf");
-                // HasDataSpecification
-                if (cd.embeddedDataSpecification != null && cd.embeddedDataSpecification.dataSpecification != null)
+
+                // HasDataSpecification solely under the viewpoint of IEC61360
+                var eds = cd.embeddedDataSpecification?.IEC61360;
+                if (eds != null)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                        o, CreateMode.Instance, cd.embeddedDataSpecification.dataSpecification, "DataSpecification");
+                        o, CreateMode.Instance, eds.dataSpecification, "DataSpecification");
 
                 // data specification is a child
-                if (cd.embeddedDataSpecification != null
-                    && cd.embeddedDataSpecification.dataSpecificationContent != null
-                    && cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360 != null)
+                var ds61360 = cd.embeddedDataSpecification?.IEC61360Content;
+                if (ds61360 != null)
                 {
                     var unused = this.entityBuilder.AasTypes.DataSpecificationIEC61360.CreateAddElements(
                         o, CreateMode.Instance,
-                        cd.embeddedDataSpecification.dataSpecificationContent.dataSpecificationIEC61360);
+                        ds61360);
                 }
 
                 // remember CD as NodeRecord

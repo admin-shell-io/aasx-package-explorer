@@ -65,6 +65,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Docs\REST_routes.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
