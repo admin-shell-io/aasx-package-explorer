@@ -11,6 +11,17 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Check the commit message(s)
-        uses: mristin/opinionated-commit-message@v2.1.2
+        uses: mristin/opinionated-commit-message@v2.2.0
         with:
           path-to-additional-verbs: src/AdditionalVerbsInImperativeMood.txt
+
+      - name: READ HERE ON FAILURE FOR MORE INSTRUCTIONS
+        if: ${{ failure() }}
+        run: |
+          Write-Host (
+            "The title and the description of your pull request do not fit our style guide. " +
+            "Please inspect carefully the error messages above and edit the pull request. " +
+            "Since we are always squashing before merge, you can leave the commit messages as-are.`n`n" +
+            "See the following page for more information about the style guide: " +
+            "https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/development-workflow.html#pull-requests"
+          )

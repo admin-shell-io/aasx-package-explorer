@@ -40,9 +40,25 @@ function Main
         Write-Host "--- Verifying the message: ---"
         Write-Host $message
         Write-Host "---"
-        & ./OpinionatedCommitMessage.ps1 `
-            -message $message `
-            -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
+        try
+        {
+            & ./OpinionatedCommitMessage.ps1 `
+                -message $message `
+                -pathToAdditionalVerbs AdditionalVerbsInImperativeMood.txt
+        }
+        catch
+        {
+            Write-Host
+            Write-Host (
+                "`u{1F4A5} `u{26A1} ATTENTION! `u{26A1} `u{1F4A5}`n`n" +
+                "The commit message failed the check. Since we are squashing before the commit, " +
+                "make sure that the title and description of your pull request (and *not* the commits) " +
+                "are valid.`n`n" +
+                "This check is intended to save you time if you have a single commit which " +
+                "will be used by GitHub to automatically generate the title and the description " +
+                "of the pull request."
+            )
+        }
     }
 }
 
