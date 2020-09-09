@@ -104,8 +104,8 @@ Global
 		ReleaseWithoutCEF|x86 = ReleaseWithoutCEF|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|Any CPU.Build.0 = Debug|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|x64.ActiveCfg = Debug|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|x64.Build.0 = Debug|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Debug|x86.ActiveCfg = Debug|Any CPU

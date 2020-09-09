@@ -164,7 +164,7 @@ namespace AasxPackageExplorer
         }
 
         //
-        //
+        // Descendent/ parent management
         //
 
         private bool SearchForDescendentAndCallIfFound(
@@ -216,6 +216,37 @@ namespace AasxPackageExplorer
                 foreach (var mem in this.Members)
                     res = res || mem.CheckIfDescendent(descendent);
             return res;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllParents(bool includeThis = false)
+        {
+            // this?
+            if (includeThis)
+                yield return this;
+
+            // any parent?
+            if (this.Parent == null)
+                yield break;
+
+            // yes
+            yield return this.Parent;
+
+            // any up?
+            foreach (var p in this.Parent.FindAllParents())
+                yield return p;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllParents(
+            Predicate<VisualElementGeneric> p, bool includeThis = false)
+        {
+            // access
+            if (p == null)
+                yield break;
+
+            // use above
+            foreach (var e in this.FindAllParents(includeThis))
+                if (p(e))
+                    yield return e;
         }
     }
 

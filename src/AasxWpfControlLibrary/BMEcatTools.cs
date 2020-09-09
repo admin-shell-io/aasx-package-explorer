@@ -147,7 +147,7 @@ namespace AasxPackageExplorer
 
                                         var p = AdminShell.Property.CreateNew(
                                             cd.GetDefaultShortName(), "PARAMETER",
-                                            AdminShell.Key.GetFromRef(cd.GetReference()));
+                                            AdminShell.Key.GetFromRef(cd.GetCdReference()));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -319,7 +319,7 @@ namespace AasxPackageExplorer
 
                                                 var p = AdminShell.Property.CreateNew(
                                                     cd.GetDefaultShortName(), "PARAMETER",
-                                                    AdminShell.Key.GetFromRef(cd.GetReference()));
+                                                    AdminShell.Key.GetFromRef(cd.GetCdReference()));
                                                 p.valueType = "double";
                                                 p.value = FVALUE[k];
 

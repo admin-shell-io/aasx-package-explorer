@@ -99,19 +99,19 @@ namespace AasxGenerate
                 // GROUP
                 var propGroup = AdminShellV20.SubmodelElementCollection.CreateNew(
                     $"CadItem{ndx:D2}", "PARAMETER",
-                    AdminShellV20.Key.GetFromRef(cdGroup.GetReference()));
+                    AdminShellV20.Key.GetFromRef(cdGroup.GetCdReference()));
                 sub1.Add(propGroup);
 
                 // FILE
                 var propFile = AdminShellV20.File.CreateNew(
-                    "File", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFile.GetReference()));
+                    "File", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFile.GetCdReference()));
                 propGroup.Add(propFile);
                 propFile.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
                 propFile.value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
                 var propType = AdminShellV20.ReferenceElement.CreateNew(
-                    "FileFormat", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFormat.GetReference()));
+                    "FileFormat", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFormat.GetCdReference()));
                 propGroup.Add(propType);
                 propType.value = AdminShellV20.Reference.CreateNew(
                     AdminShellV20.Key.CreateNew(
@@ -145,7 +145,7 @@ namespace AasxGenerate
                 // Document Item
                 var cd = preDefs.CD_VDI2770_Document;
                 using (var p0 = AdminShellV20.SubmodelElementCollection.CreateNew($"Document{idx:D2}",
-                    "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
                 {
                     sub1.Add(p0);
 
@@ -206,7 +206,7 @@ namespace AasxGenerate
 
                     cd = preDefs.CD_VDI2770_DocumentVersion;
                     using (var p1 = AdminShellV20.SubmodelElementCollection.CreateNew($"DocumentVersion01",
-                                        "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                                        "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
                     {
                         p0.Add(p1);
 
@@ -775,9 +775,9 @@ namespace AasxGenerate
                 AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "PowerSource001");
             sub1.Add(ps001);
             var ps001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetReference()[0]);
+                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
             var ps001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetReference()[0]);
+                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
             ps001.Add(ps001_1);
             ps001.Add(ps001_2);
 
@@ -785,9 +785,9 @@ namespace AasxGenerate
                 AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Switch001");
             sub1.Add(sw001);
             var sw001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetReference()[0]);
+                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
             var sw001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetReference()[0]);
+                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
             sw001.Add(sw001_1);
             sw001.Add(sw001_2);
 
@@ -798,28 +798,28 @@ namespace AasxGenerate
                         "Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
             sub1.Add(la001);
             var la001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetReference()[0]);
+                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
             var la001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetReference()[0]);
+                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
             la001.Add(la001_1);
             la001.Add(la001_2);
 
             // RELATIONS
 
             var smec1 = AdminShellV20.SubmodelElementCollection.CreateNew(
-                "E-CAD", semanticIdKey: cdRelEPlan.GetReference()[0]);
+                "E-CAD", semanticIdKey: cdRelEPlan.GetCdReference()[0]);
             sub1.Add(smec1);
 
             smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w001", semanticIdKey: cdRelElCon.GetReference()[0],
+                "w001", semanticIdKey: cdRelElCon.GetCdReference()[0],
                 first: ps001_1.GetReference(), second: sw001_1.GetReference()));
 
             smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w002", semanticIdKey: cdRelElCon.GetReference()[0],
+                "w002", semanticIdKey: cdRelElCon.GetCdReference()[0],
                 first: sw001_2.GetReference(), second: la001_1.GetReference()));
 
             smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w003", semanticIdKey: cdRelElCon.GetReference()[0],
+                "w003", semanticIdKey: cdRelElCon.GetCdReference()[0],
                 first: la001_2.GetReference(), second: ps001_2.GetReference()));
 
             // Nice
@@ -888,22 +888,22 @@ namespace AasxGenerate
 
             sub1.Add(
                 AdminShellV20.RelationshipElement.CreateNew(
-                    "rel001", semanticIdKey: cdIsPartOf.GetReference()[0],
+                    "rel001", semanticIdKey: cdIsPartOf.GetCdReference()[0],
                 first: axisGroup.GetReference(), second: motor.GetReference()));
 
             sub1.Add(
                 AdminShellV20.RelationshipElement.CreateNew(
-                    "rel002", semanticIdKey: cdIsPartOf.GetReference()[0],
+                    "rel002", semanticIdKey: cdIsPartOf.GetCdReference()[0],
                 first: axisGroup.GetReference(), second: encoder.GetReference()));
 
             sub1.Add(
                 AdminShellV20.RelationshipElement.CreateNew(
-                    "rel003", semanticIdKey: cdIsPartOf.GetReference()[0],
+                    "rel003", semanticIdKey: cdIsPartOf.GetCdReference()[0],
                 first: axisGroup.GetReference(), second: gearbox.GetReference()));
 
             sub1.Add(
                 AdminShellV20.RelationshipElement.CreateNew(
-                    "rel004", semanticIdKey: cdIsPartOf.GetReference()[0],
+                    "rel004", semanticIdKey: cdIsPartOf.GetCdReference()[0],
                 first: axisGroup.GetReference(), second: amp.GetReference()));
 
 
@@ -1162,7 +1162,7 @@ namespace AasxGenerate
                         "AssetAdministrationShell", false, "IRI",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
-                aas1.assetRef = asset1.GetReference();
+                aas1.assetRef = asset1.GetAssetReference();
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
@@ -1452,7 +1452,7 @@ namespace AasxGenerate
                     new AdminShellV20.Key("AssetAdministrationShell", false, "IRI",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
-                aas1.assetRef = asset1.GetReference();
+                aas1.assetRef = asset1.GetAssetReference();
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");

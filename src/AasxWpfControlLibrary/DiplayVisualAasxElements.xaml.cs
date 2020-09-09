@@ -201,10 +201,48 @@ namespace AasxPackageExplorer
         #region Elememt view drawing / handling
 
         //
-        // Element View Drawing
+        // Element management
         //
 
-        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject)
+        private IEnumerable<VisualElementGeneric> FindAllVisualElementInternal(VisualElementGeneric root)
+        {
+            yield return root;
+            if (root?.Members != null)
+                foreach (var m in root.Members)
+                    foreach (var e in FindAllVisualElementInternal(m))
+                        yield return e;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement()
+        {
+            if (displayedTreeViewLines == null)
+                yield break;
+            foreach (var tvl in displayedTreeViewLines)
+                foreach (var e in FindAllVisualElementInternal(tvl))
+                    yield return e;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement(Predicate<VisualElementGeneric> p)
+        {
+            if (p == null)
+                yield break;
+
+            foreach (var e in this.FindAllVisualElement())
+                if (p(e))
+                    yield return e;
+        }
+
+        public bool Contains(VisualElementGeneric ve)
+        {
+            // ReSharper disable UnusedVariable
+            foreach (var e in FindAllVisualElement((o) => { return ve == o; }))
+                return true;
+            // ReSharper enable UnusedVariable
+            return false;
+        }
+
+        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject,
+            bool alsoDereferenceObjects = false)
         {
             if (tvl == null || dataObject == null)
                 return null;
@@ -222,27 +260,40 @@ namespace AasxPackageExplorer
             if (tvl.GetMainDataObject() == dataObject)
                 return tvl;
 
+            // extended?
+            if (alsoDereferenceObjects && tvl.GetDereferencedMainDataObject() == dataObject)
+                return tvl;
+
             // recursion
             foreach (var mem in tvl.Members)
             {
-                var x = SearchInListOfVisualElements(mem, dataObject);
+                var x = SearchInListOfVisualElements(mem, dataObject, alsoDereferenceObjects);
                 if (x != null)
                     return x;
             }
             return null;
         }
 
-        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject)
+        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false)
         {
             if (displayedTreeViewLines == null)
                 return null;
             foreach (var tvl in displayedTreeViewLines)
             {
-                var x = SearchInListOfVisualElements(tvl, dataObject);
+                var x = SearchInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects);
                 if (x != null)
                     return x;
             }
             return null;
+        }
+
+        public VisualElementGeneric GetDefaultVisualElement()
+        {
+            if (displayedTreeViewLines == null || displayedTreeViewLines.Count < 1)
+                return null;
+
+            return displayedTreeViewLines[0];
         }
 
         public bool TrySelectMainDataObject(object dataObject, bool wishExpanded)
@@ -327,6 +378,10 @@ namespace AasxPackageExplorer
             }
             return false;
         }
+
+        //
+        // Element View Drawing
+        //
 
         public void Clear()
         {

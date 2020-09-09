@@ -40,7 +40,7 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public string ResultFilename = null;
+        public AasxFileRepository.FileItem ResultItem = null;
 
         private AasxFileRepository TheAasxRepo = null;
 
@@ -61,50 +61,33 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile(string fn = null)
+        public bool LoadAasxRepoFile(string fn = null, AasxFileRepository repo = null)
         {
             try
             {
-                // load the data
-                if (fn == null)
-                {
-                    // Static example
-                    var init =
-                        @"{
-  'filemaps': [
-    {
-      'assetid': 'http://pk.festo.com/3s7plfdrs35',
-      'tag': 'F',
-      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Festo-USB-stick-sample-admin-shell.aasx'
-    },
-    {
-      'assetid': 'http://pk.pf.com/40000039198163',
-      'tag': 'PF',
-      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\pf_232769_40000039198163.aasx'
-    },
-    {
-      'assetid': 'www.phoenixcontact.com/asset/product/2404267',
-      'tag': 'PC',
-      'fn': 'C:\\Users\\miho\\Desktop\\AasxPackageExplorer\\Sample_AAS\\Phoenix Contact AXC F 2152 - 11.aasx'
-    }
-  ]
-}";
-                    this.TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
-                }
-                else
+                this.TheAasxRepo = null;
+
+                if (fn != null)
                 {
                     // from file
-                    if (!File.Exists(fn))
-                        return false;
-                    var init = File.ReadAllText(fn);
-                    this.TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
+                    this.TheAasxRepo = AasxFileRepository.Load(fn);
+
                 }
+
+                if (repo != null)
+                {
+                    // from RAM
+                    this.TheAasxRepo = repo;
+                }
+
+                if (this.TheAasxRepo == null)
+                    return false;
 
                 // rework buttons
                 this.StackPanelTags.Children.Clear();
-                foreach (var fm in this.TheAasxRepo.filemaps)
+                foreach (var fm in this.TheAasxRepo.FileMap)
                 {
-                    var tag = fm.tag.Trim();
+                    var tag = fm.Tag.Trim();
                     if (tag != "")
                     {
                         var b = new Button();
@@ -116,7 +99,7 @@ namespace AasxPackageExplorer
                         b.Foreground = Brushes.White;
                         b.Click += TagButton_Click;
                         this.StackPanelTags.Children.Add(b);
-                        fm.link = b;
+                        b.Tag = fm;
                     }
                 }
 
@@ -132,13 +115,12 @@ namespace AasxPackageExplorer
 
         private void TagButton_Click(object sender, RoutedEventArgs e)
         {
-            if (this.TheAasxRepo != null && this.TheAasxRepo.filemaps != null)
-                foreach (var fm in this.TheAasxRepo.filemaps)
-                    if (fm.link == sender)
-                    {
-                        this.ResultFilename = fm.fn;
-                        ControlClosed?.Invoke();
-                    }
+            var b = sender as Button;
+            if (b?.Tag != null && this.TheAasxRepo?.FileMap != null && this.TheAasxRepo.FileMap.Contains(b.Tag))
+            {
+                this.ResultItem = b.Tag as AasxFileRepository.FileItem;
+                ControlClosed?.Invoke();
+            }
         }
 
         //
@@ -147,7 +129,7 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            ResultFilename = null;
+            ResultItem = null;
             ControlClosed?.Invoke();
         }
 
@@ -165,21 +147,21 @@ namespace AasxPackageExplorer
             var aid = TextBoxAssetId.Text.Trim().ToLower();
 
             // first compare against tags
-            if (this.TheAasxRepo != null && this.TheAasxRepo.filemaps != null)
-                foreach (var fm in this.TheAasxRepo.filemaps)
-                    if (aid == fm.tag.Trim().ToLower())
+            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
+                foreach (var fm in this.TheAasxRepo.FileMap)
+                    if (aid == fm.Tag.Trim().ToLower())
                     {
-                        this.ResultFilename = fm.fn;
+                        this.ResultItem = fm;
                         ControlClosed?.Invoke();
                         return;
                     }
 
             // if not, compare assit ids
-            if (this.TheAasxRepo != null && this.TheAasxRepo.filemaps != null)
-                foreach (var fm in this.TheAasxRepo.filemaps)
-                    if (aid == fm.assetId.Trim().ToLower())
+            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
+                foreach (var fm in this.TheAasxRepo.FileMap)
+                    if (aid == fm.AssetId.Trim().ToLower())
                     {
-                        this.ResultFilename = fm.fn;
+                        this.ResultItem = fm;
                         ControlClosed?.Invoke();
                         return;
                     }
@@ -199,7 +181,7 @@ namespace AasxPackageExplorer
             if (e.Key == Key.Escape)
             {
                 // quit
-                ResultFilename = null;
+                ResultItem = null;
                 ControlClosed?.Invoke();
             }
         }

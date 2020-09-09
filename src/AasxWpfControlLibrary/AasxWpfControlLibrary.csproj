@@ -70,6 +70,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AasxFileRepoControl.xaml.cs">
+      <DependentUpon>AasxFileRepoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AasxFileRepository.cs" />
     <Compile Include="AasxPrintFunctions.cs" />
     <Compile Include="BMEcatTools.cs" />
@@ -122,6 +125,10 @@
     <Compile Include="WpfControls\TransparentComboBox.xaml.cs">
       <DependentUpon>TransparentComboBox.xaml</DependentUpon>
     </Compile>
+    <Page Include="AasxFileRepoControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DiplayVisualAasxElements.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -274,6 +281,12 @@
     <EmbeddedResource Include="Resources\LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon_AASX_32x32_2_W.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon_AASX_40x40_W.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -95,10 +95,10 @@ namespace AasxPredefinedConcepts.Convert
                 // Document Item
                 using (var smcDoc = AdminShell.SubmodelElementCollection.CreateNew("" + smcSource.idShort,
                             smcSource.category,
-                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetReference())))
+                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetCdReference())))
                 using (var smcDocVersion = AdminShell.SubmodelElementCollection.CreateNew("DocumentVersion",
                             smcSource.category,
-                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_DocumentVersion.GetReference())))
+                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_DocumentVersion.GetCdReference())))
                 {
                     // Document itself
                     smcDoc.description = smcSource.description;

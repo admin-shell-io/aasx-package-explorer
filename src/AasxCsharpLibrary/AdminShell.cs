@@ -303,6 +303,7 @@ namespace AdminShellNS
 
             public static string[] KeyElements = new string[] {
             "GlobalReference",
+            "FragmentReference",
             "AccessPermissionRule",
             "Asset",
             "AssetAdministrationShell",
@@ -381,6 +382,7 @@ namespace AdminShellNS
             // use this in list to designate the GlobalReference
             // Resharper disable MemberHidesStaticFromOuterClass
             public static string GlobalReference = "GlobalReference";
+            public static string FragmentReference = "FragmentReference";
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
@@ -401,8 +403,6 @@ namespace AdminShellNS
             public static string IdShort = "IdShort";
             public static string FragmentId = "FragmentId";
             public static string Custom = "Custom";
-            public static string IRDI = "IRDI";
-            public static string IRI = "IRI";
 
             // some helpers
 
@@ -2196,7 +2196,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Asset : Identifiable
+        public class Asset : Identifiable, IGetReference
         {
             // for JSON only
             [XmlIgnore]
@@ -2272,13 +2272,18 @@ namespace AdminShellNS
 
             // Getter & setters
 
-            public AssetRef GetReference()
+            public AssetRef GetAssetReference()
             {
                 var r = new AssetRef();
                 r.Keys.Add(
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
+            }
+
+            public Reference GetReference()
+            {
+                return GetAssetReference();
             }
 
             public override string GetElementName()
@@ -3032,21 +3037,9 @@ namespace AdminShellNS
                 return eds;
             }
 
-            // compatibility layer
-            // TODO (MIHO, 2020-09-01): In a version beyond V2.0.1, the following can be deleted
-
-            [XmlElement(ElementName = "hasDataSpecification")]
-            [JsonProperty(PropertyName = "hasDataSpecification")]
-            public DataSpecificationRef CompatHasDataSpecification
-            {
-                set
-                {
-                    this.dataSpecification = value;
-                }
-            }
         }
 
-        public class ConceptDescription : Identifiable, System.IDisposable, IFindAllReferences
+        public class ConceptDescription : Identifiable, System.IDisposable
         {
             // for JSON only
             [XmlIgnore]
@@ -3062,13 +3055,13 @@ namespace AdminShellNS
 
 #if __not_anymore
 
-            [XmlElement(ElementName = "embeddedDataSpecification")]
-            [JsonIgnore]
-            public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
+        [XmlElement(ElementName = "embeddedDataSpecification")]
+        [JsonIgnore]
+        public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
 #else
             // According to Spec V2.0.1, a ConceptDescription might feature alos multiple data specifications
             /* TODO (MIHO, 2020-08-30): align wording of the member ("embeddedDataSpecification") with the 
-             * wording of the other entities ("hasDataSpecification") */
+                * wording of the other entities ("hasDataSpecification") */
             [XmlElement(ElementName = "embeddedDataSpecification")]
             [JsonIgnore]
             public HasDataSpecification embeddedDataSpecification = null;
@@ -3163,13 +3156,18 @@ namespace AdminShellNS
                 return Key.CreateNew(this.GetElementName(), true, this.identification.idType, this.identification.id);
             }
 
-            public ConceptDescriptionRef GetReference()
+            public ConceptDescriptionRef GetCdReference()
             {
                 var r = new ConceptDescriptionRef();
                 r.Keys.Add(
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
+            }
+
+            public Reference GetReference()
+            {
+                return GetCdReference();
             }
 
             public void SetIEC61360Spec(
@@ -3672,6 +3670,16 @@ namespace AdminShellNS
                         yield return sm;
             }
 
+            public IEnumerable<Referable> FindAllReferable(Predicate<Referable> p)
+            {
+                if (p == null)
+                    yield break;
+
+                foreach (var r in this.FindAllReferable())
+                    if (r != null && p(r))
+                        yield return r;
+            }
+
             public IEnumerable<Referable> FindAllReferable()
             {
                 if (this.AdministrationShells != null)
@@ -3714,15 +3722,6 @@ namespace AdminShellNS
                             yield return cd;
             }
 
-            public IEnumerable<Referable> FindAllReferable(Predicate<Referable> p)
-            {
-                if (p == null)
-                    yield break;
-
-                foreach (var r in this.FindAllReferable())
-                    if (r != null && p(r))
-                        yield return r;
-            }
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
             {
@@ -4461,7 +4460,7 @@ namespace AdminShellNS
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
-                typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
+            typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
 
             // for JSON only
             [XmlIgnore]
@@ -4706,14 +4705,14 @@ namespace AdminShellNS
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
-                AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
-                AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
-            };
+            AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
+            AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
+            AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+        };
 
             public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
-                "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
-                "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+            "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
+            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
 
@@ -5281,7 +5280,7 @@ namespace AdminShellNS
                 var sme = new T()
                 {
                     idShort = ids,
-                    semanticId = new SemanticId(cd.GetReference())
+                    semanticId = new SemanticId(cd.GetCdReference())
                 };
                 if (category != null)
                     sme.category = category;
@@ -5571,7 +5570,6 @@ namespace AdminShellNS
 
             // Recursing
 
-
             public void RecurseOnSubmodelElements(
                 object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
             {
@@ -5673,13 +5671,13 @@ namespace AdminShellNS
             public static string ValueType_BOOLEAN = "date";
 
             public static string[] ValueTypeItems = new string[] {
-                        "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
-                        "boolean", "date", "dateTime",
-                        "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
-                        "positiveInteger",
-                        "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                        "double", "duration",
-                        "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
+                    "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
+                    "boolean", "date", "dateTime",
+                    "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                    "positiveInteger",
+                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
+                    "double", "duration",
+                    "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
             public DataElement() { }
 
@@ -6090,17 +6088,17 @@ namespace AdminShellNS
             {
                 return
                     new[] {
-                    System.Net.Mime.MediaTypeNames.Text.Plain,
-                    System.Net.Mime.MediaTypeNames.Text.Xml,
-                    System.Net.Mime.MediaTypeNames.Text.Html,
-                    "application/json",
-                    "application/rdf+xml",
-                    System.Net.Mime.MediaTypeNames.Application.Pdf,
-                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                    "image/png",
-                    System.Net.Mime.MediaTypeNames.Image.Gif,
-                    "application/iges",
-                    "application/step"
+                System.Net.Mime.MediaTypeNames.Text.Plain,
+                System.Net.Mime.MediaTypeNames.Text.Xml,
+                System.Net.Mime.MediaTypeNames.Text.Html,
+                "application/json",
+                "application/rdf+xml",
+                System.Net.Mime.MediaTypeNames.Application.Pdf,
+                System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                "image/png",
+                System.Net.Mime.MediaTypeNames.Image.Gif,
+                "application/iges",
+                "application/step"
                     };
             }
 
@@ -6921,9 +6919,8 @@ namespace AdminShellNS
         //
         // Handling of packages
         //
-
-
     }
 
     #endregion
 }
+

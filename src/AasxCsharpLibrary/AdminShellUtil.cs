@@ -69,6 +69,29 @@ namespace AdminShellNS
             return res;
         }
 
+        public static string ExtractPascalCasingLetters(string src)
+        {
+            // access
+            src = src?.Trim();
+            if (src == null || src.Length < 1)
+                return null;
+
+            // walk through
+            var res = "";
+            var arm = true;
+            foreach (var c in src)
+            {
+                // take?
+                if (arm && Char.IsUpper(c))
+                    res += c;
+                // state for next iteration
+                arm = !Char.IsUpper(c);
+            }
+
+            // result
+            return res;
+        }
+
         public static string ShortLocation(Exception ex)
         {
             if (ex == null || ex.StackTrace == null)

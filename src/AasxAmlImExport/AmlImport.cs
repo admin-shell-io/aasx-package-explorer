@@ -976,7 +976,7 @@ namespace AasxAmlImExport
 
                             // make temporary object official
                             this.package.AasEnv.Assets.Add(asset);
-                            currentAas.assetRef = asset.GetReference();
+                            currentAas.assetRef = asset.GetAssetReference();
                             matcher.AddMatch(asset, ie);
                         }
                         else

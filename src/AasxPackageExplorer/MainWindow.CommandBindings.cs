@@ -410,6 +410,9 @@ namespace AasxPackageExplorer
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
+            if (cmd.StartsWith("filerepo"))
+                CommandBinding_FileRepoAll(cmd);
+
             if (cmd == "opcread")
                 CommandBinding_OpcUaClientRead();
 
@@ -426,7 +429,6 @@ namespace AasxPackageExplorer
                 CommandBinding_SubmodelGet();
 
             if (cmd == "bmecatimport")
-
                 CommandBinding_BMEcatImport();
 
             if (cmd == "csvimport")
@@ -602,6 +604,267 @@ namespace AasxPackageExplorer
             }
         }
 
+        public void CommandBinding_FileRepoAll(string cmd)
+        {
+            if (cmd == "filereponew")
+            {
+                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        "Create new (empty) file repository? Pending changes might be unsaved!",
+                        "AASX File Repository",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                    return;
+
+                this.UiSetFileRepository(new AasxFileRepository());
+            }
+
+            if (cmd == "filerepoopen")
+            {
+                // ask for the file
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res == true)
+                {
+                    var fr = this.UiLoadFileRepository(dlg.FileName);
+                    if (fr != null)
+                        this.UiSetFileRepository(fr);
+                }
+            }
+
+            if (cmd == "filereposaveas")
+            {
+                // any repository
+                if (this.theFileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently opened!",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // prepare dialogue
+                var outputDlg = new Microsoft.Win32.SaveFileDialog();
+                outputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                outputDlg.Title = "Select AASX file repository to be saved";
+                outputDlg.FileName = "new-aasx-repo.json";
+
+                if (this.theFileRepository?.Filename?.HasContent() == true)
+                {
+                    outputDlg.InitialDirectory = Path.GetDirectoryName(this.theFileRepository.Filename);
+                    outputDlg.FileName = Path.GetFileName(this.theFileRepository.Filename);
+                }
+
+                outputDlg.DefaultExt = "*.json";
+                outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = outputDlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res != true)
+                    return;
+
+                // OK!
+                var fn = outputDlg.FileName;
+
+                if (this.theFileRepository == null)
+                {
+                    Log.Error("No file repository open to be saved. Aborting.");
+                    return;
+                }
+
+                try
+                {
+                    Log.Info($"Saving AASX file repository to {fn} ..");
+                    this.theFileRepository.SaveAs(fn);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"When saving AASX file repository to {fn}");
+                }
+            }
+
+            if (cmd == "filerepoclose")
+            {
+                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        "Close file repository? Pending changes might be unsaved!",
+                        "AASX File Repository",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                    return;
+
+                this.UiSetFileRepository(null);
+            }
+
+            if (cmd == "filerepomakerelative")
+            {
+                // access
+                if (this.theFileRepository == null || this.theFileRepository.Filename == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently opened!",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // execute (is data binded)
+                try
+                {
+                    Log.Info("Make AASX file names relative to {0}", Path.GetFullPath(
+                        Path.GetDirectoryName("" + this.theFileRepository.Filename)));
+                    this.theFileRepository.MakeFilenamesRelative();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, $"When making AASX file names in repository relative.");
+                }
+            }
+
+            if (cmd == "filerepoquery")
+            {
+                // access
+                if (this.theFileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // dialogue
+                var uc = new SelectFromRepositoryFlyout();
+                uc.Margin = new Thickness(10);
+                if (uc.LoadAasxRepoFile(repo: this.theFileRepository))
+                {
+                    uc.ControlClosed += () =>
+                    {
+                        var fi = uc.ResultItem;
+                        if (fi?.Filename != null)
+                        {
+                            // which file?
+                            var fn = this.theFileRepository?.GetFullFilename(fi);
+                            if (fn == null)
+                                return;
+
+                            // start animation
+                            this.theFileRepository?.StartAnimation(fi,
+                                AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                            try
+                            {
+                                // load
+                                Log.Info("Switching to AASX repository file {0} ..", fn);
+                                UiLoadPackageWithNew(
+                                    ref thePackageEnv, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, $"When switching to AASX repository file {fn}.");
+                            }
+                        }
+
+                    };
+                    this.StartFlyover(uc);
+                }
+            }
+
+            if (cmd == "filerepoprint")
+            {
+                // access
+                if (this.theFileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // try print
+                try
+                {
+                    AasxPrintFunctions.PrintRepositoryCodeSheet(
+                        repoDirect: this.theFileRepository, title: "AASX file repository");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "When printing, an error occurred");
+                }
+            }
+
+            if (cmd == "filerepoaddcurrent")
+            {
+                // check
+                VisualElementAdminShell ve = null;
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAdminShell)
+                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+
+                if (ve == null || ve.theAas == null || ve.theEnv == null || ve.thePackage == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No valid AAS selected. Aborting.", "AASX File repository",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (this.theFileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please create new or open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
+                }
+
+                // add
+                this.theFileRepository.AddByAas(ve.theEnv, ve.theAas, "" + ve.thePackage?.Filename);
+            }
+
+            if (cmd == "filerepomultiadd")
+            {
+                // access
+                if (this.theFileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please create new or open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // get the input files
+                var inputDlg = new Microsoft.Win32.OpenFileDialog();
+                inputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                inputDlg.Title = "Multi-select AASX package files to be in repository";
+                inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                inputDlg.Multiselect = true;
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = inputDlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res != true || inputDlg.FileNames.Length < 1)
+                    return;
+
+                RememberForInitialDirectory(inputDlg.FileName);
+
+                // loop
+                foreach (var fn in inputDlg.FileNames)
+                    this.theFileRepository.AddByAasxFn(fn);
+            }
+        }
+
         public void CommandBinding_ConnectSecure()
         {
             // make dialgue flyout
@@ -690,7 +953,7 @@ namespace AasxPackageExplorer
             {
                 uc.ControlClosed += () =>
                 {
-                    var fn = uc.ResultFilename;
+                    var fn = uc.ResultItem?.Filename;
                     if (fn != null && fn != "")
                     {
                         Log.Info("Switching to {0} ..", fn);

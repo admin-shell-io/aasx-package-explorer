@@ -21,7 +21,7 @@
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 30000,
+  "SplashTime": 1000,
   "InternalBrowser": false,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
@@ -31,6 +31,7 @@
   "WriteDefaultOptionsFN": null /* "options-written.json" */,
   "IndirectLoadSave": true,
   "AccentColors": {},
+  "LoadWithoutPrompt": true,
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
@@ -86,9 +87,8 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
       "Args": []
-    }
+    },
     /* Festo specific from here on */
-    /*
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
@@ -127,7 +127,6 @@
         ]
       }
     }
-    */
   ],
   "SecureConnectPresets": [
     {

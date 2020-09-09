@@ -201,24 +201,38 @@ namespace AasxPackageExplorer
             Print(cb);
         }
 
-        public static bool PrintRepositoryCodeSheet(string repofn, string title = "Asset repository")
+        public static bool PrintRepositoryCodeSheet(
+            string repoFn = null, AasxFileRepository repoDirect = null, string title = "Asset repository")
         {
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try
             {
+                AasxFileRepository repo = null;
+
                 // load the data
-                if (!File.Exists(repofn))
+                if (repoFn != null)
+                {
+                    // from file
+                    repo = AasxFileRepository.Load(repoFn);
+                }
+
+                if (repoDirect != null)
+                {
+                    // from RAM
+                    repo = repoDirect;
+                }
+
+                // got something
+                if (repo == null)
                     return false;
-                var init = File.ReadAllText(repofn);
-                var TheAasxRepo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
 
                 // all assets
-                foreach (var fmi in TheAasxRepo.filemaps)
+                foreach (var fmi in repo.FileMap)
                 {
                     var csi = new CodeSheetItem();
-                    csi.id = fmi.assetId;
-                    csi.code = fmi.code;
-                    csi.description = fmi.description;
+                    csi.id = fmi.AssetId;
+                    csi.code = fmi.CodeType2D;
+                    csi.description = fmi.Description;
                     csi.normSize = 1.0; // do not vary
                     codeSheetItems.Add(csi);
                 }
@@ -229,7 +243,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("" + ex.Message, "Disappointment");
+                MessageBox.Show("" + ex.Message, "Print AASX file repository");
                 return false;
             }
             return true;
