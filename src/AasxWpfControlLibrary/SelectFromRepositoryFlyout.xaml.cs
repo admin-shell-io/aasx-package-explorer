@@ -40,7 +40,6 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        // public string ResultFilename = null;
         public AasxFileRepository.FileItem ResultItem = null;
 
         private AasxFileRepository TheAasxRepo = null;
@@ -116,15 +115,6 @@ namespace AasxPackageExplorer
 
         private void TagButton_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
-                foreach (var fm in this.TheAasxRepo.FileMap)
-                    if (fm.link == sender)
-                    {
-                        this.ResultFilename = fm.Filename;
-                        ControlClosed?.Invoke();
-                    }
-            */
             var b = sender as Button;
             if (b?.Tag != null && this.TheAasxRepo?.FileMap != null && this.TheAasxRepo.FileMap.Contains(b.Tag))
             {

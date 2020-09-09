@@ -672,6 +672,13 @@ namespace AasxPackageExplorer
 
                 // OK!
                 var fn = outputDlg.FileName;
+
+                if (this.theFileRepository == null)
+                {
+                    Log.Error("No file repository open to be saved. Aborting.");
+                    return;
+                }
+
                 try
                 {
                     Log.Info($"Saving AASX file repository to {fn} ..");
@@ -710,7 +717,8 @@ namespace AasxPackageExplorer
                 // execute (is data binded)
                 try
                 {
-                    Log.Info("Make AASX file names relative to {0}", Path.GetFullPath(Path.GetDirectoryName("" + this.theFileRepository.Filename)));
+                    Log.Info("Make AASX file names relative to {0}", Path.GetFullPath(
+                        Path.GetDirectoryName("" + this.theFileRepository.Filename)));
                     this.theFileRepository.MakeFilenamesRelative();
                 }
                 catch (Exception ex)
@@ -748,7 +756,8 @@ namespace AasxPackageExplorer
                                 return;
 
                             // start animation
-                            this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                            this.theFileRepository?.StartAnimation(fi,
+                                AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                             try
                             {
@@ -803,7 +812,8 @@ namespace AasxPackageExplorer
                 if (ve == null || ve.theAas == null || ve.theEnv == null || ve.thePackage == null)
                 {
                     MessageBoxFlyoutShow(
-                        "No valid AAS selected. Aborting.", "AASX File repository", MessageBoxButton.OK, MessageBoxImage.Error);
+                        "No valid AAS selected. Aborting.", "AASX File repository",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 

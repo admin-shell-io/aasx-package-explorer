@@ -2283,7 +2283,7 @@ namespace AdminShellNS
 
             public Reference GetReference()
             {
-                return (Reference)GetAssetReference();
+                return GetAssetReference();
             }
 
             public override string GetElementName()
@@ -3167,7 +3167,7 @@ namespace AdminShellNS
 
             public Reference GetReference()
             {
-                return (Reference)GetCdReference();
+                return GetCdReference();
             }
 
             public void SetIEC61360Spec(

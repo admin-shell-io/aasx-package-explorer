@@ -11,6 +11,8 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
 namespace AasxPackageExplorer
 {
     /// <summary>
@@ -240,7 +242,9 @@ namespace AasxPackageExplorer
 
         public void Remove(FileItem fi)
         {
-            if (!this.FileMap?.Contains(fi) == true)
+            if (fi == null || this.FileMap == null)
+                return;
+            if (!this.FileMap.Contains(fi))
                 return;
             this.FileMap.Remove(fi);
         }
@@ -281,7 +285,7 @@ namespace AasxPackageExplorer
         public void StartAnimation(FileItem fi, FileItem.VisualStateEnum state)
         {
             // access
-            if (fi == null || !this?.FileMap?.Contains(fi) == true)
+            if (fi == null || this.FileMap == null || !this.FileMap.Contains(fi))
                 return;
 
             // stop?
@@ -341,10 +345,13 @@ namespace AasxPackageExplorer
 
             // base path
             var basePath = Path.GetDirectoryName(Path.GetFullPath(this.Filename));
+            if (basePath == null)
+                return;
             if (!basePath.EndsWith("\\"))
                 basePath += "\\";
 
             // each file
+            // ReSharper disable EmptyGeneralCatchClause
             foreach (var fi in this.FileMap)
                 try
                 {
@@ -358,6 +365,7 @@ namespace AasxPackageExplorer
                     fi.Filename = relPath;
                 }
                 catch { }
+            // ReSharper enable EmptyGeneralCatchClause
         }
 
         public void AddByAas(AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas, string fn)
@@ -374,6 +382,8 @@ namespace AasxPackageExplorer
             var assetId = "" + asset.identification.id;
 
             // try determine tag
+            // ReSharper disable ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable EmptyGeneralCatchClause
             var tag = "";
             try
             {
@@ -387,6 +397,8 @@ namespace AasxPackageExplorer
                     tag = ("" + threeFn).SubstringMax(0, 3).ToUpper();
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
+            // ReSharper enable ConditionIsAlwaysTrueOrFalse
 
             // build description
             var desc = "";
@@ -415,7 +427,7 @@ namespace AasxPackageExplorer
                 var pkg = new AdminShellPackageEnv(fn);
 
                 // for each Admin Shell and then each Asset
-                if (pkg != null && pkg.AasEnv?.AdministrationShells?.Count > 0)
+                if (pkg.AasEnv?.AdministrationShells?.Count > 0)
                     foreach (var aas in pkg.AasEnv.AdministrationShells)
                     {
                         this.AddByAas(pkg.AasEnv, aas, fn);

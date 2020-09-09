@@ -28,9 +28,6 @@ namespace AasxPackageExplorer
         public event Action QueryClick;
         public event Action<AasxFileRepository.FileItem> FileDoubleClick;
 
-        //public delegate void FileDoubleClickHandler(AasxFileRepository.FileItem fi);
-        //public event FileDoubleClickHandler FileDoubleClick;
-
         private AasxFileRepository theFileRepository = null;
         public AasxFileRepository FileRepository
         {

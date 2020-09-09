@@ -73,10 +73,10 @@ namespace AasxPackageExplorer
                 return;
 
             // for ve, try to find the AAS (in the parent hierarchy)
-            var veAas = ve?.FindAllParents((v) => { return v is VisualElementAdminShell; }).FirstOrDefault();
+            var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; }).FirstOrDefault();
 
             // for ve, find the Referable to be ve or superordinate ..
-            var veRef = ve?.FindAllParents((v) =>
+            var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
                 return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
@@ -90,8 +90,8 @@ namespace AasxPackageExplorer
             {
                 aasid = (veAas as VisualElementAdminShell)?.theAas?.identification;
 
-                var derefdo = veRef?.GetDereferencedMainDataObject();
-                refref = (derefdo as AdminShell.IGetReference).GetReference();
+                var derefdo = veRef.GetDereferencedMainDataObject();
+                refref = (derefdo as AdminShell.IGetReference)?.GetReference();
             }
 
             // add, only if not already there

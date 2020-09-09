@@ -236,7 +236,8 @@ namespace AasxPackageExplorer
                 yield return p;
         }
 
-        public IEnumerable<VisualElementGeneric> FindAllParents(Predicate<VisualElementGeneric> p, bool includeThis = false)
+        public IEnumerable<VisualElementGeneric> FindAllParents(
+            Predicate<VisualElementGeneric> p, bool includeThis = false)
         {
             // access
             if (p == null)

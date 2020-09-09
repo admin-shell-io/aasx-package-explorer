@@ -16,7 +16,7 @@ function LogAndExecute($Expression)
 
 function Main
 {
-    LogAndExecute "$(Join-Path $PSScriptRoot "CheckPushCommitMessages.ps1")"
+    # LogAndExecute "$(Join-Path $PSScriptRoot "CheckPushCommitMessages.ps1")"
     LogAndExecute "$(Join-Path $PSScriptRoot "CheckLicenses.ps1")"
     LogAndExecute "$(Join-Path $PSScriptRoot "CheckFormat.ps1")"
     LogAndExecute "$(Join-Path $PSScriptRoot "CheckBiteSized.ps1")"

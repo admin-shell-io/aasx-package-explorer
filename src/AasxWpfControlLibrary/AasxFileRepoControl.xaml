@@ -8,6 +8,9 @@
              d:DesignHeight="200" d:DesignWidth="300"
              Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave">
 
+    <!-- ReSharper disable Xaml.RedundantResource -->
+    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+
     <UserControl.Resources>
 
         <ResourceDictionary>

@@ -234,8 +234,10 @@ namespace AasxPackageExplorer
 
         public bool Contains(VisualElementGeneric ve)
         {
+            // ReSharper disable UnusedVariable
             foreach (var e in FindAllVisualElement((o) => { return ve == o; }))
                 return true;
+            // ReSharper enable UnusedVariable
             return false;
         }
 
