@@ -235,7 +235,7 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        public void UiSetFileRepository (AasxFileRepository repo)
+        public void UiSetFileRepository(AasxFileRepository repo)
         {
             if (repo == null)
             {
@@ -513,10 +513,12 @@ namespace AasxPackageExplorer
 
             // start with empty repository and load, if given by options
             AasxFileRepository fr = null;
+#if __Create_Demo_Daten
             if (true)
             {
                 fr = AasxFileRepository.CreateDemoData();
             }
+#endif
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
                 var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
@@ -584,7 +586,7 @@ namespace AasxPackageExplorer
                     Log.Error(ex, $"When auto-loading {fn}");
                 }
             }
-            
+
         }
 
         private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
@@ -709,7 +711,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private AdminShell.Referable LoadFromFilerepository(AasxFileRepository.FileItem fi, 
+        private AdminShell.Referable LoadFromFilerepository(AasxFileRepository.FileItem fi,
             AdminShell.Reference requireReferable = null)
         {
             // access
@@ -780,7 +782,7 @@ namespace AasxPackageExplorer
                 {
                     var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
 
-                    #region Navigate To
+#region Navigate To
                     //=================
 
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
@@ -867,9 +869,9 @@ namespace AasxPackageExplorer
                             Log.Error(ex, "While displaying element requested by plug-in");
                         }
                     }
-                    #endregion
+#endregion
 
-                    #region Display content file
+#region Display content file
                     //==========================
 
                     var evtDispCont = evt as AasxIntegrationBase.AasxPluginResultEventDisplayContentFile;
@@ -883,8 +885,8 @@ namespace AasxPackageExplorer
                             Log.Error(ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                         }
 
-                    #endregion
-                    #region Offscreen render file
+#endregion
+#region Offscreen render file
                     //===========================
 #if OFFSCREENBROWSER
                     var evtRender = evt as AasxIntegrationBase.AasxPluginResultEventOffscreenRenderFile;
@@ -899,8 +901,8 @@ namespace AasxPackageExplorer
                                 ex, $"While starting offscreen render of file {evtRender.fn} requested by plug-in");
                         }
 #endif
-                    #endregion
-                    #region Redisplay explorer contents
+#endregion
+#region Redisplay explorer contents
                     //=================================
 
                     var evtRedrawAll = evt as AasxIntegrationBase.AasxPluginResultEventRedrawAllElements;
@@ -920,8 +922,8 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    #endregion
-                    #region Select AAS entity
+#endregion
+#region Select AAS entity
                     //=======================
 
                     var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
@@ -943,7 +945,7 @@ namespace AasxPackageExplorer
                     }
 
 
-                    #endregion
+#endregion
                 }
                 catch (Exception ex)
                 {
@@ -1010,7 +1012,7 @@ namespace AasxPackageExplorer
                     VisualElementGeneric veFocus = null;
                     if (bo != null && this.DisplayElements != null)
                     {
-                        veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo, 
+                        veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
                             alsoDereferenceObjects: true);
                         if (veFocus == null)
                         {
@@ -1305,8 +1307,8 @@ namespace AasxPackageExplorer
             }
         }
 
-        #endregion
-        #region Modal Flyovers
+#endregion
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -1486,8 +1488,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -1573,7 +1575,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

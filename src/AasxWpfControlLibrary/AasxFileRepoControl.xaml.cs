@@ -1,5 +1,4 @@
-﻿using AasxIntegrationBase;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase;
 
 namespace AasxPackageExplorer
 {
@@ -60,7 +60,7 @@ namespace AasxPackageExplorer
         private void MainTimer_Tick(object sender, EventArgs e)
         {
             if (this.theFileRepository != null)
-                this.theFileRepository.DecreaseVisualTimeBy(0.1);            
+                this.theFileRepository.DecreaseVisualTimeBy(0.1);
         }
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
@@ -83,7 +83,7 @@ namespace AasxPackageExplorer
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            
+
         }
 
         private AasxFileRepository.FileItem rightClickSelectedItem = null;
@@ -119,7 +119,7 @@ namespace AasxPackageExplorer
                 cm.IsOpen = true;
             }
         }
-        
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var mi = sender as MenuItem;

@@ -91,7 +91,7 @@ namespace AasxIntegrationBase
                 // try recursion
                 var found = FindChildLogicalTree<T>(child as DependencyObject, childName);
                 if (found != null)
-                    return found;                
+                    return found;
             }
 
             return null;

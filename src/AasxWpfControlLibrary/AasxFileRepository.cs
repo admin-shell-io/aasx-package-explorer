@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
-using AasxIntegrationBase;
 
 namespace AasxPackageExplorer
 {
@@ -42,8 +42,11 @@ namespace AasxPackageExplorer
             /// </summary>
             /// 
             [JsonProperty(PropertyName = "assetId")]
-            public string assetId = "";
-            public string AssetId {
+            private string assetId = "";
+
+            [JsonIgnore]
+            public string AssetId
+            {
                 get { return assetId; }
                 set { assetId = value; OnPropertyChanged("InfoIds"); }
             }
@@ -52,7 +55,9 @@ namespace AasxPackageExplorer
             /// AAS Id, which is associated to th asset id.
             /// </summary>
             [JsonProperty(PropertyName = "aasId")]
-            public string aasId = "";
+            private string aasId = "";
+
+            [JsonIgnore]
             public string AasId
             {
                 get { return aasId; }
@@ -63,7 +68,9 @@ namespace AasxPackageExplorer
             /// Description; help for the human user.
             /// </summary>
             [JsonProperty(PropertyName = "description")]
-            public string description = "";
+            private string description = "";
+
+            [JsonIgnore]
             public string Description
             {
                 get { return description; }
@@ -74,7 +81,9 @@ namespace AasxPackageExplorer
             /// 3-5 letters of Tag to be displayed in user interface
             /// </summary>
             [JsonProperty(PropertyName = "tag")]
-            public string tag = "";
+            private string tag = "";
+
+            [JsonIgnore]
             public string Tag
             {
                 get { return tag; }
@@ -91,7 +100,9 @@ namespace AasxPackageExplorer
             /// AASX file name to load
             /// </summary>
             [JsonProperty(PropertyName = "fn")]
-            public string filename = "";
+            private string filename = "";
+
+            [JsonIgnore]
             public string Filename
             {
                 get { return filename; }
@@ -111,6 +122,8 @@ namespace AasxPackageExplorer
             /// </summary>
             [JsonIgnore]
             private double visualTime = 0.0;
+
+            [JsonIgnore]
             public double VisualTime
             {
                 get { return visualTime; }
@@ -124,25 +137,18 @@ namespace AasxPackageExplorer
 
             // Getters used by the binding
             [JsonIgnore]
-            public string InfoIds {
-                get {
+            public string InfoIds
+            {
+                get
+                {
                     var info = "";
 
-#if __not_so_nice
-                    if (this.assetId.HasContent())
-                        info += info.AddWithDelimiter($"{this.assetId} (Asset)");
-                    if (this.aasId.HasContent())
-                        info += info.AddWithDelimiter($"{this.aasId} (AAS)");
-
-                    info += info.AddWithDelimiter(this.description);
-#else                    
                     if (this.Description.HasContent())
                         info = info.AddWithDelimiter("" + this.Description + "", delimter: Environment.NewLine);
                     if (this.AssetId.HasContent())
                         info = info.AddWithDelimiter("" + this.AssetId + " (Asset)", delimter: Environment.NewLine);
                     if (this.AasId.HasContent())
                         info = info.AddWithDelimiter("" + this.AasId + " (AAS)", delimter: Environment.NewLine);
-#endif
 
                     return info;
                 }
@@ -251,14 +257,16 @@ namespace AasxPackageExplorer
 
         public FileItem FindByAssetId(string aid)
         {
-            return this.FileMap?.FirstOrDefault((fi) => {
+            return this.FileMap?.FirstOrDefault((fi) =>
+            {
                 return fi.AssetId.Trim() == aid.Trim();
             });
         }
 
         public FileItem FindByAasId(string aid)
         {
-            return this.FileMap?.FirstOrDefault((fi) => {
+            return this.FileMap?.FirstOrDefault((fi) =>
+            {
                 return fi.AasId.Trim() == aid.Trim();
             });
         }
@@ -315,7 +323,8 @@ namespace AasxPackageExplorer
             {
                 if (!Path.IsPathRooted(fn) && this.Filename != null)
                     fn = Path.Combine(Path.GetDirectoryName(this.Filename), fn);
-            } catch
+            }
+            catch
             {
                 return null;
             }
@@ -456,7 +465,7 @@ namespace AasxPackageExplorer
 
             // return
             return repo;
-        }        
+        }
 
         public static bool GenerateRepositoryFromFileNames(string[] inputFns, string outputFn)
         {

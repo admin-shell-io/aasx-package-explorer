@@ -1,5 +1,4 @@
-﻿using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
@@ -76,7 +76,8 @@ namespace AasxPackageExplorer
             var veAas = ve?.FindAllParents((v) => { return v is VisualElementAdminShell; }).FirstOrDefault();
 
             // for ve, find the Referable to be ve or superordinate ..
-            var veRef = ve?.FindAllParents((v) => {
+            var veRef = ve?.FindAllParents((v) =>
+            {
                 var derefdo = v?.GetDereferencedMainDataObject();
                 return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
             }).FirstOrDefault();

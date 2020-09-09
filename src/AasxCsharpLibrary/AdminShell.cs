@@ -3037,6 +3037,8 @@ namespace AdminShellNS
                 return eds;
             }
 
+        }
+
         public class ConceptDescription : Identifiable, System.IDisposable
         {
             // for JSON only
@@ -3053,13 +3055,13 @@ namespace AdminShellNS
 
 #if __not_anymore
 
-            [XmlElement(ElementName = "embeddedDataSpecification")]
-            [JsonIgnore]
-            public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
+        [XmlElement(ElementName = "embeddedDataSpecification")]
+        [JsonIgnore]
+        public EmbeddedDataSpecification embeddedDataSpecification = new EmbeddedDataSpecification();
 #else
             // According to Spec V2.0.1, a ConceptDescription might feature alos multiple data specifications
             /* TODO (MIHO, 2020-08-30): align wording of the member ("embeddedDataSpecification") with the 
-             * wording of the other entities ("hasDataSpecification") */
+                * wording of the other entities ("hasDataSpecification") */
             [XmlElement(ElementName = "embeddedDataSpecification")]
             [JsonIgnore]
             public HasDataSpecification embeddedDataSpecification = null;
@@ -3161,6 +3163,11 @@ namespace AdminShellNS
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
+            }
+
+            public Reference GetReference()
+            {
+                return (Reference)GetCdReference();
             }
 
             public void SetIEC61360Spec(
@@ -3715,7 +3722,7 @@ namespace AdminShellNS
                             yield return cd;
             }
 
-            
+
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
             {
                 // first index needs to exist ..
@@ -4453,7 +4460,7 @@ namespace AdminShellNS
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
-                typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
+            typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
 
             // for JSON only
             [XmlIgnore]
@@ -4698,14 +4705,14 @@ namespace AdminShellNS
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
-                AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
-                AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
-            };
+            AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
+            AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
+            AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+        };
 
             public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
-                "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
-                "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+            "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
+            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             // constructors
 
@@ -5664,13 +5671,13 @@ namespace AdminShellNS
             public static string ValueType_BOOLEAN = "date";
 
             public static string[] ValueTypeItems = new string[] {
-                        "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
-                        "boolean", "date", "dateTime",
-                        "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
-                        "positiveInteger",
-                        "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                        "double", "duration",
-                        "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
+                    "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
+                    "boolean", "date", "dateTime",
+                    "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                    "positiveInteger",
+                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
+                    "double", "duration",
+                    "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
             public DataElement() { }
 
@@ -6081,17 +6088,17 @@ namespace AdminShellNS
             {
                 return
                     new[] {
-                    System.Net.Mime.MediaTypeNames.Text.Plain,
-                    System.Net.Mime.MediaTypeNames.Text.Xml,
-                    System.Net.Mime.MediaTypeNames.Text.Html,
-                    "application/json",
-                    "application/rdf+xml",
-                    System.Net.Mime.MediaTypeNames.Application.Pdf,
-                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                    "image/png",
-                    System.Net.Mime.MediaTypeNames.Image.Gif,
-                    "application/iges",
-                    "application/step"
+                System.Net.Mime.MediaTypeNames.Text.Plain,
+                System.Net.Mime.MediaTypeNames.Text.Xml,
+                System.Net.Mime.MediaTypeNames.Text.Html,
+                "application/json",
+                "application/rdf+xml",
+                System.Net.Mime.MediaTypeNames.Application.Pdf,
+                System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                "image/png",
+                System.Net.Mime.MediaTypeNames.Image.Gif,
+                "application/iges",
+                "application/step"
                     };
             }
 
@@ -6912,9 +6919,8 @@ namespace AdminShellNS
         //
         // Handling of packages
         //
-
-
     }
 
     #endregion
 }
+

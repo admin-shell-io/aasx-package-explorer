@@ -67,7 +67,7 @@ namespace AdminShellNS
             if (src.Length > 0 && !Char.IsLetter(src[0]))
                 res = false;
             return res;
-        }        
+        }
 
         public static string ExtractPascalCasingLetters(string src)
         {

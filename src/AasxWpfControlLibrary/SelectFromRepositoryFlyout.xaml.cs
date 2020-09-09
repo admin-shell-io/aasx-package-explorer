@@ -72,7 +72,7 @@ namespace AasxPackageExplorer
                 {
                     // from file
                     this.TheAasxRepo = AasxFileRepository.Load(fn);
-                    
+
                 }
 
                 if (repo != null)
