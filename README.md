@@ -89,3 +89,9 @@ While these projects try to implement a wider scope of programatic features,
 AASX Package Explorer, in contrast, is a tool with graphical user interface 
 meant for experimenting and demonstrating the potential of asset administration
 shells targeting tech-savvy and less technically-inclined users alike.
+
+The AASX Package Explorer also includes an internal REST server and OPC UA
+server for the loaded .AASX. Based on this a separate AASX Server is
+available (https://github.com/admin-shell-io/aasx-server) which can host
+several .AASX simultanously (see example https://admin-shell-io.com:5001/).
+
