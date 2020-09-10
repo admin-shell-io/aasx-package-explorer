@@ -93,7 +93,8 @@ namespace AasxOpenIdClient
                 return;
             }
 
-            System.Windows.Forms.MessageBox.Show("Access Aasx Server at " + dataServer, "Data Server", MessageBoxButtons.OK);
+            System.Windows.Forms.MessageBox.Show("Access Aasx Server at " + dataServer,
+                "Data Server", MessageBoxButtons.OK);
 
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -110,7 +111,8 @@ namespace AasxOpenIdClient
 
             while (operation != "" && operation != "error")
             {
-                System.Windows.Forms.MessageBox.Show("operation: " + operation + "\ntoken: " + token, "Operation", MessageBoxButtons.OK);
+                System.Windows.Forms.MessageBox.Show("operation: " + operation + "\ntoken: " + token,
+                    "Operation", MessageBoxButtons.OK);
 
                 switch (operation)
                 {
@@ -132,7 +134,8 @@ namespace AasxOpenIdClient
                             if (response2.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
                             {
                                 string redirectUrl = response2.Headers.Location.ToString();
-                                string[] splitResult = redirectUrl.Split(new string[] { "?" }, StringSplitOptions.RemoveEmptyEntries);
+                                string[] splitResult = redirectUrl.Split(new string[] { "?" },
+                                    StringSplitOptions.RemoveEmptyEntries);
                                 Console.WriteLine("Redirect to:" + splitResult[0]);
                                 authServer = splitResult[0];
                                 System.Windows.Forms.MessageBox.Show(authServer, "Redirect to", MessageBoxButtons.OK);
@@ -150,8 +153,10 @@ namespace AasxOpenIdClient
                             switch (operation)
                             {
                                 case "/server/listaas/":
-                                    System.Windows.Forms.MessageBox.Show(urlContents, "/server/listaas/", MessageBoxButtons.OK);
-                                    var uc = new AasxPackageExplorer.TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
+                                    System.Windows.Forms.MessageBox.Show(urlContents, "/server/listaas/",
+                                        MessageBoxButtons.OK);
+                                    var uc = new AasxPackageExplorer.TextBoxFlyout("REST server adress:",
+                                        MessageBoxImage.Question);
                                     uc.Text = "0";
                                     flyoutProvider.StartFlyoverModal(uc);
                                     if (uc.Result)
@@ -169,7 +174,8 @@ namespace AasxOpenIdClient
                                         string fileData = parsed3.SelectToken("fileData").Value<string>();
 
                                         var enc = new System.Text.ASCIIEncoding();
-                                        var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(secretString), JwsAlgorithm.HS256);
+                                        var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(secretString),
+                                            JwsAlgorithm.HS256);
                                         var parsed4 = JObject.Parse(fileString4);
 
                                         string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
@@ -206,7 +212,8 @@ namespace AasxOpenIdClient
                             client.SetBearerToken(token);
 
                             response.Show();
-                            System.Windows.Forms.MessageBox.Show(response.AccessToken, "Access Token", MessageBoxButtons.OK);
+                            System.Windows.Forms.MessageBox.Show(response.AccessToken,
+                                "Access Token", MessageBoxButtons.OK);
 
                             operation = lastOperation;
                             lastOperation = "";
@@ -220,7 +227,8 @@ namespace AasxOpenIdClient
                         break;
                     case "error":
                         Console.WriteLine("Can not " + lastOperation + "!");
-                        System.Windows.Forms.MessageBox.Show("Can not " + lastOperation + "!", "Error", MessageBoxButtons.OK);
+                        System.Windows.Forms.MessageBox.Show("Can not " + lastOperation + "!",
+                            "Error", MessageBoxButtons.OK);
                         break;
                 }
             }
