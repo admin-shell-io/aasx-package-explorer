@@ -50,6 +50,7 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -104,6 +105,20 @@
     <Content Include="openid3.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj">
+      <Project>{e3ab36ea-e98a-4cc2-bc18-1d0e40eeae1a}</Project>
+      <Name>AasxIntegrationBaseWpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj">
+      <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
+      <Name>AasxIntegrationBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj">
+      <Project>{ebae658a-3ece-4c98-89bc-f79809ab4a5e}</Project>
+      <Name>AasxWpfControlLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
