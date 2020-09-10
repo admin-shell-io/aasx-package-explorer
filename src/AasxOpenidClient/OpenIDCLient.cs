@@ -19,7 +19,7 @@ using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-/*;
+/*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
 
 We adapted the code marginally and removed the parts that we do not use.
@@ -317,7 +317,7 @@ namespace AasxOpenIdClient
         private static string CreateClientToken(SigningCredentials credential, string clientId, string audience)
         {
             // oz
-            // string x5c = "";
+            //// string x5c = "";
             string[] x5c = null;
             string certFileName = certPfx;
             string password = certPfxPW;
@@ -335,7 +335,7 @@ namespace AasxOpenIdClient
                 X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
             }
 
-            // x5c = JsonConvert.SerializeObject(X509Base64);
+            //// x5c = JsonConvert.SerializeObject(X509Base64);
             x5c = X509Base64;
 
             string email = "";

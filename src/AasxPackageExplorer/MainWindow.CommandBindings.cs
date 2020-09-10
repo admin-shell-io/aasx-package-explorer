@@ -1149,12 +1149,13 @@ namespace AasxPackageExplorer
                 tag = input.Substring(0, tag.Length);
                 if (tag == "openid1" || tag == "openid2" || tag == "openid3")
                 {
-                    string value = input.Substring(tag.Length + 1);
+                    //// string value = input.Substring(tag.Length + 1);
+                    string value = "";
                     if (thePackageEnv.IsOpen)
                     {
                         thePackageEnv.Close();
                     }
-                    await AasxOpenIdClient.OpenIDClient.Run(tag, value);
+                    await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
                     UiLoadPackageWithNew(
                         ref thePackageEnv,
