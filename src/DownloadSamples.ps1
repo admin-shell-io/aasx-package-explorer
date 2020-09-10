@@ -40,6 +40,22 @@ function Main
         "18_Hitachi_HX_DigTyp40.aasx"
         )
 
+        # Set up the default proxy. This is necessary for many enterprise
+        # settings, as otherwise the connection with Invoke-WebRequest won't
+        # work.
+        #
+        # See also: https://www.reddit.com/r/PowerShell/comments/77m4lj/ and
+        # http://woshub.com/using-powershell-behind-a-proxy/
+
+        $proxyAddress = [System.Net.WebProxy]::GetDefaultProxy().Address
+        if ($null -ne $proxyAddress)
+        {
+            [system.net.webrequest]::defaultwebproxy = New-Object system.net.webproxy($proxyAddress)
+            [system.net.webrequest]::defaultwebproxy.credentials = `
+                [System.Net.CredentialCache]::DefaultNetworkCredentials
+            [system.net.webrequest]::defaultwebproxy.BypassProxyOnLocal = $true
+        }
+
         foreach($sampleFilename in $sampleFilenames)
         {
             $url = $urlPrefix + $sampleFilename
@@ -57,6 +73,25 @@ function Main
             {
                 Invoke-WebRequest -Uri $url -OutFile $samplePathTmp
                 Move-Item -Path $samplePathTmp -Destination $samplePath
+            }
+            catch
+            {
+                if ($null -eq $proxyAddress)
+                {
+                    $proxyMessage = "no default proxy could be inferred by the script"
+                }
+                else
+                {
+                    $proxyMessage = "the script uses the default proxy: $("$proxyAddress"|ConvertTo-Json))"
+                }
+
+                throw (
+                    "The script failed to download the sample AASX from: $url. " +
+                    "Do you use a proxy and was it properly set up ($proxyMessage)? " +
+                    "Was there enough disk space? " +
+                    "Could the downloaded file be moved from $samplePathTmp to ${samplePath}? " +
+                    "Can you access $url from your browser?"
+                )
             }
             finally
             {
