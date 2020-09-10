@@ -12,6 +12,10 @@ We use `git` CLI to obtain the commit messages contained in the next (potential)
 The local `HEAD` is compared against the `origin/master`.
 #>
 
+Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
+    CreateAndGetArtefactsDir
+
+
 function Main
 {
     if ($null -eq (Get-Command "git" -ErrorAction SilentlyContinue))
@@ -20,6 +24,13 @@ function Main
     }
 
     Set-Location $PSScriptRoot
+
+    $artefactsDir = CreateAndGetArtefactsDir
+    $reportPath = Join-Path $artefactsDir "CheckPushCommitMessages.txt"
+    if (Test-Path $reportPath)
+    {
+        Remove-Item -Path $reportPath -Force
+    }
 
     # Get commit hashes not available in the master
     $hashesText = git log 'origin/master..HEAD' '--format=format:%H'|Out-String
@@ -48,15 +59,12 @@ function Main
         }
         catch
         {
+            Write-Host "---"
+            Write-Host "One or more commit messages failed the check, but you can ignore them."
             Write-Host
             Write-Host (
-                "`u{1F4A5} `u{26A1} ATTENTION! `u{26A1} `u{1F4A5}`n`n" +
-                "The commit message failed the check. Since we are squashing before the commit, " +
-                "make sure that the title and description of your pull request (and *not* the commits) " +
-                "are valid.`n`n" +
-                "This check is intended to save you time if you have a single commit which " +
-                "will be used by GitHub to automatically generate the title and the description " +
-                "of the pull request."
+                "Mind that we only check the title and the description " +
+                "of the pull request in our CI."
             )
         }
     }
