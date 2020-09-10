@@ -15,6 +15,7 @@ using IdentityModel;
 using IdentityModel.Client;
 using Jose;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -44,7 +45,8 @@ namespace AasxOpenIdClient
         public static string certPfxPW = "i40";
         public static string outputDir = ".";
 
-        public static async Task Run(string tag, string value)
+        static string token = "";
+        public static async Task Run(string tag, string value, AasxIntegrationBase.IFlyoutProvider flyoutProvider)
         {
             ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(AcceptAllCertifications);
@@ -91,20 +93,145 @@ namespace AasxOpenIdClient
                 return;
             }
 
-            // X.509 cert
-            var certificate = new X509Certificate2(certPfx, certPfxPW);
-            X509SigningCredentials x509Credential = null;
+            System.Windows.Forms.MessageBox.Show("Access Aasx Server at " + dataServer,
+                "Data Server", MessageBoxButtons.OK);
 
-            var response = await RequestTokenAsync(x509Credential);
-            response.Show();
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            handler.AllowAutoRedirect = false;
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(dataServer)
+            };
+            if (token != "")
+                client.SetBearerToken(token);
 
-            System.Windows.Forms.MessageBox.Show(response.AccessToken, "Access Token", MessageBoxButtons.OK);
+            string operation = "/server/listaas/";
+            string lastOperation = "";
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\nPress ENTER to access Aasx Server at " + dataServer + "\n");
-            Console.ResetColor();
-            Console.ReadLine();
-            await CallServiceAsync(response.AccessToken, value);
+            while (operation != "" && operation != "error")
+            {
+                System.Windows.Forms.MessageBox.Show("operation: " + operation + "\ntoken: " + token,
+                    "Operation", MessageBoxButtons.OK);
+
+                switch (operation)
+                {
+                    case "/server/listaas/":
+                    case "/server/getaasx2/":
+                        try
+                        {
+                            HttpResponseMessage response2 = null;
+                            switch (operation)
+                            {
+                                case "/server/listaas/":
+                                    response2 = await client.GetAsync(operation);
+                                    break;
+                                case "/server/getaasx2/":
+                                    response2 = await client.GetAsync(operation + value);
+                                    break;
+                            }
+
+                            if (response2.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
+                            {
+                                string redirectUrl = response2.Headers.Location.ToString();
+                                string[] splitResult = redirectUrl.Split(new string[] { "?" },
+                                    StringSplitOptions.RemoveEmptyEntries);
+                                Console.WriteLine("Redirect to:" + splitResult[0]);
+                                authServer = splitResult[0];
+                                System.Windows.Forms.MessageBox.Show(authServer, "Redirect to", MessageBoxButtons.OK);
+                                lastOperation = operation;
+                                operation = "authenticate";
+                                continue;
+                            }
+                            if (!response2.IsSuccessStatusCode)
+                            {
+                                lastOperation = operation;
+                                operation = "error";
+                                continue;
+                            }
+                            String urlContents = urlContents = await response2.Content.ReadAsStringAsync();
+                            switch (operation)
+                            {
+                                case "/server/listaas/":
+                                    System.Windows.Forms.MessageBox.Show(urlContents, "/server/listaas/",
+                                        MessageBoxButtons.OK);
+                                    var uc = new AasxPackageExplorer.TextBoxFlyout("REST server adress:",
+                                        MessageBoxImage.Question);
+                                    uc.Text = "0";
+                                    flyoutProvider.StartFlyoverModal(uc);
+                                    if (uc.Result)
+                                    {
+                                        value = uc.Text;
+                                    }
+                                    operation = "/server/getaasx2/";
+                                    break;
+                                case "/server/getaasx2/":
+                                    try
+                                    {
+                                        var parsed3 = JObject.Parse(urlContents);
+
+                                        string fileName = parsed3.SelectToken("fileName").Value<string>();
+                                        string fileData = parsed3.SelectToken("fileData").Value<string>();
+
+                                        var enc = new System.Text.ASCIIEncoding();
+                                        var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(secretString),
+                                            JwsAlgorithm.HS256);
+                                        var parsed4 = JObject.Parse(fileString4);
+
+                                        string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
+                                        Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
+
+                                        Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
+                                        File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e.Message);
+                                        lastOperation = operation;
+                                        operation = "error";
+                                    }
+                                    operation = "";
+                                    break;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            lastOperation = operation;
+                            operation = "error";
+                        }
+                        break;
+                    case "authenticate":
+                        try
+                        {
+                            var certificate = new X509Certificate2(certPfx, certPfxPW);
+                            X509SigningCredentials x509Credential = null;
+
+                            var response = await RequestTokenAsync(x509Credential);
+                            token = response.AccessToken;
+                            client.SetBearerToken(token);
+
+                            response.Show();
+                            System.Windows.Forms.MessageBox.Show(response.AccessToken,
+                                "Access Token", MessageBoxButtons.OK);
+
+                            operation = lastOperation;
+                            lastOperation = "";
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            lastOperation = operation;
+                            operation = "error";
+                        }
+                        break;
+                    case "error":
+                        Console.WriteLine("Can not " + lastOperation + "!");
+                        System.Windows.Forms.MessageBox.Show("Can not " + lastOperation + "!",
+                            "Error", MessageBoxButtons.OK);
+                        break;
+                }
+            }
         }
 
         static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
@@ -131,7 +258,8 @@ namespace AasxOpenIdClient
             {
                 Address = disco.TokenEndpoint,
                 // Scope = "feature1",
-                Scope = "scope1",
+                // Scope = "scope1",
+                Scope = "resource1.scope1",
 
                 ClientAssertion =
                 {
@@ -158,30 +286,39 @@ namespace AasxOpenIdClient
             };
 
             client.SetBearerToken(token);
-            var response = await client.GetStringAsync("/server/getaasx2/" + value);
 
-            var parsed3 = JObject.Parse(response);
+            try
+            {
+                var response = await client.GetStringAsync("/server/getaasx2/" + value);
 
-            string fileName = parsed3.SelectToken("fileName").Value<string>();
-            string fileData = parsed3.SelectToken("fileData").Value<string>();
+                var parsed3 = JObject.Parse(response);
 
-            var enc = new System.Text.ASCIIEncoding();
-            var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(secretString), JwsAlgorithm.HS256);
-            var parsed4 = JObject.Parse(fileString4);
+                string fileName = parsed3.SelectToken("fileName").Value<string>();
+                string fileData = parsed3.SelectToken("fileData").Value<string>();
 
-            string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
-            Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
+                var enc = new System.Text.ASCIIEncoding();
+                var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(secretString), JwsAlgorithm.HS256);
+                var parsed4 = JObject.Parse(fileString4);
 
-            Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
-            File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
+                string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
+                Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
 
-            "\n\nService claims:".ConsoleGreen();
+                Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
+                File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Can not get .AASX!");
+                return;
+            }
         }
 
         private static string CreateClientToken(SigningCredentials credential, string clientId, string audience)
         {
             // oz
-            string x5c = "";
+            //// string x5c = "";
+            string[] x5c = null;
             string certFileName = certPfx;
             string password = certPfxPW;
 
@@ -198,7 +335,8 @@ namespace AasxOpenIdClient
                 X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
             }
 
-            x5c = JsonConvert.SerializeObject(X509Base64);
+            //// x5c = JsonConvert.SerializeObject(X509Base64);
+            x5c = X509Base64;
 
             string email = "";
             X509Certificate2 x509 = new X509Certificate2(certFileName, password);
