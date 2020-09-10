@@ -62,7 +62,9 @@
     ],
     "postProcessors": [ "ExtractSearchIndex" ],
     "globalMetadata": {
-      "_enableSearch": "true"
+      "_enableSearch": "true",
+      "_appLogoPath": "images/adminshellio-48x48.jpg",
+      "_appFaviconPath": "images/favicon.ico"
     },
     "markdownEngineName": "markdig",
     "noLangKeyword": false,
