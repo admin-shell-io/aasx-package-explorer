@@ -22,7 +22,8 @@ function Main
     {
         throw (
             "The opinionated-csharp-todos check failed. " +
-            "Please have a close look at the output above."
+            "Please have a close look at the output above, " +
+            "in particular the lines prefixed with `"FAILED`"."
         )
     }
 }

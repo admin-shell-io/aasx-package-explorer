@@ -37,7 +37,8 @@ function Main {
     {
         throw (
             "The bite-sized check failed. " +
-            "Please have a close look at the output above."
+            "Please have a close look at the output above, " +
+            "in particular the lines prefixed with `"FAIL`"."
         )
     }
 }
