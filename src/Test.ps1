@@ -30,13 +30,14 @@ function Main
     $samplesDir = GetSamplesDir
     if(!(Test-Path $samplesDir))
     {
-        throw ("The directory containing samples could not be found: " +
-                "$samplesDir; these samples are necessary to " +
-                "perform the integration tests.")
+        throw (
+            "The directory containing samples could not be found: " +
+            "$samplesDir; these samples are necessary to " +
+            "perform the integration tests. " +
+            "Did you maybe forget to download them with DownloadSamples.ps1?"
+        )
     }
-
-
-
+    
     # Glob test DLLs relative to $targetDir
     $testDlls = Get-ChildItem `
         -Path (Join-Path $targetDir "*.Tests.dll") `
