@@ -24,8 +24,11 @@ function Main
     $formatReport = Get-Content $reportPath |ConvertFrom-Json
     if ($formatReport.Count -ge 1)
     {
-        throw "There are $( $formatReport.Count ) dotnet-format issue(s). " +  `
-             "The report is stored in: $reportPath"
+        throw (
+            "There are $( $formatReport.Count ) dotnet-format issue(s). " +
+            "The report is stored in: $reportPath. " +
+            "Please reformat the code with FormatCode.ps1."
+        )
     }
 }
 

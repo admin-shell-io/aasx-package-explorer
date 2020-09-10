@@ -35,7 +35,10 @@ function Main {
 
     if($LASTEXITCODE -ne 0)
     {
-        throw "The bite-sized check failed."
+        throw (
+            "The bite-sized check failed. " +
+            "Please have a close look at the output above."
+        )
     }
 }
 
