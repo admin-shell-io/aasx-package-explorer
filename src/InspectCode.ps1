@@ -90,6 +90,10 @@ function Main
             "https://www.jetbrains.com/help/resharper/Reference__Code_Inspections_CSHARP.html#BestPractice"
         )
     }
+    else
+    {
+        Write-Host "There were no issues detected."
+    }
 }
 
 $previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
