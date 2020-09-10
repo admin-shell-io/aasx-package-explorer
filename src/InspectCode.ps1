@@ -80,8 +80,15 @@ function Main
             Write-Host "... and some more issues ($( $issues.Count ) in total)."
         }
 
-        throw "There are $( $issues.Count ) InspectCode issue(s). " +      `
-                 "The issues are stored in: $codeInspectionPath"
+        throw (
+            "There are $( $issues.Count ) InspectCode issue(s). " +
+            "The issues are stored in: $codeInspectionPath. " +
+            "Please fix the issues either manually or semi-automatically " +
+            "using an IDE such as Rider (https://www.jetbrains.com/rider/ and " +
+            "https://www.jetbrains.com/help/resharper/Code_Analysis__Quick-Fixes.html). " +
+            "For the information about individual issues, have a look at: " +
+            "https://www.jetbrains.com/help/resharper/Reference__Code_Inspections_CSHARP.html#BestPractice"
+        )
     }
 }
 

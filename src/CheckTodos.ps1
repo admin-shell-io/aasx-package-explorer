@@ -20,7 +20,10 @@ function Main
         --excludes 'packages/**' '**/obj/**' 'MsaglWpfControl/**'
     if($LASTEXITCODE -ne 0)
     {
-        throw "Failed to validate the TODOs in the code."
+        throw (
+            "The opinionated-csharp-todos check failed. " +
+            "Please have a close look at the output above."
+        )
     }
 }
 

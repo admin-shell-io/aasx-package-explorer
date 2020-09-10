@@ -19,7 +19,10 @@ function Main
     dotnet dead-csharp --inputs "**/*.cs" --excludes "**/obj/**" "packages/**" "**/Properties/**"
     if($LASTEXITCODE -ne 0)
     {
-        throw "The dead-csharp check failed."
+        throw (
+            "The dead-csharp check failed. " +
+            "Please have a close look at the output above."
+        )
     }
 }
 
