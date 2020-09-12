@@ -4,6 +4,9 @@
 - name: Licenses and Copyrights
   href: licenses-and-copyrights.md
 
+- name: Installing the Dependencies
+  href: installing-the-dependencies.md
+
 - name: Building the Solution
   href: building-the-solution.md
 
