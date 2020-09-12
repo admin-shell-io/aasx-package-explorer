@@ -41,20 +41,18 @@ function Main
         )
 
         # Set up the default proxy. This is necessary for many enterprise
-        # settings, as otherwise the connection with Invoke-WebRequest won't
+        # settings, as the direct connection with Invoke-WebRequest does not
         # work.
         #
-        # See also: https://www.reddit.com/r/PowerShell/comments/77m4lj/ and
-        # http://woshub.com/using-powershell-behind-a-proxy/
+        # See also: https://www.reddit.com/r/PowerShell/comments/77m4lj/,
+        # http://woshub.com/using-powershell-behind-a-proxy/ and
+        # https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/use-internet-connection-with-default-proxy
 
-        $proxyAddress = [System.Net.WebProxy]::GetDefaultProxy().Address
-        if ($null -ne $proxyAddress)
-        {
-            [system.net.webrequest]::defaultwebproxy = New-Object system.net.webproxy($proxyAddress)
-            [system.net.webrequest]::defaultwebproxy.credentials = `
-                [System.Net.CredentialCache]::DefaultNetworkCredentials
-            [system.net.webrequest]::defaultwebproxy.BypassProxyOnLocal = $true
-        }
+        $proxy = [System.Net.WebRequest]::GetSystemWebProxy()
+        $proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
+        $webClient = New-Object System.Net.WebClient
+        $webClient.proxy = $proxy
+        $webClient.UseDefaultCredentials = $true
 
         foreach($sampleFilename in $sampleFilenames)
         {
@@ -71,7 +69,7 @@ function Main
             $samplePathTmp = $samplePath + ".DownloadSamples.ps1.temp"
             try
             {
-                Invoke-WebRequest -Uri $url -OutFile $samplePathTmp
+                $webClient.DownloadFile($url, $samplePathTmp)
                 Move-Item -Path $samplePathTmp -Destination $samplePath
             }
             catch
@@ -85,12 +83,15 @@ function Main
                     $proxyMessage = "the script uses the default proxy: $("$proxyAddress"|ConvertTo-Json))"
                 }
 
+                $nl = [System]::Environment.NewLine
+
                 throw (
-                    "The script failed to download the sample AASX from: $url. " +
-                    "Do you use a proxy and was it properly set up ($proxyMessage)? " +
-                    "Was there enough disk space? " +
-                    "Could the downloaded file be moved from $samplePathTmp to ${samplePath}? " +
-                    "Can you access $url from your browser?"
+                    "The script failed to download the sample AASX from: $url.$nl$nl" +
+                    "* Do you use a proxy and was it properly set up?$nl" +
+                    "  * powershell `"[System.Net.WebRequest]::GetSystemWebProxy()`"?$nl" +
+                    "* Was there enough disk space?$nl" +
+                    "* Could the downloaded file be moved from $samplePathTmp to ${samplePath}?$nl" +
+                    "* Can you access $url from your browser?"
                 )
             }
             finally
