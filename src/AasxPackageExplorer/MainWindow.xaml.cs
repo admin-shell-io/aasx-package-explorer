@@ -242,7 +242,7 @@ namespace AasxPackageExplorer
                 // disable completely
                 this.theFileRepository = null;
                 this.RepoControl.FileRepository = this.theFileRepository;
-                this.RepoControl.Visibility = Visibility.Collapsed;
+                this.RepoControl.Visibility = Visibility.Visible;
                 if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
                     this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(0.0);
             }
@@ -306,9 +306,7 @@ namespace AasxPackageExplorer
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
                 package, entity, editMode, hintMode,
-                (thePackageAux == null)
-                    ? null
-                    : new[] { thePackageAux },
+                ProvideAuxPackages(true, true),
                 flyoutProvider: this,
                 hightlightField: hightlightField);
 
@@ -613,6 +611,19 @@ namespace AasxPackageExplorer
                     highlightField: new DispEditHighlight.HighlightFieldInfo(
                         resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
                     onlyReFocus: true));
+        }
+
+        private AdminShellPackageEnv[] ProvideAuxPackages(
+            bool showAuxPackage = false, bool showRepoFiles = false)
+        {
+            var auxes = new List<AdminShellPackageEnv>();
+            if (showAuxPackage && this.thePackageAux != null)
+                auxes.Add(this.thePackageAux);
+            if (showRepoFiles && this.theFileRepository != null)
+                auxes.Add(this.theFileRepository.MakeUpFakePackage());
+            if (auxes.Count < 1)
+                return null;
+            return auxes.ToArray();
         }
 
         private void MainTimer_HandleLogMessages()
@@ -931,7 +942,8 @@ namespace AasxPackageExplorer
                     if (evSelectEntity != null)
                     {
                         var uc = new SelectAasEntityFlyout(
-                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv);
+                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv, 
+                            this.ProvideAuxPackages(true, true));
                         this.StartFlyoverModal(uc);
                         if (uc.ResultKeys != null)
                         {
@@ -998,11 +1010,22 @@ namespace AasxPackageExplorer
                         return;
                     }
 
+                    // special case - 1st half: possible plugin information?
+                    var searchRef = new AdminShell.Reference(hi.ReferableReference);
+                    var srl = searchRef?.Last;
+                    string searchPluginTag = null;
+                    if (srl?.type == AdminShell.Key.GlobalReference && srl.idType == AdminShell.Key.Custom
+                        && srl?.value.StartsWith("Plugin:") == true)
+                    {
+                        searchPluginTag = srl.value.Substring("Plugin:".Length);
+                        searchRef.Keys.Remove(srl);
+                    }
+
                     // load it (safe)
                     AdminShell.Referable bo = null;
                     try
                     {
-                        bo = LoadFromFilerepository(fi, hi.ReferableReference);
+                        bo = LoadFromFilerepository(fi, searchRef);
                     }
                     catch (Exception ex)
                     {
@@ -1021,6 +1044,17 @@ namespace AasxPackageExplorer
                             return;
                         }
                     }
+
+                    // special case - 2nd half
+                    if (searchPluginTag != null && veFocus is VisualElementSubmodelRef veSm
+                        && veSm.Members != null)
+                        foreach (var vem in veSm.Members)
+                            if (vem is VisualElementPluginExtension vepe)
+                                if (vepe?.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
+                                {
+                                    veFocus = vepe;
+                                    break;
+                                }
 
                     // if successful, try to display it
                     try

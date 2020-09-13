@@ -142,6 +142,15 @@ namespace AasxPackageExplorer
 
             if (cmd == "save")
             {
+                // open?
+                if (thePackageEnv == null || !thePackageEnv.IsOpen)
+                {
+                    MessageBoxFlyoutShow(
+                        "No open AASX file to be saved.",
+                        "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
+                }
+
                 try
                 {
                     // save

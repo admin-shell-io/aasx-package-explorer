@@ -93,5 +93,32 @@ namespace AasxPredefinedConcepts
                 return null;
             }
         }
+
+        public static AdminShell.ConceptDescription CreateSparseConceptDescription(
+            string lang,
+            string idType,
+            string idShort,
+            string id,
+            string definitionHereString,
+            AdminShell.Reference isCaseOf = null)
+        {
+            // access
+            if (idShort == null || idType == null || id == null)
+                return null;
+
+            // create CD
+            var cd = AdminShell.ConceptDescription.CreateNew(idShort, idType, id);
+            var dsiec = cd.CreateDataSpecWithContentIec61360();
+            dsiec.preferredName = new AdminShellV20.LangStringSetIEC61360(lang, "" + idShort);
+            dsiec.definition = new AdminShellV20.LangStringSetIEC61360(lang,
+                "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
+
+            // options
+            if (isCaseOf != null)
+                cd.IsCaseOf = new List<AdminShell.Reference>(new[] { isCaseOf });
+
+            // ok
+            return cd;
+        }
     }
 }

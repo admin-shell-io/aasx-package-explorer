@@ -66,6 +66,8 @@ namespace AasxIntegrationBase
     public class AasxPluginResultEventSelectAasEntity : AasxPluginResultEventBase
     {
         public string filterEntities = null;
+        public bool showAuxPackage = false;
+        public bool showRepoFiles = false;
     }
 
     public class AasxPluginEventReturnBase

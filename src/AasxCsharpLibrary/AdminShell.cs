@@ -619,6 +619,9 @@ namespace AdminShellNS
             [JsonIgnore]
             public Key this[int index] { get { return keys[index]; } }
 
+            public Key First { get { return this.Count < 1 ? null : this.keys[0]; } }
+            public Key Last { get { return this.Count < 1 ? null : this.keys[this.keys.Count - 1 ]; } }
+
             // constructors / creators
 
             public Reference()
@@ -1991,7 +1994,7 @@ namespace AdminShellNS
             IEnumerable<Reference> FindAllReferences();
         }
 
-        public class AdministrationShell : Identifiable, IFindAllReferences
+        public class AdministrationShell : Identifiable, IFindAllReferences, IGetReference
         {
             // for JSON only
             [XmlIgnore]
@@ -2127,6 +2130,15 @@ namespace AdminShellNS
                 hasDataSpecification.Add(new EmbeddedDataSpecification(r));
             }
 
+            public Reference GetReference()
+            {
+                var r = new Reference();
+                r.Keys.Add(
+                    Key.CreateNew(
+                        this.GetElementName(), true, this.identification.idType, this.identification.id));
+                return r;
+            }
+
             public override string GetElementName()
             {
                 return "AssetAdministrationShell";
@@ -2182,6 +2194,10 @@ namespace AdminShellNS
 
             public IEnumerable<Reference> FindAllReferences()
             {
+                // Asset
+                if (this.assetRef != null)
+                    yield return this.assetRef;
+
                 // Submodel references
                 if (this.submodelRefs != null)
                     foreach (var r in this.submodelRefs)
@@ -3256,6 +3272,15 @@ namespace AdminShellNS
                 }
             }
 
+            public DataSpecificationIEC61360 CreateDataSpecWithContentIec61360()
+            {
+                var eds = AdminShell.EmbeddedDataSpecification.CreateIEC61360WithContent();
+                if (this.embeddedDataSpecification == null)
+                    this.embeddedDataSpecification = new HasDataSpecification();
+                this.embeddedDataSpecification.Add(eds);
+                return eds.dataSpecificationContent?.dataSpecificationIEC61360;
+            }
+
             public string GetDefaultPreferredName(string defaultLang = null)
             {
                 return "" +
@@ -3847,23 +3872,27 @@ namespace AdminShellNS
             {
                 if (this.AdministrationShells != null)
                     foreach (var aas in this.AdministrationShells)
-                        foreach (var r in aas.FindAllReferences())
-                            yield return r;
+                        if (aas != null)
+                            foreach (var r in aas.FindAllReferences())
+                                yield return r;
 
                 if (this.Assets != null)
                     foreach (var asset in this.Assets)
-                        foreach (var r in asset.FindAllReferences())
-                            yield return r;
+                        if (asset != null)
+                            foreach (var r in asset.FindAllReferences())
+                                yield return r;
 
                 if (this.Submodels != null)
                     foreach (var sm in this.Submodels)
-                        foreach (var r in sm.FindAllReferences())
-                            yield return r;
+                        if (sm != null)
+                            foreach (var r in sm.FindAllReferences())
+                                yield return r;
 
                 if (this.ConceptDescriptions != null)
                     foreach (var cd in this.ConceptDescriptions)
-                        foreach (var r in cd.FindAllReferences())
-                            yield return r;
+                        if (cd != null)
+                            foreach (var r in cd.FindAllReferences())
+                                yield return r;
             }
 
             // creators
@@ -4485,7 +4514,7 @@ namespace AdminShellNS
                 {
                     if (kind == null)
                         return null;
-                    return "XXX" + kind.kind;
+                    return kind.kind;
                 }
                 set
                 {
@@ -4555,6 +4584,19 @@ namespace AdminShellNS
                 }
             }
 #endif
+
+            public static T CreateNew<T>(string idShort = null, string category = null, Reference semanticId = null)
+                where T : SubmodelElement, new() 
+            {
+                var res = new T();
+                if (idShort != null)
+                    res.idShort = idShort;
+                if (category != null)
+                    res.category = category;
+                if (semanticId != null)
+                    res.semanticId = new SemanticId(semanticId);
+                return res;
+            }
 
             public void CreateNewLogic(string idShort = null, string category = null, Key semanticIdKey = null)
             {
@@ -5032,30 +5074,23 @@ namespace AdminShellNS
 
                     // dive into?
                     // TODO (MIHO, 2020-07-31): would be nice to use IEnumerateChildren for this ..
-                    if (current is SubmodelElementCollection smc)
-                    {
+                    if (current is SubmodelElementCollection smc && smc.value != null)
                         foreach (var x in smc.value.FindDeep<T>(match))
                             yield return x;
-                    }
 
-                    if (current is AnnotatedRelationshipElement are)
-                    {
+                    if (current is AnnotatedRelationshipElement are && are.annotations != null)
                         foreach (var x in are.annotations.FindDeep<T>(match))
                             yield return x;
-                    }
 
-                    if (current is Entity ent)
-                    {
+                    if (current is Entity ent && ent.statements != null)
                         foreach (var x in ent.statements.FindDeep<T>(match))
                             yield return x;
-                    }
 
                     if (current is Operation op)
-                    {
                         for (int i = 0; i < 2; i++)
-                            foreach (var x in Operation.GetWrappers(op[i]).FindDeep<T>(match))
-                                yield return x;
-                    }
+                            if (Operation.GetWrappers(op[i]) != null)
+                                foreach (var x in Operation.GetWrappers(op[i]).FindDeep<T>(match))
+                                    yield return x;
                 }
             }
 
@@ -5549,6 +5584,14 @@ namespace AdminShellNS
                         if (smw.submodelElement.idShort.Trim().ToLower() == idShort.Trim().ToLower())
                             return smw;
                 return null;
+            }
+
+            public IEnumerable<T> FindDeep<T>(Predicate<T> match = null) where T : SubmodelElement
+            {
+                if (this.submodelElements == null)
+                    yield break;
+                foreach (var x in this.submodelElements.FindDeep<T>(match))
+                    yield return x;
             }
 
             public Tuple<string, string> ToCaptionInfo()

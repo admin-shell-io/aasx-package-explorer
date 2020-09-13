@@ -2827,7 +2827,8 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "Asset", ent.assetRef.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                        stack, "Asset", ent.assetRef.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                        auxPackages: helper.auxPackages);
                 }
 
             }
