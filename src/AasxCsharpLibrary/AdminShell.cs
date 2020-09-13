@@ -2255,6 +2255,14 @@ namespace AdminShellNS
             // from hasDataSpecification:
             [XmlElement(ElementName = "hasDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
+
+            // from this very class
+            [XmlElement(ElementName = "assetIdentificationModelRef")]
+            public SubmodelRef assetIdentificationModelRef = null;
+
+            [XmlElement(ElementName = "billOfMaterialRef")]
+            public SubmodelRef billOfMaterialRef = null;
+
             // from HasKind
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
@@ -2276,12 +2284,6 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
-            // from this very class
-            [XmlElement(ElementName = "assetIdentificationModelRef")]
-            public SubmodelRef assetIdentificationModelRef = null;
-
-            [XmlElement(ElementName = "billOfMaterialRef")]
-            public SubmodelRef billOfMaterialRef = null;
 
             // constructors
 

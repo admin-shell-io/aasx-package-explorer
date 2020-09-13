@@ -8,12 +8,65 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace AdminShellNS
 {
+    /// <summary>
+    /// validates the XML content against the AASX XML schema.
+    ///
+    /// Please produce instances with <see cref="AasSchemaValidation.NewXmlValidator"/>.
+    /// </summary>
+    public class XmlValidator
+    {
+        private System.Xml.Schema.XmlSchemaSet xmlSchemaSet;
+
+        internal XmlValidator(XmlSchemaSet xmlSchemaSet)
+        {
+            this.xmlSchemaSet = xmlSchemaSet;
+        }
+
+        /// <summary>
+        /// validates the given XML content and stores the results in the <paramref name="recs"/>.
+        /// </summary>
+        /// <param name="recs">Validation records</param>
+        /// <param name="xmlContent">Content to be validated</param>
+        public void Validate(AasValidationRecordList recs, Stream xmlContent)
+        {
+            if (recs == null)
+                throw new ArgumentException($"Unexpected null {nameof(recs)}");
+
+            if (xmlContent == null)
+                throw new ArgumentException($"Unexpected null {nameof(xmlContent)}");
+
+            // load/ validate on same records
+            var settings = new System.Xml.XmlReaderSettings();
+            settings.ValidationType = System.Xml.ValidationType.Schema;
+            settings.Schemas = xmlSchemaSet;
+
+            settings.ValidationEventHandler +=
+                (object sender, System.Xml.Schema.ValidationEventArgs e) =>
+                {
+                    recs.Add(
+                        new AasValidationRecord(
+                            AasValidationSeverity.Serialization, null,
+                        $"XML: {e?.Exception?.LineNumber}, {e?.Exception?.LinePosition}: {e?.Message}"));
+                };
+
+            // use the xml stream
+            using (var reader = System.Xml.XmlReader.Create(xmlContent, settings))
+            {
+                while (reader.Read())
+                {
+                    // Invoke callbacks
+                };
+            }
+        }
+    }
+
     public enum AasValidationSeverity
     {
         Hint, Warning, SpecViolation, SchemaViolation, Serialization
@@ -86,19 +139,16 @@ namespace AdminShellNS
             return null;
         }
 
-        public static int ValidateXML(AasValidationRecordList recs, Stream xmlContent)
+        /// <summary>
+        /// produces a validator which validates XML AASX files.
+        /// </summary>
+        /// <returns>initialized validator</returns>
+        public static XmlValidator NewXmlValidator()
         {
-            // see: AasxCsharpLibrary.Tests/TestLoadSave.cs
-            var newRecs = new AasValidationRecordList();
-
-            // access
-            if (recs == null || xmlContent == null)
-                return -1;
-
             // Load the schema files
             var files = GetSchemaResources(SerializationFormat.XML);
             if (files == null)
-                return -1;
+                throw new InvalidOperationException("No XML schema files could be found in the resources.");
 
             var xmlSchemaSet = new System.Xml.Schema.XmlSchemaSet();
             xmlSchemaSet.XmlResolver = new System.Xml.XmlUrlResolver();
@@ -119,15 +169,19 @@ namespace AdminShellNS
             }
             catch (Exception ex)
             {
-                throw new FileNotFoundException("ValidateXML: Error accessing embedded resource schema files: " +
-                    ex.Message);
+                throw new FileNotFoundException(
+                    $"Error accessing embedded resource schema files: {ex.Message}");
             }
+
+            var newRecs = new AasValidationRecordList();
 
             // set up messages
             xmlSchemaSet.ValidationEventHandler += (object sender, System.Xml.Schema.ValidationEventArgs e) =>
             {
-                newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null,
-                    "" + e?.Exception?.LineNumber + ", " + e?.Exception?.LinePosition + ": " + e?.Message));
+                newRecs.Add(
+                    new AasValidationRecord(
+                    AasValidationSeverity.Serialization, null,
+                    $"{e?.Exception?.LineNumber}, {e?.Exception?.LinePosition}: {e?.Message}"));
             };
 
             // compile
@@ -137,8 +191,8 @@ namespace AdminShellNS
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("ValidateXML: Error compiling schema files: " +
-                    ex.Message);
+                throw new InvalidOperationException(
+                    $"Error compiling schema files: {ex.Message}");
             }
 
             if (newRecs.Count > 0)
@@ -148,30 +202,21 @@ namespace AdminShellNS
                 throw new InvalidOperationException(string.Join(Environment.NewLine, parts));
             }
 
-            // load/ validate on same records
-            var settings = new System.Xml.XmlReaderSettings();
-            settings.ValidationType = System.Xml.ValidationType.Schema;
-            settings.Schemas = xmlSchemaSet;
+            return new XmlValidator(xmlSchemaSet);
+        }
 
-            settings.ValidationEventHandler +=
-                (object sender, System.Xml.Schema.ValidationEventArgs e) =>
-                {
-                    newRecs.Add(new AasValidationRecord(AasValidationSeverity.Serialization, null,
-                    "XML: " + e?.Exception?.LineNumber + ", " + e?.Exception?.LinePosition + ": " + e?.Message));
-                };
-
-            // use the xml stream
-            using (var reader = System.Xml.XmlReader.Create(xmlContent, settings))
-            {
-                while (reader.Read())
-                {
-                    // Invoke callbacks
-                };
-            }
-
-            // result
-            recs.AddRange(newRecs);
-            return newRecs.Count;
+        /// <summary>
+        /// creates an XML validator and applies it on the given content.
+        ///
+        /// If you repeatedly need to validate XML against a schema, re-use an instance of
+        /// <see cref="XmlValidator"/> produced with <see cref="NewXmlValidator"/>. 
+        /// </summary>
+        /// <param name="recs">Validation records</param>
+        /// <param name="xmlContent">Content to be validated</param>
+        public static void ValidateXML(AasValidationRecordList recs, Stream xmlContent)
+        {
+            var validator = NewXmlValidator();
+            validator.Validate(recs, xmlContent);
         }
 
         public static int ValidateJSONAlternative(AasValidationRecordList recs, Stream jsonContent)
