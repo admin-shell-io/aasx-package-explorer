@@ -98,3 +98,15 @@ Example of the dependency license down in the body of LICENSE.txt:
 // met:
 ...
 ```
+
+## Contributor License Agreement (CLA)
+
+Every contributor needs to sign the Contributor License Agreement (CLA). 
+Thanks to [CLA-assistant][cla-assistant] GitHub plug-in, this can be done 
+on-line.
+
+When you create a pull request, you will be automatically asked to sign the CLA.
+Simply click on the button, click that you agree to CLA and the agreement should
+be signed.
+
+[cla-assistant]: https://cla-assistant.io/

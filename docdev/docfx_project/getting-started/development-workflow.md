@@ -3,7 +3,9 @@
 We develop with Github using pull requests (see [this Github guide](
 https://guides.github.com/introduction/flow/) for a short introduction). 
 
-The development branch is always `master`. The releases mark the development 
+**Development branch**. The development branch is always `master`. 
+
+**Releases**. The releases mark the development 
 milestones on the `master` branch with a certain feature completeness.
 
 ## Pull Requests
