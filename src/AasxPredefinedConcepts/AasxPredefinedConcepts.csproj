@@ -51,6 +51,8 @@
     <Compile Include="Convert\ConvertDocumentationHsuToSg2.cs" />
     <Compile Include="Convert\ConvertPredefinedConcepts.cs" />
     <Compile Include="Convert\ConvertTechnicalDataToFlat.cs" />
+    <Compile Include="DefinitionsMTP.cs" />
+    <Compile Include="DefinitionsExperimental.cs" />
     <Compile Include="DefinitionsLanguages.cs" />
     <Compile Include="DefinitionsZveiTechnicalData.cs" />
     <Compile Include="DefinitionsZveiDigitalTypeplate.cs" />

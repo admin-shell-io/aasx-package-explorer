@@ -92,6 +92,78 @@ namespace AdminShellNS
             return res;
         }
 
+        public static int CountHeadingSpaces(string line)
+        {
+            if (line == null)
+                return 0;
+            int j;
+            for (j = 0; j < line.Length; j++)
+                if (!Char.IsWhiteSpace(line[j]))
+                    break;
+            return j;
+        }
+
+        /// <summary>
+        /// Used to re-reformat a C# here string, which is multiline string introduced by @" ... ";
+        /// </summary>
+        public static string[] CleanHereStringToArray(string here)
+        {
+            if (here == null)
+                return null;
+
+            // convert all weird breaks to pure new lines
+            here = here.Replace("\r\n", "\n");
+            here = here.Replace("\n\r", "\n");
+
+            // convert all tabs to spaces
+            here = here.Replace("\t", "    ");
+
+            // split these
+            var lines = new List<string>(here.Split('\n'));
+            if (lines.Count < 1)
+                return lines.ToArray();
+
+            // the first line could be special
+            string firstLine = null;
+            if (lines[0].Trim() != "")
+            {
+                firstLine = lines[0].Trim();
+                lines.RemoveAt(0);
+            }
+
+            // detect an constant amount of heading spaces
+            var headSpaces = int.MaxValue;
+            foreach (var line in lines)
+                if (line.Trim() != "")
+                    headSpaces = Math.Min(headSpaces, CountHeadingSpaces(line));
+
+            // multi line trim possible?
+            if (headSpaces != int.MaxValue && headSpaces > 0)
+                for (int i = 0; i < lines.Count; i++)
+                    if (lines[i].Length > headSpaces)
+                        lines[i] = lines[i].Substring(headSpaces);
+
+            // re-compose again
+            if (firstLine != null)
+                lines.Insert(0, firstLine);
+
+            // return
+            return lines.ToArray();
+        }
+
+        /// <summary>
+        /// Used to re-reformat a C# here string, which is multiline string introduced by @" ... ";
+        /// </summary>
+        public static string CleanHereStringWithNewlines(string here, string nl = null)
+        {
+            if (nl == null)
+                nl = Environment.NewLine;
+            var lines = CleanHereStringToArray(here);
+            if (lines == null)
+                return null;
+            return String.Join(nl, lines);
+        }
+
         public static string ShortLocation(Exception ex)
         {
             if (ex == null || ex.StackTrace == null)

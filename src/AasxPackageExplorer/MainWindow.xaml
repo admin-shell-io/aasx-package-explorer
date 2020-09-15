@@ -457,7 +457,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
+                        <!-- Row height set to zero to have invisibility at very program start -->
+                        <RowDefinition Height="0" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

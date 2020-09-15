@@ -1059,13 +1059,30 @@ namespace AdminShellNS
             Close();
         }
 
-        public string MakePackageFileAvailableAsTempFile(string packageUri)
+        public string MakePackageFileAvailableAsTempFile(string packageUri, bool keepFilename = false)
         {
+            // access
+            if (packageUri == null)
+                return null;
+
             // get input stream
             var input = this.GetLocalStreamFromPackage(packageUri);
-            // copy to temp file
+
+            // generate tempfile name
             string tempext = System.IO.Path.GetExtension(packageUri);
             string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);
+
+            // maybe modify tempfile name?
+            if (keepFilename)
+            {
+                var masterFn = System.IO.Path.GetFileNameWithoutExtension(packageUri);
+                var tmpDir = System.IO.Path.GetDirectoryName(temppath);
+                var tmpFnExt = System.IO.Path.GetFileName(temppath);
+
+                temppath = System.IO.Path.Combine(tmpDir, "" + masterFn + "_" + tmpFnExt);
+            }
+
+            // copy to temp file
             var temp = File.OpenWrite(temppath);
             input.CopyTo(temp);
             temp.Close();

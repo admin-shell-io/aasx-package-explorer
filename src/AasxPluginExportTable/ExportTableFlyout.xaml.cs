@@ -73,7 +73,7 @@ namespace AasxPluginExportTable
 
             // placeholders
             TextBoxPlaceholders.Text =
-                AasxWpfBaseUtils.CleanHereStringWithNewlines(
+                AdminShellUtil.CleanHereStringWithNewlines(
                 @"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
                 {Referable}.{idShort, category, description[@en..], elementName, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent
                 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, {Qualifiable}.qualifiers, {Qualifiable}.multiplicity

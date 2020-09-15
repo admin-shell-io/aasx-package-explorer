@@ -73,14 +73,15 @@ namespace AasxPackageExplorer
                 return;
 
             // for ve, try to find the AAS (in the parent hierarchy)
-            var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; }).FirstOrDefault();
+            var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; },
+                includeThis: true).FirstOrDefault();
 
             // for ve, find the Referable to be ve or superordinate ..
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
                 return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
-            }).FirstOrDefault();
+            }, includeThis: true).FirstOrDefault();
 
             // check, if ve can identify a Referable, to which a symbolic link can be done ..
             AdminShell.Identification aasid = null;
@@ -92,6 +93,17 @@ namespace AasxPackageExplorer
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
                 refref = (derefdo as AdminShell.IGetReference)?.GetReference();
+            }
+
+            // sure?
+            if (refref == null)
+                return;
+
+            // in case of plug in, make it more specific
+            if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
+            {
+                refref += new AdminShell.Key(AdminShell.Key.GlobalReference, false,
+                    AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag);
             }
 
             // add, only if not already there

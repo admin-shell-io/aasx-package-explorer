@@ -1092,7 +1092,8 @@ namespace AasxPackageExplorer
             bool addEclassIrdi = false,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null)
+            ModifyRepo.LambdaAction takeOverLambdaAction = null,
+            AdminShellPackageEnv[] auxPackages = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1208,7 +1209,8 @@ namespace AasxPackageExplorer
                             content: "Add existing"),
                         (o) =>
                         {
-                            var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities);
+                            var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities,
+                                        auxPackages: auxPackages);
                             if (k2 != null)
                             {
                                 keys.AddRange(k2);

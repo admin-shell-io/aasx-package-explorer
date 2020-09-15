@@ -189,31 +189,31 @@ namespace AasxPackageExplorer
         /// Template string for the id of an AAS. Could contain up to 16 placeholders of:
         /// D = decimal digit, X = hex digit, A = alphanumerical digit
         /// </summary>
-        public string TemplateIdAas = "www.company.com/ids/aas/DDDD_DDDD_DDDD_DDDD";
+        public string TemplateIdAas = "https://example.com/ids/aas/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
         /// Template string for the id of an aaset. Could contain up to 16 placeholders of:
         /// D = decimal digit, X = hex digit, A = alphanumerical digit
         /// </summary>
-        public string TemplateIdAsset = "www.company.com/ids/asset/DDDD_DDDD_DDDD_DDDD";
+        public string TemplateIdAsset = "https://example.com/ids/asset/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
         /// Template string for the id of an submodel of kind instance. Could contain up to 16 placeholders of:
         /// D = decimal digit, X = hex digit, A = alphanumerical digit
         /// </summary>
-        public string TemplateIdSubmodelInstance = "www.company.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
+        public string TemplateIdSubmodelInstance = "https://example.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
         /// Template string for the id of an submodel of kind type. Could contain up to 16 placeholders of:
         /// D = decimal digit, X = hex digit, A = alphanumerical digit
         /// </summary>
-        public string TemplateIdSubmodelTemplate = "www.company.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
+        public string TemplateIdSubmodelTemplate = "https://example.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
         /// Template string for the id of a concept description. Could contain up to 16 placeholders of:
         /// D = decimal digit, X = hex digit, A = alphanumerical digit
         /// </summary>
-        public string TemplateIdConceptDescription = "www.company.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
+        public string TemplateIdConceptDescription = "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
         /// Path to eCl@ss files

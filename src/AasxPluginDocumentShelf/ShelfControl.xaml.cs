@@ -192,57 +192,60 @@ namespace AasxPluginDocumentShelf
                 try
                 {
                     // temp input
-                    var inputFn = ent.DigitalFile;
-
-                    // from package?
-                    if (CheckIfPackageFile(inputFn))
-                        inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.DigitalFile);
-
-                    // temp output
-                    string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
-
-                    // remember these for later deletion
-                    ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
-
-                    // start process
-                    string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
-                    string exeFn = System.IO.Path.Combine(
-                        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
-                    var startInfo = new ProcessStartInfo(exeFn, arguments);
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    var process = new Process();
-                    process.StartInfo = startInfo;
-                    process.EnableRaisingEvents = true;
-                    DocumentEntity lambdaEntity = ent;
-                    string outputFnBuffer = outputFn;
-                    process.Exited += (sender2, args) =>
+                    var inputFn = ent?.DigitalFile;
+                    if (inputFn != null)
                     {
-                        // release number of parallel processes
+
+                        // from package?
+                        if (CheckIfPackageFile(inputFn))
+                            inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.DigitalFile);
+
+                        // temp output
+                        string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
+
+                        // remember these for later deletion
+                        ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
+
+                        // start process
+                        string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
+                        string exeFn = System.IO.Path.Combine(
+                            System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
+                        var startInfo = new ProcessStartInfo(exeFn, arguments);
+                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        var process = new Process();
+                        process.StartInfo = startInfo;
+                        process.EnableRaisingEvents = true;
+                        DocumentEntity lambdaEntity = ent;
+                        string outputFnBuffer = outputFn;
+                        process.Exited += (sender2, args) =>
+                        {
+                            // release number of parallel processes
+                            lock (mutexDocEntitiesInPreview)
+                            {
+                                numDocEntitiesInPreview--;
+                            }
+
+                            // take over data?
+                            if (lambdaEntity.ImgContainer != null)
+                            {
+                                // trigger display image
+                                lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
+                            }
+                        };
+                        process.Start();
+
+                        // limit the number of parallel executions
                         lock (mutexDocEntitiesInPreview)
                         {
-                            numDocEntitiesInPreview--;
+                            numDocEntitiesInPreview++;
                         }
-
-                        // take over data?
-                        if (lambdaEntity.ImgContainer != null)
-                        {
-                            // trigger display image
-                            lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
-                        }
-                    };
-                    process.Start();
-
-                    // limit the number of parallel executions
-                    lock (mutexDocEntitiesInPreview)
-                    {
-                        numDocEntitiesInPreview++;
                     }
                 }
                 catch { }
                 // ReSharper enable EmptyGeneralCatchClause
             }
 
-            // over all items in order to check, if a prepared image shall be display
+            // over all items in order to check, if a prepared image shall be displayed
             foreach (var x in this.ScrollMainContent.Items)
             {
                 var de = x as DocumentEntity;

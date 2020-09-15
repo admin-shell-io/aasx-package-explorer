@@ -4,7 +4,10 @@
   /* "AasxToLoad": "sample-hsu.aasx", */
   /* "AasxToLoad": "MTPsample.aasx", */
   /* "AasxToLoad": "sample-generated-modified.aasx", */
-  "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx",
+  /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
+  /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\FestoProducts-repo2.json", 
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -18,7 +21,6 @@
   "EclassDir": ".\\eclass\\",
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",
-  "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 1000,
