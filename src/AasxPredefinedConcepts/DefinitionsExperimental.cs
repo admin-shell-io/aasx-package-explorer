@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// reSharper disable UnusedType.Global
+
 namespace AasxPredefinedConcepts
 {
     /// <summary>
@@ -20,7 +22,7 @@ namespace AasxPredefinedConcepts
         /// Identifiers for Interoperable relationships  
         /// for the use of Composite Components of Manufacturing Equipment
         /// </summary>
-        public class InteropRelations 
+        public class InteropRelations
         {
             public AdminShell.ConceptDescription
                 CD_FileToNavigateElement,

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxPredefinedConcepts;
 using AdminShellNS;
 
 namespace AasxPluginMtpViewer
@@ -26,21 +27,15 @@ namespace AasxPluginMtpViewer
         /// </summary>
         public static MtpViewerOptions CreateDefault()
         {
+            var defs = new DefinitionsMTP.ModuleTypePackage(new DefinitionsMTP());
+
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://www.admin-shell.io/mtp/v1/submodel"));
+            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpSubmodel.Keys);
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel"));
+            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

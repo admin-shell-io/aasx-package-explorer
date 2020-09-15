@@ -6,7 +6,8 @@
   /* "AasxToLoad": "sample-generated-modified.aasx", */
   /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\FestoProducts-repo2.json",
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\FestoProducts-repo2.json", 
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,

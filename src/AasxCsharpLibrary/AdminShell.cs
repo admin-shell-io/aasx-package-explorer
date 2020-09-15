@@ -620,7 +620,7 @@ namespace AdminShellNS
             public Key this[int index] { get { return keys[index]; } }
 
             public Key First { get { return this.Count < 1 ? null : this.keys[0]; } }
-            public Key Last { get { return this.Count < 1 ? null : this.keys[this.keys.Count - 1 ]; } }
+            public Key Last { get { return this.Count < 1 ? null : this.keys[this.keys.Count - 1]; } }
 
             // constructors / creators
 
@@ -3606,6 +3606,34 @@ namespace AdminShellNS
                 return null;
             }
 
+            public IEnumerable<AdministrationShell> FindAllAAS(
+                Predicate<AdministrationShell> p = null)
+            {
+                if (this.administrationShells == null)
+                    yield break;
+                foreach (var x in this.administrationShells)
+                    if (p == null || p(x))
+                        yield return x;
+            }
+
+            public IEnumerable<Submodel> FindAllSubmodelGroupedByAAS(
+                Func<AdministrationShell, Submodel, bool> p = null)
+            {
+                if (this.administrationShells == null || this.submodels == null)
+                    yield break;
+                foreach (var aas in this.administrationShells)
+                {
+                    if (aas?.submodelRefs == null)
+                        continue;
+                    foreach (var smref in aas.submodelRefs)
+                    {
+                        var sm = this.FindSubmodel(smref);
+                        if (sm != null && (p == null || p(aas, sm)))
+                            yield return sm;
+                    }
+                }
+            }
+
             public Asset FindAsset(Identification id)
             {
                 if (id == null)
@@ -4586,7 +4614,7 @@ namespace AdminShellNS
 #endif
 
             public static T CreateNew<T>(string idShort = null, string category = null, Reference semanticId = null)
-                where T : SubmodelElement, new() 
+                where T : SubmodelElement, new()
             {
                 var res = new T();
                 if (idShort != null)
@@ -5150,12 +5178,29 @@ namespace AdminShellNS
                             yield return smw.submodelElement as T;
             }
 
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Reference semId,
+                Key.MatchMode matchMode = Key.MatchMode.Strict)
+                where T : SubmodelElement
+            {
+                foreach (var smw in this)
+                    if (smw.submodelElement != null && smw.submodelElement is T
+                        && smw.submodelElement.semanticId != null)
+                        if (smw.submodelElement.semanticId.Matches(semId, matchMode))
+                            yield return smw.submodelElement as T;
+            }
+
             public SubmodelElementWrapper FindFirstSemanticId(Key semId, Type[] allowedTypes = null)
             {
                 return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
             public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                where T : SubmodelElement
+            {
+                return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
+            }
+
+            public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();

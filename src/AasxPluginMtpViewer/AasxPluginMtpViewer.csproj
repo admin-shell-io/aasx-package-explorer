@@ -107,6 +107,10 @@
       <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
       <Name>AasxIntegrationBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj">
+      <Project>{A8583F61-E5D8-44A0-98E3-A795578BE3F0}</Project>
+      <Name>AasxPredefinedConcepts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WpfMtpControl\WpfMtpControl.csproj">
       <Project>{f6cf3948-c67a-40fc-812a-3733f673ea21}</Project>
       <Name>WpfMtpControl</Name>

@@ -73,7 +73,7 @@ namespace AasxPackageExplorer
                 return;
 
             // for ve, try to find the AAS (in the parent hierarchy)
-            var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; }, 
+            var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; },
                 includeThis: true).FirstOrDefault();
 
             // for ve, find the Referable to be ve or superordinate ..
@@ -102,7 +102,7 @@ namespace AasxPackageExplorer
             // in case of plug in, make it more specific
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
-                refref += new AdminShell.Key(AdminShell.Key.GlobalReference, false, 
+                refref += new AdminShell.Key(AdminShell.Key.GlobalReference, false,
                     AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag);
             }
 

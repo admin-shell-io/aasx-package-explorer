@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPredefinedConcepts;
 using AdminShellNS;
 using WpfMtpControl;
 
@@ -28,11 +29,15 @@ namespace AasxPluginMtpViewer
         private AasxPluginMtpViewer.MtpViewerOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
+        private DefinitionsMTP.ModuleTypePackage theDefs = null;
+
         private WpfMtpControl.MtpSymbolLib theSymbolLib = null;
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
         private WpfMtpControl.MtpData activeMtpData = null;
 
         private AdminShell.File activeMtpFileElem = null;
+        private string activeMtpFileFn = null;
+        private Dictionary<string, string> activeEndpointMapping = new Dictionary<string, string>();
 
         public WpfMtpControlWrapper()
         {
@@ -49,6 +54,8 @@ namespace AasxPluginMtpViewer
             this.theSubmodel = theSubmodel;
             this.theOptions = theOptions;
             this.theEventStack = eventStack;
+
+            this.theDefs = new DefinitionsMTP.ModuleTypePackage(new DefinitionsMTP());
         }
 
         public static WpfMtpControlWrapper FillWithWpfControls(
@@ -95,27 +102,112 @@ namespace AasxPluginMtpViewer
             activeVisualObjectLib = new WpfMtpControl.MtpVisualObjectLib();
             activeVisualObjectLib.LoadStatic(this.theSymbolLib);
 
+            // gather infos
+            var ok = GatherMtpInfos();
+            if (ok && this.activeMtpFileFn != null)
+            {
+                // access file
+                var inputFn = this.activeMtpFileFn;
+                if (CheckIfPackageFile(inputFn))
+                    inputFn = thePackage.MakePackageFileAvailableAsTempFile(inputFn);
+
+                // load file
+                LoadFile(inputFn);
+
+                // fit it
+                this.mtpVisu.ZoomToFitCanvas();
+
+                // double click handler
+                this.mtpVisu.MtpObjectDoubleClick += MtpVisu_MtpObjectDoubleClick;
+            }
+        }
+
+        private bool GatherMtpInfos()
+        {
+            // clear mappings
+            this.activeEndpointMapping = new Dictionary<string, string>();
+
+            // access
+            var env = this.thePackage?.AasEnv;
+            if (this.theSubmodel?.semanticId == null || this.theSubmodel.submodelElements == null
+                || this.theDefs == null
+                || env?.AdministrationShells == null
+                || this.thePackage.AasEnv.Submodels == null)
+                return false;
+
+            // need to find the type Submodel
+            AdminShell.Submodel mtpTypeSm = null;
+
+            // check, if the user pointed to the instance submodel
+            if (this.theSubmodel.semanticId.Matches(this.theDefs.SEM_MtpInstanceSubmodel))
+            {
+                // gather infos
+                foreach (var srcLst in this.theSubmodel.submodelElements
+                    .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        this.theDefs.CD_SourceList?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
+                {
+                    // found a source list, might contain sources
+                    if (srcLst?.value == null)
+                        continue;
+
+                    // UA Server?
+                    foreach (var src in srcLst.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        this.theDefs.CD_SourceOpcUaServer?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
+                        if (src?.value != null)
+                        {
+                            // UA server
+                            var ep = src.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                                this.theDefs.CD_Endpoint.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
+
+                            // add
+                            this.activeEndpointMapping[("" + src.idShort).Trim()] = "" + ep;
+                        }
+                }
+
+                // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
+                // How to get from subModel to AAS?
+                var instanceAas = env.FindAASwithSubmodel(this.theSubmodel.identification);
+                var typeAas = env.FindReferableByReference(instanceAas?.derivedFrom) as AdminShell.AdministrationShell;
+                if (instanceAas?.derivedFrom != null && typeAas != null)
+                    foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>
+                    {
+                        return aas == typeAas && true == sm?.semanticId?.Matches(this.theDefs.SEM_MtpSubmodel);
+                    }))
+                    {
+                        mtpTypeSm = msm;
+                        break;
+                    }
+
+                // another possibility: direct reference
+                var dirLink = this.theSubmodel.submodelElements
+                    .FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                        this.theDefs.CD_MtpTypeSubmodel?.GetReference(), AdminShell.Key.MatchMode.Relaxed);
+                var dirLinkSm = env.FindReferableByReference(dirLink?.value) as AdminShell.Submodel;
+                if (mtpTypeSm == null)
+                    mtpTypeSm = dirLinkSm;
+
+            }
+
+            // other (not intended) case: user points to type submodel directly
+            if (mtpTypeSm == null
+                && this.theSubmodel.semanticId.Matches(this.theDefs.SEM_MtpSubmodel))
+                mtpTypeSm = this.theSubmodel;
+
+            // ok, is there a type submodel?
+            if (mtpTypeSm == null)
+                return false;
+
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
-            var simIdFn = new AdminShell.Key("ConceptDescription", false,
-                "IRI", "http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage");
-            this.activeMtpFileElem = theSubmodel?.submodelElements?.FindFirstSemanticIdAs<AdminShell.File>(simIdFn);
+            this.activeMtpFileElem = mtpTypeSm.submodelElements?
+                .FindFirstSemanticIdAs<AdminShell.File>(this.theDefs.CD_MtpFile.GetReference(),
+                    AdminShell.Key.MatchMode.Relaxed);
             var inputFn = this.activeMtpFileElem?.value;
             if (inputFn == null)
-                return;
+                return false;
+            this.activeMtpFileFn = inputFn;
 
-            // access file
-            if (CheckIfPackageFile(inputFn))
-                inputFn = thePackage.MakePackageFileAvailableAsTempFile(inputFn);
-
-            // load file
-            LoadFile(inputFn);
-
-            // fit it
-            this.mtpVisu.ZoomToFitCanvas();
-
-            // double click handler
-            this.mtpVisu.MtpObjectDoubleClick += MtpVisu_MtpObjectDoubleClick;
+            return true;
         }
 
         private bool CheckIfPackageFile(string fn)

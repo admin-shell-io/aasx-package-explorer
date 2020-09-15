@@ -942,7 +942,7 @@ namespace AasxPackageExplorer
                     if (evSelectEntity != null)
                     {
                         var uc = new SelectAasEntityFlyout(
-                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv, 
+                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv,
                             this.ProvideAuxPackages(true, true));
                         this.StartFlyoverModal(uc);
                         if (uc.ResultKeys != null)
@@ -1012,10 +1012,10 @@ namespace AasxPackageExplorer
 
                     // special case - 1st half: possible plugin information?
                     var searchRef = new AdminShell.Reference(hi.ReferableReference);
-                    var srl = searchRef?.Last;
+                    var srl = searchRef.Last;
                     string searchPluginTag = null;
-                    if (srl?.type == AdminShell.Key.GlobalReference && srl.idType == AdminShell.Key.Custom
-                        && srl?.value.StartsWith("Plugin:") == true)
+                    if (srl?.type == AdminShell.Key.GlobalReference && srl?.idType == AdminShell.Key.Custom
+                        && srl?.value?.StartsWith("Plugin:") == true)
                     {
                         searchPluginTag = srl.value.Substring("Plugin:".Length);
                         searchRef.Keys.Remove(srl);
@@ -1050,7 +1050,7 @@ namespace AasxPackageExplorer
                         && veSm.Members != null)
                         foreach (var vem in veSm.Members)
                             if (vem is VisualElementPluginExtension vepe)
-                                if (vepe?.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
+                                if (vepe.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
                                 {
                                     veFocus = vepe;
                                     break;
@@ -1565,8 +1565,9 @@ namespace AasxPackageExplorer
 
         private void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && (Math.Abs(dragStartPoint.X) < 0.001 &&
-                Math.Abs(dragStartPoint.Y) < 0.001) && this.showContentPackageUri != null &&
+            // MIHO 2020-09-14: removed this from the check below
+            //// && (Math.Abs(dragStartPoint.X) < 0.001 && Math.Abs(dragStartPoint.Y) < 0.001)
+            if (e.LeftButton == MouseButtonState.Pressed && !isDragging && this.showContentPackageUri != null &&
                 this.thePackageEnv != null)
             {
                 Point position = e.GetPosition(null);
@@ -1584,7 +1585,8 @@ namespace AasxPackageExplorer
                     try
                     {
                         // hastily prepare temp file ..
-                        var tempfile = thePackageEnv.MakePackageFileAvailableAsTempFile(this.showContentPackageUri);
+                        var tempfile = thePackageEnv.MakePackageFileAvailableAsTempFile(
+                            this.showContentPackageUri, keepFilename: true);
 
                         // Package the data.
                         DataObject data = new DataObject();
