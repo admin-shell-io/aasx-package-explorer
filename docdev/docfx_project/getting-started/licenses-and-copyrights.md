@@ -103,7 +103,8 @@ Example of the dependency license down in the body of LICENSE.txt:
 
 Every contributor needs to sign the Contributor License Agreement (CLA). 
 Thanks to [CLA-assistant][cla-assistant] GitHub plug-in, this can be done 
-on-line.
+on-line. You can see the CLA here:
+https://cla-assistant.io/admin-shell-io/aasx-package-explorer
 
 When you create a pull request, you will be automatically asked to sign the CLA.
 Simply click on the button, click that you agree to CLA and the agreement should
