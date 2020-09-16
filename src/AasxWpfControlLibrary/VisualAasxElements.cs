@@ -604,7 +604,7 @@ namespace AasxPackageExplorer
             this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
             this.TagFg = Brushes.White;
 
-            this.TagString = wrap.GetFourDigitCode();
+            this.TagString = wrap.GetElementAbbreviation();
 
             RefreshFromMainData();
             RestoreFromCache();
