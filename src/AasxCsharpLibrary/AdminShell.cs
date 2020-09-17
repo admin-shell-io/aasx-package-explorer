@@ -582,8 +582,28 @@ namespace AdminShellNS
             }
         }
 
+        public class AasElementSelfDescription
+        {
+            public string ElementName = "";
+            public string ElementAbbreviation = "";
+
+            public AasElementSelfDescription() { }
+
+            public AasElementSelfDescription(string ElementName, string ElementAbbreviation)
+            {
+                this.ElementName = ElementName;
+                this.ElementAbbreviation = ElementAbbreviation;
+            }
+        }
+
+        public interface IAasElement
+        {
+            AasElementSelfDescription GetSelfDescription();
+            string GetElementName();
+        }
+
         [XmlType(TypeName = "reference")]
-        public class Reference
+        public class Reference : IAasElement
         {
 
             // members
@@ -812,9 +832,14 @@ namespace AdminShellNS
                 return res;
             }
 
+            public virtual AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Reference", "Rfc");
+            }
+
             public virtual string GetElementName()
             {
-                return "Reference";
+                return this.GetSelfDescription()?.ElementName;
             }
         }
 
@@ -835,9 +860,9 @@ namespace AdminShellNS
 
             // further methods
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "AssetAdministrationShellRef";
+                return new AasElementSelfDescription("AssetAdministrationShellRef", "AasRef");
             }
         }
 
@@ -861,9 +886,9 @@ namespace AdminShellNS
 
             // further methods
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "AssetRef";
+                return new AasElementSelfDescription("AssetRef", "AssetRef");
             }
         }
 
@@ -900,9 +925,9 @@ namespace AdminShellNS
 
             // further methods
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "SubmodelRef";
+                return new AasElementSelfDescription("SubmodelRef", "SMRef");
             }
         }
 
@@ -929,10 +954,11 @@ namespace AdminShellNS
                 return r;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "ConceptDescriptionRef";
+                return new AasElementSelfDescription("ConceptDescriptionRef", "CDRef");
             }
+
         }
 
         [XmlType(TypeName = "dataSpecificationRef")]
@@ -964,10 +990,11 @@ namespace AdminShellNS
                 return res;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "DataSpecificationRef";
+                return new AasElementSelfDescription("DataSpecificationRef", "DSRef");
             }
+
         }
 
         [XmlType(TypeName = "conceptDescriptions")]
@@ -1021,10 +1048,11 @@ namespace AdminShellNS
 
             // further methods
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "ContainedElementRef";
+                return new AasElementSelfDescription("ContainedElementRef", "CERef");
             }
+
         }
 
 #if __not_valid_anymore
@@ -1608,7 +1636,7 @@ namespace AdminShellNS
         {
         }
 
-        public class Referable : IValidateEntity
+        public class Referable : IValidateEntity, IAasElement
         {
 
             // members
@@ -1703,9 +1731,14 @@ namespace AdminShellNS
                 description.langString.Add(new LangStr(lang, str));
             }
 
+            public virtual AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Referable", "Ref");
+            }
+
             public virtual string GetElementName()
             {
-                return "Referable"; // not correct, but this method wasn't overridden correctly
+                return this.GetSelfDescription()?.ElementName;
             }
 
             public string GetFriendlyName()
@@ -2139,9 +2172,9 @@ namespace AdminShellNS
                 return r;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "AssetAdministrationShell";
+                return new AasElementSelfDescription("AssetAdministrationShell", "AAS");
             }
 
             public Tuple<string, string> ToCaptionInfo()
@@ -2302,9 +2335,9 @@ namespace AdminShellNS
                 return GetAssetReference();
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Asset";
+                return new AasElementSelfDescription("Asset", "Asset");
             }
 
             public Tuple<string, string> ToCaptionInfo()
@@ -2455,9 +2488,9 @@ namespace AdminShellNS
                     containedElements.reference.Add(ContainedElementRef.CreateNew(r));
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "View";
+                return new AasElementSelfDescription("View", "View");
             }
 
             public Tuple<string, string> ToCaptionInfo()
@@ -3295,9 +3328,9 @@ namespace AdminShellNS
                         .shortName?.GetDefaultStr(defaultLang);
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "ConceptDescription";
+                return new AasElementSelfDescription("ConceptDescription", "CD");
             }
 
             public Tuple<string, string> ToCaptionInfo()
@@ -3486,9 +3519,9 @@ namespace AdminShellNS
                 conceptDescriptionsRefs.conceptDescriptions.Add(cdr);
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "ConceptDictionary";
+                return new AasElementSelfDescription("ConceptDictionary", "CDic");
             }
         }
 
@@ -4340,7 +4373,7 @@ namespace AdminShellNS
             Reference GetReference();
         }
 
-        public class Qualifier
+        public class Qualifier : IAasElement
         {
             // for JSON only
             [XmlIgnore]
@@ -4407,9 +4440,14 @@ namespace AdminShellNS
             }
 #endif
 
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Qualifier", "Qfr");
+            }
+
             public string GetElementName()
             {
-                return "Qualifier";
+                return this.GetSelfDescription()?.ElementName;
             }
 
             // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
@@ -4673,9 +4711,9 @@ namespace AdminShellNS
                 return null;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "SubmodelElement";
+                return new AasElementSelfDescription("SubmodelElement", "SME");
             }
 
             public Reference GetReference()
@@ -4941,25 +4979,14 @@ namespace AdminShellNS
                 return sme;
             }
 
-            public string GetFourDigitCode()
+            public string GetElementAbbreviation()
             {
                 if (submodelElement == null)
                     return ("Null");
-                if (submodelElement is AdminShell.Property) return ("Prop");
-                if (submodelElement is AdminShell.MultiLanguageProperty) return ("MLP");
-                if (submodelElement is AdminShell.Range) return ("Rang");
-                if (submodelElement is AdminShell.File) return ("File");
-                if (submodelElement is AdminShell.Blob) return ("Blob");
-                if (submodelElement is AdminShell.ReferenceElement) return ("Ref");
-                if (submodelElement is AdminShell.AnnotatedRelationshipElement) return ("ARel");
-                // Note: sequence matters, as AnnotatedRelationshipElement is also RelationshipElement!!
-                if (submodelElement is AdminShell.RelationshipElement) return ("Rel");
-                if (submodelElement is AdminShell.Capability) return ("Cap");
-                if (submodelElement is AdminShell.SubmodelElementCollection) return ("SMC");
-                if (submodelElement is AdminShell.Operation) return ("Opr");
-                if (submodelElement is AdminShell.Entity) return ("Ent");
-                if (submodelElement is AdminShell.BasicEvent) return ("Evt");
-                return ("Elem");
+                var dsc = submodelElement.GetSelfDescription();
+                if (dsc?.ElementAbbreviation == null)
+                    return ("Null");
+                return dsc.ElementAbbreviation;
             }
 
             public static List<SubmodelElement> ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
@@ -5584,9 +5611,9 @@ namespace AdminShellNS
 
             // further
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Submodel";
+                return new AasElementSelfDescription("Submodel", "SM");
             }
 
             public Reference GetReference()
@@ -5779,9 +5806,9 @@ namespace AdminShellNS
             { }
 #endif
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "DataElement";
+                return new AasElementSelfDescription("DataElement", "DE");
             }
         }
 
@@ -5879,9 +5906,9 @@ namespace AdminShellNS
                 return this;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Property";
+                return new AasElementSelfDescription("Property", "Prop");
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -5942,9 +5969,9 @@ namespace AdminShellNS
                 return (x);
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "MultiLanguageProperty";
+                return new AasElementSelfDescription("MultiLanguageProperty", "MLP");
             }
 
             public MultiLanguageProperty Set(ListOfLangStr ls)
@@ -6034,9 +6061,9 @@ namespace AdminShellNS
                 return (x);
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Range";
+                return new AasElementSelfDescription("Range", "Range");
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -6103,9 +6130,9 @@ namespace AdminShellNS
                 this.value = value;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Blob";
+                return new AasElementSelfDescription("Blob", "Blob");
             }
 
         }
@@ -6167,9 +6194,9 @@ namespace AdminShellNS
                 this.value = value;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "File";
+                return new AasElementSelfDescription("File", "File");
             }
 
             public static string[] GetPopularMimeTypes()
@@ -6245,9 +6272,9 @@ namespace AdminShellNS
                 this.value = value;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "ReferenceElement";
+                return new AasElementSelfDescription("ReferenceElement", "Ref");
             }
 
         }
@@ -6310,9 +6337,9 @@ namespace AdminShellNS
                 this.second = second;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "RelationshipElement";
+                return new AasElementSelfDescription("RelationshipElement", "Rel");
             }
         }
 
@@ -6417,9 +6444,9 @@ namespace AdminShellNS
                 this.second = second;
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "AnnotatedRelationshipElement";
+                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
             }
         }
 
@@ -6433,9 +6460,9 @@ namespace AdminShellNS
                 : base(src)
             { }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Capability";
+                return new AasElementSelfDescription("Capability", "Cap");
             }
         }
 
@@ -6587,13 +6614,13 @@ namespace AdminShellNS
             }
 
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "SubmodelElementCollection";
+                return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
             }
         }
 
-        public class OperationVariable
+        public class OperationVariable : IAasElement
         {
             public enum Direction { In, Out, InOut };
 
@@ -6633,9 +6660,14 @@ namespace AdminShellNS
                 this.value = new SubmodelElementWrapper(elem);
             }
 
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("OperationVariable", "OprVar");
+            }
+
             public string GetElementName()
             {
-                return "OperationVariable";
+                return this.GetSelfDescription()?.ElementName;
             }
         }
 
@@ -6795,9 +6827,9 @@ namespace AdminShellNS
             }
 #endif
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Operation";
+                return new AasElementSelfDescription("Operation", "Opr");
             }
         }
 
@@ -6955,9 +6987,9 @@ namespace AdminShellNS
 
             // name
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "Entity";
+                return new AasElementSelfDescription("Entity", "Ent");
             }
         }
 
@@ -6998,9 +7030,9 @@ namespace AdminShellNS
                 return (x);
             }
 
-            public override string GetElementName()
+            public override AasElementSelfDescription GetSelfDescription()
             {
-                return "BasicEvent";
+                return new AasElementSelfDescription("BasicEvent", "Evt");
             }
         }
 

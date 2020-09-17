@@ -223,7 +223,8 @@ namespace AasxPluginExportTable
 
             private void repReferable(string head, AdminShell.Referable rf)
             {
-                //-9- {Referable}.{idShort, category, description, description[@en..], elementName, parent}
+                //-9- {Referable}.{idShort, category, description, description[@en..], elementName, 
+                //     elementAbbreviation, parent}
                 if (rf.idShort != null)
                     rep(head + "idShort", rf.idShort);
                 if (rf.category != null)
@@ -231,6 +232,7 @@ namespace AasxPluginExportTable
                 if (rf.description != null)
                     repListOfLangStr(head + "description", rf.description.langString);
                 rep(head + "elementName", "" + rf.GetElementName());
+                rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
                 rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
             }
 

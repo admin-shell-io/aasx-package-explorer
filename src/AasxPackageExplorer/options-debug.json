@@ -69,11 +69,11 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
       "Args": []
-    },
+    } /*,
     {
       "Path": "..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
       "Args": []
-    },
+    }*/,
     {
       "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\AasxPluginTechnicalData.dll",
       "Args": []

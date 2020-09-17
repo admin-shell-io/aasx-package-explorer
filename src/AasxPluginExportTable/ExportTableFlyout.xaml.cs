@@ -75,7 +75,7 @@ namespace AasxPluginExportTable
             TextBoxPlaceholders.Text =
                 AdminShellUtil.CleanHereStringWithNewlines(
                 @"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
-                {Referable}.{idShort, category, description[@en..], elementName, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent
+                {Referable}.{idShort, category, description[@en..], elementName, elementAbbreviation, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent
                 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, {Qualifiable}.qualifiers, {Qualifiable}.multiplicity
                 {Reference}, {Reference}[0..n], {Reference}[0..n].{type, local, idType, value}, {Reference} = {semanticId, isCaseOf, unitId}
                 SME.value, Property.{value, valueType, valueId}, MultiLanguageProperty.{value, vlaueId}, Range.{valueType, min, max}, Blob.{mimeType, value}, File.{mimeType, value}, ReferenceElement.value, RelationshipElement.{first, second}, SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}, Entity.{entityType, asset}
