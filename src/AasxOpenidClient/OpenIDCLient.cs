@@ -5,6 +5,8 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Security.Permissions;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -322,25 +324,33 @@ namespace AasxOpenIdClient
             string certFileName = certPfx;
             string password = certPfxPW;
 
-            X509Certificate2Collection xc = new X509Certificate2Collection();
-            xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
+            X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
-            string[] X509Base64 = new string[xc.Count];
+            // X509Certificate2Collection xc = new X509Certificate2Collection();
+            // xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
 
-            int j = xc.Count;
-            var xce = xc.GetEnumerator();
-            for (int i = 0; i < xc.Count; i++)
+            X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
+            X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
+            X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection, "Test Certificate Select", "Select a certificate from the following list to get information on that certificate", X509SelectionFlag.SingleSelection);
+            X509Certificate2 certificate = scollection[0];
+            X509Chain ch = new X509Chain();
+            ch.Build(certificate);
+
+            string[] X509Base64 = new string[ch.ChainElements.Count];
+
+            int j = 0;
+            foreach (X509ChainElement element in ch.ChainElements)
             {
-                xce.MoveNext();
-                X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
+                X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
             }
 
             //// x5c = JsonConvert.SerializeObject(X509Base64);
             x5c = X509Base64;
 
             string email = "";
-            X509Certificate2 x509 = new X509Certificate2(certFileName, password);
-            string subject = x509.Subject;
+            // X509Certificate2 x509 = new X509Certificate2(certFileName, password);
+            string subject = certificate.Subject;
             var split = subject.Split(new Char[] { ',' });
             if (split[0] != "")
             {
@@ -356,13 +366,13 @@ namespace AasxOpenIdClient
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("-----BEGIN CERTIFICATE-----");
             builder.AppendLine(
-                Convert.ToBase64String(x509.RawData, Base64FormattingOptions.InsertLineBreaks));
+                Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
             System.Windows.Forms.MessageBox.Show(builder.ToString(), "Client Certificate", MessageBoxButtons.OK);
             //
 
-            credential = new X509SigningCredentials(x509);
+            credential = new X509SigningCredentials(certificate);
             // oz end
 
             var now = DateTime.UtcNow;
