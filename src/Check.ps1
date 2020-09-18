@@ -8,11 +8,14 @@ $ErrorActionPreference = "Stop"
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     CreateAndGetArtefactsDir
 
-function IsISE {
-    try {
+function IsISE
+{
+    try
+    {
         return $null -ne $psISE;
     }
-    catch {
+    catch
+    {
         return $false;
     }
 }
@@ -32,7 +35,7 @@ function LogAndExecute($Expression, $Timestamp, $ForegroundColor, $Emoji)
         $symbol = ""
     }
 
-    if ($Expression.StartsWith("./Check"))
+    if ( $Expression.StartsWith("./Check"))
     {
         $title = $Expression -replace '^./Check([a-zA-Z_0-9-]+)\.ps1.*$', '$1'
     }
@@ -54,7 +57,7 @@ function LogAndExecute($Expression, $Timestamp, $ForegroundColor, $Emoji)
     }
     else
     {
-        throw "Unhandled title for the expression: $($Expression|ConvertTo-Json)"
+        throw "Unhandled title for the expression: $( $Expression|ConvertTo-Json )"
     }
 
     & powershell $Expression|ForEach-Object {
@@ -64,7 +67,8 @@ function LogAndExecute($Expression, $Timestamp, $ForegroundColor, $Emoji)
     }
 }
 
-function PickColor($ArtefactsDir) {
+function PickColor($ArtefactsDir)
+{
     $colorPath = Join-Path $ArtefactsDir "CheckLastColor.txt"
     if (Test-Path $colorPath)
     {
@@ -74,7 +78,7 @@ function PickColor($ArtefactsDir) {
     {
         $lastColor = ""
     }
-    
+
     $colors = @(
     "Black",
     "DarkBlue",
@@ -95,7 +99,7 @@ function PickColor($ArtefactsDir) {
     $color = $colors[$colorIndex]
 
     Set-Content -Path $colorPath -Value $color
-    
+
     return $color
 }
 
@@ -110,7 +114,7 @@ function PickEmoji($ArtefactsDir)
     {
         $lastEmoji = 0
     }
-    
+
     $emojis = @(
     0x1F916,
     0x1F600,
@@ -158,27 +162,27 @@ function Main
         -Expression "./CheckBiteSized.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./CheckDeadCode.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./CheckTodos.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./Doctest.ps1 -check" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./BuildForDebug.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./Test.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
-    LogAndExecute  `
+    LogAndExecute `
         -Expression "./InspectCode.ps1" `
         -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
 
@@ -190,4 +194,13 @@ function Main
     Write-Host "All checks passed successfully. You can now push the commits."
 }
 
-$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
+$previousLocation = Get-Location; try
+{
+    Main
+}
+finally
+{
+    [Console]::ResetColor()
+    Write-Host
+    Set-Location $previousLocation
+}
