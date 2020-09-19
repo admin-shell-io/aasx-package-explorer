@@ -23,7 +23,7 @@
         </DockPanel>
 
         <!-- Main content -->
-        <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+        <ScrollViewer x:Name="scrollViewerVisu"  Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
             <!-- ReSharper disable once Xaml.RedundantAttachedProperty -->
             <Canvas Grid.Row="1" x:Name="canvasVisu" Height="400" Width="400" HorizontalAlignment="Left" Loaded="Canvas_Loaded" MouseDown="CanvasVisu_MouseDown">
             </Canvas>

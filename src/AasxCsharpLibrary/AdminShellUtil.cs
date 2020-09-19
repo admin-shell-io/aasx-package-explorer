@@ -56,6 +56,7 @@ namespace AdminShellNS
             return false;
         }
 
+        /// <code doctest="true">Assert.IsTrue(AdminShellUtil.ComplyIdShort(""));</code>
         public static bool ComplyIdShort(string src)
         {
             if (src == null)

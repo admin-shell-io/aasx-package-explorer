@@ -35,7 +35,10 @@
       <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
       <Name>AasxCsharpLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
+    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj">
+      <Project>{DEC389BC-59BC-48E5-B163-6E44CE782C4A}</Project>
+      <Name>AasxDictionaryImport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj">
       <Project>{ebae658a-3ece-4c98-89bc-f79809ab4a5e}</Project>
       <Name>AasxWpfControlLibrary</Name>

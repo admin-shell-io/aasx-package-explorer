@@ -76,7 +76,7 @@ namespace WpfMtpControl
                         Thread.Sleep(200);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     // ignored
                 }

@@ -246,6 +246,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DynamicInstances\MtpViewBinValve.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DynamicInstances\MtpViewPIDCntlTiny.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -282,6 +286,9 @@
     <Compile Include="DynamicInstances\MtpViewBinViewLarge.xaml.cs">
       <DependentUpon>MtpViewBinViewLarge.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DynamicInstances\MtpViewBinValve.xaml.cs">
+      <DependentUpon>MtpViewBinValve.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DynamicInstances\MtpViewPIDCntlTiny.xaml.cs">
       <DependentUpon>MtpViewPIDCntlTiny.xaml</DependentUpon>
     </Compile>
@@ -294,6 +301,7 @@
     <Compile Include="MtpSymbolLib.cs" />
     <Compile Include="MtpVisualObjectLib.cs" />
     <Compile Include="MtpVisuOpcUaClient.cs" />
+    <Compile Include="MtpVisuOptions.cs" />
     <Compile Include="MtpVisuViewer.xaml.cs">
       <DependentUpon>MtpVisuViewer.xaml</DependentUpon>
     </Compile>

@@ -1,4 +1,4 @@
-﻿{  
+﻿{
   "SymbolMappings": [
     {
       "EClassVersions": null,
@@ -6,5 +6,25 @@
       "EClassIRDIs": null,
       "SymbolDefault": "PNID_Festo.manual_valve_active-u-nozzled"
     }
-  ]
+  ],
+  "PreLoadInfo": {
+    "EndpointMapping": [
+      {
+        "ForName": "CPX1_CEC",
+        "NewEndpoint": "opc.tcp://127.0.0.1:4841"
+      }
+    ],
+    "IdentifierRenaming": [
+      {
+        "OldText": "\\|var\\|CODESYS Control Win V31.Application.SERVICE.Dosing_duration.WQC",
+        "NewText": "|var|CODESYS Control Win V31.Application.SERVICE.Dosing_duration.WQC"
+      }
+    ],
+    "NamespaceRenaming": []
+  },
+  "VisuOptions": {
+    "Background": "#505050",
+    "StateColorActive": "#ff2020",
+    "StateColorNonActive" :  "#20ff20"
+  }
 }

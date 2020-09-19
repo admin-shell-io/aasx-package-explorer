@@ -449,7 +449,7 @@
         <Canvas.Resources/>
         <!--Unknown tag: metadata-->
         <!--Unknown tag: sodipodi:namedview-->
-        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC">
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#FF0091DC" Tag="StateDependency">
             <Path.Data>
                 <PathGeometry Figures="M20 0H8V4h5v6.57141L0 5V20l14-6 14 6V5L15 10.57141V4h5V0Z" FillRule="NonZero"/>
             </Path.Data>

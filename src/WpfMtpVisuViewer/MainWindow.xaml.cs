@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
 using WpfMtpControl;
+using WpfMtpControl.DataSources;
 
 namespace WpfMtpVisuViewer
 {
@@ -27,7 +28,7 @@ namespace WpfMtpVisuViewer
     {
         public WpfMtpControl.MtpVisuOpcUaClient client = new WpfMtpControl.MtpVisuOpcUaClient();
 
-        public AasOpcUaClient textOpcUaClient = null;
+        public AasOpcUaClient testOpcUaClient = null;
 
         public MainWindow()
         {
@@ -66,12 +67,13 @@ namespace WpfMtpVisuViewer
             }
 
 
+            // TODO (MIHO, 2020-09-18): remove this test code
             opcCounter++;
-            if (textOpcUaClient != null && opcCounter % 20 == 0)
+            if (testOpcUaClient != null && opcCounter % 20 == 0)
                 try
                 {
                     // ReSharper disable once UnusedVariable
-                    var x = textOpcUaClient.ReadSubmodelElementValueAsString(
+                    var x = testOpcUaClient.ReadSubmodelElementValueAsString(
                         "|var|CODESYS Control Win V3.Application.SENSORS.L001.V", 2);
                 }
                 catch
@@ -79,11 +81,11 @@ namespace WpfMtpVisuViewer
                     // ignored
                 }
 
-            if (textOpcUaClient != null && opcCounter % 100 == 0)
+            if (testOpcUaClient != null && opcCounter % 100 == 0)
                 try
                 {
-                    textOpcUaClient.Cancel();
-                    textOpcUaClient.Close();
+                    testOpcUaClient.Cancel();
+                    testOpcUaClient.Close();
                 }
                 catch
                 {
@@ -107,8 +109,9 @@ namespace WpfMtpVisuViewer
             this.activeMtpData = new WpfMtpControl.MtpData();
             this.hintsForConfigRecs = new MtpSymbolMapRecordList();
 
-            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.activeSubscriber, fn,
-                makeUpConfigRecs: hintsForConfigRecs);
+            mtpVisu.VisuOptions = this.theOptions.VisuOptions;
+            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.theOptions.PreLoadInfo, 
+                this.activeSubscriber, fn, makeUpConfigRecs: hintsForConfigRecs);
             if (this.activeMtpData.PictureCollection.Count > 0)
                 mtpVisu.SetPicture(this.activeMtpData.PictureCollection.Values.ElementAt(0));
             mtpVisu.RedrawMtp();
@@ -135,6 +138,8 @@ namespace WpfMtpVisuViewer
         public class MtpViewerStandaloneOptions : AasxIntegrationBase.AasxPluginOptionsBase
         {
             public WpfMtpControl.MtpSymbolMapRecordList SymbolMappings = new WpfMtpControl.MtpSymbolMapRecordList();
+            public MtpDataSourceOpcUaPreLoadInfo PreLoadInfo = new MtpDataSourceOpcUaPreLoadInfo();
+            public MtpVisuOptions VisuOptions = new MtpVisuOptions();
         }
 
         private MtpViewerStandaloneOptions theOptions = null;
@@ -175,8 +180,8 @@ namespace WpfMtpVisuViewer
             {
                 //// LoadFile("Dosing.mtp");
                 //// LoadFile("Manifest_PxC_Dosing.aml");
-                //// LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
-                LoadFile("Manifest_Sten1.aml");
+                LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
+                //// LoadFile("Manifest_Sten1.aml");
 
                 SetMessage("MTP file loaded.");
             }

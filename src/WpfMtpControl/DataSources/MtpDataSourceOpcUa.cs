@@ -1,7 +1,9 @@
-﻿using System;
+﻿using AasxIntegrationBase;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WpfMtpControl.DataSources
@@ -28,6 +30,78 @@ namespace WpfMtpControl.DataSources
         public AccessType Access = AccessType.ReadWrite;
 
         public string MtpSourceItemId = "";
+    }
+
+    /// <summary>
+    /// This class holds information to manage renaming of endpoints for different MTP instances
+    /// </summary>
+    public class MtpDataSourceOpcUaEndpointMapping
+    {
+        public string NewEndpoint = null;
+        public string ForName = null;
+        public string ForId = null;
+
+        public MtpDataSourceOpcUaEndpointMapping() { }
+        
+        public MtpDataSourceOpcUaEndpointMapping(string NewEndpoint, string ForName = null, string ForId = null)
+        {
+            this.ForName = ForName;
+            this.ForId = ForId;
+            this.NewEndpoint = NewEndpoint;
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return NewEndpoint.HasContent()
+                    && (ForName.HasContent() || ForId.HasContent());
+            }
+        }
+    }
+
+    /// <summary>
+    /// This class allows for string replacement of information given on data sources
+    /// </summary>
+    public class MtpDataSourceStringReplacement
+    {
+        public string OldText = null;
+        public string NewText = null;
+
+        public MtpDataSourceStringReplacement() { }
+
+        public MtpDataSourceStringReplacement(string OldText, string NewText)
+        {
+            this.OldText = OldText;
+            this.NewText = NewText;
+        }
+
+        public bool IsValid
+        {
+            get
+            {
+                return this.OldText.HasContent() && this.NewText.HasContent();
+            }
+        }
+
+        public string DoReplacement(string input)
+        {
+            if (input == null)
+                return null;
+            if (!this.IsValid)
+                return input;
+            return Regex.Replace(input, this.OldText, this.NewText);
+        }
+    }
+
+    /// <summary>
+    /// This class holds information, which is to be used prior to load / setup MTP data acqusition.
+    /// </summary>
+    public class MtpDataSourceOpcUaPreLoadInfo
+    {
+        public List<MtpDataSourceOpcUaEndpointMapping> EndpointMapping = new List<MtpDataSourceOpcUaEndpointMapping>();
+        public List<MtpDataSourceStringReplacement> IdentifierRenaming = new List<MtpDataSourceStringReplacement>();
+        public List<MtpDataSourceStringReplacement> NamespaceRenaming = new List<MtpDataSourceStringReplacement>();
     }
 
     /// <summary>

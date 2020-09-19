@@ -16,6 +16,7 @@ using AasxIntegrationBase;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using WpfMtpControl;
+using WpfMtpControl.DataSources;
 
 namespace AasxPluginMtpViewer
 {
@@ -30,6 +31,8 @@ namespace AasxPluginMtpViewer
         private PluginEventStack theEventStack = null;
 
         private DefinitionsMTP.ModuleTypePackage theDefs = null;
+
+        public MtpDataSourceOpcUaPreLoadInfo thePreLoadInfo = new MtpDataSourceOpcUaPreLoadInfo();
 
         private WpfMtpControl.MtpSymbolLib theSymbolLib = null;
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
@@ -221,7 +224,7 @@ namespace AasxPluginMtpViewer
                 return;
 
             this.activeMtpData = new WpfMtpControl.MtpData();
-            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, null, null, fn);
+            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, null, this.thePreLoadInfo, null, fn);
             if (this.activeMtpData.PictureCollection.Count > 0)
                 mtpVisu.SetPicture(this.activeMtpData.PictureCollection.Values.ElementAt(0));
             mtpVisu.RedrawMtp();
