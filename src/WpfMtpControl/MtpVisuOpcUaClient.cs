@@ -222,7 +222,7 @@ namespace WpfMtpControl
             var ds = (server as DetailServer);
 
             // TODO (MIHO, 2020-08-06): remove this, if not required anymore
-            var allowedIds = new[] { "L001", "L002", "L003", "F001", "M001", "V001", "V002", "V003" };
+            var allowedIds = new[] { "L001", "L002", "L003", "F001", "M001", "V001", "V002", "V003", "P001" };
             var allowedFound = false;
             foreach (var ai in allowedIds)
                 if (Identifier.Contains("." + ai + "."))

@@ -210,8 +210,8 @@
     </Canvas>
 
     <Canvas x:Key="Pump_general_nozzled" x:Shared="false" Width="1000" Height="1000">
-        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1.7" Width="1003.5" Canvas.Top="0.7" Height="997.5"   Fill="#FFFFFFFF" StrokeThickness="30.016222" Stroke="#FF000000"/>
-        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   StrokeThickness="29.74557877" Stroke="#FF000000" StrokeLineJoin="Bevel">
+        <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="1.7" Width="1003.5" Canvas.Top="0.7" Height="997.5"   Fill="#FFFFFFFF" StrokeThickness="30.016222" Stroke="#FF000000" Tag="StateToStroke"/>
+        <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"   StrokeThickness="29.74557877" Stroke="#FF000000" StrokeLineJoin="Bevel" Tag="StateToStroke">
             <Path.Data>
                 <PathGeometry Figures="M 507.93821 -3.23602 998.449 497.82864 507.93821 998.8933" FillRule="NonZero"/>
             </Path.Data>

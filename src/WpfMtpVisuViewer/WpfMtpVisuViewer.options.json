@@ -4,7 +4,7 @@
       "EClassVersions": null,
       "EClassClasses": "37010201",
       "EClassIRDIs": null,
-      "SymbolDefault": "PNID_Festo.manual_valve_active-u-nozzled"
+      "SymbolDefault": "PNID_Festo.manual_valve_default-u-nozzled"
     }
   ],
   "PreLoadInfo": {
@@ -23,8 +23,10 @@
     "NamespaceRenaming": []
   },
   "VisuOptions": {
-    "Background": "#505050",
-    "StateColorActive": "#ff2020",
-    "StateColorNonActive" :  "#20ff20"
+    "Background": "#707070",
+    "StateColorActive": "#2020ff",
+    "StateColorNonActive": "#202020",
+    "StateColorForward": "#2020ff",
+    "StateColorReverse": "#20ff20"
   }
 }

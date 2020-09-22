@@ -229,9 +229,9 @@ namespace WpfMtpControl
                 eClassVersions: "10.1", eClassClasses: "37010201",
                 placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
-            records.Add(new MtpVisualObjectRecord("Pump_general",
-                syms["PNID_ISO10628.Pump_general_nozzled"],
-                eClassClasses: "36419090;3641", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
+            //// records.Add(new MtpVisualObjectRecord("Pump_general",
+            ////    syms["PNID_ISO10628.Pump_general_nozzled"],
+            ////    eClassClasses: "36419090;3641", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
             records.Add(new MtpVisualObjectRecord("Sensor_general",
                 syms["PNID_ISO10628.Sensor_general"],
@@ -254,16 +254,20 @@ namespace WpfMtpControl
             // access resource dictionaries FESTO
 
             records.Add(new MtpVisualObjectRecord("Control_Valve",
-                syms["PNID_Festo.Control_Valve_nozzled"],
+                syms["PNID_Festo.control_valve_tagged-u-nozzled"],
                 eClassClasses: "37010203", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
             records.Add(new MtpVisualObjectRecord("Manual_Valve",
-                syms[/* "PNID_Festo.Manual_Valve_nozzled"*/ "PNID_Festo.manual_valve_active-u-nozzled"],
+                syms["PNID_Festo.manual_valve_default-u-nozzled"],
                 eClassClasses: "37010201", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
 
             records.Add(new MtpVisualObjectRecord("Stirrer",
-                syms["PNID_Festo.Stirrer_default"],
+                syms["PNID_Festo.stirrer_active-u"],
                 eClassClasses: "36090590", placement: MtpSymbol.SymbolPlaceType.StretchToBoundingBox, prio: 0));
+
+            records.Add(new MtpVisualObjectRecord("Pump_general",
+                syms["PNID_Festo.pump_active-r-nozzled"],
+                eClassClasses: "36419090;3641", placement: MtpSymbol.SymbolPlaceType.FitNozzles, prio: 0));
         }
 
         public void LoadFromSymbolMappings(MtpSymbolLib symbolLib, IEnumerable<MtpSymbolMapRecord> mappings)

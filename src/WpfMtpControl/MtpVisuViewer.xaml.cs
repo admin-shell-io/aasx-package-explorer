@@ -143,7 +143,8 @@ namespace WpfMtpControl
             // rotation in degree, mathematically positive == anti clock wise
             var tg = new TransformGroup();
             tg.Children.Add(new RotateTransform(-rotation, center.X, center.Y));
-            tg.Children.Add(new ScaleTransform(scale, scale, 0.0 * center.X, 0.0 * center.Y));
+            tg.Children.Add(new ScaleTransform(scale, scale, center.X, center.Y));
+            // tg.Children.Add(new ScaleTransform(scale, scale, 0.0 * center.X + contentObject.Width / 2, 0.0 * center.Y + contentObject.Height / 2));
             contentObject.RenderTransform = tg;
 
             // make such object
@@ -238,9 +239,34 @@ namespace WpfMtpControl
                 //
                 if (obj is MtpData.MtpVisualObject vo)
                 {
+                    // debug?
+                    if (obj.Name == "V001")
+                    {
+                        ;
+                    }
+
+                    // search
                     var symbol = vo?.visObj?.Symbol;
                     if (symbol?.SymbolData == null)
+                    {
+                        // make missing bounding box
+                        if (drawBoundingBoxes && vo.x.HasValue && vo.y.HasValue
+                            && vo.width.HasValue && vo.height.HasValue)
+                        {
+                            // box
+                            DrawToCanvasAtPositionSize(canvas, vo.x.Value, vo.y.Value, vo.width.Value,
+                                vo.height.Value, ConstructRect(Brushes.Red, 2.0));
+
+                            // label?
+                            var labeltb = UIElementHelper.CreateStickyLabel(this.LabelFontSettings, "" + vo.Name);
+                            UIElementHelper.DrawToCanvasAtPositionAligned(canvas,
+                                vo.x.Value + vo.width.Value / 2,
+                                vo.y.Value + vo.height.Value / 2,
+                                UIElementHelper.DrawToCanvasAlignment.Centered, labeltb);
+                        }
+
                         continue;
+                    }
 
                     // make a NEW content object to display & manipulate
                     var contentObject = symbol.SymbolData as Canvas;
@@ -255,11 +281,6 @@ namespace WpfMtpControl
 
                     // same logic for potential dynamic instance
                     var dynInstanceVO = vo.dynInstance?.CreateVisualObject(vo.width.Value, vo.height.Value);
-
-                    if (obj.Name == "V001")
-                    {
-                        ;
-                    }
 
                     //
                     // how to draw content?
@@ -340,6 +361,18 @@ namespace WpfMtpControl
                                     new[] {
                                         new Tuple<string, string>("%TAG%", "" + vo.Name)
                                     });
+
+
+                                if (obj.Name == "P001")
+                                {
+                                    // start.Rot = 0;
+                                    // contentObject = new Canvas();
+                                    //contentObject.Background = Brushes.Orange;
+                                    //contentObject.Width = 25;
+                                    //contentObject.Height = 25;
+                                    // contentObject = UIElementHelper.cloneElement(contentObject) as Canvas;
+                                }
+
                                 var shape = ConstructDirectVO(contentObject, 1.0 * start.Scale, 1.0 * start.Rot,
                                                 contentCOG.Value);
                                 shape.Width *= start.Scale;
@@ -367,12 +400,14 @@ namespace WpfMtpControl
 
                                 // draw
                                 shape.Tag = vo;
+                                shape.BorderThickness = new Thickness(2);
+                                shape.BorderBrush = Brushes.Orange;
                                 DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height, shape);
 
                                 // register in dynInstance?
                                 if (vo.dynInstance != null)
                                 {
-                                    vo.dynInstance.SymbolCanvas = canvas;
+                                    vo.dynInstance.SymbolElement = shape;
                                     vo.dynInstance.RedrawSymbol();
                                 }
 

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -65,7 +66,7 @@ namespace Mtp.DynamicInstances
         /// <summary>
         /// If MTP symbol is drawn, hold the Canvas object of it
         /// </summary>
-        public Canvas SymbolCanvas;
+        public FrameworkElement SymbolElement;
 
         /// <summary>
         /// Called, if the state of the object has been changed or firstly initialized
@@ -107,6 +108,33 @@ namespace Mtp.DynamicInstances
         public virtual UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
         {
             return null;
+        }
+
+        //
+        // Symbol manipulation
+        //
+
+        public void SymbolSetStateColor (Brush stateColor)
+        {
+            // access
+            if (this.SymbolElement == null)
+                return;
+
+            // fill
+            foreach (var c in AasxWpfBaseUtils.LogicalTreeFindAllChildsWithRegexTag<System.Windows.Shapes.Shape>(
+                this.SymbolElement, "StateToFill"))
+                if (c != null)
+                {
+                    c.Fill = stateColor;
+                }
+
+            // stroke
+            foreach (var c in AasxWpfBaseUtils.LogicalTreeFindAllChildsWithRegexTag<System.Windows.Shapes.Shape>(
+                this.SymbolElement, "StateToStroke"))
+                if (c != null)
+                {
+                    c.Stroke = stateColor;
+                }
         }
 
         //
@@ -1242,28 +1270,104 @@ namespace Mtp.DynamicInstances
 
         public override void RedrawSymbol(MtpVisuOptions visuOptions = null)
         {
-            // access
-            if (this.SymbolCanvas == null)
-                return;
-
-            // ok
-            foreach (var c in AasxWpfBaseUtils.LogicalTreeFindAllChildsWithRegexTag<System.Windows.Shapes.Path>(
-                this.SymbolCanvas, "StateDependency"))
+            // what color?
+            Brush color = null;
+            if (this.Ctrl)
             {
-                if (c == null)
-                    continue;
-
-                if (this.Ctrl)
-                {
-                    c.Fill = (visuOptions?.StateColorActiveBrush != null) 
-                        ? visuOptions.StateColorActiveBrush : Brushes.Red;
-                }
-                else
-                {
-                    c.Fill = (visuOptions?.StateColorNonActiveBrush != null) 
-                        ? visuOptions.StateColorNonActiveBrush : Brushes.Black;
-                }
+                color = (visuOptions?.StateColorActiveBrush != null)
+                    ? visuOptions.StateColorActiveBrush : Brushes.Red;
             }
+            else
+            {
+                color = (visuOptions?.StateColorNonActiveBrush != null)
+                    ? visuOptions.StateColorNonActiveBrush : Brushes.Black;
+            }
+
+            // set
+            if (color != null)
+                this.SymbolSetStateColor(color);
+        }
+
+    }
+
+    public class MtpDiMonBinValve : MtpDiBinValve
+    {
+        // members only selected, a lot of "unnecessary" memebrs
+        public bool ErrorActiveStatic;
+        public bool ErrorActiveDynamic;
+
+        public MtpDiMonBinValve() : base()
+        {
+        }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call MtpDiBinValve
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonStatErr",
+                (ct, o) => { this.ErrorActiveStatic = (bool)o; });
+            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonDynErr",
+                (ct, o) => { this.ErrorActiveDynamic = (bool)o; });
+        }
+
+    }
+
+    public class MtpDiBinDrive : MtpDiActiveElement
+    {
+        public bool ForwardCtrl;
+        public bool ReverseCtrl;
+
+        public MtpDiBinDrive() : base()
+        {
+            this.DrawSymbolAsWell = true;
+        }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "FwdCtrl",
+                (ct, o) => { this.ForwardCtrl = (bool)o; DemandRedrawOnTick(); });
+            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "RevCtrl",
+                (ct, o) => { this.ReverseCtrl = (bool)o; DemandRedrawOnTick(); });
+        }
+
+        public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
+        {
+            var c = new MtpViewBinDrive();
+            c.Width = mtpWidth;
+            c.Height = mtpHeight;
+            c.DataContext = this;
+            return c;
+        }
+
+        public override void RedrawSymbol(MtpVisuOptions visuOptions = null)
+        {
+            // what color?
+            Brush color = null;
+            if (this.ForwardCtrl && !this.ReverseCtrl)
+            {
+                color = (visuOptions?.StateColorForwardBrush != null)
+                    ? visuOptions.StateColorForwardBrush : Brushes.Blue;
+            }
+            else if (!this.ForwardCtrl && this.ReverseCtrl)
+            {
+                color = (visuOptions?.StateColorReverseBrush != null)
+                    ? visuOptions.StateColorReverseBrush : Brushes.Red;
+            }
+            else
+            {
+                color = (visuOptions?.StateColorNonActiveBrush != null)
+                    ? visuOptions.StateColorNonActiveBrush : Brushes.Black;
+            }
+
+            // set
+            if (color != null)
+                this.SymbolSetStateColor(color);
         }
 
     }

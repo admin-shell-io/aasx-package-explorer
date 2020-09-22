@@ -14,31 +14,48 @@ namespace WpfMtpControl
         // original input
 
         public string Background = "#e0e0e0";
+        
         public string StateColorActive = "#0000ff";
         public string StateColorNonActive = "#000000";
+
+        public string StateColorForward = "#0000ff";
+        public string StateColorReverse = "#00ff00";
 
         // prepared
 
         [JsonIgnore]
         public Brush BackgroundBrush = new SolidColorBrush(Color.FromRgb(224, 224, 255));
+
         [JsonIgnore]
         public Brush StateColorActiveBrush = Brushes.Blue;
         [JsonIgnore]
         public Brush StateColorNonActiveBrush = Brushes.Black;
 
+        [JsonIgnore]
+        public Brush StateColorForwardBrush = Brushes.Blue;
+        [JsonIgnore]
+        public Brush StateColorReverseBrush = Brushes.Green;
+
+        private static void PrepareColor(string preset, ref Brush color)
+        {
+            if (preset.HasContent())
+                try
+                {
+                    color = new SolidColorBrush(
+                        (Color)ColorConverter.ConvertFromString(preset));
+                }
+                catch { }
+        }
+
         public void Prepare()
         {
-            if (this.Background.HasContent())
-                this.BackgroundBrush = new SolidColorBrush(
-                    (Color)ColorConverter.ConvertFromString(this.Background));
+            PrepareColor(this.Background, ref this.BackgroundBrush);
 
-            if (this.StateColorActive.HasContent())
-                this.StateColorActiveBrush = new SolidColorBrush(
-                    (Color)ColorConverter.ConvertFromString(this.StateColorActive));
+            PrepareColor(this.StateColorActive, ref this.StateColorActiveBrush);
+            PrepareColor(this.StateColorNonActive, ref this.StateColorNonActiveBrush);
 
-            if (this.StateColorNonActive.HasContent())
-                this.StateColorNonActiveBrush = new SolidColorBrush(
-                    (Color)ColorConverter.ConvertFromString(this.StateColorNonActive));
+            PrepareColor(this.StateColorForward, ref this.StateColorForwardBrush);
+            PrepareColor(this.StateColorReverse, ref this.StateColorReverseBrush);
         }
     }
 }

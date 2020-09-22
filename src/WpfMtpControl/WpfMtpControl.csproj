@@ -242,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="DynamicInstances\MtpViewBinDrive.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DynamicInstances\MtpViewBinViewLarge.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -282,6 +286,9 @@
     </Compile>
     <Compile Include="DynamicInstances\MtpViewAnaViewLarge.xaml.cs">
       <DependentUpon>MtpViewAnaViewLarge.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DynamicInstances\MtpViewBinDrive.xaml.cs">
+      <DependentUpon>MtpViewBinDrive.xaml</DependentUpon>
     </Compile>
     <Compile Include="DynamicInstances\MtpViewBinViewLarge.xaml.cs">
       <DependentUpon>MtpViewBinViewLarge.xaml</DependentUpon>

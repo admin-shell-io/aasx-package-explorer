@@ -193,8 +193,9 @@ namespace WpfMtpControl
                         }
                     }
 
-                    if (ie.Name == "TI005")
+                    if (ie.Name == "V001")
                     {
+                        ;
                     }
 
                     //
@@ -264,6 +265,11 @@ namespace WpfMtpControl
 
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinVlv")
                                     vo.dynInstance = new MtpDiBinValve();
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/MonBinVlv")
+                                    vo.dynInstance = new MtpDiMonBinValve();
+
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinDrv")
+                                    vo.dynInstance = new MtpDiBinDrive();
 
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl")
                                     vo.dynInstance = new MtpDiPIDCntl();
