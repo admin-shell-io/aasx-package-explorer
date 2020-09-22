@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Web.Helpers;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -247,8 +248,19 @@ namespace AasxOpenIdClient
 
             System.Windows.Forms.MessageBox.Show(disco.Raw, "Discovery JSON", MessageBoxButtons.OK);
 
-            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint);
-            // oz
+            List<string> rootCertSubject = new List<string>();
+            dynamic discoObject = Json.Decode(disco.Raw);
+            if (discoObject.rootCertSubjects != null)
+            {
+                int i = 0;
+                while (i < discoObject.rootCertSubjects.Length)
+                {
+                    rootCertSubject.Add(discoObject.rootCertSubjects[i++]);
+                }
+            }
+
+            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint, rootCertSubject);
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nClientToken with x5c in header: \n");
             Console.ResetColor();
@@ -316,7 +328,7 @@ namespace AasxOpenIdClient
             }
         }
 
-        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience)
+        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience, List<string> rootCertSubject)
         {
             // oz
             //// string x5c = "";
@@ -332,6 +344,25 @@ namespace AasxOpenIdClient
 
             X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
             X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
+
+            Boolean rootCertFound = false;
+            X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
+            foreach (X509Certificate2 fc in fcollection)
+            {
+                X509Chain fch = new X509Chain();
+                fch.Build(fc);
+                foreach (X509ChainElement element in fch.ChainElements)
+                {
+                    if (rootCertSubject.Contains(element.Certificate.Subject))
+                    {
+                        rootCertFound = true;
+                        fcollection2.Add(fc);
+                    }
+                }
+            }
+            if (rootCertFound)
+                fcollection = fcollection2;
+
             X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection, "Test Certificate Select", "Select a certificate from the following list to get information on that certificate", X509SelectionFlag.SingleSelection);
             X509Certificate2 certificate = scollection[0];
             X509Chain ch = new X509Chain();
