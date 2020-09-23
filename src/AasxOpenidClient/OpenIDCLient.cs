@@ -6,10 +6,11 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Security.Permissions;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
@@ -20,7 +21,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Web.Helpers;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -217,7 +217,7 @@ namespace AasxOpenIdClient
                     case "authenticate":
                         try
                         {
-                            // var certificate = new X509Certificate2(certPfx, certPfxPW);
+                            //// var certificate = new X509Certificate2(certPfx, certPfxPW);
                             X509SigningCredentials x509Credential = null;
 
                             var response = await RequestTokenAsync(x509Credential);
@@ -338,7 +338,8 @@ namespace AasxOpenIdClient
             }
         }
 
-        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience, List<string> rootCertSubject)
+        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience,
+            List<string> rootCertSubject)
         {
             // oz
             //// string x5c = "";
@@ -349,11 +350,12 @@ namespace AasxOpenIdClient
             X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
             store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
-            // X509Certificate2Collection xc = new X509Certificate2Collection();
-            // xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
+            //// X509Certificate2Collection xc = new X509Certificate2Collection();
+            //// xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
 
             X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
-            X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(X509FindType.FindByTimeValid, DateTime.Now, false);
+            X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
+                X509FindType.FindByTimeValid, DateTime.Now, false);
 
             Boolean rootCertFound = false;
             X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
@@ -373,7 +375,10 @@ namespace AasxOpenIdClient
             if (rootCertFound)
                 fcollection = fcollection2;
 
-            X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection, "Test Certificate Select", "Select a certificate from the following list to get information on that certificate", X509SelectionFlag.SingleSelection);
+            X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                "Test Certificate Select",
+                "Select a certificate from the following list to get information on that certificate",
+                X509SelectionFlag.SingleSelection);
             X509Certificate2 certificate = scollection[0];
             X509Chain ch = new X509Chain();
             ch.Build(certificate);
@@ -390,7 +395,7 @@ namespace AasxOpenIdClient
             x5c = X509Base64;
 
             string email = "";
-            // X509Certificate2 x509 = new X509Certificate2(certFileName, password);
+            //// X509Certificate2 x509 = new X509Certificate2(certFileName, password);
             string subject = certificate.Subject;
             var split = subject.Split(new Char[] { ',' });
             if (split[0] != "")

@@ -1159,7 +1159,6 @@ namespace AasxPackageExplorer
                 if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
                 {
                     string value = input.Substring(tag.Length);
-                    // string value = "";
                     if (thePackageEnv.IsOpen)
                     {
                         thePackageEnv.Close();
