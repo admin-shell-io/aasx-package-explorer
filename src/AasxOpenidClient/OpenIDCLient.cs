@@ -379,23 +379,44 @@ namespace AasxOpenIdClient
                 "Test Certificate Select",
                 "Select a certificate from the following list to get information on that certificate",
                 X509SelectionFlag.SingleSelection);
-            X509Certificate2 certificate = scollection[0];
-            X509Chain ch = new X509Chain();
-            ch.Build(certificate);
-
-            string[] X509Base64 = new string[ch.ChainElements.Count];
-
-            int j = 0;
-            foreach (X509ChainElement element in ch.ChainElements)
+            X509Certificate2 certificate = null;
+            if (scollection.Count != 0)
             {
-                X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                certificate = scollection[0];
+                X509Chain ch = new X509Chain();
+                ch.Build(certificate);
+
+                string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                int j = 0;
+                foreach (X509ChainElement element in ch.ChainElements)
+                {
+                    X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                }
+
+                x5c = X509Base64;
+            }
+            else
+            {
+                // use old fixed certificate chain
+                X509Certificate2Collection xc = new X509Certificate2Collection();
+                xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
+
+                string[] X509Base64 = new string[xc.Count];
+
+                int j = xc.Count;
+                var xce = xc.GetEnumerator();
+                for (int i = 0; i < xc.Count; i++)
+                {
+                    xce.MoveNext();
+                    X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
+                }
+                x5c = X509Base64;
+
+                certificate = new X509Certificate2(certFileName, password);
             }
 
-            //// x5c = JsonConvert.SerializeObject(X509Base64);
-            x5c = X509Base64;
-
             string email = "";
-            //// X509Certificate2 x509 = new X509Certificate2(certFileName, password);
             string subject = certificate.Subject;
             var split = subject.Split(new Char[] { ',' });
             if (split[0] != "")

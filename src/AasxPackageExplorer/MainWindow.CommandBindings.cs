@@ -1163,12 +1163,14 @@ namespace AasxPackageExplorer
                     {
                         thePackageEnv.Close();
                     }
+                    File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                     await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
-                    UiLoadPackageWithNew(
-                        ref thePackageEnv,
-                        new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
-                        AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
+                        UiLoadPackageWithNew(
+                            ref thePackageEnv,
+                            new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                            AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     return;
                 }
 
