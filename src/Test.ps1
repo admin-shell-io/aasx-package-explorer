@@ -1,6 +1,37 @@
-﻿<#
+﻿#!/usr/bin/env pwsh
+param(
+    [Parameter(HelpMessage = "If set, list the names of the test cases and exit")]
+    [switch]
+    $Explore = $false,
+
+    [Parameter(HelpMessage = "If set, execute only the given tests")]
+    [string]
+    $Test = ""
+)
+
+<#
 .SYNOPSIS
-This script runs all the unit tests specified in the testDlls variable below.
+    This script runs all the unit tests specified in the testDlls variable below.
+
+.EXAMPLE
+    Test.ps1
+
+    This runs all the unit tests and creates the coverage report.
+
+.EXAMPLE
+    Test.ps1 -Explore
+
+    This lists all the unit tests.
+
+.EXAMPLE
+    Test.ps1 -Test "AasxDictionaryImport.Cdd.Tests.Test_PropertyWrapper.ReferenceType"
+
+    This executes a single unit test.
+
+.EXAMPLE
+    Test.ps1 -Test "AasxDictionaryImport"
+
+    This executes all the tests prefixed with AasxDictionaryImport.
 #>
 
 $ErrorActionPreference = "Stop"
@@ -44,14 +75,30 @@ function Main
         -File `
         -Name
 
+    [string[]]$absTestDlls = @()
     foreach ($testDll in $testDlls)
     {
         $absTestDll = Join-Path $targetDir $testDll
         if (!(Test-Path $absTestDll))
         {
-            throw ("Test DLL could not be found: $absTestDll; " +
-                    "did you compile the solution with BuildForDebug.ps1?")
+            throw "Assertion violated, test DLL could not be found: $absTestDll"
         }
+        $absTestDlls += $absTestDll
+    }
+
+    if ($Explore)
+    {
+        Push-Location
+        try
+        {
+            Set-Location $targetDir
+            & $nunit3Console $absTestDlls --explore
+        }
+        finally
+        {
+            Pop-Location
+        }
+        exit 0
     }
 
     if (Test-Path env:SAMPLE_AASX_DIR)
@@ -66,23 +113,53 @@ function Main
     try
     {
         $env:SAMPLE_AASX_DIR = $samplesDir
-        & $openCoverConsole `
-            -target:$nunit3Console `
-            -targetargs:( `
-                "--noheader --shadowcopy=false " +
-                 "--result=$testResultsPath " +
-                 "--stoponerror " +
-                 ($testDlls -Join " ")
-            ) `
-            -targetdir:$targetDir `
-            -output:$coverageResultsPath `
-            -register:Path64 `
-            -filter:"+[Aasx*]*" `
-            -returntargetcode
 
-        if ($LASTEXITCODE -ne 0)
+        # If -Test is not specified, run all the unit tests with coverage.
+        if ($Test -eq "")
         {
-            throw "The unit test(s) failed."
+            & $openCoverConsole `
+                -target:$nunit3Console `
+                -targetargs:( `
+                    "--noheader --shadowcopy=false " +
+                     "--result=$testResultsPath " +
+                     "--stoponerror " +
+                     ($testDlls -Join " ")
+                ) `
+                -targetdir:$targetDir `
+                -output:$coverageResultsPath `
+                -register:Path64 `
+                -filter:"+[Aasx*]*" `
+                -returntargetcode
+            if ($LASTEXITCODE -ne 0)
+            {
+                throw "Running the unit tests with OpenCover failed."
+            }
+
+            # Scripts are expected at the root of src/
+            $srcDir = $PSScriptRoot
+
+            $coverageReportPath = Join-Path $artefactsDir "CoverageReport"
+            & $reportGenerator `
+                -reports:$coverageResultsPath `
+                -targetdir:$coverageReportPath `
+                -sourcedirs:$srcDir
+        }
+        else
+        {
+            Push-Location
+            try
+            {
+                Set-Location $targetDir
+                & $nunit3Console $absTestDlls --test=$Test
+                if ($LASTEXITCODE -ne 0)
+                {
+                    throw "Running the unit tests with Nunit3 console failed."
+                }
+            }
+            finally
+            {
+                Pop-Location
+            }
         }
     }
     finally
@@ -92,15 +169,6 @@ function Main
             $env:SAMPLE_AASX_DIR = $prevEnvSampleAasxDir
         }
     }
-
-    # Scripts are expected at the root of src/
-    $srcDir = $PSScriptRoot
-
-    $coverageReportPath = Join-Path $artefactsDir "CoverageReport"
-    & $reportGenerator `
-        -reports:$coverageResultsPath `
-        -targetdir:$coverageReportPath `
-        -sourcedirs:$srcDir
 }
 
 $previousLocation = Get-Location; try
