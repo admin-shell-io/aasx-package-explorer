@@ -1156,20 +1156,21 @@ namespace AasxPackageExplorer
                 string input = uc.Text.ToLower();
                 string tag = "openid1";
                 tag = input.Substring(0, tag.Length);
-                if (tag == "openid1" || tag == "openid2" || tag == "openid3")
+                if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
                 {
-                    //// string value = input.Substring(tag.Length + 1);
-                    string value = "";
+                    string value = input.Substring(tag.Length);
                     if (thePackageEnv.IsOpen)
                     {
                         thePackageEnv.Close();
                     }
+                    File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                     await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
-                    UiLoadPackageWithNew(
-                        ref thePackageEnv,
-                        new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
-                        AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
+                        UiLoadPackageWithNew(
+                            ref thePackageEnv,
+                            new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                            AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     return;
                 }
 
