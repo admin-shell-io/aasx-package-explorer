@@ -58,32 +58,42 @@ namespace AasxOpenIdClient
             string caption = "Connect with " + tag + ".dat";
             string message = "";
 
-            // read openx.dat
-            try
+            if (value != "")
             {
-                using (StreamReader sr = new StreamReader(tag + ".dat"))
+                dataServer = value;
+                authServer = "";
+                certPfx = "";
+                certPfxPW = "";
+            }
+            else
+            {
+                // read openx.dat
+                try
                 {
-                    authServer = sr.ReadLine();
-                    dataServer = sr.ReadLine();
-                    certPfx = sr.ReadLine();
-                    certPfxPW = sr.ReadLine();
-                    outputDir = sr.ReadLine();
-
-                    message =
-                        "authServer: " + authServer + "\n" +
-                        "dataServer: " + dataServer + "\n" +
-                        "certPfx: " + certPfx + "\n" +
-                        "certPfxPW: " + certPfxPW + "\n" +
-                        "outputDir: " + outputDir + "\n" +
-                        "\nConinue?";
+                    using (StreamReader sr = new StreamReader(tag + ".dat"))
+                    {
+                        authServer = sr.ReadLine();
+                        dataServer = sr.ReadLine();
+                        certPfx = sr.ReadLine();
+                        certPfxPW = sr.ReadLine();
+                        outputDir = sr.ReadLine();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(tag + ".dat " + " can not be read!");
+                    return;
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(tag + ".dat " + " can not be read!");
-                return;
-            }
+
+            message =
+                "authServer: " + authServer + "\n" +
+                "dataServer: " + dataServer + "\n" +
+                "certPfx: " + certPfx + "\n" +
+                "certPfxPW: " + certPfxPW + "\n" +
+                "outputDir: " + outputDir + "\n" +
+                "\nConinue?";
 
             MessageBoxButtons buttons = MessageBoxButtons.YesNo;
             DialogResult result;
@@ -207,7 +217,7 @@ namespace AasxOpenIdClient
                     case "authenticate":
                         try
                         {
-                            var certificate = new X509Certificate2(certPfx, certPfxPW);
+                            // var certificate = new X509Certificate2(certPfx, certPfxPW);
                             X509SigningCredentials x509Credential = null;
 
                             var response = await RequestTokenAsync(x509Credential);
