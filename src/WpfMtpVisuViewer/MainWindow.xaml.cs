@@ -182,6 +182,7 @@ namespace WpfMtpVisuViewer
                 //// LoadFile("Manifest_PxC_Dosing.aml");
                 LoadFile("Manifest_V18.10.31_3_better_name_win3.aml");
                 //// LoadFile("Manifest_Sten1.aml");
+                //// LoadFile("Manifest_ChemiReaktor_MIHO.aml");
 
                 SetMessage("MTP file loaded.");
             }

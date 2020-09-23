@@ -382,15 +382,15 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", 
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", 
                 (ct, o) => { this.Value = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC", 
+            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC", 
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
                 (ct, o) => { this.ValueScaleLowLimit = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMax",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMax",
                 (ct, o) => { this.ValueScaleHighLimit = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
                 (ct, o) => { this.ValueUnit = (int)o; });
         }
 
@@ -564,46 +564,46 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VAHLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VAHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueHigh = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWHLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueHigh = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTHLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueHigh = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VALLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VALLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueLow = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveLow = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWLLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWLLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueLow = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveLow = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTLLim",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTLLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueLow = (double)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveLow = (bool)o; });
 
         }
@@ -743,15 +743,15 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "V",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "V",
                 (ct, o) => { this.Value = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMin",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMin",
                 (ct, o) => { this.ValueScaleLowLimit = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMax",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMax",
                 (ct, o) => { this.ValueScaleHighLimit = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
                 (ct, o) => { this.ValueUnit = (int)o; });
         }
 
@@ -925,46 +925,46 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VAHLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VAHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueHigh = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWHLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueHigh = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableHigh = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTHLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTHLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueHigh = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveHigh = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VALLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VALLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueLow = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveLow = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWLLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWLLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueLow = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveLow = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableLow = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTLLim",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTLLim",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueLow = (int)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
                 (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveLow = (bool)o; });
 
         }
@@ -1147,14 +1147,14 @@ namespace Mtp.DynamicInstances
         {
             this.TagName = "" + Name;
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "V",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "V",
                 (ct, o) => { this.Value = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState0",
+            subscriber?.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState0",
                 (ct, o) => { this.ValState0 = (string)o; });
-            subscriber.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState1",
+            subscriber?.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState1",
                 (ct, o) => { this.ValState1 = (string)o; });
         }
 
@@ -1220,16 +1220,16 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutEn",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutEn",
                 (ct, o) => { this.EnableFlutterRecog = (bool)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VFlutTi",
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VFlutTi",
                 (ct, o) => { this.FlutterTimeInterval = (double)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VFlutCnt",
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VFlutCnt",
                 (ct, o) => { this.FlutterCounts = (int)o; });
 
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutAct",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutAct",
                 (ct, o) => { this.FlutterIsActive = (bool)o; });
         }
     }
@@ -1255,7 +1255,7 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "Ctrl",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "Ctrl",
                 (ct, o) => { this.Ctrl = (bool)o; DemandRedrawOnTick(); });
         }
 
@@ -1306,9 +1306,9 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonStatErr",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonStatErr",
                 (ct, o) => { this.ErrorActiveStatic = (bool)o; });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonDynErr",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonDynErr",
                 (ct, o) => { this.ErrorActiveDynamic = (bool)o; });
         }
 
@@ -1330,9 +1330,9 @@ namespace Mtp.DynamicInstances
             base.PopulateFromAml(Name, ie, subscriber);
 
             // some more
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "FwdCtrl",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "FwdCtrl",
                 (ct, o) => { this.ForwardCtrl = (bool)o; DemandRedrawOnTick(); });
-            subscriber.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "RevCtrl",
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "RevCtrl",
                 (ct, o) => { this.ReverseCtrl = (bool)o; DemandRedrawOnTick(); });
         }
 
