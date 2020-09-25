@@ -74,7 +74,8 @@ namespace WpfMtpControl
 
             public Dictionary<Opc.Ua.NodeId, DetailItem> nodeIdToItemRef = new Dictionary<Opc.Ua.NodeId, DetailItem>();
 
-            public AasOpcUaClient uaClient = null;
+            private AasOpcUaClient uaClient = null;
+            public AasOpcUaClient UaClient { get { return uaClient; } }
 
             public DetailServer(MtpVisuOpcUaClient parentRef)
             {
@@ -90,20 +91,22 @@ namespace WpfMtpControl
                     msToNextState = 3000;
                     var nextState = -1;
 
+                    // starting server
                     if (state == 0)
                     {
                         // try to initialize OPC UA server
                         this.uaClient = new AasOpcUaClient(
-                            this.Endpoint, _autoAccept: true, _stopTimeout: 9999, _userName: this.User,
+                            this.Endpoint, _autoAccept: true, _stopTimeout: 10, _userName: this.User,
                             _password: this.Password);
                         this.uaClient.Run();
                         // go on for a checking state
                         nextState = 1;
                     }
 
+                    // starting subscription
                     if (state == 1)
                     {
-                        // stable connection
+                        // good connection
                         if (this.uaClient != null && this.uaClient.StatusCode == AasOpcUaClientStatus.Running)
                         {
                             // add subscriptions for all nodes
@@ -143,6 +146,12 @@ namespace WpfMtpControl
                             // go on
                             nextState = 2;
                         }
+                    }
+
+                    // stable running
+                    if (state == 2)
+                    {
+                        ;
                     }
 
                     // move?
@@ -278,10 +287,10 @@ namespace WpfMtpControl
             var i = 0;
             foreach (var s in this.servers)
             {
-                servinfo += $"({i} {s.state},{s.msToNextState} ms) ";
+                servinfo += $"(se={i} st={s.state} t={s.msToNextState,5}ms, code={""+s.UaClient?.StatusCode.ToString()}) ";
                 i++;
             }
-            return $"{this.servers.Count} servers, {numit} items";
+            return $"{this.servers.Count} servers, {numit} items | {servinfo}";
         }
 
         public void ViewDetails()
