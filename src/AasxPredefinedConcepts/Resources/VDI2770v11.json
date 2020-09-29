@@ -1,0 +1,1874 @@
+﻿{
+  "SM_ManufacturerDocumentation": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ],
+      "First": {
+        "type": "Submodel",
+        "local": false,
+        "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+        "index": 0,
+        "idType": "IRI"
+      },
+      "Last": {
+        "type": "Submodel",
+        "local": false,
+        "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+        "index": 0,
+        "idType": "IRI"
+      }
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "www.example.com/ids/sm/4533_7162_9002_5518"
+    },
+    "administration": null,
+    "idShort": "ManufacturerDocumentation",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Instance",
+    "descriptions": null
+  },
+  "CD_Document": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document"
+    },
+    "administration": null,
+    "idShort": "Document",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Document"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Feste und geordnete Menge von für die Verwendung durch Personen bestimmte Informationen, die verwaltet und als Einheit zwischen Benutzern und System ausgetauscht werden kann."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentIdDomain": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentIdDomain"
+    },
+    "administration": null,
+    "idShort": "DocumentIdDomain",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentIdDomain"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Set of information on the Document within a given domain, e.g. the providing organisation."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentDomainId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentIdDomain/DocumentDomainId"
+    },
+    "administration": null,
+    "idShort": "DocumentDomainId",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentDomainId"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Identification of the Domain, e.g. the providing organisation."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/DocumentId"
+    },
+    "administration": null,
+    "idShort": "DocumentId",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentId"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "",
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "die eigentliche Identifikationsnummer"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentClassification": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification"
+    },
+    "administration": null,
+    "idShort": "DocumentClassification",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassification"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Set of information for describing the classification of the Document according to an well-identified ClassificationSystem."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentClassId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassId"
+    },
+    "administration": null,
+    "idShort": "DocumentClassId",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassId"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN?",
+              "text": "DocumentClassId"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eindeutige ID der Klasse in einer Klassifikation."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentClassName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassName"
+    },
+    "administration": null,
+    "idShort": "DocumentClassName",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassName"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Liste von sprachabhängigen Namen zur ClassId. "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentClassificationSystem": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassificationSystem"
+    },
+    "administration": null,
+    "idShort": "DocumentClassificationSystem",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Classification System"
+            },
+            {
+              "language": "DE",
+              "text": "Klassifikationssystem"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "DocumentClassificationSystem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eindeutige Kennung für ein Klassifikationssystem. Für Klassifikationen nach VDI 2770 muss \"VDI2770:2018\" verwenden werden."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentVersion": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersion"
+    },
+    "administration": null,
+    "idShort": "DocumentVersion",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "Version des Dokuments"
+            },
+            {
+              "language": "EN",
+              "text": "DocumentVersion"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Zu jedem Dokument muss eine Menge von mindestens einer Dokumentenversion existieren. Es können auch mehrere Dokumentenversionen ausgeliefert werden."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Language": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersion/Language"
+    },
+    "administration": null,
+    "idShort": "Language",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Language"
+            },
+            {
+              "language": "DE",
+              "text": "Sprache"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Language"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eine Liste der im Dokument verwendeten Sprachen."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentVersionIdValue": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersionId/Val"
+    },
+    "administration": null,
+    "idShort": "DocumentVersionIdValue",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentVersionId"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Verschiedene Versionen eines Dokuments müssen eindeutig identifizierbar sein. Die DocumentVersionId stellt eine innerhalb einer Domäne eindeutige Versionsidentifikationsnummer dar."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Title": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Description/Title"
+    },
+    "administration": null,
+    "idShort": "Title",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Title"
+            },
+            {
+              "language": "DE",
+              "text": "Titel"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "Title"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sprachabhängiger Titel des Dokuments."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Summary": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentDescription/Summary"
+    },
+    "administration": null,
+    "idShort": "Summary",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "Summary"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Sprachabhängige, aussagekräftige Zusammenfassung des Dokumenteninhalts."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_KeyWords": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentDescription/KeyWords"
+    },
+    "administration": null,
+    "idShort": "KeyWords",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [],
+          "First": null,
+          "Last": null
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "KeyWords"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": []
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Date": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/SetDate"
+    },
+    "administration": null,
+    "idShort": "Date",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "SetDate"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Datum und Uhrzeit, an dem der Status festgelegt wurde. Es muss das Datumsformat „YYYY-MM-dd“ verwendet werden (Y = Jahr, M = Monat, d = Tag, siehe ISO 8601)."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_LifeCycleStatusValue": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/StatusValue"
+    },
+    "administration": null,
+    "idShort": "LifeCycleStatusValue",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN?",
+              "text": "StatusValue"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "DATE",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Jede Dokumentenversion stellt einen Zeitpunkt im Dokumentenlebenszyklus dar. Dieser Statuswert bezieht sich auf die Meilensteine im Dokumentenlebenszyklus. Für die Anwendung dieser Richtlinie sind die beiden folgenden Status zu verwenden: InReview (in Prüfung), Released (freigegeben)"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Role": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Party/Role"
+    },
+    "administration": null,
+    "idShort": "Role",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [],
+          "First": null,
+          "Last": null
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Role"
+            },
+            {
+              "language": "DE",
+              "text": "Rolle"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Festlegung einer Rolle für die Organisation gemäß der folgenden Auswahlliste. Author (Autor), Customer (Kunde), Supplier (Zulieferer, Anbieter), Manufacturer (Hersteller), Responsible (Verantwortlicher)"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_OrganizationName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Organization/OrganizationName"
+    },
+    "administration": null,
+    "idShort": "OrganizationName",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "gebräuchliche Bezeichnung für Organisation"
+            },
+            {
+              "language": "EN",
+              "text": "organization name"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "OrganizationName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Die gebräuchliche Bezeichnung für die Organisation."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_OrganizationOfficialName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Organization/OrganizationOfficialName"
+    },
+    "administration": null,
+    "idShort": "OrganizationOfficialName",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "DE",
+              "text": "offizieller Name der Organisation"
+            },
+            {
+              "language": "EN",
+              "text": "official name of the organization"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "EN",
+              "text": "OrganizationOfficialName"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Der offizielle Namen der Organisation."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "local": true,
+            "value": "0173-1#02-AAO677#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ],
+        "First": {
+          "type": "ConceptDescription",
+          "local": true,
+          "value": "0173-1#02-AAO677#002",
+          "index": 0,
+          "idType": "IRDI"
+        },
+        "Last": {
+          "type": "ConceptDescription",
+          "local": true,
+          "value": "0173-1#02-AAO677#002",
+          "index": 0,
+          "idType": "IRDI"
+        }
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_DigitalFile": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/DigitalFile"
+    },
+    "administration": null,
+    "idShort": "DigitalFile",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DigitalFile"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "Eine Datei, die die DocumentVersion repräsentiert. Neben der obligatorischen PDF/A Datei können weitere Dateien angegeben werden."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_PreviewFile": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/PreviewFile"
+    },
+    "administration": null,
+    "idShort": "PreviewFile",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DigitalFile"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Provides a preview image of the Document, e.g. first page, in a commonly used image format and low resolution."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Comment": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Comment"
+    },
+    "administration": null,
+    "idShort": "Comment",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Comment"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "DE",
+              "text": "States a user-defined comment. Can be freely defined, even in multiple languages."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DocumentedEntity": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document/DocumentedEntity"
+    },
+    "administration": null,
+    "idShort": "DocumentedEntity",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "DocumentedEntity"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Identifies the Entity, which is subject to the Documentation. Note: can be omitted, if the subject of the Documentation is the overall Asset of the Asset Administration Shell."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_RefersTo": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document/RefersTo"
+    },
+    "administration": null,
+    "idShort": "RefersTo",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "RefersTo"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms a RefersTo-relationship to another Document. Typically, this other Document is a dependent document of the originating (main) document."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_BasedOn": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document/BasedOn"
+    },
+    "administration": null,
+    "idShort": "BasedOn",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "BasedOn"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms a BasedOn-relationship to another Document. Typically states, that this document bases on another document"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Affecting": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document/Affecting"
+    },
+    "administration": null,
+    "idShort": "Affecting",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Affecting"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms an Affecting-relationship to another Document. "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TranslationOf": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Document/TranslationOf"
+    },
+    "administration": null,
+    "idShort": "TranslationOf",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "TranslationOf"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Forms an TranslationOf-relationship to another Document. "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Entity": {
+    "identification": {
+      "idType": "IRI",
+      "id": "http://admin-shell.io/vdi/2770/1/0/Entity"
+    },
+    "administration": null,
+    "idShort": "Entity",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ],
+          "First": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Last": {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360",
+            "index": 0,
+            "idType": "IRI"
+          }
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "EN",
+              "text": "Entity"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": "[ISO 15519-1:2010]",
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "States, that the described Entity is an important entity for documentation of the superordinate Asset of the Asset Administration Shell. "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  }
+}

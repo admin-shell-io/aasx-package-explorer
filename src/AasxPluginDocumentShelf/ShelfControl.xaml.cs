@@ -736,10 +736,18 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelEdit;
                 ButtonAddUpdateDoc.Content = "Add";
 
+                /* TODO (MIHO, 2020-09-29): if the V1.1 template works and is adopted, the old
+                // V1.0 shall be removed completely (over complicated) */
                 // make a template description for the content (remeber it)
                 var desc = theOptions.FormVdi2770;
                 if (desc == null)
                     desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
+
+                // latest version (from resources)
+                if (this.CheckBoxLatestVersion.IsChecked == true)
+                {
+                    desc = DocumentShelfOptions.CreateVdi2770v11TemplateDesc();
+                }
 
                 this.currentFormDescription = desc;
                 formInUpdateMode = false;
@@ -842,6 +850,57 @@ namespace AasxPluginDocumentShelf
             if (sender == ButtonCancel)
             {
                 OuterTabControl.SelectedItem = TabPanelList;
+            }
+
+            if(sender == ButtonFixCDs)
+            {
+                // check if CDs are present
+                var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
+                    new AasxPredefinedConcepts.DefinitionsVDI2770());
+                var theCds = theDefs?.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+
+                if (theCds == null || theCds.Count < 1)
+                {
+                    Log.Error(
+                        "Not able to find appropriate ConceptDescriptions in pre-definitions. " +
+                        "Aborting.");
+                    return;
+                }
+
+                // check for Environment
+                var env = this.thePackage?.AasEnv;
+                if (env == null)
+                {
+                    Log.Error(
+                        "Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
+                    return;
+                }
+
+                // be safe?
+                if (MessageBoxResult.Yes != MessageBox.Show(
+                    "Add missing ConceptDescriptions to the AAS?", "Question",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    return;
+
+                // ok, check
+                int nr = 0;
+                foreach (var x in theCds)
+                {
+                    var cd = x as AdminShell.ConceptDescription;
+                    if (cd == null || cd.identification == null)
+                        continue;
+                    var cdFound = env.FindConceptDescription(cd.identification);
+                    if (cdFound != null)
+                        continue;
+                    // ok, add
+                    var newCd = new AdminShell.ConceptDescription(cd);
+                    env.ConceptDescriptions.Add(newCd);
+                    nr++;
+                }
+
+                // ok
+                Log.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
             }
 
         }

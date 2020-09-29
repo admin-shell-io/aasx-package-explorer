@@ -234,5 +234,149 @@ namespace AasxPluginDocumentShelf
             return descDoc;
         }
 
+        /// <summary>
+        /// Create form descriptions for the new v1.1 template of VDIO2770
+        /// </summary>
+        public static FormDescSubmodelElementCollection CreateVdi2770v11TemplateDesc()
+        {
+            // shortcut
+            var defs = AasxPredefinedConcepts.VDI2770v11.Static;
+
+            // DocumentItem
+
+            var descDoc = new FormDescSubmodelElementCollection(
+                "Document", FormMultiplicity.ZeroToMany, defs.CD_Document?.GetSingleKey(), 
+                "Document{00}",
+                "Each document item comprises a set of elements describing the information of a VDI 2770 Document " +
+                "with directly attached DocumentVersion.");
+
+            // DocumentIdDomain
+
+            var descDocIdDom = new FormDescSubmodelElementCollection(
+                "DocumentIdDomain", FormMultiplicity.ZeroToMany, defs.CD_DocumentIdDomain?.GetSingleKey(),
+                "DocumentIdDomain{00}",
+                "Set of information on the Document within a given domain, e.g. the providing organisation.");
+            descDoc.Add(descDocIdDom);
+
+            descDocIdDom.Add(new FormDescProperty(
+                "DocumentDomainId", FormMultiplicity.One, defs.CD_DocumentDomainId?.GetSingleKey(), 
+                "DocumentDomainId",
+                "Identification of the Domain, e.g. the providing organisation."));
+
+            descDocIdDom.Add(new FormDescProperty(
+                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentId",
+                "Identification of the Document within a given domain, e.g. the providing organisation."));
+
+            // DocumentClassification
+
+            var descDocClass = new FormDescSubmodelElementCollection(
+                "DocumentClassification", FormMultiplicity.ZeroToMany, defs.CD_DocumentIdDomain?.GetSingleKey(),
+                "DocumentClassification{00}",
+                "Set of information on the Document within a given domain, e.g. the providing organisation.");
+            descDoc.Add(descDocClass);
+
+            var descDocClassId = new FormDescProperty(
+                "ClassId", FormMultiplicity.One, defs.CD_DocumentClassId?.GetSingleKey(),
+                "ClassId",
+                "ClassId of the document in VDI2770 or other.");
+
+            var cbList = new List<string>();
+            var vlList = new List<string>();
+            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(
+                                                typeof(DefinitionsVDI2770.Vdi2770DocClass)))
+            {
+                if ((int)dc == 0)
+                    continue;
+                cbList.Add("" + DefinitionsVDI2770.GetDocClass(dc) + " - " + DefinitionsVDI2770.GetDocClassName(dc));
+                vlList.Add("" + DefinitionsVDI2770.GetDocClass(dc));
+            }
+
+            descDocClassId.comboBoxChoices = cbList.ToArray();
+            descDocClassId.valueFromComboBoxIndex = vlList.ToArray();
+            descDocClass.Add(descDocClassId);
+
+            var descDocName = new FormDescProperty(
+                "ClassName", FormMultiplicity.One, defs.CD_DocumentClassName?.GetSingleKey(), 
+                "ClassName",
+                "ClassName of the document in VDI2770 or other. " +
+                "This property is automaticall computed based on ClassId.");
+
+            descDocName.SlaveOfIdShort = "ClassId";
+
+            descDocName.valueFromMasterValue = new Dictionary<string, string>();
+            foreach (var dc in (DefinitionsVDI2770.Vdi2770DocClass[])Enum.GetValues(
+                                                                    typeof(DefinitionsVDI2770.Vdi2770DocClass)))
+                descDocName.valueFromMasterValue.Add(
+                    DefinitionsVDI2770.GetDocClass(dc), DefinitionsVDI2770.GetDocClassName(dc));
+
+            descDocClass.Add(descDocName);
+
+            // DocumentVersion
+
+            var descDocVer = new FormDescSubmodelElementCollection(
+                "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(), "DocumentVersion",
+                "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
+            descDoc.Add(descDocVer);
+
+            descDocVer.Add(new FormDescProperty(
+                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionIdValue?.GetSingleKey(), "DocumentVersionId",
+                "The combination of DocumentId and DocumentVersionId shall be unqiue."));
+
+            descDocVer.Add(new FormDescProperty(
+                "Languages", FormMultiplicity.ZeroToMany, defs.CD_Language?.GetSingleKey(), "Language{0}",
+                "List of languages used in the DocumentVersion. For most cases, " +
+                "at least one language shall be given."));
+
+            descDocVer.Add(new FormDescMultiLangProp(
+                "Title", FormMultiplicity.One, defs.CD_Title?.GetSingleKey(), "Title",
+                "Language dependent title of the document."));
+
+            descDocVer.Add(new FormDescMultiLangProp(
+                "Summary", FormMultiplicity.One, defs.CD_Summary?.GetSingleKey(), "Summary",
+                "Language dependent summary of the document."));
+
+            descDocVer.Add(new FormDescMultiLangProp(
+                "Keywords", FormMultiplicity.One, defs.CD_KeyWords?.GetSingleKey(), "Keywords",
+                "Language dependent keywords of the document."));
+
+            descDocVer.Add(new FormDescFile(
+                "DigitalFile", FormMultiplicity.OneToMany, defs.CD_DigitalFile?.GetSingleKey(), "DigitalFile{0:00}",
+                "Digital file, which represents the Document and DocumentVersion. " +
+                "A PDF/A format is required for textual representations."));
+
+            descDocVer.Add(new FormDescProperty(
+                "SetDate", FormMultiplicity.One, defs.CD_Date?.GetSingleKey(), "SetDate",
+                "Date when the document was introduced into the AAS or set to the status. Format is YYYY-MM-dd."));
+
+            var descStatus = new FormDescProperty(
+                "StatusValue", FormMultiplicity.One, defs.CD_LifeCycleStatusValue?.GetSingleKey(), "StatusValue",
+                "Each document version represents a point in time in the document life cycle. " +
+                "This status value refers to the milestones in the document life cycle. " +
+                "The following two statuses should be used for the application of this guideline: " +
+                "InReview (under review), Released (released).");
+            descDocVer.Add(descStatus);
+            descStatus.comboBoxChoices = new[] { "InReview", "Released" };
+
+            var descRole = new FormDescProperty(
+                "Role", FormMultiplicity.One, defs.CD_Role?.GetSingleKey(), "Role",
+                "Define a role for the organisation according to the following selection list.");
+            descDocVer.Add(descRole);
+            descRole.comboBoxChoices = new[] { "Author", "Customer", "Supplier", "Manufacturer", "Responsible" };
+
+            descDocVer.Add(new FormDescProperty(
+                "OrganizationName", FormMultiplicity.One, defs.CD_OrganizationName?.GetSingleKey(), "OrganizationName",
+                "Common name for the organisation."));
+
+            descDocVer.Add(new FormDescProperty(
+                "OrganizationOfficialName", FormMultiplicity.One, defs.CD_OrganizationOfficialName?.GetSingleKey(),
+                "OrganizationOfficialName",
+                "Official name for the organisation (which might be longer or include legal information)."));
+
+            // back to Document
+
+            return descDoc;
+        }
+
     }
 }

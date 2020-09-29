@@ -54,6 +54,7 @@
     <Compile Include="DefinitionsMTP.cs" />
     <Compile Include="DefinitionsExperimental.cs" />
     <Compile Include="DefinitionsLanguages.cs" />
+    <Compile Include="DefinitionsV2770v11.cs" />
     <Compile Include="DefinitionsZveiTechnicalData.cs" />
     <Compile Include="DefinitionsZveiDigitalTypeplate.cs" />
     <Compile Include="DefinitionsVDI2770.cs" />
@@ -76,6 +77,7 @@
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate_old.json" />
+    <EmbeddedResource Include="Resources\VDI2770v11.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\VDI2770.json" />

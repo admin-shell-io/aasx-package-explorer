@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -567,6 +569,37 @@ namespace AasxIntegrationBase.AasForms
             this.InitSme(res);
             if (this.presetMimeType != null)
                 res.mimeType = this.presetMimeType;
+            return res;
+        }
+
+    }
+
+    public class Utils
+    {
+
+        public static T LoadFromResourceJson<T>(Assembly assembly, string resourceName) where T : new()
+        {
+            // empty result
+            T res = default(T);
+
+            // access resource
+            var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+                return res;
+
+            // read text
+            TextReader tr = new StreamReader(stream);
+            var jsonStr = tr.ReadToEnd();
+            stream.Close();
+
+            // need special settings
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                new[] { typeof(T), typeof(AasForms.FormDescBase) });
+
+            // Parse into root
+            res = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonStr, settings);
+
+            // ok
             return res;
         }
 
