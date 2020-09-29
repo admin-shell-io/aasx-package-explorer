@@ -13,6 +13,8 @@ namespace AasxPredefinedConcepts
         // Constants
         //
 
+        public const string Vdi2770Sys = "VDI2770:2018";
+
         public enum Vdi2770DocClass
         {
             All = 0, Identification, TechnicalSpec, DrawingPlans, Assemblies, Certificates,
@@ -21,7 +23,7 @@ namespace AasxPredefinedConcepts
 
         public static string[] Vdi2770ClassIdMapping =
         {
-            "",         "* - All document classes",
+            "All",      "* - All document classes",
             "01-01",    "Identification",
             "02-01",    "Technical specifiction",
             "02-02",    "Drawings, plans",

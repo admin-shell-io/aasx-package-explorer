@@ -81,8 +81,8 @@
                             <local:EnumBooleanConverter x:Key="enumBooleanConverter" />
                         </WrapPanel.Resources>
                         <RadioButton x:Name="RadioLangAll" VerticalContentAlignment="Center" Margin="3"
-                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=All}">
-                            <Label Content="All"/>
+                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Any}">
+                            <Label Content="Any"/>
                         </RadioButton>
                         <RadioButton x:Name="RadioLangEN" VerticalContentAlignment="Center" Margin="3"
                                  IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=EN}">

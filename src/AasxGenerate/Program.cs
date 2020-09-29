@@ -45,35 +45,35 @@ namespace AasxGenerate
                 "CadItem", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
             aasenv.ConceptDescriptions.Add(cdGroup);
             cdGroup.SetIEC61360Spec(
-                preferredNames: new[] { "DE", "CAD Dateieinheit", "EN", "CAD file item" },
+                preferredNames: new[] { "de", "CAD Dateieinheit", "en", "CAD file item" },
                 shortName: "CadItem",
                 unit: "",
                 definition: new[] {
-                    "DE", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
-                    "EN", "Collection of properties, which make a file for a CAD system accessible." }
+                    "de", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
+                    "en", "Collection of properties, which make a file for a CAD system accessible." }
             );
 
             var cdFile = AdminShellV20.ConceptDescription.CreateNew(
                 "File", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
-                preferredNames: new[] { "DE", "Enthaltene CAD Datei", "EN", "Embedded CAD file" },
+                preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
                 shortName: "File",
                 unit: "",
                 definition: new[] {
-                    "DE", "Verweis auf enthaltene CAD Datei.", "EN", "Reference to embedded CAD file." }
+                    "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
             );
 
             var cdFormat = AdminShellV20.ConceptDescription.CreateNew(
                 "FileFormat", AdminShellV20.Identification.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
-                preferredNames: new[] { "DE", "Filetype CAD", "EN", "Filetype CAD" },
+                preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
                 shortName: "FileFormat",
                 unit: "",
                 definition: new[] {
-                    "DE", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.",
-                    "EN", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
+                    "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.",
+                    "en", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
             );
 
             // SUB MODEL
@@ -241,8 +241,8 @@ namespace AasxGenerate
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
-                            p.value.Add("EN", "" + args[3]);
-                            p.value.Add("DE", "Deutsche Übersetzung von: " + args[3]);
+                            p.value.Add("en", "" + args[3]);
+                            p.value.Add("de", "Deutsche Übersetzung von: " + args[3]);
                             p.value.Add("FR", "Traduction française de: " + args[3]);
                         }
 
@@ -253,8 +253,8 @@ namespace AasxGenerate
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
-                            p.value.Add("EN", "Summary for: " + args[3]);
-                            p.value.Add("DE", "Zusammenfassung von: " + args[3]);
+                            p.value.Add("en", "Summary for: " + args[3]);
+                            p.value.Add("de", "Zusammenfassung von: " + args[3]);
                             p.value.Add("FR", "Résumé de: " + args[3]);
                         }
 
@@ -265,8 +265,8 @@ namespace AasxGenerate
                             AdminShellV20.Key.GetFromRef(cd.GetReference())))
                         {
                             p1.Add(p);
-                            p.value.Add("EN", "Keywords for: " + args[3]);
-                            p.value.Add("DE", "Stichwörter für: " + args[3]);
+                            p.value.Add("en", "Keywords for: " + args[3]);
+                            p.value.Add("de", "Stichwörter für: " + args[3]);
                             p.value.Add("FR", "Repèrs par: " + args[3]);
                         }
 
@@ -407,10 +407,10 @@ namespace AasxGenerate
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "TBD", "EN", "Manufacturer name" },
+                    preferredNames: new[] { "de", "TBD", "en", "Manufacturer name" },
                     shortName: "Manufacturer",
-                    definition: new[] { "DE", "TBD",
-                    "EN",
+                    definition: new[] { "de", "TBD",
+                    "en",
                     "legally valid designation of the natural or judicial person which is directly " +
                         "responsible for the design, production, packaging and labeling of a product in respect " +
                         "to its being brought into circulation" }
@@ -429,15 +429,15 @@ namespace AasxGenerate
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "Breite", "EN", "Width" },
+                    preferredNames: new[] { "de", "Breite", "en", "Width" },
                     shortName: "Width",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
                     definition: new[] {
-                        "DE",
+                        "de",
                         "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
                         "rechtwinklig zur längsten Symmetrieachse",
-                        "EN",
+                        "en",
                         "for objects with orientation in preferred position during use the dimension " +
                         "perpendicular to height/ length/depth" }
                 );
@@ -455,16 +455,16 @@ namespace AasxGenerate
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "Höhe", "EN", "Height" },
+                    preferredNames: new[] { "de", "Höhe", "en", "Height" },
                     shortName: "Height",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
                     definition: new[] {
-                        "DE",
+                        "de",
                         "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
                         "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
                         "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
-                        "EN",
+                        "en",
                         "for objects with orientation in preferred position during use the dimension " +
                         "perpendicular to diameter/length/width/depth" }
                 );
@@ -482,15 +482,15 @@ namespace AasxGenerate
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "Tiefe", "EN", "Depth" },
+                    preferredNames: new[] { "de", "Tiefe", "en", "Depth" },
                     shortName: "Depth",
                     unit: "mm",
                     valueFormat: "REAL_MEASURE",
                     definition: new[] {
-                        "DE",
+                        "de",
                         "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
                         "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
-                        "EN",
+                        "en",
                         "for objects with fixed orientation or in preferred utilization position, " +
                         "the rear , generally away from the observer expansion is described as depth" }
                 );
@@ -509,12 +509,12 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Gewicht der Artikeleinzelverpackung", "EN", "Weight of the individual packaging" },
+                        "de", "Gewicht der Artikeleinzelverpackung", "en", "Weight of the individual packaging" },
                     shortName: "Weight",
                     unit: "g",
                     valueFormat: "REAL_MEASURE",
-                    definition: new[] { "DE", "Masse der Einzelverpackung eines Artikels",
-                    "EN", "Mass of the individual packaging of an article" }
+                    definition: new[] { "de", "Masse der Einzelverpackung eines Artikels",
+                    "en", "Mass of the individual packaging of an article" }
                 );
 
                 // as designed
@@ -552,10 +552,10 @@ namespace AasxGenerate
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
-                    preferredNames: new[] { "DE", "Werkstoff", "EN", "Material" },
+                    preferredNames: new[] { "de", "Werkstoff", "en", "Material" },
                     shortName: "Material",
-                    definition: new[] { "DE", "TBD",
-                    "EN",
+                    definition: new[] { "de", "TBD",
+                    "en",
                     "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
                     "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
                     "Schweißen usw. in die endgültige Form gebracht werden" }
@@ -598,20 +598,20 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss
-                        "EN", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
+                        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
                     shortName: "DocuName",                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "legally valid designation of the natural or judicial person..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "legally valid designation of the natural or judicial person..." }
                 );
 
                 var p = AdminShellV20.MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                             AdminShellV20.Key.GetFromRef(cd.GetReference()));
                 sub1.Add(p);
-                p.value.Add("EN", "An english value.");
-                p.value.Add("DE", "Ein deutscher Wert.");
+                p.value.Add("en", "An english value.");
+                p.value.Add("de", "Ein deutscher Wert.");
                 sme1 = p;
             }
 
@@ -624,13 +624,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss
-                        "EN", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
+                        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
                     shortName: "VoltageRange",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited voltage range..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited voltage range..." }
                 );
 
                 var p = AdminShellV20.Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
@@ -650,13 +650,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Verbindung",    // wechseln Sie die Sprache bei eCl@ss 
-                        "EN", "Connection" },   // um die Sprach-Texte aufzufinden
+                        "de", "Verbindung",    // wechseln Sie die Sprache bei eCl@ss 
+                        "en", "Connection" },   // um die Sprach-Texte aufzufinden
                     shortName: "VerConn",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely defined electrical connection..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely defined electrical connection..." }
                 );
 
                 var ar = AdminShellV20.AnnotatedRelationshipElement.CreateNew(
@@ -702,13 +702,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss
-                        "DE", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
+                        "en", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited language constructs..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
                 );
             }
 
@@ -721,13 +721,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss
-                        "DE", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
+                        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited language constructs..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
                 );
             }
 
@@ -740,13 +740,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss
-                        "DE", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
+                        "en", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited language constructs..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
                 );
             }
 
@@ -759,13 +759,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss
-                        "DE", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
+                        "en", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited language constructs..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
                 );
             }
 
@@ -852,13 +852,13 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "EN", "Is part of",    // wechseln Sie die Sprache bei eCl@ss
-                        "DE", "Teil von" },   // um die Sprach-Texte aufzufinden
+                        "en", "Is part of",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Teil von" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
                     valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "DE", "TBD",
-                    "EN", "very precisely limited language constructs..." }
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
                 );
             }
 
@@ -934,11 +934,11 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Setze Energiespare-Modus",
-                        "EN", "Set energy saving mode" },
+                        "de", "Setze Energiespare-Modus",
+                        "en", "Set energy saving mode" },
                     shortName: "SetMode",
-                    definition: new[] { "DE", "Setze Energiemodus 1..4",
-                    "EN", "Set energy saving mode 1..4" }
+                    definition: new[] { "de", "Setze Energiemodus 1..4",
+                    "en", "Set energy saving mode 1..4" }
                 );
 
                 theOp.idShort = "setmode";
@@ -954,12 +954,12 @@ namespace AasxGenerate
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "DE", "Energiesparemodus-Vorgabe",
-                        "EN", "Preset of energy saving mode" },
+                        "de", "Energiesparemodus-Vorgabe",
+                        "en", "Preset of energy saving mode" },
                     shortName: "mode",
                     valueFormat: "INT",
-                    definition: new[] { "DE", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
-                    "EN", "Preset in optimal case for the energy saving mode" }
+                    definition: new[] { "de", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
+                    "en", "Preset in optimal case for the energy saving mode" }
                 );
 
                 var p = AdminShellV20.Property.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
@@ -1130,8 +1130,8 @@ namespace AasxGenerate
                 var asset1 = new AdminShellV20.Asset();
                 aasenv1.Assets.Add(asset1);
                 asset1.SetIdentification("IRI", "http://exaple.com/3s7plfdrs35", "3s7plfdrs35");
-                asset1.AddDescription("EN", "USB Stick");
-                asset1.AddDescription("DE", "USB Speichereinheit");
+                asset1.AddDescription("en", "USB Stick");
+                asset1.AddDescription("de", "USB Speichereinheit");
 
                 // CAD
                 Log.WriteLine(2, "Creating submodel CAD ..");
@@ -1405,8 +1405,8 @@ namespace AasxGenerate
                 var asset1 = new AdminShellV20.Asset("Asset_3s7plfdrs35");
                 aasenv1.Assets.Add(asset1);
                 asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
-                asset1.AddDescription("EN", "USB Stick");
-                asset1.AddDescription("DE", "USB Speichereinheit");
+                asset1.AddDescription("en", "USB Stick");
+                asset1.AddDescription("de", "USB Speichereinheit");
 
                 // CAD
                 Log.WriteLine(2, "Creating submodel CAD ..");

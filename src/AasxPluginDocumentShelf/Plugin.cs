@@ -27,6 +27,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginDocumentShelf.DocumentShelfOptions options =
             new AasxPluginDocumentShelf.DocumentShelfOptions();
+        private AasxPluginDocumentShelf.ShelfControl shelfControl = null;
 
         public string GetPluginName()
         {
@@ -80,6 +81,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                    "event-return", "Called to return a result evaluated by the host for a certain event."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
@@ -167,6 +170,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
+            if (action == "event-return" && args != null 
+                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase 
+                && this.shelfControl != null)
+            {
+                this.shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+            }
+
             if (action == "get-check-visual-extension")
             {
                 var cve = new AasxPluginResultBaseObject();
@@ -184,12 +194,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 // call
-                var resobj = AasxPluginDocumentShelf.ShelfControl.FillWithWpfControls(
+                this.shelfControl = AasxPluginDocumentShelf.ShelfControl.FillWithWpfControls(
                     Log, args[0], args[1], this.options, this.eventStack, args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = resobj;
+                res.obj = this.shelfControl;
                 return res;
             }
 
