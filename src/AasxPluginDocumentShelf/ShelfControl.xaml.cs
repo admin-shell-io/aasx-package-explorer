@@ -775,6 +775,13 @@ namespace AasxPluginDocumentShelf
                 var theCds = theDefs?.GetAllReferables().Where(
                     (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
 
+                // v11
+                if (CheckBoxLatestVersion.IsChecked == true)
+                {
+                    theCds= AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+                }
+
                 if (theCds == null || theCds.Count < 1)
                 {
                     Log.Error(
@@ -818,6 +825,35 @@ namespace AasxPluginDocumentShelf
                 Log.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
             }
 
+            if (sender == ButtonCreateEntity)
+            {
+                // show the edit panel
+                OuterTabControl.SelectedItem = TabPanelEntity;
+            }
+
+            if (sender == ButtonCancelEntity)
+            {
+                OuterTabControl.SelectedItem = TabPanelList;
+            }
+
+            if (sender == ButtonAddEntity 
+                && this.theSubmodel != null
+                && TextBoxEntityIdShort.Text.Trim().HasContent())
+            {
+                // add entity
+                this.theSubmodel.submodelElements.CreateSMEForCD<AdminShell.Entity>(
+                    AasxPredefinedConcepts.VDI2770v11.Static.CD_Entity,
+                    idShort: "" + TextBoxEntityIdShort.Text.Trim(),
+                    addSme: true);
+
+                // switch back
+                OuterTabControl.SelectedItem = TabPanelList;
+
+                // re-display also in Explorer
+                var evt = new AasxPluginResultEventRedrawAllElements();
+                if (theEventStack != null)
+                    theEventStack.PushEvent(evt);
+            }
         }
     }
 }

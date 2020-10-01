@@ -323,6 +323,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
+
             if (desc == null || desc.KeySemanticId == null || sourceElements == null)
                 return;
 

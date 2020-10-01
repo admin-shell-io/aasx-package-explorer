@@ -28,8 +28,8 @@
                     <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">Document Shelf</Label>
                     <!-- <TextBox DockPanel.Dock="Right" Text="{Binding Path=TagName, Mode=TwoWay}"/> -->                    
                     <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
-                        <CheckBox x:Name="CheckBoxLatestVersion" Content="use v1.1" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                        <Button x:Name="ButtonCreateDoc" Margin="2,2,10,2" Padding="2" Content="Create new document .." Click="ButtonTabPanels_Click"/>
+                        <Button x:Name="ButtonCreateEntity" Margin="2,2,10,2" Padding="2" Content="Add Entity .." Click="ButtonTabPanels_Click"/>
+                        <Button x:Name="ButtonCreateDoc" Margin="2,2,10,2" Padding="2" Content="Add Document .." Click="ButtonTabPanels_Click"/>
                     </WrapPanel>
                     <Label/>
                 </DockPanel>
@@ -38,6 +38,7 @@
                         <ComboBoxItem>All classes</ComboBoxItem>
                         <ComboBoxItem>01-01 Identification</ComboBoxItem>
                     </ComboBox>
+
                     <WrapPanel DockPanel.Dock="Right" Margin="0,1,0,-1" >
                         <WrapPanel.Resources>
                             <local:EnumBooleanConverter x:Key="enumBooleanConverter" />
@@ -73,6 +74,9 @@
                             </Viewbox>
                         </ToggleButton>
                     </WrapPanel>
+
+                    <CheckBox x:Name="CheckBoxLatestVersion" DockPanel.Dock="Right" Content="use v1.1" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
                     <Label/>
                 </DockPanel>
                 <DockPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
@@ -214,6 +218,48 @@
                     <TextBlock x:Name="FileInfo"/>
                 </DockPanel>
                 -->
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="TabPanelEntity" Visibility="Collapsed">
+            <Grid Background="#e8e8e8" Loaded="Grid_Loaded">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Row="0" Grid.Column="0" Background="LightBlue">
+                    <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">Entity</Label>
+                    <!-- <TextBox DockPanel.Dock="Right" Text="{Binding Path=TagName, Mode=TwoWay}"/> -->
+                    <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                        <Button x:Name="ButtonCancelEntity" Margin="2,2,10,2" Padding="6,2,6,2" Content="Cancel" Click="ButtonTabPanels_Click"/>
+                        <Button x:Name="ButtonAddEntity" Margin="2,2,10,2" Padding="6,2,6,2" Content="Add" Click="ButtonTabPanels_Click"/>
+                    </WrapPanel>
+                    <Label/>
+                </DockPanel>
+
+                <Grid Grid.Row="2" Margin="0,10,0,0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="IdShort:"/>
+
+                    <TextBox x:Name="TextBoxEntityIdShort" Grid.Row="0" Grid.Column="1" Margin="2"/>
+
+                </Grid>
+                
             </Grid>
         </TabItem>
     </TabControl>    

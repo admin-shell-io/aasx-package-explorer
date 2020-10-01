@@ -487,7 +487,8 @@ namespace AasxPackageExplorer
             AdminShell.SemanticId semanticId,
             Action<AdminShell.SemanticId> setOutput,
             string statement = null,
-            bool checkForCD = false)
+            bool checkForCD = false,
+            string addExistingEntities = null)
         {
             // access
             if (stack == null)
@@ -522,7 +523,7 @@ namespace AasxPackageExplorer
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
                     package: package,
-                    addExistingEntities: AdminShell.Key.SubmodelRef);
+                    addExistingEntities: addExistingEntities);
         }
 
         //

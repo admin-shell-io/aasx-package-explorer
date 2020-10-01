@@ -36,6 +36,8 @@ namespace AasxPredefinedConcepts
 
         protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
 
+        protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
+
         //
         // Constructors
         //
@@ -158,12 +160,20 @@ namespace AasxPredefinedConcepts
         {
         }
 
+        public virtual AdminShell.Referable[] GetAllReferables()
+        {
+            return this.theReflectedReferables?.ToArray();
+        }
+
         public void RetrieveEntriesByReflection(Type typeToReflect = null,
             bool useAttributes = false, bool useFieldNames = false)
         {
             // access
             if (this.theLibrary == null || typeToReflect == null)
                 return;
+
+            // remember found Referables
+            this.theReflectedReferables = new List<AdminShell.Referable>();
 
             // reflection
             foreach (var fi in typeToReflect.GetFields())
@@ -197,11 +207,13 @@ namespace AasxPredefinedConcepts
                 { 
                     var sm = this.RetrieveReferable<AdminShell.Submodel>(libName);
                     fi.SetValue(this, sm);
+                    this.theReflectedReferables.Add(sm);
                 }
                 if (isCD)
                 {
                     var cd = this.RetrieveReferable<AdminShell.ConceptDescription>(libName);
                     fi.SetValue(this, cd);
+                    this.theReflectedReferables.Add(cd);
                 }
             }
         }

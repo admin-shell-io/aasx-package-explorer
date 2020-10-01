@@ -273,7 +273,7 @@ namespace AasxPluginDocumentShelf
             // DocumentClassification
 
             var descDocClass = new FormDescSubmodelElementCollection(
-                "DocumentClassification", FormMultiplicity.ZeroToMany, defs.CD_DocumentIdDomain?.GetSingleKey(),
+                "DocumentClassification", FormMultiplicity.ZeroToMany, defs.CD_DocumentClassification?.GetSingleKey(),
                 "DocumentClassification{0:00}",
                 "Set of information on the Document within a given domain, e.g. the providing organisation.");
             descDoc.Add(descDocClass);

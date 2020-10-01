@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AasxDefinitionBase.cs" />
     <Compile Include="Convert\ConvertDocumentationSg2ToHsu.cs" />
+    <Compile Include="Convert\ConvertDocumentationSg2ToV11.cs" />
     <Compile Include="Convert\ConvertDocumentationHsuToSg2.cs" />
     <Compile Include="Convert\ConvertPredefinedConcepts.cs" />
     <Compile Include="Convert\ConvertTechnicalDataToFlat.cs" />
