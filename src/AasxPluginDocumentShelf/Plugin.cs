@@ -207,7 +207,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // prepare list
                 var list = new List<string>();
-                list.Add("Document");
+                list.Add("Document (recommended version)");
+                list.Add("Document (development version V1.1)");
 
                 // make result
                 var res = new AasxPluginResultBaseObject();
@@ -224,8 +225,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // generate (by hand)
                 var sm = new AdminShell.Submodel();
-                sm.semanticId = new AdminShell.SemanticId(options.SemIdDocumentation);
-                sm.idShort = "Documentation";
+                if (smName.Contains("V1.1"))
+                {
+                    sm.semanticId = new AdminShell.SemanticId(
+                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                    sm.idShort = "ManufacturerDocumentation";
+                }
+                else
+                {
+                    sm.semanticId = new AdminShell.SemanticId(options.SemIdDocumentation);
+                    sm.idShort = "Documentation";
+                }
 
                 // make result
                 var res = new AasxPluginResultBaseObject();
