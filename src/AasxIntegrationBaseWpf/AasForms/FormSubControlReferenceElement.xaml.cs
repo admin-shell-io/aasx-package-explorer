@@ -28,19 +28,8 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         protected bool UpdateDisplayInCharge = false;        
 
-        public class ViewModel : INotifyPropertyChanged
+        public class ViewModel : WpfViewModelBase
         {
-            // duty from INotifyPropertyChanged
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            protected virtual void OnPropertyChanged(string propertyName)
-            {
-                var handler = PropertyChanged;
-                if (handler != null)
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-
             // data binded properties
             private AdminShell.Reference storedReference = null;
             public AdminShell.Reference StoredReference
@@ -52,10 +41,10 @@ namespace AasxIntegrationBase.AasForms
                 set
                 {
                     storedReference = value;
-                    OnPropertyChanged("DisplayReference");
+                    OnPropertyChanged("InfoReference");
                 }
             }
-            public string DisplayReference
+            public string InfoReference
             {
                 get
                 {

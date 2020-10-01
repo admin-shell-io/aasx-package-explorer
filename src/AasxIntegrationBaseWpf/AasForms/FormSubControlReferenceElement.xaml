@@ -21,7 +21,7 @@
             <TextBlock x:Name="TextBlockIndex" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" FontSize="8" VerticalAlignment="Top" Margin="0,1,4,0" Text="#1"/>
             <Border x:Name="BorderReference" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Background="LightBlue" BorderBrush="DarkBlue" BorderThickness="1" 
                     MinHeight="40" Margin="2">
-                <TextBlock x:Name="TextBlockReference" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="10" Padding="2" Text="sxaxasx" />
+                <TextBlock x:Name="TextBlockReference" VerticalAlignment="Top" HorizontalAlignment="Left" TextWrapping="Wrap" FontSize="10" Padding="2" Text="{Binding InfoReference}" />
             </Border>
             <Button x:Name="ButtonClear" Grid.Row="0" Grid.Column="2" Content="Clear" Padding="4,0,4,0" Margin="2"/>
             <Button x:Name="ButtonSelect" Grid.Row="1" Grid.Column="2" Content="Select" Padding="4,0,4,0" Margin="2"/>
