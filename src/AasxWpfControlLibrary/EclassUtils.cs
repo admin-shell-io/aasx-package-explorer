@@ -499,8 +499,10 @@ namespace AasxPackageExplorer
             // new cd
             var res = new AdminShell.ConceptDescription();
 
-            var ds = new AdminShell.DataSpecificationIEC61360();
-            res.embeddedDataSpecification.IEC61360Content = ds;
+            // MIHO 2020-10-02: fix bug, create IEC61360 content
+            var eds = AdminShell.EmbeddedDataSpecification.CreateIEC61360WithContent();
+            res.IEC61360DataSpec = eds;
+            var ds = eds.GetIEC61360();
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)
