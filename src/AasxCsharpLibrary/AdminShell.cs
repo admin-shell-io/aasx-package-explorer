@@ -3088,6 +3088,10 @@ namespace AdminShellNS
                 return eds;
             }
 
+            public DataSpecificationIEC61360 GetIEC61360()
+            {
+                return this.dataSpecificationContent?.dataSpecificationIEC61360;
+            }
         }
 
         public class ConceptDescription : Identifiable, System.IDisposable
@@ -3235,9 +3239,7 @@ namespace AdminShellNS
             {
                 var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
                 eds.dataSpecification.Keys.Add(
-                    Key.CreateNew(
-                        "GlobalReference", false, "IRI",
-                        "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
+                    DataSpecificationIEC61360.GetKey());
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
                     AdminShell.DataSpecificationIEC61360.CreateNew(
                         preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
