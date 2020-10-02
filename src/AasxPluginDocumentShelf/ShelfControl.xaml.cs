@@ -341,7 +341,7 @@ namespace AasxPluginDocumentShelf
         {
             // automatically set V1.1??
             if (this.theSubmodel?.semanticId?.Matches(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey(), 
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey(),
                 AdminShellV20.Key.MatchMode.Relaxed) == true)
             {
                 this.CheckBoxLatestVersion.IsChecked = true;
