@@ -67,7 +67,7 @@ namespace AasxPluginDocumentShelf
                     RaiseViewModelChanged();
                 }
             }
-           
+
             private AasxLanguageHelper.LangEnum theSelectedLanguage = AasxLanguageHelper.LangEnum.Any;
             public AasxLanguageHelper.LangEnum TheSelectedLanguage
             {
@@ -470,7 +470,7 @@ namespace AasxPluginDocumentShelf
                     ent.DoubleClick += DocumentEntity_DoubleClick;
                     ent.MenuClick += DocumentEntity_MenuClick;
                 }
-                
+
                 // finally set
                 ScrollMainContent.ItemsSource = its;
             }
@@ -650,9 +650,9 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelEdit;
                 ButtonAddUpdateDoc.Content = "Add";
 
-                /* TODO (MIHO, 2020-09-29): if the V1.1 template works and is adopted, the old
-                // V1.0 shall be removed completely (over complicated) */
-                // make a template description for the content (remeber it)
+                //// TODO (MIHO, 2020-09-29): if the V1.1 template works and is adopted, the old
+                //// V1.0 shall be removed completely (over complicated) */
+                //// make a template description for the content (remeber it)
                 var desc = theOptions.FormVdi2770;
                 if (desc == null)
                     desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
@@ -767,7 +767,7 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelList;
             }
 
-            if(sender == ButtonFixCDs)
+            if (sender == ButtonFixCDs)
             {
                 // check if CDs are present
                 var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
@@ -778,7 +778,7 @@ namespace AasxPluginDocumentShelf
                 // v11
                 if (CheckBoxLatestVersion.IsChecked == true)
                 {
-                    theCds= AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
+                    theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
                     (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
                 }
 
@@ -836,7 +836,7 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelList;
             }
 
-            if (sender == ButtonAddEntity 
+            if (sender == ButtonAddEntity
                 && this.theSubmodel != null
                 && TextBoxEntityIdShort.Text.Trim().HasContent())
             {

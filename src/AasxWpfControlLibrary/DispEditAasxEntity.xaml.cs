@@ -2387,7 +2387,7 @@ namespace AasxPackageExplorer
                     "The semanticId shall reference to a ConceptDescription within the AAS environment " +
                     "or an external repository, such as IEC CDD or eCl@ss or " +
                     "a company / consortia repository.",
-                    checkForCD: true, 
+                    checkForCD: true,
                     addExistingEntities: AdminShell.Key.ConceptDescription);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 

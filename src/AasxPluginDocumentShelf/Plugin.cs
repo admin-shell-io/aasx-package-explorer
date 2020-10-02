@@ -170,8 +170,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
-            if (action == "event-return" && args != null 
-                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase 
+            if (action == "event-return" && args != null
+                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
                 && this.shelfControl != null)
             {
                 this.shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);

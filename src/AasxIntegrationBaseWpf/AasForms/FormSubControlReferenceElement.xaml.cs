@@ -26,7 +26,7 @@ namespace AasxIntegrationBase.AasForms
         /// Is true while <c>UpdateDisplay</c> takes place, in order to distinguish between user updates and
         /// program logic
         /// </summary>
-        protected bool UpdateDisplayInCharge = false;        
+        protected bool UpdateDisplayInCharge = false;
 
         public class ViewModel : WpfViewModelBase
         {
@@ -107,8 +107,8 @@ namespace AasxIntegrationBase.AasForms
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
                 // TEST
-                // dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
-                // UpdateDisplay();
+                //// dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
+                //// UpdateDisplay();
 
                 // try find topmost instance
                 var top = FormInstanceHelper.GetTopMostParent(dc.instance);
@@ -117,7 +117,7 @@ namespace AasxIntegrationBase.AasForms
                 {
                     // give over to event stack
                     var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                    ev.filterEntities = "Entity"; // dc.desc.presetFilter;
+                    ev.filterEntities = "Entity"; //// dc.desc.presetFilter;
                     ev.showAuxPackage = true;
                     ev.showRepoFiles = true;
                     topBase.outerEventStack.PushEvent(ev);

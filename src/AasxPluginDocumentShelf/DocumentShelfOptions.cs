@@ -247,7 +247,7 @@ namespace AasxPluginDocumentShelf
             // DocumentItem
 
             var descDoc = new FormDescSubmodelElementCollection(
-                "Document", FormMultiplicity.ZeroToMany, defs.CD_Document?.GetSingleKey(), 
+                "Document", FormMultiplicity.ZeroToMany, defs.CD_Document?.GetSingleKey(),
                 "Document{0:00}",
                 "Each document item comprises a set of elements describing the information of a VDI 2770 Document " +
                 "with directly attached DocumentVersion.");
@@ -261,7 +261,7 @@ namespace AasxPluginDocumentShelf
             descDoc.Add(descDocIdDom);
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentDomainId", FormMultiplicity.One, defs.CD_DocumentDomainId?.GetSingleKey(), 
+                "DocumentDomainId", FormMultiplicity.One, defs.CD_DocumentDomainId?.GetSingleKey(),
                 "DocumentDomainId",
                 "Identification of the Domain, e.g. the providing organisation."));
 
@@ -279,13 +279,13 @@ namespace AasxPluginDocumentShelf
             descDoc.Add(descDocClass);
 
             var descDocClassSystem = new FormDescProperty(
-                            "ClassificationSystem", 
+                            "ClassificationSystem",
                             FormMultiplicity.One, defs.CD_DocumentClassificationSystem?.GetSingleKey(),
                             "ClassificationSystem",
                             "Identification of the classification system. A classification according to " +
                             "VDI2770:2018 shall be given.");
 
-            descDocClassSystem.comboBoxChoices = new[] 
+            descDocClassSystem.comboBoxChoices = new[]
                 { "VDI2770:2018", "IEC 61355-1:2008", "IEC/IEEE 82079-1:2019" };
 
             descDocClass.Add(descDocClassSystem);
@@ -302,7 +302,8 @@ namespace AasxPluginDocumentShelf
             {
                 if ((int)dc == 0)
                     continue;
-                cbList.Add("VDI2770 - " + DefinitionsVDI2770.GetDocClass(dc) + " - " + DefinitionsVDI2770.GetDocClassName(dc));
+                cbList.Add("VDI2770 - " + DefinitionsVDI2770.GetDocClass(dc) + " - "
+                    + DefinitionsVDI2770.GetDocClassName(dc));
                 vlList.Add("" + DefinitionsVDI2770.GetDocClass(dc));
             }
 
@@ -311,7 +312,7 @@ namespace AasxPluginDocumentShelf
             descDocClass.Add(descDocClassId);
 
             var descDocName = new FormDescProperty(
-                "ClassName", FormMultiplicity.One, defs.CD_DocumentClassName?.GetSingleKey(), 
+                "ClassName", FormMultiplicity.One, defs.CD_DocumentClassName?.GetSingleKey(),
                 "ClassName",
                 "ClassName of the document in VDI2770 or other. " +
                 "This property is automaticall computed based on ClassId.");
@@ -330,7 +331,8 @@ namespace AasxPluginDocumentShelf
             // DocumentVersion
 
             var descDocVer = new FormDescSubmodelElementCollection(
-                "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(), "DocumentVersion",
+                "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(),
+                "DocumentVersion",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 
@@ -340,7 +342,7 @@ namespace AasxPluginDocumentShelf
                 "at least one language shall be given."));
 
             descDocVer.Add(new FormDescProperty(
-                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionIdValue?.GetSingleKey(), 
+                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionIdValue?.GetSingleKey(),
                 "DocumentVersionId",
                 "The combination of DocumentId and DocumentVersionId shall be unqiue."));
 

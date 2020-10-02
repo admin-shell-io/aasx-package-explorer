@@ -204,7 +204,7 @@ namespace AasxPredefinedConcepts
 
                 // access library
                 if (isSM)
-                { 
+                {
                     var sm = this.RetrieveReferable<AdminShell.Submodel>(libName);
                     fi.SetValue(this, sm);
                     this.theReflectedReferables.Add(sm);

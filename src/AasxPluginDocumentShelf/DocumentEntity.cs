@@ -40,7 +40,7 @@ namespace AasxPluginDocumentShelf
         public string[] DeleteFilesAfterLoading = null;
 
         public enum DocRelationType { DocumentedEntity, RefersTo, BasedOn, Affecting, TranslationOf };
-        public List<Tuple<DocRelationType, AdminShell.Reference>> Relations = 
+        public List<Tuple<DocRelationType, AdminShell.Reference>> Relations =
             new List<Tuple<DocRelationType, AdminShellV20.Reference>>();
 
         public DocumentEntity() { }
@@ -107,7 +107,7 @@ namespace AasxPluginDocumentShelf
                         // take the 1st title
                         var title =
                             "" +
-                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdTitle, 
+                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdTitle,
                             AdminShellV20.Key.MatchMode.Relaxed)?.value;
 
                         // could be also a multi-language title
@@ -138,7 +138,7 @@ namespace AasxPluginDocumentShelf
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdLanguage, 
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdLanguage,
                             AdminShellV20.Key.MatchMode.Relaxed))
                         {
                             // language code
@@ -181,7 +181,7 @@ namespace AasxPluginDocumentShelf
                                 options?.SemIdDocumentVersionIdValue))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdDate, 
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdDate,
                             AdminShellV20.Key.MatchMode.Relaxed))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
@@ -289,7 +289,7 @@ namespace AasxPluginDocumentShelf
 
                         // have multiple opportunities for orga
                         var orga = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_OrganizationOfficialName?.GetReference(), 
+                                defs11.CD_OrganizationOfficialName?.GetReference(),
                                 AdminShellV20.Key.MatchMode.Relaxed)?.value;
                         if (orga.Trim().Length < 1)
                             orga = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
@@ -301,7 +301,7 @@ namespace AasxPluginDocumentShelf
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Language?.GetReference(), 
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Language?.GetReference(),
                             AdminShellV20.Key.MatchMode.Relaxed))
                         {
                             // language code
@@ -338,14 +338,14 @@ namespace AasxPluginDocumentShelf
 
                             // shall be a 2770 classification
                             var classSys = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_DocumentClassificationSystem?.GetReference(), 
+                                    defs11.CD_DocumentClassificationSystem?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
                             if (classSys.ToLower().Trim() != DefinitionsVDI2770.Vdi2770Sys.ToLower())
                                 continue;
 
                             // class infos
                             var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_DocumentClassId?.GetReference(), 
+                                    defs11.CD_DocumentClassId?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
 
                             // evaluate, if in selection
@@ -369,12 +369,12 @@ namespace AasxPluginDocumentShelf
                                 defs11.CD_DocumentVersionIdValue?.GetReference()))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Date?.GetReference(), 
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Date?.GetReference(),
                             AdminShellV20.Key.MatchMode.Relaxed))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
                             further = further.Substring(2);
-                        
+
                         // construct entity
                         var ent = new DocumentEntity(title, orga, further, countryCodesStr.ToArray());
                         ent.ReferableHash = String.Format(
