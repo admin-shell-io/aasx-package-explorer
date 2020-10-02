@@ -930,7 +930,7 @@ namespace AasxIntegrationBase.AasForms
                             var onlyFn = System.IO.Path.GetFileNameWithoutExtension(sourcePath);
                             var onlyExt = System.IO.Path.GetExtension(sourcePath);
                             var salt = Guid.NewGuid().ToString().Substring(0, 8);
-                            var targetPath = "/aasx/VDI2770/";
+                            var targetPath = "/aasx/files/";
                             var targetFn = String.Format("{0}_{1}{2}", onlyFn, salt, onlyExt);
 
                             file.value = targetPath + targetFn;

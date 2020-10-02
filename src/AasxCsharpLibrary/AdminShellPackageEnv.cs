@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
@@ -987,11 +988,16 @@ namespace AdminShellNS
             if ((sourcePath == null && sourceGetBytesDel == null) || targetDir == null || targetFn == null)
                 return;
 
+            // re-work target dir
+            targetDir = targetDir.Replace(@"\", "/");
+
+            // rework targetFn
+            targetFn = Regex.Replace(targetFn, "[^A-Za-z0-9-.]+", "_");
+
             // build target path
             targetDir = targetDir.Trim();
             if (!targetDir.EndsWith("/"))
                 targetDir += "/";
-            targetDir = targetDir.Replace(@"\", "/");
             targetFn = targetFn.Trim();
             if (sourcePath == "" || targetDir == "" || targetFn == "")
                 throw (new Exception("Trying add supplementary file with empty name or path!"));

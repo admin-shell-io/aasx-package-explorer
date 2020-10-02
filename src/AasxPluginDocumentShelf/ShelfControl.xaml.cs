@@ -339,6 +339,14 @@ namespace AasxPluginDocumentShelf
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
+            // automatically set V1.1??
+            if (this.theSubmodel?.semanticId?.Matches(
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey(), 
+                AdminShellV20.Key.MatchMode.Relaxed) == true)
+            {
+                this.CheckBoxLatestVersion.IsChecked = true;
+            }
+
             // user control was loaded, all options shall be set and outer grid is loaded fully ..
             ParseSubmodelToListItems(
                 this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass,
