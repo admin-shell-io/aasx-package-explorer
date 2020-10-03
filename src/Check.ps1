@@ -8,32 +8,24 @@ $ErrorActionPreference = "Stop"
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     CreateAndGetArtefactsDir
 
-function IsISE
+class Setting
 {
-    try
-    {
-        return $null -ne $psISE;
-    }
-    catch
-    {
-        return $false;
+    [string]$Timestamp
+    [string]$ForegroundColor  # empty string -> do not show colors
+    [string]$Emoji  # empty string -> do not show emoji
+
+    Setting($Timestamp, $ForegroundColor, $Emoji) {
+       $this.Timestamp = $Timestamp
+       $this.ForegroundColor = $ForegroundColor
+       $this.Emoji = $Emoji
     }
 }
 
-function LogAndExecute($Expression, $Timestamp, $ForegroundColor, $Emoji)
+function LogAndExecute([string]$Expression, [Setting]$Setting)
 {
     Write-Host "---"
     Write-Host "Running: $Expression"
     Write-Host "---"
-
-    if (IsISE)
-    {
-        $symbol = $Emoji
-    }
-    else
-    {
-        $symbol = ""
-    }
 
     if ( $Expression.StartsWith("./Check"))
     {
@@ -60,10 +52,31 @@ function LogAndExecute($Expression, $Timestamp, $ForegroundColor, $Emoji)
         throw "Unhandled title for the expression: $( $Expression|ConvertTo-Json )"
     }
 
-    & powershell $Expression|ForEach-Object {
-        Write-Host -ForegroundColor $ForegroundColor -BackgroundColor White `
-            -NoNewline "$symbol${title}:${Timestamp}:"
-        Write-Host " $_"
+    if ("" -eq $Setting.Emoji)
+    {
+        $prefix = "${title}:${Timestamp}:"
+    }
+    else
+    {
+        $prefix = "$($Setting.Emoji)${title}:${Timestamp}:"
+    }
+
+    if ("" -eq $Setting.ForegroundColor)
+    {
+        & powershell $Expression|ForEach-Object {
+            Write-Host -NoNewline $prefix
+            Write-Host " $_"
+        }
+    }
+    else
+    {
+        & powershell $Expression|ForEach-Object {
+            Write-Host `
+                -ForegroundColor $Setting.ForegroundColor `
+                -BackgroundColor White `
+                -NoNewline $prefix
+            Write-Host " $_"
+        }
     }
 }
 
@@ -146,49 +159,86 @@ function Main
     Set-Location $PSScriptRoot
 
     $artefactsDir = CreateAndGetArtefactsDir
-    $foregroundColor = PickColor -ArtefactsDir $artefactsDir
-    $emoji = PickEmoji -ArtefactsDir $artefactsDir
+
     $timestamp = [DateTime]::Now.ToString('HH:mm:ss')
+    $setting = [Setting]::new($timestamp, "", "")
+
+    function IsISE
+    {
+        try
+        {
+            return $null -ne $psISE;
+        }
+        catch
+        {
+            return $false;
+        }
+    }
+
+    $isISE = IsISE
+    if ($isISE)
+    {
+        <#
+        (mristin, 2020-10-03) I could make only ISE display emojis properly.
+        The other consoles such as Git Bash did not play ball.
+        #>
+        $setting.Emoji = PickEmoji -ArtefactsDir $artefactsDir
+
+        <#
+        (mristin, 2020-10-03) We could not make @MichaelHoffmeisterFesto
+        Powershell ISE display the colors properly though they worked just
+        fine in my ISE (version 5.1.18362.752). We had to apply the SimCity
+        trick and disable coloring for this particular host.
+
+        For more context on SimCity trick, see 
+        https://www.joelonsoftware.com/2004/06/13/how-microsoft-lost-the-api-war/
+        #>
+        $hostVersion = (Get-Host).Version.ToString()
+        if ($hostVersion -ne "5.1.17134.858")
+        {
+            $setting.ForegroundColor = PickColor -ArtefactsDir $artefactsDir 
+        }
+    }
 
     LogAndExecute `
         -Expression "./CheckLicenses.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./CheckFormat.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./CheckBiteSized.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./CheckDeadCode.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./CheckTodos.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./Doctest.ps1 -check" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./BuildForDebug.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./Test.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./InspectCode.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     LogAndExecute `
         -Expression "./CheckPushCommitMessages.ps1" `
-        -Timestamp $timestamp -ForegroundColor $foregroundColor -Emoji $emoji
+        -Setting $setting
 
     Write-Host
     Write-Host "All checks passed successfully. You can now push the commits."
