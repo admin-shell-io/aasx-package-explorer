@@ -933,11 +933,17 @@ namespace AasxIntegrationBase.AasForms
                             var targetPath = "/aasx/files/";
                             var targetFn = String.Format("{0}_{1}{2}", onlyFn, salt, onlyExt);
 
+                            // have package to adopt the file name
+                            packageEnv.PrepareSupplementaryFileParameters(ref targetPath, ref targetFn);
+
+                            // save
                             file.value = targetPath + targetFn;
 
                             if (addFilesToPackage)
+                            {
                                 packageEnv.AddSupplementaryFileToStore(
                                     sourcePath, targetPath, targetFn, embedAsThumb: false);
+                            }
                         }
                         catch (Exception ex)
                         {

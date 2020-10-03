@@ -5576,6 +5576,16 @@ namespace AdminShellNS
                 return (s);
             }
 
+            public SubmodelElementWrapperCollection SmeForWrite
+            {
+                get
+                {
+                    if (this.submodelElements == null)
+                        this.submodelElements = new SubmodelElementWrapperCollection();
+                    return this.submodelElements;
+                }
+            }
+
             // from IEnumarateChildren
             public IEnumerable<SubmodelElementWrapper> EnumerateChildren()
             {

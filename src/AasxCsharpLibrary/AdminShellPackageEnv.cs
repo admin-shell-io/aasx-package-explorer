@@ -980,6 +980,17 @@ namespace AdminShellNS
             return content_type;
         }
 
+        public void PrepareSupplementaryFileParameters(ref string targetDir, ref string targetFn)
+        {
+            // re-work target dir
+            if (targetDir != null)
+                targetDir = targetDir.Replace(@"\", "/");
+
+            // rework targetFn
+            if (targetFn != null)
+                targetFn = Regex.Replace(targetFn, @"[^A-Za-z0-9-.]+", "_");
+        }
+
         public void AddSupplementaryFileToStore(
             string sourcePath, string targetDir, string targetFn, bool embedAsThumb,
             AdminShellPackageSupplementaryFile.SourceGetByteChunk sourceGetBytesDel = null, string useMimeType = null)
@@ -987,12 +998,6 @@ namespace AdminShellNS
             // beautify parameters
             if ((sourcePath == null && sourceGetBytesDel == null) || targetDir == null || targetFn == null)
                 return;
-
-            // re-work target dir
-            targetDir = targetDir.Replace(@"\", "/");
-
-            // rework targetFn
-            targetFn = Regex.Replace(targetFn, "[^A-Za-z0-9-.]+", "_");
 
             // build target path
             targetDir = targetDir.Trim();
