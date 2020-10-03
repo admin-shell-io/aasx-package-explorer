@@ -144,13 +144,13 @@ The VS solution is structured in multiple folders
 
 As copying and renaming projects in Vs does not always work perfectly, here a step-by-step guidance:
 
-* in Plugins, add a new project as .DLL for .net
+* in Plugins, add a new project as .DLL for .net & WPF
 * choose wisely a new name for the project, always starting with AasxPlugin..
 * location shall be below src/.
 * select .net-framework = 4.6.1
 * copy an appropriate existing Plugin.cs (do NOT rename it!)
 * copy an appropriate existing ...Options.cs (rename it, you WILL need options)
-* add reference to AasxCsharpLibrary, AasxIntegrationBase, AasxIntegrationBaseWpf
+* add reference to AasxCsharpLibrary, AasxIntegrationBase, AasxIntegrationBaseWpf, AasxPredefinedConcepts
 * in the ...Options.cs, check&modify the record-logic for allowing Submodel semantic ids
 * choose an appropriate Submodel semantic id to be associated with the plugin
 * change the contents of the Plugin.cs (do NOT rename it!)
@@ -164,6 +164,8 @@ As copying and renaming projects in Vs does not always work perfectly, here a st
   * "call-check-visual-extension": the main app calls this action for each Submodel to check, if the plug-in feels responsible
   * "get-events": retrieves stacked events FROM the plugin
   * "event-return": pushes events from the main app TO the plugin
+  * "get-check-visual-extension": returns a True, if a control shall be rendered
+  * "fill-panel-visual-extension": fill a provided WPF panel with content controls
 * event payloads are defined in: AasxPluginInterface.cs
 
 [visual-studio]: https://visualstudio.microsoft.com/de/vs/community/
