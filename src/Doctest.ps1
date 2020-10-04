@@ -67,7 +67,7 @@ function Main
         $cmdArgs += "--check"
     }
 
-    $quotedCmdArgs = $cmdArgs | % { "'$_'"}
+    $quotedCmdArgs = $cmdArgs | ForEach-Object { "'$_'"}
     Write-Host "Executing: $cmd $($quotedCmdArgs -Join " ")"
 
     & $cmd $cmdArgs
