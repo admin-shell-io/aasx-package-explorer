@@ -178,10 +178,6 @@ namespace AasxPredefinedConcepts
             // reflection
             foreach (var fi in typeToReflect.GetFields())
             {
-                // access
-                if (fi == null)
-                    continue;
-
                 // libName
                 var libName = "" + fi.Name;
 

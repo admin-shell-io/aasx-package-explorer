@@ -780,7 +780,7 @@ namespace AasxPluginDocumentShelf
                 // check if CDs are present
                 var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
-                var theCds = theDefs?.GetAllReferables().Where(
+                var theCds = theDefs.GetAllReferables().Where(
                     (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
 
                 // v11
@@ -790,7 +790,7 @@ namespace AasxPluginDocumentShelf
                     (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
                 }
 
-                if (theCds == null || theCds.Count < 1)
+                if (theCds.Count < 1)
                 {
                     Log.Error(
                         "Not able to find appropriate ConceptDescriptions in pre-definitions. " +

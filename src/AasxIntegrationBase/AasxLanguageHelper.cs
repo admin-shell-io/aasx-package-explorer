@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AasxIntegrationBase
 {
-    public class AasxLanguageHelper
+    public static class AasxLanguageHelper
     {
         public enum LangEnum { Any = 0, EN, DE, CN, JP, KR, FR, ES };
 

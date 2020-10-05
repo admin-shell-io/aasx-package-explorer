@@ -254,7 +254,7 @@ namespace AasxPluginDocumentShelf
                 return its;
 
             // look for Documents
-            if (subModel?.submodelElements != null)
+            if (subModel.submodelElements != null)
                 foreach (var smcDoc in
                     subModel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
                         defs11.CD_Document?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed))

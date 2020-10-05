@@ -156,7 +156,7 @@ namespace AasxPredefinedConcepts.Convert
                                 defsSg2.CD_VDI2770_Language.GetSingleKey(),
                                 AdminShellV20.Key.MatchMode.Relaxed))
                             smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
-                                defsV11.CD_Language, addSme: true)?.Set("string", "" + s1);
+                                defsV11.CD_Language, addSme: true)?.Set("string", "" + o);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
                             defsV11.CD_DocumentVersionIdValue, addSme: true)?.
