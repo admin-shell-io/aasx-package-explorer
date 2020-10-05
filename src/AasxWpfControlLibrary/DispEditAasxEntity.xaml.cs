@@ -1691,6 +1691,12 @@ namespace AasxPackageExplorer
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper.submodelElement);
 
+                if (parentContainer != null && parentContainer is AdminShell.Entity && wrapper != null)
+                    helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
+                        horizStack, repo, (parentContainer as AdminShell.Entity).statements,
+                        wrapper, env, "SubmodelElement:",
+                        nextFocus: wrapper.submodelElement);
+
                 // refactor?
                 if (parentContainer != null && parentContainer is AdminShell.IManageSubmodelElements)
                     helper.AddAction(
@@ -2687,7 +2693,8 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                    helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                        auxPackages: helper.auxPackages);
                 }
             }
             else

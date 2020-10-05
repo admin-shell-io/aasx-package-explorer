@@ -455,7 +455,29 @@ namespace AasxPluginImageMap
                 if (fe.Tag is AdminShell.Property prop &&
                     prop.parent is AdminShell.Entity ent)
                 {
-                    ;
+                    // first check, if a navigate to reference element can be found
+                    var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                        AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
+                        AdminShellV20.Key.MatchMode.Relaxed);
+                    if (navTo?.value != null)
+                    {
+                        // try activate
+                        var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
+                        ev.targetReference = new AdminShell.Reference(navTo.value);
+                        this.theEventStack?.PushEvent(ev);
+                        return;
+                    }
+
+                    // if not, have a look to the Entity itself
+                    if (ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity
+                        && ent.assetRef != null && ent.assetRef.Count > 0)
+                    {
+                        // try activate
+                        var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
+                        ev.targetReference = new AdminShell.Reference(ent.assetRef);
+                        this.theEventStack?.PushEvent(ev);
+                        return;
+                    }
                 }
 
                 // handle double click in any case

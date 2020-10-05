@@ -274,7 +274,33 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+        public class SupplementaryReferenceInformation
+        {
+            public AdminShell.Reference CleanReference;
+
+            public string SearchPluginTag = null;
+        }
+
+        public SupplementaryReferenceInformation StripSupplementaryReferenceInformation(AdminShell.Reference rf)
+        {
+            // in any case, provide record
+            var sri = new SupplementaryReferenceInformation();
+            sri.CleanReference = new AdminShell.Reference(rf);
+
+            // plug-in?
+            var srl = sri.CleanReference.Last;
+            if (srl?.type == AdminShell.Key.FragmentReference && srl?.idType == AdminShell.Key.Custom
+                && srl?.value?.StartsWith("Plugin:") == true)
+            {
+                sri.SearchPluginTag = srl.value.Substring("Plugin:".Length);
+                sri.CleanReference.Keys.Remove(srl);
+            }
+
+            // ok
+            return sri;
+        }
+
+        private VisualElementGeneric InternalSearchVisualElementOnMainDataObject(object dataObject,
             bool alsoDereferenceObjects = false)
         {
             if (displayedTreeViewLines == null)
@@ -286,6 +312,32 @@ namespace AasxPackageExplorer
                     return x;
             }
             return null;
+        }
+
+        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false,
+            SupplementaryReferenceInformation sri = null)
+        {
+            // call internal
+            var ve = InternalSearchVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects);
+
+            // refine ve?
+            if (sri != null)
+            {
+                // plugin?
+                if (sri.SearchPluginTag != null && ve is VisualElementSubmodelRef veSm
+                    && veSm.Members != null)
+                    foreach (var vem in veSm.Members)
+                        if (vem is VisualElementPluginExtension vepe)
+                            if (vepe.theExt?.Tag?.Trim().ToLower() == sri.SearchPluginTag.Trim().ToLower())
+                            {
+                                ve = vepe;
+                                break;
+                            }
+            }
+
+            // return
+            return ve;
         }
 
         public VisualElementGeneric GetDefaultVisualElement()

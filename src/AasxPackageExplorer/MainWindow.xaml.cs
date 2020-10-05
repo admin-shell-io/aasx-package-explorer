@@ -187,7 +187,8 @@ namespace AasxPackageExplorer
 
         public void UiLoadPackageWithNew(
             ref AdminShellPackageEnv packenv, AdminShellPackageEnv packnew, string info = "",
-            bool onlyAuxiliary = false)
+            bool onlyAuxiliary = false,
+            bool doNotNavigateAfterLoaded = false)
         {
             Log.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
             // loading
@@ -202,16 +203,31 @@ namespace AasxPackageExplorer
                 Log.Error(ex, $"When loading {info}, an error occurred");
                 return;
             }
+            
             // displaying
             try
             {
-                RestartUIafterNewPackage(onlyAuxiliary);
+                if (!doNotNavigateAfterLoaded)
+                    RestartUIafterNewPackage(onlyAuxiliary);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, $"When displaying element tree of {info}, an error occurred");
                 return;
             }
+
+            // further actions
+            try
+            {
+                UiCheckIfActivateLoadedNavTo();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"When performing actions after load of {info}, an error occurred");
+                return;
+            }
+
+            // done
             Log.Info("AASX {0} loaded.", info);
         }
 
@@ -233,6 +249,57 @@ namespace AasxPackageExplorer
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be 
+        /// found to be activated
+        /// </summary>
+        public bool UiCheckIfActivateLoadedNavTo()
+        {
+            // access
+            if (this.thePackageEnv?.AasEnv == null || this.DisplayElements == null)
+                return false;
+
+            // use convenience function
+            foreach (var sm in this.thePackageEnv.AasEnv.FindAllSubmodelGroupedByAAS())
+            {
+                // check for ReferenceElement
+                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                    AasxPredefinedConcepts.DefinitionsPackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
+                    AdminShell.Key.MatchMode.Relaxed);
+                if (navTo?.value == null)
+                    continue;
+
+                // remember some further supplementary search information
+                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo?.value);
+
+                // lookup business objects
+                var bo = this.thePackageEnv?.AasEnv.FindReferableByReference(sri.CleanReference);
+                if (bo == null)
+                    return false;
+
+                // still proceed?
+                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                        alsoDereferenceObjects: true, sri: sri);
+                if (veFound == null)
+                    return false;
+
+                // ok .. focus!!
+                DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+                // remember in history
+                ButtonHistory.Push(veFound);
+                // fake selection
+                RedrawElementView();
+                DisplayElements.Refresh();
+                ContentTakeOver.IsEnabled = false;
+
+                // finally break
+                return true;
+            }
+
+            // nothing found
+            return false;
         }
 
         public void UiSetFileRepository(AasxFileRepository repo)
@@ -1010,22 +1077,65 @@ namespace AasxPackageExplorer
                         return;
                     }
 
-                    // special case - 1st half: possible plugin information?
-                    var searchRef = new AdminShell.Reference(hi.ReferableReference);
-                    var srl = searchRef.Last;
-                    string searchPluginTag = null;
-                    if (srl?.type == AdminShell.Key.GlobalReference && srl?.idType == AdminShell.Key.Custom
-                        && srl?.value?.StartsWith("Plugin:") == true)
-                    {
-                        searchPluginTag = srl.value.Substring("Plugin:".Length);
-                        searchRef.Keys.Remove(srl);
-                    }
+                    /* OLD
+
+                                        // special case - 1st half: possible plugin information?
+                                        var searchRef = new AdminShell.Reference(hi.ReferableReference);
+                                        var srl = searchRef.Last;
+                                        string searchPluginTag = null;
+                                        if (srl?.type == AdminShell.Key.GlobalReference && srl?.idType == AdminShell.Key.Custom
+                                            && srl?.value?.StartsWith("Plugin:") == true)
+                                        {
+                                            searchPluginTag = srl.value.Substring("Plugin:".Length);
+                                            searchRef.Keys.Remove(srl);
+                                        }
+
+                                        // load it (safe)
+                                        AdminShell.Referable bo = null;
+                                        try
+                                        {
+                                            bo = LoadFromFilerepository(fi, searchRef);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Log.Error(ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
+                                        }
+
+                                        // still proceed?
+                                        VisualElementGeneric veFocus = null;
+                                        if (bo != null && this.DisplayElements != null)
+                                        {
+                                            veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                                                alsoDereferenceObjects: true);
+                                            if (veFocus == null)
+                                            {
+                                                Log.Error($"Cannot lookup requested element within loaded file from repository.");
+                                                return;
+                                            }
+                                        }
+
+                                        // special case - 2nd half
+                                        if (searchPluginTag != null && veFocus is VisualElementSubmodelRef veSm
+                                            && veSm.Members != null)
+                                            foreach (var vem in veSm.Members)
+                                                if (vem is VisualElementPluginExtension vepe)
+                                                    if (vepe.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
+                                                    {
+                                                        veFocus = vepe;
+                                                        break;
+                                                    }
+                    */
+
+                    /* NEW */
+
+                    // remember some further supplementary search information
+                    var sri = this.DisplayElements.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
                     AdminShell.Referable bo = null;
                     try
                     {
-                        bo = LoadFromFilerepository(fi, searchRef);
+                        bo = LoadFromFilerepository(fi, sri.CleanReference);
                     }
                     catch (Exception ex)
                     {
@@ -1037,24 +1147,13 @@ namespace AasxPackageExplorer
                     if (bo != null && this.DisplayElements != null)
                     {
                         veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                            alsoDereferenceObjects: true);
+                            alsoDereferenceObjects: true, sri: sri);
                         if (veFocus == null)
                         {
                             Log.Error($"Cannot lookup requested element within loaded file from repository.");
                             return;
                         }
                     }
-
-                    // special case - 2nd half
-                    if (searchPluginTag != null && veFocus is VisualElementSubmodelRef veSm
-                        && veSm.Members != null)
-                        foreach (var vem in veSm.Members)
-                            if (vem is VisualElementPluginExtension vepe)
-                                if (vepe.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
-                                {
-                                    veFocus = vepe;
-                                    break;
-                                }
 
                     // if successful, try to display it
                     try
