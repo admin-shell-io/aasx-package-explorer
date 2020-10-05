@@ -90,6 +90,10 @@
       "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\AasxPluginGenericForms.dll",
       "Args": []
     },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\AasxPluginImageMap.dll",
+      "Args": []
+    },
     /* Festo specific from here on */
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",

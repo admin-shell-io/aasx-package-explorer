@@ -801,6 +801,34 @@ namespace AdminShellNS
             // ReSharper enable EmptyGeneralCatchClause
         }
 
+        public Stream GetStreamFromUriOrLocalPackage(string uriString)
+        {
+            // local
+            if (this.IsLocalFile(uriString))
+                return GetLocalStreamFromPackage(uriString);
+
+            // no ..
+            return File.Open(uriString, FileMode.Open, FileAccess.Read);
+        }
+
+        public byte[] GetByteArrayFromUriOrLocalPackage(string uriString)
+        {
+            try
+            {
+                using (var input = GetStreamFromUriOrLocalPackage(uriString))
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        input.CopyTo(ms);
+                        return ms.ToArray();
+                    }
+                }
+            } catch
+            {
+                return null;
+            }
+        }
+
         public bool IsLocalFile(string uriString)
         {
             // access
