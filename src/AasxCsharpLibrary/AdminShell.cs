@@ -388,6 +388,7 @@ namespace AdminShellNS
             public static string Submodel = "Submodel";
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
+            public static string Entity = "Entity";
             // Resharper enable MemberHidesStaticFromOuterClass
 
             public static string[] IdentifierTypeNames = new string[] {
@@ -5577,6 +5578,16 @@ namespace AdminShellNS
                     s.administration.revision = revision;
                 }
                 return (s);
+            }
+
+            public SubmodelElementWrapperCollection SmeForWrite
+            {
+                get
+                {
+                    if (this.submodelElements == null)
+                        this.submodelElements = new SubmodelElementWrapperCollection();
+                    return this.submodelElements;
+                }
             }
 
             // from IEnumarateChildren

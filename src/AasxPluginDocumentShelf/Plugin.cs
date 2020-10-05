@@ -27,6 +27,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginDocumentShelf.DocumentShelfOptions options =
             new AasxPluginDocumentShelf.DocumentShelfOptions();
+        private AasxPluginDocumentShelf.ShelfControl shelfControl = null;
 
         public string GetPluginName()
         {
@@ -80,6 +81,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                    "event-return", "Called to return a result evaluated by the host for a certain event."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
@@ -167,6 +170,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
+            if (action == "event-return" && args != null
+                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
+                && this.shelfControl != null)
+            {
+                this.shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+            }
+
             if (action == "get-check-visual-extension")
             {
                 var cve = new AasxPluginResultBaseObject();
@@ -184,12 +194,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 // call
-                var resobj = AasxPluginDocumentShelf.ShelfControl.FillWithWpfControls(
+                this.shelfControl = AasxPluginDocumentShelf.ShelfControl.FillWithWpfControls(
                     Log, args[0], args[1], this.options, this.eventStack, args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = resobj;
+                res.obj = this.shelfControl;
                 return res;
             }
 
@@ -197,7 +207,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // prepare list
                 var list = new List<string>();
-                list.Add("Document");
+                list.Add("Document (recommended version)");
+                list.Add("Document (development version V1.1)");
 
                 // make result
                 var res = new AasxPluginResultBaseObject();
@@ -214,8 +225,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // generate (by hand)
                 var sm = new AdminShell.Submodel();
-                sm.semanticId = new AdminShell.SemanticId(options.SemIdDocumentation);
-                sm.idShort = "Documentation";
+                if (smName.Contains("V1.1"))
+                {
+                    sm.semanticId = new AdminShell.SemanticId(
+                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                    sm.idShort = "ManufacturerDocumentation";
+                }
+                else
+                {
+                    sm.semanticId = new AdminShell.SemanticId(options.SemIdDocumentation);
+                    sm.idShort = "Documentation";
+                }
 
                 // make result
                 var res = new AasxPluginResultBaseObject();

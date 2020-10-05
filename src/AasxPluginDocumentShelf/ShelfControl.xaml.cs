@@ -68,15 +68,8 @@ namespace AasxPluginDocumentShelf
                 }
             }
 
-            public enum LanguageSelection { All = 0, EN, DE, CN, JP, KR, FR, ES };
-
-            public static string[] LanguageSelectionToISO3166String = {
-                "All", "GB", "DE", "CN", "JP", "KR", "FR", "ES" }; // ISO 3166 -> List of contries
-            public static string[] LanguageSelectionToISO639String = {
-                "All", "en", "de", "cn", "jp", "kr", "fr", "es" }; // ISO 639 -> List of languages
-
-            private LanguageSelection theSelectedLanguage = LanguageSelection.All;
-            public LanguageSelection TheSelectedLanguage
+            private AasxLanguageHelper.LangEnum theSelectedLanguage = AasxLanguageHelper.LangEnum.Any;
+            public AasxLanguageHelper.LangEnum TheSelectedLanguage
             {
                 get { return theSelectedLanguage; }
                 set
@@ -331,8 +324,29 @@ namespace AasxPluginDocumentShelf
             return shelfCntl;
         }
 
+        public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
+        {
+            if (this.currentFormInst?.subscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = this.currentFormInst.subscribeForNextEventReturn;
+                this.currentFormInst.subscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+        }
+
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
+            // automatically set V1.1??
+            if (this.theSubmodel?.semanticId?.Matches(
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey(),
+                AdminShellV20.Key.MatchMode.Relaxed) == true)
+            {
+                this.CheckBoxLatestVersion.IsChecked = true;
+            }
+
             // user control was loaded, all options shall be set and outer grid is loaded fully ..
             ParseSubmodelToListItems(
                 this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass,
@@ -369,7 +383,7 @@ namespace AasxPluginDocumentShelf
 
         private void ParseSubmodelToListItems(
             AdminShell.Submodel subModel, AasxPluginDocumentShelf.DocumentShelfOptions options,
-            int selectedDocClass, ViewModel.LanguageSelection selectedLanguage, ViewModel.ListType selectedListType)
+            int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage, ViewModel.ListType selectedListType)
         {
             try
             {
@@ -406,176 +420,66 @@ namespace AasxPluginDocumentShelf
                 if (!found)
                     return;
 
+                // right now: hardcoded check for mdoel version
+                var modelVersion = DocumentEntity.SubmodelVersion.Default;
+                var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
+                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
+                    modelVersion = DocumentEntity.SubmodelVersion.V11;
+
                 // what defaultLanguage
                 string defaultLang = null;
-                if (theViewModel != null && theViewModel.TheSelectedLanguage > ViewModel.LanguageSelection.All)
-                    defaultLang = ViewModel.LanguageSelectionToISO639String[(int)theViewModel.TheSelectedLanguage];
-
-                // set a new list
-                var its = new List<DocumentEntity>();
-
-                // look for Documents
-                if (subModel?.submodelElements != null)
-                    foreach (var smcDoc in
-                        subModel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            options?.SemIdDocument))
-                    {
-                        // access
-                        if (smcDoc == null || smcDoc.value == null)
-                            continue;
-
-                        // look immediately for DocumentVersion, as only with this there is a valid List item
-                        foreach (var smcVer in
-                            smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                                options?.SemIdDocumentVersion))
-                        {
-                            // access
-                            if (smcVer == null || smcVer.value == null)
-                                continue;
-
-                            //
-                            // try to lookup info in smcDoc and smcVer
-                            //
-
-                            // take the 1st title
-                            var title =
-                                "" +
-                                smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(options?.SemIdTitle)?.value;
-
-                            // could be also a multi-language title
-                            foreach (var mlp in
-                                smcVer.value.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(
-                                    options?.SemIdTitle))
-                                if (mlp.value != null)
-                                    title = mlp.value.GetDefaultStr(defaultLang);
-
-                            // have multiple opportunities for orga
-                            var orga =
-                                "" +
-                                smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    options?.SemIdOrganizationOfficialName)?.value;
-                            if (orga.Trim().Length < 1)
-                                orga =
-                                    "" +
-                                    smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                        options?.SemIdOrganizationName)?.value;
-
-                            // class infos
-                            var classId =
-                                "" +
-                                smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    options?.SemIdDocumentClassId)?.value;
-
-                            // collect country codes
-                            var countryCodesStr = new List<string>();
-                            var countryCodesEnum = new List<ViewModel.LanguageSelection>();
-                            foreach (var cclp in
-                                smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdLanguage))
-                            {
-                                // language code
-                                var candidate = ("" + cclp.value).Trim().ToUpper();
-                                if (candidate.Length < 1)
-                                    continue;
-
-                                // convert to country codes
-                                foreach (var ev in
-                                    (ViewModel.LanguageSelection[])Enum.GetValues(typeof(ViewModel.LanguageSelection)))
-                                    if (candidate == ViewModel.LanguageSelectionToISO639String[(int)ev]?.ToUpper())
-                                    {
-                                        candidate = ViewModel.LanguageSelectionToISO3166String[(int)ev]?.ToUpper();
-                                        countryCodesEnum.Add(ev);
-                                    }
-
-                                // add
-                                countryCodesStr.Add(candidate);
-                            }
-
-                            // evaluate, if in selection
-                            var okDocClass =
-                                (selectedDocClass < 1 || classId == null || classId.Trim().Length < 1 ||
-                                classId.Trim()
-                                    .StartsWith(
-                                        DefinitionsVDI2770.GetDocClass(
-                                            (DefinitionsVDI2770.Vdi2770DocClass)selectedDocClass)));
-
-                            var okLanguage =
-                                (selectedLanguage == ViewModel.LanguageSelection.All ||
-                                countryCodesEnum == null ||
-                                // make only exception, if no language not all (not only the preferred
-                                // of LanguageSelectionToISO639String) are in the property
-                                countryCodesStr.Count < 1 ||
-                                countryCodesEnum.Contains(selectedLanguage));
-
-                            if (!okDocClass || !okLanguage)
-                                continue;
-
-                            // further info
-                            var further = "";
-                            foreach (var fi in
-                                smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
-                                    options?.SemIdDocumentVersionIdValue))
-                                further += "\u00b7 version: " + fi.value;
-                            foreach (var fi in
-                                smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(options?.SemIdDate))
-                                further += "\u00b7 date: " + fi.value;
-                            if (further.Length > 0)
-                                further = further.Substring(2);
-
-                            // construct entity
-                            var ent = new DocumentEntity(title, orga, further, countryCodesStr.ToArray());
-                            ent.ReferableHash = String.Format(
-                                "{0:X14} {1:X14}", thePackage.GetHashCode(), smcDoc.GetHashCode());
-
-                            // for updating data, set the source elements of this document entity
-                            ent.SourceElementsDocument = smcDoc.value;
-                            ent.SourceElementsDocumentVersion = smcVer.value;
-
-                            // filename
-                            var fn = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                                options?.SemIdDigitalFile)?.value;
-                            ent.DigitalFile = fn;
-
-                            // make viewbox to host __later__ created image!
-                            var vb = new Viewbox();
-                            vb.Stretch = Stretch.Uniform;
-                            ent.ImgContainer = vb;
-
-                            // can already put a generated image into the viewbox?
-                            if (referableHashToCachedBitmap != null &&
-                                referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
-                            {
-                                var img = new Image();
-                                img.Source = referableHashToCachedBitmap[ent.ReferableHash];
-                                ent.ImgContainer.Child = img;
-                            }
-                            else
-                            {
-                                // trigger generation of image
-
-                                // check if already in list
-                                DocumentEntity foundDe = null;
-                                foreach (var de in theDocEntitiesToPreview)
-                                    if (ent.ReferableHash == de.ReferableHash)
-                                        foundDe = de;
-
-                                lock (theDocEntitiesToPreview)
-                                {
-                                    if (foundDe != null)
-                                        theDocEntitiesToPreview.Remove(foundDe);
-                                    theDocEntitiesToPreview.Add(ent);
-                                }
-                            }
-
-                            // attach events and add
-                            ent.DoubleClick += DocumentEntity_DoubleClick;
-                            ent.MenuClick += DocumentEntity_MenuClick;
-                            its.Add(ent);
-
-                        }
-
-                    }
+                if (theViewModel != null && theViewModel.TheSelectedLanguage > AasxLanguageHelper.LangEnum.Any)
+                    defaultLang = AasxLanguageHelper.LangEnumToISO639String[(int)theViewModel.TheSelectedLanguage];
 
                 // make new list box items
+                var its = new List<DocumentEntity>();
+                if (modelVersion != DocumentEntity.SubmodelVersion.V11)
+                    its = ListOfDocumentEntity.ParseSubmodelForV10(
+                        thePackage, subModel, options, defaultLang, selectedDocClass, selectedLanguage);
+                else
+                    its = ListOfDocumentEntity.ParseSubmodelForV11(
+                        thePackage, subModel, defs11, defaultLang, selectedDocClass, selectedLanguage);
+
+                // post process
+                foreach (var ent in its)
+                {
+                    // make viewbox to host __later__ created image!
+                    var vb = new Viewbox();
+                    vb.Stretch = Stretch.Uniform;
+                    ent.ImgContainer = vb;
+
+                    // can already put a generated image into the viewbox?
+                    if (referableHashToCachedBitmap != null &&
+                        referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
+                    {
+                        var img = new Image();
+                        img.Source = referableHashToCachedBitmap[ent.ReferableHash];
+                        ent.ImgContainer.Child = img;
+                    }
+                    else
+                    {
+                        // trigger generation of image
+
+                        // check if already in list
+                        DocumentEntity foundDe = null;
+                        foreach (var de in theDocEntitiesToPreview)
+                            if (ent.ReferableHash == de.ReferableHash)
+                                foundDe = de;
+
+                        lock (theDocEntitiesToPreview)
+                        {
+                            if (foundDe != null)
+                                theDocEntitiesToPreview.Remove(foundDe);
+                            theDocEntitiesToPreview.Add(ent);
+                        }
+                    }
+
+                    // attach events and add
+                    ent.DoubleClick += DocumentEntity_DoubleClick;
+                    ent.MenuClick += DocumentEntity_MenuClick;
+                }
+
+                // finally set
                 ScrollMainContent.ItemsSource = its;
             }
             catch (Exception ex)
@@ -584,14 +488,14 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-        private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader)
+        private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
             // first check
             if (e == null || menuItemHeader == null)
                 return;
 
             // what to do?
-            if (menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
+            if (tag == null && menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
                 e.SourceElementsDocumentVersion != null)
             {
                 // show the edit panel
@@ -601,14 +505,23 @@ namespace AasxPluginDocumentShelf
                 // make a template description for the content (remeber it)
                 formInUpdateMode = true;
                 updateSourceElements = e.SourceElementsDocument;
+
                 var desc = theOptions.FormVdi2770;
                 if (desc == null)
                     desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
+
+                // latest version (from resources)
+                if (e.SmVersion == DocumentEntity.SubmodelVersion.V11)
+                {
+                    desc = DocumentShelfOptions.CreateVdi2770v11TemplateDesc();
+                }
+
                 this.currentFormDescription = desc;
 
                 // take over existing data
                 this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
                 this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
+                this.currentFormInst.outerEventStack = theEventStack;
 
                 // bring it to the panel
                 var elementsCntl = new FormListOfDifferentControl();
@@ -630,7 +543,7 @@ namespace AasxPluginDocumentShelf
                 return;
             }
 
-            if (menuItemHeader == "Delete" && e.SourceElementsDocument != null &&
+            if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null &&
                 e.SourceElementsDocumentVersion != null && theSubmodel?.submodelElements != null && theOptions != null)
             {
                 // the source elements need to match a Document
@@ -685,6 +598,15 @@ namespace AasxPluginDocumentShelf
                         // ReSharper enable PossibleMultipleEnumeration
                     }
             }
+
+            // check for a document reference
+            if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
+                && reltup.Item2 != null && reltup.Item2.Count > 0)
+            {
+                var evt = new AasxPluginResultEventNavigateToReference();
+                evt.targetReference = new AdminShell.Reference(reltup.Item2);
+                this.theEventStack.PushEvent(evt);
+            }
         }
 
         private void DocumentEntity_DoubleClick(DocumentEntity e)
@@ -736,10 +658,18 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelEdit;
                 ButtonAddUpdateDoc.Content = "Add";
 
-                // make a template description for the content (remeber it)
+                //// TODO (MIHO, 2020-09-29): if the V1.1 template works and is adopted, the old
+                //// V1.0 shall be removed completely (over complicated) */
+                //// make a template description for the content (remeber it)
                 var desc = theOptions.FormVdi2770;
                 if (desc == null)
                     desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
+
+                // latest version (from resources)
+                if (this.CheckBoxLatestVersion.IsChecked == true)
+                {
+                    desc = DocumentShelfOptions.CreateVdi2770v11TemplateDesc();
+                }
 
                 this.currentFormDescription = desc;
                 formInUpdateMode = false;
@@ -748,6 +678,7 @@ namespace AasxPluginDocumentShelf
                 // take over existing data
                 this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
                 this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
+                this.currentFormInst.outerEventStack = theEventStack;
 
                 // bring it to the panel
                 var elementsCntl = new FormListOfDifferentControl();
@@ -844,6 +775,93 @@ namespace AasxPluginDocumentShelf
                 OuterTabControl.SelectedItem = TabPanelList;
             }
 
+            if (sender == ButtonFixCDs)
+            {
+                // check if CDs are present
+                var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
+                    new AasxPredefinedConcepts.DefinitionsVDI2770());
+                var theCds = theDefs.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+
+                // v11
+                if (CheckBoxLatestVersion.IsChecked == true)
+                {
+                    theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+                }
+
+                if (theCds.Count < 1)
+                {
+                    Log.Error(
+                        "Not able to find appropriate ConceptDescriptions in pre-definitions. " +
+                        "Aborting.");
+                    return;
+                }
+
+                // check for Environment
+                var env = this.thePackage?.AasEnv;
+                if (env == null)
+                {
+                    Log.Error(
+                        "Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
+                    return;
+                }
+
+                // be safe?
+                if (MessageBoxResult.Yes != MessageBox.Show(
+                    "Add missing ConceptDescriptions to the AAS?", "Question",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    return;
+
+                // ok, check
+                int nr = 0;
+                foreach (var x in theCds)
+                {
+                    var cd = x as AdminShell.ConceptDescription;
+                    if (cd == null || cd.identification == null)
+                        continue;
+                    var cdFound = env.FindConceptDescription(cd.identification);
+                    if (cdFound != null)
+                        continue;
+                    // ok, add
+                    var newCd = new AdminShell.ConceptDescription(cd);
+                    env.ConceptDescriptions.Add(newCd);
+                    nr++;
+                }
+
+                // ok
+                Log.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
+            }
+
+            if (sender == ButtonCreateEntity)
+            {
+                // show the edit panel
+                OuterTabControl.SelectedItem = TabPanelEntity;
+            }
+
+            if (sender == ButtonCancelEntity)
+            {
+                OuterTabControl.SelectedItem = TabPanelList;
+            }
+
+            if (sender == ButtonAddEntity
+                && this.theSubmodel != null
+                && TextBoxEntityIdShort.Text.Trim().HasContent())
+            {
+                // add entity
+                this.theSubmodel.SmeForWrite.CreateSMEForCD<AdminShell.Entity>(
+                    AasxPredefinedConcepts.VDI2770v11.Static.CD_Entity,
+                    idShort: "" + TextBoxEntityIdShort.Text.Trim(),
+                    addSme: true);
+
+                // switch back
+                OuterTabControl.SelectedItem = TabPanelList;
+
+                // re-display also in Explorer
+                var evt = new AasxPluginResultEventRedrawAllElements();
+                if (theEventStack != null)
+                    theEventStack.PushEvent(evt);
+            }
         }
     }
 }

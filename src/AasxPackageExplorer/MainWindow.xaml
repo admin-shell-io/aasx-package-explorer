@@ -365,7 +365,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                         <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
                         <Separator/>
                         <MenuItem Header="Plugins ..">
-                            <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Header="New Submodel" InputGestureText="Ctrl+Shift+M" IsCheckable="True" Command="{StaticResource NewSubmodelFromPlugin}"/>
+                            <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Header="New Submodel" InputGestureText="Ctrl+Shift+M" Command="{StaticResource NewSubmodelFromPlugin}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem x:Name="MenuItemWorkspacConvertElement" Header="Convert .." Command="{StaticResource ConvertElement}"/>

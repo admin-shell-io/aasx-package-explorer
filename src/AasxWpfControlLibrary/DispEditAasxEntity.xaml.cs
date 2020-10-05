@@ -1300,7 +1300,9 @@ namespace AasxPackageExplorer
                     "The semanticId may be either a reference to a submodel " +
                     "with kind=Type (within the same or another Administration Shell) or " +
                     "it can be an external reference to an external standard " +
-                    "defining the semantics of the submodel (for example an PDF if a standard).");
+                    "defining the semantics of the submodel (for example an PDF if a standard).",
+                    addExistingEntities: AdminShell.Key.SubmodelRef + " " + AdminShell.Key.Submodel + " " +
+                        AdminShell.Key.ConceptDescription);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
@@ -2385,7 +2387,8 @@ namespace AasxPackageExplorer
                     "The semanticId shall reference to a ConceptDescription within the AAS environment " +
                     "or an external repository, such as IEC CDD or eCl@ss or " +
                     "a company / consortia repository.",
-                    checkForCD: true);
+                    checkForCD: true,
+                    addExistingEntities: AdminShell.Key.ConceptDescription);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
@@ -2903,7 +2906,8 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntitySemanticId(stack, view.semanticId,
                 (sid) => { view.semanticId = sid; },
                 "Only by adding this, a computer can distinguish, for what the view is really meant for.",
-                checkForCD: false);
+                checkForCD: false,
+                addExistingEntities: AdminShell.Key.ConceptDescription);
 
             // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, view.hasDataSpecification,

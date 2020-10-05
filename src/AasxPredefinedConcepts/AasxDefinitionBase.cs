@@ -13,6 +13,10 @@ namespace AasxPredefinedConcepts
 {
     public class AasxDefinitionBase
     {
+        //
+        // Inner classes
+        //
+
         public class LibraryEntry
         {
             public string name = "";
@@ -26,7 +30,33 @@ namespace AasxPredefinedConcepts
             }
         }
 
+        //
+        // Fields
+        //
+
         protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
+
+        protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
+
+        //
+        // Constructors
+        //
+
+        public AasxDefinitionBase() { }
+
+        public AasxDefinitionBase(Assembly assembly, string resourceName)
+        {
+            this.theLibrary = BuildLibrary(assembly, resourceName);
+        }
+
+        //
+        // Rest
+        //
+
+        public void ReadLibrary(Assembly assembly, string resourceName)
+        {
+            this.theLibrary = BuildLibrary(assembly, resourceName);
+        }
 
         protected Dictionary<string, LibraryEntry> BuildLibrary(Assembly assembly, string resourceName)
         {
@@ -119,6 +149,69 @@ namespace AasxPredefinedConcepts
 
             // ok
             return cd;
+        }
+
+        /// <summary>
+        /// This attribute indicates, that the attributed member shall be looked up by its name
+        /// in the library.
+        /// </summary>
+        [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
+        public class RetrieveReferableForField : System.Attribute
+        {
+        }
+
+        public virtual AdminShell.Referable[] GetAllReferables()
+        {
+            return this.theReflectedReferables?.ToArray();
+        }
+
+        public void RetrieveEntriesByReflection(Type typeToReflect = null,
+            bool useAttributes = false, bool useFieldNames = false)
+        {
+            // access
+            if (this.theLibrary == null || typeToReflect == null)
+                return;
+
+            // remember found Referables
+            this.theReflectedReferables = new List<AdminShell.Referable>();
+
+            // reflection
+            foreach (var fi in typeToReflect.GetFields())
+            {
+                // libName
+                var libName = "" + fi.Name;
+
+                // test
+                var ok = false;
+                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
+                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+
+                if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
+                    ok = true;
+
+                if (useFieldNames && isSM && libName.StartsWith("SM_"))
+                    ok = true;
+
+                if (useFieldNames && isCD && libName.StartsWith("CD_"))
+                    ok = true;
+
+                if (!ok)
+                    continue;
+
+                // access library
+                if (isSM)
+                {
+                    var sm = this.RetrieveReferable<AdminShell.Submodel>(libName);
+                    fi.SetValue(this, sm);
+                    this.theReflectedReferables.Add(sm);
+                }
+                if (isCD)
+                {
+                    var cd = this.RetrieveReferable<AdminShell.ConceptDescription>(libName);
+                    fi.SetValue(this, cd);
+                    this.theReflectedReferables.Add(cd);
+                }
+            }
         }
     }
 }

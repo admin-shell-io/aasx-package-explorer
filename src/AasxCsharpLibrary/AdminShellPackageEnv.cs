@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
@@ -979,6 +980,17 @@ namespace AdminShellNS
             return content_type;
         }
 
+        public void PrepareSupplementaryFileParameters(ref string targetDir, ref string targetFn)
+        {
+            // re-work target dir
+            if (targetDir != null)
+                targetDir = targetDir.Replace(@"\", "/");
+
+            // rework targetFn
+            if (targetFn != null)
+                targetFn = Regex.Replace(targetFn, @"[^A-Za-z0-9-.]+", "_");
+        }
+
         public void AddSupplementaryFileToStore(
             string sourcePath, string targetDir, string targetFn, bool embedAsThumb,
             AdminShellPackageSupplementaryFile.SourceGetByteChunk sourceGetBytesDel = null, string useMimeType = null)
@@ -991,7 +1003,6 @@ namespace AdminShellNS
             targetDir = targetDir.Trim();
             if (!targetDir.EndsWith("/"))
                 targetDir += "/";
-            targetDir = targetDir.Replace(@"\", "/");
             targetFn = targetFn.Trim();
             if (sourcePath == "" || targetDir == "" || targetFn == "")
                 throw (new Exception("Trying add supplementary file with empty name or path!"));

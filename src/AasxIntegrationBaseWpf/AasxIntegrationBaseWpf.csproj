@@ -51,6 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AasForms\AasFormUtils.cs" />
+    <Compile Include="AasForms\FormSubControlReferenceElement.xaml.cs">
+      <DependentUpon>FormSubControlReferenceElement.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AasForms\FormSubControlSMEBase.xaml.cs">
       <DependentUpon>FormSubControlSMEBase.xaml</DependentUpon>
     </Compile>
@@ -68,6 +71,10 @@
       <DependentUpon>MessageBoxFlyout.xaml</DependentUpon>
     </Compile>
     <Compile Include="WpfViewmodelBase.cs" />
+    <Page Include="AasForms\FormSubControlReferenceElement.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="AasForms\FormSubControlSMEBase.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
