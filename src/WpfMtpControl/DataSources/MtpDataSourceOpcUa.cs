@@ -1,10 +1,10 @@
-﻿using AasxIntegrationBase;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 
 namespace WpfMtpControl.DataSources
 {
@@ -42,7 +42,7 @@ namespace WpfMtpControl.DataSources
         public string ForId = null;
 
         public MtpDataSourceOpcUaEndpointMapping() { }
-        
+
         public MtpDataSourceOpcUaEndpointMapping(string NewEndpoint, string ForName = null, string ForId = null)
         {
             this.ForName = ForName;

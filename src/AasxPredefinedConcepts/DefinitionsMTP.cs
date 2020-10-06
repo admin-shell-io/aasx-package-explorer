@@ -27,9 +27,9 @@ namespace AasxPredefinedConcepts
                 CD_SourceOpcUaServer,
                 CD_Endpoint,
                 CD_MtpFile,
-                CD_IdentifierRenaming, 
-                CD_NamespaceRenaming, 
-                CD_RenamingOldText, 
+                CD_IdentifierRenaming,
+                CD_NamespaceRenaming,
+                CD_RenamingOldText,
                 CD_RenamingNewText;
 
             public ModuleTypePackage(AasxDefinitionBase bs)
@@ -72,7 +72,7 @@ namespace AasxPredefinedConcepts
                     "MtpFile",
                     "http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage",
                     "Specifies a File, which contains MTP information in MTP/ AutmationML format." +
-                    "File may be zipped.");                
+                    "File may be zipped.");
 
                 CD_IdentifierRenaming = CreateSparseConceptDescription("en", "IRI",
                     "IdentifierRenaming",

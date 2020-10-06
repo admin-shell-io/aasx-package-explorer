@@ -5,14 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AasxPackageExplorer"
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="40">
+             d:DesignHeight="20" d:DesignWidth="50">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
 
-        <Button x:Name="buttonBack" Content="&#x2bc7;" Click="buttonBack_Click">
+        <Button Grid.Column="0" x:Name="buttonBack" Content="&#x2bc7;" Click="Button_Click">
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="4"/>
+                </Style>
+            </Button.Resources>
+        </Button>
+
+        <Button Grid.Column="2" x:Name="buttonHome" Content="&#x1f3e0;" Click="Button_Click">
             <Button.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="4"/>

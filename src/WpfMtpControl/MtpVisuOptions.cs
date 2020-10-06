@@ -1,11 +1,11 @@
-﻿using AasxIntegrationBase;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using AasxIntegrationBase;
+using Newtonsoft.Json;
 
 namespace WpfMtpControl
 {
@@ -14,7 +14,7 @@ namespace WpfMtpControl
         // original input
 
         public string Background = "#e0e0e0";
-        
+
         public string StateColorActive = "#0000ff";
         public string StateColorNonActive = "#000000";
 

@@ -40,6 +40,8 @@ namespace AasxPackageExplorer
 
         public event EventHandler<VisualElementHistoryItem> VisualElementRequested = null;
 
+        public event EventHandler HomeRequested = null;
+
         private List<VisualElementHistoryItem> history = new List<VisualElementHistoryItem>();
 
         // init
@@ -114,25 +116,34 @@ namespace AasxPackageExplorer
             buttonBack.IsEnabled = true;
         }
 
-        private void buttonBack_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            // anything
-            if (history == null || history.Count < 1)
-                return;
+            if (sender == buttonBack)
+            {
+                // anything
+                if (history == null || history.Count < 1)
+                    return;
 
-            // pop last (as this the already displayed one)
-            history.RemoveAt(history.Count - 1);
+                // pop last (as this the already displayed one)
+                history.RemoveAt(history.Count - 1);
 
-            // may be disable ..
-            buttonBack.IsEnabled = history.Count > 0;
+                // may be disable ..
+                buttonBack.IsEnabled = history.Count > 0;
 
-            // give back the one prior to it
-            if (history.Count < 1)
-                return;
-            var ve = history[history.Count - 1];
+                // give back the one prior to it
+                if (history.Count < 1)
+                    return;
+                var ve = history[history.Count - 1];
 
-            // trigger event
-            this.VisualElementRequested?.Invoke(this, ve);
+                // trigger event
+                this.VisualElementRequested?.Invoke(this, ve);
+            }
+
+            if (sender == buttonHome)
+            {
+                // just trigger
+                this.HomeRequested?.Invoke(this, null);
+            }
         }
     }
 }

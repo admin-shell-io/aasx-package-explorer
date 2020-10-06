@@ -170,14 +170,15 @@ namespace AasxPluginImageMap
                 var x = JsonConvert.DeserializeObject<List<double>>(input);
                 return x.ToArray();
             }
-            catch {
+            catch
+            {
                 return null;
             }
         }
 
         public string[] RegionColors = new[] { "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff" };
 
-        private Tuple<Brush, Brush, Brush> DetermineColors (int index, bool forceTransparent, byte aFill, byte aStroke)
+        private Tuple<Brush, Brush, Brush> DetermineColors(int index, bool forceTransparent, byte aFill, byte aStroke)
         {
             var bc = (Color)ColorConverter.ConvertFromString(RegionColors[index % 6]);
             if (bc == null)
@@ -320,8 +321,8 @@ namespace AasxPluginImageMap
                     var cols = DetermineColors(index, forceTransparent, 0x30, 0xff);
 
                     // construct widget
-                    AddRectangle(this.CanvasContent, prect, 
-                        pts[0], pts[1], pts[2] - pts[0], pts[3] - pts[1], 
+                    AddRectangle(this.CanvasContent, prect,
+                        pts[0], pts[1], pts[2] - pts[0], pts[3] - pts[1],
                         cols.Item1, cols.Item2);
 
                     // construct text

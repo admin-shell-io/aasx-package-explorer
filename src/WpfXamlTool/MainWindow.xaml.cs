@@ -1,5 +1,4 @@
-﻿using ICSharpCode.AvalonEdit.Document;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xaml;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace WpfXamlTool
 {
@@ -55,7 +55,7 @@ namespace WpfXamlTool
             {
                 TryPresetFromResource("preset0.xaml");
             }
-            
+
             if (sender == ButtonPreset1)
             {
                 TryPresetFromResource("preset1.xaml");
@@ -66,7 +66,7 @@ namespace WpfXamlTool
                 ApplyRegexToXaml(
                     new Regex("Name=\"(\\w+)\"", RegexOptions.Multiline),
                     (Match m) =>
-                    {                        
+                    {
                         return "";
                     });
             }
@@ -103,7 +103,7 @@ namespace WpfXamlTool
 
                 // save
                 try
-                { 
+                {
                     if (true == dlg.ShowDialog())
                     {
                         // get text

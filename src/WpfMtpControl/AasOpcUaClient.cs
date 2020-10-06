@@ -130,7 +130,8 @@ namespace WpfMtpControl
             try
             {
                 config = await application.LoadApplicationConfiguration(false);
-            } catch
+            }
+            catch
             {
                 exitCode = AasOpcUaClientStatus.ErrorReadConfigFile;
                 return;

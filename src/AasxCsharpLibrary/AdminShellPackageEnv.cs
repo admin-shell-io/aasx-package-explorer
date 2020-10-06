@@ -823,7 +823,8 @@ namespace AdminShellNS
                         return ms.ToArray();
                     }
                 }
-            } catch
+            }
+            catch
             {
                 return null;
             }

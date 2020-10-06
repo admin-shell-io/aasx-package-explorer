@@ -111,10 +111,10 @@ namespace AasxIntegrationBase
             {
                 // directly found?
                 var fe = child as FrameworkElement;
-                
+
                 // check, if valid
                 if (child is T && fe != null && fe.Tag is string tagSt && tagSt.HasContent() &&
-                    (childTagPattern == null || Regex.IsMatch(tagSt, childTagPattern)) )
+                    (childTagPattern == null || Regex.IsMatch(tagSt, childTagPattern)))
                 {
                     // if the child's name is of the request name
                     yield return (T)child;
@@ -124,7 +124,7 @@ namespace AasxIntegrationBase
                 foreach (var x in LogicalTreeFindAllChildsWithRegexTag<T>(child as DependencyObject, childTagPattern))
                     yield return x;
             }
-        }        
+        }
 
         public static BitmapImage LoadBitmapImageFromPackage(AdminShellPackageEnv package, string path)
         {

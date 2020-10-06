@@ -75,7 +75,7 @@ namespace AasxPluginMtpViewer
             this.theSubmodel = theSubmodel;
             this.theOptions = theOptions;
             this.theEventStack = eventStack;
-            this.theLog = log;            
+            this.theLog = log;
         }
 
         public static WpfMtpControlWrapper FillWithWpfControls(
@@ -299,7 +299,7 @@ namespace AasxPluginMtpViewer
             this.hintsForConfigRecs = new MtpSymbolMapRecordList();
 
             this.activeMtpData = new WpfMtpControl.MtpData();
-            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, 
+            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib,
                 this.client, this.thePreLoadInfo, this.activeSubscriber, fn);
 
             if (this.activeMtpData.PictureCollection.Count > 0)

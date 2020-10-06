@@ -203,12 +203,11 @@ namespace AasxPackageExplorer
                 Log.Error(ex, $"When loading {info}, an error occurred");
                 return;
             }
-            
+
             // displaying
             try
             {
-                if (!doNotNavigateAfterLoaded)
-                    RestartUIafterNewPackage(onlyAuxiliary);
+                RestartUIafterNewPackage(onlyAuxiliary);
             }
             catch (Exception ex)
             {
@@ -219,7 +218,8 @@ namespace AasxPackageExplorer
             // further actions
             try
             {
-                UiCheckIfActivateLoadedNavTo();
+                if (!doNotNavigateAfterLoaded)
+                    UiCheckIfActivateLoadedNavTo();
             }
             catch (Exception ex)
             {
@@ -873,6 +873,10 @@ namespace AasxPackageExplorer
 
                         try
                         {
+                            // remember some further supplementary search information
+                            var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
+                            work = sri.CleanReference;
+
                             // incrementally make it unprecise
                             while (work.Count > 0)
                             {
@@ -904,7 +908,8 @@ namespace AasxPackageExplorer
                                     // try to look up in visual elements
                                     if (this.DisplayElements != null)
                                     {
-                                        var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo);
+                                        var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                                            alsoDereferenceObjects: true, sri: sri);
                                         if (ve != null)
                                         {
                                             veFound = ve;
@@ -1041,6 +1046,19 @@ namespace AasxPackageExplorer
             MainTimer_HandlePlugins();
         }
 
+        private void ButtonHistory_HomeRequested(object sender, EventArgs e)
+        {
+            // be careful
+            try
+            {
+                UiCheckIfActivateLoadedNavTo();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "While displaying home element");
+            }
+        }
+
         private void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
         {
             // be careful
@@ -1076,57 +1094,6 @@ namespace AasxPackageExplorer
                         Log.Error($"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
                         return;
                     }
-
-                    /* OLD
-
-                                        // special case - 1st half: possible plugin information?
-                                        var searchRef = new AdminShell.Reference(hi.ReferableReference);
-                                        var srl = searchRef.Last;
-                                        string searchPluginTag = null;
-                                        if (srl?.type == AdminShell.Key.GlobalReference && srl?.idType == AdminShell.Key.Custom
-                                            && srl?.value?.StartsWith("Plugin:") == true)
-                                        {
-                                            searchPluginTag = srl.value.Substring("Plugin:".Length);
-                                            searchRef.Keys.Remove(srl);
-                                        }
-
-                                        // load it (safe)
-                                        AdminShell.Referable bo = null;
-                                        try
-                                        {
-                                            bo = LoadFromFilerepository(fi, searchRef);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Log.Error(ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
-                                        }
-
-                                        // still proceed?
-                                        VisualElementGeneric veFocus = null;
-                                        if (bo != null && this.DisplayElements != null)
-                                        {
-                                            veFocus = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                                                alsoDereferenceObjects: true);
-                                            if (veFocus == null)
-                                            {
-                                                Log.Error($"Cannot lookup requested element within loaded file from repository.");
-                                                return;
-                                            }
-                                        }
-
-                                        // special case - 2nd half
-                                        if (searchPluginTag != null && veFocus is VisualElementSubmodelRef veSm
-                                            && veSm.Members != null)
-                                            foreach (var vem in veSm.Members)
-                                                if (vem is VisualElementPluginExtension vepe)
-                                                    if (vepe.theExt?.Tag?.Trim().ToLower() == searchPluginTag.Trim().ToLower())
-                                                    {
-                                                        veFocus = vepe;
-                                                        break;
-                                                    }
-                    */
-
-                    /* NEW */
 
                     // remember some further supplementary search information
                     var sri = this.DisplayElements.StripSupplementaryReferenceInformation(hi.ReferableReference);
@@ -1722,6 +1689,5 @@ namespace AasxPackageExplorer
                     DispEditEntityPanel.ClearHighlight();
             }
         }
-
     }
 }

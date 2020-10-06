@@ -110,7 +110,7 @@ namespace WpfMtpVisuViewer
             this.hintsForConfigRecs = new MtpSymbolMapRecordList();
 
             mtpVisu.VisuOptions = this.theOptions.VisuOptions;
-            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.theOptions.PreLoadInfo, 
+            this.activeMtpData.LoadAmlOrMtp(activeVisualObjectLib, this.client, this.theOptions.PreLoadInfo,
                 this.activeSubscriber, fn, makeUpConfigRecs: hintsForConfigRecs);
             if (this.activeMtpData.PictureCollection.Count > 0)
                 mtpVisu.SetPicture(this.activeMtpData.PictureCollection.Values.ElementAt(0));

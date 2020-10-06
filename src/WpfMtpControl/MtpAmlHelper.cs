@@ -187,7 +187,7 @@ namespace WpfMtpControl
                                     // mapping??
                                     if (preLoadInfo?.EndpointMapping != null)
                                         foreach (var epm in preLoadInfo.EndpointMapping)
-                                            if (epm?.IsValid == true && 
+                                            if (epm?.IsValid == true &&
                                                 (server.Name.Trim() == epm.ForName?.Trim()
                                                  || server.ID.Trim() == epm.ForId?.Trim()))
                                             {

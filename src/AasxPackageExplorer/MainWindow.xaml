@@ -376,7 +376,9 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                     </MenuItem>
                 </Menu>
 
-                <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="40" VisualElementRequested="ButtonHistory_ObjectRequested"/>
+                <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50" 
+                        VisualElementRequested="ButtonHistory_ObjectRequested"
+                        HomeRequested="ButtonHistory_HomeRequested"/>
 
                 <StackPanel Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" Orientation="Horizontal">
                     <Image x:Name="LogoImage" VerticalAlignment="Stretch" Margin="2,2,4,2"/>

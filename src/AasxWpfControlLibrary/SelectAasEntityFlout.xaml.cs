@@ -113,7 +113,7 @@ namespace AasxPackageExplorer
         }
 
         private AdminShell.KeyList BuildKeyListToTop(
-            VisualElementGeneric visElem, 
+            VisualElementGeneric visElem,
             bool includeAas = false)
         {
             // access

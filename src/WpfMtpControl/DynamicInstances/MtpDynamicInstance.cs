@@ -114,7 +114,7 @@ namespace Mtp.DynamicInstances
         // Symbol manipulation
         //
 
-        public void SymbolSetStateColor (Brush stateColor)
+        public void SymbolSetStateColor(Brush stateColor)
         {
             // access
             if (this.SymbolElement == null)
@@ -316,7 +316,9 @@ namespace Mtp.DynamicInstances
         {
             // ReSharper disable once UnusedMemberHierarchy.Global
             get { return valuex; }
-            set { valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent");
+            set
+            {
+                valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent");
                 RaisePropertyChanged("ValueText");
             }
         }
@@ -382,9 +384,9 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", 
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V",
                 (ct, o) => { this.Value = (double)o; });
-            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC", 
+            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
             subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
                 (ct, o) => { this.ValueScaleLowLimit = (double)o; });
@@ -699,7 +701,7 @@ namespace Mtp.DynamicInstances
         {
             get
             {
-                var st = Value.ToString(CultureInfo.InvariantCulture);                
+                var st = Value.ToString(CultureInfo.InvariantCulture);
                 return st;
             }
         }
