@@ -248,8 +248,7 @@ namespace WpfXamlTool
                     cntstr = cntstr.Substring(1);
                 }
 
-                double step = 0;
-                if (!double.TryParse(cntstr, NumberStyles.Any, CultureInfo.InvariantCulture, out step))
+                if (!double.TryParse(cntstr, NumberStyles.Any, CultureInfo.InvariantCulture, out double step))
                     return;
 
                 var incdec = sign * step;
@@ -292,8 +291,7 @@ namespace WpfXamlTool
                     dp = Math.Max(1, dp);
 
                 // try get actual number
-                double actual = 0;
-                if (!double.TryParse(origNumber, NumberStyles.Any, CultureInfo.InvariantCulture, out actual))
+                if (!double.TryParse(origNumber, NumberStyles.Any, CultureInfo.InvariantCulture, out double actual))
                     return;
 
                 // modify actual number

@@ -211,12 +211,12 @@ namespace AasxPluginMtpViewer
                     this.defsMtp.CD_IdentifierRenaming?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
                     if (ren?.value != null)
                     {
-                        var oldtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        var oldtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
                             this.defsMtp.CD_RenamingOldText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
-                        var newtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        var newtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
                             this.defsMtp.CD_RenamingNewText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
-                            preLoadInfo.IdentifierRenaming != null)
+                            preLoadInfo?.IdentifierRenaming != null)
                             preLoadInfo.IdentifierRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
                     }
 

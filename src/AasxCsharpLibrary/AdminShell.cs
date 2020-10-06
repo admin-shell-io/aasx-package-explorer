@@ -3850,7 +3850,7 @@ namespace AdminShellNS
                     // try find aas for it
                     var aas = this.FindAllAAS((a) =>
                     {
-                        return a?.assetRef?.Matches(asset?.identification) == true;
+                        return a?.assetRef?.Matches(asset.identification) == true;
                     }).FirstOrDefault();
                     if (aas == null)
                         return exactMatch ? null : asset;

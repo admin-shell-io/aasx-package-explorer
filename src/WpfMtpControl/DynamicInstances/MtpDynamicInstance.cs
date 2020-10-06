@@ -384,15 +384,15 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V",
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V",
                 (ct, o) => { this.Value = (double)o; });
-            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
-            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
                 (ct, o) => { this.ValueScaleLowLimit = (double)o; });
-            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMax",
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMax",
                 (ct, o) => { this.ValueScaleHighLimit = (double)o; });
-            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
                 (ct, o) => { this.ValueUnit = (int)o; });
         }
 
@@ -745,15 +745,15 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "V",
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "V",
                 (ct, o) => { this.Value = (int)o; });
-            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
                 (ct, o) => { this.WorstQualityCode = (byte)o; });
-            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMin",
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMin",
                 (ct, o) => { this.ValueScaleLowLimit = (int)o; });
-            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMax",
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMax",
                 (ct, o) => { this.ValueScaleHighLimit = (int)o; });
-            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
                 (ct, o) => { this.ValueUnit = (int)o; });
         }
 
@@ -1297,10 +1297,6 @@ namespace Mtp.DynamicInstances
         // members only selected, a lot of "unnecessary" memebrs
         public bool ErrorActiveStatic;
         public bool ErrorActiveDynamic;
-
-        public MtpDiMonBinValve() : base()
-        {
-        }
 
         public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
         {

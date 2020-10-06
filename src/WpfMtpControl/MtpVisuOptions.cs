@@ -38,11 +38,16 @@ namespace WpfMtpControl
 
         private static void PrepareColor(string preset, ref Brush color)
         {
+            // going mad about this ..
+            // ReSharper disable once EmptyGeneralCatchClause
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once PossibleNullReferenceException
             if (preset.HasContent())
                 try
                 {
-                    color = new SolidColorBrush(
-                        (Color)ColorConverter.ConvertFromString(preset));
+                    var c = (Color)ColorConverter.ConvertFromString(preset);
+                    if (c != null)
+                        color = new SolidColorBrush(c);
                 }
                 catch { }
         }

@@ -144,7 +144,9 @@ namespace WpfMtpControl
             var tg = new TransformGroup();
             tg.Children.Add(new RotateTransform(-rotation, center.X, center.Y));
             tg.Children.Add(new ScaleTransform(scale, scale, center.X, center.Y));
-            // tg.Children.Add(new ScaleTransform(scale, scale, 0.0 * center.X + contentObject.Width / 2, 0.0 * center.Y + contentObject.Height / 2));
+            // Note: the following was disabled by MIHO at same stage:
+            //// tg.Children.Add(new ScaleTransform(scale, scale, 0
+            //// .0 * center.X + contentObject.Width / 2, 0.0 * center.Y + contentObject.Height / 2));
             contentObject.RenderTransform = tg;
 
             // make such object
@@ -365,12 +367,6 @@ namespace WpfMtpControl
 
                                 if (obj.Name == "P001")
                                 {
-                                    // start.Rot = 0;
-                                    // contentObject = new Canvas();
-                                    //contentObject.Background = Brushes.Orange;
-                                    //contentObject.Width = 25;
-                                    //contentObject.Height = 25;
-                                    // contentObject = UIElementHelper.cloneElement(contentObject) as Canvas;
                                 }
 
                                 var shape = ConstructDirectVO(contentObject, 1.0 * start.Scale, 1.0 * start.Rot,

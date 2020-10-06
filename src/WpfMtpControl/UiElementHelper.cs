@@ -403,8 +403,8 @@ namespace WpfMtpControl
         public static TextBlock CreateStickyLabel(FontSettings fontSettings, string text, double padding = 2.0)
         {
             var size = fontSettings.MeasureString(text);
-            // TODO (MICHA, 20-10-04): check if font is set correctly ..
-            // TODO (MICHA, 20-10-04): seems, that for Textblock the alignement DOES NOT WORK!
+            // TODO (MICHA, 2020-10-04): check if font is set correctly ..
+            // TODO (MICHA, 2020-10-04): seems, that for Textblock the alignement DOES NOT WORK!
             var tb = new TextBlock();
             tb.Height = size.Height + 2 * padding;
             tb.Width = size.Width + 2 * padding;

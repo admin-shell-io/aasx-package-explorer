@@ -272,7 +272,7 @@ namespace AasxPackageExplorer
                     continue;
 
                 // remember some further supplementary search information
-                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo?.value);
+                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo.value);
 
                 // lookup business objects
                 var bo = this.thePackageEnv?.AasEnv.FindReferableByReference(sri.CleanReference);

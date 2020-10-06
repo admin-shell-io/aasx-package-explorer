@@ -226,7 +226,7 @@ namespace AasxPackageExplorer
             if (si is VisualElementPluginExtension vepe)
             {
                 // get main data object of the parent of the plug in ..
-                var parentMdo = vepe?.Parent.GetMainDataObject();
+                var parentMdo = vepe.Parent.GetMainDataObject();
                 if (parentMdo != null)
                 {
                     // safe to return a list for the parent ..

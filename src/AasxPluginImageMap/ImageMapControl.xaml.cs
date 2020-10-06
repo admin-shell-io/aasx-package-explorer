@@ -27,6 +27,9 @@ using Newtonsoft.Json;
 // ReSharper disable InconsistentlySynchronizedField
 // checks and everything looks fine .. maybe .Count() is already treated as synchronized action?
 
+// ReSharper disable NegativeEqualityExpression
+// checks look cleaner this way
+
 namespace AasxPluginImageMap
 {
     /// <summary>
@@ -180,9 +183,8 @@ namespace AasxPluginImageMap
 
         private Tuple<Brush, Brush, Brush> DetermineColors(int index, bool forceTransparent, byte aFill, byte aStroke)
         {
-            var bc = (Color)ColorConverter.ConvertFromString(RegionColors[index % 6]);
-            if (bc == null)
-                bc = Colors.White;
+            // ReSharper disable once PossibleNullReferenceException
+            var bc = (Color)ColorConverter.ConvertFromString("" + RegionColors[index % 6]);
             var fillColor = Color.FromArgb(aFill, bc.R, bc.G, bc.B);
             var strokeColor = Color.FromArgb(aStroke, bc.R, bc.G, bc.B);
             var textColor = Colors.White;

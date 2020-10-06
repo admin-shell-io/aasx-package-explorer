@@ -287,7 +287,8 @@ namespace WpfMtpControl
             var i = 0;
             foreach (var s in this.servers)
             {
-                servinfo += $"(se={i} st={s.state} t={s.msToNextState,5}ms, code={"" + s.UaClient?.StatusCode.ToString()}) ";
+                servinfo += $"(se={i} st={s.state} t={s.msToNextState,5}ms, " +
+                    $"code={"" + s.UaClient?.StatusCode.ToString()}) ";
                 i++;
             }
             return $"{this.servers.Count} servers, {numit} items | {servinfo}";
