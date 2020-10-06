@@ -41,6 +41,7 @@ namespace AasxPredefinedConcepts.Convert
         public static IEnumerable<ConvertProviderBase> GetAllProviders()
         {
             yield return new ConvertDocumentationSg2ToHsuProvider();
+            yield return new ConvertDocumentationSg2ToV11Provider();
             yield return new ConvertDocumentationHsuToSg2Provider();
             yield return new ConvertTechnicalDataToFlatProvider();
         }

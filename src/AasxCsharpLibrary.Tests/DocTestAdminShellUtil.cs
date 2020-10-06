@@ -8,49 +8,49 @@ namespace AdminShellNS.Tests
     public class DocTest_AdminShellUtil_cs
     {
         [Test]
-        public void AtLine30AndColumn12()
+        public void AtLine31AndColumn12()
         {
             Assert.AreEqual("someName", AdminShellUtil.FilterFriendlyName("someName"));
         }
 
         [Test]
-        public void AtLine31AndColumn12()
+        public void AtLine32AndColumn12()
         {
             Assert.AreEqual("some__name", AdminShellUtil.FilterFriendlyName("some!;name"));
         }
 
         [Test]
-        public void AtLine41AndColumn12()
+        public void AtLine42AndColumn12()
         {
             Assert.IsFalse(AdminShellUtil.HasWhitespace(""));
         }
 
         [Test]
-        public void AtLine42AndColumn12()
+        public void AtLine43AndColumn12()
         {
             Assert.IsTrue(AdminShellUtil.HasWhitespace(" "));
         }
 
         [Test]
-        public void AtLine43AndColumn12()
+        public void AtLine44AndColumn12()
         {
             Assert.IsTrue(AdminShellUtil.HasWhitespace("aa bb"));
         }
 
         [Test]
-        public void AtLine44AndColumn12()
+        public void AtLine45AndColumn12()
         {
             Assert.IsTrue(AdminShellUtil.HasWhitespace(" aabb"));
         }
 
         [Test]
-        public void AtLine45AndColumn12()
+        public void AtLine46AndColumn12()
         {
             Assert.IsTrue(AdminShellUtil.HasWhitespace("aabb "));
         }
 
         [Test]
-        public void AtLine46AndColumn12()
+        public void AtLine47AndColumn12()
         {
             Assert.IsFalse(AdminShellUtil.HasWhitespace("aabb"));
         }

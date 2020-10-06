@@ -134,6 +134,40 @@ This is a brief list of steps explaining how to submit your code contribution.
 
 * Ask somebody from the organization to squash & merge the pull request for you 
 
+## Visual Studio - Solution structure
+
+The VS solution is structured in multiple folders
+
+* Plugins: all plugin reside here
+
+## Create a plugin
+
+As copying and renaming projects in Vs does not always work perfectly, here a step-by-step guidance:
+
+* in Plugins, add a new project as .DLL for .net & WPF
+* choose wisely a new name for the project, always starting with AasxPlugin..
+* location shall be below src/.
+* select .net-framework = 4.6.1
+* copy an appropriate existing Plugin.cs (do NOT rename it!)
+* copy an appropriate existing ...Options.cs (rename it, you WILL need options)
+* add reference to AasxCsharpLibrary, AasxIntegrationBase, AasxIntegrationBaseWpf, AasxPredefinedConcepts
+* in the ...Options.cs, check&modify the record-logic for allowing Submodel semantic ids
+* choose an appropriate Submodel semantic id to be associated with the plugin
+* change the contents of the Plugin.cs (do NOT rename it!)
+  * change handling of options defined in ...Options.cs file 
+  * change ListActions() for the actions, your plugin shall handle
+    (if an action is not listed, it will not be issued by the main application to the plug-in!)
+  * change / extend ActivateAction() to handle defined actions
+    * use string-comparison for action names
+    * always check & typecast provided arguments
+* important actions are:
+  * "call-check-visual-extension": the main app calls this action for each Submodel to check, if the plug-in feels responsible
+  * "get-events": retrieves stacked events FROM the plugin
+  * "event-return": pushes events from the main app TO the plugin
+  * "get-check-visual-extension": returns a True, if a control shall be rendered
+  * "fill-panel-visual-extension": fill a provided WPF panel with content controls
+* event payloads are defined in: AasxPluginInterface.cs
+
 [visual-studio]: https://visualstudio.microsoft.com/de/vs/community/
 [organization]: https://github.com/admin-shell-io
 [branches-guideline]: https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/development-workflow.html#pull-requests

@@ -393,6 +393,7 @@ namespace AdminShellNS
             public static string Submodel = "Submodel";
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
+            public static string Entity = "Entity";
             // Resharper enable MemberHidesStaticFromOuterClass
 
             public static string[] IdentifierTypeNames = new string[] {
@@ -2260,6 +2261,14 @@ namespace AdminShellNS
             // from hasDataSpecification:
             [XmlElement(ElementName = "hasDataSpecification")]
             public HasDataSpecification hasDataSpecification = null;
+
+            // from this very class
+            [XmlElement(ElementName = "assetIdentificationModelRef")]
+            public SubmodelRef assetIdentificationModelRef = null;
+
+            [XmlElement(ElementName = "billOfMaterialRef")]
+            public SubmodelRef billOfMaterialRef = null;
+
             // from HasKind
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
@@ -2281,12 +2290,6 @@ namespace AdminShellNS
                     kind.kind = value;
                 }
             }
-            // from this very class
-            [XmlElement(ElementName = "assetIdentificationModelRef")]
-            public SubmodelRef assetIdentificationModelRef = null;
-
-            [XmlElement(ElementName = "billOfMaterialRef")]
-            public SubmodelRef billOfMaterialRef = null;
 
             // constructors
 
@@ -3091,6 +3094,10 @@ namespace AdminShellNS
                 return eds;
             }
 
+            public DataSpecificationIEC61360 GetIEC61360()
+            {
+                return this.dataSpecificationContent?.dataSpecificationIEC61360;
+            }
         }
 
         public class ConceptDescription : Identifiable, System.IDisposable
@@ -3238,9 +3245,7 @@ namespace AdminShellNS
             {
                 var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
                 eds.dataSpecification.Keys.Add(
-                    Key.CreateNew(
-                        "GlobalReference", false, "IRI",
-                        "www.admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"));
+                    DataSpecificationIEC61360.GetKey());
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
                     AdminShell.DataSpecificationIEC61360.CreateNew(
                         preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -479,7 +481,7 @@ namespace AasxIntegrationBase.AasForms
     [DisplayName("FormMultiLangProp")]
     public class FormDescMultiLangProp : FormDescSubmodelElement
     {
-        public static string[] DefaultLanguages = new string[] { "DE", "EN", "FR", "ES", "IT", "CN", "KR" };
+        public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "cn", "kr" };
 
         public FormDescMultiLangProp() { }
 
@@ -571,4 +573,59 @@ namespace AasxIntegrationBase.AasForms
         }
 
     }
+
+    [DisplayName("FormReferenceElement")]
+    public class FormDescReferenceElement : FormDescSubmodelElement
+    {
+        /// <summary>
+        /// pre-set a filter for allowed SubmodelElement types.
+        /// </summary>
+        [JsonProperty(Order = 20)]
+        public string presetFilter = "";
+
+        public FormDescReferenceElement() { }
+
+        // Constructors
+        //=============
+
+        public FormDescReferenceElement(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false,
+            string presetFilter = null)
+            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+        {
+            if (presetFilter != null)
+                this.presetFilter = presetFilter;
+        }
+
+        public FormDescReferenceElement(FormDescReferenceElement other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.presetFilter = other.presetFilter;
+        }
+
+        public override FormDescSubmodelElement Clone()
+        {
+            return new FormDescReferenceElement(this);
+        }
+
+        /// <summary>
+        /// Build a new instance, based on the description data
+        /// </summary>
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        {
+            return new FormInstanceReferenceElement(parentInstance, this, source);
+        }
+
+        public AdminShell.ReferenceElement GenerateDefault()
+        {
+            var res = new AdminShell.ReferenceElement();
+            this.InitSme(res);
+            return res;
+        }
+
+    }
+
 }

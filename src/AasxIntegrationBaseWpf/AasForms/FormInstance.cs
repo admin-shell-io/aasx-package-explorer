@@ -100,6 +100,11 @@ namespace AasxIntegrationBase.AasForms
         public PluginEventStack outerEventStack = null;
 
         /// <summary>
+        /// For the TOPMOST instance, receive the next incoming event ..
+        /// </summary>
+        public Action<AasxPluginEventReturnBase> subscribeForNextEventReturn = null;
+
+        /// <summary>
         /// Build a new instance, based on the description data
         /// </summary>
         public FormInstanceBase() { }
@@ -318,6 +323,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
+
             if (desc == null || desc.KeySemanticId == null || sourceElements == null)
                 return;
 
@@ -924,14 +930,20 @@ namespace AasxIntegrationBase.AasForms
                             var onlyFn = System.IO.Path.GetFileNameWithoutExtension(sourcePath);
                             var onlyExt = System.IO.Path.GetExtension(sourcePath);
                             var salt = Guid.NewGuid().ToString().Substring(0, 8);
-                            var targetPath = "/aasx/VDI2770/";
+                            var targetPath = "/aasx/files/";
                             var targetFn = String.Format("{0}_{1}{2}", onlyFn, salt, onlyExt);
 
+                            // have package to adopt the file name
+                            packageEnv.PrepareSupplementaryFileParameters(ref targetPath, ref targetFn);
+
+                            // save
                             file.value = targetPath + targetFn;
 
                             if (addFilesToPackage)
+                            {
                                 packageEnv.AddSupplementaryFileToStore(
                                     sourcePath, targetPath, targetFn, embedAsThumb: false);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -947,6 +959,59 @@ namespace AasxIntegrationBase.AasForms
             if (file != null && Touched && fileSource != null && editSource)
             {
                 fileSource.value = file.value;
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    public class FormInstanceReferenceElement : FormInstanceSubmodelElement
+    {
+
+        public FormInstanceReferenceElement(
+            FormInstanceListOfSame parentInstance, FormDescReferenceElement parentDesc,
+            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+        {
+            // way back to description
+            this.parentInstance = parentInstance;
+            this.desc = parentDesc;
+
+            // initialize Referable
+            var re = new AdminShell.ReferenceElement();
+            this.sme = re;
+            InitReferable(parentDesc, source);
+
+            // check, if a source is present
+            this.sourceSme = source;
+            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            if (reSource != null)
+            {
+                // take over
+                re.value = new AdminShell.Reference(reSource.value);
+            }
+
+            // create user control
+            this.subControl = new FormSubControlReferenceElement();
+            this.subControl.DataContext = this;
+        }
+
+        /// <summary>
+        /// Before rendering the SME into a list of new elements, process the SME.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back
+        /// the new values instead of producing a new element. Returns True, if a new element shall be rendered.
+        /// </summary>
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        {
+            // refer to base (SME) function, but not caring about result
+            base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
+
+            var mlp = this.sme as AdminShell.MultiLanguageProperty;
+            var mlpSource = this.sourceSme as AdminShell.MultiLanguageProperty;
+            if (mlp != null && Touched && mlpSource != null && editSource)
+            {
+                mlpSource.value = new AdminShell.LangStringSet(mlp.value);
                 return false;
             }
             return true;

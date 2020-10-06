@@ -89,17 +89,45 @@ namespace AasxPluginDocumentShelf
             var menuItem = sender as MenuItem;
             var data = this.DataContext as DocumentEntity;
             if (data != null && menuItem != null && (menuItem.Header as string) != null)
-                data.RaiseMenuClick(menuItem.Header as string);
+                data.RaiseMenuClick(menuItem.Header as string, menuItem.Tag);
         }
 
         private void ItemButton_Click(object sender, RoutedEventArgs e)
         {
+            // access
             ContextMenu cm = GridItem?.FindResource("ContextMenuItem") as ContextMenu;
-            if (cm != null)
+            var data = this.DataContext as DocumentEntity;
+            if (cm == null || data == null)
+                return;
+
+            // clear old items (very stupid)
+            while (cm.Items.Count > 2)
+                cm.Items.RemoveAt(2);
+
+            // add new items
+            if (data.Relations != null && data.Relations.Count > 0)
             {
-                cm.PlacementTarget = sender as Button;
-                cm.IsOpen = true;
+                cm.Items.Add(new Separator());
+
+                foreach (var reltup in data.Relations)
+                {
+                    var drt = reltup.Item1;
+                    var re = reltup.Item2;
+                    if (re == null || re.Count < 1)
+                        continue;
+                    var mi = new MenuItem();
+                    mi.Header = "" + drt.ToString() + ": " + re.Last.value;
+                    mi.Icon = " \x2794";
+                    mi.Click += MenuItem_Click;
+                    mi.Tag = reltup;
+
+                    cm.Items.Add(mi);
+                }
             }
+
+            // show
+            cm.PlacementTarget = sender as Button;
+            cm.IsOpen = true;
         }
 
     }

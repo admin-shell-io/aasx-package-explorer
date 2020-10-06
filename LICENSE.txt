@@ -74,6 +74,9 @@ MIT license (MIT, see below).
 
 The ExcelDataReader is licensed under the MIT license (MIT, see below).
 
+Portions copyright (c) by OPC Foundation, Inc. and licensed under the
+Reciprocal Community License (RCL) (see below)
+
 The OPC UA Example Code of OPC UA Standard is licensed under the MIT license
 (MIT, see below).
 
@@ -972,5 +975,15 @@ With resepect to OPC UA Example Code
  * The complete license agreement can be found here:
  * http://opcfoundation.org/License/MIT/1.00/
 
+With respect to OPC Foundation
+==============================
 
+RCL License
+Reciprocal Community License 1.00 (RCL1.00)
+Version 1.00, June 24, 2009
+Copyright (C) 2008,2009 OPC Foundation, Inc., All Rights Reserved.
 
+https://opcfoundation.org/license/rcl.html
+
+Remark: PHOENIX CONTACT GmbH & Co. KG and Festo SE & Co. KG are members
+of OPC foundation.

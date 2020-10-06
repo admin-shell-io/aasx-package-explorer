@@ -109,6 +109,11 @@ namespace AasxIntegrationBase.AasForms
                             break;
                         }
                 }
+                else
+                {
+                    // editable combo box, initialize normal
+                    ComboBoxValue.Text = "" + dc.prop.value;
+                }
             }
             else
             {

@@ -5,9 +5,12 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
@@ -55,32 +58,42 @@ namespace AasxOpenIdClient
             string caption = "Connect with " + tag + ".dat";
             string message = "";
 
-            // read openx.dat
-            try
+            if (value != "")
             {
-                using (StreamReader sr = new StreamReader(tag + ".dat"))
+                dataServer = value;
+                authServer = "";
+                certPfx = "";
+                certPfxPW = "";
+            }
+            else
+            {
+                // read openx.dat
+                try
                 {
-                    authServer = sr.ReadLine();
-                    dataServer = sr.ReadLine();
-                    certPfx = sr.ReadLine();
-                    certPfxPW = sr.ReadLine();
-                    outputDir = sr.ReadLine();
-
-                    message =
-                        "authServer: " + authServer + "\n" +
-                        "dataServer: " + dataServer + "\n" +
-                        "certPfx: " + certPfx + "\n" +
-                        "certPfxPW: " + certPfxPW + "\n" +
-                        "outputDir: " + outputDir + "\n" +
-                        "\nConinue?";
+                    using (StreamReader sr = new StreamReader(tag + ".dat"))
+                    {
+                        authServer = sr.ReadLine();
+                        dataServer = sr.ReadLine();
+                        certPfx = sr.ReadLine();
+                        certPfxPW = sr.ReadLine();
+                        outputDir = sr.ReadLine();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(tag + ".dat " + " can not be read!");
+                    return;
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(tag + ".dat " + " can not be read!");
-                return;
-            }
+
+            message =
+                "authServer: " + authServer + "\n" +
+                "dataServer: " + dataServer + "\n" +
+                "certPfx: " + certPfx + "\n" +
+                "certPfxPW: " + certPfxPW + "\n" +
+                "outputDir: " + outputDir + "\n" +
+                "\nConinue?";
 
             MessageBoxButtons buttons = MessageBoxButtons.YesNo;
             DialogResult result;
@@ -204,7 +217,7 @@ namespace AasxOpenIdClient
                     case "authenticate":
                         try
                         {
-                            var certificate = new X509Certificate2(certPfx, certPfxPW);
+                            //// var certificate = new X509Certificate2(certPfx, certPfxPW);
                             X509SigningCredentials x509Credential = null;
 
                             var response = await RequestTokenAsync(x509Credential);
@@ -245,8 +258,19 @@ namespace AasxOpenIdClient
 
             System.Windows.Forms.MessageBox.Show(disco.Raw, "Discovery JSON", MessageBoxButtons.OK);
 
-            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint);
-            // oz
+            List<string> rootCertSubject = new List<string>();
+            dynamic discoObject = Json.Decode(disco.Raw);
+            if (discoObject.rootCertSubjects != null)
+            {
+                int i = 0;
+                while (i < discoObject.rootCertSubjects.Length)
+                {
+                    rootCertSubject.Add(discoObject.rootCertSubjects[i++]);
+                }
+            }
+
+            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint, rootCertSubject);
+
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nClientToken with x5c in header: \n");
             Console.ResetColor();
@@ -314,7 +338,8 @@ namespace AasxOpenIdClient
             }
         }
 
-        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience)
+        private static string CreateClientToken(SigningCredentials credential, string clientId, string audience,
+            List<string> rootCertSubject)
         {
             // oz
             //// string x5c = "";
@@ -322,25 +347,77 @@ namespace AasxOpenIdClient
             string certFileName = certPfx;
             string password = certPfxPW;
 
-            X509Certificate2Collection xc = new X509Certificate2Collection();
-            xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
+            X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
-            string[] X509Base64 = new string[xc.Count];
+            //// X509Certificate2Collection xc = new X509Certificate2Collection();
+            //// xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
 
-            int j = xc.Count;
-            var xce = xc.GetEnumerator();
-            for (int i = 0; i < xc.Count; i++)
+            X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
+            X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
+                X509FindType.FindByTimeValid, DateTime.Now, false);
+
+            Boolean rootCertFound = false;
+            X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
+            foreach (X509Certificate2 fc in fcollection)
             {
-                xce.MoveNext();
-                X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
+                X509Chain fch = new X509Chain();
+                fch.Build(fc);
+                foreach (X509ChainElement element in fch.ChainElements)
+                {
+                    if (rootCertSubject.Contains(element.Certificate.Subject))
+                    {
+                        rootCertFound = true;
+                        fcollection2.Add(fc);
+                    }
+                }
+            }
+            if (rootCertFound)
+                fcollection = fcollection2;
+
+            X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                "Test Certificate Select",
+                "Select a certificate from the following list to get information on that certificate",
+                X509SelectionFlag.SingleSelection);
+            X509Certificate2 certificate = null;
+            if (scollection.Count != 0)
+            {
+                certificate = scollection[0];
+                X509Chain ch = new X509Chain();
+                ch.Build(certificate);
+
+                string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                int j = 0;
+                foreach (X509ChainElement element in ch.ChainElements)
+                {
+                    X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                }
+
+                x5c = X509Base64;
+            }
+            else
+            {
+                // use old fixed certificate chain
+                X509Certificate2Collection xc = new X509Certificate2Collection();
+                xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
+
+                string[] X509Base64 = new string[xc.Count];
+
+                int j = xc.Count;
+                var xce = xc.GetEnumerator();
+                for (int i = 0; i < xc.Count; i++)
+                {
+                    xce.MoveNext();
+                    X509Base64[--j] = Convert.ToBase64String(xce.Current.GetRawCertData());
+                }
+                x5c = X509Base64;
+
+                certificate = new X509Certificate2(certFileName, password);
             }
 
-            //// x5c = JsonConvert.SerializeObject(X509Base64);
-            x5c = X509Base64;
-
             string email = "";
-            X509Certificate2 x509 = new X509Certificate2(certFileName, password);
-            string subject = x509.Subject;
+            string subject = certificate.Subject;
             var split = subject.Split(new Char[] { ',' });
             if (split[0] != "")
             {
@@ -356,13 +433,13 @@ namespace AasxOpenIdClient
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("-----BEGIN CERTIFICATE-----");
             builder.AppendLine(
-                Convert.ToBase64String(x509.RawData, Base64FormattingOptions.InsertLineBreaks));
+                Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
             System.Windows.Forms.MessageBox.Show(builder.ToString(), "Client Certificate", MessageBoxButtons.OK);
             //
 
-            credential = new X509SigningCredentials(x509);
+            credential = new X509SigningCredentials(certificate);
             // oz end
 
             var now = DateTime.UtcNow;

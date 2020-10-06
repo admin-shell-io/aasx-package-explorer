@@ -64,11 +64,91 @@ simply call:
 The script `src\Check.ps1` will inform you which individual scripts were run. In
 case of failures, you can just run the last failing script.
 
-For example, if you only want to run the unit tests, call:
+Please see the source code of `src\Check.ps1` for more details.
+
+### Testing Locally with `Test.ps1`
+
+Unit tests are part of our continuous integration. While you usually test
+with `src\Check.ps1` at the end of the development cycle, it is often practical
+to continuously test while developing. 
+
+The script `src\Test.ps1` handles all the unit testing for you. 
+
+Please note that you have to build the solution for debug before *each run* 
+(using `src\BuildForDebug.ps1`). `src\Test.ps1` will look for binaries in 
+`artefacts` directory, and ignore any other binaries you might have built with
+your IDE (*e.g.*, building from within Visual Studio will have *no* effect on
+`src\Test.ps1` execution!).
+
+To run all the tests:
 
 ```powershell
 .\src\Test.ps1
 ```
+
+To list the tests without executing them:
+
+```powershell
+.\src\Test.ps1 -Explore
+```
+
+To execute an individual unit test:
+
+```powershell
+.\src\Test.ps1 -Test AasxDictionaryImport.Cdd.Tests.Test_Context.Empty
+```
+
+You can also specify a prefix so that all the corresponding test cases will be
+executed:
+
+```powershell
+.\src\Test.ps1 -Test AasxDictionaryImport.Cdd
+```
+
+### Testing Locally with Visual Studio
+
+Our tests are written using NUnit3, so you need to install NUnit 3 Test Adapter
+for Visual Studio (see [this article][nunit3-test-adapter] from NUnit 
+documentation).
+
+See [this article][nunit3-test-adapter-usage] for how to use NUnit 3 Test 
+Adapter in more detail.
+
+Once the adapter has been installed, you can run all the tests which do not
+require any external dependencies (such as AASX samples downloaded from 
+http://admin-shell-io.com/samples/).
+
+Our tests with external dependencies use environment variables to specify the
+location of the dependencies. While `src\Check.ps1` and related scripts set up
+the expected locations in the environment automatically, you need to adjust your
+test setting accordingly.
+
+So far, we need to set `SAMPLE_AASX_DIR` environment variable to point to the
+absolute path where AASX samples have been downloaded (using 
+`src\DownloadSamples.ps1`). This is by definition 
+`{your repository}\sample-aasx`.
+
+In order to reflect this environment variable in your test adapter, you have
+to create a RUNSETTINGS file and include it into the solution as user-specific.
+Please follow [this page][visual-studio-runsettings] from Visual Studio 
+documentation how to set up a RUNSETTINGS file.
+
+Here is an example RUNSETTINGS file:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+ <EnvironmentVariables>
+    <SAMPLE_AASX_DIR>
+        C:\admin-shell-io\aasx-package-explorer\sample-aasx
+    </SAMPLE_AASX_DIR>
+  </EnvironmentVariables>
+</RunSettings>
+```
+
+[nunit3-test-adapter]: https://docs.nunit.org/articles/vs-test-adapter/Adapter-Installation.html
+[nunit3-test-adapter-usage]: https://docs.nunit.org/articles/vs-test-adapter/Usage.html
+[visual-studio-runsettings]: https://docs.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2019
 
 ## Github Workflows
 
