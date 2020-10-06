@@ -5580,6 +5580,8 @@ namespace AdminShellNS
                 return (s);
             }
 
+            [XmlIgnore]
+            [JsonIgnore]
             public SubmodelElementWrapperCollection SmeForWrite
             {
                 get
