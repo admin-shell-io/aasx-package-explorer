@@ -112,6 +112,77 @@ namespace AasxPackageExplorer
             }
         }
 
+        private AdminShell.KeyList BuildKeyListToTop(
+            VisualElementGeneric visElem,
+            bool includeAas = false)
+        {
+            // access
+            if (visElem == null)
+                return null;
+
+            // prepare result
+            var res = new AdminShell.KeyList();
+            var ve = visElem;
+            while (ve != null)
+            {
+                if (ve is VisualElementSubmodelRef)
+                {
+                    // import special case, as Submodel ref is important part of the chain!
+                    var elem = ve as VisualElementSubmodelRef;
+                    if (elem.theSubmodel != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                elem.theSubmodel.GetElementName(), true,
+                                elem.theSubmodel.identification.idType,
+                                elem.theSubmodel.identification.id));
+
+                    // include aas
+                    if (includeAas && ve.Parent is VisualElementAdminShell veAas
+                        && veAas.theAas?.identification != null)
+                    {
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                AdminShell.Key.AAS, true,
+                                veAas.theAas.identification.idType,
+                                veAas.theAas.identification.id));
+                    }
+
+                    break;
+                }
+                else
+                if (ve.GetMainDataObject() is AdminShell.Identifiable)
+                {
+                    // a Identifiable will terminate the list of keys
+                    var data = ve.GetMainDataObject() as AdminShell.Identifiable;
+                    if (data != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                data.GetElementName(), true, data.identification.idType, data.identification.id));
+                    break;
+                }
+                else
+                if (ve.GetMainDataObject() is AdminShell.Referable)
+                {
+                    // add a key and go up ..
+                    var data = ve.GetMainDataObject() as AdminShell.Referable;
+                    if (data != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(data.GetElementName(), true, "IdShort", data.idShort));
+                }
+                else
+                // uups!
+                { }
+                // need to go up
+                ve = ve.Parent;
+            }
+
+            return res;
+        }
+
         private bool PrepareResult()
         {
             // access
@@ -133,52 +204,9 @@ namespace AasxPackageExplorer
                 var fullFilter = ApplyFullFilterString(theFilter);
                 if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
                     return false;
+
                 // ok, prepare list of keys
-                this.ResultKeys = new AdminShell.KeyList();
-                var de = si;
-                while (de != null)
-                {
-                    if (de is VisualElementSubmodelRef)
-                    {
-                        // import special case, as Submodel ref is important part of the chain!
-                        var elem = de as VisualElementSubmodelRef;
-                        if (elem.theSubmodel != null)
-                            this.ResultKeys.Insert(
-                                0,
-                                AdminShell.Key.CreateNew(
-                                    elem.theSubmodel.GetElementName(), true,
-                                    elem.theSubmodel.identification.idType,
-                                    elem.theSubmodel.identification.id));
-                        break;
-                    }
-                    else
-                    if (de.GetMainDataObject() is AdminShell.Identifiable)
-                    {
-                        // a Identifiable will terminate the list of keys
-                        var data = de.GetMainDataObject() as AdminShell.Identifiable;
-                        if (data != null)
-                            this.ResultKeys.Insert(
-                                0,
-                                AdminShell.Key.CreateNew(
-                                    data.GetElementName(), true, data.identification.idType, data.identification.id));
-                        break;
-                    }
-                    else
-                    if (de.GetMainDataObject() is AdminShell.Referable)
-                    {
-                        // add a key and go up ..
-                        var data = de.GetMainDataObject() as AdminShell.Referable;
-                        if (data != null)
-                            this.ResultKeys.Insert(
-                                0,
-                                AdminShell.Key.CreateNew(data.GetElementName(), true, "IdShort", data.idShort));
-                    }
-                    else
-                    // uups!
-                    { }
-                    // need to go up
-                    de = de.Parent;
-                }
+                this.ResultKeys = BuildKeyListToTop(si);
                 return true;
             }
 
@@ -193,6 +221,25 @@ namespace AasxPackageExplorer
                 this.ResultKeys = new AdminShell.KeyList();
                 this.ResultKeys.AddRange(smref.Keys);
                 return true;
+            }
+
+            if (si is VisualElementPluginExtension vepe)
+            {
+                // get main data object of the parent of the plug in ..
+                var parentMdo = vepe.Parent.GetMainDataObject();
+                if (parentMdo != null)
+                {
+                    // safe to return a list for the parent ..
+                    // (include AAS, as this is important to plug-ins)
+                    this.ResultKeys = BuildKeyListToTop(si, includeAas: true);
+
+                    // .. enriched by a last element
+                    this.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
+                        AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag));
+
+                    // ok
+                    return true;
+                }
             }
 
             // uups

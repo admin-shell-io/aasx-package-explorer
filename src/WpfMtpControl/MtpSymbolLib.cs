@@ -109,10 +109,10 @@ namespace WpfMtpControl
             this.symbolData = clonedCanvas;
 
             // find named nozzles and remove artifacts!
-            this.NozzlePos = UIElementHelper.FindIndexedTags(clonedCanvas, "Nozzle", extractShapes: true);
+            this.NozzlePos = UIElementHelper.FindNozzlesViaTags(clonedCanvas, "Nozzle", extractShapes: true);
 
             // find label positions and remove artifacts!
-            this.LabelPos = UIElementHelper.FindIndexedTags(clonedCanvas, "Label", extractShapes: true);
+            this.LabelPos = UIElementHelper.FindNozzlesViaTags(clonedCanvas, "Label", extractShapes: true);
         }
     }
 

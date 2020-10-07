@@ -266,6 +266,11 @@ namespace AdminShellNS
                 return r[0];
             }
 
+            public Identification ToId()
+            {
+                return new Identification(this);
+            }
+
             public string ToString(int format = 0)
             {
                 if (format == 1)
@@ -3814,7 +3819,7 @@ namespace AdminShellNS
             }
 
 
-            public Referable FindReferableByReference(Reference rf, int keyIndex = 0)
+            public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
                 // first index needs to exist ..
                 if (rf == null || keyIndex >= rf.Count)
@@ -3823,12 +3828,67 @@ namespace AdminShellNS
                 // which type?
                 var firstType = rf[keyIndex].type.Trim().ToLower();
                 var firstIdentification = new Identification(rf[keyIndex].idType, rf[keyIndex].value);
+                AdministrationShell aasToFollow = null;
 
                 if (firstType == Key.AAS.Trim().ToLower())
-                    return this.FindAAS(firstIdentification);
+                {
+                    // search aas
+                    var aas = this.FindAAS(firstIdentification);
+
+                    // not found or already at end with our search?
+                    if (aas == null || keyIndex >= rf.Count - 1)
+                        return aas;
+
+                    // follow up
+                    aasToFollow = aas;
+                }
 
                 if (firstType == Key.Asset.Trim().ToLower())
-                    return this.FindAsset(firstIdentification);
+                {
+                    // search asset
+                    var asset = this.FindAsset(firstIdentification);
+
+                    // not found or already at end with our search?
+                    if (asset == null || keyIndex >= rf.Count - 1)
+                        return exactMatch ? null : asset;
+
+                    // try find aas for it
+                    var aas = this.FindAllAAS((a) =>
+                    {
+                        return a?.assetRef?.Matches(asset.identification) == true;
+                    }).FirstOrDefault();
+                    if (aas == null)
+                        return exactMatch ? null : asset;
+
+                    // follow up
+                    aasToFollow = aas;
+                }
+
+                // try
+                if (aasToFollow != null)
+                {
+                    // search different entities
+                    if (rf[keyIndex + 1].type.Trim().ToLower() == Key.Submodel.ToLower()
+                        || rf[keyIndex + 1].type.Trim().ToLower() == Key.SubmodelRef.ToLower())
+                    {
+                        // ok, search SubmodelRef
+                        var smref = aasToFollow.FindSubmodelRef(rf[keyIndex + 1].ToId());
+                        if (smref == null)
+                            return exactMatch ? null : aasToFollow;
+
+                        // validate matching submodel
+                        var sm = this.FindSubmodel(smref);
+                        if (sm == null)
+                            return exactMatch ? null : aasToFollow;
+
+                        // at our end?
+                        if (keyIndex >= rf.Count - 2)
+                            return sm;
+
+                        // go inside
+                        return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 2);
+                    }
+                }
 
                 if (firstType == Key.ConceptDescription.Trim().ToLower())
                     return this.FindConceptDescription(firstIdentification);
@@ -5580,8 +5640,8 @@ namespace AdminShellNS
                 return (s);
             }
 
-            [XmlIgnore]
             [JsonIgnore]
+            [XmlIgnore]
             public SubmodelElementWrapperCollection SmeForWrite
             {
                 get

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using AasxIntegrationBase;
 using Aml.Engine.CAEX;
 using WpfMtpControl.DataSources;
 
@@ -156,7 +157,10 @@ namespace WpfMtpControl
             return res;
         }
 
-        public static void CreateDataSources(IMtpDataSourceFactoryOpcUa dataSourceFactory, CAEXFileType aml)
+        public static void CreateDataSources(
+            IMtpDataSourceFactoryOpcUa dataSourceFactory,
+            MtpDataSourceOpcUaPreLoadInfo preLoadInfo,
+            CAEXFileType aml)
         {
             // access
             if (dataSourceFactory == null || aml == null)
@@ -170,14 +174,28 @@ namespace WpfMtpControl
                             if (ie3.RefBaseSystemUnitPath.Trim() == "MTPSUCLib/CommunicationSet/SourceList")
                                 foreach (var server in ie3.InternalElement)     // now on server
                                 {
-                                    // check if server
+                                    // check if server valid
                                     if (server.RefBaseSystemUnitPath.Trim() !=
                                         "MTPCommunicationSUCLib/ServerAssembly/OPCUAServer")
+                                        continue;
+                                    if (!server.Name.HasContent())
                                         continue;
 
                                     // get attributes
                                     var ep = FindAttributeValueByName(server.Attribute, "Endpoint");
-                                    if (ep == null || ep.Trim().Length < 1)
+
+                                    // mapping??
+                                    if (preLoadInfo?.EndpointMapping != null)
+                                        foreach (var epm in preLoadInfo.EndpointMapping)
+                                            if (epm?.IsValid == true &&
+                                                (server.Name.Trim() == epm.ForName?.Trim()
+                                                 || server.ID.Trim() == epm.ForId?.Trim()))
+                                            {
+                                                ep = epm.NewEndpoint?.Trim();
+                                            }
+
+                                    // check endpoint
+                                    if (!ep.HasContent())
                                         continue;
 
                                     // make server
@@ -188,7 +206,7 @@ namespace WpfMtpControl
                                     // go into items
                                     foreach (var item in server.ExternalInterface)
                                     {
-                                        // check fo item
+                                        // check to item
                                         // TODO (MIHO, 2020-08-06): spec/example files seem not to be in a final state
                                         // check for the final role/class names to be used
                                         if (!item.RefBaseClassPath.Trim().Contains("OPCUAItem"))
@@ -198,6 +216,15 @@ namespace WpfMtpControl
                                         var id = FindAttributeValueByName(item.Attribute, "Identifier");
                                         var ns = FindAttributeValueByName(item.Attribute, "Namespace");
                                         var ac = FindAttributeValueByName(item.Attribute, "Access");
+
+                                        // potential renaming?
+                                        if (preLoadInfo?.IdentifierRenaming != null)
+                                            foreach (var ren in preLoadInfo.IdentifierRenaming)
+                                                id = ren.DoReplacement(id);
+
+                                        if (preLoadInfo?.NamespaceRenaming != null)
+                                            foreach (var ren in preLoadInfo.NamespaceRenaming)
+                                                ns = ren.DoReplacement(ns);
 
                                         // create
                                         // ReSharper disable once UnusedVariable

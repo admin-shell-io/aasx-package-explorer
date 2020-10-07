@@ -53,7 +53,7 @@
             <Label Grid.Row="2" Grid.Column="0" FontSize="6" Padding="0" Foreground="Gray">Value</Label>
             <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" FontSize="6" Padding="0" Foreground="White" Content="{Binding Path=ValueUnitText, Mode=OneWay}"/>
             <Viewbox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
-                <TextBlock FontSize="4" Padding="0" Foreground="White" TextWrapping="WrapWithOverflow" Text="{Binding Path=Value, Mode=OneWay}"/>
+                <TextBlock FontSize="4" Padding="0" Foreground="White" TextWrapping="WrapWithOverflow" Text="{Binding Path=ValueText, Mode=OneWay}"/>
             </Viewbox>
             <!-- ReSharper disable once Xaml.MissingGridIndex -->
             <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" Margin="0,1,0,1" Height="4" Value="{Binding Path=ValuePercent, Mode=OneWay}"/>

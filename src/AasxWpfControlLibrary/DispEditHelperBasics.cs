@@ -1136,10 +1136,13 @@ namespace AasxPackageExplorer
             gc.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
-            // 5 buttons behind it
-            gc = new ColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
+            // 5 .. buttons behind it
+            for (int i = 0; i < 3; i++)
+            {
+                gc = new ColumnDefinition();
+                gc.Width = new GridLength(1.0, GridUnitType.Auto);
+                g.ColumnDefinitions.Add(gc);
+            }
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
@@ -1172,7 +1175,7 @@ namespace AasxPackageExplorer
                 var g2 = AddSmallGrid(1, 5 + presetNo, colDescs.ToArray());
                 Grid.SetRow(g2, 0);
                 Grid.SetColumn(g2, 1);
-                Grid.SetColumnSpan(g2, 5);
+                Grid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
 
                 if (addEclassIrdi)
@@ -1402,6 +1405,38 @@ namespace AasxPackageExplorer
                                 else
                                     return new ModifyRepo.LambdaActionRedrawEntity();
                             });
+
+                        // button [up]
+                        repo.RegisterControl(
+                            AddSmallButtonTo(
+                                g, 0 + i + rowOfs, 6,
+                                margin: new Thickness(2, 2, 2, 2),
+                                padding: new Thickness(5, 0, 5, 0),
+                                content: "\U0001f805"),
+                            (o) =>
+                            {
+                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
+                                if (takeOverLambdaAction != null)
+                                    return takeOverLambdaAction;
+                                else
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                            });
+
+                        // button [down]
+                        repo.RegisterControl(
+                            AddSmallButtonTo(
+                                g, 0 + i + rowOfs, 7,
+                                margin: new Thickness(2, 2, 2, 2),
+                                padding: new Thickness(5, 0, 5, 0),
+                                content: "\U0001f807"),
+                            (o) =>
+                            {
+                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
+                                if (takeOverLambdaAction != null)
+                                    return takeOverLambdaAction;
+                                else
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                            });
                     }
 
             // in total
@@ -1465,7 +1500,7 @@ namespace AasxPackageExplorer
             if (list == null || list.Count < 1 || entity == null)
                 return;
             int ndx = list.IndexOf(existing);
-            if (ndx < 0 || ndx >= list.Count - 1)
+            if (ndx < 0 || ndx > list.Count - 1)
                 return;
             list.Insert(ndx, entity);
         }

@@ -26,7 +26,11 @@ namespace AasxPredefinedConcepts
                 CD_SourceList,
                 CD_SourceOpcUaServer,
                 CD_Endpoint,
-                CD_MtpFile;
+                CD_MtpFile,
+                CD_IdentifierRenaming,
+                CD_NamespaceRenaming,
+                CD_RenamingOldText,
+                CD_RenamingNewText;
 
             public ModuleTypePackage(AasxDefinitionBase bs)
             {
@@ -70,6 +74,29 @@ namespace AasxPredefinedConcepts
                     "Specifies a File, which contains MTP information in MTP/ AutmationML format." +
                     "File may be zipped.");
 
+                CD_IdentifierRenaming = CreateSparseConceptDescription("en", "IRI",
+                    "IdentifierRenaming",
+                    "http://www.admin-shell.io/mtp/v1/New/IdentifierRenaming",
+                    "Specifies a renaming of OPC UA identifiers for nodes. Designates a SubmodelElementCollection " +
+                    "containing two Properties for OldText and NewText for string replacement.");
+
+                CD_NamespaceRenaming = CreateSparseConceptDescription("en", "IRI",
+                    "NamespaceRenaming",
+                    "http://www.admin-shell.io/mtp/v1/New/NamespaceRenaming",
+                    "Specifies a renaming of OPC UA namespaces for nodes. Designates a SubmodelElementCollection " +
+                    "containing two Properties for OldText and NewText for string replacement.");
+
+                CD_RenamingOldText = CreateSparseConceptDescription("en", "IRI",
+                    "OldText",
+                    "http://www.admin-shell.io/mtp/v1/New/RenamingOldText",
+                    "Within a renaming of OPC UA identifiers or namespaces, designates the text which shall be " +
+                    "replaced.");
+
+                CD_RenamingNewText = CreateSparseConceptDescription("en", "IRI",
+                    "NewText",
+                    "http://www.admin-shell.io/mtp/v1/New/RenamingNewText",
+                    "Within a renaming of OPC UA identifiers or namespaces, designates the new text, which shall be " +
+                    "substituted.");
             }
         }
     }

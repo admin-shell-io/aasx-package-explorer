@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Mtp.DynamicInstances.MtpViewBinValve"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mtp.DynamicInstances"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="100">
+    <Border Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" CornerRadius="4">
+        <Grid x:Name="viewGrid" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+    </Border>
+</UserControl>

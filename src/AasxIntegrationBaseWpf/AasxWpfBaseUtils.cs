@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,9 +98,33 @@ namespace AasxIntegrationBase
             return null;
         }
 
+        public static IEnumerable<T> LogicalTreeFindAllChildsWithRegexTag<T>
+            (DependencyObject parent, string childTagPattern)
+            where T : DependencyObject
+        {
+            // Confirm parent and childName are valid.
+            if (parent == null)
+                yield break;
 
+            // loop
+            foreach (var child in LogicalTreeHelper.GetChildren(parent))
+            {
+                // directly found?
+                var fe = child as FrameworkElement;
 
+                // check, if valid
+                if (child is T && fe != null && fe.Tag is string tagSt && tagSt.HasContent() &&
+                    (childTagPattern == null || Regex.IsMatch(tagSt, childTagPattern)))
+                {
+                    // if the child's name is of the request name
+                    yield return (T)child;
+                }
 
+                // try recursion
+                foreach (var x in LogicalTreeFindAllChildsWithRegexTag<T>(child as DependencyObject, childTagPattern))
+                    yield return x;
+            }
+        }
 
         public static BitmapImage LoadBitmapImageFromPackage(AdminShellPackageEnv package, string path)
         {

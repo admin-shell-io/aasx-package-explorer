@@ -22,6 +22,7 @@ namespace WpfMtpControl
         ErrorMonitoredItem = 0x16,
         ErrorAddSubscription = 0x17,
         ErrorRunning = 0x18,
+        ErrorReadConfigFile = 0x19,
         ErrorNoKeepAlive = 0x30,
         ErrorInvalidCommandLine = 0x100,
         Running = 0x1000,
@@ -57,6 +58,7 @@ namespace WpfMtpControl
         {
             // start server as a worker (will start in the background)
             // ReSharper disable once LocalVariableHidesMember
+            // ReSharper disable EmptyGeneralCatchClause
             var worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += (s1, e1) =>
@@ -78,7 +80,6 @@ namespace WpfMtpControl
                 }
                 catch
                 {
-                    // ignored
                 }
             };
             worker.RunWorkerCompleted += (s1, e1) =>
@@ -86,6 +87,7 @@ namespace WpfMtpControl
                 ;
             };
             worker.RunWorkerAsync();
+            // ReSharper enable EmptyGeneralCatchClause
         }
 
         public void Cancel()
@@ -125,7 +127,16 @@ namespace WpfMtpControl
             };
 
             // load the application configuration.
-            ApplicationConfiguration config = await application.LoadApplicationConfiguration(false);
+            ApplicationConfiguration config = null;
+            try
+            {
+                config = await application.LoadApplicationConfiguration(false);
+            }
+            catch
+            {
+                exitCode = AasOpcUaClientStatus.ErrorReadConfigFile;
+                return;
+            }
 
             // check the application certificate.
             bool haveAppCertificate = await application.CheckApplicationInstanceCertificate(false, 0);

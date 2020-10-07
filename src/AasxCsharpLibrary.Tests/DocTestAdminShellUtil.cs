@@ -54,6 +54,12 @@ namespace AdminShellNS.Tests
         {
             Assert.IsFalse(AdminShellUtil.HasWhitespace("aabb"));
         }
+
+        [Test]
+        public void AtLine59AndColumn12()
+        {
+            Assert.IsTrue(AdminShellUtil.ComplyIdShort(""));
+        }
     }
 }
 

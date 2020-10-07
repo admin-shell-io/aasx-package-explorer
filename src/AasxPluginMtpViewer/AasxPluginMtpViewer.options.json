@@ -35,5 +35,12 @@
       "SymbolIntermediate": null,
       "Comment": "V003,45fd1be7-d9fe-426a-aec7-ca16a09cb64b"
     }
-  ]
+  ],
+  "VisuOptions": {
+    "Background": "#707070",
+    "StateColorActive": "#2020ff",
+    "StateColorNonActive": "#202020",
+    "StateColorForward": "#2020ff",
+    "StateColorReverse": "#20ff20"
+  }
 }

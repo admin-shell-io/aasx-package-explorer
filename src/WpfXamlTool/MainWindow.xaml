@@ -1,0 +1,117 @@
+﻿<Window x:Class="WpfXamlTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfXamlTool"
+        mc:Ignorable="d"
+        Title="WPF XAML Tool for effective XAML snippet creation" Height="450" Width="800" Loaded="Window_Loaded"
+        DragEnter="Window_DragEnter" Drop="Window_Drop">
+    <Grid Background="#303030">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" MinHeight="200"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="1*" MaxHeight="100"/>
+        </Grid.RowDefinitions>
+
+        <!-- Upper half of main window -->
+        <Grid Grid.Row="0" Grid.Column="0">
+
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*" MaxWidth="370"/>
+            </Grid.ColumnDefinitions>
+
+            <Viewbox x:Name="ViewboxDisplay" Grid.Column="0" Margin="20" Stretch="Uniform">
+
+                <Border x:Name="BorderContent" BorderThickness="1" CornerRadius="3" MinHeight="30" MinWidth="30">
+                    <Border.BorderBrush>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Rectangle StrokeDashArray="4 2" Stroke="Gray" StrokeThickness="1"
+                      Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                      Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Border.BorderBrush>
+
+                </Border>
+
+            </Viewbox>
+
+            <GridSplitter HorizontalAlignment="Right" 
+                      VerticalAlignment="Stretch" 
+                      Grid.Column="1" ResizeBehavior="PreviousAndNext"
+                      Grid.Row="0"
+                      Width="8" Background="#FFBCBCBC"/>
+
+            <StackPanel Grid.Column="2" Orientation="Vertical">
+                
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="ButtonPreset0" Content="Preset 0" Margin="4" Click="Button_Click"/>
+                    <Button x:Name="ButtonPreset1" Content="Preset 1" Margin="4" Click="Button_Click"/>
+                </StackPanel>
+                
+                <Button x:Name="ButtonFixNames" Content="Fix Names" Margin="4" Click="Button_Click"/>
+                <Button x:Name="ButtonFixRotTrans" Content="Fix RotateTransform" Margin="4" Click="Button_Click"/>
+                <Button x:Name="ButtonDisplay" Content="Display" Margin="4" Click="Button_Click"/>
+                <CheckBox x:Name="CheckBoxLiveDisplay" Content="Live display (try+update by timer)" 
+                          Margin="4" Foreground="White"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="-50" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="-10" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="-5" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="-1" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="-.5" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="-.1" Margin="4" Click="ButtonValue_Click"/>
+                    <Label Content=" + " Foreground="Gray"/>
+                    <Button Content="+.1" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="+.5" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="+1" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="+5" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="+10" Margin="4" Click="ButtonValue_Click"/>
+                    <Button Content="+50" Margin="4" Click="ButtonValue_Click"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="ButtonTagFill" Content="Tag Fill" Margin="4" Click="Button_Click"/>
+                    <Button x:Name="ButtonTagStroke" Content="Tag Stroke" Margin="4" Click="Button_Click"/>
+                    <Button x:Name="ButtonTagTwoNozzleHoriz" Content="2 nozzle horiz" Margin="4" Click="Button_Click"/>
+                    <Button x:Name="ButtonTagTwoNozzleVert" Content="2 nozzle vert" Margin="4" Click="Button_Click"/>
+                </StackPanel>
+                
+            </StackPanel>
+
+        </Grid>
+
+        <GridSplitter HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Bottom" 
+                      Grid.Row="1" ResizeBehavior="PreviousAndNext"
+                      Grid.Column="0"
+                      Height="8" Background="#FFBCBCBC"/>
+
+        <DockPanel Grid.Row="2" >
+            <Button DockPanel.Dock="Right" x:Name="ButtonSave" Content="Save.." Margin="2" Click="Button_Click"/>
+            <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="3" Margin="2">
+                <TextBlock x:Name="TextBlockFilename" Foreground="Gray"/>
+            </Border>
+        </DockPanel>
+        
+        <avalonEdit:TextEditor Grid.Row="3"
+            xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+            Name="textEdit"
+            SyntaxHighlighting="XML"
+            FontFamily="Consolas"
+            FontSize="10pt"/>
+
+        <TextBox x:Name="TextBoxInfo" Grid.Row="4" IsReadOnly="True" IsReadOnlyCaretVisible="False"
+                 Background="#303030" Foreground="White" TextWrapping="WrapWithOverflow"/>
+
+    </Grid>
+</Window>

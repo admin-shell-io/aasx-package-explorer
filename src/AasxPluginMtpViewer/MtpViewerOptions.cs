@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxPredefinedConcepts;
 using AdminShellNS;
+using WpfMtpControl;
 
 namespace AasxPluginMtpViewer
 {
@@ -21,6 +22,8 @@ namespace AasxPluginMtpViewer
         public List<MtpViewerOptionsRecord> Records = new List<MtpViewerOptionsRecord>();
 
         public WpfMtpControl.MtpSymbolMapRecordList SymbolMappings = new WpfMtpControl.MtpSymbolMapRecordList();
+
+        public MtpVisuOptions VisuOptions = new MtpVisuOptions();
 
         /// <summary>
         /// Create a set of minimal options

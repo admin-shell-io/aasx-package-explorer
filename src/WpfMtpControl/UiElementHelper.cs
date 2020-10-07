@@ -77,7 +77,7 @@ namespace WpfMtpControl
                 }
         }
 
-        private static void FindIndexedTagsIntern(
+        private static void FindNozzlesViaTagsIntern(
             System.Windows.DependencyObject parent, Dictionary<int, Point> namedNozzles,
             string matchHead, bool extractShapes = false)
         {
@@ -119,7 +119,7 @@ namespace WpfMtpControl
                 }
 
                 // recurse?
-                FindIndexedTagsIntern(child, namedNozzles, matchHead, extractShapes);
+                FindNozzlesViaTagsIntern(child, namedNozzles, matchHead, extractShapes);
             }
 
             if (extractShapes && parent is Canvas)
@@ -128,12 +128,12 @@ namespace WpfMtpControl
 
         }
 
-        public static Point[] FindIndexedTags(
+        public static Point[] FindNozzlesViaTags(
             System.Windows.DependencyObject parent, string matchHead, bool extractShapes = false)
         {
             // find named nozzles
             var namedNozzles = new Dictionary<int, Point>();
-            UIElementHelper.FindIndexedTagsIntern(parent, namedNozzles, matchHead, extractShapes: extractShapes);
+            UIElementHelper.FindNozzlesViaTagsIntern(parent, namedNozzles, matchHead, extractShapes: extractShapes);
 
             // integrity check
             for (int i = 0; i < namedNozzles.Count; i++)
@@ -403,6 +403,8 @@ namespace WpfMtpControl
         public static TextBlock CreateStickyLabel(FontSettings fontSettings, string text, double padding = 2.0)
         {
             var size = fontSettings.MeasureString(text);
+            // TODO (MICHA, 2020-10-04): check if font is set correctly ..
+            // TODO (MICHA, 2020-10-04): seems, that for Textblock the alignement DOES NOT WORK!
             var tb = new TextBlock();
             tb.Height = size.Height + 2 * padding;
             tb.Width = size.Width + 2 * padding;

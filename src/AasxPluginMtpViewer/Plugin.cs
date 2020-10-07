@@ -165,7 +165,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // call
                 var resobj = AasxPluginMtpViewer.WpfMtpControlWrapper.FillWithWpfControls(args?[0], args?[1],
-                    this.options, this.eventStack, args?[2]);
+                    this.options, this.eventStack, this.Log, args?[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

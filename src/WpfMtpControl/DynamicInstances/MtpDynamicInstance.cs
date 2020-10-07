@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
+using AasxIntegrationBase;
 using Aml.Engine.CAEX;
 using WpfMtpControl;
 
@@ -51,8 +55,51 @@ namespace Mtp.DynamicInstances
     public class MtpDynamicInstanceBase : ObservableObject
     {
         //
-        // Important Methods
+        // Important Members, Methods
         //
+
+        /// <summary>
+        /// An overloaded object might request drawing the MTP symbol on top of the dynamic instance.
+        /// </summary>
+        public bool DrawSymbolAsWell;
+
+        /// <summary>
+        /// If MTP symbol is drawn, hold the Canvas object of it
+        /// </summary>
+        public FrameworkElement SymbolElement;
+
+        /// <summary>
+        /// Called, if the state of the object has been changed or firstly initialized
+        /// </summary>
+        public virtual void RedrawSymbol(MtpVisuOptions visuOptions = null)
+        {
+        }
+
+        /// <summary>
+        /// Internal flag for redrawing
+        /// </summary>
+        private bool doRedrawOnTick = false;
+
+        /// <summary>
+        /// Flag for this instance to demand a redraw next time b ythe UI thread.
+        /// </summary>
+        /// <returns></returns>
+        public void DemandRedrawOnTick()
+        {
+            this.doRedrawOnTick = true;
+        }
+
+        /// <summary>
+        /// Will be called by the UI thread each 100ms
+        /// </summary>
+        public virtual void Tick(MtpVisuOptions visuOptions = null)
+        {
+            if (this.doRedrawOnTick)
+            {
+                this.doRedrawOnTick = false;
+                this.RedrawSymbol(visuOptions);
+            }
+        }
 
         public virtual void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
         {
@@ -61,6 +108,33 @@ namespace Mtp.DynamicInstances
         public virtual UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
         {
             return null;
+        }
+
+        //
+        // Symbol manipulation
+        //
+
+        public void SymbolSetStateColor(Brush stateColor)
+        {
+            // access
+            if (this.SymbolElement == null)
+                return;
+
+            // fill
+            foreach (var c in AasxWpfBaseUtils.LogicalTreeFindAllChildsWithRegexTag<System.Windows.Shapes.Shape>(
+                this.SymbolElement, "StateToFill"))
+                if (c != null)
+                {
+                    c.Fill = stateColor;
+                }
+
+            // stroke
+            foreach (var c in AasxWpfBaseUtils.LogicalTreeFindAllChildsWithRegexTag<System.Windows.Shapes.Shape>(
+                this.SymbolElement, "StateToStroke"))
+                if (c != null)
+                {
+                    c.Stroke = stateColor;
+                }
         }
 
         //
@@ -222,8 +296,13 @@ namespace Mtp.DynamicInstances
         {
             get
             {
-                if (wqc < 100) return Brushes.Red;
-                if (wqc < 255) return Brushes.DarkOrange;
+                if (wqc == 96) return Brushes.DarkBlue; // Simulation
+                if (wqc == 128) return Brushes.Green; // Good
+                if (wqc == 164) return Brushes.Yellow; // Maintenance
+
+                if (wqc <= 40) return Brushes.Red; // Bad
+                if (wqc < 128) return Brushes.DarkOrange; // Uncertain
+                if (wqc < 255) return Brushes.Green; // also good?
                 return Brushes.Transparent;
             }
         }
@@ -237,7 +316,11 @@ namespace Mtp.DynamicInstances
         {
             // ReSharper disable once UnusedMemberHierarchy.Global
             get { return valuex; }
-            set { valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent"); }
+            set
+            {
+                valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent");
+                RaisePropertyChanged("ValueText");
+            }
         }
         public double ValuePercent
         {
@@ -245,6 +328,20 @@ namespace Mtp.DynamicInstances
             {
                 return (valuex - valueScaleLowLimit)
                   / Math.Max(0.001, ValueScaleHighLimit - valueScaleLowLimit) * 100.0;
+            }
+        }
+        public string ValueText
+        {
+            get
+            {
+                var st = Value.ToString(CultureInfo.InvariantCulture);
+                // check the number of digits / decimal places
+                var dpi = st.IndexOf('.');
+                if (st.Length >= 8 && st.Length - dpi > 4)
+                {
+                    st = st.Substring(0, dpi + 4);
+                }
+                return st;
             }
         }
 
@@ -287,7 +384,16 @@ namespace Mtp.DynamicInstances
                 return;
             this.TagName = "" + Name;
 
-            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V", (ct, o) => { this.Value = (double)o; });
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "V",
+                (ct, o) => { this.Value = (double)o; });
+            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+                (ct, o) => { this.WorstQualityCode = (byte)o; });
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMin",
+                (ct, o) => { this.ValueScaleLowLimit = (double)o; });
+            subscriber.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VSclMax",
+                (ct, o) => { this.ValueScaleHighLimit = (double)o; });
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+                (ct, o) => { this.ValueUnit = (int)o; });
         }
 
         public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
@@ -456,7 +562,413 @@ namespace Mtp.DynamicInstances
 
         public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
         {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VAHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueHigh = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueHigh = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueHigh = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VALLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueLow = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveLow = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VWLLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueLow = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveLow = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VTLLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueLow = (double)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveLow = (bool)o; });
+
+        }
+
+        public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
+        {
+            UserControl c = null;
+            if (mtpWidth <= 50 || mtpHeight <= 40)
+            {
+                var bvt = new MtpViewAnaMonTiny();
+                c = bvt;
+                c.Width = 80;
+                c.Height = 30;
+                c.DataContext = this;
+                bvt.ButtonGo.Click += ButtonGo_Click;
+            }
+            else
+            {
+                var bvl = new MtpViewAnaViewLarge();
+                c = bvl;
+                c.Width = 130;
+                c.Height = 96;
+                c.DataContext = this;
+                bvl.ButtonGo.Click += ButtonGo_Click;
+            }
+            Demo(2);
+            return c;
+        }
+
+        public override bool Demo(int mode)
+        {
+            // most functionality is already in base class
+            base.Demo(mode);
+
+            // often have the same limits
+            this.Band[BandTolerance] = new LimitBand(320, 380, true, true, true, true);
+            this.Band[BandWarning] = new LimitBand(200, 600, true, true, true, true);
+            this.Band[BandAlarm] = new LimitBand(100, 800, true, true, true, true);
+
+            // some more tweaks?
+            if (mode == 1)
+            {
+                return true;
+            }
+            if (mode == 2)
+            {
+                return true;
+            }
+            if (mode == 3)
+            {
+                return true;
+            }
+            if (mode == 4)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    public class MtpDiDIntView : MtpDiIndicatorElement
+    {
+        // Value
+        private int valuex = 0;
+        public virtual int Value
+        {
+            // ReSharper disable once UnusedMemberHierarchy.Global
+            get { return valuex; }
+            set
+            {
+                valuex = value; RaisePropertyChanged("Value"); RaisePropertyChanged("ValuePercent");
+                RaisePropertyChanged("ValueText");
+            }
+        }
+        public double ValuePercent
+        {
+            get
+            {
+                return (valuex - valueScaleLowLimit)
+                  / Math.Max(0.001, ValueScaleHighLimit - valueScaleLowLimit) * 100.0;
+            }
+        }
+        public string ValueText
+        {
+            get
+            {
+                var st = Value.ToString(CultureInfo.InvariantCulture);
+                return st;
+            }
+        }
+
+        // ValueScaleLowLimit
+        private int valueScaleLowLimit = 0;
+        public int ValueScaleLowLimit
+        {
+            get { return valueScaleLowLimit; }
+            set
+            {
+                valueScaleLowLimit = value; RaisePropertyChanged("ValueScaleLowLimit");
+                RaisePropertyChanged("ValuePercent");
+            }
+        }
+
+        // ValueScaleHighLimit
+        private int valueScaleHighLimit = 0;
+        public int ValueScaleHighLimit
+        {
+            get { return valueScaleHighLimit; }
+            set
+            {
+                valueScaleHighLimit = value; RaisePropertyChanged("ValueScaleHighLimit");
+                RaisePropertyChanged("ValuePercent");
+            }
+        }
+
+        // ValueUnit
+        private int valueUnit = 0;
+        public int ValueUnit
+        {
+            get { return valueUnit; }
+            set { valueUnit = value; RaisePropertyChanged("ValueUnit"); RaisePropertyChanged("ValueUnitText"); }
+        }
+        public string ValueUnitText { get { return this.FindUnitTextById(valueUnit); } }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            if (ie == null || subscriber == null)
+                return;
             this.TagName = "" + Name;
+
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "V",
+                (ct, o) => { this.Value = (int)o; });
+            subscriber.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+                (ct, o) => { this.WorstQualityCode = (byte)o; });
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMin",
+                (ct, o) => { this.ValueScaleLowLimit = (int)o; });
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VSclMax",
+                (ct, o) => { this.ValueScaleHighLimit = (int)o; });
+            subscriber.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VUnit",
+                (ct, o) => { this.ValueUnit = (int)o; });
+        }
+
+        public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
+        {
+            UserControl c = null;
+            if (mtpWidth <= 50 || mtpHeight <= 40)
+            {
+                var bvt = new MtpViewAnaViewTiny();
+                c = bvt;
+                c.Width = 80;
+                c.Height = 30;
+                c.DataContext = this;
+                bvt.ButtonGo.Click += ButtonGo_Click;
+            }
+            else
+            {
+                var bvl = new MtpViewAnaViewLarge();
+                c = bvl;
+                c.Width = 130;
+                c.Height = 96;
+                c.DataContext = this;
+                bvl.ButtonGo.Click += ButtonGo_Click;
+            }
+            Demo(2);
+            return c;
+        }
+
+        public override bool Demo(int mode)
+        {
+            if (mode == 1)
+            {
+                TagDescription = "This is a very long description of everything and even more";
+                WorstQualityCode = 0xff;
+                Value = 345;
+                ValueUnit = 1001;
+                ValueScaleLowLimit = -23;
+                ValueScaleHighLimit = 960;
+                return true;
+            }
+            if (mode == 2)
+            {
+                TagDescription = "Another description";
+                WorstQualityCode = 0xa5;
+                Value = 23;
+                ValueUnit = 1001;
+                ValueScaleLowLimit = -23;
+                ValueScaleHighLimit = 960;
+                return true;
+            }
+            if (mode == 3)
+            {
+                TagDescription = "Another description";
+                WorstQualityCode = 0xa5;
+                Value = 390;
+                ValueUnit = 1001;
+                ValueScaleLowLimit = -23;
+                ValueScaleHighLimit = 960;
+                return true;
+            }
+            if (mode == 4)
+            {
+                TagDescription = "Former description";
+                WorstQualityCode = 0x5a;
+                Value = 720;
+                ValueUnit = 1002;
+                ValueScaleLowLimit = -23;
+                ValueScaleHighLimit = 960;
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public class MtpDiDIntMon : MtpDiDIntView
+    {
+        // Members
+        // basically 3 Limit Bands Tolerance, Warning, Alarm each with individual limit values and enables
+
+        public class LimitBand
+        {
+            public int LimitValueLow, LimitValueHigh;
+            public bool LimitEnableLow, LimitEnableHigh;
+            public bool LimitActiveLow, LimitActiveHigh;
+
+            public LimitBand() { }
+
+            public LimitBand(int LimitValueLow, int LimitValueHigh,
+                bool LimitEnableLow, bool LimitEnableHigh,
+                bool LimitActiveLow, bool LimitActiveHigh)
+            {
+                this.LimitValueLow = LimitValueLow;
+                this.LimitValueHigh = LimitValueHigh;
+                this.LimitEnableLow = LimitEnableLow;
+                this.LimitEnableHigh = LimitEnableHigh;
+                this.LimitActiveLow = LimitActiveLow;
+                this.LimitActiveHigh = LimitActiveHigh;
+            }
+
+            public bool EvalValueForLimitViolation(int value)
+            {
+                this.LimitActiveLow = this.LimitEnableLow && value < this.LimitValueLow;
+                this.LimitActiveHigh = this.LimitEnableHigh && value > this.LimitValueHigh;
+                return this.LimitActiveLow || this.LimitActiveHigh;
+            }
+        }
+
+        public const int BandNone = -1;
+        public const int BandTolerance = 0;
+        public const int BandWarning = 1;
+        public const int BandAlarm = 2;
+
+        public LimitBand[] Band = new LimitBand[] { new LimitBand(), new LimitBand(), new LimitBand() };
+
+        // concept of violatedBand
+
+        private int violatedBand = BandNone;
+        public int ViolatedBand { get { return violatedBand; } }
+
+        private string[] violatedBandText = new string[] { "TOL", "WARN", "ALRM" };
+        public string ViolatedBandText
+        {
+            get
+            {
+                if (violatedBand < BandTolerance || violatedBand > BandAlarm)
+                    return "none";
+                return violatedBandText[violatedBand];
+            }
+        }
+
+        private Brush[] violatedBandBrush = new Brush[] { Brushes.DarkOrange, Brushes.OrangeRed, Brushes.Red };
+        public Brush ViolatedBandBrush
+        {
+            get
+            {
+                if (violatedBand < BandTolerance || violatedBand > BandAlarm)
+                    return Brushes.Transparent;
+                return violatedBandBrush[violatedBand];
+            }
+        }
+
+        // now: OVERIDE the getter/setter
+
+        public override int Value
+        {
+            get
+            {
+                return base.Value;
+            }
+            set
+            {
+                base.Value = value;
+
+                violatedBand = BandNone;
+                if (this.Band[BandTolerance].EvalValueForLimitViolation(value))
+                    violatedBand = BandTolerance;
+                if (this.Band[BandWarning].EvalValueForLimitViolation(value))
+                    violatedBand = BandWarning;
+                if (this.Band[BandAlarm].EvalValueForLimitViolation(value))
+                    violatedBand = BandAlarm;
+
+                RaisePropertyChanged("ViolatedBand");
+                RaisePropertyChanged("ViolatedBandText");
+                RaisePropertyChanged("ViolatedBandBrush");
+            }
+        }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VAHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueHigh = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VAHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueHigh = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableHigh = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTHLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueHigh = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTHAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveHigh = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VALLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitValueLow = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VALAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandAlarm].LimitActiveLow = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VWLLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitValueLow = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VWLAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandWarning].LimitActiveLow = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLEn",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitEnableLow = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VTLLim",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitValueLow = (int)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VTLAct",
+                (ct, o) => { if (this.Band?[BandAlarm] != null) this.Band[BandTolerance].LimitActiveLow = (bool)o; });
+
         }
 
         public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
@@ -636,6 +1148,16 @@ namespace Mtp.DynamicInstances
         public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
         {
             this.TagName = "" + Name;
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "V",
+                (ct, o) => { this.Value = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<byte>(ie.Attribute, "WQC",
+                (ct, o) => { this.WorstQualityCode = (byte)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState0",
+                (ct, o) => { this.ValState0 = (string)o; });
+            subscriber?.SubscribeToAmlIdRefWith<string>(ie.Attribute, "VState1",
+                (ct, o) => { this.ValState1 = (string)o; });
         }
 
         public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
@@ -687,10 +1209,165 @@ namespace Mtp.DynamicInstances
         }
     }
 
+    public class MtpDiBinMon : MtpDiBinView
+    {
+        public bool EnableFlutterRecog;
+        public double FlutterTimeInterval;
+        public int FlutterCounts;
+        public bool FlutterIsActive;
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutEn",
+                (ct, o) => { this.EnableFlutterRecog = (bool)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<double>(ie.Attribute, "VFlutTi",
+                (ct, o) => { this.FlutterTimeInterval = (double)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<int>(ie.Attribute, "VFlutCnt",
+                (ct, o) => { this.FlutterCounts = (int)o; });
+
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "VFlutAct",
+                (ct, o) => { this.FlutterIsActive = (bool)o; });
+        }
+    }
+
     public class MtpDiActiveElement : MtpDiIndicatorElement
     {
         // Note: now spec, yet
         // therefore not sure, what common elements are
+    }
+
+    public class MtpDiBinValve : MtpDiActiveElement
+    {
+        public bool Ctrl;
+
+        public MtpDiBinValve() : base()
+        {
+            this.DrawSymbolAsWell = true;
+        }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "Ctrl",
+                (ct, o) => { this.Ctrl = (bool)o; DemandRedrawOnTick(); });
+        }
+
+        public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
+        {
+            var c = new MtpViewBinValve();
+            c.Width = mtpWidth;
+            c.Height = mtpHeight;
+            c.DataContext = this;
+            return c;
+        }
+
+        public override void RedrawSymbol(MtpVisuOptions visuOptions = null)
+        {
+            // what color?
+            Brush color = null;
+            if (this.Ctrl)
+            {
+                color = (visuOptions?.StateColorActiveBrush != null)
+                    ? visuOptions.StateColorActiveBrush : Brushes.Red;
+            }
+            else
+            {
+                color = (visuOptions?.StateColorNonActiveBrush != null)
+                    ? visuOptions.StateColorNonActiveBrush : Brushes.Black;
+            }
+
+            // set
+            if (color != null)
+                this.SymbolSetStateColor(color);
+        }
+
+    }
+
+    public class MtpDiMonBinValve : MtpDiBinValve
+    {
+        // members only selected, a lot of "unnecessary" memebrs
+        public bool ErrorActiveStatic;
+        public bool ErrorActiveDynamic;
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call MtpDiBinValve
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonStatErr",
+                (ct, o) => { this.ErrorActiveStatic = (bool)o; });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "MonDynErr",
+                (ct, o) => { this.ErrorActiveDynamic = (bool)o; });
+        }
+
+    }
+
+    public class MtpDiBinDrive : MtpDiActiveElement
+    {
+        public bool ForwardCtrl;
+        public bool ReverseCtrl;
+
+        public MtpDiBinDrive() : base()
+        {
+            this.DrawSymbolAsWell = true;
+        }
+
+        public override void PopulateFromAml(string Name, InternalElementType ie, MtpDataSourceSubscriber subscriber)
+        {
+            // call AnaView
+            base.PopulateFromAml(Name, ie, subscriber);
+
+            // some more
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "FwdCtrl",
+                (ct, o) => { this.ForwardCtrl = (bool)o; DemandRedrawOnTick(); });
+            subscriber?.SubscribeToAmlIdRefWith<bool>(ie.Attribute, "RevCtrl",
+                (ct, o) => { this.ReverseCtrl = (bool)o; DemandRedrawOnTick(); });
+        }
+
+        public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
+        {
+            var c = new MtpViewBinDrive();
+            c.Width = mtpWidth;
+            c.Height = mtpHeight;
+            c.DataContext = this;
+            return c;
+        }
+
+        public override void RedrawSymbol(MtpVisuOptions visuOptions = null)
+        {
+            // what color?
+            Brush color = null;
+            if (this.ForwardCtrl && !this.ReverseCtrl)
+            {
+                color = (visuOptions?.StateColorForwardBrush != null)
+                    ? visuOptions.StateColorForwardBrush : Brushes.Blue;
+            }
+            else if (!this.ForwardCtrl && this.ReverseCtrl)
+            {
+                color = (visuOptions?.StateColorReverseBrush != null)
+                    ? visuOptions.StateColorReverseBrush : Brushes.Red;
+            }
+            else
+            {
+                color = (visuOptions?.StateColorNonActiveBrush != null)
+                    ? visuOptions.StateColorNonActiveBrush : Brushes.Black;
+            }
+
+            // set
+            if (color != null)
+                this.SymbolSetStateColor(color);
+        }
+
     }
 
     public class MtpDiPIDCntl : MtpDiActiveElement

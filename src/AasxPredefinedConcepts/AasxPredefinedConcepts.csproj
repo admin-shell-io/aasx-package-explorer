@@ -52,6 +52,8 @@
     <Compile Include="Convert\ConvertDocumentationHsuToSg2.cs" />
     <Compile Include="Convert\ConvertPredefinedConcepts.cs" />
     <Compile Include="Convert\ConvertTechnicalDataToFlat.cs" />
+    <Compile Include="DefinitionsPackageExplorer.cs" />
+    <Compile Include="DefinitionsImageMap.cs" />
     <Compile Include="DefinitionsMTP.cs" />
     <Compile Include="DefinitionsExperimental.cs" />
     <Compile Include="DefinitionsLanguages.cs" />

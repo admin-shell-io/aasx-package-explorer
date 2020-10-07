@@ -19,6 +19,7 @@ using System.Xml;
 using Aml.Engine.CAEX;
 using Mtp.DynamicInstances;
 using WpfMtpControl.DataSources;
+using static WpfMtpControl.MtpData;
 
 namespace WpfMtpControl
 {
@@ -34,6 +35,8 @@ namespace WpfMtpControl
         public delegate void MtpObjectDoubleClickHandler(MtpData.MtpBaseObject source);
         public event MtpObjectDoubleClickHandler MtpObjectDoubleClick;
 
+        public MtpVisuOptions VisuOptions = new MtpVisuOptions();
+
         //
         // Internal properties
         //
@@ -45,6 +48,11 @@ namespace WpfMtpControl
 
         private void Canvas_Loaded(object sender, RoutedEventArgs e)
         {
+            // Timer for loading
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dispatcherTimer.Start();
         }
 
         public UIElementHelper.FontSettings LabelFontSettings = new UIElementHelper.FontSettings(
@@ -135,7 +143,10 @@ namespace WpfMtpControl
             // rotation in degree, mathematically positive == anti clock wise
             var tg = new TransformGroup();
             tg.Children.Add(new RotateTransform(-rotation, center.X, center.Y));
-            tg.Children.Add(new ScaleTransform(scale, scale, 0.0 * center.X, 0.0 * center.Y));
+            tg.Children.Add(new ScaleTransform(scale, scale, center.X, center.Y));
+            // Note: the following was disabled by MIHO at same stage:
+            //// tg.Children.Add(new ScaleTransform(scale, scale, 0
+            //// .0 * center.X + contentObject.Width / 2, 0.0 * center.Y + contentObject.Height / 2));
             contentObject.RenderTransform = tg;
 
             // make such object
@@ -178,6 +189,9 @@ namespace WpfMtpControl
                 return;
             canvas.Children.Clear();
 
+            // prepare options correctly
+            this.VisuOptions?.Prepare();
+
             // for some tests, we need randomness
             var rnd = new Random();
 
@@ -188,6 +202,12 @@ namespace WpfMtpControl
                     return;
                 canvas.Width = pic.TotalSize.Width;
                 canvas.Height = pic.TotalSize.Height;
+
+                if (this.VisuOptions?.BackgroundBrush != null)
+                {
+                    canvas.Background = this.VisuOptions.BackgroundBrush;
+                    scrollViewerVisu.Background = this.VisuOptions.BackgroundBrush;
+                }
             }
 
             // assume, that the elements below are in a list
@@ -221,9 +241,34 @@ namespace WpfMtpControl
                 //
                 if (obj is MtpData.MtpVisualObject vo)
                 {
+                    // debug?
+                    if (obj.Name == "V001")
+                    {
+                        ;
+                    }
+
+                    // search
                     var symbol = vo?.visObj?.Symbol;
                     if (symbol?.SymbolData == null)
+                    {
+                        // make missing bounding box
+                        if (drawBoundingBoxes && vo.x.HasValue && vo.y.HasValue
+                            && vo.width.HasValue && vo.height.HasValue)
+                        {
+                            // box
+                            DrawToCanvasAtPositionSize(canvas, vo.x.Value, vo.y.Value, vo.width.Value,
+                                vo.height.Value, ConstructRect(Brushes.Red, 2.0));
+
+                            // label?
+                            var labeltb = UIElementHelper.CreateStickyLabel(this.LabelFontSettings, "" + vo.Name);
+                            UIElementHelper.DrawToCanvasAtPositionAligned(canvas,
+                                vo.x.Value + vo.width.Value / 2,
+                                vo.y.Value + vo.height.Value / 2,
+                                UIElementHelper.DrawToCanvasAlignment.Centered, labeltb);
+                        }
+
                         continue;
+                    }
 
                     // make a NEW content object to display & manipulate
                     var contentObject = symbol.SymbolData as Canvas;
@@ -233,15 +278,11 @@ namespace WpfMtpControl
                     contentObject = UIElementHelper.cloneElement(contentObject) as Canvas;
 
                     // delete not necessary artifacts in the XAML
-                    UIElementHelper.FindIndexedTags(contentObject, "Nozzle", extractShapes: true);
-                    UIElementHelper.FindIndexedTags(contentObject, "Label", extractShapes: true);
+                    UIElementHelper.FindNozzlesViaTags(contentObject, "Nozzle", extractShapes: true);
+                    UIElementHelper.FindNozzlesViaTags(contentObject, "Label", extractShapes: true);
 
                     // same logic for potential dynamic instance
                     var dynInstanceVO = vo.dynInstance?.CreateVisualObject(vo.width.Value, vo.height.Value);
-
-                    if (obj.Name == "V001")
-                    {
-                    }
 
                     //
                     // how to draw content?
@@ -256,138 +297,157 @@ namespace WpfMtpControl
                                 vo.height.Value, ConstructRect(Brushes.Violet, 1.0));
 
                         // draw it
-                        var vb = ConstructViewboxVO(dynInstanceVO, vo.rotation.Value);
+                        var vb = ConstructViewboxVO(dynInstanceVO, 0.0 /* vo.rotation.Value */);
                         vb.Stretch = Stretch.Uniform;
                         vb.Tag = vo;
                         DrawToCanvasAtPositionSize(canvas, vo.x.Value, vo.y.Value, vo.width.Value, vo.height.Value, vb);
                     }
-                    else
-                    if (vo.visObj != null && contentObject != null)
+
+                    if (vo.dynInstance == null || vo.dynInstance.DrawSymbolAsWell)
                     {
-                        // how to draw based on valid vis obj information                        
-                        if (vo.visObj.Placement == MtpSymbol.SymbolPlaceType.FitNozzles && vo.nozzlePoints.Count > 0
-                            && symbol.NozzlePos != null && symbol.NozzlePos.Length > 0)
+                        if (vo.visObj != null && contentObject != null)
                         {
-                            // magnetically snap in
-                            // COG of "surrounding" nozzles, and distance
-                            var npArr = vo.nozzlePoints.ToArray();
-                            var npCOG = UIElementHelper.ComputeCOG(npArr);
-                            var npRadius = UIElementHelper.ComputeRadiusForCenterPointer(npArr, npCOG.Value);
-
-                            // COG of content nozzles, and distance
-                            var contentCOG = UIElementHelper.ComputeCOG(symbol.NozzlePos);
-                            var contentRadius = UIElementHelper.ComputeRadiusForCenterPointer(
-                                                    symbol.NozzlePos, contentCOG.Value);
-
-                            // compute the delta between visual object's mid an its nozzle COG
-                            var contentCogToMid = new Point(
-                                contentCOG.Value.X - contentObject.Width / 2.0,
-                                contentCOG.Value.Y - contentObject.Height / 2.0);
-
-                            if (npArr == null || npCOG == null || npRadius == null
-                                || contentCOG == null || contentRadius == null)
-                                continue;
-
-                            // based on the radius and COG information, construct a start vector
-                            // FIX: radius could be 0!
-                            var start = new UIElementHelper.Transformation2D(
-                                (contentRadius.Value < 0.01) ? 1.0 : npRadius.Value / contentRadius.Value,
-                                vo.rotation.Value,
-                                npCOG.Value.X, npCOG.Value.Y
-                            );
-
-                            // disturb it?
-                            if (false)
-#pragma warning disable 162
-                            // ReSharper disable once HeuristicUnreachableCode
+                            // how to draw based on valid vis obj information                        
+                            if (vo.visObj.Placement == MtpSymbol.SymbolPlaceType.FitNozzles && vo.nozzlePoints.Count > 0
+                                && symbol.NozzlePos != null && symbol.NozzlePos.Length > 0)
                             {
+                                // magnetically snap in
+                                // COG of "surrounding" nozzles, and distance
+                                var npArr = vo.nozzlePoints.ToArray();
+                                var npCOG = UIElementHelper.ComputeCOG(npArr);
+                                var npRadius = UIElementHelper.ComputeRadiusForCenterPointer(npArr, npCOG.Value);
+
+                                // COG of content nozzles, and distance
+                                var contentCOG = UIElementHelper.ComputeCOG(symbol.NozzlePos);
+                                var contentRadius = UIElementHelper.ComputeRadiusForCenterPointer(
+                                                        symbol.NozzlePos, contentCOG.Value);
+
+                                // compute the delta between visual object's mid an its nozzle COG
+                                var contentCogToMid = new Point(
+                                    contentCOG.Value.X - contentObject.Width / 2.0,
+                                    contentCOG.Value.Y - contentObject.Height / 2.0);
+
+                                if (npArr == null || npCOG == null || npRadius == null
+                                    || contentCOG == null || contentRadius == null)
+                                    continue;
+
+                                // based on the radius and COG information, construct a start vector
+                                // FIX: radius could be 0!
+                                var start = new UIElementHelper.Transformation2D(
+                                    (contentRadius.Value < 0.01) ? 1.0 : npRadius.Value / contentRadius.Value,
+                                    vo.rotation.Value,
+                                    npCOG.Value.X, npCOG.Value.Y
+                                );
+
+                                // disturb it?
+                                if (false)
+#pragma warning disable 162
                                 // ReSharper disable once HeuristicUnreachableCode
-                                start.Rot += -15.0 + 30.0 * rnd.NextDouble();
-                                start.Scale *= 0.8 + 0.4 * rnd.NextDouble();
-                                start.OfsX += -5.0 + 10.0 * rnd.NextDouble();
-                                start.OfsY += -5.0 + 10.0 * rnd.NextDouble();
-                            }
+                                {
+                                    // ReSharper disable once HeuristicUnreachableCode
+                                    start.Rot += -15.0 + 30.0 * rnd.NextDouble();
+                                    start.Scale *= 0.8 + 0.4 * rnd.NextDouble();
+                                    start.OfsX += -5.0 + 10.0 * rnd.NextDouble();
+                                    start.OfsY += -5.0 + 10.0 * rnd.NextDouble();
+                                }
 #pragma warning restore 162
 
-                            // improve it
-                            var better = UIElementHelper.FindBestFitForFieldOfPoints(
-                                            symbol.NozzlePos, npArr, start, 0.3, 30.0, 10.0, 10, 3);
-                            if (better != null)
-                                start = better;
+                                // improve it
+                                var better = UIElementHelper.FindBestFitForFieldOfPoints(
+                                                symbol.NozzlePos, npArr, start, 0.3, 30.0, 10.0, 10, 3);
+                                if (better != null)
+                                    start = better;
 
-                            // draw it
-                            UIElementHelper.ApplyMultiLabel(contentObject, new[] {
+                                // draw it
+                                UIElementHelper.ApplyMultiLabel(contentObject,
+                                    new[] {
+                                        new Tuple<string, string>("%TAG%", "" + vo.Name)
+                                    });
+
+
+                                if (obj.Name == "P001")
+                                {
+                                }
+
+                                var shape = ConstructDirectVO(contentObject, 1.0 * start.Scale, 1.0 * start.Rot,
+                                                contentCOG.Value);
+                                shape.Width *= start.Scale;
+                                shape.Height *= start.Scale;
+
+                                var sr = new Rect(
+                                    start.OfsX - shape.Width / 2,
+                                    start.OfsY - shape.Height / 2,
+                                    shape.Width,
+                                    shape.Height);
+
+                                if (drawBoundingBoxes)
+                                    DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height,
+                                        ConstructRect(Brushes.Blue, 1.0));
+
+                                // Correct position for drawing the shape for some IRRATIONAL offset and the delta 
+                                // between shape's mid and the COG of the nozzles
+
+                                sr.Location = new Point(
+                                    sr.X - 2.0 - contentCogToMid.X * start.Scale,
+                                    sr.Y - 2.0 - contentCogToMid.Y * start.Scale);
+
+                                // for debugging?
+                                //// DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
+
+                                // draw
+                                shape.Tag = vo;
+                                shape.BorderThickness = new Thickness(2);
+                                shape.BorderBrush = Brushes.Orange;
+                                DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height, shape);
+
+                                // register in dynInstance?
+                                if (vo.dynInstance != null)
+                                {
+                                    vo.dynInstance.SymbolElement = shape;
+                                    vo.dynInstance.RedrawSymbol();
+                                }
+
+                                // draw the label at mid of bounding box
+                                var labeltb = UIElementHelper.CreateStickyLabel(this.LabelFontSettings, "" + vo.Name);
+                                labeltb.Tag = vo;
+                                UIElementHelper.DrawToCanvasAtPositionAligned(canvas,
+                                    vo.x.Value + vo.width.Value / 2,
+                                    vo.y.Value + vo.height.Value / 2,
+                                    UIElementHelper.TranslateRotToAlignemnt(start.Rot), labeltb);
+
+                            }
+                            else
+                            if (vo.visObj.Placement == MtpSymbol.SymbolPlaceType.StretchToBoundingBox)
+                            {
+                                // make bounding box Rect
+                                if (drawBoundingBoxes)
+                                    DrawToCanvasAtPositionSize(canvas,
+                                        vo.x.Value, vo.y.Value,
+                                        vo.width.Value, vo.height.Value, ConstructRect(Brushes.Blue, 1.0));
+
+                                // draw it
+                                UIElementHelper.ApplyMultiLabel(contentObject, new[] {
                                 new Tuple<string, string>("%TAG%", "" + vo.Name)
                             });
-                            var shape = ConstructDirectVO(contentObject, 1.0 * start.Scale, 1.0 * start.Rot,
-                                            contentCOG.Value);
-                            shape.Width *= start.Scale;
-                            shape.Height *= start.Scale;
-
-                            var sr = new Rect(
-                                start.OfsX - shape.Width / 2,
-                                start.OfsY - shape.Height / 2,
-                                shape.Width,
-                                shape.Height);
-
-                            if (drawBoundingBoxes)
-                                DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height,
-                                    ConstructRect(Brushes.Blue, 1.0));
-
-                            // Correct position for drawing the shape for some IRRATIONAL offset and the delta 
-                            // between shape's mid and the COG of the nozzles
-
-                            sr.Location = new Point(
-                                sr.X - 2.0 - contentCogToMid.X * start.Scale,
-                                sr.Y - 2.0 - contentCogToMid.Y * start.Scale);
-
-                            // for debugging?
-                            //// DrawHandlePoint(canvas, sr.X, sr.Y, drawHandlePoints);
-
-                            // draw
-                            shape.Tag = vo;
-                            DrawToCanvasAtPositionSize(canvas, sr.X, sr.Y, sr.Width, sr.Height, shape);
-
-                            // draw the label at mid of bounding box
-                            var labeltb = UIElementHelper.CreateStickyLabel(this.LabelFontSettings, "" + vo.Name);
-                            labeltb.Tag = vo;
-                            UIElementHelper.DrawToCanvasAtPositionAligned(canvas,
-                                vo.x.Value + vo.width.Value / 2,
-                                vo.y.Value + vo.height.Value / 2,
-                                UIElementHelper.TranslateRotToAlignemnt(start.Rot), labeltb);
-
+                                var vb = ConstructViewboxVO(contentObject, vo.rotation.Value);
+                                vb.Tag = vo;
+                                DrawToCanvasAtPositionSize(canvas,
+                                    vo.x.Value, vo.y.Value,
+                                    vo.width.Value, vo.height.Value, vb);
+                            }
+                            else
+                            {
+                                // right now, impossible!
+                            }
                         }
                         else
-                        if (vo.visObj.Placement == MtpSymbol.SymbolPlaceType.StretchToBoundingBox)
                         {
-                            // make bounding box Rect
+                            // make missing part Rect
                             if (drawBoundingBoxes)
                                 DrawToCanvasAtPositionSize(canvas,
                                     vo.x.Value, vo.y.Value,
-                                    vo.width.Value, vo.height.Value, ConstructRect(Brushes.Blue, 1.0));
-
-                            // draw it
-                            UIElementHelper.ApplyMultiLabel(contentObject, new[] {
-                                new Tuple<string, string>("%TAG%", "" + vo.Name)
-                            });
-                            var vb = ConstructViewboxVO(contentObject, vo.rotation.Value);
-                            vb.Tag = vo;
-                            DrawToCanvasAtPositionSize(canvas,
-                                vo.x.Value, vo.y.Value,
-                                vo.width.Value, vo.height.Value, vb);
+                                    vo.width.Value, vo.height.Value, ConstructRect(Brushes.Red, 2.0));
                         }
-                        else
-                        {
-                            // right now, impossible!
-                        }
-                    }
-                    else
-                    {
-                        // make missing part Rect
-                        if (drawBoundingBoxes)
-                            DrawToCanvasAtPositionSize(canvas,
-                                vo.x.Value, vo.y.Value,
-                                vo.width.Value, vo.height.Value, ConstructRect(Brushes.Red, 2.0));
                     }
 
                     // handle in the mid
@@ -583,6 +643,18 @@ namespace WpfMtpControl
                     MtpObjectDoubleClick?.Invoke(mbo);
                 }
             }
+        }
+
+        //
+        // Timer
+        //
+
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            if (this.activePicture?.Objects != null)
+                foreach (var mo in this.activePicture.Objects)
+                    if (mo is MtpVisualObject vo && vo.dynInstance != null)
+                        vo.dynInstance.Tick(this.VisuOptions);
         }
     }
 }

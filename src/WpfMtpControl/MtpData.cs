@@ -193,8 +193,9 @@ namespace WpfMtpControl
                         }
                     }
 
-                    if (ie.Name == "TI005")
+                    if (ie.Name == "V001")
                     {
+                        ;
                     }
 
                     //
@@ -239,15 +240,37 @@ namespace WpfMtpControl
                                 && ieDI.RefBaseSystemUnitPath.Trim().Length > 0)
                             {
                                 var bsup = ieDI.RefBaseSystemUnitPath.Trim();
+
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView"
                                     || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView")
                                     vo.dynInstance = new MtpDiAnaView();
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView/AnaMon"
                                     || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/AnaMon")
                                     vo.dynInstance = new MtpDiAnaMon();
+
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/DIntiew"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/DIntView")
+                                    vo.dynInstance = new MtpDiDIntView();
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/AnaView/DIntMon"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/AnaView/DIntMon")
+                                    vo.dynInstance = new MtpDiDIntMon();
+
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinView"
                                     || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinView")
                                     vo.dynInstance = new MtpDiBinView();
+
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinMon"
+                                    || bsup == "MTPDataObjectSUCLib/DataAssembly/IndicatorElement/BinMon")
+                                    vo.dynInstance = new MtpDiBinMon();
+
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinVlv")
+                                    vo.dynInstance = new MtpDiBinValve();
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/MonBinVlv")
+                                    vo.dynInstance = new MtpDiMonBinValve();
+
+                                if (bsup == "MTPDataObjectSUCLib/DataAssembly/BinDrv")
+                                    vo.dynInstance = new MtpDiBinDrive();
+
                                 if (bsup == "MTPDataObjectSUCLib/DataAssembly/ActiveElement/PIDCtrl")
                                     vo.dynInstance = new MtpDiPIDCntl();
                             }
@@ -299,6 +322,7 @@ namespace WpfMtpControl
 
         public void LoadStream(
             MtpVisualObjectLib objectLib, IMtpDataSourceFactoryOpcUa dataSourceFactory,
+            MtpDataSourceOpcUaPreLoadInfo preLoadInfo,
             MtpDataSourceSubscriber subscriber, Stream stream,
             MtpSymbolMapRecordList makeUpConfigRecs = null)
         {
@@ -316,7 +340,7 @@ namespace WpfMtpControl
 
             // load data sources
             if (dataSourceFactory != null)
-                MtpAmlHelper.CreateDataSources(dataSourceFactory, doc.CAEXFile);
+                MtpAmlHelper.CreateDataSources(dataSourceFactory, preLoadInfo, doc.CAEXFile);
 
             // index pictures
             var pl = MtpAmlHelper.FindAllMtpPictures(doc.CAEXFile);
@@ -331,6 +355,7 @@ namespace WpfMtpControl
 
         public void LoadAmlOrMtp(
             MtpVisualObjectLib objectLib, IMtpDataSourceFactoryOpcUa dataSourceFactory,
+            MtpDataSourceOpcUaPreLoadInfo preLoadInfo,
             MtpDataSourceSubscriber subscriber, string fn,
             MtpSymbolMapRecordList makeUpConfigRecs = null)
         {
@@ -346,7 +371,7 @@ namespace WpfMtpControl
             {
                 using (var stream = File.OpenRead(fn))
                 {
-                    LoadStream(objectLib, dataSourceFactory, subscriber, stream, makeUpConfigRecs);
+                    LoadStream(objectLib, dataSourceFactory, preLoadInfo, subscriber, stream, makeUpConfigRecs);
                 }
                 return;
             }
@@ -363,7 +388,7 @@ namespace WpfMtpControl
                     {
                         using (var stream = entry.Open())
                         {
-                            LoadStream(objectLib, dataSourceFactory, subscriber, stream, makeUpConfigRecs);
+                            LoadStream(objectLib, dataSourceFactory, preLoadInfo, subscriber, stream, makeUpConfigRecs);
                         }
                         break;
                     }
