@@ -56,7 +56,7 @@ namespace AdminShellNS.Tests
         }
 
         [Test]
-        public void AtLine58AndColumn12()
+        public void AtLine59AndColumn12()
         {
             Assert.IsTrue(AdminShellUtil.ComplyIdShort(""));
         }
