@@ -5,7 +5,7 @@
         {
           "type": "Submodel",
           "local": false,
-          "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+          "value": "https://admin-shell.io/vdi/2770/1/1/Documentation",
           "index": 0,
           "idType": "IRI"
         }
@@ -13,14 +13,14 @@
       "First": {
         "type": "Submodel",
         "local": false,
-        "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+        "value": "https://admin-shell.io/vdi/2770/1/1/Documentation",
         "index": 0,
         "idType": "IRI"
       },
       "Last": {
         "type": "Submodel",
         "local": false,
-        "value": "http://admin-shell.io/vdi/2770/1/1/Documentation",
+        "value": "https://admin-shell.io/vdi/2770/1/1/Documentation",
         "index": 0,
         "idType": "IRI"
       }
@@ -43,7 +43,7 @@
   "CD_Document": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document"
     },
     "administration": null,
     "idShort": "Document",
@@ -107,7 +107,7 @@
   "CD_DocumentIdDomain": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentIdDomain"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentIdDomain"
     },
     "administration": null,
     "idShort": "DocumentIdDomain",
@@ -171,7 +171,7 @@
   "CD_DocumentDomainId": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentIdDomain/DocumentDomainId"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentIdDomain/DocumentDomainId"
     },
     "administration": null,
     "idShort": "DocumentDomainId",
@@ -235,7 +235,7 @@
   "CD_DocumentId": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/DocumentId"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentClassification/DocumentId"
     },
     "administration": null,
     "idShort": "DocumentId",
@@ -299,7 +299,7 @@
   "CD_DocumentClassification": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentClassification"
     },
     "administration": null,
     "idShort": "DocumentClassification",
@@ -363,7 +363,7 @@
   "CD_DocumentClassId": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassId"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassId"
     },
     "administration": null,
     "idShort": "DocumentClassId",
@@ -432,7 +432,7 @@
   "CD_DocumentClassName": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassName"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassName"
     },
     "administration": null,
     "idShort": "DocumentClassName",
@@ -496,7 +496,7 @@
   "CD_DocumentClassificationSystem": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassificationSystem"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentClassification/ClassificationSystem"
     },
     "administration": null,
     "idShort": "DocumentClassificationSystem",
@@ -569,7 +569,7 @@
   "CD_DocumentVersion": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersion"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentVersion"
     },
     "administration": null,
     "idShort": "DocumentVersion",
@@ -637,7 +637,7 @@
   "CD_Language": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersion/Language"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentVersion/Language"
     },
     "administration": null,
     "idShort": "Language",
@@ -710,7 +710,7 @@
   "CD_DocumentVersionIdValue": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentVersionId/Val"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentVersionId/Val"
     },
     "administration": null,
     "idShort": "DocumentVersionIdValue",
@@ -774,7 +774,7 @@
   "CD_Title": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Description/Title"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Description/Title"
     },
     "administration": null,
     "idShort": "Title",
@@ -847,7 +847,7 @@
   "CD_Summary": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentDescription/Summary"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentDescription/Summary"
     },
     "administration": null,
     "idShort": "Summary",
@@ -911,7 +911,7 @@
   "CD_KeyWords": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/DocumentDescription/KeyWords"
+      "id": "https://admin-shell.io/vdi/2770/1/0/DocumentDescription/KeyWords"
     },
     "administration": null,
     "idShort": "KeyWords",
@@ -950,7 +950,7 @@
   "CD_Date": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/SetDate"
+      "id": "https://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/SetDate"
     },
     "administration": null,
     "idShort": "Date",
@@ -1014,7 +1014,7 @@
   "CD_LifeCycleStatusValue": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/StatusValue"
+      "id": "https://admin-shell.io/vdi/2770/1/0/LifeCycleStatus/StatusValue"
     },
     "administration": null,
     "idShort": "LifeCycleStatusValue",
@@ -1078,7 +1078,7 @@
   "CD_Role": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Party/Role"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Party/Role"
     },
     "administration": null,
     "idShort": "Role",
@@ -1126,7 +1126,7 @@
   "CD_OrganizationName": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Organization/OrganizationName"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Organization/OrganizationName"
     },
     "administration": null,
     "idShort": "OrganizationName",
@@ -1199,7 +1199,7 @@
   "CD_OrganizationOfficialName": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Organization/OrganizationOfficialName"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Organization/OrganizationOfficialName"
     },
     "administration": null,
     "idShort": "OrganizationOfficialName",
@@ -1298,7 +1298,7 @@
   "CD_DigitalFile": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/DigitalFile"
+      "id": "https://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/DigitalFile"
     },
     "administration": null,
     "idShort": "DigitalFile",
@@ -1362,7 +1362,7 @@
   "CD_PreviewFile": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/PreviewFile"
+      "id": "https://admin-shell.io/vdi/2770/1/0/StoredDocumentRepresentation/PreviewFile"
     },
     "administration": null,
     "idShort": "PreviewFile",
@@ -1426,7 +1426,7 @@
   "CD_Comment": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Comment"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Comment"
     },
     "administration": null,
     "idShort": "Comment",
@@ -1490,7 +1490,7 @@
   "CD_DocumentedEntity": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document/DocumentedEntity"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document/DocumentedEntity"
     },
     "administration": null,
     "idShort": "DocumentedEntity",
@@ -1554,7 +1554,7 @@
   "CD_RefersTo": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document/RefersTo"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document/RefersTo"
     },
     "administration": null,
     "idShort": "RefersTo",
@@ -1618,7 +1618,7 @@
   "CD_BasedOn": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document/BasedOn"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document/BasedOn"
     },
     "administration": null,
     "idShort": "BasedOn",
@@ -1682,7 +1682,7 @@
   "CD_Affecting": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document/Affecting"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document/Affecting"
     },
     "administration": null,
     "idShort": "Affecting",
@@ -1746,7 +1746,7 @@
   "CD_TranslationOf": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Document/TranslationOf"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Document/TranslationOf"
     },
     "administration": null,
     "idShort": "TranslationOf",
@@ -1810,7 +1810,7 @@
   "CD_Entity": {
     "identification": {
       "idType": "IRI",
-      "id": "http://admin-shell.io/vdi/2770/1/0/Entity"
+      "id": "https://admin-shell.io/vdi/2770/1/0/Entity"
     },
     "administration": null,
     "idShort": "Entity",
