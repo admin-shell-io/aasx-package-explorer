@@ -26,7 +26,7 @@ The QR code generation is under the MIT license (see https://github.com/codebude
 The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
 */
 
-namespace AasxGenerate
+namespace AasxToolkit
 {
     public class IriIdentifierRepository
     {

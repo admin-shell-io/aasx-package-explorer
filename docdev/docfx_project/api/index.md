@@ -65,11 +65,13 @@ a much skinnier release without the browser (only about 2 Mb).
 The namespace [AasxIntegrationBase](AasxIntegrationBase.yml) provides all the
 functionality needed to integrate the plug-ins.
 
-## AasxGenerate Program
+## AasxToolkit Program
 
-Apart from the main AASX Package Explorer, we include an additional command-line 
-program, [AasxGenerate](AasxGenerate.yml), to demonstrate how to generate AASX
-packages in code.
+Apart from the main AASX Package Explorer, we include an additional 
+program, [AasxToolkit](AasxToolkit.yml), to generate and manipulate AASX 
+packages from the command line. This program is also a good entry point if you
+want to see how you can perform operations on AASX in code (rather than using
+a GUI tool).
 
 ## What is a REST Server Doing Here?
 

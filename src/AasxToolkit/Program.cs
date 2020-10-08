@@ -31,7 +31,7 @@ The obsoleted code was moved to obsolete/2020-07-20/AasxGenerate/Program.cs for 
 from this file for readability.
  */
 
-namespace AasxGenerate
+namespace AasxToolkit
 {
     public static class Program
     {
@@ -1660,7 +1660,7 @@ namespace AasxGenerate
             if (args.Length < 1)
             {
                 // Default
-                Console.Out.WriteLine(@"Help: AasxGenerate <cmd> [args] <cmd> [args] ..
+                Console.Out.WriteLine(@"Help: AasxToolkit <cmd> [args] <cmd> [args] ..
       gen [fn]             = generates package within RAM. Filename points to init json-file. Internal fn = *
       load [fn]            = loads filename to RAM. Extensions: .xml, .json, .aasx, .aml
       save [fn]            = saves RAM to filename. Extensions: .xml, .json, .aasx, .aml
