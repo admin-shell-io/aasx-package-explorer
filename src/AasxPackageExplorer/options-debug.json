@@ -39,7 +39,6 @@
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
-    /*
     {
       "Path": "..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\AasxIntegrationEmptySample.dll",
       "Args": [],
@@ -62,7 +61,6 @@
       "Args": [],
       "Options": null
     },
-    */
     {
       "Path": "..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\AasxPluginBomStructure.dll",
       "Args": []

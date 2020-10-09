@@ -45,7 +45,8 @@ namespace AasxIntegrationBase
 
         public void TryLoadAdditionalOptionsFromAssemblyDir<T>(
             string pluginName, Assembly assy = null,
-            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+            JsonSerializerSettings settings = null,
+            LogInstance log = null) where T : AasxPluginOptionsBase
         {
             // expand assy?
             if (assy == null)
@@ -67,7 +68,9 @@ namespace AasxIntegrationBase
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }
-                catch { }
+                catch (Exception ex) {
+                    log?.Error(ex, $"loading additional options (${fn})");
+                }
             // ReSharper enable EmptyGeneralCatchClause
         }
     }
