@@ -14,7 +14,7 @@
 -dll ..\..\..\..\..\AasxRestrictedPlugins\AasxPluginOpcUaClient\bin\Debug\AasxPluginOpcUaClient.dll
 -dll ..\..\..\..\AasxPluginBomStructure\bin\Debug\AasxPluginBomStructure.dll
 -rem Festo-USB-stick-sample-admin-shell-rest.aasx
-..\..\..\..\AasxGenerate\bin\Debug\sample.xml
+..\..\..\..\AasxToolkit\bin\Debug\sample.xml
 -rem test-aml-export2.aasx
 -rem ..\..\..\..\..\Sample_AAS\Example_AAS_ServoDCMotor.aasx
 -rem ..\..\..\..\..\Sample_AAS\Example_AAS_ForTesting_v07_with_reuse_submodel.aasx

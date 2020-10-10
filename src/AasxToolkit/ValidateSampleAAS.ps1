@@ -17,9 +17,9 @@ function LogAndExecute($Expression)
 
 function Main
 {
-    Get-ChildItem -File -Path ..\..\..\..\sample-aasx -Filter *.aasx | Foreach {
+    Get-ChildItem -File -Path ..\..\..\..\sample-aasx -Filter *.aasx | Foreach-Object {
 		# Write-Host "$($_.Fullname)"
-		$cmd = ".\AasxGenerate.exe load `"$($_.Fullname)`" check+fix save sample.xml validate sample.xml"
+		$cmd = ".\AasxToolkit.exe load `"$($_.Fullname)`" check+fix save sample.xml validate sample.xml"
 		Write-Host ""
 		Write-Host -ForegroundColor Yellow "Executing: $cmd"
 		Invoke-Expression $cmd

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{294FC59A-5645-412F-8216-702FB66528C1}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AasxGenerate</RootNamespace>
-    <AssemblyName>AasxGenerate</AssemblyName>
+    <RootNamespace>AasxToolkit</RootNamespace>
+    <AssemblyName>AasxToolkit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

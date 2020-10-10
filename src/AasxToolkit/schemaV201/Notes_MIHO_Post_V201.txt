@@ -66,7 +66,7 @@ CONCLUSION
 
 I'm stopping at this stage for right now.
 
-C:\MIHO\Develop\Aasx\aasx-package-explorer\src\AasxGenerate\bin\Debug\schemaV201>..\..\..\..\..\..\tools-restricted\xmlstarlet-1.6.1\xml.exe val --xsd AAS.xsd -e ..\sample.xml
+C:\MIHO\Develop\Aasx\aasx-package-explorer\src\AasxToolkit\bin\Debug\schemaV201>..\..\..\..\..\..\tools-restricted\xmlstarlet-1.6.1\xml.exe val --xsd AAS.xsd -e ..\sample.xml
 ..\sample.xml - invalid
 .\validate_samle_xml.bat : ../sample.xml:3711.38: Element '{http://www.admin-shell.io/IEC61360/2/0}preferredName': Missing child element(s). Expected is (
 {http://www.admin-shell.io/IEC61360/2/0}langString ).
