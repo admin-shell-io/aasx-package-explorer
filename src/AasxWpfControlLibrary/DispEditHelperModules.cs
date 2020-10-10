@@ -523,7 +523,7 @@ namespace AasxPackageExplorer
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
                     package: package,
-                    addExistingEntities: addExistingEntities);
+                    addExistingEntities: addExistingEntities, addFromPool: true);
         }
 
         //

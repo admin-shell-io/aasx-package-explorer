@@ -38,6 +38,8 @@ namespace AasxPredefinedConcepts
 
         protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
 
+        public string DomainInfo = "";
+
         //
         // Constructors
         //
@@ -165,7 +167,7 @@ namespace AasxPredefinedConcepts
             return this.theReflectedReferables?.ToArray();
         }
 
-        public void RetrieveEntriesByReflection(Type typeToReflect = null,
+        public void RetrieveEntriesFromLibraryByReflection(Type typeToReflect = null,
             bool useAttributes = false, bool useFieldNames = false)
         {
             // access
@@ -211,6 +213,43 @@ namespace AasxPredefinedConcepts
                     fi.SetValue(this, cd);
                     this.theReflectedReferables.Add(cd);
                 }
+            }
+        }
+
+        public void AddEntriesByReflection(Type typeToReflect = null,
+            bool useAttributes = false, bool useFieldNames = false)
+        {
+            // access
+            if (typeToReflect == null)
+                return;
+
+            // reflection
+            foreach (var fi in typeToReflect.GetFields())
+            {
+                // libName
+                var fiName = "" + fi.Name;
+
+                // test
+                var ok = false;
+                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
+                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+
+                if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
+                    ok = true;
+
+                if (useFieldNames && isSM && fiName.StartsWith("SM_"))
+                    ok = true;
+
+                if (useFieldNames && isCD && fiName.StartsWith("CD_"))
+                    ok = true;
+
+                if (!ok)
+                    continue;
+
+                // add
+                var rf = fi.GetValue(this) as AdminShell.Referable;
+                if (rf != null)
+                    this.theReflectedReferables.Add(rf);
             }
         }
     }

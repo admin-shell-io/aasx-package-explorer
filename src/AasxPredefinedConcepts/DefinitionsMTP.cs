@@ -10,12 +10,12 @@ namespace AasxPredefinedConcepts
     /// <summary>
     /// Definitions for MTP. Somehow preliminary, to be replaced by "full" JSON definitions
     /// </summary>
-    public class DefinitionsMTP : AasxDefinitionBase
+    public class DefinitionsMTP 
     {
         /// <summary>
         /// Definitions for MTP. Somehow preliminary, to be replaced by "full" JSON definitions
         /// </summary>
-        public class ModuleTypePackage
+        public class ModuleTypePackage : AasxDefinitionBase
         {
             public AdminShell.SemanticId
                 SEM_MtpSubmodel,
@@ -32,8 +32,12 @@ namespace AasxPredefinedConcepts
                 CD_RenamingOldText,
                 CD_RenamingNewText;
 
-            public ModuleTypePackage(AasxDefinitionBase bs)
+            public ModuleTypePackage()
             {
+                // info
+                this.DomainInfo = "Module Type Package (MTP)";
+
+                // Referable
                 SEM_MtpSubmodel = new AdminShell.SemanticId(
                     AdminShell.Key.CreateNew(
                         type: "Submodel",
@@ -97,6 +101,9 @@ namespace AasxPredefinedConcepts
                     "http://www.admin-shell.io/mtp/v1/New/RenamingNewText",
                     "Within a renaming of OPC UA identifiers or namespaces, designates the new text, which shall be " +
                     "substituted.");
+
+                // reflect
+                AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);
             }
         }
     }

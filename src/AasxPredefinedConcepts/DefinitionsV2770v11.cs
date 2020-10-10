@@ -16,6 +16,8 @@ namespace AasxPredefinedConcepts
     /// </summary>
     public class VDI2770v11 : AasxDefinitionBase
     {
+        public static VDI2770v11 Static = new VDI2770v11();
+
         public AdminShell.Submodel
             SM_ManufacturerDocumentation;
 
@@ -47,16 +49,17 @@ namespace AasxPredefinedConcepts
             CD_BasedOn,
             CD_Affecting,
             CD_TranslationOf,
-            CD_Entity;
+            CD_Entity;        
 
-        public static VDI2770v11 Static = null;
-
-        static VDI2770v11()
+        public VDI2770v11()
         {
-            Static = new VDI2770v11();
-            Static.ReadLibrary(
+            // info
+            this.DomainInfo = "Manufacturer Documentation (VDI2770) v1.1";
+
+            // Referable
+            this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "VDI2770v11.json");
-            Static.RetrieveEntriesByReflection(typeof(VDI2770v11), useFieldNames: true);
+            this.RetrieveEntriesFromLibraryByReflection(typeof(VDI2770v11), useFieldNames: true);
         }
     }
 }

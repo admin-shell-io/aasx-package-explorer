@@ -59,9 +59,8 @@ namespace AasxPluginMtpViewer
             InitializeComponent();
 
             // use pre-definitions
-            this.defsInterop = new AasxPredefinedConcepts.DefinitionsExperimental.InteropRelations(
-                new AasxPredefinedConcepts.DefinitionsExperimental());
-            this.defsMtp = new DefinitionsMTP.ModuleTypePackage(new DefinitionsMTP());
+            this.defsInterop = new AasxPredefinedConcepts.DefinitionsExperimental.InteropRelations();
+            this.defsMtp = new DefinitionsMTP.ModuleTypePackage();
         }
 
         public void Start(

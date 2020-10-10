@@ -27,6 +27,10 @@ namespace AasxPredefinedConcepts
 
         public ImageMap()
         {
+            // info
+            this.DomainInfo = "Plugin ImageMap";
+
+            // Referable
             SEM_ImageMapSubmodel = new AdminShell.SemanticId(
                 AdminShell.Key.CreateNew(
                     type: "Submodel",
@@ -64,6 +68,9 @@ namespace AasxPredefinedConcepts
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/NavigateTo/1/0",
                 @"If ReferenceElement subordinate to Entity, overrules Entity AssetId and navigates to value " +
                 "reference .");
+
+            // reflect
+            AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);
         }
     }
 }

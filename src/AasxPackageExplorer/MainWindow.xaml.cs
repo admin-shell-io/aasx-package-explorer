@@ -266,7 +266,7 @@ namespace AasxPackageExplorer
             {
                 // check for ReferenceElement
                 var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                    AasxPredefinedConcepts.DefinitionsPackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
                     AdminShell.Key.MatchMode.Relaxed);
                 if (navTo?.value == null)
                     continue;

@@ -68,6 +68,14 @@ namespace AasxIntegrationBase.AasForms
                         if (q != null)
                             tsme.FormInfo = "" + q.value;
 
+                        q = qs?.FindType("EditIdShort");
+                        if (q != null)
+                            tsme.FormEditIdShort = q.value.Trim().ToLower() == "true" ;
+
+                        q = qs?.FindType("EditDescription");
+                        if (q != null)
+                            tsme.FormEditDescription = q.value.Trim().ToLower() == "true";
+
                         q = qs?.FindType("Multiplicity");
                         if (q != null)
                         {

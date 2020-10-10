@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations, Version=2020.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
@@ -52,11 +54,12 @@
     <Compile Include="Convert\ConvertDocumentationHsuToSg2.cs" />
     <Compile Include="Convert\ConvertPredefinedConcepts.cs" />
     <Compile Include="Convert\ConvertTechnicalDataToFlat.cs" />
-    <Compile Include="DefinitionsPackageExplorer.cs" />
+    <Compile Include="PackageExplorer.cs" />
     <Compile Include="DefinitionsImageMap.cs" />
     <Compile Include="DefinitionsMTP.cs" />
     <Compile Include="DefinitionsExperimental.cs" />
     <Compile Include="DefinitionsLanguages.cs" />
+    <Compile Include="DefinitionsPool.cs" />
     <Compile Include="DefinitionsV2770v11.cs" />
     <Compile Include="DefinitionsZveiTechnicalData.cs" />
     <Compile Include="DefinitionsZveiDigitalTypeplate.cs" />

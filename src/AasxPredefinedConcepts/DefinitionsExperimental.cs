@@ -15,14 +15,14 @@ namespace AasxPredefinedConcepts
     /// plugins, to develop some functionalities.
     /// Later, these definitions shall be replaced by substantial definitions, e.g. imported from JSON.
     /// </summary>
-    public class DefinitionsExperimental : AasxDefinitionBase
+    public class DefinitionsExperimental 
     {
         /// <summary>
         /// This class holds definitions from the Submodel Template Specification: 
         /// Identifiers for Interoperable relationships  
         /// for the use of Composite Components of Manufacturing Equipment
         /// </summary>
-        public class InteropRelations
+        public class InteropRelations : AasxDefinitionBase
         {
             public AdminShell.ConceptDescription
                 CD_FileToNavigateElement,
@@ -36,8 +36,12 @@ namespace AasxPredefinedConcepts
                 CD_TubePipeConnectionPneumatic,
                 CD_TubePipeConnectionHydraulic;
 
-            public InteropRelations(AasxDefinitionBase bs)
+            public InteropRelations()
             {
+                // info
+                this.DomainInfo = "Interoperable Relations (experimental)";
+
+                // Referable
                 CD_FileToNavigateElement = CreateSparseConceptDescription("en", "IRI",
                     "FileToNavigateElement",
                     "http://admin-shell.io/sandbox/CompositeComponent/General/FileToNavigateElement/1/0",
@@ -96,6 +100,9 @@ namespace AasxPredefinedConcepts
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/TubePipeConnectionHydraulic/1/0",
                     "States, that there is a hydraulic connection between two Electrical Entities.",
                     isCaseOf: CD_TubePipeConnection.GetReference());
+
+                // reflect
+                AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);
             }
         }
     }
