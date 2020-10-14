@@ -208,17 +208,30 @@ namespace AasxToolkit
         {
             private static string[] newLines = new[] {"\r\n", "\r", "\n"};
 
-            // DONT-CHECK-IN add doctests
             /// <summary>
             /// Indent text by prepending indentation to each line.
             /// </summary>
             /// <param name="text">to be indented</param>
             /// <param name="indentation">to be prepended at each line</param>
             /// <returns>indented text</returns>
+            ///
+            /// <code doctest="true">Assert.AreEqual("", Cli.Indentation.Indent("", "  "));</code>
+            /// <code doctest="true">Assert.AreEqual("  test", Cli.Indentation.Indent("test", "  "));</code>
             /// <code doctest="true">
+            /// var nl = System.Environment.NewLine;
+            /// Assert.AreEqual($"  test{nl}  me", Cli.Indentation.Indent("test\nme", "  "));
+            /// </code>
+            /// <code doctest="true">
+            /// var nl = System.Environment.NewLine;
+            /// Assert.AreEqual($"  test{nl}  me", Cli.Indentation.Indent("test\r\nme", "  "));
             /// </code>
             public static string Indent(string text, string indentation)
             {
+                if (text.Length == 0)
+                {
+                    return "";
+                }
+                
                 return string.Join(
                     System.Environment.NewLine,
                     text.Split(newLines, System.StringSplitOptions.None)
