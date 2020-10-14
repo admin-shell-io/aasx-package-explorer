@@ -1,4 +1,4 @@
-using IDisposable = System.IDisposable;
+﻿using IDisposable = System.IDisposable;
 
 namespace AdminShellNS.Tests
 {

@@ -12,13 +12,23 @@ namespace AasxToolkit
     /// </summary>
     public static class Cli
     {
+        public class ReturnCode
+        {
+            public readonly int Value;
+
+            public ReturnCode(int value)
+            {
+                Value = value;
+            }
+        }
+        
         public abstract class Instruction
         {
             /// <summary>
             /// Executes the instruction.
             /// </summary>
-            /// <returns>If false, the execution chain should not proceed.</returns>
-            public abstract bool Execute();
+            /// <returns>Error code, if the instruction should exit, or null otherwise</returns>
+            public abstract ReturnCode Execute();
 
             public List<string> Validate()
             {
@@ -41,10 +51,10 @@ namespace AasxToolkit
             /// </remarks>
             public System.IO.TextWriter Out = System.Console.Out;
 
-            public override bool Execute()
+            public override ReturnCode Execute()
             {
                 Out.WriteLine(GenerateUsageMessage(_commandLine));
-                return false;
+                return new ReturnCode(0);
             }
 
             public HelpInstruction(CommandLine commandLine)
@@ -53,24 +63,27 @@ namespace AasxToolkit
             }
         }
 
-        public class InstructionParsing
+        public class Parsing
         {
             public readonly Instruction Instruction;
             public readonly IReadOnlyList<string> Errors;
 
-            public InstructionParsing(Instruction instruction)
+            public Parsing(Instruction instruction)
             {
                 Instruction = instruction;
                 Errors = null;
             }
 
-            public InstructionParsing(IReadOnlyList<string> errors)
+            public Parsing(IReadOnlyList<string> errors)
             {
                 Instruction = null;
                 Errors = errors;
             }
         }
 
+        /// <summary>
+        /// Declares an argument of a command.
+        /// </summary>
         public class Arg
         {
             public readonly string Name;
@@ -83,8 +96,11 @@ namespace AasxToolkit
             }
         }
 
-        public delegate InstructionParsing ParseFunction(List<string> correspondingArguments);
+        public delegate Parsing ParseFunction(IReadOnlyList<string> correspondingArguments);
 
+        /// <summary>
+        /// Declares a command of the application.
+        /// </summary>
         public class Command
         {
             public readonly string Name;
@@ -102,6 +118,9 @@ namespace AasxToolkit
             }
         }
 
+        /// <summary>
+        /// Declares how the command-line arguments should be handled.
+        /// </summary>
         public class CommandLine
         {
             /// <summary>
@@ -147,14 +166,17 @@ namespace AasxToolkit
                         "help",
                         "Display the usage of the program and exit immediately",
                         new List<Arg>(),
-                        arguments => new InstructionParsing(
+                        arguments => new Parsing(
                             new HelpInstruction(this))));
 
                 Commands = cmds;
             }
         }
 
-        public class Parsing
+        /// <summary>
+        /// Represents a parsing of the command-line arguments.
+        /// </summary>
+        public class CommandLineParsing
         {
             /// <summary>
             /// Specifies how many command-line arguments were accepted before the parsing stopped.
@@ -167,14 +189,14 @@ namespace AasxToolkit
             public readonly IReadOnlyList<Instruction> Instructions;
             public readonly IReadOnlyList<string> Errors;
 
-            public Parsing(int acceptedArgs, IReadOnlyList<Instruction> instructions)
+            public CommandLineParsing(int acceptedArgs, IReadOnlyList<Instruction> instructions)
             {
                 AcceptedArgs = acceptedArgs;
                 Instructions = instructions;
                 Errors = null;
             }
 
-            public Parsing(int acceptedArgs, IReadOnlyList<string> errors)
+            public CommandLineParsing(int acceptedArgs, IReadOnlyList<string> errors)
             {
                 AcceptedArgs = acceptedArgs;
                 Instructions = null;
@@ -204,6 +226,11 @@ namespace AasxToolkit
             }
         }
 
+        /// <summary>
+        /// Generates the help message based on the declaration of the command line.
+        /// </summary>
+        /// <param name="commandLine">Corresponding command-line declaration</param>
+        /// <returns>string to be readily output</returns>
         public static string GenerateUsageMessage(CommandLine commandLine)
         {
             var blocks = new List<string>();
@@ -282,11 +309,26 @@ namespace AasxToolkit
             return result;
         }
 
-        public static Parsing Parse(CommandLine commandLine, IReadOnlyList<string> args)
+        /// <summary>
+        /// Parses the given command-line arguments.
+        /// </summary>
+        /// <param name="commandLine">declaration of the command line</param>
+        /// <param name="args">arguments received in the Main()</param>
+        /// <returns>parsing result</returns>
+        public static CommandLineParsing Parse(CommandLine commandLine, IReadOnlyList<string> args)
         {
+            if (args.Count == 0)
+            {
+                throw new ArgumentException(
+                    "Unexpected zero command-line arguments. " +
+                    "The command-line arguments should contain at least one element, namely the program.");
+            }
+            
             var instructions = new List<Instruction>();
 
-            int cursor = 0;
+            // Skip the first argument assuming it denotes the program and start with the second argument
+            int cursor = 1;
+            
             while (cursor < args.Count)
             {
                 bool found = false;
@@ -300,7 +342,7 @@ namespace AasxToolkit
                                 ? $"It requires at least {cmd.Arguments.Count} arguments."
                                 : "It requires at least one argument.";
                             
-                            return new Parsing(
+                            return new CommandLineParsing(
                                 cursor,
                                 new List<string>
                                 {
@@ -314,13 +356,13 @@ namespace AasxToolkit
                             correspondingArguments.Add(args[cursor + 1 + i]);
                         }
 
-                        var instructionParsing = cmd.Parse(correspondingArguments);
-                        if (instructionParsing.Instruction == null)
+                        var parsing = cmd.Parse(correspondingArguments);
+                        if (parsing.Instruction == null)
                         {
-                            return new Parsing(cursor, instructionParsing.Errors);
+                            return new CommandLineParsing(cursor, parsing.Errors);
                         }
 
-                        instructions.Add(instructionParsing.Instruction);
+                        instructions.Add(parsing.Instruction);
                         cursor += cmd.Arguments.Count + 1;
                         found = true;
                         break;
@@ -329,27 +371,30 @@ namespace AasxToolkit
 
                 if (!found)
                 {
-                    return new Parsing(cursor, new List<string> {$"Command unknown: {args[cursor]}"});
+                    return new CommandLineParsing(cursor, new List<string> {$"Command unknown: {args[cursor]}"});
                 }
             }
 
-            return new Parsing(0, instructions);
+            return new CommandLineParsing(0, instructions);
         }
 
         /// <summary>
         /// Executes the chain of instructions and stop if any of the instructions says so.
         /// </summary>
         /// <param name="instructions">Chain of instructions</param>
-        public static void Execute(IReadOnlyList<Instruction> instructions)
+        /// <returns>return code after the execution, or null if the application can proceed</returns>
+        public static ReturnCode Execute(IReadOnlyList<Instruction> instructions)
         {
             foreach (var instr in instructions)
             {
-                bool shouldProceed = instr.Execute();
-                if (!shouldProceed)
+                ReturnCode code = instr.Execute();
+                if (code != null)
                 {
-                    return;
+                    return code;
                 }
             }
+
+            return null;
         }
 
         public static string FormatParsingErrors(

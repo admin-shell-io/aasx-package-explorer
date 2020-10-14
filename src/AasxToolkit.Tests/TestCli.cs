@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using NUnit.Framework;
 
 namespace AasxToolkit.Tests
@@ -16,7 +15,7 @@ namespace AasxToolkit.Tests
                 new List<Cli.Command>()
             );
 
-            var parsing = Cli.Parse(cmdLine, new string[] { });
+            var parsing = Cli.Parse(cmdLine, new[] {"test-program"});
             Assert.IsNull(parsing.Errors);
             Assert.IsEmpty(parsing.Instructions);
         }
@@ -30,7 +29,7 @@ namespace AasxToolkit.Tests
                 new List<Cli.Command>()
             );
 
-            var parsing = Cli.Parse(cmdLine, new string[] {"help"});
+            var parsing = Cli.Parse(cmdLine, new[] {"test-program", "help"});
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(1, parsing.Instructions.Count);
 
@@ -41,8 +40,8 @@ namespace AasxToolkit.Tests
                     var writer = new System.IO.StringWriter();
                     helpInstruction.Out = writer;
 
-                    bool shouldContinue = helpInstruction.Execute();
-                    Assert.IsFalse(shouldContinue);
+                    Cli.ReturnCode code = helpInstruction.Execute();
+                    Assert.AreEqual(0, code.Value);
 
                     var nl = System.Environment.NewLine;
                     Assert.AreEqual(
@@ -87,10 +86,10 @@ namespace AasxToolkit.Tests
                 Message = message;
             }
 
-            public override bool Execute()
+            public override Cli.ReturnCode Execute()
             {
                 Context.Messages.Add(Message);
-                return true;  // should continue execution
+                return null;
             }
         }
 
@@ -108,7 +107,7 @@ namespace AasxToolkit.Tests
                         {
                             new Cli.Arg("message", "message to be added to the dummy context")
                         },
-                        (args) => new Cli.InstructionParsing(
+                        (args) => new Cli.Parsing(
                             new DummyInstruction(context, args[0])))
                 }
             );
@@ -123,7 +122,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var parsing = Cli.Parse(cmdLine, new string[]{});
+            var parsing = Cli.Parse(cmdLine, new[]{"test-program"});
             Assert.IsNull(parsing.Errors);
             Assert.IsEmpty(parsing.Instructions);
         }
@@ -135,7 +134,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var parsing = Cli.Parse(cmdLine, new string[]{"help"});
+            var parsing = Cli.Parse(cmdLine, new[]{"test-program", "help"});
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(1, parsing.Instructions.Count);
 
@@ -146,8 +145,8 @@ namespace AasxToolkit.Tests
                     var writer = new System.IO.StringWriter();
                     helpInstruction.Out = writer;
 
-                    bool shouldContinue = helpInstruction.Execute();
-                    Assert.IsFalse(shouldContinue);
+                    Cli.ReturnCode code = helpInstruction.Execute();
+                    Assert.AreEqual(0, code.Value);
 
                     var nl = System.Environment.NewLine;
                     Assert.AreEqual(
@@ -183,7 +182,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var parsing = Cli.Parse(cmdLine, new string[]{"say", "one", "say", "two"});
+            var parsing = Cli.Parse(cmdLine, new []{"test-program", "say", "one", "say", "two"});
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(2, parsing.Instructions.Count);
 
@@ -204,7 +203,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var parsing = Cli.Parse(cmdLine, new string[]{"say", "one", "say", "two"});
+            var parsing = Cli.Parse(cmdLine, new[]{"test-program", "say", "one", "say", "two"});
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(2, parsing.Instructions.Count);
 
@@ -220,7 +219,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var args = new[] {"say"};
+            var args = new[] {"test-program", "say"};
             var parsing = Cli.Parse(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
 
@@ -229,7 +228,11 @@ namespace AasxToolkit.Tests
             var nl = System.Environment.NewLine;
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
-                $"Too few arguments specified for the command say. It requires at least one argument.",
+                $"Arguments (vertically ordered):{nl}" +
+                $"test-program{nl}" +
+                $"say <<< PROBLEM <<<{nl}" +
+                nl +
+                "Too few arguments specified for the command say. It requires at least one argument.",
                 errorMsg);
         }
         
@@ -240,7 +243,7 @@ namespace AasxToolkit.Tests
 
             var cmdLine = setUpCommandLineWithContext(context);
 
-            var args = new[] {"say", "one", "unknown-command", "foobar"};
+            var args = new[] {"test-program", "say", "one", "unknown-command", "foobar"};
             var parsing = Cli.Parse(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
 
@@ -250,6 +253,7 @@ namespace AasxToolkit.Tests
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
                 $"Arguments (vertically ordered):{nl}" +
+                $"test-program{nl}" +
                 $"say{nl}" +
                 $"one{nl}" +
                 $"unknown-command <<< PROBLEM <<<{nl}" +
