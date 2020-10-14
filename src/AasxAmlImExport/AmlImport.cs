@@ -1147,7 +1147,11 @@ namespace AasxAmlImExport
 
                             // populate
                             sme = TryPopulateSubmodelElement(ie, sme);
-                            matcher.AddMatch(sme, ie);
+                            try
+                            {
+                                matcher.AddMatch(sme, ie);
+                            }
+                            catch { }
                             if (sme != null)
                             {
                                 if (currentOperation == null || currentOperationDir < 0 || currentOperationDir >= 2)
@@ -1327,7 +1331,7 @@ namespace AasxAmlImExport
                                         {
                                             // embedded data spec for the SDK
                                             var eds = new AdminShell.EmbeddedDataSpecification();
-                                            cd.embeddedDataSpecification.Add(eds);
+                                            cd.IEC61360DataSpec = eds;
 
                                             /*
                                              TODO (Michael Hoffmeister, 2020-08-01): fill out 
