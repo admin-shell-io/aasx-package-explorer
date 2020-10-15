@@ -10,11 +10,13 @@ namespace AasxToolkit
     ///
     /// The handling of the command-line arguments was separated in three phases:
     /// <ul>
-    /// <li>Declaration: the interface is specified <emph>in a declarative manner</emph></li>,
-    /// <li>Parsing: the actual command-line arguments are parsed into <emph>instructions</emph> and</li>
+    /// <li>Command declaration: the interface is specified <emph>in a declarative manner</emph></li>,
+    /// <li>Instruction parsing: the actual command-line arguments are parsed into <emph>instructions</emph> and</li>
     /// <li>Execution: the chain of instructions is finally executed, one instruction at the time.</li>  
     /// </ul>
     ///
+    /// Think of the process as a mapping: commands -> instructions -> execution.
+    /// 
     /// Declarative specification allows for better readability. Even without the help message, we aim to make it
     /// obvious how the program should be invoked by just looking at the code.
     ///
@@ -24,77 +26,27 @@ namespace AasxToolkit
     /// By introducing <emph>instructions</emph> as units of execution, the code can be easily reused.
     /// For example, different commands can be parsed into the same instruction with different parameters.
     ///
-    /// The execution phase allows for hiding the implementation details of the serial execution of the instructions.
-    /// These details are probably completely irrelevant to the user of the module and thus their encapsulation improves
-    /// the readability of the <c>Main</c> method in the program.
+    /// The execution phase allows us to nicely share the context <emph>between</emph> the execution of the individual
+    /// instructions and return pre-emptively from the execution loop, if necessary.
     /// </summary>
     public static class Cli
     {
-        public class ReturnCode
-        {
-            public readonly int Value;
-
-            public ReturnCode(int value)
-            {
-                Value = value;
-            }
-        }
-
         /// <summary>
         /// Represents a single instruction to the program.
         /// </summary>
-        public abstract class Instruction
-        {
-            /// <summary>
-            /// Executes the instruction.
-            /// </summary>
-            /// <returns>Error code, if the instruction should exit, or null otherwise</returns>
-            public abstract ReturnCode Execute();
-        }
-
-        /// <summary>
-        /// Implements a pre-defined instruction to show command usage.
-        /// </summary>
-        public class HelpInstruction : Instruction
-        {
-            /// <summary>
-            /// Refers to the corresponding command-line declaration.
-            /// </summary>
-            /// <remarks>
-            /// This member was made writeable, since we have to declare the command-line after all the commands have
-            /// been declared.
-            /// </remarks>
-            private CommandLine _commandLine = null;
-
-            /// <summary>
-            /// Specifies the writer to write the usage to.
-            /// </summary>
-            /// <remarks>
-            /// This member was introduced so that we can test the instruction.
-            /// </remarks>
-            public System.IO.TextWriter Out = System.Console.Out;
-
-            public override ReturnCode Execute()
-            {
-                Out.WriteLine(GenerateUsageMessage(_commandLine));
-                return new ReturnCode(0);
-            }
-
-            public HelpInstruction(CommandLine commandLine)
-            {
-                _commandLine = commandLine;
-            }
-        }
+        /// <remarks>The instruction interface is intentionally defined here (and not in a different file) so that we
+        /// can extract this code to a completely separate NuGet package in the future, if necessary.</remarks>
+        public interface IInstruction { }
 
         /// <summary>
         /// Represents a parsing of a command as specified on the command-line.
         /// </summary>
         public class Parsing
         {
-            public readonly Instruction Instruction;
+            public readonly IInstruction Instruction;
             public readonly IReadOnlyList<string> Errors;
 
-            public Parsing(Instruction instruction)
+            public Parsing(IInstruction instruction)
             {
                 Instruction = instruction;
                 Errors = null;
@@ -167,30 +119,13 @@ namespace AasxToolkit
             {
                 Name = name;
                 Description = description;
-
-                var commandsPlusBuiltins = new List<Command>(commands);
-                commandsPlusBuiltins.Add(
-                    new Command(
-                        "help",
-                        "Display the usage of the program and exit immediately",
-                        new List<Arg>(),
-                        arguments => new Parsing(
-                            new HelpInstruction(this))));
-
-                Commands = commandsPlusBuiltins;
+                Commands = commands;
             }
         }
 
         public static CommandLine DeclareCommandLine(string name, string description, IReadOnlyList<Command> commands)
         {
             // Pre-conditions
-            var reserved = new HashSet<string> { "help" };
-            if (commands.Any(cmd => reserved.Contains(cmd.Name)))
-            {
-                throw new ArgumentException(
-                    $"The following command names are reserved: {string.Join(", ", reserved)}");
-            }
-
             var seen = new HashSet<string>();
             foreach (var cmd in commands)
             {
@@ -218,10 +153,10 @@ namespace AasxToolkit
             /// </remarks>
             public readonly int AcceptedArgs;
 
-            public readonly IReadOnlyList<Instruction> Instructions;
+            public readonly IReadOnlyList<IInstruction> Instructions;
             public readonly IReadOnlyList<string> Errors;
 
-            public ParsingOfInstructions(int acceptedArgs, IReadOnlyList<Instruction> instructions)
+            public ParsingOfInstructions(int acceptedArgs, IReadOnlyList<IInstruction> instructions)
             {
                 AcceptedArgs = acceptedArgs;
                 Instructions = instructions;
@@ -369,7 +304,7 @@ namespace AasxToolkit
                     "The command-line arguments should contain at least one element, namely the program.");
             }
 
-            var instructions = new List<Instruction>();
+            var instructions = new List<IInstruction>();
 
             // Skip the first argument assuming it denotes the program and start with the second argument
             int cursor = 1;
@@ -421,25 +356,6 @@ namespace AasxToolkit
             }
 
             return new ParsingOfInstructions(0, instructions);
-        }
-
-        /// <summary>
-        /// Executes the chain of instructions and stop if any of the instructions says so.
-        /// </summary>
-        /// <param name="instructions">Chain of instructions</param>
-        /// <returns>return code after the execution, or null if the program can proceed</returns>
-        public static ReturnCode Execute(IReadOnlyList<Instruction> instructions)
-        {
-            foreach (var instr in instructions)
-            {
-                ReturnCode code = instr.Execute();
-                if (code != null)
-                {
-                    return code;
-                }
-            }
-
-            return null;
         }
 
         public static string FormatParsingErrors(

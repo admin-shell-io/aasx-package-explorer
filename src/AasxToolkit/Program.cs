@@ -35,7 +35,12 @@ namespace AasxToolkit
 
         public static int MainWithExitCode(string[] args)
         {
-            var context = new Instruction.Context();
+            if (args.Length == 0)
+            {
+                throw new ArgumentException(
+                    "Unexpected no command-line arguments. There should be at least one, first argument " +
+                    "referring to the program.");
+            }
 
             var nl = System.Environment.NewLine;
 
@@ -61,8 +66,7 @@ namespace AasxToolkit
                             });
                     }
 
-                    return new Cli.Parsing(
-                        new Instruction.Generate(context, pth));
+                    return new Cli.Parsing(new Instruction.Generate(pth));
                 }
             );
 
@@ -88,7 +92,7 @@ namespace AasxToolkit
                             new[] { $"Unexpected file extension: {pth}" });
                     }
 
-                    return new Cli.Parsing(new Instruction.Load(context, pth));
+                    return new Cli.Parsing(new Instruction.Load(pth));
                 }
             );
 
@@ -111,7 +115,7 @@ namespace AasxToolkit
                             new[] { $"Unexpected file extension: {pth}" });
                     }
 
-                    return new Cli.Parsing(new Instruction.Save(context, pth));
+                    return new Cli.Parsing(new Instruction.Save(pth));
                 }
             );
 
@@ -126,7 +130,7 @@ namespace AasxToolkit
                 },
                 (cmdArgs) =>
                 {
-                    return new Cli.Parsing(new Instruction.ExportTemplate(context, cmdArgs[0]));
+                    return new Cli.Parsing(new Instruction.ExportTemplate(cmdArgs[0]));
                 }
             );
 
@@ -150,7 +154,7 @@ namespace AasxToolkit
                             new[] { $"Unexpected file extension: {pth}" });
                     }
 
-                    return new Cli.Parsing(new Instruction.Validate(context, pth));
+                    return new Cli.Parsing(new Instruction.Validate(pth));
                 }
             );
 
@@ -158,24 +162,35 @@ namespace AasxToolkit
                 "check",
                 "checks the AASX package in RAM.",
                 new Cli.Arg[] { },
-                (cmdArgs) => new Cli.Parsing(
-                    new Instruction.CheckAndFix(context, false))
+                (cmdArgs) => new Cli.Parsing(new Instruction.CheckAndFix(false))
             );
 
             var cmdCheckAndFix = new Cli.Command(
                 "check+fix",
                 "checks and fixes the AASX package in RAM.",
                 new Cli.Arg[] { },
-                (cmdArgs) => new Cli.Parsing(
-                    new Instruction.CheckAndFix(context, true))
+                (cmdArgs) => new Cli.Parsing(new Instruction.CheckAndFix(true))
             );
 
             var cmdTest = new Cli.Command(
                 "test",
                 "tests the AASX package in RAM.",
                 new Cli.Arg[] { },
-                (cmdArgs) => new Cli.Parsing(
-                    new Instruction.Test(context))
+                (cmdArgs) => new Cli.Parsing(new Instruction.Test())
+            );
+
+            var cmdHelp = new Cli.Command(
+                "help",
+                "If this command is specified, the program will only display the help message and " +
+                "immediately exit (aliases: --help, -help, /help, -h and /h).",
+                new Cli.Arg[] { },
+                (cmdArgs) =>
+                {
+                    throw new InvalidOperationException(
+                        "The help command should never be parsed. It should be handled *before* " +
+                        "the command-line arguments are parsed. The command is declared only so that it appears " +
+                        "in the help message.");
+                }
             );
 
             var cmdLine = new Cli.CommandLine(
@@ -191,9 +206,21 @@ namespace AasxToolkit
                     cmdValidate,
                     cmdCheck,
                     cmdCheckAndFix,
-                    cmdTest
+                    cmdTest,
+                    cmdHelp
                 }
             );
+
+            // # Handle the special "help" command
+
+            var helpAliases = new HashSet<string> { "help", "--help", "-help", "/help", "-h", "/h" };
+            if (args.Length == 1 || args.Any(arg => helpAliases.Contains(arg)))
+            {
+                Console.WriteLine(Cli.GenerateUsageMessage(cmdLine));
+                return 0;
+            }
+
+            // # Parse
 
             var parsing = Cli.ParseInstructions(cmdLine, args);
             if (parsing.Errors != null)
@@ -204,13 +231,10 @@ namespace AasxToolkit
                 return -1;
             }
 
-            var returnCode = Cli.Execute(parsing.Instructions);
-            if (returnCode == null)
-            {
-                return 0;
-            }
+            // # Execute
 
-            return returnCode.Value;
+            int returnCode = Execution.Execute(parsing.Instructions);
+            return returnCode;
         }
     }
 }

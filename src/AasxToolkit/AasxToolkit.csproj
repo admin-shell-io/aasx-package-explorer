@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cli.cs" />
+    <Compile Include="Execution.cs" />
     <Compile Include="Generate.cs" />
     <Compile Include="Instruction.cs" />
     <Compile Include="Log.cs" />

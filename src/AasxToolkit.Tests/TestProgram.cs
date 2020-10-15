@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AasxToolkit.Test;
@@ -144,6 +145,54 @@ namespace AasxToolkit.Tests
                             Assert.AreEqual("", consoleCap.Error());
                         }
                     }
+                }
+            }
+        }
+
+        public class TestHelp
+        {
+            [Test]
+            public void TestDisplayedWhenNoArguments()
+            {
+                using (var consoleCap = new ConsoleCapture())
+                {
+                    int code = AasxToolkit.Program.MainWithExitCode(new[] { nameof(AasxToolkit) });
+
+                    Assert.AreEqual(0, code);
+                    Assert.AreEqual("", consoleCap.Error());
+                    Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
+                }
+            }
+
+            [TestCase("help")]
+            [TestCase("-help")]
+            [TestCase("--help")]
+            [TestCase("/help")]
+            [TestCase("-h")]
+            [TestCase("/h")]
+            public void TestDisplayedWhenHelpArgument(string helpArg)
+            {
+                using (var consoleCap = new ConsoleCapture())
+                {
+                    int code = AasxToolkit.Program.MainWithExitCode(new[] { nameof(AasxToolkit), helpArg });
+
+                    Assert.AreEqual(0, code);
+                    Assert.AreEqual("", consoleCap.Error());
+                    Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
+                }
+            }
+
+            [Test]
+            public void TestHelpTrumpsOtherArguments()
+            {
+                using (var consoleCap = new ConsoleCapture())
+                {
+                    int code = AasxToolkit.Program.MainWithExitCode(
+                        new[] { nameof(AasxToolkit), "load", "doesnt-exist.aasx", "help" });
+
+                    Assert.AreEqual(0, code);
+                    Assert.AreEqual("", consoleCap.Error());
+                    Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
                 }
             }
         }
