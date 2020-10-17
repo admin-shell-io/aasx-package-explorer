@@ -49,11 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AasxDefinitionBase.cs" />
+    <Compile Include="ConceptModel\ConceptModelZveiTechnicalData.cs" />
     <Compile Include="Convert\ConvertDocumentationSg2ToHsu.cs" />
+    <Compile Include="Convert\ConvertTechnicalDataV10ToV11.cs" />
     <Compile Include="Convert\ConvertDocumentationSg2ToV11.cs" />
     <Compile Include="Convert\ConvertDocumentationHsuToSg2.cs" />
     <Compile Include="Convert\ConvertPredefinedConcepts.cs" />
     <Compile Include="Convert\ConvertTechnicalDataToFlat.cs" />
+    <Compile Include="DefinitionsZveiTechnicalDataV11.cs" />
     <Compile Include="PackageExplorer.cs" />
     <Compile Include="DefinitionsImageMap.cs" />
     <Compile Include="DefinitionsMTP.cs" />
@@ -84,6 +87,7 @@
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate_old.json" />
     <EmbeddedResource Include="Resources\VDI2770v11.json" />
+    <EmbeddedResource Include="Resources\ZveiTechnicalDataV11.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\VDI2770.json" />

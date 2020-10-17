@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
+using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 
 namespace AasxPluginTechnicalData
@@ -46,7 +47,7 @@ namespace AasxPluginTechnicalData
         }
 
         public void TableAddPropertyRows_Recurse(
-            DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang, AdminShellPackageEnv package,
+            ConceptModelZveiTechnicalData theDefs, string defaultLang, AdminShellPackageEnv package,
             Table table, AdminShell.SubmodelElementWrapperCollection smwc, int depth = 0)
         {
             // access
@@ -75,8 +76,8 @@ namespace AasxPluginTechnicalData
                 // make up semantics
                 if (sme.semanticId != null)
                 {
-                    if (sme.semanticId.Matches(theDefs.CD_NonstandardizedProperty.GetSingleKey()))
-                        semantics = "Non-standardized";
+                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleKey()))
+                        semantics = "(not available)";
                     else
                     {
                         // the semantics display
@@ -184,7 +185,7 @@ namespace AasxPluginTechnicalData
         }
 
         public FlowDocument CreateFlowDocument(
-            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs,
+            AdminShellPackageEnv package, ConceptModelZveiTechnicalData theDefs,
             string defaultLang, AdminShell.Submodel sm)
         {
             // access
@@ -256,7 +257,7 @@ namespace AasxPluginTechnicalData
         }
 
         public void SetContents(
-            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShellPackageEnv package, ConceptModelZveiTechnicalData theDefs, string defaultLang,
             AdminShell.Submodel sm)
         {
             FlowDocViewer.Document = CreateFlowDocument(package, theDefs, defaultLang, sm);

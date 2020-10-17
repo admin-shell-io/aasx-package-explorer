@@ -10,6 +10,17 @@
           "idType": "IRI"
         }
       ]
+    },
+    {
+      "AllowSubmodelSemanticId": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "http://admin-shell.io/sandbox/SG2/TechnicalData/Submodel/1/1",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
     }
   ]
 }

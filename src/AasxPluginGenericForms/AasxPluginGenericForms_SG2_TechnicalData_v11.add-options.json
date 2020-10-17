@@ -1,0 +1,2319 @@
+{
+  "$type": "Options",
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "TEC",
+      "FormTitle": "Technical data (sheet) model",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Submodel",
+        "FormInfo": "",
+        "FormEditIdShort": false,
+        "FormEditDescription": false,
+        "PresetIdShort": "TechnicalData",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+          "type": "Submodel",
+          "local": false,
+          "value": "http://admin-shell.io/sandbox/SG2/TechnicalData/Submodel/1/1",
+          "index": 0,
+          "idType": "IRI"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "GeneralInformation",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "GeneralInformation",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/GeneralInformation/1/1",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "ManufacturerName",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ManufacturerName",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerName/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  ""
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormFile",
+                "FormTitle": "ManufacturerLogo",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ManufacturerLogo",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerLogo/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "ManufacturerProductDesignation",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ManufacturerProductDesignation",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerProductDesignation/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "ManufacturerPartNumber",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ManufacturerPartNumber",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerPartNumber/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "ManufacturerOrderCode",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ManufacturerOrderCode",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerOrderCode/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormFile",
+                "FormTitle": "ProductImage",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ProductImage{0:00}",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductImage/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "presetMimeType": ""
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "ProductClassifications",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "ProductClassifications",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassifications/1/1",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "ProductClassificationItem{00}",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ProductClassificationItem{00}{0:00}",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassificationItem/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "ProductClassificationSystem",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "ProductClassificationSystem",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassificationSystem/1/1",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      ""
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "ClassificationSystemVersion",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "ClassificationSystemVersion",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ClassificationSystemVersion/1/1",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      ""
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "ProductClassId",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "ProductClassId",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassId/1/1",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      ""
+                    ],
+                    "presetValue": ""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "TechnicalProperties",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "TechnicalProperties",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/TechnicalProperties/1/1",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "SemanticIdNotAvailable",
+                "FormEditIdShort": true,
+                "FormEditDescription": true,
+                "PresetIdShort": "SemanticIdNotAvailable{0:00}",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/SemanticIdNotAvailable /1/1 ",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "MainSection",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "MainSection{0:00}",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/MainSection/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "SemanticIdNotAvailable",
+                    "FormEditIdShort": true,
+                    "FormEditDescription": true,
+                    "PresetIdShort": "SemanticIdNotAvailable{0:00}",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/SemanticIdNotAvailable /1/1 ",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "ZeroToMany",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      ""
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormSubmodelElementCollection",
+                    "FormTitle": "SubSection",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "SubSection{0:00}",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/SubSection/1/1",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "ZeroToMany",
+                    "IsReadOnly": false,
+                    "value": [
+                      {
+                        "$type": "FormProperty",
+                        "FormTitle": "SemanticIdNotAvailable",
+                        "FormEditIdShort": true,
+                        "FormEditDescription": true,
+                        "PresetIdShort": "SemanticIdNotAvailable{0:00}",
+                        "KeySemanticId": {
+                          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                          "type": "ConceptDescription",
+                          "local": true,
+                          "value": "https://admin-shell.io/SemanticIdNotAvailable /1/1 ",
+                          "index": 0,
+                          "idType": "IRI"
+                        },
+                        "Multiplicity": "ZeroToMany",
+                        "IsReadOnly": false,
+                        "allowedValueTypes": [
+                          ""
+                        ],
+                        "presetValue": ""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "FurtherInformation",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "FurtherInformation",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/FurtherInformation/1/1",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormProperty",
+                "FormTitle": "TextStatement",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "TextStatement{0:00}",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/TextStatement/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "ValidDate",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ValidDate",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/sandbox/SG2/TechnicalData/ValidDate/1/1",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "date"
+                ],
+                "presetValue": ""
+              }
+            ]
+          }
+        ]
+      },
+      "ConceptDescriptions": [
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/GeneralInformation/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "GeneralInformation",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Generelle Informationen"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "General information"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "General information"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Generelle Informationen"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Generelle Informationen, zum Beispiel Bestell- und Herstellerinformationen"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "General information, for example ordering and manufacturer information"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerName/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ManufacturerName",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellername"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Manufacturer name"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Herstellername"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Manufacturer name"
+                  }
+                ],
+                "unit": "",
+                "symbol": "string",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO677#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ],
+              "First": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO677#002",
+                "index": 0,
+                "idType": "IRDI"
+              },
+              "Last": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO677#002",
+                "index": 0,
+                "idType": "IRDI"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerLogo/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ManufacturerLogo",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellerlogo-Datei"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "File with manufactuer logo"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Herstellerlogo"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Manufactuer logo"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bilddatei für Logo des Herstellers im gebräuchlichem Format (.png, .jpg). "
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Imagefile for logo of manufacturer provided in common format (.png, .jpg). "
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerProductDesignation/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ManufacturerProductDesignation",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellerproduktbezeichnung"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Manufacturer product designation"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Product designation"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktbezeichnung"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Kurze Beschreibung des Produktes (Kurztext)"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Short description of the product (short text)"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAW338#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ],
+              "First": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAW338#001",
+                "index": 0,
+                "idType": "IRDI"
+              },
+              "Last": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAW338#001",
+                "index": 0,
+                "idType": "IRDI"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerPartNumber/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ManufacturerPartNumber",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellerartikelnummer"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "product article number of manufacturer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Manufacturer order code"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Herstellerbestellcode"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "eindeutiger Bestellschlüssel des Herstellers"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "unique product identifier of the manufacturer"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO676#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ],
+              "First": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO676#003",
+                "index": 0,
+                "idType": "IRDI"
+              },
+              "Last": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO676#003",
+                "index": 0,
+                "idType": "IRDI"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ManufacturerOrderCode/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ManufacturerOrderCode",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Eindeutiger Herstellerbestellcode"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Unique manufacturer order code"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Manufacturer order code"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Herstellerbestellcode"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "eindeutiger Bestellschlüssel des Herstellers um exakt gleiches Produkt zu bestellen"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "unique product identifier of the manufacturer sufficient to order exact same produkt"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO676#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ],
+              "First": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO676#003",
+                "index": 0,
+                "idType": "IRDI"
+              },
+              "Last": {
+                "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                "type": "GlobalReference",
+                "local": false,
+                "value": "0173-1#02-AAO676#003",
+                "index": 0,
+                "idType": "IRDI"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductImage/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ProductImage",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bilddatei für Produkt"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Imagefile for product"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Product image"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktbild"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bilddatei für das assozierte Produkt im gebräuchlichem Format (.png, .jpg). "
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Imagefile for associated product provided in common format (.png, .jpg). "
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassifications/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ProductClassifications",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Produktklassifizierungen"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ProductClassifications"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "ProductClassification"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktklassifizierung"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Produktklassifizierungen durch Assoziation mit Produktklassen in gebräuchlichen Klassifizierungssystemen."
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Product classifications by association with product classes in common classification systems."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassificationItem/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "ProductClassificationItem",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Einzelne Produktklassifizierung"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Single ProductClassification"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "ProductClassification"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktklassifizierung"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Einzelne Produktklassifizierung durch Assoziation mit einer Produktklasse"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Single product classification by association with product class"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassificationSystem/1/1"
+          },
+          "idShort": "ProductClassificationSystem",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Klassifikationssystem"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Classification system"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Classification system"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Klassifikationssystem"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Common name of the product classification system"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Gebräuchlicher Name für das Produkt-Klassifikationssystem"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ClassificationSystemVersion/1/1"
+          },
+          "idShort": "ClassificationSystemVersion",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Versionskennung des Klassifikationssystems"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Verison id  of the classification system"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Version class. system"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Version Klass.-System"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Common version identifier of the used classification system"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Gebräuchliche Versionskennung des genutzen Klassifikationssystems"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ProductClassId/1/1"
+          },
+          "idShort": "ProductClassId",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktklasse im System"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Product class in system"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Product class"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Produktklasse "
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Class of the associated product in the classification system; according to the notation of the system"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Klasse des assoziierten Produktes im Klassifikationssystem; entsprechend der Notationsweise des Systems."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/TechnicalProperties/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "TechnicalProperties",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Technische und Produktmerkmale"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Technical and product properties"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Properties"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Merkmale"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Einzelne Merkmale die das Produkt und die technischen Eigenschaften beschreiben"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Individual characteristics that describe the product and its technical properties"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/SemanticIdNotAvailable /1/1 "
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "SemanticIdNotAvailable",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Merkmal ohne SemanticId"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Property without SemanticId"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Property without SemanticId"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Merkmal ohne SemanticId"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Merkmal, welches nicht über ein gebräuchliches Klassifikationssystem beschrieben ist"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Property that is not described using a common classification system"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/MainSection/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "MainSection",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Hauptsektion für Merkmale"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Main section for properties"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Main section"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Hauptsektion"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Haupt-Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Main subdivision possibility for properties. Can be named via idShort."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/SubSection/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "SubSection",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Untersektion für Merkmale"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Subsection for properties"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Subsection "
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Untersektion "
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Untergeordnete Unterteilungsmöglichkeit für Merkmale. Kann über idShort benannt werden."
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Subordinate subdivision possibility for properties. Can be named via idShort."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/FurtherInformation/1/1"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "FurtherInformation",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Weitere Informationen"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Further information"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Further information"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Weitere Informationen"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Weiterführende Informationen zum Produkt, der Gültigkeit der gemachten Angaben und zu diesem Datensatz"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Further information on the product, the validity of the information provided and this data record"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/TextStatement/1/1"
+          },
+          "idShort": "TextStatement",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Aussage des Herstellers als Text"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Statement by the manufacturer as text"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Valid on date"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Gültig am"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Statement in text form, e.g. scope of validity of the statements."
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Aussage in Textform, etwa Gültigkeitsbereich der Aussagen."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/sandbox/SG2/TechnicalData/ValidDate/1/1"
+          },
+          "idShort": "ValidDate",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ],
+                "First": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Last": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                  "index": 0,
+                  "idType": "IRI"
+                }
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Informationen gültig am"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Information valid on date"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Valid on date"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Gültig am"
+                  }
+                ],
+                "unit": "",
+                "dataType": "DATE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "EN",
+                    "text": "Denotes a date on which the data specified in the submodel was valid for the associated product. Approximately: Date of the last update of the data."
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "DE",
+                    "text": "Bezeichnet ein Datum, an welchem die im Submodel genannten Daten für das assoziierte Produkt gültig waren. Etwa: Tag der letzten Aktualisierung der Daten."
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

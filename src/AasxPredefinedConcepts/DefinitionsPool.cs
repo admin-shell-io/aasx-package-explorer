@@ -98,6 +98,8 @@ namespace AasxPredefinedConcepts
 
             thePool.IndexReferables("ZVEI TechnicalData v1.0",
                 new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData()).GetAllReferables());
+
+            thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
         }
 
         //

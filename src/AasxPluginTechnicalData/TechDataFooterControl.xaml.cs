@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxPredefinedConcepts;
+using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 
 namespace AasxPluginTechnicalData
@@ -28,7 +29,7 @@ namespace AasxPluginTechnicalData
         }
 
         public void SetContents(
-            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShellPackageEnv package, ConceptModelZveiTechnicalData theDefs, string defaultLang,
             AdminShell.Submodel sm)
         {
             // access

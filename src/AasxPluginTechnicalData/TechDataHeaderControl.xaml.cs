@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
+using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -60,7 +61,7 @@ namespace AasxPluginTechnicalData
         }
 
         public void SetContents(
-            AdminShellPackageEnv package, DefinitionsZveiTechnicalData.SetOfDefs theDefs, string defaultLang,
+            AdminShellPackageEnv package, ConceptModelZveiTechnicalData theDefs, string defaultLang,
             AdminShell.Submodel sm)
         {
             // access
@@ -134,15 +135,15 @@ namespace AasxPluginTechnicalData
                     var sys = (
                         "" +
                         smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_ClassificationSystem.GetSingleKey())?.value).Trim();
+                            theDefs.CD_ProductClassificationSystem.GetSingleKey())?.value).Trim();
                     var ver = (
                         "" +
                         smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_SystemVersion.GetSingleKey())?.value).Trim();
+                            theDefs.CD_ClassificationSystemVersion.GetSingleKey())?.value).Trim();
                     var cls = (
                         "" +
                         smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_ProductClass.GetSingleKey())?.value).Trim();
+                            theDefs.CD_ProductClassId.GetSingleKey())?.value).Trim();
                     if (sys != "" && cls != "")
                         clr.Add(new ClassificationRecord(sys, ver, cls));
                 }
