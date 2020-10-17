@@ -53,7 +53,7 @@ namespace AasxPredefinedConcepts.Convert
                 var special = false;
 
                 // Submodel Handling
-                if (sme?.submodelElement is AdminShell.SubmodelElementCollection smcSectSrc)
+                if (sme.submodelElement is AdminShell.SubmodelElementCollection smcSectSrc)
                 {
                     // what to create?
                     AdminShell.SubmodelElementCollection smcSectDst = null;
@@ -66,8 +66,7 @@ namespace AasxPredefinedConcepts.Convert
                         smcSectDst = smcDest.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
                             defsV11.CD_SubSection, addSme: false);
 
-                    if (smcSectDst == null)
-                        smcSectDst = new AdminShell.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
+                    smcSectDst ??= new AdminShell.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
 
                     // add manually
                     smcSectDst.idShort = smcSectSrc.idShort;
@@ -82,15 +81,15 @@ namespace AasxPredefinedConcepts.Convert
                     // was special
                     special = true;
                 }
-                                    
+
                 if (!special)
                 {
                     // just move "by hand", as the old SMEs are already detached
-                    smcDest.Add(sme?.submodelElement);
+                    smcDest.Add(sme.submodelElement);
 
                     // do some fix for "non-standardized"
-                    if (sme?.submodelElement.semanticId?
-                        .MatchesExactlyOneKey(defsV10.CD_NonstandardizedProperty.GetSingleKey(), 
+                    if (sme.submodelElement.semanticId?
+                        .MatchesExactlyOneKey(defsV10.CD_NonstandardizedProperty.GetSingleKey(),
                             AdminShell.Key.MatchMode.Relaxed) == true)
                     {
                         // fix
@@ -150,7 +149,7 @@ namespace AasxPredefinedConcepts.Convert
                                     rf as AdminShell.ConceptDescription));
 
             // General Info (target cardinality: 1)
-            foreach(var smcV10gi in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+            foreach (var smcV10gi in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
                         defsV10.CD_GeneralInformation.GetSingleKey()))
             {
                 // make a new one
@@ -159,7 +158,7 @@ namespace AasxPredefinedConcepts.Convert
 
                 // SME
                 smcV11gi.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV11.CD_ManufacturerName,
-                    smcV10gi.value, defsV10.CD_ManufacturerName, 
+                    smcV10gi.value, defsV10.CD_ManufacturerName,
                     createDefault: true, addSme: true);
 
                 smcV11gi.value.CopyOneSMEbyCopy<AdminShell.File>(defsV11.CD_ManufacturerLogo,

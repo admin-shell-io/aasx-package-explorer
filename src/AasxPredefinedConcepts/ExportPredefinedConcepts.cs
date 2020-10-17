@@ -18,6 +18,7 @@ namespace AasxPredefinedConcepts
                 return;
 
             // make text file
+            // ReSharper disable once ConvertToUsingDeclaration
             using (var snippets = new System.IO.StreamWriter(fn))
             {
                 // Phase (1) which ConceptDescriptions need to be exported

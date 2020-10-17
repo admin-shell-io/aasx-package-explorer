@@ -5498,7 +5498,7 @@ namespace AdminShellNS
 
             // for conversion
 
-            public T CopyOneSMEbyCopy<T>(Key destSemanticId, 
+            public T CopyOneSMEbyCopy<T>(Key destSemanticId,
                 SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
                 ConceptDescription createDefault = null, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
@@ -5540,12 +5540,12 @@ namespace AdminShellNS
                 return dst;
             }
 
-            public T CopyOneSMEbyCopy<T>(ConceptDescription destCD, 
+            public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
                 SubmodelElementWrapperCollection sourceSmc, ConceptDescription sourceCD,
                 bool createDefault = false, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
             {
-                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceCD?.GetSingleKey(), 
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceCD?.GetSingleKey(),
                     createDefault ? destCD : null, setDefault, matchMode, addSme);
             }
 
@@ -5556,7 +5556,9 @@ namespace AdminShellNS
             {
                 // bool find possible sources
                 bool foundSrc = false;
-                foreach (var src in sourceSmc?.FindAllSemanticIdAs<T>(sourceSemanticId, matchMode))
+                if (sourceSmc == null)
+                    return;
+                foreach (var src in sourceSmc.FindAllSemanticIdAs<T>(sourceSemanticId, matchMode))
                 {
                     // type of found src?
                     var aeSrc = SubmodelElementWrapper.GetAdequateEnum(src?.GetElementName());
@@ -5579,7 +5581,7 @@ namespace AdminShellNS
                         this.Add(dst);
                     }
                 }
-                
+
                 // default?
                 if (createDefault != null && !foundSrc)
                 {
@@ -5596,7 +5598,7 @@ namespace AdminShellNS
                 bool createDefault = false, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed) where T : SubmodelElement, new()
             {
-                CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(), 
+                CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(),
                     createDefault ? destCD : null, setDefault, matchMode);
             }
         }

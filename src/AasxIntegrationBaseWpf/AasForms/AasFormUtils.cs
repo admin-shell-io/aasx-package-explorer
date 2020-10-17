@@ -70,7 +70,7 @@ namespace AasxIntegrationBase.AasForms
 
                         q = qs?.FindType("EditIdShort");
                         if (q != null)
-                            tsme.FormEditIdShort = q.value.Trim().ToLower() == "true" ;
+                            tsme.FormEditIdShort = q.value.Trim().ToLower() == "true";
 
                         q = qs?.FindType("EditDescription");
                         if (q != null)

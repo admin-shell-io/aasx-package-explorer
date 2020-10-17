@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AdminShellNS;
 
 // reSharper disable UnusedType.Global
+// reSharper disable ClassNeverInstantiated.Global
 
 namespace AasxPredefinedConcepts
 {
@@ -15,7 +16,7 @@ namespace AasxPredefinedConcepts
     /// plugins, to develop some functionalities.
     /// Later, these definitions shall be replaced by substantial definitions, e.g. imported from JSON.
     /// </summary>
-    public class DefinitionsExperimental 
+    public class DefinitionsExperimental
     {
         /// <summary>
         /// This class holds definitions from the Submodel Template Specification: 

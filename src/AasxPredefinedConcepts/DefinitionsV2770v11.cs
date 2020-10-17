@@ -49,7 +49,7 @@ namespace AasxPredefinedConcepts
             CD_BasedOn,
             CD_Affecting,
             CD_TranslationOf,
-            CD_Entity;        
+            CD_Entity;
 
         public VDI2770v11()
         {

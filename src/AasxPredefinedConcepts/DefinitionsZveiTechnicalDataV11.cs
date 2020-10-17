@@ -40,7 +40,7 @@ namespace AasxPredefinedConcepts
             CD_SubSection,
             CD_FurtherInformation,
             CD_TextStatement,
-            CD_ValidDate;        
+            CD_ValidDate;
 
         public ZveiTechnicalDataV11()
         {

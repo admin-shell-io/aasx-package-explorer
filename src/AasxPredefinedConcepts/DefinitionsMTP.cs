@@ -5,12 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// reSharper disable UnusedType.Global
+// reSharper disable ClassNeverInstantiated.Global
+
 namespace AasxPredefinedConcepts
 {
     /// <summary>
     /// Definitions for MTP. Somehow preliminary, to be replaced by "full" JSON definitions
     /// </summary>
-    public class DefinitionsMTP 
+    public class DefinitionsMTP
     {
         /// <summary>
         /// Definitions for MTP. Somehow preliminary, to be replaced by "full" JSON definitions

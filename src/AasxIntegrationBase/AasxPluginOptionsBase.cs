@@ -68,7 +68,8 @@ namespace AasxIntegrationBase
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
             // ReSharper enable EmptyGeneralCatchClause

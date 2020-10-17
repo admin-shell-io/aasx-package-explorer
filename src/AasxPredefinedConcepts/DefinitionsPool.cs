@@ -1,11 +1,11 @@
-﻿using AasxIntegrationBase;
-using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
+using AdminShellNS;
 
 #nullable enable
 
@@ -63,7 +63,7 @@ namespace AasxPredefinedConcepts
         }
     }
 
-    public class DefinitionsPool 
+    public class DefinitionsPool
     {
         // 
         // Singleton
@@ -106,7 +106,7 @@ namespace AasxPredefinedConcepts
         // Member
         //
 
-        private Dictionary<string, List<DefinitionsPoolEntityBase>> pool = 
+        private Dictionary<string, List<DefinitionsPoolEntityBase>> pool =
             new Dictionary<string, List<DefinitionsPoolEntityBase>>();
 
         //
@@ -122,7 +122,7 @@ namespace AasxPredefinedConcepts
         {
             // access
             if (ent?.Domain == null)
-                return;            
+                return;
 
             // new hash value
             if (!this.pool.ContainsKey(ent.Domain))
@@ -151,7 +151,7 @@ namespace AasxPredefinedConcepts
         // Methods
         //
 
-        public void IndexReferables (string Domain, IEnumerable<AdminShell.Referable> indexRef)
+        public void IndexReferables(string Domain, IEnumerable<AdminShell.Referable> indexRef)
         {
             foreach (var ir in indexRef)
             {
