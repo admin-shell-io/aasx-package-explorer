@@ -932,6 +932,9 @@ namespace AasxAmlImExport
                     // start
                     Debug(indentation, "Consulting IE name {0}", ie.Name);
 
+                    if (ie.Name == "OperatingManual")
+                        ;
+
                     //
                     // find mirror elements
                     //
@@ -1134,24 +1137,28 @@ namespace AasxAmlImExport
                     //
                     // in Submodel, SMEC, also Internal Elements can have a property role
                     //
-                    #region
-                    for (int i = 1; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)
+                    #region                    
+                    // Note 18 OCT 2020 (MIHO): I presume, that SMC shall be excluded from th search, hence
+                    // do another kind of comparison
+                    for (int i = 0; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)
                     {
+                        // access
                         var aen = AdminShell.SubmodelElementWrapper.AdequateElementNames[i];
+                        var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum(aen);
+                        if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
+                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection)
+                            continue;
+
                         if (CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Header + aen))
                         {
                             // begin new (temporary) object
-                            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(aen);
+                            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(ae);
                             if (sme == null)
                                 continue;
 
                             // populate
                             sme = TryPopulateSubmodelElement(ie, sme);
-                            try
-                            {
-                                matcher.AddMatch(sme, ie);
-                            }
-                            catch { }
+                            matcher.AddMatch(sme, ie);
                             if (sme != null)
                             {
                                 if (currentOperation == null || currentOperationDir < 0 || currentOperationDir >= 2)
@@ -1383,6 +1390,8 @@ namespace AasxAmlImExport
                             // try find registered sides
                             foreach (var side in new[] { il.RefPartnerSideA, il.RefPartnerSideB })
                             {
+                                if (!this.registerForInternalLinks.ContainsKey(side))
+                                    continue;
                                 var items = this.registerForInternalLinks[side];
                                 if (items != null)
                                     foreach (var it in items)

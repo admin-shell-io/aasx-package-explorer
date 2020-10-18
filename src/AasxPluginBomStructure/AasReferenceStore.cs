@@ -82,7 +82,8 @@ namespace AasxPluginBomStructure
                     sme.GetElementName(), false, AdminShell.Identification.IdShort, sme.idShort));
 
             // index
-            dict.Add(ComputeHashOnReference(currRef), sme);
+            var hk = ComputeHashOnReference(currRef);
+            dict.Add(hk, sme);
 
             // recurse
             var childs = (sme as AdminShell.IEnumerateChildren)?.EnumerateChildren();
