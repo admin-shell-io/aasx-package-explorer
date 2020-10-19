@@ -24,7 +24,7 @@ function Main {
             "packages/**" `
             "**/Settings.Designer.cs" `
             "**/Resources.Designer.cs" `
-            "AasxToolkit/Program.cs" `
+            "AasxToolkit/Generate.cs" `
             "AasxPluginExportTable/ExportTableFlyout.xaml.cs" `
             "MsaglWpfControl/GraphViewer.cs" `
             "MsaglWpfControl/VEdge.cs" `
