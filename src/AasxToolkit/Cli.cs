@@ -28,6 +28,18 @@ namespace AasxToolkit
     ///
     /// The execution phase allows us to nicely share the context <emph>between</emph> the execution of the individual
     /// instructions and return pre-emptively from the execution loop, if necessary.
+    ///
+    /// To add a new command-instruction-execution to the program, follow these steps:
+    /// <ol>
+    /// <li>Start by conceptualizing what data your instruction needs. Write it down by writing a class
+    ///     implementing <see cref="IInstruction"/> and put it in <see cref="Instruction"/>.</li>
+    /// <li>Add the command to <see cref="Program"/>. Provide parse function that translates command-line arguments
+    ///     into your instruction.</li>
+    /// <li>Implement the execution of your instruction by adding a case corresponding to your instruction to
+    ///     the switch in <see cref="Execution"/>.</li>
+    /// <li>Write the corresponding unit tests. Depending on the complexity, you might need to test the parsing and
+    ///     execution in isolation.</li>
+    /// </ol>
     /// </summary>
     public static class Cli
     {
