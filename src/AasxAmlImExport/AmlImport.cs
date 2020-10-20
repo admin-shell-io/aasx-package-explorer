@@ -366,11 +366,19 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(AdminShell.Referable parent, AdminShell.SubmodelElement se)
             {
+                // TODO (MIHO, 2020-10-19): it should exist a generic Interface IManageSubmodelElements
+                // in AdminShell.cs which allows arbitrary elements to add children
                 if (parent is AdminShell.Submodel psm)
                     psm.Add(se);
 
                 if (parent is AdminShell.SubmodelElementCollection psmc)
                     psmc.Add(se);
+
+                if (parent is AdminShell.Entity ent)
+                    ent.Add(se);
+
+                if (parent is AdminShell.AnnotatedRelationshipElement anno)
+                    anno.Add(se);
             }
 
             private AdminShell.AdministrationShell TryParseAasFromIe(SystemUnitClassType ie)
@@ -633,7 +641,7 @@ namespace AasxAmlImExport
                 else
                     // uups!
                     return null;
-            }
+            }            
 
             private void TryPopulateReferenceAttribute(
                 SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target,
@@ -747,6 +755,19 @@ namespace AasxAmlImExport
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
 
+                    if (sme is AdminShell.MultiLanguageProperty mlp)
+                    {
+                        var value = TryParseDescriptionFromAttributes(
+                            ie.Attribute, AmlConst.Attributes.MultiLanguageProperty_Value);
+                        var valueId = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.MultiLanguageProperty_ValueId);
+
+                        if (value.langString != null)
+                            mlp.value = new AdminShell.LangStringSet(value.langString);
+                        if (valueId != null)
+                            mlp.valueId = ParseAmlReference(valueId);
+                    }
+
                     if (sme is AdminShell.Blob smeb)
                     {
                         var mimeType = FindAttributeValueByRefSemantic(
@@ -788,6 +809,7 @@ namespace AasxAmlImExport
                         }
                     }
 
+                    // will also include AnnotatedRelationship !!
                     if (sme is AdminShell.RelationshipElement smere)
                     {
                         if (aasStyleAttributes)
@@ -812,6 +834,19 @@ namespace AasxAmlImExport
                             TryPopulateReferenceAttribute(
                                 ie, "second", AmlConst.Interfaces.ReferableReference, smere, 3);
                         }
+                    }
+
+                    if (sme is AdminShell.Entity ent)
+                    {
+                        var entityType = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.Entity_entityType);
+                        if (entityType != null)
+                            ent.entityType = entityType;
+
+                        var assetRef = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.Entity_asset);
+                        if (assetRef != null)
+                            ent.assetRef = new AdminShell.AssetRef(ParseAmlReference(assetRef));
                     }
 
                     // ok
@@ -864,7 +899,6 @@ namespace AasxAmlImExport
             private AdminShell.DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
                 AttributeSequence aseq)
             {
-
                 // finally, create the entity
                 var ds = new AdminShell.DataSpecificationIEC61360();
 
@@ -1086,6 +1120,60 @@ namespace AasxAmlImExport
                     }
 
                     //
+                    // Entity
+                    //
+                    if (currentAas != null && currentSubmodel != null &&
+                        CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Entity))
+                    {
+                        // begin new (temporary) object
+                        var ent = new AdminShell.Entity();
+                        ent = TryPopulateSubmodelElement(ie, ent) as AdminShell.Entity;
+                        if (ent != null)
+                        {
+                            Debug(
+                                indentation,
+                                "  ENTITY with required attributes recognised. " +
+                                "Starting new ENTITY..");
+
+                            // make collection official
+                            AddToSubmodelOrSmec(currentSmeCollection, ent);
+                            matcher.AddMatch(ent, ie);
+
+                            // will be the ne parent for child elements
+                            parentSmeCollection = ent;
+                        }
+                        else
+                            Debug(indentation, "  ENTITY with insufficient attributes. Skipping");
+                    }
+
+                    //
+                    // Annotated Relationship
+                    //
+                    if (currentAas != null && currentSubmodel != null &&
+                        CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_AnnotatedRelationship))
+                    {
+                        // begin new (temporary) object
+                        var ent = new AdminShell.AnnotatedRelationshipElement();
+                        ent = TryPopulateSubmodelElement(ie, ent) as AdminShell.AnnotatedRelationshipElement;
+                        if (ent != null)
+                        {
+                            Debug(
+                                indentation,
+                                "  ANNOTATED-RELATIONSHIP with required attributes recognised. " +
+                                "Starting new ANNOTATED-RELATIONSHIP..");
+
+                            // make collection official
+                            AddToSubmodelOrSmec(currentSmeCollection, ent);
+                            matcher.AddMatch(ent, ie);
+
+                            // will be the ne parent for child elements
+                            parentSmeCollection = ent;
+                        }
+                        else
+                            Debug(indentation, "  ANNOTATED-RELATIONSHIP with insufficient attributes. Skipping");
+                    }
+
+                    //
                     // in Submodel oder SMEC, look out for attributes
                     //
                     #region
@@ -1146,7 +1234,10 @@ namespace AasxAmlImExport
                         var aen = AdminShell.SubmodelElementWrapper.AdequateElementNames[i];
                         var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum(aen);
                         if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
-                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection)
+                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection
+                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Entity
+                            || ae == 
+                               AdminShell.SubmodelElementWrapper.AdequateElementEnum.AnnotatedRelationshipElement)
                             continue;
 
                         if (CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Header + aen))

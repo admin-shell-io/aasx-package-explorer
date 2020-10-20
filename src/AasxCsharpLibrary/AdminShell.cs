@@ -6420,7 +6420,7 @@ namespace AdminShellNS
             }
         }
 
-        public class AnnotatedRelationshipElement : RelationshipElement, IEnumerateChildren
+        public class AnnotatedRelationshipElement : RelationshipElement, IManageSubmodelElements, IEnumerateChildren
         {
             // for JSON only
             [XmlIgnore]
@@ -6511,6 +6511,23 @@ namespace AdminShellNS
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();
                 this.annotations.Add(smw);
+            }
+
+            // from IManageSubmodelElements
+            public void Add(SubmodelElement sme)
+            {
+                if (annotations == null)
+                    annotations = new DataElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                sew.submodelElement = sme;
+                annotations.Add(sew);
+            }
+
+            public void Remove(SubmodelElement sme)
+            {
+                if (annotations != null)
+                    annotations.Remove(sme);
             }
 
             // further 

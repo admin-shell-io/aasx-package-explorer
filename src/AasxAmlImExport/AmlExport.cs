@@ -271,6 +271,68 @@ namespace AasxAmlImExport
             }
         }
 
+        private static void ExportReferenceWithSme(
+            AdminShell.AdministrationShellEnv env,
+            List<AmlInternalLinkEntity> internalLinksToCreate,
+            InternalElementType ie,
+            AdminShell.Referable referable,
+            AdminShell.Reference refInReferable,
+            string attrName,
+            string roleName,
+            string outgoingLinkName,
+            bool aasStyleAttributes = false, bool amlStyleAttributes = true)
+        {
+            // access
+            if (env == null || ie == null || !attrName.HasContent() || !roleName.HasContent() 
+                || !outgoingLinkName.HasContent())
+                return;
+
+            // working mode(s)
+            if (aasStyleAttributes)
+            {
+                if (refInReferable != null)
+                {
+                    AppendAttributeNameAndRole(ie.Attribute, attrName, roleName, ToAmlReference(refInReferable));
+                }
+            }
+
+            if (amlStyleAttributes)
+            {
+                var extIf = ie.ExternalInterface.Append(outgoingLinkName);
+                if (extIf != null)
+                {
+                    // set the internal interface by class
+                    extIf.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
+
+                    // serialize Reference as string in AAS style
+                    if (refInReferable != null)
+                    {
+                        AppendAttributeNameAndRole(ie.Attribute, attrName, roleName, ToAmlReference(refInReferable));
+                    }
+
+                    // try find the referenced element as Referable in the AAS environment
+                    var targetReferable = env.FindReferableByReference(refInReferable);
+                    if (targetReferable != null && internalLinksToCreate != null)
+                    {
+                        internalLinksToCreate.Add(
+                            new AmlInternalLinkEntity(extIf, referable, targetReferable,
+                            outgoingLinkName, "ReferableReference",
+                            (x) =>
+                            {
+                                if (x != null)
+                                {
+                                    var x2 = x.ExternalInterface.Append("ReferableReference");
+                                    if (x2 != null)
+                                    {
+                                        x2.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
+                                    }
+                                }
+                            }));
+                    }
+                }
+            }
+        }
+
         private static void ExportListOfSme(
             AasAmlMatcher matcher, List<AmlInternalLinkEntity> internalLinksToCreate,
             SystemUnitClassType parent, AdminShell.AdministrationShellEnv env,
@@ -349,6 +411,24 @@ namespace AasxAmlImExport
                     }
 
                     {
+                        if (sme is AdminShell.MultiLanguageProperty mlp)
+                        {
+                            // value
+                            if (mlp.value?.langString != null)
+                            {
+                                SetLangStr(ie.Attribute, mlp.value.langString, "value", 
+                                    AmlConst.Attributes.MultiLanguageProperty_Value);
+                            }
+
+                            // value id
+                            if (mlp.valueId != null)
+                                AppendAttributeNameAndRole(
+                                    ie.Attribute, "valueId", AmlConst.Attributes.MultiLanguageProperty_ValueId,
+                                    ToAmlReference(mlp.valueId));
+                        }
+                    }
+
+                    {
                         if (sme is AdminShell.Blob smeb)
                         {
                             if (smeb.mimeType != null)
@@ -400,6 +480,13 @@ namespace AasxAmlImExport
                     {
                         if (sme is AdminShell.ReferenceElement smer)
                         {
+                            // value == a Reference
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                                aasStyleAttributes, amlStyleAttributes);
+
+                            // TODO (MIHO, 2020-10-19): ASAP delete this dead code, it is unwanted!
+#if FOR_REFERENCE_FOR_A_WHILE
                             if (aasStyleAttributes)
                             {
                                 if (smer.value != null)
@@ -447,11 +534,29 @@ namespace AasxAmlImExport
                                     }
                                 }
                             }
+#endif
                         }
                     }
                     {
                         if (sme is AdminShell.RelationshipElement smer)
                         {
+                            // first & second
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.first, "first", AmlConst.Attributes.RelationshipElement_First, "first",
+                                aasStyleAttributes, amlStyleAttributes);
+
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.second, "second", AmlConst.Attributes.RelationshipElement_Second, "second",
+                                aasStyleAttributes, amlStyleAttributes);
+
+                            if (sme is AdminShell.AnnotatedRelationshipElement anno)
+                            {
+                                // Recurse
+                                ExportListOfSme(matcher, internalLinksToCreate, ie, env, anno.annotations);
+                            }
+
+                            // TODO (MIHO, 2020-10-19): ASAP delete this dead code, it is unwanted!
+#if FOR_REFERENCE_FOR_A_WHILE
                             if (aasStyleAttributes)
                             {
                                 if (smer.first != null && smer.second != null)
@@ -510,6 +615,7 @@ namespace AasxAmlImExport
                                     }
                                 }
                             }
+#endif
                         }
                     }
                     {
@@ -550,6 +656,26 @@ namespace AasxAmlImExport
                                 ExportListOfSme(matcher, internalLinksToCreate, oie, env, lop);
                             }
                         }
+                    }
+                    {
+                        if (sme is AdminShell.Entity ent)
+                        {
+                            // entityType
+                            AppendAttributeNameAndRole(
+                                ie.Attribute, "entityType", AmlConst.Attributes.Entity_entityType,
+                                ent.entityType, attributeDataType: "xs:string");
+
+                            // assetRef
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, ent,
+                                ent.assetRef, "asset", AmlConst.Attributes.Entity_asset, "asset",
+                                aasStyleAttributes, amlStyleAttributes);
+
+                            // Recurse
+                            ExportListOfSme(matcher, internalLinksToCreate, ie, env, ent.statements);
+                        }
+                    }
+                    {
+                        
                     }
 
                     // Qualifiers

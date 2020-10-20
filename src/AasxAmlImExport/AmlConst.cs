@@ -62,11 +62,17 @@ namespace AasxAmlImExport
 
             public static string Property_ValueId = "AAS:Property/valueId";
 
+            public static string MultiLanguageProperty_Value = "AAS:MultiLanguageProperty/value";
+            public static string MultiLanguageProperty_ValueId = "AAS:MultiLanguageProperty/valueId";
+
             public static string Blob_MimeType = "AAS:Blob/mimeType";
             public static string File_MimeType = "AAS:File/mimeType";
 
             public static string RelationshipElement_First = "AAS:RelationshipElement/first";
             public static string RelationshipElement_Second = "AAS:RelationshipElement/second";
+
+            public static string Entity_entityType = "AAS:Entity/entityType";
+            public static string Entity_asset = "AAS:Entity/asset";
 
             public static string CD_IsCaseOf = "AAS:ConceptDescription/isCaseOf";
             public static string CD_EmbeddedDataSpecification = "AAS:ConceptDescription/EmbeddedDataSpecification";
@@ -107,6 +113,12 @@ namespace AasxAmlImExport
                 "AssetAdministrationShellRoleClassLib/OperationOutputVariables";
             public static string OperationVariableInOut =
                 "AssetAdministrationShellRoleClassLib/OperationInoutputVariables";
+
+            public static string SubmodelElement_Entity =
+                "AssetAdministrationShellRoleClassLib/Entity";
+
+            public static string SubmodelElement_AnnotatedRelationship =
+                "AssetAdministrationShellRoleClassLib/AnnotatedRelationshipElement";
 
             public static string ConceptDescription = "AssetAdministrationShellRoleClassLib/ConceptDescription";
             public static string DataSpecificationContent =
