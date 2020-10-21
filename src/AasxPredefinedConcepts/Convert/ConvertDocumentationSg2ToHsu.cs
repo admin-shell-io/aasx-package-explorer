@@ -105,6 +105,7 @@ namespace AasxPredefinedConcepts.Convert
                         continue;
 
                     // make new HSU Document
+                    // ReSharper disable once ConvertToUsingDeclaration
                     // Document Item
                     using (var smcHsuDoc = AdminShell.SubmodelElementCollection.CreateNew("" + smcDoc.idShort,
                                 smcDoc.category,

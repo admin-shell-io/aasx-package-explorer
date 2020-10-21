@@ -57,7 +57,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // try find additional options
                 this.options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
+                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, this.Log);
             }
             catch (Exception ex)
             {

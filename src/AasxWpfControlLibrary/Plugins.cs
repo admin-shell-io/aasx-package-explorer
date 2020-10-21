@@ -353,6 +353,8 @@ namespace AasxPackageExplorer
                             if (duplicateLog != null)
                                 duplicateLog(xsp);
                             Log.LogInstance.Append(xsp);
+                            if (xsp.isError)
+                                Log.LogInstance.NumberErrors++;
                         }
                     }
                 }

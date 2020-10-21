@@ -484,5 +484,23 @@
       "value": "True",
       "valueId": null
     }
+  },
+  {
+    "name": "GenericForms plugin | EditIdShort = True",
+    "qualifier": {
+      "semanticId": null,
+      "type": "EditIdShort",
+      "value": "True",
+      "valueId": null
+    }
+  },
+  {
+    "name": "GenericForms plugin | EditDescription = True",
+    "qualifier": {
+      "semanticId": null,
+      "type": "EditDescription",
+      "value": "True",
+      "valueId": null
+    }
   }
 ]

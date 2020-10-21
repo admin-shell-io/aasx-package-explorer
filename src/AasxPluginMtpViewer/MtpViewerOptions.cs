@@ -30,7 +30,7 @@ namespace AasxPluginMtpViewer
         /// </summary>
         public static MtpViewerOptions CreateDefault()
         {
-            var defs = new DefinitionsMTP.ModuleTypePackage(new DefinitionsMTP());
+            var defs = new DefinitionsMTP.ModuleTypePackage();
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;

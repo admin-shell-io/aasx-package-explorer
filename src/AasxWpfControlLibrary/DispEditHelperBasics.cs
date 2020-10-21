@@ -1090,6 +1090,7 @@ namespace AasxPackageExplorer
             AdminShellPackageEnv package = null,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
+            bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null,
@@ -1168,7 +1169,7 @@ namespace AasxPackageExplorer
             if (keys != null)
             {
                 // populate [+], [Select], [eCl@ss], [Copy] buttons
-                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#" });
+                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
 
@@ -1178,10 +1179,35 @@ namespace AasxPackageExplorer
                 Grid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
 
-                if (addEclassIrdi)
+                if (addFromPool)
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 1,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "Add known"),
+                        (o) =>
+                        {
+                            var uc = new SelectFromReferablesPoolFlyout();
+                            uc.DataSourcePools = AasxPredefinedConcepts.DefinitionsPool.Static;
+                            this.flyoutProvider.StartFlyoverModal(uc);
+
+                            if (uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
+                                && pe.Ref is AdminShell.Identifiable id
+                                && id.identification != null)
+                                keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,
+                                    id.identification.idType, id.identification.id));
+
+                            if (takeOverLambdaAction != null)
+                                return takeOverLambdaAction;
+                            else
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                        });
+
+                if (addEclassIrdi)
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 2,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "Add eCl@ss IRDI"),
@@ -1206,7 +1232,7 @@ namespace AasxPackageExplorer
                 if (addExistingEntities != null && package != null)
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 2,
+                            g2, 0, 3,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "Add existing"),
@@ -1226,7 +1252,7 @@ namespace AasxPackageExplorer
 
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 3,
+                        g2, 0, 4,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Add blank"),
@@ -1242,7 +1268,7 @@ namespace AasxPackageExplorer
 
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 4,
+                        g2, 0, 5,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Clipboard"),
@@ -1259,7 +1285,7 @@ namespace AasxPackageExplorer
                     var closureKey = addPresetKeys[i];
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 5 + i,
+                            g2, 0, 6 + i,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "" + addPresetNames[i]),

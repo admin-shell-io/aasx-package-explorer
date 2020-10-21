@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPluginTechnicalData.Tetra.Framework.WPF;
 using AasxPredefinedConcepts;
+using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 
 namespace AasxPluginTechnicalData
@@ -29,7 +30,7 @@ namespace AasxPluginTechnicalData
             InitializeComponent();
         }
 
-        private DefinitionsZveiTechnicalData.SetOfDefs theDefs = null;
+        private ConceptModelZveiTechnicalData theDefs = null;
         private AdminShellPackageEnv thePackage = null;
         private AdminShell.Submodel theSubmodel = null;
         private TechnicalDataOptions theOptions = null;
@@ -50,7 +51,7 @@ namespace AasxPluginTechnicalData
             this.theEventStack = eventStack;
 
             // retrieve the Definitions
-            this.theDefs = new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData());
+            this.theDefs = new ConceptModelZveiTechnicalData(sm);
 
             // ok, directly set contents
             SetContents();

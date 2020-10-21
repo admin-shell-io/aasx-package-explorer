@@ -4994,31 +4994,31 @@ namespace AdminShellNS
             public static SubmodelElement CreateAdequateType(AdequateElementEnum ae, SubmodelElement src = null)
             {
                 if (ae == AdequateElementEnum.Property)
-                    return new Property(src);
+                    return new Property(src as Property);
                 if (ae == AdequateElementEnum.MultiLanguageProperty)
-                    return new MultiLanguageProperty(src);
+                    return new MultiLanguageProperty(src as MultiLanguageProperty);
                 if (ae == AdequateElementEnum.Range)
-                    return new Range(src);
+                    return new Range(src as Range);
                 if (ae == AdequateElementEnum.File)
-                    return new File(src);
+                    return new File(src as File);
                 if (ae == AdequateElementEnum.Blob)
-                    return new Blob(src);
+                    return new Blob(src as Blob);
                 if (ae == AdequateElementEnum.ReferenceElement)
-                    return new ReferenceElement(src);
+                    return new ReferenceElement(src as ReferenceElement);
                 if (ae == AdequateElementEnum.RelationshipElement)
-                    return new RelationshipElement(src);
+                    return new RelationshipElement(src as RelationshipElement);
                 if (ae == AdequateElementEnum.AnnotatedRelationshipElement)
-                    return new AnnotatedRelationshipElement(src);
+                    return new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
                 if (ae == AdequateElementEnum.Capability)
-                    return new Capability(src);
+                    return new Capability(src as Capability);
                 if (ae == AdequateElementEnum.SubmodelElementCollection)
-                    return new SubmodelElementCollection(src);
+                    return new SubmodelElementCollection(src as SubmodelElementCollection);
                 if (ae == AdequateElementEnum.Operation)
-                    return new Operation(src);
+                    return new Operation(src as Operation);
                 if (ae == AdequateElementEnum.BasicEvent)
-                    return new BasicEvent(src);
+                    return new BasicEvent(src as BasicEvent);
                 if (ae == AdequateElementEnum.Entity)
-                    return new Entity(src);
+                    return new Entity(src as Entity);
                 return null;
             }
 
@@ -5457,6 +5457,10 @@ namespace AdminShellNS
                 if (category != null)
                     sme.category = category;
 
+                // if its a SMC, make sure its accessible
+                if (sme is SubmodelElementCollection smc)
+                    smc.value = new SubmodelElementWrapperCollection();
+
                 // instantanously add it?
                 if (addSme)
                     this.Add(sme);
@@ -5490,6 +5494,112 @@ namespace AdminShellNS
 
                 // give back
                 return sme;
+            }
+
+            // for conversion
+
+            public T CopyOneSMEbyCopy<T>(Key destSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
+                ConceptDescription createDefault = null, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+            {
+                // get source
+                var src = sourceSmc?.FindFirstSemanticIdAs<T>(sourceSemanticId, matchMode);
+                var aeSrc = SubmodelElementWrapper.GetAdequateEnum(src?.GetElementName());
+                if (src == null || aeSrc == SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                {
+                    // create a default?
+                    if (createDefault == null)
+                        return null;
+
+                    // ok, default
+                    var dflt = this.CreateSMEForCD<T>(createDefault, addSme: addSme);
+
+                    // set default?
+                    setDefault?.Invoke(dflt);
+
+                    // return 
+                    return dflt;
+                }
+
+                // ok, create new one
+                var dst = SubmodelElementWrapper.CreateAdequateType(aeSrc, src) as T;
+                if (dst == null)
+                    return null;
+
+                // make same things sure
+                dst.idShort = src.idShort;
+                dst.category = src.category;
+                dst.semanticId = new SemanticId(destSemanticId);
+
+                // instantanously add it?
+                if (addSme)
+                    this.Add(dst);
+
+                // give back
+                return dst;
+            }
+
+            public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
+                SubmodelElementWrapperCollection sourceSmc, ConceptDescription sourceCD,
+                bool createDefault = false, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+            {
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceCD?.GetSingleKey(),
+                    createDefault ? destCD : null, setDefault, matchMode, addSme);
+            }
+
+            public void CopyManySMEbyCopy<T>(Key destSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
+                ConceptDescription createDefault = null, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed) where T : SubmodelElement, new()
+            {
+                // bool find possible sources
+                bool foundSrc = false;
+                if (sourceSmc == null)
+                    return;
+                foreach (var src in sourceSmc.FindAllSemanticIdAs<T>(sourceSemanticId, matchMode))
+                {
+                    // type of found src?
+                    var aeSrc = SubmodelElementWrapper.GetAdequateEnum(src?.GetElementName());
+
+                    // ok?
+                    if (src == null || aeSrc == SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                        continue;
+                    foundSrc = true;
+
+                    // ok, create new one
+                    var dst = SubmodelElementWrapper.CreateAdequateType(aeSrc, src) as T;
+                    if (dst != null)
+                    {
+                        // make same things sure
+                        dst.idShort = src.idShort;
+                        dst.category = src.category;
+                        dst.semanticId = new SemanticId(destSemanticId);
+
+                        // instantanously add it?
+                        this.Add(dst);
+                    }
+                }
+
+                // default?
+                if (createDefault != null && !foundSrc)
+                {
+                    // ok, default
+                    var dflt = this.CreateSMEForCD<T>(createDefault, addSme: true);
+
+                    // set default?
+                    setDefault?.Invoke(dflt);
+                }
+            }
+
+            public void CopyManySMEbyCopy<T>(ConceptDescription destCD,
+                SubmodelElementWrapperCollection sourceSmc, ConceptDescription sourceCD,
+                bool createDefault = false, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed) where T : SubmodelElement, new()
+            {
+                CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(),
+                    createDefault ? destCD : null, setDefault, matchMode);
             }
         }
 
@@ -6049,6 +6159,12 @@ namespace AdminShellNS
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("MultiLanguageProperty", "MLP");
+            }
+
+            public MultiLanguageProperty Set(LangStringSet ls)
+            {
+                this.value = ls;
+                return this;
             }
 
             public MultiLanguageProperty Set(ListOfLangStr ls)

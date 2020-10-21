@@ -95,6 +95,9 @@
     <Compile Include="ProgressBarFlyout.xaml.cs">
       <DependentUpon>ProgressBarFlyout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectFromReferablesPoolFlyout.xaml.cs">
+      <DependentUpon>SelectFromReferablesPoolFlyout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ShowValidationResultsFlyout.xaml.cs">
       <DependentUpon>ShowValidationResultsFlyout.xaml</DependentUpon>
     </Compile>
@@ -158,6 +161,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ProgressBarFlyout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SelectFromReferablesPoolFlyout.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -267,6 +274,10 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj">
       <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
       <Name>AasxIntegrationBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj">
+      <Project>{a8583f61-e5d8-44a0-98e3-a795578be3f0}</Project>
+      <Name>AasxPredefinedConcepts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

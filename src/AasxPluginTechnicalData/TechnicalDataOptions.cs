@@ -21,15 +21,22 @@ namespace AasxPluginTechnicalData
         /// </summary>
         public static TechnicalDataOptions CreateDefault()
         {
-            var rec = new TechnicalDataOptionsRecord();
-            rec.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://smart.festo.com/id/type/submodel/TechnicalDatat/1/1"));
+            // definitions
+            var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
+                    new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
+            var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
+
+            // records
 
             var opt = new TechnicalDataOptions();
-            opt.Records.Add(rec);
+
+            var rec10 = new TechnicalDataOptionsRecord();
+            rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetSemanticKey());
+            opt.Records.Add(rec10);
+
+            var rec11 = new TechnicalDataOptionsRecord();
+            rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetSemanticKey());
+            opt.Records.Add(rec11);
 
             return opt;
         }

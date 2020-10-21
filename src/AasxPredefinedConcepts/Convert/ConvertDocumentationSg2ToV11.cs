@@ -98,6 +98,7 @@ namespace AasxPredefinedConcepts.Convert
                         continue;
 
                     // make new V11 Document
+                    // ReSharper disable once ConvertToUsingDeclaration
                     // Document Item
                     using (var smcV11Doc = AdminShell.SubmodelElementCollection.CreateNew("" + smcDoc.idShort,
                                 smcDoc.category,

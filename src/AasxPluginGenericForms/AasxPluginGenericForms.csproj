@@ -93,6 +93,9 @@
     <None Include="AasxPluginGenericForms.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="AasxPluginGenericForms_SG2_TechnicalData_v11.add-options.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
