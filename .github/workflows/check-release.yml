@@ -49,12 +49,14 @@ jobs:
         run: powershell .\PackageRelease.ps1 -version LATEST.alpha
 
       - name: Upload latest
+        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
           name: aasx-package-explorer.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
           path: artefacts/release/LATEST.alpha/aasx-package-explorer.zip
 
       - name: Upload latest small
+        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
           name: aasx-package-explorer-small.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
