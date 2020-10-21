@@ -35,13 +35,6 @@ namespace AasxToolkit
 
         public static int MainWithExitCode(string[] args)
         {
-            if (args.Length == 0)
-            {
-                throw new ArgumentException(
-                    "Unexpected no command-line arguments. There should be at least one, first argument " +
-                    "referring to the program.");
-            }
-
             var nl = System.Environment.NewLine;
 
             var cmdGen = new Cli.Command(
@@ -214,7 +207,7 @@ namespace AasxToolkit
             // # Handle the special "help" command
 
             var helpAliases = new HashSet<string> { "help", "--help", "-help", "/help", "-h", "/h" };
-            if (args.Length == 1 || args.Any(arg => helpAliases.Contains(arg)))
+            if (args.Length == 0 || args.Any(arg => helpAliases.Contains(arg)))
             {
                 Console.WriteLine(Cli.GenerateUsageMessage(cmdLine));
                 return 0;
