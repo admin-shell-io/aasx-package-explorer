@@ -54,7 +54,6 @@ namespace AasxToolkit.Tests
                         int code = AasxToolkit.Program.MainWithExitCode(
                             new[]
                             {
-                                nameof(AasxToolkit),
                                 "load", pth,
                                 "save", Path.Combine(tmpDir.Path, "saved.xml")
                             });
@@ -81,7 +80,6 @@ namespace AasxToolkit.Tests
                         int code = AasxToolkit.Program.MainWithExitCode(
                             new[]
                             {
-                                nameof(AasxToolkit),
                                 "load", pth,
                                 "export-template", Path.Combine(tmpDir.Path, "exported.template")
                             });
@@ -108,7 +106,6 @@ namespace AasxToolkit.Tests
                         int code = AasxToolkit.Program.MainWithExitCode(
                             new[]
                             {
-                                nameof(AasxToolkit),
                                 "load", pth,
                                 "check",
                                 "save", Path.Combine(tmpDir.Path, "saved.xml")
@@ -135,7 +132,6 @@ namespace AasxToolkit.Tests
                             int code = AasxToolkit.Program.MainWithExitCode(
                                 new[]
                                 {
-                                    nameof(AasxToolkit),
                                     "load", pth,
                                     "check+fix",
                                     "save", Path.Combine(tmpDir.Path, "saved.xml")
@@ -156,7 +152,7 @@ namespace AasxToolkit.Tests
             {
                 using (var consoleCap = new ConsoleCapture())
                 {
-                    int code = AasxToolkit.Program.MainWithExitCode(new[] { nameof(AasxToolkit) });
+                    int code = AasxToolkit.Program.MainWithExitCode(new string[] { });
 
                     Assert.AreEqual(0, code);
                     Assert.AreEqual("", consoleCap.Error());
@@ -174,7 +170,7 @@ namespace AasxToolkit.Tests
             {
                 using (var consoleCap = new ConsoleCapture())
                 {
-                    int code = AasxToolkit.Program.MainWithExitCode(new[] { nameof(AasxToolkit), helpArg });
+                    int code = AasxToolkit.Program.MainWithExitCode(new[] { helpArg });
 
                     Assert.AreEqual(0, code);
                     Assert.AreEqual("", consoleCap.Error());
@@ -188,7 +184,7 @@ namespace AasxToolkit.Tests
                 using (var consoleCap = new ConsoleCapture())
                 {
                     int code = AasxToolkit.Program.MainWithExitCode(
-                        new[] { nameof(AasxToolkit), "load", "doesnt-exist.aasx", "help" });
+                        new[] { "load", "doesnt-exist.aasx", "help" });
 
                     Assert.AreEqual(0, code);
                     Assert.AreEqual("", consoleCap.Error());

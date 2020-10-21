@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace AasxToolkit.Tests
@@ -14,7 +15,7 @@ namespace AasxToolkit.Tests
                 new List<Cli.Command>()
             );
 
-            var parsing = Cli.ParseInstructions(cmdLine, new[] { "test-program" });
+            var parsing = Cli.ParseInstructions(cmdLine, new string[] { });
             Assert.IsNull(parsing.Errors);
             Assert.IsEmpty(parsing.Instructions);
         }
@@ -58,7 +59,7 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var parsing = Cli.ParseInstructions(cmdLine, new[] { "test-program" });
+            var parsing = Cli.ParseInstructions(cmdLine, new string[] { });
             Assert.IsNull(parsing.Errors);
             Assert.IsEmpty(parsing.Instructions);
         }
@@ -92,7 +93,7 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var parsing = Cli.ParseInstructions(cmdLine, new[] { "test-program", "say", "one", "say", "two" });
+            var parsing = Cli.ParseInstructions(cmdLine, new[] { "say", "one", "say", "two" });
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(2, parsing.Instructions.Count);
 
@@ -107,13 +108,26 @@ namespace AasxToolkit.Tests
         }
 
         [Test]
+        public void TestParsingNoArgumentsGivesEmptyInstructions()
+        {
+            var cmdLine = setUpCommandLine();
+
+            var args = new string[] { };
+            var parsing = Cli.ParseInstructions(cmdLine, args);
+            Assert.IsEmpty(parsing.Instructions);
+            Assert.AreEqual(0, parsing.AcceptedArgs);
+            Assert.IsNull(parsing.Errors);
+        }
+
+        [Test]
         public void TestParsingFailedDueToTooFewArguments()
         {
             var cmdLine = setUpCommandLine();
 
-            var args = new[] { "test-program", "say" };
+            var args = new[] { "say" };
             var parsing = Cli.ParseInstructions(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
+            Assert.AreEqual(0, parsing.AcceptedArgs);
 
             var errorMsg = Cli.FormatParsingErrors(args, parsing.AcceptedArgs, parsing.Errors);
 
@@ -121,7 +135,6 @@ namespace AasxToolkit.Tests
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
                 $"Arguments (vertically ordered):{nl}" +
-                $"test-program{nl}" +
                 $"say <<< PROBLEM <<<{nl}" +
                 nl +
                 "Too few arguments specified for the command say. It requires at least one argument.",
@@ -133,7 +146,7 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var args = new[] { "test-program", "say", "one", "unknown-command", "foobar" };
+            var args = new[] { "say", "one", "unknown-command", "foobar" };
             var parsing = Cli.ParseInstructions(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
 
@@ -143,7 +156,6 @@ namespace AasxToolkit.Tests
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
                 $"Arguments (vertically ordered):{nl}" +
-                $"test-program{nl}" +
                 $"say{nl}" +
                 $"one{nl}" +
                 $"unknown-command <<< PROBLEM <<<{nl}" +

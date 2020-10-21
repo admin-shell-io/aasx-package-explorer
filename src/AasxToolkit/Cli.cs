@@ -311,17 +311,12 @@ namespace AasxToolkit
         {
             if (args.Count == 0)
             {
-                throw new ArgumentException(
-                    "Unexpected zero command-line arguments. " +
-                    "The command-line arguments should contain at least one element, namely the program.");
+                return new ParsingOfInstructions(0, new List<IInstruction>());
             }
 
             var instructions = new List<IInstruction>();
 
-            // Skip the first argument assuming it denotes the program and start with the second argument
-            int cursor = 1;
-
-            while (cursor < args.Count)
+            for (int cursor = 0; cursor < args.Count;)
             {
                 bool found = false;
                 foreach (var cmd in commandLine.Commands)
@@ -396,41 +391,27 @@ namespace AasxToolkit
             var writer = new System.IO.StringWriter();
 
             writer.WriteLine("The command-line arguments could not be parsed.");
-            if (acceptedArgs == 0)
-            {
-                for (var i = 0; i < errors.Count; i++)
-                {
-                    writer.Write(errors[i]);
 
-                    if (i < errors.Count - 1)
-                    {
-                        writer.WriteLine();
-                    }
+            writer.WriteLine("Arguments (vertically ordered):");
+            for (var i = 0; i < args.Count; i++)
+            {
+                if (i != acceptedArgs)
+                {
+                    writer.WriteLine(args[i]);
+                }
+                else
+                {
+                    writer.WriteLine($"{args[i]} <<< PROBLEM <<<");
                 }
             }
-            else
+            writer.WriteLine();
+            for (var i = 0; i < errors.Count; i++)
             {
-                writer.WriteLine("Arguments (vertically ordered):");
-                for (var i = 0; i < args.Count; i++)
-                {
-                    if (i != acceptedArgs)
-                    {
-                        writer.WriteLine(args[i]);
-                    }
-                    else
-                    {
-                        writer.WriteLine($"{args[i]} <<< PROBLEM <<<");
-                    }
-                }
-                writer.WriteLine();
-                for (var i = 0; i < errors.Count; i++)
-                {
-                    writer.Write(errors[i]);
+                writer.Write(errors[i]);
 
-                    if (i < errors.Count - 1)
-                    {
-                        writer.WriteLine();
-                    }
+                if (i < errors.Count - 1)
+                {
+                    writer.WriteLine();
                 }
             }
 
