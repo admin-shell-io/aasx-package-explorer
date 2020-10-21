@@ -755,6 +755,29 @@ namespace AasxAmlImExport
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
 
+                    if (sme is AdminShell.Range rng)
+                    {
+                        var min = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Min);
+                        var minAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Min);
+
+                        var max = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Max);
+                        var maxAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Max);
+
+                        if (min != null)
+                        {
+                            rng.min = min;
+                            if (minAttr != null)
+                                rng.valueType = ParseAmlDataType(minAttr.AttributeDataType);
+                        }
+
+                        if (max != null)
+                        {
+                            rng.max = max;
+                            if (maxAttr != null)
+                                rng.valueType = ParseAmlDataType(maxAttr.AttributeDataType);
+                        }
+                    }
+
                     if (sme is AdminShell.MultiLanguageProperty mlp)
                     {
                         var value = TryParseDescriptionFromAttributes(

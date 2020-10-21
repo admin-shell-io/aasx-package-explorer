@@ -56,6 +56,8 @@ namespace AasxAmlImExport
             public static string File_Value = "AAS:File/value";
             public static string Blob_Value = "AAS:Blob/value";
             public static string ReferenceElement_Value = "AAS:ReferenceElement/value";
+            public static string Range_Min = "AAS:Range/min";
+            public static string Range_Max = "AAS:Range/max";
 
             public static string SMEC_ordered = "AAS:SubmodelElementCollection/ordered";
             public static string SMEC_allowDuplicates = "AAS:SubmodelElementCollection/allowDuplicates";

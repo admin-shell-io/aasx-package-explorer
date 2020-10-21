@@ -675,7 +675,26 @@ namespace AasxAmlImExport
                         }
                     }
                     {
-                        
+                        if (sme is AdminShell.Range rng)
+                        {
+                            // min
+                            if (rng.min != null)
+                            {
+                                var a = AppendAttributeNameAndRole(
+                                    ie.Attribute, "min", AmlConst.Attributes.Range_Min, rng.min);
+                                if (rng.valueType != null)
+                                    a.AttributeDataType = "xs:" + rng.valueType.Trim();
+                            }
+
+                            // max
+                            if (rng.max != null)
+                            {
+                                var a = AppendAttributeNameAndRole(
+                                    ie.Attribute, "max", AmlConst.Attributes.Range_Max, rng.max);
+                                if (rng.valueType != null)
+                                    a.AttributeDataType = "xs:" + rng.valueType.Trim();
+                            }
+                        }
                     }
 
                     // Qualifiers
