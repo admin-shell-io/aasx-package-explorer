@@ -641,7 +641,7 @@ namespace AasxAmlImExport
                 else
                     // uups!
                     return null;
-            }            
+            }
 
             private void TryPopulateReferenceAttribute(
                 SystemUnitClassType ie, string ifName, string ifClassPath, AdminShell.SubmodelElement target,
@@ -989,9 +989,6 @@ namespace AasxAmlImExport
                     // start
                     Debug(indentation, "Consulting IE name {0}", ie.Name);
 
-                    if (ie.Name == "OperatingManual")
-                        ;
-
                     //
                     // find mirror elements
                     //
@@ -1251,6 +1248,7 @@ namespace AasxAmlImExport
                     #region                    
                     // Note 18 OCT 2020 (MIHO): I presume, that SMC shall be excluded from th search, hence
                     // do another kind of comparison
+                    // reSharper disable once ForCanBeConvertedToForeach
                     for (int i = 0; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)
                     {
                         // access
@@ -1259,7 +1257,7 @@ namespace AasxAmlImExport
                         if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
                             || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection
                             || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Entity
-                            || ae == 
+                            || ae ==
                                AdminShell.SubmodelElementWrapper.AdequateElementEnum.AnnotatedRelationshipElement)
                             continue;
 

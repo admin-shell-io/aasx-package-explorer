@@ -283,7 +283,7 @@ namespace AasxAmlImExport
             bool aasStyleAttributes = false, bool amlStyleAttributes = true)
         {
             // access
-            if (env == null || ie == null || !attrName.HasContent() || !roleName.HasContent() 
+            if (env == null || ie == null || !attrName.HasContent() || !roleName.HasContent()
                 || !outgoingLinkName.HasContent())
                 return;
 
@@ -416,7 +416,7 @@ namespace AasxAmlImExport
                             // value
                             if (mlp.value?.langString != null)
                             {
-                                SetLangStr(ie.Attribute, mlp.value.langString, "value", 
+                                SetLangStr(ie.Attribute, mlp.value.langString, "value",
                                     AmlConst.Attributes.MultiLanguageProperty_Value);
                             }
 
