@@ -366,19 +366,8 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(AdminShell.Referable parent, AdminShell.SubmodelElement se)
             {
-                // TODO (MIHO, 2020-10-19): it should exist a generic Interface IManageSubmodelElements
-                // in AdminShell.cs which allows arbitrary elements to add children
-                if (parent is AdminShell.Submodel psm)
-                    psm.Add(se);
-
-                if (parent is AdminShell.SubmodelElementCollection psmc)
-                    psmc.Add(se);
-
-                if (parent is AdminShell.Entity ent)
-                    ent.Add(se);
-
-                if (parent is AdminShell.AnnotatedRelationshipElement anno)
-                    anno.Add(se);
+                if (parent is AdminShell.IManageSubmodelElements imse)
+                    imse.Add(se);
             }
 
             private AdminShell.AdministrationShell TryParseAasFromIe(SystemUnitClassType ie)
@@ -1246,7 +1235,7 @@ namespace AasxAmlImExport
                     // in Submodel, SMEC, also Internal Elements can have a property role
                     //
                     #region                    
-                    // Note 18 OCT 2020 (MIHO): I presume, that SMC shall be excluded from th search, hence
+                    // Note MIHO, 2020-10-18): I presume, that SMC shall be excluded from th search, hence
                     // do another kind of comparison
                     // reSharper disable once ForCanBeConvertedToForeach
                     for (int i = 0; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)

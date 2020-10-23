@@ -626,48 +626,42 @@ namespace AasxPackageExplorer
 
                 var showCDinfo = false;
 
-                if (sme is AdminShell.Property smep)
+                switch (sme)
                 {
-                    if (smep.value != null && smep.value != "")
-                        this.Info += "= " + smep.value;
-                    else if (smep.valueId != null && !smep.valueId.IsEmpty)
-                        this.Info += "<= " + smep.valueId.ToString();
+                    case AdminShell.Property smep:
+                        if (smep.value != null && smep.value != "")
+                            this.Info += "= " + smep.value;
+                        else if (smep.valueId != null && !smep.valueId.IsEmpty)
+                            this.Info += "<= " + smep.valueId.ToString();
+                        showCDinfo = true;
+                        break;
 
-                    showCDinfo = true;
-                }
+                    case AdminShell.Range rng:
+                        var txtMin = rng.min == null ? "{}" : rng.min.ToString();
+                        var txtMax = rng.max == null ? "{}" : rng.max.ToString();
+                        this.Info += $"= {txtMin} .. {txtMax}";
+                        showCDinfo = true;
+                        break;
 
-                if (sme is AdminShell.Range rng)
-                {
-                    var txtMin = rng.min == null ? "{}" : rng.min.ToString();
-                    var txtMax = rng.max == null ? "{}" : rng.max.ToString();
+                    case AdminShell.MultiLanguageProperty mlp:
+                        if (mlp.value != null)
+                            this.Info += "-> " + mlp.value.GetDefaultStr();
+                        break;
 
-                    this.Info += $"= {txtMin} .. {txtMax}";
+                    case AdminShell.File smef:
+                        if (smef.value != null && smef.value != "")
+                            this.Info += "-> " + smef.value;
+                        break;
 
-                    showCDinfo = true;
-                }
+                    case AdminShell.ReferenceElement smere:
+                        if (smere.value != null && !smere.value.IsEmpty)
+                            this.Info += "~> " + smere.value.ToString();
+                        break;
 
-                if (sme is AdminShell.MultiLanguageProperty mlp)
-                {
-                    if (mlp.value != null)
-                        this.Info += "-> " + mlp.value.GetDefaultStr();
-                }
-
-                if (sme is AdminShell.File smef)
-                {
-                    if (smef.value != null && smef.value != "")
-                        this.Info += "-> " + smef.value;
-                }
-
-                if (sme is AdminShell.ReferenceElement smere)
-                {
-                    if (smere.value != null && !smere.value.IsEmpty)
-                        this.Info += "~> " + smere.value.ToString();
-                }
-
-                if (sme is AdminShell.SubmodelElementCollection smc)
-                {
-                    if (smc.value != null)
-                        this.Info += "(" + smc.value.Count + " elements)";
+                    case AdminShell.SubmodelElementCollection smc:
+                        if (smc.value != null)
+                            this.Info += "(" + smc.value.Count + " elements)";
+                        break;
                 }
 
                 // Show CD / unikts ..
