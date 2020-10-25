@@ -24,7 +24,7 @@ namespace AasxToolkit
     /// </summary>
     public static class Execution
     {
-        public static int Execute(IReadOnlyList<Cli.IInstruction> instructions)
+        public static int Execute(IReadOnlyList<Instruction.IInstruction> instructions)
         {
             // # Context
             AdminShellPackageEnv package = null;
@@ -287,9 +287,7 @@ namespace AasxToolkit
                             break;
                         }
                     default:
-                        throw new InvalidOperationException(
-                            "The execution of the instruction has not been handled: " +
-                            instruction.GetType());
+                        throw ExhaustiveMatching.ExhaustiveMatch.Failed(instruction);
                 }
             }
 

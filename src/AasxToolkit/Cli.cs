@@ -32,7 +32,7 @@ namespace AasxToolkit
     /// To add a new command-instruction-execution to the program, follow these steps:
     /// <ol>
     /// <li>Start by conceptualizing what data your instruction needs. Write it down by writing a class
-    ///     implementing <see cref="IInstruction"/> and put it in <see cref="Instruction"/>.</li>
+    ///     implementing <see cref="Instruction.IInstruction"/> and put it in <see cref="Instruction"/>.</li>
     /// <li>Add the command to <see cref="Program"/>. Provide parse function that translates command-line arguments
     ///     into your instruction.</li>
     /// <li>Implement the execution of your instruction by adding a case corresponding to your instruction to
@@ -44,21 +44,14 @@ namespace AasxToolkit
     public static class Cli
     {
         /// <summary>
-        /// Represents a single instruction to the program.
-        /// </summary>
-        /// <remarks>The instruction interface is intentionally defined here (and not in a different file) so that we
-        /// can extract this code to a completely separate NuGet package in the future, if necessary.</remarks>
-        public interface IInstruction { }
-
-        /// <summary>
         /// Represents a parsing of a command as specified on the command-line.
         /// </summary>
         public class Parsing
         {
-            public readonly IInstruction Instruction;
+            public readonly Instruction.IInstruction Instruction;
             public readonly IReadOnlyList<string> Errors;
 
-            public Parsing(IInstruction instruction)
+            public Parsing(Instruction.IInstruction instruction)
             {
                 Instruction = instruction;
                 Errors = null;
@@ -165,10 +158,10 @@ namespace AasxToolkit
             /// </remarks>
             public readonly int AcceptedArgs;
 
-            public readonly IReadOnlyList<IInstruction> Instructions;
+            public readonly IReadOnlyList<Instruction.IInstruction> Instructions;
             public readonly IReadOnlyList<string> Errors;
 
-            public ParsingOfInstructions(int acceptedArgs, IReadOnlyList<IInstruction> instructions)
+            public ParsingOfInstructions(int acceptedArgs, IReadOnlyList<Instruction.IInstruction> instructions)
             {
                 AcceptedArgs = acceptedArgs;
                 Instructions = instructions;
@@ -311,10 +304,10 @@ namespace AasxToolkit
         {
             if (args.Count == 0)
             {
-                return new ParsingOfInstructions(0, new List<IInstruction>());
+                return new ParsingOfInstructions(0, new List<Instruction.IInstruction>());
             }
 
-            var instructions = new List<IInstruction>();
+            var instructions = new List<Instruction.IInstruction>();
 
             for (int cursor = 0; cursor < args.Count;)
             {

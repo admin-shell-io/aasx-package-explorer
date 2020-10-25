@@ -1,14 +1,21 @@
-﻿using System;
-using System.IO;
-
-using AasxAmlImExport;
-using AasxIntegrationBase.AasForms;
-using AdminShellNS;
-
-namespace AasxToolkit.Instruction
+﻿namespace AasxToolkit.Instruction
 {
+    /// <summary>
+    /// Represents a single instruction to the program.
+    /// </summary>
+    /// <remarks>The instruction interface is intentionally defined here (and not in a different file) so that we
+    /// can extract this code to a completely separate NuGet package in the future, if necessary.</remarks>
+    [ExhaustiveMatching.Closed(
+        typeof(Generate),
+        typeof(Load),
+        typeof(Save),
+        typeof(Validate),
+        typeof(ExportTemplate),
+        typeof(CheckAndFix),
+        typeof(Test))]
+    public interface IInstruction { }
 
-    class Generate : Cli.IInstruction
+    public class Generate : IInstruction
     {
         public readonly string JsonInitFile;
 
@@ -18,7 +25,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class Load : Cli.IInstruction
+    public class Load : IInstruction
     {
         public readonly string Path;
 
@@ -28,7 +35,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class Save : Cli.IInstruction
+    public class Save : IInstruction
     {
         public readonly string Path;
 
@@ -38,7 +45,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class Validate : Cli.IInstruction
+    public class Validate : IInstruction
     {
         public readonly string Path;
 
@@ -48,7 +55,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class ExportTemplate : Cli.IInstruction
+    public class ExportTemplate : IInstruction
     {
         public readonly string Path;
 
@@ -58,7 +65,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class CheckAndFix : Cli.IInstruction
+    public class CheckAndFix : IInstruction
     {
         public readonly bool ShouldFix;
 
@@ -68,7 +75,7 @@ namespace AasxToolkit.Instruction
         }
     }
 
-    class Test : Cli.IInstruction
+    public class Test : IInstruction
     {
         // Intentionally left empty
     }
