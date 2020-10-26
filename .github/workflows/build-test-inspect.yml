@@ -110,7 +110,7 @@ jobs:
           cache-name: inspect-code
         with:
           path: artefacts/inspectcode-caches
-          key: ${{ env.cache-name }}-2020-07-06-T-14-40Z
+          key: ${{ env.cache-name }}-2020-10-26-T-14-40Z
 
       - name: Inspect code
         working-directory: src
