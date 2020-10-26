@@ -644,7 +644,7 @@ namespace AasxAmlImExport
                     // by this, AML can easily setup a reference
                     // to do so, register a link and attach the appropriate lambda
                     this.registerForInternalLinks.Add(
-                        "" + ie.ID + ":" + "ReferableReference",
+                        "" + ie.ID + ":" + ifName,
                         new TargetIdAction(
                             targetId,
                             (il, ti) =>
