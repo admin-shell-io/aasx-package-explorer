@@ -4994,31 +4994,31 @@ namespace AdminShellNS
             public static SubmodelElement CreateAdequateType(AdequateElementEnum ae, SubmodelElement src = null)
             {
                 if (ae == AdequateElementEnum.Property)
-                    return new Property(src as Property);
+                    return new Property(src);
                 if (ae == AdequateElementEnum.MultiLanguageProperty)
-                    return new MultiLanguageProperty(src as MultiLanguageProperty);
+                    return new MultiLanguageProperty(src);
                 if (ae == AdequateElementEnum.Range)
-                    return new Range(src as Range);
+                    return new Range(src);
                 if (ae == AdequateElementEnum.File)
-                    return new File(src as File);
+                    return new File(src);
                 if (ae == AdequateElementEnum.Blob)
-                    return new Blob(src as Blob);
+                    return new Blob(src);
                 if (ae == AdequateElementEnum.ReferenceElement)
-                    return new ReferenceElement(src as ReferenceElement);
+                    return new ReferenceElement(src);
                 if (ae == AdequateElementEnum.RelationshipElement)
-                    return new RelationshipElement(src as RelationshipElement);
+                    return new RelationshipElement(src);
                 if (ae == AdequateElementEnum.AnnotatedRelationshipElement)
-                    return new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
+                    return new AnnotatedRelationshipElement(src);
                 if (ae == AdequateElementEnum.Capability)
-                    return new Capability(src as Capability);
+                    return new Capability(src);
                 if (ae == AdequateElementEnum.SubmodelElementCollection)
-                    return new SubmodelElementCollection(src as SubmodelElementCollection);
+                    return new SubmodelElementCollection(src);
                 if (ae == AdequateElementEnum.Operation)
-                    return new Operation(src as Operation);
+                    return new Operation(src);
                 if (ae == AdequateElementEnum.BasicEvent)
-                    return new BasicEvent(src as BasicEvent);
+                    return new BasicEvent(src);
                 if (ae == AdequateElementEnum.Entity)
-                    return new Entity(src as Entity);
+                    return new Entity(src);
                 return null;
             }
 
@@ -6051,21 +6051,24 @@ namespace AdminShellNS
 
             public Property() { }
 
-            public Property(SubmodelElement src) : base(src) { }
-
-            public Property(Property src)
+            public Property(SubmodelElement src)
                 : base(src)
             {
-                this.valueType = src.valueType;
-                this.value = src.value;
-                if (src.valueId != null)
-                    src.valueId = new Reference(src.valueId);
+                if (!(src is Property p))
+                    return;
+                this.valueType = p.valueType;
+                this.value = p.value;
+                if (p.valueId != null)
+                    valueId = new Reference(p.valueId);
             }
 
 #if !DoNotUseAasxCompatibilityModels
             public Property(AasxCompatibilityModels.AdminShellV10.Property src)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 this.valueType = src.valueType;
                 this.value = src.value;
                 if (src.valueId != null)
@@ -6134,14 +6137,15 @@ namespace AdminShellNS
 
             public MultiLanguageProperty() { }
 
-            public MultiLanguageProperty(SubmodelElement src) : base(src) { }
-
-            public MultiLanguageProperty(MultiLanguageProperty src)
+            public MultiLanguageProperty(SubmodelElement src)
                 : base(src)
             {
-                this.value = new LangStringSet(src.value);
-                if (src.valueId != null)
-                    src.valueId = new Reference(src.valueId);
+                if (!(src is MultiLanguageProperty mlp))
+                    return;
+
+                this.value = new LangStringSet(mlp.value);
+                if (mlp.valueId != null)
+                    valueId = new Reference(mlp.valueId);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -6233,14 +6237,15 @@ namespace AdminShellNS
 
             public Range() { }
 
-            public Range(SubmodelElement src) : base(src) { }
-
-            public Range(Range src)
+            public Range(SubmodelElement src)
                 : base(src)
             {
-                this.valueType = src.valueType;
-                this.min = src.min;
-                this.max = src.max;
+                if (!(src is Range rng))
+                    return;
+
+                this.valueType = rng.valueType;
+                this.min = rng.min;
+                this.max = rng.max;
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -6292,19 +6297,23 @@ namespace AdminShellNS
 
             public Blob() { }
 
-            public Blob(SubmodelElement src) : base(src) { }
-
-            public Blob(Blob src)
+            public Blob(SubmodelElement src)
                 : base(src)
             {
-                this.mimeType = src.mimeType;
-                this.value = src.value;
+                if (!(src is Blob blb))
+                    return;
+
+                this.mimeType = blb.mimeType;
+                this.value = blb.value;
             }
 
 #if !DoNotUseAasxCompatibilityModels
             public Blob(AasxCompatibilityModels.AdminShellV10.Blob src)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 this.mimeType = src.mimeType;
                 this.value = src.value;
             }
@@ -6356,19 +6365,23 @@ namespace AdminShellNS
 
             public File() { }
 
-            public File(SubmodelElement src) : base(src) { }
-
-            public File(File src)
+            public File(SubmodelElement src)
                 : base(src)
             {
-                this.mimeType = src.mimeType;
-                this.value = src.value;
+                if (!(src is File fil))
+                    return;
+
+                this.mimeType = fil.mimeType;
+                this.value = fil.value;
             }
 
 #if !DoNotUseAasxCompatibilityModels
             public File(AasxCompatibilityModels.AdminShellV10.File src)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 this.mimeType = src.mimeType;
                 this.value = src.value;
             }
@@ -6434,19 +6447,23 @@ namespace AdminShellNS
 
             public ReferenceElement() { }
 
-            public ReferenceElement(SubmodelElement src) : base(src) { }
-
-            public ReferenceElement(ReferenceElement src)
+            public ReferenceElement(SubmodelElement src)
                 : base(src)
             {
-                if (src.value != null)
-                    this.value = new Reference(src.value);
+                if (!(src is ReferenceElement re))
+                    return;
+
+                if (re.value != null)
+                    this.value = new Reference(re.value);
             }
 
 #if !DoNotUseAasxCompatibilityModels
             public ReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 if (src.value != null)
                     this.value = new Reference(src.value);
             }
@@ -6491,21 +6508,25 @@ namespace AdminShellNS
 
             public RelationshipElement() { }
 
-            public RelationshipElement(SubmodelElement src) : base(src) { }
-
-            public RelationshipElement(RelationshipElement src)
+            public RelationshipElement(SubmodelElement src)
                 : base(src)
             {
-                if (src.first != null)
-                    this.first = new Reference(src.first);
-                if (src.second != null)
-                    this.second = new Reference(src.second);
+                if (!(src is RelationshipElement rel))
+                    return;
+
+                if (rel.first != null)
+                    this.first = new Reference(rel.first);
+                if (rel.second != null)
+                    this.second = new Reference(rel.second);
             }
 
 #if !DoNotUseAasxCompatibilityModels
             public RelationshipElement(AasxCompatibilityModels.AdminShellV10.RelationshipElement src)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 if (src.first != null)
                     this.first = new Reference(src.first);
                 if (src.second != null)
@@ -6587,17 +6608,17 @@ namespace AdminShellNS
 
             public AnnotatedRelationshipElement() { }
 
-            public AnnotatedRelationshipElement(SubmodelElement src) : base(src) { }
-
-            public AnnotatedRelationshipElement(AnnotatedRelationshipElement src)
+            public AnnotatedRelationshipElement(SubmodelElement src)
                 : base(src)
             {
-                if (src.first != null)
-                    this.first = new Reference(src.first);
-                if (src.second != null)
-                    this.second = new Reference(src.second);
-                if (src.annotations != null)
-                    this.annotations = new DataElementWrapperCollection(src.annotations);
+                if (!(src is AnnotatedRelationshipElement arel))
+                    return;
+                if (arel.first != null)
+                    this.first = new Reference(arel.first);
+                if (arel.second != null)
+                    this.second = new Reference(arel.second);
+                if (arel.annotations != null)
+                    this.annotations = new DataElementWrapperCollection(arel.annotations);
             }
 
             public new static AnnotatedRelationshipElement CreateNew(
@@ -6647,9 +6668,7 @@ namespace AdminShellNS
         {
             public Capability() { }
 
-            public Capability(SubmodelElement src) : base(src) { }
-
-            public Capability(Capability src)
+            public Capability(SubmodelElement src)
                 : base(src)
             { }
 
@@ -6727,15 +6746,16 @@ namespace AdminShellNS
 
             public SubmodelElementCollection() { }
 
-            public SubmodelElementCollection(SubmodelElement src) : base(src) { }
-
-            public SubmodelElementCollection(SubmodelElementCollection src, bool shallowCopy = false)
+            public SubmodelElementCollection(SubmodelElement src, bool shallowCopy = false)
                 : base(src)
             {
-                this.ordered = src.ordered;
-                this.allowDuplicates = src.allowDuplicates;
+                if (!(src is SubmodelElementCollection smc))
+                    return;
+
+                this.ordered = smc.ordered;
+                this.allowDuplicates = smc.allowDuplicates;
                 if (!shallowCopy)
-                    foreach (var smw in src.value)
+                    foreach (var smw in smc.value)
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
             }
 
@@ -6744,6 +6764,9 @@ namespace AdminShellNS
                 AasxCompatibilityModels.AdminShellV10.SubmodelElementCollection src, bool shallowCopy = false)
                 : base(src)
             {
+                if (src == null)
+                    return;
+
                 this.ordered = src.ordered;
                 this.allowDuplicates = src.allowDuplicates;
                 if (!shallowCopy)
@@ -6836,7 +6859,7 @@ namespace AdminShellNS
 
             public OperationVariable(OperationVariable src, bool shallowCopy = false)
             {
-                this.value = new SubmodelElementWrapper(src.value.submodelElement, shallowCopy);
+                this.value = new SubmodelElementWrapper(src?.value?.submodelElement, shallowCopy);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -6990,17 +7013,18 @@ namespace AdminShellNS
 
             public Operation() { }
 
-            public Operation(SubmodelElement src) : base(src) { }
-
-            public Operation(Operation src)
+            public Operation(SubmodelElement src)
                 : base(src)
             {
+                if (!(src is Operation op))
+                    return;
+
                 for (int i = 0; i < 2; i++)
-                    if (src[i] != null)
+                    if (op[i] != null)
                     {
                         if (this[i] == null)
                             this[i] = new List<OperationVariable>();
-                        foreach (var ov in src[i])
+                        foreach (var ov in op[i])
                             this[i].Add(new OperationVariable(ov));
                     }
             }
@@ -7102,20 +7126,21 @@ namespace AdminShellNS
 
             public Entity() { }
 
-            public Entity(SubmodelElement src) : base(src) { }
-
-            public Entity(Entity src)
+            public Entity(SubmodelElement src)
                 : base(src)
             {
-                if (src.statements != null)
+                if (!(src is Entity ent))
+                    return;
+
+                if (ent.statements != null)
                 {
                     this.statements = new SubmodelElementWrapperCollection();
-                    foreach (var smw in src.statements)
+                    foreach (var smw in ent.statements)
                         this.statements.Add(new SubmodelElementWrapper(smw.submodelElement));
                 }
-                this.entityType = src.entityType;
-                if (src.assetRef != null)
-                    this.assetRef = new AssetRef(src.assetRef);
+                this.entityType = ent.entityType;
+                if (ent.assetRef != null)
+                    this.assetRef = new AssetRef(ent.assetRef);
             }
 
             public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null)
@@ -7203,13 +7228,14 @@ namespace AdminShellNS
 
             public BasicEvent() { }
 
-            public BasicEvent(SubmodelElement src) : base(src) { }
-
-            public BasicEvent(BasicEvent src)
+            public BasicEvent(SubmodelElement src)
                 : base(src)
             {
-                if (src.observed != null)
-                    this.observed = new Reference(src.observed);
+                if (!(src is BasicEvent be))
+                    return;
+
+                if (be.observed != null)
+                    this.observed = new Reference(be.observed);
             }
 
 #if !DoNotUseAasxCompatibilityModels
