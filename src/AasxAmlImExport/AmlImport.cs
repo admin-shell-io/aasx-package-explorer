@@ -366,11 +366,8 @@ namespace AasxAmlImExport
 
             private void AddToSubmodelOrSmec(AdminShell.Referable parent, AdminShell.SubmodelElement se)
             {
-                if (parent is AdminShell.Submodel psm)
-                    psm.Add(se);
-
-                if (parent is AdminShell.SubmodelElementCollection psmc)
-                    psmc.Add(se);
+                if (parent is AdminShell.IManageSubmodelElements imse)
+                    imse.Add(se);
             }
 
             private AdminShell.AdministrationShell TryParseAasFromIe(SystemUnitClassType ie)
@@ -647,7 +644,7 @@ namespace AasxAmlImExport
                     // by this, AML can easily setup a reference
                     // to do so, register a link and attach the appropriate lambda
                     this.registerForInternalLinks.Add(
-                        "" + ie.ID + ":" + "ReferableReference",
+                        "" + ie.ID + ":" + ifName,
                         new TargetIdAction(
                             targetId,
                             (il, ti) =>
@@ -747,6 +744,42 @@ namespace AasxAmlImExport
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
 
+                    if (sme is AdminShell.Range rng)
+                    {
+                        var min = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Min);
+                        var minAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Min);
+
+                        var max = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Max);
+                        var maxAttr = FindAttributeByRefSemantic(ie.Attribute, AmlConst.Attributes.Range_Max);
+
+                        if (min != null)
+                        {
+                            rng.min = min;
+                            if (minAttr != null)
+                                rng.valueType = ParseAmlDataType(minAttr.AttributeDataType);
+                        }
+
+                        if (max != null)
+                        {
+                            rng.max = max;
+                            if (maxAttr != null)
+                                rng.valueType = ParseAmlDataType(maxAttr.AttributeDataType);
+                        }
+                    }
+
+                    if (sme is AdminShell.MultiLanguageProperty mlp)
+                    {
+                        var value = TryParseDescriptionFromAttributes(
+                            ie.Attribute, AmlConst.Attributes.MultiLanguageProperty_Value);
+                        var valueId = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.MultiLanguageProperty_ValueId);
+
+                        if (value.langString != null)
+                            mlp.value = new AdminShell.LangStringSet(value.langString);
+                        if (valueId != null)
+                            mlp.valueId = ParseAmlReference(valueId);
+                    }
+
                     if (sme is AdminShell.Blob smeb)
                     {
                         var mimeType = FindAttributeValueByRefSemantic(
@@ -788,6 +821,7 @@ namespace AasxAmlImExport
                         }
                     }
 
+                    // will also include AnnotatedRelationship !!
                     if (sme is AdminShell.RelationshipElement smere)
                     {
                         if (aasStyleAttributes)
@@ -812,6 +846,19 @@ namespace AasxAmlImExport
                             TryPopulateReferenceAttribute(
                                 ie, "second", AmlConst.Interfaces.ReferableReference, smere, 3);
                         }
+                    }
+
+                    if (sme is AdminShell.Entity ent)
+                    {
+                        var entityType = FindAttributeValueByRefSemantic(
+                            ie.Attribute, AmlConst.Attributes.Entity_entityType);
+                        if (entityType != null)
+                            ent.entityType = entityType;
+
+                        var assetRef = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.Entity_asset);
+                        if (assetRef != null)
+                            ent.assetRef = new AdminShell.AssetRef(ParseAmlReference(assetRef));
                     }
 
                     // ok
@@ -864,7 +911,6 @@ namespace AasxAmlImExport
             private AdminShell.DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
                 AttributeSequence aseq)
             {
-
                 // finally, create the entity
                 var ds = new AdminShell.DataSpecificationIEC61360();
 
@@ -1083,6 +1129,60 @@ namespace AasxAmlImExport
                     }
 
                     //
+                    // Entity
+                    //
+                    if (currentAas != null && currentSubmodel != null &&
+                        CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Entity))
+                    {
+                        // begin new (temporary) object
+                        var ent = new AdminShell.Entity();
+                        ent = TryPopulateSubmodelElement(ie, ent) as AdminShell.Entity;
+                        if (ent != null)
+                        {
+                            Debug(
+                                indentation,
+                                "  ENTITY with required attributes recognised. " +
+                                "Starting new ENTITY..");
+
+                            // make collection official
+                            AddToSubmodelOrSmec(currentSmeCollection, ent);
+                            matcher.AddMatch(ent, ie);
+
+                            // will be the ne parent for child elements
+                            parentSmeCollection = ent;
+                        }
+                        else
+                            Debug(indentation, "  ENTITY with insufficient attributes. Skipping");
+                    }
+
+                    //
+                    // Annotated Relationship
+                    //
+                    if (currentAas != null && currentSubmodel != null &&
+                        CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_AnnotatedRelationship))
+                    {
+                        // begin new (temporary) object
+                        var ent = new AdminShell.AnnotatedRelationshipElement();
+                        ent = TryPopulateSubmodelElement(ie, ent) as AdminShell.AnnotatedRelationshipElement;
+                        if (ent != null)
+                        {
+                            Debug(
+                                indentation,
+                                "  ANNOTATED-RELATIONSHIP with required attributes recognised. " +
+                                "Starting new ANNOTATED-RELATIONSHIP..");
+
+                            // make collection official
+                            AddToSubmodelOrSmec(currentSmeCollection, ent);
+                            matcher.AddMatch(ent, ie);
+
+                            // will be the ne parent for child elements
+                            parentSmeCollection = ent;
+                        }
+                        else
+                            Debug(indentation, "  ANNOTATED-RELATIONSHIP with insufficient attributes. Skipping");
+                    }
+
+                    //
                     // in Submodel oder SMEC, look out for attributes
                     //
                     #region
@@ -1134,14 +1234,26 @@ namespace AasxAmlImExport
                     //
                     // in Submodel, SMEC, also Internal Elements can have a property role
                     //
-                    #region
-                    for (int i = 1; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)
+                    #region                    
+                    // Note MIHO, 2020-10-18): I presume, that SMC shall be excluded from th search, hence
+                    // do another kind of comparison
+                    // reSharper disable once ForCanBeConvertedToForeach
+                    for (int i = 0; i < AdminShell.SubmodelElementWrapper.AdequateElementNames.Length; i++)
                     {
+                        // access
                         var aen = AdminShell.SubmodelElementWrapper.AdequateElementNames[i];
+                        var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum(aen);
+                        if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
+                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection
+                            || ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Entity
+                            || ae ==
+                               AdminShell.SubmodelElementWrapper.AdequateElementEnum.AnnotatedRelationshipElement)
+                            continue;
+
                         if (CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.SubmodelElement_Header + aen))
                         {
                             // begin new (temporary) object
-                            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(aen);
+                            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(ae);
                             if (sme == null)
                                 continue;
 
@@ -1327,7 +1439,7 @@ namespace AasxAmlImExport
                                         {
                                             // embedded data spec for the SDK
                                             var eds = new AdminShell.EmbeddedDataSpecification();
-                                            cd.embeddedDataSpecification.Add(eds);
+                                            cd.IEC61360DataSpec = eds;
 
                                             /*
                                              TODO (Michael Hoffmeister, 2020-08-01): fill out 
@@ -1379,6 +1491,8 @@ namespace AasxAmlImExport
                             // try find registered sides
                             foreach (var side in new[] { il.RefPartnerSideA, il.RefPartnerSideB })
                             {
+                                if (!this.registerForInternalLinks.ContainsKey(side))
+                                    continue;
                                 var items = this.registerForInternalLinks[side];
                                 if (items != null)
                                     foreach (var it in items)

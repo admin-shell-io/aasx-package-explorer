@@ -624,14 +624,49 @@ namespace AasxPackageExplorer
                 this.Caption = ((sme.kind != null && sme.kind.IsTemplate) ? "<T> " : "") + ci.Item1;
                 this.Info = ci.Item2;
 
-                if (sme is AdminShell.Property)
-                {
-                    var smep = sme as AdminShell.Property;
-                    if (smep.value != null && smep.value != "")
-                        this.Info += "= " + smep.value;
-                    else if (smep.valueId != null && !smep.valueId.IsEmpty)
-                        this.Info += "<= " + smep.valueId.ToString();
+                var showCDinfo = false;
 
+                switch (sme)
+                {
+                    case AdminShell.Property smep:
+                        if (smep.value != null && smep.value != "")
+                            this.Info += "= " + smep.value;
+                        else if (smep.valueId != null && !smep.valueId.IsEmpty)
+                            this.Info += "<= " + smep.valueId.ToString();
+                        showCDinfo = true;
+                        break;
+
+                    case AdminShell.Range rng:
+                        var txtMin = rng.min == null ? "{}" : rng.min.ToString();
+                        var txtMax = rng.max == null ? "{}" : rng.max.ToString();
+                        this.Info += $"= {txtMin} .. {txtMax}";
+                        showCDinfo = true;
+                        break;
+
+                    case AdminShell.MultiLanguageProperty mlp:
+                        if (mlp.value != null)
+                            this.Info += "-> " + mlp.value.GetDefaultStr();
+                        break;
+
+                    case AdminShell.File smef:
+                        if (smef.value != null && smef.value != "")
+                            this.Info += "-> " + smef.value;
+                        break;
+
+                    case AdminShell.ReferenceElement smere:
+                        if (smere.value != null && !smere.value.IsEmpty)
+                            this.Info += "~> " + smere.value.ToString();
+                        break;
+
+                    case AdminShell.SubmodelElementCollection smc:
+                        if (smc.value != null)
+                            this.Info += "(" + smc.value.Count + " elements)";
+                        break;
+                }
+
+                // Show CD / unikts ..
+                if (showCDinfo)
+                {
                     // cache ConceptDescription?
                     if (sme.semanticId != null && sme.semanticId.Keys != null)
                     {
@@ -644,34 +679,6 @@ namespace AasxPackageExplorer
                                 this.Info += " [" + iecprop.unit + "]";
                         }
                     }
-                }
-
-                if (sme is AdminShell.MultiLanguageProperty)
-                {
-                    var mlp = sme as AdminShell.MultiLanguageProperty;
-                    if (mlp.value != null)
-                        this.Info += "-> " + mlp.value.GetDefaultStr();
-                }
-
-                if (sme is AdminShell.File)
-                {
-                    var smef = sme as AdminShell.File;
-                    if (smef.value != null && smef.value != "")
-                        this.Info += "-> " + smef.value;
-                }
-
-                if (sme is AdminShell.ReferenceElement)
-                {
-                    var smere = sme as AdminShell.ReferenceElement;
-                    if (smere.value != null && !smere.value.IsEmpty)
-                        this.Info += "~> " + smere.value.ToString();
-                }
-
-                if (sme is AdminShell.SubmodelElementCollection)
-                {
-                    var smesec = sme as AdminShell.SubmodelElementCollection;
-                    if (smesec.value != null)
-                        this.Info += "(" + smesec.value.Count + " elements)";
                 }
 
                 // Qualifiers?

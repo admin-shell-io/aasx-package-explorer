@@ -30,7 +30,7 @@ function Main
         "--properties:Platform=x64" `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
-        '--exclude=*\obj\*;packages\*;*\bin\*' `
+        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
         AasxPackageExplorer.sln
 
     [xml]$inspection = Get-Content $codeInspectionPath

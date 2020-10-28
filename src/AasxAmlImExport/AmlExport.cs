@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
+using Aml.Engine.AmlObjects;
 using Aml.Engine.CAEX;
 
 /*
@@ -271,6 +272,68 @@ namespace AasxAmlImExport
             }
         }
 
+        private static void ExportReferenceWithSme(
+            AdminShell.AdministrationShellEnv env,
+            List<AmlInternalLinkEntity> internalLinksToCreate,
+            InternalElementType ie,
+            AdminShell.Referable referable,
+            AdminShell.Reference refInReferable,
+            string attrName,
+            string roleName,
+            string outgoingLinkName,
+            bool aasStyleAttributes = false, bool amlStyleAttributes = true)
+        {
+            // access
+            if (env == null || ie == null || !attrName.HasContent() || !roleName.HasContent()
+                || !outgoingLinkName.HasContent())
+                return;
+
+            // working mode(s)
+            if (aasStyleAttributes)
+            {
+                if (refInReferable != null)
+                {
+                    AppendAttributeNameAndRole(ie.Attribute, attrName, roleName, ToAmlReference(refInReferable));
+                }
+            }
+
+            if (amlStyleAttributes)
+            {
+                var extIf = ie.ExternalInterface.Append(outgoingLinkName);
+                if (extIf != null)
+                {
+                    // set the internal interface by class
+                    extIf.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
+
+                    // serialize Reference as string in AAS style
+                    if (refInReferable != null)
+                    {
+                        AppendAttributeNameAndRole(ie.Attribute, attrName, roleName, ToAmlReference(refInReferable));
+                    }
+
+                    // try find the referenced element as Referable in the AAS environment
+                    var targetReferable = env.FindReferableByReference(refInReferable);
+                    if (targetReferable != null && internalLinksToCreate != null)
+                    {
+                        internalLinksToCreate.Add(
+                            new AmlInternalLinkEntity(extIf, referable, targetReferable,
+                            outgoingLinkName, "ReferableReference",
+                            (x) =>
+                            {
+                                if (x != null)
+                                {
+                                    var x2 = x.ExternalInterface.Append("ReferableReference");
+                                    if (x2 != null)
+                                    {
+                                        x2.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
+                                    }
+                                }
+                            }));
+                    }
+                }
+            }
+        }
+
         private static void ExportListOfSme(
             AasAmlMatcher matcher, List<AmlInternalLinkEntity> internalLinksToCreate,
             SystemUnitClassType parent, AdminShell.AdministrationShellEnv env,
@@ -348,23 +411,39 @@ namespace AasxAmlImExport
                                 ToAmlReference(smep.valueId));
                     }
 
+                    switch (sme)
                     {
-                        if (sme is AdminShell.Blob smeb)
-                        {
+                        case AdminShell.MultiLanguageProperty mlp:
+                            // value
+                            if (mlp.value?.langString != null)
+                            {
+                                SetLangStr(ie.Attribute, mlp.value.langString, "value",
+                                    AmlConst.Attributes.MultiLanguageProperty_Value);
+                            }
+
+                            // value id
+                            if (mlp.valueId != null)
+                                AppendAttributeNameAndRole(
+                                    ie.Attribute, "valueId", AmlConst.Attributes.MultiLanguageProperty_ValueId,
+                                    ToAmlReference(mlp.valueId));
+                            break;
+
+                        case AdminShell.Blob smeb:
+                            // mime type
                             if (smeb.mimeType != null)
                                 AppendAttributeNameAndRole(
                                     ie.Attribute, "mimeType", AmlConst.Attributes.Blob_MimeType, smeb.mimeType);
+
+                            // value
                             if (smeb.value != null)
                             {
                                 var a = AppendAttributeNameAndRole(
                                     ie.Attribute, "value", AmlConst.Attributes.Blob_Value, smeb.value);
                                 a.AttributeDataType = "xs:string";
                             }
-                        }
-                    }
-                    {
-                        if (sme is AdminShell.File smef)
-                        {
+                            break;
+
+                        case AdminShell.File smef:
                             if (aasStyleAttributes)
                             {
                                 if (smef.mimeType != null)
@@ -395,126 +474,31 @@ namespace AasxAmlImExport
                                     }
                                 }
                             }
-                        }
-                    }
-                    {
-                        if (sme is AdminShell.ReferenceElement smer)
-                        {
-                            if (aasStyleAttributes)
-                            {
-                                if (smer.value != null)
-                                {
-                                    AppendAttributeNameAndRole(
-                                        ie.Attribute, "value", AmlConst.Attributes.ReferenceElement_Value,
-                                        ToAmlReference(smer.value));
-                                }
-                            }
+                            break;
 
-                            if (amlStyleAttributes)
-                            {
-                                var extIf = ie.ExternalInterface.Append("ReferableReference");
-                                if (extIf != null)
-                                {
-                                    // set the internal interface by class
-                                    extIf.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
+                        case AdminShell.ReferenceElement smer:
+                            // value == a Reference
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                                aasStyleAttributes, amlStyleAttributes);
+                            break;
 
-                                    // serialize Reference as string in AAS style
-                                    if (smer.value != null)
-                                    {
-                                        AppendAttributeNameAndRole(
-                                            extIf.Attribute, "value", AmlConst.Attributes.ReferenceElement_Value,
-                                            ToAmlReference(smer.value));
-                                    }
+                        case AdminShell.RelationshipElement smer:
+                            // first & second
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.first, "first", AmlConst.Attributes.RelationshipElement_First, "first",
+                                aasStyleAttributes, amlStyleAttributes);
 
-                                    // try find the referenced element as Referable in the AAS environment
-                                    var targetReferable = env.FindReferableByReference(smer.value);
-                                    if (targetReferable != null && internalLinksToCreate != null)
-                                    {
-                                        internalLinksToCreate.Add(
-                                            new AmlInternalLinkEntity(extIf, smer, targetReferable,
-                                            "ReferableReference", "ReferableReference",
-                                            (x) =>
-                                            {
-                                                if (x != null)
-                                                {
-                                                    var x2 = x.ExternalInterface.Append("ReferableReference");
-                                                    if (x2 != null)
-                                                    {
-                                                        x2.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
-                                                    }
-                                                }
-                                            }));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    {
-                        if (sme is AdminShell.RelationshipElement smer)
-                        {
-                            if (aasStyleAttributes)
-                            {
-                                if (smer.first != null && smer.second != null)
-                                {
-                                    AppendAttributeNameAndRole(
-                                        ie.Attribute, "first", AmlConst.Attributes.RelationshipElement_First,
-                                        ToAmlReference(smer.first));
-                                    AppendAttributeNameAndRole(
-                                        ie.Attribute, "second", AmlConst.Attributes.RelationshipElement_Second,
-                                        ToAmlReference(smer.second));
-                                }
-                            }
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
+                                smer.second, "second", AmlConst.Attributes.RelationshipElement_Second, "second",
+                                aasStyleAttributes, amlStyleAttributes);
 
-                            if (amlStyleAttributes)
-                            {
-                                for (int i = 0; i < 2; i++)
-                                {
-                                    // get first, second
-                                    var theRef = (new[] { smer.first, smer.second })[i];
-                                    var theName = (new[] { "first", "second" })[i];
+                            // Recurse
+                            if (sme is AdminShell.AnnotatedRelationshipElement anno)
+                                ExportListOfSme(matcher, internalLinksToCreate, ie, env, anno.annotations);
+                            break;
 
-                                    if (theRef != null)
-                                    {
-                                        var extIf = ie.ExternalInterface.Append(theName);
-                                        if (extIf != null)
-                                        {
-                                            // set the internal interface by class
-                                            extIf.RefBaseClassPath = AmlConst.Interfaces.ReferableReference;
-
-                                            // serialize Reference as string in AAS style
-                                            AppendAttributeNameAndRole(
-                                                extIf.Attribute, "value", AmlConst.Attributes.ReferenceElement_Value,
-                                                ToAmlReference(theRef));
-
-                                            // try find the referenced element as Referable in the AAS environment
-                                            var targetReferable = env.FindReferableByReference(theRef);
-                                            if (targetReferable != null && internalLinksToCreate != null)
-                                            {
-                                                internalLinksToCreate.Add(
-                                                    new AmlInternalLinkEntity(extIf, smer, targetReferable, theName,
-                                                    "ReferableReference",
-                                                    (x) =>
-                                                    {
-                                                        if (x != null)
-                                                        {
-                                                            var x2 = x.ExternalInterface.Append("ReferableReference");
-                                                            if (x2 != null)
-                                                            {
-                                                                x2.RefBaseClassPath =
-                                                                    AmlConst.Interfaces.ReferableReference;
-                                                            }
-                                                        }
-                                                    }));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    {
-                        if (sme is AdminShell.SubmodelElementCollection smec)
-                        {
+                        case AdminShell.SubmodelElementCollection smec:
                             // recurse
                             AppendAttributeNameAndRole(
                                 ie.Attribute, "ordered", AmlConst.Attributes.SMEC_ordered,
@@ -524,11 +508,9 @@ namespace AasxAmlImExport
                                 smec.allowDuplicates ? "true" : "false", attributeDataType: "xs:boolean");
 
                             ExportListOfSme(matcher, internalLinksToCreate, ie, env, smec.value);
-                        }
-                    }
-                    {
-                        if (sme is AdminShell.Operation op)
-                        {
+                            break;
+
+                        case AdminShell.Operation op:
                             // over in, out
                             for (int i = 0; i < 2; i++)
                             {
@@ -549,7 +531,42 @@ namespace AasxAmlImExport
                                     lop.Add(oe.value);
                                 ExportListOfSme(matcher, internalLinksToCreate, oie, env, lop);
                             }
-                        }
+                            break;
+
+                        case AdminShell.Entity ent:
+                            // entityType
+                            AppendAttributeNameAndRole(
+                                ie.Attribute, "entityType", AmlConst.Attributes.Entity_entityType,
+                                ent.entityType, attributeDataType: "xs:string");
+
+                            // assetRef
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, ent,
+                                ent.assetRef, "asset", AmlConst.Attributes.Entity_asset, "asset",
+                                aasStyleAttributes, amlStyleAttributes);
+
+                            // Recurse
+                            ExportListOfSme(matcher, internalLinksToCreate, ie, env, ent.statements);
+                            break;
+
+                        case AdminShell.Range rng:
+                            // min
+                            if (rng.min != null)
+                            {
+                                var a = AppendAttributeNameAndRole(
+                                    ie.Attribute, "min", AmlConst.Attributes.Range_Min, rng.min);
+                                if (rng.valueType != null)
+                                    a.AttributeDataType = "xs:" + rng.valueType.Trim();
+                            }
+
+                            // max
+                            if (rng.max != null)
+                            {
+                                var a = AppendAttributeNameAndRole(
+                                    ie.Attribute, "max", AmlConst.Attributes.Range_Max, rng.max);
+                                if (rng.valueType != null)
+                                    a.AttributeDataType = "xs:" + rng.valueType.Trim();
+                            }
+                            break;
                     }
 
                     // Qualifiers

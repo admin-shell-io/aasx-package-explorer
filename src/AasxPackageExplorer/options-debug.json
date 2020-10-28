@@ -44,6 +44,7 @@
       "Args": [],
       "Options": null
     },
+    */
     {
       "Path": "..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -68,7 +69,7 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\AasxPluginExportTable.dll",
       "Args": []
-    }, 
+    },
     {
       "Path": "..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\AasxPluginWebBrowser.dll",
       "Args": []
@@ -92,8 +93,9 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\AasxPluginImageMap.dll",
       "Args": []
-    },
+    }
     /* Festo specific from here on */
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
@@ -132,6 +134,7 @@
         ]
       }
     }
+    */
   ],
   "SecureConnectPresets": [
     {
