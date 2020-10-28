@@ -36,7 +36,7 @@ jobs:
           cache-name: cache-local-nuget-tools
         with:
           path: tools
-          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-10-28
 
       - name: Cache global nuget packages
         uses: actions/cache@v2
@@ -44,7 +44,7 @@ jobs:
           cache-name: cache-global-nuget-packages
         with:
           path: ~/.nuget/packages/
-          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
+          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-10-28
 
       - name: Install tools for build-test-inspect
         working-directory: src

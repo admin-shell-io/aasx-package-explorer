@@ -31,6 +31,12 @@
       "commands": [
         "opinionated-csharp-todos"
       ]
+    },
+    "jetbrains.resharper.globaltools": {
+      "version": "2020.2.4",
+      "commands": [
+        "jb"
+      ]
     }
   }
 }

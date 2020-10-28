@@ -85,7 +85,8 @@ namespace AasxPackageExplorer
         public double ZoomLevel
         {
             get { return 1.0; }
-            set { ; }
+            // ReSharper disable once ValueParameterNotUsed
+            set {; }
         }
 #endif
 

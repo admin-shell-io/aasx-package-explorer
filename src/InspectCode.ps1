@@ -6,28 +6,23 @@ This script inspects the code quality after the build.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    FindInspectCode, `
     CreateAndGetArtefactsDir
 
 function Main
 {
-    $inspectcode = FindInspectCode
-
     $artefactsDir = CreateAndGetArtefactsDir
     $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
 
     Set-Location $PSScriptRoot
 
-    Write-Host "Inspecting the code with inspectcode.exe ..."
+    Write-Host "Inspecting the code with inspectcode ..."
 
     $cachesHome = Join-Path $artefactsDir "inspectcode-caches"
     New-Item -ItemType Directory -Force -Path "$cachesHome"|Out-Null
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
-    & $inspectcode `
-        "--properties:Configuration=Debug" `
-        "--properties:Platform=x64" `
+    & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
         '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `

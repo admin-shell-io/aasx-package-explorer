@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -1156,6 +1157,8 @@ namespace AasxPackageExplorer
                                     if (submodel.submodelElements == null)
                                         submodel.submodelElements =
                                             new AdminShellV20.SubmodelElementWrapperCollection();
+
+                                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
                                     return new ModifyRepo.LambdaActionRedrawAllElements(
                                         submodel, isExpanded: true);
@@ -2312,6 +2315,7 @@ namespace AasxPackageExplorer
                                     if (are.annotations == null)
                                         are.annotations = new AdminShell.DataElementWrapperCollection();
 
+                                    // ReSharper disable once PossibleNullReferenceException  -- ignore a false positive
                                     are.annotations.Add(clonesmw);
 
                                     return new ModifyRepo.LambdaActionRedrawAllElements(

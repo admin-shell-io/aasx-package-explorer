@@ -3,64 +3,64 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPackageExplorer", "AasxPackageExplorer\AasxPackageExplorer.csproj", "{569B369E-9393-4F57-994E-6B84398FD7CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPackageExplorer", "AasxPackageExplorer\AasxPackageExplorer.csproj", "{569B369E-9393-4F57-994E-6B84398FD7CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxToolkit", "AasxToolkit\AasxToolkit.csproj", "{294FC59A-5645-412F-8216-702FB66528C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxToolkit", "AasxToolkit\AasxToolkit.csproj", "{294FC59A-5645-412F-8216-702FB66528C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCsharpLibrary", "AasxCsharpLibrary\AasxCsharpLibrary.csproj", "{9863799B-4E44-4DA2-9120-C85C7985BC6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxCsharpLibrary", "AasxCsharpLibrary\AasxCsharpLibrary.csproj", "{9863799B-4E44-4DA2-9120-C85C7985BC6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxWpfControlLibrary", "AasxWpfControlLibrary\AasxWpfControlLibrary.csproj", "{EBAE658A-3ECE-4C98-89BC-F79809AB4A5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxWpfControlLibrary", "AasxWpfControlLibrary\AasxWpfControlLibrary.csproj", "{EBAE658A-3ECE-4C98-89BC-F79809AB4A5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxRestServerLibrary", "AasxRestServerLibrary\AasxRestServerLibrary.csproj", "{967E60E3-D668-42A3-AA0B-1A031C20D871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxRestServerLibrary", "AasxRestServerLibrary\AasxRestServerLibrary.csproj", "{967E60E3-D668-42A3-AA0B-1A031C20D871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxRestConsoleServer", "AasxRestConsoleServer\AasxRestConsoleServer.csproj", "{6C45112D-B7F0-4463-BE6D-A8A2B5A547BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxRestConsoleServer", "AasxRestConsoleServer\AasxRestConsoleServer.csproj", "{6C45112D-B7F0-4463-BE6D-A8A2B5A547BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxIntegrationBase", "AasxIntegrationBase\AasxIntegrationBase.csproj", "{5A05DF78-216B-4A0B-9E30-7B2557C7E867}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxIntegrationBase", "AasxIntegrationBase\AasxIntegrationBase.csproj", "{5A05DF78-216B-4A0B-9E30-7B2557C7E867}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxIntegrationEmptySample", "AasxIntegrationEmptySample\AasxIntegrationEmptySample.csproj", "{7B8F763F-39FE-4947-B0E6-B9D97A3B6F8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxIntegrationEmptySample", "AasxIntegrationEmptySample\AasxIntegrationEmptySample.csproj", "{7B8F763F-39FE-4947-B0E6-B9D97A3B6F8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxAmlImExport", "AasxAmlImExport\AasxAmlImExport.csproj", "{6D1A03B2-EBA7-4CE2-9237-DF9AD7128947}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxAmlImExport", "AasxAmlImExport\AasxAmlImExport.csproj", "{6D1A03B2-EBA7-4CE2-9237-DF9AD7128947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxMqtt", "AasxMqtt\AasxMqtt.csproj", "{042305D7-DB68-4D02-B08F-ED47BBCD705E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxMqtt", "AasxMqtt\AasxMqtt.csproj", "{042305D7-DB68-4D02-B08F-ED47BBCD705E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxMqttClient", "AasxMqttClient\AasxMqttClient.csproj", "{7DFE2ECB-37C5-4697-8D8C-050ECAFCF553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxMqttClient", "AasxMqttClient\AasxMqttClient.csproj", "{7DFE2ECB-37C5-4697-8D8C-050ECAFCF553}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginBomStructure", "AasxPluginBomStructure\AasxPluginBomStructure.csproj", "{9E14C360-2DBC-46AE-90A5-6171ABA9CFDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginBomStructure", "AasxPluginBomStructure\AasxPluginBomStructure.csproj", "{9E14C360-2DBC-46AE-90A5-6171ABA9CFDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPredefinedConcepts", "AasxPredefinedConcepts\AasxPredefinedConcepts.csproj", "{A8583F61-E5D8-44A0-98E3-A795578BE3F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPredefinedConcepts", "AasxPredefinedConcepts\AasxPredefinedConcepts.csproj", "{A8583F61-E5D8-44A0-98E3-A795578BE3F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginDocumentShelf", "AasxPluginDocumentShelf\AasxPluginDocumentShelf.csproj", "{00CDE8B2-EBF3-4ECC-B533-D2270693828F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginDocumentShelf", "AasxPluginDocumentShelf\AasxPluginDocumentShelf.csproj", "{00CDE8B2-EBF3-4ECC-B533-D2270693828F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxIntegrationBaseWpf", "AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj", "{E3AB36EA-E98A-4CC2-BC18-1D0E40EEAE1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxIntegrationBaseWpf", "AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj", "{E3AB36EA-E98A-4CC2-BC18-1D0E40EEAE1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginGenericForms", "AasxPluginGenericForms\AasxPluginGenericForms.csproj", "{B9A11210-B5F8-40BC-9464-04D69C3C512B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginGenericForms", "AasxPluginGenericForms\AasxPluginGenericForms.csproj", "{B9A11210-B5F8-40BC-9464-04D69C3C512B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsaglWpfControl", "MsaglWpfControl\MsaglWpfControl.csproj", "{57BB1D65-1EF9-4EAE-A1DE-9EA749431FA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsaglWpfControl", "MsaglWpfControl\MsaglWpfControl.csproj", "{57BB1D65-1EF9-4EAE-A1DE-9EA749431FA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginExportTable", "AasxPluginExportTable\AasxPluginExportTable.csproj", "{FB0ACC7F-3115-44BF-9931-1BB317CC2F02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginExportTable", "AasxPluginExportTable\AasxPluginExportTable.csproj", "{FB0ACC7F-3115-44BF-9931-1BB317CC2F02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginWebBrowser", "AasxPluginWebBrowser\AasxPluginWebBrowser.csproj", "{AA2A09A7-1E92-4572-9411-249C392ED6A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginWebBrowser", "AasxPluginWebBrowser\AasxPluginWebBrowser.csproj", "{AA2A09A7-1E92-4572-9411-249C392ED6A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginTechnicalData", "AasxPluginTechnicalData\AasxPluginTechnicalData.csproj", "{B074E5E8-A2D4-4DFB-81C6-4DD5F0ABB8B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginTechnicalData", "AasxPluginTechnicalData\AasxPluginTechnicalData.csproj", "{B074E5E8-A2D4-4DFB-81C6-4DD5F0ABB8B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9264D68F-5269-420F-A486-6B8F39BEEB8B}"
 	ProjectSection(SolutionItems) = preProject
 		README-packages.md = README-packages.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxUANodesetImExport", "AasxUANodesetImExport\AasxUANodesetImExport.csproj", "{65783100-86DA-4CF6-8066-1292B902B216}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxUANodesetImExport", "AasxUANodesetImExport\AasxUANodesetImExport.csproj", "{65783100-86DA-4CF6-8066-1292B902B216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxDictionaryImport", "AasxDictionaryImport\AasxDictionaryImport.csproj", "{DEC389BC-59BC-48E5-B163-6E44CE782C4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxDictionaryImport", "AasxDictionaryImport\AasxDictionaryImport.csproj", "{DEC389BC-59BC-48E5-B163-6E44CE782C4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxSignature", "AasxSignature\AasxSignature.csproj", "{69824EF3-30F8-4C8A-874E-9B1F5873D25E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxSignature", "AasxSignature\AasxSignature.csproj", "{69824EF3-30F8-4C8A-874E-9B1F5873D25E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxOpenidClient", "AasxOpenidClient\AasxOpenidClient.csproj", "{7788AC2B-7F97-4755-B343-C4196FA90198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxOpenidClient", "AasxOpenidClient\AasxOpenidClient.csproj", "{7788AC2B-7F97-4755-B343-C4196FA90198}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxCsharpLibrary.Tests", "AasxCsharpLibrary.Tests\AasxCsharpLibrary.Tests.csproj", "{2F21FEFF-F0EF-40B5-BA05-09FC9F499AE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxCsharpLibrary.Tests", "AasxCsharpLibrary.Tests\AasxCsharpLibrary.Tests.csproj", "{2F21FEFF-F0EF-40B5-BA05-09FC9F499AE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseCode", "BaseCode", "{DDA9C372-F8ED-4099-A53C-01B9333FD985}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxDictionaryImport.Tests", "AasxDictionaryImport.Tests\AasxDictionaryImport.Tests.csproj", "{B540EBF4-C026-45A4-9721-909AF0CC14C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxDictionaryImport.Tests", "AasxDictionaryImport.Tests\AasxDictionaryImport.Tests.csproj", "{B540EBF4-C026-45A4-9721-909AF0CC14C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalLibs", "FunctionalLibs", "{F9AE9D23-200C-455B-B14E-2EF20B13432E}"
 EndProject
@@ -72,32 +72,32 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProgsUserInterface", "Progs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataStore", "DataStore", "{9490C085-8FDC-4EDE-BDCF-280FC19E43FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfMtpControl", "WpfMtpControl\WpfMtpControl.csproj", "{F6CF3948-C67A-40FC-812A-3733F673EA21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMtpControl", "WpfMtpControl\WpfMtpControl.csproj", "{F6CF3948-C67A-40FC-812A-3733F673EA21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginMtpViewer", "AasxPluginMtpViewer\AasxPluginMtpViewer.csproj", "{7A612803-BAE2-4FED-BBCE-56079EDB8594}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginMtpViewer", "AasxPluginMtpViewer\AasxPluginMtpViewer.csproj", "{7A612803-BAE2-4FED-BBCE-56079EDB8594}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfMtpVisuViewer", "WpfMtpVisuViewer\WpfMtpVisuViewer.csproj", "{1E2E9A75-3C8C-4CD9-BE11-32190FD4313C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfMtpVisuViewer", "WpfMtpVisuViewer\WpfMtpVisuViewer.csproj", "{1E2E9A75-3C8C-4CD9-BE11-32190FD4313C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalUiLibs", "FunctionalUiLibs", "{C1752DB5-0157-4666-A25D-2666089457BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxUaNetServer", "AasxUaNetServer\AasxUaNetServer.csproj", "{C1E3F0D9-2BEA-4668-AFF4-454FDF527A58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxUaNetServer", "AasxUaNetServer\AasxUaNetServer.csproj", "{C1E3F0D9-2BEA-4668-AFF4-454FDF527A58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginUaNetServer", "AasxPluginUaNetServer\AasxPluginUaNetServer.csproj", "{32EEDE14-8622-42E6-81AE-33941B7A6EFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginUaNetServer", "AasxPluginUaNetServer\AasxPluginUaNetServer.csproj", "{32EEDE14-8622-42E6-81AE-33941B7A6EFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginUaNetClient", "AasxPluginUaNetClient\AasxPluginUaNetClient.csproj", "{9EB71E8B-EC41-4054-BAB4-F419B4D13A36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginUaNetClient", "AasxPluginUaNetClient\AasxPluginUaNetClient.csproj", "{9EB71E8B-EC41-4054-BAB4-F419B4D13A36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxUaNetConsoleServer", "AasxUaNetConsoleServer\AasxUaNetConsoleServer.csproj", "{232852C2-358B-4577-9D29-1E48ED75C342}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxUaNetConsoleServer", "AasxUaNetConsoleServer\AasxUaNetConsoleServer.csproj", "{232852C2-358B-4577-9D29-1E48ED75C342}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserSpecific", "UserSpecific", "{4FD813E9-EC97-4E85-BAFC-5280BC07C302}"
 	ProjectSection(SolutionItems) = preProject
 		MIHO.NUnit.runsettings = MIHO.NUnit.runsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfXamlTool", "WpfXamlTool\WpfXamlTool.csproj", "{96FBCF5F-BBF3-4076-8DB6-BF9D8420F3DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfXamlTool", "WpfXamlTool\WpfXamlTool.csproj", "{96FBCF5F-BBF3-4076-8DB6-BF9D8420F3DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginImageMap", "AasxPluginImageMap\AasxPluginImageMap.csproj", "{8D09D103-1B97-4D54-BAA9-841B2F93FF36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginImageMap", "AasxPluginImageMap\AasxPluginImageMap.csproj", "{8D09D103-1B97-4D54-BAA9-841B2F93FF36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxToolkit.Tests", "AasxToolkit.Tests\AasxToolkit.Tests.csproj", "{B649731D-C961-4A0E-9A20-3DF20D941E83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxToolkit.Tests", "AasxToolkit.Tests\AasxToolkit.Tests.csproj", "{B649731D-C961-4A0E-9A20-3DF20D941E83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -621,8 +621,8 @@ Global
 		{65783100-86DA-4CF6-8066-1292B902B216}.ReleaseWithoutCEF|x86.Build.0 = Release|Any CPU
 		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x64.Build.0 = Debug|Any CPU
+		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x64.ActiveCfg = Debug|x64
+		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x64.Build.0 = Debug|x64
 		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.Debug|x86.Build.0 = Debug|Any CPU
 		{DEC389BC-59BC-48E5-B163-6E44CE782C4A}.DebugWithoutCEF|Any CPU.ActiveCfg = Debug|Any CPU

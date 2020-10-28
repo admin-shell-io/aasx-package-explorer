@@ -1,198 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E3AB36EA-E98A-4CC2-BC18-1D0E40EEAE1A}</ProjectGuid>
+    <TargetFramework>net461</TargetFramework>
     <OutputType>library</OutputType>
-    <RootNamespace>AasxIntegrationBaseWpf</RootNamespace>
-    <AssemblyName>AasxIntegrationBaseWpf</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AasForms\AasFormUtils.cs" />
-    <Compile Include="AasForms\FormSubControlReferenceElement.xaml.cs">
-      <DependentUpon>FormSubControlReferenceElement.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormSubControlSMEBase.xaml.cs">
-      <DependentUpon>FormSubControlSMEBase.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormSubControlSMEC.xaml.cs">
-      <DependentUpon>FormSubControlSMEC.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\IFormListControl.cs" />
-    <Compile Include="AasxPluginOptionSerialization.cs" />
-    <Compile Include="EmptyFlyout.xaml.cs">
-      <DependentUpon>EmptyFlyout.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="IFlyoutControl.cs" />
-    <Compile Include="IFlyoutProvider.cs" />
-    <Compile Include="MessageBoxFlyout.xaml.cs">
-      <DependentUpon>MessageBoxFlyout.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WpfViewmodelBase.cs" />
-    <Page Include="AasForms\FormSubControlReferenceElement.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormSubControlSMEBase.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormSubControlSMEC.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormListOfSameControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormListOfDifferentControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormSubControlFile.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormSubControlMultiLangProp.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="AasForms\FormSubControlProperty.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="EmptyFlyout.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MessageBoxFlyout.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\Graphics.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="AasForms\FormListOfSameControl.xaml.cs">
-      <DependentUpon>FormListOfSameControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormListOfDifferentControl.xaml.cs">
-      <DependentUpon>FormListOfDifferentControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormSubControlFile.xaml.cs">
-      <DependentUpon>FormSubControlFile.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormSubControlMultiLangProp.xaml.cs">
-      <DependentUpon>FormSubControlMultiLangProp.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormSubControlProperty.xaml.cs">
-      <DependentUpon>FormSubControlProperty.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="AasForms\FormDescription.cs" />
-    <Compile Include="AasForms\FormInstance.cs" />
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AasxWpfBaseUtils.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
-      <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
-      <Name>AasxCsharpLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj">
-      <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
-      <Name>AasxIntegrationBase</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OriginalResources\Notes.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SampleFormDescription.txt" />
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\msg_error.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\msg_hand.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\msg_info.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\msg_question.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\msg_warning.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="OriginalResources\FormSmaller.xaml" />
+    <Page Remove="OriginalResources\IconDelete.xaml" />
+    <Page Remove="OriginalResources\IconPencil.xaml" />
+    <Page Remove="OriginalResources\ListBars.xaml" />
+    <Page Remove="OriginalResources\ListTiles.xaml" />
+  </ItemGroup>
 </Project>
