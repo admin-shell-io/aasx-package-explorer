@@ -230,7 +230,7 @@ namespace AasxPluginMtpViewer
                         var newtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
                             this.defsMtp.CD_RenamingNewText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
-                            preLoadInfo.NamespaceRenaming != null)
+                            preLoadInfo?.NamespaceRenaming != null)
                             preLoadInfo.NamespaceRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
                     }
 
