@@ -23,32 +23,30 @@ namespace AasxToolkit.Tests
 
     public class TestWithACommand
     {
-        class DummyInstruction : Cli.IInstruction
-        {
-            public readonly string Message;
-
-            public DummyInstruction(string message)
-            {
-                Message = message;
-            }
-        }
-
         private Cli.CommandLine setUpCommandLine()
         {
+            // We use a subset of commands to make the testing simpler, in particular when it comes to testing
+            // the help message.
+            var cmdLoad = new Cli.Command(
+                "load",
+                "loads the AASX package into RAM.",
+                new[]
+                {
+                    new Cli.Arg(
+                        "package-file",
+                        "Path to the AASX package."),
+                },
+                (cmdArgs) =>
+                {
+                    var pth = cmdArgs[0];
+                    return new Cli.Parsing(new Instruction.Load(pth));
+                }
+            );
+
             var cmdLine = Cli.DeclareCommandLine(
                 "test-program",
                 "Tests something.",
-                new List<Cli.Command>
-                {
-                    new Cli.Command(
-                        "say",
-                        "Add a message to the dummy context.",
-                        new List<Cli.Arg>
-                        {
-                            new Cli.Arg("message", "message to be added to the dummy context")
-                        },
-                        (args) => new Cli.Parsing(new DummyInstruction(args[0])))
-                }
+                new List<Cli.Command> { cmdLoad }
             );
 
             return cmdLine;
@@ -72,6 +70,7 @@ namespace AasxToolkit.Tests
             string help = Cli.GenerateUsageMessage(cmdLine);
 
             var nl = System.Environment.NewLine;
+
             Assert.AreEqual(
                 $"test-program:{nl}" +
                 $"  Tests something.{nl}" +
@@ -80,11 +79,11 @@ namespace AasxToolkit.Tests
                 $"  test-program [list of commands]{nl}" +
                 $"{nl}" +
                 $"Commands:{nl}" +
-                $"  say [message]{nl}" +
-                $"    Add a message to the dummy context.{nl}" +
+                $"  load [package-file]{nl}" +
+                $"    loads the AASX package into RAM.{nl}" +
                 $"{nl}" +
-                $"    message:{nl}" +
-                $"      message to be added to the dummy context{nl}",
+                $"    package-file:{nl}" +
+                $"      Path to the AASX package.{nl}",
                 help);
         }
 
@@ -93,18 +92,18 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var parsing = Cli.ParseInstructions(cmdLine, new[] { "say", "one", "say", "two" });
+            var parsing = Cli.ParseInstructions(cmdLine, new[] { "load", "one", "load", "two" });
             Assert.IsNull(parsing.Errors);
             Assert.AreEqual(2, parsing.Instructions.Count);
 
-            Assert.IsInstanceOf<DummyInstruction>(parsing.Instructions[0]);
-            Assert.IsInstanceOf<DummyInstruction>(parsing.Instructions[1]);
+            Assert.IsInstanceOf<Instruction.Load>(parsing.Instructions[0]);
+            Assert.IsInstanceOf<Instruction.Load>(parsing.Instructions[1]);
 
-            var first = (DummyInstruction)parsing.Instructions[0];
-            Assert.AreEqual("one", first.Message);
+            var first = (Instruction.Load)parsing.Instructions[0];
+            Assert.AreEqual("one", first.Path);
 
-            var second = (DummyInstruction)parsing.Instructions[1];
-            Assert.AreEqual("two", second.Message);
+            var second = (Instruction.Load)parsing.Instructions[1];
+            Assert.AreEqual("two", second.Path);
         }
 
         [Test]
@@ -124,7 +123,7 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var args = new[] { "say" };
+            var args = new[] { "load" };
             var parsing = Cli.ParseInstructions(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
             Assert.AreEqual(0, parsing.AcceptedArgs);
@@ -135,9 +134,9 @@ namespace AasxToolkit.Tests
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
                 $"Arguments (vertically ordered):{nl}" +
-                $"say <<< PROBLEM <<<{nl}" +
+                $"load <<< PROBLEM <<<{nl}" +
                 nl +
-                "Too few arguments specified for the command say. It requires at least one argument.",
+                "Too few arguments specified for the command load. It requires at least one argument.",
                 errorMsg);
         }
 
@@ -146,7 +145,7 @@ namespace AasxToolkit.Tests
         {
             var cmdLine = setUpCommandLine();
 
-            var args = new[] { "say", "one", "unknown-command", "foobar" };
+            var args = new[] { "load", "one", "unknown-command", "foobar" };
             var parsing = Cli.ParseInstructions(cmdLine, args);
             Assert.IsNull(parsing.Instructions);
 
@@ -156,7 +155,7 @@ namespace AasxToolkit.Tests
             Assert.AreEqual(
                 $"The command-line arguments could not be parsed.{nl}" +
                 $"Arguments (vertically ordered):{nl}" +
-                $"say{nl}" +
+                $"load{nl}" +
                 $"one{nl}" +
                 $"unknown-command <<< PROBLEM <<<{nl}" +
                 $"foobar{nl}" +
