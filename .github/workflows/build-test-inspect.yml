@@ -104,14 +104,6 @@ jobs:
           echo "Commit is: $commit"
           dotnet tool run csmacnz.Coveralls --opencover -i ..\artefacts\CoverageResults.xml --useRelativePaths --repoToken $env:COVERALLS_REPO_TOKEN --commitId $commit --commitBranch $branch
 
-      - name: Cache inspect code
-        uses: actions/cache@v2
-        env:
-          cache-name: inspect-code
-        with:
-          path: artefacts/inspectcode-caches
-          key: ${{ env.cache-name }}-2020-07-06-T-14-40Z
-
       - name: Inspect code
         working-directory: src
         run: powershell .\InspectCode.ps1

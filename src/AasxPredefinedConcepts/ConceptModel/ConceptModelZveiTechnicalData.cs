@@ -41,8 +41,6 @@ namespace AasxPredefinedConcepts.ConceptModel
             CD_TextStatement,
             CD_ValidDate;
 
-        public ConceptModelZveiTechnicalData() { }
-
         public ConceptModelZveiTechnicalData(AdminShell.Submodel sm)
         {
             InitFromSubmodel(sm);
@@ -122,13 +120,13 @@ namespace AasxPredefinedConcepts.ConceptModel
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
-            if (sm?.semanticId.MatchesExactlyOneKey(defsV10.SM_TechnicalData.GetSemanticKey(),
-                AdminShellV20.Key.MatchMode.Relaxed) == true)
+            if (sm.semanticId.MatchesExactlyOneKey(
+                    defsV10.SM_TechnicalData.GetSemanticKey(), AdminShellV20.Key.MatchMode.Relaxed))
                 InitFromVersion(Version.V1_0);
 
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
-            if (sm?.semanticId.MatchesExactlyOneKey(defsV11.SM_TechnicalData.GetSemanticKey(),
-                AdminShellV20.Key.MatchMode.Relaxed) == true)
+            if (sm.semanticId.MatchesExactlyOneKey(
+                    defsV11.SM_TechnicalData.GetSemanticKey(), AdminShellV20.Key.MatchMode.Relaxed))
                 InitFromVersion(Version.V1_1);
         }
     }
