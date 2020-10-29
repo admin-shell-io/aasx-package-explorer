@@ -645,7 +645,12 @@ namespace AdminShellNS
             [JsonIgnore]
             public Key this[int index] { get { return keys[index]; } }
 
+            [XmlIgnore]
+            [JsonIgnore]
             public Key First { get { return this.Count < 1 ? null : this.keys[0]; } }
+
+            [XmlIgnore]
+            [JsonIgnore]
             public Key Last { get { return this.Count < 1 ? null : this.keys[this.keys.Count - 1]; } }
 
             // constructors / creators

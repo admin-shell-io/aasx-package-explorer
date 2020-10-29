@@ -44,7 +44,6 @@
       "Args": [],
       "Options": null
     },
-    */
     {
       "Path": "..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -95,8 +94,7 @@
       "Args": []
     }
     /* Festo specific from here on */
-    /*
-    {
+    /* {
       "Path": "..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [],
       "Options": {
@@ -133,7 +131,7 @@
           }
         ]
       }
-    }
+    } 
     */
   ],
   "SecureConnectPresets": [
