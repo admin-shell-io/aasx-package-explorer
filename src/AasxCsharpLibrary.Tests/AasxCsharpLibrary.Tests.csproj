@@ -13,7 +13,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestResources\XmlValidation\expectedOk\**">
+    <None Include="TestResources\AasxCsharpLibrary.Tests\XmlValidation\expectedOk\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
