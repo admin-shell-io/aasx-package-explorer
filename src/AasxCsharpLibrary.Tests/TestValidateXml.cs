@@ -14,7 +14,7 @@ namespace AdminShellNS.Tests
         {
             string successDir = Path.Combine(
                 TestContext.CurrentContext.TestDirectory,
-                "TestResources\\XmlValidation\\expectedOk");
+                "TestResources\\AasxCsharpLibrary.Tests\\XmlValidation\\expectedOk");
 
             if (!System.IO.Directory.Exists(successDir))
             {
