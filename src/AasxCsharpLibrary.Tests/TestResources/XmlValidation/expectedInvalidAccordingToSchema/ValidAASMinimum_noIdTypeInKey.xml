@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<aas:aasenv xmlns:IEC="http://www.admin-shell.io/IEC61360/2/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:abac="http://www.admin-shell.io/aas/abac/2/0" xsi:schemaLocation="http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd" xmlns:aas="http://www.admin-shell.io/aas/2/0">
+  <aas:assetAdministrationShells>
+    <aas:assetAdministrationShell>
+      <aas:idShort>myAAS</aas:idShort>
+      <aas:identification idType="IRI">http://example.com/demo/aas/1/1/NNNNNNNN</aas:identification>
+      <aas:assetRef>
+        <aas:keys>
+          <aas:key type="Asset" local="true" idType="">http://example.com/KLIYLHKLYUI</aas:key>
+        </aas:keys>
+      </aas:assetRef>
+      <aas:submodelRefs />
+      <aas:conceptDictionaries />
+    </aas:assetAdministrationShell>
+  </aas:assetAdministrationShells>
+  <aas:assets>
+    <aas:asset>
+      <aas:idShort>myAsset</aas:idShort>
+      <aas:identification idType="IRI">http://example.com/KLIYLHKLYUI</aas:identification>
+      <aas:kind>Instance</aas:kind>
+    </aas:asset>
+  </aas:assets>
+  <aas:submodels />
+  <aas:conceptDescriptions />
+</aas:aasenv>

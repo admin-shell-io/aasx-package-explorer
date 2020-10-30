@@ -1,0 +1,1 @@
+﻿[Serialization] in : XML: 6, 8: Das Element 'assetAdministrationShell' in Namespace 'http://www.admin-shell.io/aas/2/0' hat ein ungültiges untergeordnetes Element 'assetRef' in Namespace 'http://www.admin-shell.io/aas/2/0'. Erwartet wurde die Liste der möglichen Elemente: 'category, description, parent, identification' in Namespace 'http://www.admin-shell.io/aas/2/0'.
