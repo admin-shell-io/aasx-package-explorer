@@ -53,9 +53,6 @@ namespace AasxPackageExplorer
         private IFlyoutControl currentFlyoutControl = null;
 
         private BrowserContainer theContentBrowser = new BrowserContainer();
-#if OFFSCREENBROWSER
-        private BrowserContainer theOffscreenBrowser = new BrowserContainer();
-#endif
 
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
 
@@ -556,10 +553,6 @@ namespace AasxPackageExplorer
             theContentBrowser.Start(Options.Curr.ContentHome, Options.Curr.InternalBrowser);
             CefContainer.Child = theContentBrowser.BrowserControl;
 
-#if OFFSCREENBROWSER
-            theOffscreenBrowser.Start(Options.Curr.ContentHome, true, useOffscreen: true);
-#endif
-
             // window size?
             if (Options.Curr.WindowLeft > 0) this.Left = Options.Curr.WindowLeft;
             if (Options.Curr.WindowTop > 0) this.Top = Options.Curr.WindowTop;
@@ -969,22 +962,6 @@ namespace AasxPackageExplorer
                             Log.Error(ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                         }
 
-                    #endregion
-                    #region Offscreen render file
-                    //===========================
-#if OFFSCREENBROWSER
-                    var evtRender = evt as AasxIntegrationBase.AasxPluginResultEventOffscreenRenderFile;
-                    if (evtRender != null && evtRender.fn != null)
-                        try
-                        {
-                            theOffscreenBrowser?.StartOffscreenRender(evtRender.fn);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(
-                                ex, $"While starting offscreen render of file {evtRender.fn} requested by plug-in");
-                        }
-#endif
                     #endregion
                     #region Redisplay explorer contents
                     //=================================

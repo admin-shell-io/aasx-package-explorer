@@ -15,9 +15,6 @@
 	<Platform>x64</Platform>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>WITHBROWSERPLUGIN</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>aasx.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
