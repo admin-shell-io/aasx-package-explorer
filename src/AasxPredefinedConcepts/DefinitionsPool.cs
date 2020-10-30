@@ -163,6 +163,7 @@ namespace AasxPredefinedConcepts
 
         public void IndexDefinitions(AasxDefinitionBase bs)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse  -- this seems like a false positive.
             if (bs == null || !bs.DomainInfo.HasContent())
                 return;
             IndexReferables(bs.DomainInfo, bs.GetAllReferables());

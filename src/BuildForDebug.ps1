@@ -15,55 +15,54 @@ solution dependencies (see Install*.ps1 scripts).
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    FindMSBuild, `
+    AssertDotnet,      `
     GetArtefactsDir
 
 function Main
 {
-    $msbuild = FindMSBuild
-
-    Write-Host "Using MSBuild from: $msbuild"
+    AssertDotnet
 
     $configuration = "Debug"
 
-    $outputPath = Join-Path $(GetArtefactsDir) "build" `
+    $outputPath = Join-Path $( GetArtefactsDir ) "build" `
         | Join-Path -ChildPath $configuration
 
     Set-Location $PSScriptRoot
 
-    if(!$clean)
+    if (!$clean)
     {
-        Write-Host "Building to: $outputPath"
+        Write-Host "Building and publishing to: $outputPath"
 
         New-Item -ItemType Directory -Force -Path $outputPath|Out-Null
 
-        & $msbuild `
-            "/p:OutputPath=$outputPath" `
-            "/p:Configuration=$configuration" `
-            "/p:Platform=x64" `
-            "/maxcpucount"
+        & dotnet.exe publish `
+            --configuration $configuration `
+            --runtime win-x64 `
+            --output $outputPath
 
-        $buildExitCode = $LASTEXITCODE
-        Write-Host "MSBuild exit code: $buildExitCode"
-        if ($buildExitCode -ne 0)
+        $exitCode = $LASTEXITCODE
+        Write-Host "dotnet publish exit code: $exitCode"
+        if ($exitCode -ne 0)
         {
-            throw "MSBuild failed."
+            throw "dotnet publish failed."
         }
     }
     else
     {
         Write-Host "Cleaning up the build ..."
 
-        & $msbuild "/p:Configuration=$configuration" "/t:Clean"
+        & dotnet.exe clean `
+            --configuration $configuration `
+            --runtime win-x64
 
-        $buildExitCode = $LASTEXITCODE
-        Write-Host "MSBuild exit code: $buildExitCode"
-        if ($buildExitCode -ne 0)
+        $exitCode = $LASTEXITCODE
+        Write-Host "dotnet clean exit code: $exitCode"
+        if ($exitCode -ne 0)
         {
-            throw "MSBuild failed."
+            throw "dotnet clean failed."
         }
 
-        if(Test-Path $outputPath)
+        if (Test-Path $outputPath)
         {
             Write-Host "Removing: $outputPath"
             Remove-Item -Recurse -Force $outputPath
@@ -71,4 +70,11 @@ function Main
     }
 }
 
-$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
+$previousLocation = Get-Location; try
+{
+    Main
+}
+finally
+{
+    Set-Location $previousLocation
+}

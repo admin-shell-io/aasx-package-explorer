@@ -582,6 +582,8 @@ namespace AasxPackageExplorer
                 {
                     if (ds.preferredName == null)
                         ds.preferredName = new AdminShell.LangStringSetIEC61360();
+
+                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                     ds.preferredName.Add(ls);
                 });
 
@@ -589,6 +591,8 @@ namespace AasxPackageExplorer
                 {
                     if (ds.definition == null)
                         ds.definition = new AdminShell.LangStringSetIEC61360();
+
+                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                     ds.definition.Add(ls);
                 });
 

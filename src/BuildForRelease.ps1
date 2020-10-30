@@ -15,14 +15,12 @@ solution dependencies (see Install*.ps1 scripts).
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    FindMSBuild,  `
-     GetArtefactsDir
+    AssertDotnet, `
+    GetArtefactsDir
 
 function Main
 {
-    $msbuild = FindMSBuild
-
-    Write-Host "Using MSBuild from: $msbuild"
+    AssertDotnet
 
     $configuration = "Release"
 
@@ -33,7 +31,7 @@ function Main
 
     if (!$clean)
     {
-        Write-Host "Building to: $outputPath"
+        Write-Host "Building and publishing to: $outputPath"
 
         New-Item -ItemType Directory -Force -Path $outputPath|Out-Null
 
@@ -58,19 +56,17 @@ function Main
 
             Write-Host "Building $project to: $projectOutputPath"
 
-            & $msbuild `
-                "/p:OutputPath=$projectOutputPath" `
-                "/p:Configuration=$configuration" `
-                "/p:Platform=x64" `
-                /maxcpucount `
-                $csprojectPath `
-                /t:build
+            & dotnet.exe publish `
+                --output $projectOutputPath `
+                --runtime win-x64 `
+                --configuration $configuration `
+                $csprojectPath
 
             $buildExitCode = $LASTEXITCODE
-            Write-Host "MSBuild exit code: $buildExitCode"
+            Write-Host "dotnet publish exit code: $buildExitCode"
             if ($buildExitCode -ne 0)
             {
-                throw "MSBuild failed."
+                throw "dotnet publish failed."
             }
         }
     }
@@ -78,13 +74,13 @@ function Main
     {
         Write-Host "Cleaning up the build ..."
 
-        & $msbuild "/p:Configuration=$configuration" /t:Clean
+        & dotnet.exe clean --configuration $configuration
 
         $buildExitCode = $LASTEXITCODE
-        Write-Host "MSBuild exit code: $buildExitCode"
+        Write-Host "dotnet clean exit code: $buildExitCode"
         if ($buildExitCode -ne 0)
         {
-            throw "MSBuild failed."
+            throw "dotnet clean failed."
         }
 
         if (Test-Path $outputPath)

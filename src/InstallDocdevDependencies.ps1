@@ -26,7 +26,6 @@ function Main
     Write-Host "Installing DocFX 2.56.1 ..."
     nuget install docfx.console -Version 2.56.1 -OutputDirectory $toolsDir
 
-
     dotnet tool restore
 }
 

@@ -121,12 +121,11 @@ namespace AasxDictionaryImport.Cdd
             if (reference != null)
             {
                 var cls = reference.Get(_context);
-                if (cls != null)
-                    return CreatePropertyCollection(cls, wrapper.Children);
+                return cls != null ? CreatePropertyCollection(cls, wrapper.Children) : null;
             }
-            else if (wrapper.Element.DataType is AggregateType aggregateType)
+            if (wrapper.Element.DataType is AggregateType aggregateType)
                 return CreateAggregateCollection(wrapper, aggregateType);
-            else if (wrapper.Element.DataType is LevelType levelType)
+            if (wrapper.Element.DataType is LevelType levelType)
                 return CreateLevelCollection(wrapper.Element, levelType);
             return CreateProperty(wrapper.Element);
         }

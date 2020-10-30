@@ -124,8 +124,6 @@ namespace AasxDictionaryImport.Cdd
             for (int i = 1; i < reader.FieldCount; i++)
             {
                 var column = GetString(reader, i);
-                if (column == null)
-                    break;
                 columns.Add(column);
             }
             return columns;
@@ -136,7 +134,7 @@ namespace AasxDictionaryImport.Cdd
             var elementDict = new Dictionary<string, string>();
             for (int i = 0; i < columns.Count; i++)
             {
-                elementDict.Add(columns[i], GetString(reader, i + 1) ?? String.Empty);
+                elementDict.Add(columns[i], GetString(reader, i + 1));
             }
             return (T)Activator.CreateInstance(typeof(T), elementDict);
         }

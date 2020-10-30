@@ -6,19 +6,23 @@ This script installs the dependencies necessary to build the solution.
 $ErrorActionPreference = "Stop"
 
 Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
-    AssertDotnet, `
-    GetToolsDir
+    AssertDotnet
 
-function Main {
-    if ($null -eq (Get-Command "nuget.exe" -ErrorAction SilentlyContinue))
-    {
-       throw "Unable to find nuget.exe in your PATH"
-    }
+function Main
+{
+    AssertDotnet
 
     Set-Location $PSScriptRoot
 
-    Write-Host "Restoring packages for the solution ..."
-    nuget.exe restore AasxPackageExplorer.sln -PackagesDirectory packages
+    Write-Host "Restoring packages for the solution..."
+    dotnet restore
 }
 
-$previousLocation = Get-Location; try { Main } finally { Set-Location $previousLocation }
+$previousLocation = Get-Location; try
+{
+    Main
+}
+finally
+{
+    Set-Location $previousLocation
+}

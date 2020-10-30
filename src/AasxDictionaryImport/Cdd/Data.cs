@@ -106,10 +106,15 @@ namespace AasxDictionaryImport.Cdd
         /// Returns the URL to the IEC CDD web page for this element, or null if the URL could not be determined.
         /// </summary>
         /// <returns>The URL for the IEC CDD web page for this element, or null if it could not be determined</returns>
+        // ReSharper disable once ReturnTypeCanBeNotNullable
         public Uri? GetDetailsUrl()
         {
             var baseUri = new Uri(BaseUrl);
             var domain = GetDomain();
+
+            if (domain == null)
+                return null;
+
             var code = EncodeCode();
             var endpoint = GetEndpoint();
             var path = String.Format(UrlPathPattern, domain, code, endpoint);
@@ -545,7 +550,7 @@ namespace AasxDictionaryImport.Cdd
             Class = new Reference<Class>(irdi);
         }
 
-        public override Reference<Class>? GetClassReference() => Class;
+        public override Reference<Class> GetClassReference() => Class;
 
         public static ClassInstanceType? ParseType(string typeName, string[] typeArgs)
         {
@@ -566,7 +571,7 @@ namespace AasxDictionaryImport.Cdd
             Class = new Reference<Class>(irdi);
         }
 
-        public override Reference<Class>? GetClassReference() => Class;
+        public override Reference<Class> GetClassReference() => Class;
 
         public static ClassReferenceType? ParseType(string typeName, string[] typeArgs)
         {

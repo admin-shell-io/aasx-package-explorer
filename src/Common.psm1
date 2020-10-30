@@ -14,64 +14,6 @@ function GetToolsDir
 
 <#
 .SYNOPSIS
-Search for MSBuild in the path and at expected locations using `vswhere.exe`.
-#>
-function FindMSBuild
-{
-    $msbuild = $null
-
-    $msbuildCommand = Get-Command "MSBuild.exe" -ErrorAction SilentlyContinue
-    $msbuildFailedSearches = @()
-    if ($null -ne $msbuildCommand)
-    {
-        $msbuild = $msbuildCommand.Source
-    }
-    else
-    {
-        $vswherePath = "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-        if (!(Test-Path $vswherePath))
-        {
-            throw "Could not find vswhere at: $vswherePath"
-        }
-
-        $ids = 'Community', 'Professional', 'Enterprise', 'BuildTools' `
-            | ForEach-Object { 'Microsoft.VisualStudio.Product.' + $_ }
-
-        $instance = & $vswherePath -latest -products $ids -requires Microsoft.Component.MSBuild -format json `
-            | Convertfrom-Json `
-            | Select-Object -first 1
-
-        $msbuildPath = Join-Path $instance.installationPath 'MSBuild\15.0\Bin\MSBuild.exe'
-        if (Test-Path $msbuildPath)
-        {
-            $msbuild = $msbuildPath
-        }
-        else
-        {
-            $msbuildFailedSearches += $msbuildPath
-
-            $msbuildPath = Join-Path $instance.installationPath 'MSBuild\Current\Bin\MSBuild.exe'
-            if (Test-Path $msbuildPath)
-            {
-                $msbuild = $msbuildPath
-            }
-            else
-            {
-                $msbuildFailedSearches += $msbuildPath
-            }
-        }
-    }
-
-    if (!$msbuild)
-    {
-        throw "Could not find MSBuild in PATH and at these locations: $( $msbuildFailedSearches -join ';' )"
-    }
-
-    return $msbuild
-}
-
-<#
-.SYNOPSIS
 Asserts that dotnet is on the path.
 #>
 function AssertDotnet
@@ -180,20 +122,6 @@ function AssertOpinionatedCsharpTodosVersion
     AssertDotnetToolVersion -packageID "opinionatedcsharptodos" -expectedVersion "1.0.0-pre1"
 }
 
-function FindInspectCode
-{
-    $toolsDir = GetToolsDir
-    $inspectcode = Join-Path $toolsDir "JetBrains.ReSharper.CommandLineTools.2020.1.2\tools\inspectcode.exe"
-
-    if (!(Test-Path $inspectcode))
-    {
-        throw "The inspectcode.exe could not be found at: $inspectcode;" + `
-               "did you install it with nuget " + `
-               "(see $( Join-Path $PSScriptRoot "InstallBuildDependencies.ps1" ))?"
-    }
-    return $inspectcode
-}
-
 function FindNunit3Console
 {
     $toolsDir = GetToolsDir
@@ -260,7 +188,6 @@ Export-ModuleMember -Function `
      AssertDeadCsharpVersion, `
      AssertDoctestCsharpVersion, `
      AssertOpinionatedCsharpTodosVersion, `
-     FindMSBuild, `
      FindInspectCode, `
      FindNunit3Console, `
      FindOpenCoverConsole, `
