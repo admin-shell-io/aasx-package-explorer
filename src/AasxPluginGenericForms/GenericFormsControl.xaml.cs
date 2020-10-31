@@ -163,6 +163,7 @@ namespace AasxPluginGenericForms
 
             // take over existing data
             this.currentFormInst = new FormInstanceSubmodel(currentFormRecord.FormSubmodel);
+            this.currentFormInst.InitReferable(currentFormRecord.FormSubmodel, theSubmodel);
             this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
             this.currentFormInst.outerEventStack = theEventStack;
 
@@ -197,7 +198,7 @@ namespace AasxPluginGenericForms
                     try
                     {
                         this.currentFormInst.AddOrUpdateDifferentElementsToCollection(
-                            currentElements, thePackage, addFilesToPackage: true);
+                            currentElements, thePackage, addFilesToPackage: true, editSource: true);
                     }
                     catch (Exception ex)
                     {

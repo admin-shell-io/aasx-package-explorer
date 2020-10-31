@@ -502,5 +502,14 @@
       "value": "True",
       "valueId": null
     }
+  },
+  {
+    "name": "GenericForms plugin | FormChoices",
+    "qualifier": {
+      "semanticId": null,
+      "type": "FormChoices",
+      "value": "To be filled; multiple choices separated by semicolon ';'.",
+      "valueId": null
+    }
   }
 ]

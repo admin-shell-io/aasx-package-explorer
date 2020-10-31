@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -91,6 +92,14 @@ namespace AasxIntegrationBase.AasForms
                         q = qs?.FindType("PresetMimeType");
                         if (q != null && tsme is FormDescFile)
                             (tsme as FormDescFile).presetMimeType = "" + q.value;
+
+                        q = qs?.FindType("FormChoices");
+                        if (q != null && q.value.HasContent() && tsme is FormDescProperty fdprop)
+                        {
+                            var choices = q.value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (choices != null && choices.Length > 0)
+                                fdprop.comboBoxChoices = choices;
+                        }
 
                         // adopt presetIdShort
                         if (tsme.Multiplicity == FormMultiplicity.ZeroToMany ||
