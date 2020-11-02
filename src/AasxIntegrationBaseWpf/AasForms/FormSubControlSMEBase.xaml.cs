@@ -86,7 +86,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
-            // Resharper disable once
+            // Resharper disable once RedundantJumpStatement
             if (dc == null)
                 return;
         }
