@@ -2347,23 +2347,31 @@ namespace AasxPackageExplorer
                 }
 
                 // try to invoke plugin to get submodel
-                AasxPluginResultBaseObject gsres = null;
+                AdminShell.Submodel smres = null;
+                AdminShell.ListOfConceptDescriptions cdres = null;
                 try
                 {
-                    gsres = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBaseObject;
+                    var res = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBase;
+                    if (res is AasxPluginResultBaseObject rbo)
+                    {
+                        smres = rbo.obj as AdminShell.Submodel;
+                    }
+                    if (res is AasxPluginResultGenerateSubmodel rgsm)
+                    {
+                        smres = rgsm.sm;
+                        cdres = rgsm.cds;
+                    }
                 }
                 catch { }
 
                 // something
-                var smres = gsres?.obj as AdminShell.Submodel;
-                if (gsres == null || smres == null)
+                if (smres == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing plugins. Aborting.", "New Submodel from plugins",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
 
                 try
                 {
@@ -2376,10 +2384,29 @@ namespace AasxPackageExplorer
                         smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
-                    // add
+                    // add Submodel
                     var smref = new AdminShell.SubmodelRef(smres.GetReference());
                     ve1.theAas.AddSubmodelRef(smref);
                     thePackageEnv.AasEnv.Submodels.Add(smres);
+
+                    // add ConceptDescriptions?
+                    if (cdres != null && cdres.Count > 0)
+                    {
+                        int nr = 0;
+                        foreach (var cd in cdres)
+                        {
+                            if (cd == null || cd.identification == null)
+                                continue;
+                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
+                            if (cdFound != null)
+                                continue;
+                            // ok, add
+                            var newCd = new AdminShell.ConceptDescription(cd);
+                            ve1.theEnv.ConceptDescriptions.Add(newCd);
+                            nr++;
+                        }
+                        Log.Info($"added {nr} ConceptDescritions for Submodel {smres.idShort}.");
+                    }
 
                     // redisplay
                     // add to "normal" event quoue

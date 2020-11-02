@@ -27,6 +27,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginGenericForms.GenericFormOptions options = new AasxPluginGenericForms.GenericFormOptions();
+        private AasxPluginGenericForms.GenericFormsControl formsControl = null;
 
         public string GetPluginName()
         {
@@ -88,6 +89,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                    "event-return", "Called to return a result evaluated by the host for a certain event."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
@@ -179,6 +182,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return this.eventStack.PopEvent();
                 }
 
+                if (action == "event-return" && args != null
+                    && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
+                    && this.formsControl != null)
+                {
+                    this.formsControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+                }
+
                 if (action == "get-check-visual-extension")
                 {
                     var cve = new AasxPluginResultBaseObject();
@@ -194,12 +204,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         return null;
 
                     // call
-                    var resobj = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
+                    this.formsControl = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
                         Log, args[0], args[1], this.options, this.eventStack, args[2]);
 
                     // give object back
                     var res = new AasxPluginResultBaseObject();
-                    res.obj = resobj;
+                    res.obj = this.formsControl;
                     return res;
                 }
 
@@ -216,6 +226,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // make result
                     var res = new AasxPluginResultBaseObject();
+                    res.strType = "OK";
                     res.obj = list;
                     return res;
                 }
@@ -240,9 +251,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var sm = foundRec.FormSubmodel.GenerateDefault();
 
                     // make result
-                    var res = new AasxPluginResultBaseObject();
-                    res.strType = "OK";
-                    res.obj = sm;
+                    var res = new AasxPluginResultGenerateSubmodel();
+                    res.sm = sm;
+                    res.cds = foundRec.ConceptDescriptions;
                     return res;
                 }
             }

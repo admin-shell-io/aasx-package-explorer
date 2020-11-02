@@ -6,27 +6,11 @@
              xmlns:local="clr-namespace:AasxIntegrationBase.AasForms"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300" Loaded="UserControl_Loaded">
-    <Grid x:Name="GridOuter" Background="LightBlue" Margin="2">
-        <Grid x:Name="TheGrid" Margin="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="48"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="24"/>
-            </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="LabelIdShort" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="idShort:"/>
-            <TextBox x:Name="TextBoxIdShort" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="2" />
+    <StackPanel>
+        <local:FormSubControlReferableAttributes x:Name="TheRefAttributes" Margin="4"
+                DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        </local:FormSubControlReferableAttributes>
+    </StackPanel>
 
-            <TextBlock x:Name="LabelDescription" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Description:"/>
-            <TextBlock x:Name="TextBlockInfo"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="Click '+' to add language set" Margin="2" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-            <Button x:Name="ButtonLangPlus" Grid.Row="1" Grid.Column="3" Content="+" Margin="2" Click="Button_Click"/>
-
-        </Grid>
-    </Grid>
 </UserControl>

@@ -112,6 +112,19 @@ namespace AasxPluginGenericForms
             return shelfCntl;
         }
 
+        public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
+        {
+            if (this.currentFormInst?.subscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = this.currentFormInst.subscribeForNextEventReturn;
+                this.currentFormInst.subscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+        }
+
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             // user control was loaded, all options shall be set and outer grid is loaded fully ..

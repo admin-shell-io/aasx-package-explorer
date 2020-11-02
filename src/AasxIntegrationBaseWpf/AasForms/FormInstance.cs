@@ -540,7 +540,7 @@ namespace AasxIntegrationBase.AasForms
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
         public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
-        {            
+        {
             if (this.PairInstances != null)
                 foreach (var pair in this.PairInstances)
                 {
@@ -552,7 +552,7 @@ namespace AasxIntegrationBase.AasForms
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, 
+            AdminShell.SubmodelElementWrapperCollection elements,
             AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false,
             bool editSource = false)
@@ -568,8 +568,8 @@ namespace AasxIntegrationBase.AasForms
 
             // SM as a set of elements
             if (this.PairInstances != null)
-            return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
-                    elements, packageEnv, addFilesToPackage);
+                return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
+                        elements, packageEnv, addFilesToPackage);
             return null;
         }
     }
@@ -728,7 +728,7 @@ namespace AasxIntegrationBase.AasForms
             if (this.PairInstances != null)
                 return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
                     elements, packageEnv, addFilesToPackage);
-            
+
             return null;
         }
 

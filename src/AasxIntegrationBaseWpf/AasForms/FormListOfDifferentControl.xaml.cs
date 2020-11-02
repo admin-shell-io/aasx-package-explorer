@@ -156,41 +156,6 @@ namespace AasxIntegrationBase.AasForms
 
         // Display functionality
 
-        private void UpdateDisplayForidShortDesc(
-            FormDescReferable desc, AdminShell.Referable rf, FormInstanceBase instance)
-        {
-            // access
-            if (desc == null || rf == null || instance == null)
-            {
-                // invisible
-                GridIdShortDesc.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            // eval visibilities
-            var visiIdShort = desc.FormEditIdShort;
-            var visiDescription = desc.FormEditDescription;
-            var visiAtAll = visiIdShort || visiDescription;
-
-            // set plain fields
-            LabelIdShort.Visibility = (visiIdShort) ? Visibility.Visible : Visibility.Collapsed;
-            TextBoxIdShort.Visibility = LabelIdShort.Visibility;
-
-            TextBoxIdShort.Text = "" + rf.idShort;
-            TextBoxIdShort.TextChanged += (object sender3, TextChangedEventArgs e3) =>
-            {
-                // if (!UpdateDisplayInCharge)
-                    instance.Touch();
-                rf.idShort = TextBoxIdShort.Text;
-            };
-
-            LabelDescription.Visibility = (visiDescription) ? Visibility.Visible : Visibility.Collapsed;
-            TextBlockInfo.Visibility = LabelDescription.Visibility;
-            ButtonLangPlus.Visibility = LabelDescription.Visibility;
-
-            GridIdShortDesc.Visibility = (visiAtAll) ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private void UpdateDisplay()
         {
             // need data context of the UC coming from Submodel, SMEC or at least listOfElements
@@ -222,9 +187,6 @@ namespace AasxIntegrationBase.AasForms
                     TextBlockHeaderFormInfo.Text = dc.smDesc.FormInfo;
                 }
 
-                // IdShort / Description
-                UpdateDisplayForidShortDesc(dc.smDesc, dc.smInst.sm, dc.smInst);
-
                 // populate elements
                 foreach (var pair in dc.smInst.PairInstances)
                 {
@@ -253,9 +215,6 @@ namespace AasxIntegrationBase.AasForms
                         : dc.smecDesc.FormTitle;
                     TextBlockHeaderFormInfo.Text = dc.smecDesc.FormInfo;
                 }
-
-                // IdShort / Description
-                UpdateDisplayForidShortDesc(dc.smecDesc, dc.smecInst.sme, dc.smecInst);
 
                 // populate elements
                 foreach (var pair in dc.smecInst.PairInstances)
@@ -307,32 +266,6 @@ namespace AasxIntegrationBase.AasForms
             {
                 this.FormSmaller = !this.FormSmaller;
                 this.SetProperty(IFormListControlPropertyType.FormSmaller, this.FormSmaller);
-            }
-
-            // Plus?
-            if (sender == ButtonLangPlus)
-            {
-                // add
-                if (dc.smInst != null && dc.smInst.sm != null)
-                {
-                    if (dc.smInst.sm.description == null)
-                        dc.smInst.sm.description = new AdminShell.Description();
-
-                    dc.smInst.Touch();
-                    dc.smInst.sm.description.langString.Add(new AdminShell.LangStr("", ""));
-                }
-
-                if (dc.smecInst != null && dc.smecInst.sme != null)
-                {
-                    if (dc.smecInst.sme.description == null)
-                        dc.smecInst.sme.description = new AdminShell.Description();
-
-                    dc.smecInst.Touch();
-                    dc.smecInst.sme.description.langString.Add(new AdminShell.LangStr("", ""));
-                }
-
-                // show
-                UpdateDisplay();
             }
         }
     }
