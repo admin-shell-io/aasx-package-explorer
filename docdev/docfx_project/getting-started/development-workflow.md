@@ -74,19 +74,3 @@ The workflow build-test-inspect was intentionally skipped.
 The workflow check-style was intentionally skipped.
 The workflow check-release was intentionally skipped.
 ```
-
-## Large Binary Files
-
-We use Git Large File Support (LFS) to handle binary files. Please do not forget
-to install Git-Lfs (https://git-lfs.github.com) on your computer.
-
-You need to make sure the files are tracked before you add binaries to the 
-repository. Invoking:
-```bash
-$ git lfs track
-```
-gives you the list like this one:
-```
-Listing tracked patterns
-    *.png (.gitattributes)
-```
