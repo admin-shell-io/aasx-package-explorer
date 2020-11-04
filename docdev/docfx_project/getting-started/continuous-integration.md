@@ -19,6 +19,16 @@ To clean the build, call:
 .\src\BuildForDebug.ps1 -clean
 ```
 
+In cases of substantial changes to the solution (*e.g.*, conversion of the
+projects from legacy to SDK style), you need to delete `bin` and `obj` 
+subdirectories beneath `src` as dotnet (and consequently MSBuild) will not do 
+that for you. We provide a shallow script to save you a couple of 
+keystrokes:
+
+```powershell
+.\src\RemoveBinAndObj.ps1
+```
+
 ## Reformatting Code
 
 We use `dontet-format` to automatically fix the formatting of

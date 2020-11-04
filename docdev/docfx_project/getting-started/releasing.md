@@ -36,6 +36,16 @@ If you want to clean a previous build, call:
 
 This will produce the solution build in `artefacts/` directory.
 
+In cases of substantial changes to the solution (*e.g.*, conversion of the
+projects from legacy to SDK style), you need to delete `bin` and `obj` 
+subdirectories beneath `src` as dotnet (and consequently MSBuild) will not do 
+that for you. We provide a shallow script to save you a couple of 
+keystrokes:
+
+```powershell
+.\src\RemoveBinAndObj.ps1
+```
+
 ## Package the Release
 
 The release is now ready to be packaged. Call `PackageRelease.ps` with the
