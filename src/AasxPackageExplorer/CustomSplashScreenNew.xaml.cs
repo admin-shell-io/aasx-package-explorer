@@ -44,8 +44,8 @@ namespace AasxPackageExplorer
             // set new values here
             this.TextBlockAuthors.Text = Options.Curr.PrefAuthors;
             this.TextBlockLicenses.Text = Options.Curr.PrefLicenseShort;
-            this.TextBlockVersion.Text = "V" + Options.Curr.PrefVersion;
-            this.TextBlockBuildDate.Text = Options.Curr.PrefBuildDate;
+            this.TextBlockVersion.Text = Options.Curr.PrefVersion;
+            this.TextBlockBuildDate.Text = "";
 
             // try to include plug-ins as well
             var lic = Plugins.CompileAllLicenses();

@@ -18,7 +18,7 @@
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 1000,
+  "SplashTime": 5000,
   "InternalBrowser": true,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
