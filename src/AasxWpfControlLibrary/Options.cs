@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using AasxGlobalLogging;
@@ -129,7 +130,7 @@ namespace AasxPackageExplorer
                         string fileContents = tr.ReadToEnd();
                         if (fileContents.Length > 20)
                             fileContents = fileContents.Substring(0, 20) + "..";
-                        return (fileContents);
+                        return (fileContents.Trim());
                     }
                 }
                 return "";
@@ -150,9 +151,38 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// The current version string of the application. Use of Options as singleton.
+        /// Note: in the past, there was a semantic version such as "1.9.8.3", but
+        /// this was not maintained properly. Now, a version is derived from the
+        /// build data with the intention, that the according tag in Github-Releases
+        /// will be identical.
         /// </summary>
         [JsonIgnore]
-        public string PrefVersion = "1.9.8.3";
+        public string PrefVersion
+        {
+            get
+            {
+                var bdate = "" + PrefBuildDate;
+                var version = "(not available)";
+
+                // %date% in European format (e.g. during development)
+                var m = Regex.Match(bdate, @"(\d+)\.(\d+)\.(\d+)");
+                if (m.Success && m.Groups.Count >= 4)
+                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
+                        + m.Groups[3].Value + "-"
+                        + m.Groups[2].Value + "-"
+                        + m.Groups[1].Value;
+
+                // %date% in US local (e.g. from continous integration from Github)
+                m = Regex.Match(bdate, @"(\d+)\/(\d+)\/(\d+)");
+                if (m.Success && m.Groups.Count >= 4)
+                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
+                        + m.Groups[3].Value + "-"
+                        + m.Groups[1].Value + "-"
+                        + m.Groups[2].Value;
+
+                return version;
+            }
+        }
 
         /// <summary>
         /// This file shall be loaded at start of application
