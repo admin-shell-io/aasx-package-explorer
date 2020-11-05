@@ -206,14 +206,11 @@ namespace AdminShellNS
                 // load only XML
                 try
                 {
-                    using (var reader = new StreamReader(fn))
-                    {
-                        this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(
-                            reader.BaseStream);
-
-                        if (this.aasenv == null)
-                            throw (new Exception("Type error for XML file!"));
-                    }
+                    var reader = new StreamReader(fn);
+                    this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(reader.BaseStream);
+                    if (this.aasenv == null)
+                        throw (new Exception("Type error for XML file!"));
+                    reader.Close();
                 }
                 catch (Exception ex)
                 {
@@ -269,73 +266,67 @@ namespace AdminShellNS
                 // load package AASX
                 try
                 {
-                    using (var package = Package.Open(fnToLoad, FileMode.Open))
-                    {
+                    var package = Package.Open(fnToLoad, FileMode.Open);
 
-                        // get the origin from the package
-                        PackagePart originPart = null;
-                        var xs = package.GetRelationshipsByType(
-                            "http://www.admin-shell.io/aasx/relationships/aasx-origin");
-                        foreach (var x in xs)
-                            if (x.SourceUri.ToString() == "/")
-                            {
-                                originPart = package.GetPart(x.TargetUri);
-                                break;
-                            }
-
-                        if (originPart == null)
-                            throw (new Exception("Unable to find AASX origin. Aborting!"));
-
-                        // get the specs from the package
-                        PackagePart specPart = null;
-                        xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
-                        foreach (var x in xs)
+                    // get the origin from the package
+                    PackagePart originPart = null;
+                    var xs = package.GetRelationshipsByType(
+                        "http://www.admin-shell.io/aasx/relationships/aasx-origin");
+                    foreach (var x in xs)
+                        if (x.SourceUri.ToString() == "/")
                         {
-                            specPart = package.GetPart(x.TargetUri);
+                            originPart = package.GetPart(x.TargetUri);
                             break;
                         }
+                    if (originPart == null)
+                        throw (new Exception("Unable to find AASX origin. Aborting!"));
 
-                        if (specPart == null)
-                            throw (new Exception("Unable to find AASX spec(s). Aborting!"));
+                    // get the specs from the package
+                    PackagePart specPart = null;
+                    xs = originPart.GetRelationshipsByType("http://www.admin-shell.io/aasx/relationships/aas-spec");
+                    foreach (var x in xs)
+                    {
+                        specPart = package.GetPart(x.TargetUri);
+                        break;
+                    }
+                    if (specPart == null)
+                        throw (new Exception("Unable to find AASX spec(s). Aborting!"));
 
-                        // open spec part to read
-                        try
+                    // open spec part to read
+                    try
+                    {
+                        if (specPart.Uri.ToString().ToLower().Trim().EndsWith("json"))
                         {
-                            if (specPart.Uri.ToString().ToLower().Trim().EndsWith("json"))
+                            using (var s = specPart.GetStream(FileMode.Open))
                             {
-                                using (var s = specPart.GetStream(FileMode.Open))
+                                using (StreamReader file = new StreamReader(s))
                                 {
-                                    using (StreamReader file = new StreamReader(s))
-                                    {
-                                        JsonSerializer serializer = new JsonSerializer();
-                                        serializer.Converters.Add(
-                                            new AdminShellConverters.JsonAasxConverter(
-                                                "modelType", "name"));
-
-                                        this.aasenv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
-                                            file, typeof(AdminShell.AdministrationShellEnv));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                using (var s = specPart.GetStream(FileMode.Open))
-                                {
-                                    // own catch loop to be more specific
-                                    this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
-                                    this.openPackage = package;
-                                    if (this.aasenv == null)
-                                        throw (new Exception("Type error for XML file!"));
-                                    s.Close();
+                                    JsonSerializer serializer = new JsonSerializer();
+                                    serializer.Converters.Add(
+                                        new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                                    this.aasenv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
+                                        file, typeof(AdminShell.AdministrationShellEnv));
                                 }
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            throw (new Exception(
-                                string.Format("While reading AAS {0} spec at {1} gave: {2}",
-                                    fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                            using (var s = specPart.GetStream(FileMode.Open))
+                            {
+                                // own catch loop to be more specific
+                                this.aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
+                                this.openPackage = package;
+                                if (this.aasenv == null)
+                                    throw (new Exception("Type error for XML file!"));
+                                s.Close();
+                            }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw (new Exception(
+                            string.Format("While reading AAS {0} spec at {1} gave: {2}",
+                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                     }
                 }
                 catch (Exception ex)
@@ -395,24 +386,18 @@ namespace AdminShellNS
                     this.fn = fn;
                 try
                 {
-                    Stream s = (useMemoryStream != null)
-                        ? (Stream)useMemoryStream
+                    Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
                         : File.Open(fn, FileMode.Create, FileAccess.Write);
 
-                    try
-                    {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
-                        var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, this.aasenv, nss);
-                        s.Flush();
-                    }
-                    finally
-                    {
-                        // close?
-                        if (useMemoryStream == null)
-                            s.Close();
-                    }
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
+                    var nss = GetXmlDefaultNamespaces();
+                    serializer.Serialize(s, this.aasenv, nss);
+                    s.Flush();
+
+                    // close?
+                    if (useMemoryStream == null)
+                        s.Close();
                 }
                 catch (Exception ex)
                 {
@@ -434,32 +419,26 @@ namespace AdminShellNS
                     Stream s = (useMemoryStream != null) ? (Stream)useMemoryStream
                         : File.Open(fn, FileMode.Create, FileAccess.Write);
 
-                    try
+                    // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
+                    JsonSerializer serializer = new JsonSerializer()
                     {
-                        // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        JsonSerializer serializer = new JsonSerializer()
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                            Formatting = Newtonsoft.Json.Formatting.Indented
-                        };
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                        Formatting = Newtonsoft.Json.Formatting.Indented
+                    };
+                    var sw = new StreamWriter(s);
+                    var writer = new JsonTextWriter(sw);
+                    serializer.Serialize(writer, this.aasenv);
+                    writer.Flush();
+                    sw.Flush();
+                    s.Flush();
 
-                        using (var sw = new StreamWriter(s))
-                        {
-                            using (var writer = new JsonTextWriter(sw))
-                            {
-                                serializer.Serialize(writer, this.aasenv);
-                                writer.Flush();
-                                sw.Flush();
-                                s.Flush();
-                            }
-                        }
-                    }
-                    finally
+                    // close?
+                    if (useMemoryStream == null)
                     {
-                        // close?
-                        if (useMemoryStream == null)
-                            s.Close();
+                        writer.Close();
+                        sw.Close();
+                        s.Close();
                     }
                 }
                 catch (Exception ex)
@@ -493,10 +472,7 @@ namespace AdminShellNS
                                     System.IO.File.Copy(this.fn, fn);
                             }
                         }
-                        catch
-                        {
-                        }
-
+                        catch { }
                         // ReSharper enable EmptyGeneralCatchClause
                         this.openPackage = null;
                     }
@@ -514,7 +490,6 @@ namespace AdminShellNS
                             (this.tempFn != null) ? this.tempFn : fn,
                             (writeFreshly) ? FileMode.Create : FileMode.OpenOrCreate);
                     }
-
                     this.fn = fn;
 
                     // get the origin from the package
@@ -527,7 +502,6 @@ namespace AdminShellNS
                             originPart = package.GetPart(x.TargetUri);
                             break;
                         }
-
                     if (originPart == null)
                     {
                         // create, as not existing
@@ -539,7 +513,6 @@ namespace AdminShellNS
                             var bytes = System.Text.Encoding.ASCII.GetBytes("Intentionally empty.");
                             s.Write(bytes, 0, bytes.Length);
                         }
-
                         package.CreateRelationship(
                             originPart.Uri, TargetMode.Internal,
                             "http://www.admin-shell.io/aasx/relationships/aasx-origin");
@@ -563,8 +536,8 @@ namespace AdminShellNS
                             specPart.Uri.ToString()).ToLower().Trim();
                         var ext = System.IO.Path.GetExtension(specPart.Uri.ToString()).ToLower().Trim();
                         if ((ext == ".json" && prefFmt == SerializationFormat.Xml)
-                            || (ext == ".xml" && prefFmt == SerializationFormat.Json)
-                            || (name.StartsWith("aasenv-with-no-id")))
+                             || (ext == ".xml" && prefFmt == SerializationFormat.Json)
+                             || (name.StartsWith("aasenv-with-no-id")))
                         {
                             // try kill specpart
                             // ReSharper disable EmptyGeneralCatchClause
@@ -573,15 +546,8 @@ namespace AdminShellNS
                                 originPart.DeleteRelationship(specRel.Id);
                                 package.DeletePart(specPart.Uri);
                             }
-                            catch
-                            {
-                            }
-                            finally
-                            {
-                                specPart = null;
-                                specRel = null;
-                            }
-
+                            catch { }
+                            finally { specPart = null; specRel = null; }
                             // ReSharper enable EmptyGeneralCatchClause
                         }
                     }
@@ -685,7 +651,7 @@ namespace AdminShellNS
                         // normal file?
                         if (psfAdd.specialHandling == AdminShellPackageSupplementaryFile.SpecialHandlingType.None ||
                             psfAdd.specialHandling ==
-                            AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
+                                AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
                         {
 
                             // try find an existing part for that file ..
@@ -701,7 +667,6 @@ namespace AdminShellNS
                                         break;
                                     }
                             }
-
                             if (psfAdd.specialHandling ==
                                 AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
                             {
@@ -781,16 +746,15 @@ namespace AdminShellNS
                         {
                             throw (new Exception(
                                 string.Format("While write AASX {0} indirectly at {1} gave: {2}",
-                                    fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                         }
                 }
                 catch (Exception ex)
                 {
                     throw (new Exception(
                         string.Format("While write AASX {0} at {1} gave: {2}",
-                            fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                        fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
                 }
-
                 return true;
             }
 
@@ -838,13 +802,21 @@ namespace AdminShellNS
             // ReSharper enable EmptyGeneralCatchClause
         }
 
+        public Stream GetStreamFromUriOrLocalPackage(string uriString)
+        {
+            // local
+            if (this.IsLocalFile(uriString))
+                return GetLocalStreamFromPackage(uriString);
+
+            // no ..
+            return File.Open(uriString, FileMode.Open, FileAccess.Read);
+        }
+
         public byte[] GetByteArrayFromUriOrLocalPackage(string uriString)
         {
             try
             {
-                using (var input = (this.IsLocalFile(uriString))
-                    ? GetLocalStreamFromPackage(uriString)
-                    : File.Open(uriString, FileMode.Open, FileAccess.Read))
+                using (var input = GetStreamFromUriOrLocalPackage(uriString))
                 {
                     using (MemoryStream ms = new MemoryStream())
                     {
@@ -1066,7 +1038,7 @@ namespace AdminShellNS
 
             var targetPath = "" + targetDir.Trim() + targetFn.Trim();
 
-            // base function
+            // base funciton
             AddSupplementaryFileToStore(sourcePath, targetPath, embedAsThumb, sourceGetBytesDel, useMimeType);
         }
 
@@ -1134,30 +1106,28 @@ namespace AdminShellNS
                 return null;
 
             // get input stream
-            using (var input = this.GetLocalStreamFromPackage(packageUri))
+            var input = this.GetLocalStreamFromPackage(packageUri);
+
+            // generate tempfile name
+            string tempext = System.IO.Path.GetExtension(packageUri);
+            string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);
+
+            // maybe modify tempfile name?
+            if (keepFilename)
             {
+                var masterFn = System.IO.Path.GetFileNameWithoutExtension(packageUri);
+                var tmpDir = System.IO.Path.GetDirectoryName(temppath);
+                var tmpFnExt = System.IO.Path.GetFileName(temppath);
 
-                // generate tempfile name
-                string tempext = System.IO.Path.GetExtension(packageUri);
-                string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);
-
-                // maybe modify tempfile name?
-                if (keepFilename)
-                {
-                    var masterFn = System.IO.Path.GetFileNameWithoutExtension(packageUri);
-                    var tmpDir = System.IO.Path.GetDirectoryName(temppath);
-                    var tmpFnExt = System.IO.Path.GetFileName(temppath);
-
-                    temppath = System.IO.Path.Combine(tmpDir, "" + masterFn + "_" + tmpFnExt);
-                }
-
-                // copy to temp file
-                using (var temp = File.OpenWrite(temppath))
-                {
-                    input.CopyTo(temp);
-                    return temppath;
-                }
+                temppath = System.IO.Path.Combine(tmpDir, "" + masterFn + "_" + tmpFnExt);
             }
+
+            // copy to temp file
+            var temp = File.OpenWrite(temppath);
+            input.CopyTo(temp);
+            temp.Close();
+            return temppath;
         }
     }
+
 }
