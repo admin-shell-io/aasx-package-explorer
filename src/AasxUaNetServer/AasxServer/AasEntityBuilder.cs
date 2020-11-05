@@ -548,6 +548,9 @@ namespace AasOpcUaServer
                 x.TypeDefinitionId = typeDefinitionId;
             }
 
+            x.AccessLevel = AccessLevels.CurrentReadOrWrite;
+            x.UserAccessLevel = AccessLevels.CurrentReadOrWrite;
+
             return x;
         }
 

@@ -1,7 +1,8 @@
 {
   "profiles": {
     "AasxPackageExplorer": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-read-json options-debug.json"
     }
   }
 }

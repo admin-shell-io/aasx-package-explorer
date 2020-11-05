@@ -19,6 +19,16 @@ To clean the build, call:
 .\src\BuildForDebug.ps1 -clean
 ```
 
+In cases of substantial changes to the solution (*e.g.*, conversion of the
+projects from legacy to SDK style), you need to delete `bin` and `obj` 
+subdirectories beneath `src` as dotnet (and consequently MSBuild) will not do 
+that for you. We provide a shallow script to save you a couple of 
+keystrokes:
+
+```powershell
+.\src\RemoveBinAndObj.ps1
+```
+
 ## Reformatting Code
 
 We use `dontet-format` to automatically fix the formatting of
@@ -149,6 +159,57 @@ Here is an example RUNSETTINGS file:
 [nunit3-test-adapter]: https://docs.nunit.org/articles/vs-test-adapter/Adapter-Installation.html
 [nunit3-test-adapter-usage]: https://docs.nunit.org/articles/vs-test-adapter/Usage.html
 [visual-studio-runsettings]: https://docs.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2019
+
+### GUI Tests
+
+Analogous to unit tests, we provide GUI tests (a.k.a. function tests) based on 
+[FlaUI](https://github.com/FlaUI/FlaUI).
+Such test projects are marked with `.GuiTests` suffix. 
+
+Mind that the tests run against the executables released in 
+`artefacts\build\Debug` directory. This means that building the executables
+in your IDE will have no effect on GUI tests (unless you manually set the target
+for the binaries to `artefacts\build\Debug`). Please always double-check that
+you built your binaries with `src\BuildForDebug.ps1` to avoid unnecessary
+confusion.
+
+Some of the GUI tests, similarly to unit tests, depend on sample AASX files
+which need to be downloaded with `src\DownloadSamples.ps1` before the tests can
+run. Once you built for debug and obtained the samples, you are all set to 
+automatically test the GUIs.
+
+To run all the GUI tests, call:
+
+```powershell
+.\src\TestGui.ps1
+```
+
+Similar to unit tests, you can list the tests:
+
+```powershell
+.\src\Test.ps1 -Explore
+```
+
+, execute a single test:
+
+```powershell
+.\src\TestGui.ps1 `
+    -Test AasxPackageExplorer.GuiTests.TestBasic.Test_application_start
+```
+
+or a group of tests sharing a common prefix: 
+
+```powershell
+.\src\TestGui.ps1 `
+    -Test AasxPackageExplorer.GuiTests
+```
+
+GUI tests are not executed automatically on the remote 
+CI servers. First, it is more often than difficult to run GUI tests on headless
+remote servers, so it would put a high maintenance burden. Second, GUI tests
+take too long and depend on timeouts which are often not controllable
+and reproducible enough. In particular, timeouts depend on the server load and
+hence can vary greatly. 
 
 ## Github Workflows
 
