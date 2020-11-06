@@ -68,28 +68,9 @@
             <TextBlock x:Name="TextBlockHeaderFormInfo" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontSize="10" FontWeight="Light" Margin="2,0,2,2" Text="Quite a long informative text" TextWrapping="Wrap" Foreground="DarkBlue"/>
         </Grid>
 
-        <!-- SMEC
-        <Grid x:Name="GridSMEC" Margin="2" Background="White" Visibility="Visible">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2"/>
-                <RowDefinition Height="24"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="6"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2"/>
-                <ColumnDefinition Width="24"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="24"/>
-                <ColumnDefinition Width="24"/>
-                <ColumnDefinition Width="2"/>
-            </Grid.ColumnDefinitions>
-
-            <TextBlock x:Name="TextBlockSmecFormTitle" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="SubmodelElementCollection" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="DarkBlue"/>
-            <TextBlock x:Name="TextBlockSmecFormInfo" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontSize="10" FontWeight="Light" Margin="2,0,2,2" Text="Quite a long informative text" TextWrapping="Wrap" Foreground="DarkBlue"/>
-        </Grid>
-         -->
+        <local:FormSubControlReferableAttributes x:Name="TheRefAttributes" Margin="4"
+                DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+        </local:FormSubControlReferableAttributes>
 
         <!-- LIST OF ELEMENTS -->
         <StackPanel x:Name="StackPanelElements" Orientation="Vertical" Visibility="Visible">

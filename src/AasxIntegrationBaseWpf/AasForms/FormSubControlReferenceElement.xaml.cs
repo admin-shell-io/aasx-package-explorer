@@ -117,7 +117,7 @@ namespace AasxIntegrationBase.AasForms
                 {
                     // give over to event stack
                     var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                    ev.filterEntities = "Entity"; //// dc.desc.presetFilter;
+                    ev.filterEntities = AdminShell.Key.AllElements;
                     ev.showAuxPackage = true;
                     ev.showRepoFiles = true;
                     topBase.outerEventStack.PushEvent(ev);

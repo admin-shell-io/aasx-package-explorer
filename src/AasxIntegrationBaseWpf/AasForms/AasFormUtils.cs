@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,30 +24,32 @@ namespace AasxIntegrationBase.AasForms
                 if (smw != null && smw.submodelElement != null)
                 {
                     FormDescSubmodelElement tsme = null;
-                    if (smw.submodelElement is AdminShell.Property)
+                    if (smw.submodelElement is AdminShell.Property p)
                     {
-                        var p = (smw.submodelElement as AdminShell.Property);
                         tsme = new FormDescProperty(
                             "" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsExactlyOneKey(),
                             "" + p.idShort, valueType: p.valueType);
                     }
-                    if (smw.submodelElement is AdminShell.MultiLanguageProperty)
+                    if (smw.submodelElement is AdminShell.MultiLanguageProperty mlp)
                     {
-                        var mlp = (smw.submodelElement as AdminShell.MultiLanguageProperty);
                         tsme = new FormDescMultiLangProp(
                             "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
                             "" + mlp.idShort);
                     }
-                    if (smw.submodelElement is AdminShell.File)
+                    if (smw.submodelElement is AdminShell.File fl)
                     {
-                        var mlp = (smw.submodelElement as AdminShell.File);
                         tsme = new FormDescFile(
-                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
-                            "" + mlp.idShort);
+                            "" + fl.idShort, FormMultiplicity.One, fl.semanticId?.GetAsExactlyOneKey(),
+                            "" + fl.idShort);
                     }
-                    if (smw.submodelElement is AdminShell.SubmodelElementCollection)
+                    if (smw.submodelElement is AdminShell.ReferenceElement rf)
                     {
-                        var smec = (smw.submodelElement as AdminShell.SubmodelElementCollection);
+                        tsme = new FormDescReferenceElement(
+                            "" + rf.idShort, FormMultiplicity.One, rf.semanticId?.GetAsExactlyOneKey(),
+                            "" + rf.idShort);
+                    }
+                    if (smw.submodelElement is AdminShell.SubmodelElementCollection smec)
+                    {
                         tsme = new FormDescSubmodelElementCollection(
                             "" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsExactlyOneKey(),
                             "" + smec.idShort);
@@ -91,6 +94,14 @@ namespace AasxIntegrationBase.AasForms
                         q = qs?.FindType("PresetMimeType");
                         if (q != null && tsme is FormDescFile)
                             (tsme as FormDescFile).presetMimeType = "" + q.value;
+
+                        q = qs?.FindType("FormChoices");
+                        if (q != null && q.value.HasContent() && tsme is FormDescProperty fdprop)
+                        {
+                            var choices = q.value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (choices != null && choices.Length > 0)
+                                fdprop.comboBoxChoices = choices;
+                        }
 
                         // adopt presetIdShort
                         if (tsme.Multiplicity == FormMultiplicity.ZeroToMany ||
@@ -149,7 +160,7 @@ namespace AasxIntegrationBase.AasForms
                     // make submodel template
                     var tsm = new FormDescSubmodel(
                         "Submodel",
-                        sm.semanticId?.GetAsExactlyOneKey(),
+                        sm.GetSemanticKey(),
                         sm.idShort,
                         "");
                     tsm.SubmodelElements = new FormDescListOfElement();
