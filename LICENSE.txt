@@ -11,7 +11,7 @@ Copyright (c) 2019-2020 Fraunhofer IOSB-INA Lemgo,
     zur Foerderung der angewandten Forschung e.V.
 
 Copyright (c) 2020 Schneider Electric Automation GmbH
-<marco.mendes@se.com>,
+<https://www.se.com/ww/en/work/support>,
 author: Marco Mendes
 
 Copyright (c) 2020 SICK AG <info@sick.de>
