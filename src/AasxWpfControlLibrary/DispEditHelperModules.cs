@@ -523,7 +523,10 @@ namespace AasxPackageExplorer
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
                     package: package,
-                    addExistingEntities: addExistingEntities, addFromPool: true);
+                    addExistingEntities: addExistingEntities, addFromPool: true,
+                    jumpLambda: (kl) => {
+                        return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                    });
         }
 
         //

@@ -97,7 +97,11 @@ namespace AasxPackageExplorer
                 refref = (derefdo as AdminShell.IGetReference)?.GetReference();
             }
 
-            // sure?
+            // some more special cases
+            if (refref == null && ve is VisualElementConceptDescription vecd)
+                refref = vecd.theCD?.GetReference();
+
+            // found some referable Reference?
             if (refref == null)
                 return;
 

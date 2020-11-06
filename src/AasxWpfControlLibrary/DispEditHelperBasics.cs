@@ -1169,11 +1169,11 @@ namespace AasxPackageExplorer
             if (keys != null)
             {
                 // populate [+], [Select], [eCl@ss], [Copy] buttons
-                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#" });
+                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
 
-                var g2 = AddSmallGrid(1, 5 + presetNo, colDescs.ToArray());
+                var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
                 Grid.SetRow(g2, 0);
                 Grid.SetColumn(g2, 1);
                 Grid.SetColumnSpan(g2, 7);
@@ -1266,9 +1266,21 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                     });
 
+                if (jumpLambda != null)
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 5,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "Jump"),
+                        (o) =>
+                        {
+                            return jumpLambda(keys);
+                        });
+
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 5,
+                        g2, 0, 6,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Clipboard"),
@@ -1285,7 +1297,7 @@ namespace AasxPackageExplorer
                     var closureKey = addPresetKeys[i];
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 6 + i,
+                            g2, 0, 7 + i,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "" + addPresetNames[i]),

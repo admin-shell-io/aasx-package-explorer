@@ -93,17 +93,22 @@ namespace AasxPackageExplorer
                     var temp = theModifyRepo.WishForOutsideAction[0];
                     theModifyRepo.WishForOutsideAction.RemoveAt(0);
 
+                    // trivial?
+                    if (temp is ModifyRepo.LambdaActionNone)
+                        continue;
+
                     // what?
                     if (temp is ModifyRepo.LambdaActionRedrawEntity)
+                    {
+                        // redraw ourselves?
                         if (thePackage != null && theEntity != null)
                             DisplayOrEditVisualAasxElement(
                                 thePackage, theEntity, helper.editMode, helper.hintMode,
                                 auxPackages: helper.auxPackages, flyoutProvider: helper.flyoutProvider);
-                    if (temp is ModifyRepo.LambdaActionRedrawAllElements
-                        || temp is ModifyRepo.LambdaActionContentsChanged
-                        || temp is ModifyRepo.LambdaActionContentsTakeOver)
-                        // Unfortunately twice as ugly
-                        this.WishForOutsideAction.Add(temp);
+                    }
+
+                    // all other elements refer to superior functionality
+                    this.WishForOutsideAction.Add(temp);
                 }
             }
         }
@@ -2701,7 +2706,10 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        auxPackages: helper.auxPackages);
+                        auxPackages: helper.auxPackages,
+                        jumpLambda: (kl) => {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
                 }
             }
             else
@@ -2728,8 +2736,11 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "first", rele.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); });
+                    helper.AddKeyListKeys(
+                        stack, "first", rele.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                        jumpLambda: (kl) => { 
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl)); 
+                        });
                 }
 
                 helper.AddHintBubble(
@@ -2752,7 +2763,10 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "second", rele.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                        stack, "second", rele.second.Keys, repo, thePackage, AdminShell.Key.AllElements,
+                        jumpLambda: (kl) => {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
                 }
 
                 // specifically for annotated relationship?

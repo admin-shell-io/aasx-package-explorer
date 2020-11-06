@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AasxGlobalLogging;
+using AdminShellNS;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -55,6 +56,15 @@ namespace AasxPackageExplorer
         }
         public class LambdaActionContentsChanged : LambdaAction { }
         public class LambdaActionContentsTakeOver : LambdaAction { }
+        public class LambdaActionNavigateTo : LambdaAction
+        {
+            public LambdaActionNavigateTo() { }
+            public LambdaActionNavigateTo(AdminShell.Reference targetReference)
+            {
+                this.targetReference = targetReference;
+            }
+            public AdminShell.Reference targetReference;
+        }
 
         // some flags for the main application
         public List<LambdaAction> WishForOutsideAction = new List<LambdaAction>();

@@ -746,9 +746,8 @@ namespace AasxPackageExplorer
                         DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
                         // what to do?
-                        if (temp is ModifyRepo.LambdaActionRedrawAllElements)
+                        if (temp is ModifyRepo.LambdaActionRedrawAllElements wish)
                         {
-                            var wish = temp as ModifyRepo.LambdaActionRedrawAllElements;
                             // edit mode affects the total element view
                             if (!wish.OnlyReFocus)
                                 RedrawAllAasxElements();
@@ -773,6 +772,12 @@ namespace AasxPackageExplorer
                         {
                             // rework list
                             ContentTakeOver_Click(null, null);
+                        }
+
+                        if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
+                        {
+                            // handle it by UI
+                            UiHandleNavigateTo(tempNavTo.targetReference);
                         }
                     }
                 }
@@ -845,6 +850,99 @@ namespace AasxPackageExplorer
             return null;
         }
 
+        private void UiHandleNavigateTo(AdminShell.Reference targetReference)
+        {
+            // access
+            if (targetReference == null || targetReference.Count < 1)
+                return;
+
+            // make a copy of the Reference for searching
+            VisualElementGeneric veFound = null;
+            var work = new AdminShell.Reference(targetReference);
+
+            try
+            {
+                // remember some further supplementary search information
+                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
+                work = sri.CleanReference;
+
+                // incrementally make it unprecise
+                while (work.Count > 0)
+                {
+                    // try to find a business object in the package
+                    AdminShell.Referable bo = null;
+                    if (thePackageEnv != null && thePackageEnv.AasEnv != null)
+                        bo = thePackageEnv.AasEnv.FindReferableByReference(work);
+
+                    // if not, may be in aux package
+                    if (bo == null && thePackageAux != null && thePackageAux.AasEnv != null)
+                        bo = thePackageAux.AasEnv.FindReferableByReference(work);
+
+                    // if not, may look into the AASX file repo
+                    if (bo == null && this.theFileRepository != null)
+                    {
+                        // find?
+                        AasxFileRepository.FileItem fi = null;
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
+                            fi = this.theFileRepository.FindByAssetId(work[0].value.Trim());
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
+                            fi = this.theFileRepository.FindByAasId(work[0].value.Trim());
+
+                        bo = LoadFromFilerepository(fi, work);
+                    }
+
+                    // still yes?
+                    if (bo != null)
+                    {
+                        // try to look up in visual elements
+                        if (this.DisplayElements != null)
+                        {
+                            var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                                alsoDereferenceObjects: true, sri: sri);
+                            if (ve != null)
+                            {
+                                veFound = ve;
+                                break;
+                            }
+                        }
+                    }
+
+                    // make it more unprecice
+                    work.Keys.RemoveAt(work.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "While retrieving element requested for navigate to");
+            }
+
+            // if successful, try to display it
+            try
+            {
+                if (veFound != null)
+                {
+                    // show ve
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+                    // remember in history
+                    ButtonHistory.Push(veFound);
+                    // fake selection
+                    RedrawElementView();
+                    DisplayElements.Refresh();
+                    ContentTakeOver.IsEnabled = false;
+                }
+                else
+                {
+                    // everything is in default state, push adequate button history
+                    var veTop = this.DisplayElements.GetDefaultVisualElement();
+                    ButtonHistory.Push(veTop);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "While displaying element requested for navigate to");
+            }
+        }
+
         private void MainTimer_HandlePlugins()
         {
             // check if a plug-in has some work to do ..
@@ -860,91 +958,7 @@ namespace AasxPackageExplorer
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
                     if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
                     {
-                        // make a copy of the Reference for searching
-                        VisualElementGeneric veFound = null;
-                        var work = new AdminShell.Reference(evtNavTo.targetReference);
-
-                        try
-                        {
-                            // remember some further supplementary search information
-                            var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
-                            work = sri.CleanReference;
-
-                            // incrementally make it unprecise
-                            while (work.Count > 0)
-                            {
-                                // try to find a business object in the package
-                                AdminShell.Referable bo = null;
-                                if (thePackageEnv != null && thePackageEnv.AasEnv != null)
-                                    bo = thePackageEnv.AasEnv.FindReferableByReference(work);
-
-                                // if not, may be in aux package
-                                if (bo == null && thePackageAux != null && thePackageAux.AasEnv != null)
-                                    bo = thePackageAux.AasEnv.FindReferableByReference(work);
-
-                                // if not, may look into the AASX file repo
-                                if (bo == null && this.theFileRepository != null)
-                                {
-                                    // find?
-                                    AasxFileRepository.FileItem fi = null;
-                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
-                                        fi = this.theFileRepository.FindByAssetId(work[0].value.Trim());
-                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
-                                        fi = this.theFileRepository.FindByAasId(work[0].value.Trim());
-
-                                    bo = LoadFromFilerepository(fi, work);
-                                }
-
-                                // still yes?
-                                if (bo != null)
-                                {
-                                    // try to look up in visual elements
-                                    if (this.DisplayElements != null)
-                                    {
-                                        var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                                            alsoDereferenceObjects: true, sri: sri);
-                                        if (ve != null)
-                                        {
-                                            veFound = ve;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                // make it more unprecice
-                                work.Keys.RemoveAt(work.Count - 1);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "While retrieving element requested by plug-in");
-                        }
-
-                        // if successful, try to display it
-                        try
-                        {
-                            if (veFound != null)
-                            {
-                                // show ve
-                                DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
-                                // remember in history
-                                ButtonHistory.Push(veFound);
-                                // fake selection
-                                RedrawElementView();
-                                DisplayElements.Refresh();
-                                ContentTakeOver.IsEnabled = false;
-                            }
-                            else
-                            {
-                                // everything is in default state, bush adequate button history
-                                var veTop = this.DisplayElements.GetDefaultVisualElement();
-                                ButtonHistory.Push(veTop);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "While displaying element requested by plug-in");
-                        }
+                        UiHandleNavigateTo(evtNavTo.targetReference);
                     }
                     #endregion
 
