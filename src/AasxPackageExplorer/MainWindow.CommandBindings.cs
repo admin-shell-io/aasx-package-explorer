@@ -2062,10 +2062,11 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportGenericForms()
         {
             // trivial things
-            if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
+            if (this.thePackageEnv == null)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
 
             // a SubmodelRef shall be exported
@@ -2113,10 +2114,11 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportPredefineConcepts()
         {
             // trivial things
-            if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
+            if (this.thePackageEnv == null)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
 
             // a SubmodelRef shall be exported
@@ -2167,7 +2169,9 @@ namespace AasxPackageExplorer
             if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    "An AASX package needs to be open for writing.", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
 
             // a Referable shall be exported
@@ -2231,10 +2235,11 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportTable()
         {
             // trivial things
-            if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
+            if (this.thePackageEnv == null)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
 
             // a SubmodelRef shall be exported
@@ -2276,10 +2281,11 @@ namespace AasxPackageExplorer
         public void CommandBinding_NewSubmodelFromPlugin()
         {
             // trivial things
-            if (this.thePackageEnv == null || !this.thePackageEnv.IsOpen)
+            if (this.thePackageEnv == null)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
 
             // an AAS needs to be selected
