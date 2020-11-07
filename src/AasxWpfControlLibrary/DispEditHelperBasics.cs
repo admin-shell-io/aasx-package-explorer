@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 
 /*
@@ -97,8 +98,7 @@ namespace AasxPackageExplorer
 
         private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
-        public AdminShellPackageEnv package = null;
-        public AdminShellPackageEnv[] auxPackages = null;
+        public PackageCentral packages = null;
 
         public IFlyoutProvider flyoutProvider = null;
 
@@ -950,42 +950,26 @@ namespace AasxPackageExplorer
         }
 
         public List<AdminShell.Key> SmartSelectAasEntityKeys(
-            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages, PackageCentral.Selector selector, string filter = null)
         {
-            if (this.flyoutProvider == null)
-            {
-                var dlg = new SelectAasEntityDialogueByTree(env, filter, package, auxPackages);
-                if (dlg.ShowDialog() == true)
-                    return dlg.ResultKeys;
-            }
-            else
-            {
-                var uc = new SelectAasEntityFlyout(env, filter, package, auxPackages);
-                this.flyoutProvider.StartFlyoverModal(uc);
-                if (uc.ResultKeys != null)
-                    return uc.ResultKeys;
-            }
+            var uc = new SelectAasEntityFlyout(packages, selector, filter);
+            this.flyoutProvider.StartFlyoverModal(uc);
+            if (uc.ResultKeys != null)
+                return uc.ResultKeys;
+
             return null;
         }
 
         public VisualElementGeneric SmartSelectAasEntityVisualElement(
-            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector,
+            string filter = null)
         {
-            if (this.flyoutProvider == null)
-            {
-                var dlg = new SelectAasEntityDialogueByTree(env, filter, package, auxPackages);
-                if (dlg.ShowDialog() == true)
-                    return dlg.ResultVisualElement;
-            }
-            else
-            {
-                var uc = new SelectAasEntityFlyout(env, filter, package, auxPackages);
-                this.flyoutProvider.StartFlyoverModal(uc);
-                if (uc.ResultVisualElement != null)
-                    return uc.ResultVisualElement;
-            }
+            var uc = new SelectAasEntityFlyout(packages, selector, filter);
+            this.flyoutProvider.StartFlyoverModal(uc);
+            if (uc.ResultVisualElement != null)
+                return uc.ResultVisualElement;
+
             return null;
         }
 
@@ -1087,14 +1071,14 @@ namespace AasxPackageExplorer
             StackPanel view, string key,
             AdminShell.KeyList keys,
             ModifyRepo repo = null,
-            AdminShellPackageEnv package = null,
+            PackageCentral packages = null,
+            PackageCentral.Selector selector = PackageCentral.Selector.Main,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            ModifyRepo.LambdaAction takeOverLambdaAction = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1229,7 +1213,7 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
-                if (addExistingEntities != null && package != null)
+                if (addExistingEntities != null && packages.MainAvailable)
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 3,
@@ -1238,8 +1222,7 @@ namespace AasxPackageExplorer
                             content: "Add existing"),
                         (o) =>
                         {
-                            var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities,
-                                        auxPackages: auxPackages);
+                            var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
                             if (k2 != null)
                             {
                                 keys.AddRange(k2);
@@ -1659,7 +1642,8 @@ namespace AasxPackageExplorer
                         }))
                 {
                     AddKeyListKeys(
-                        substack, "semanticId", qual.semanticId.Keys, repo, package,
+                        substack, "semanticId", qual.semanticId.Keys, repo, 
+                        packages, PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: AdminShell.Key.AllElements,
                         addEclassIrdi: true);
                 }
@@ -1680,7 +1664,8 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo, package, AdminShell.Key.AllElements);
+                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo, 
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements);
                 }
 
             }

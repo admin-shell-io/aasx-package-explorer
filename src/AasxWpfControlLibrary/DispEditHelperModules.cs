@@ -342,7 +342,8 @@ namespace AasxPackageExplorer
                             this.AddKeyListKeys(
                                 stack, String.Format("reference[{0}]", i),
                                 hasDataSpecification[i].dataSpecification.Keys,
-                                repo, package, addExistingEntities: null /* "All" */,
+                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux, 
+                                addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeys: addPresetKeys);
                 }
             }
@@ -395,7 +396,8 @@ namespace AasxPackageExplorer
                 {
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo, package,
+                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux, 
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true);
                 }
@@ -522,7 +524,7 @@ namespace AasxPackageExplorer
                     }))
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
-                    package: package,
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     jumpLambda: (kl) => {
                         return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
@@ -656,7 +658,8 @@ namespace AasxPackageExplorer
                     }))
             {
                 this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo, package,
+                    stack, "unitId", dsiec.unitId.Keys, repo, 
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true);
             }
 
@@ -768,7 +771,7 @@ namespace AasxPackageExplorer
                     levelColors[1][0], levelColors[1][1]);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
-                    repo, package, "Submodel");
+                    repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.Main, "Submodel");
             }
         }
     }

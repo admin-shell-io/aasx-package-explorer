@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -41,24 +42,21 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
+        PackageCentral packages = null;
+        PackageCentral.Selector selector;
         private string theFilter = null;
-        private AdminShellPackageEnv thePackage = null;
-        private AdminShell.AdministrationShellEnv theEnv = null;
-        private AdminShellPackageEnv[] theAuxPackages = null;
 
         public AdminShell.KeyList ResultKeys = null;
         public VisualElementGeneric ResultVisualElement = null;
 
         public SelectAasEntityFlyout(
-            AdminShell.AdministrationShellEnv env,
-            string filter = null,
-            AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector,
+            string filter = null)
         {
             InitializeComponent();
-            thePackage = package;
-            theAuxPackages = auxPackages;
-            theEnv = env;
+            this.packages = packages;
+            this.selector = selector;
             theFilter = filter;
         }
 
@@ -266,7 +264,7 @@ namespace AasxPackageExplorer
         private void FilterFor(string filter)
         {
             filter = ApplyFullFilterString(filter);
-            DisplayElements.RebuildAasxElements(theEnv, thePackage, theAuxPackages, true, filter);
+            DisplayElements.RebuildAasxElements(packages, selector, true, filter);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)

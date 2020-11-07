@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -442,32 +443,44 @@ namespace AasxPackageExplorer
         }
 
         public void RebuildAasxElements(
-            AdminShell.AdministrationShellEnv env = null,
-            AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null, bool editMode = false, string filterElementName = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector, 
+            bool editMode = false, string filterElementName = null)
         {
             // clear tree
             displayedTreeViewLines = new List<VisualElementGeneric>();
 
             // valid?
-            if (env != null)
+            if (packages.MainAvailable)
             {
 
                 // generate lines, add
                 var x = Generators.GenerateVisualElementsFromShellEnv(
-                    treeViewLineCache, env, package, editMode, expandMode: 1);
+                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
 
                 // more?
-                if (auxPackages != null)
-                    foreach (var aux in auxPackages)
-                    {
-                        var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                            treeViewLineCache, aux.AasEnv, aux, editMode, expandMode: 1);
-                        foreach (var xx in x2)
-                            displayedTreeViewLines.Add(xx);
-                    }
+                if (packages.AuxAvailable && 
+                    (selector == PackageCentral.Selector.MainAux 
+                     || selector == PackageCentral.Selector.MainAuxFileRepo))
+                {
+                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux, editMode, expandMode: 1);
+                    foreach (var xx in x2)
+                        displayedTreeViewLines.Add(xx);
+                }
+
+                // more?
+                if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
+                {
+                    var pkg = packages.FileRepository.MakeUpFakePackage();
+
+                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                        treeViewLineCache, pkg?.AasEnv, pkg, editMode, expandMode: 1);
+                    foreach (var xx in x2)
+                        displayedTreeViewLines.Add(xx);
+                }
 
                 // may be filter
                 if (filterElementName != null)
@@ -481,7 +494,7 @@ namespace AasxPackageExplorer
                     // emergency
                     displayedTreeViewLines.Add(
                         new VisualElementEnvironmentItem(
-                            null /* no parent */, treeViewLineCache, package, env,
+                            null /* no parent */, treeViewLineCache, packages.Main, packages.Main?.AasEnv,
                             VisualElementEnvironmentItem.ItemType.EmptySet));
                 }
 
