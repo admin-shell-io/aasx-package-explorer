@@ -370,6 +370,53 @@ namespace AasxPackageExplorer
             return (but);
         }
 
+        public Button AddSmallContextMenuItemTo(
+            Grid g, int row, int col,
+            string content,
+            ModifyRepo repo,
+            string[] menuHeaders,
+            Func<object, ModifyRepo.LambdaAction> menuItemLambda,
+            Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            Brush foreground = null, Brush background = null)
+        {
+            // construct button
+            var but = new Button();
+            but.Margin = margin;
+            but.Padding = padding;
+            if (foreground != null)
+                but.Foreground = foreground;
+            if (background != null)
+                but.Background = background;
+            but.Content = content;
+            Grid.SetRow(but, row);
+            Grid.SetColumn(but, col);
+            g.Children.Add(but);
+
+            // on demand: construct and register context menu
+            if (menuHeaders != null && menuHeaders.Length >= 2 && menuItemLambda != null)
+            {
+                but.Click += (sender, e) =>
+                {
+                    var nmi = menuHeaders.Length / 2;
+                    var cm = new ContextMenu();
+                    for (int i = 0; i < nmi; i++)
+                    {
+                        var mi = new MenuItem();
+                        mi.Icon = "" + menuHeaders[2 * i + 0];
+                        mi.Header = "" + menuHeaders[2 * i + 1];
+                        mi.Tag = i;
+                        cm.Items.Add(mi);
+                        repo.RegisterControl(mi, menuItemLambda);
+                    }
+                    cm.PlacementTarget = but;
+                    cm.IsOpen = true;
+                };
+            }
+
+            // ok
+            return (but);
+        }
+
         public CheckBox AddSmallCheckBoxTo(
             Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
@@ -1122,12 +1169,9 @@ namespace AasxPackageExplorer
             g.ColumnDefinitions.Add(gc);
 
             // 5 .. buttons behind it
-            for (int i = 0; i < 3; i++)
-            {
-                gc = new ColumnDefinition();
-                gc.Width = new GridLength(1.0, GridUnitType.Auto);
-                g.ColumnDefinitions.Add(gc);
-            }
+            gc = new ColumnDefinition();
+            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
@@ -1411,53 +1455,46 @@ namespace AasxPackageExplorer
                                 keys[currentI] == this.highlightField.containingObject)
                             this.HighligtStateElement(tbValue, true);
 
-                        // button [-]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
+                        // button [hamburger]
+                        AddSmallContextMenuItemTo(
                                 g, 0 + i + rowOfs, 5,
+                                "\u2261",
+                                repo, new [] {
+                                    "\u2702", "Delete",
+                                    "\u25b2", "Move Up",
+                                    "\u25bc", "Move Down",
+                                },
                                 margin: new Thickness(2, 2, 2, 2),
                                 padding: new Thickness(5, 0, 5, 0),
-                                content: "-"),
-                            (o) =>
-                            {
-                                keys.RemoveAt(currentI);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                menuItemLambda: (o) =>
+                                {
+                                    var action = false;
 
-                        // button [up]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
-                                g, 0 + i + rowOfs, 6,
-                                margin: new Thickness(2, 2, 2, 2),
-                                padding: new Thickness(5, 0, 5, 0),
-                                content: "\U0001f805"),
-                            (o) =>
-                            {
-                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                    if (o is MenuItem mi && mi.Tag is int ti)
+                                        switch (ti)
+                                        {
+                                            case 0:
+                                                keys.RemoveAt(currentI);
+                                                action = true;
+                                                break;
+                                            case 1:
+                                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
+                                                action = true;
+                                                break;
+                                            case 2:
+                                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
+                                                action = true;
+                                                break;
+                                        }
 
-                        // button [down]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
-                                g, 0 + i + rowOfs, 7,
-                                margin: new Thickness(2, 2, 2, 2),
-                                padding: new Thickness(5, 0, 5, 0),
-                                content: "\U0001f807"),
-                            (o) =>
-                            {
-                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                    if (action)
+                                        if (takeOverLambdaAction != null)
+                                            return takeOverLambdaAction;
+                                        else
+                                            return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new ModifyRepo.LambdaActionNone();
+                                });
+
                     }
 
             // in total

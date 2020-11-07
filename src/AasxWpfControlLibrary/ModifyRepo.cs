@@ -103,15 +103,13 @@ namespace AasxPackageExplorer
                 tb.KeyUp += Tb_KeyUp;
             }
 
-            if (c is Button)
+            if (c is Button btn)
             {
-                var b = c as Button;
-                b.Click += B_Click;
+                btn.Click += B_Click;
             }
 
-            if (c is ComboBox)
+            if (c is ComboBox cb)
             {
-                var cb = c as ComboBox;
                 it.originalValue = "" + cb.Text;
                 cb.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
                   new System.Windows.Controls.TextChangedEventHandler(Tb_TextChanged));
@@ -123,12 +121,16 @@ namespace AasxPackageExplorer
                     cb.KeyUp += Tb_KeyUp;
             }
 
-            if (c is CheckBox)
+            if (c is CheckBox ch)
             {
-                var cb = c as CheckBox;
-                it.originalValue = cb.IsChecked;
-                cb.Checked += Cb_Checked;
-                cb.Unchecked += Cb_Checked;
+                it.originalValue = ch.IsChecked;
+                ch.Checked += Cb_Checked;
+                ch.Unchecked += Cb_Checked;
+            }
+
+            if (c is MenuItem mi)
+            {
+                mi.Click += B_Click;
             }
 
             return c;
@@ -191,9 +193,9 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is Button)
+                    if (it.control is Button || it.control is MenuItem)
                     {
-                        var action = it.setValueLambda(null);
+                        var action = it.setValueLambda(it.control);
                         if (action != null)
                             WishForOutsideAction.Add(action);
                     }
