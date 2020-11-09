@@ -1931,6 +1931,45 @@ namespace AdminShellNS
                 return sb.ToString();
             }
 
+            // sorting
+
+            public class ComparerIdShort : IComparer<Referable>
+            {
+                public int Compare(Referable a, Referable b)
+                {
+                    return String.Compare(a.idShort, b.idShort);
+                }
+            }
+
+            public class ComparerIndexed : IComparer<Referable>
+            {
+                public int NullIndex = int.MaxValue;
+                public Dictionary<Referable, int> Index = new Dictionary<Referable, int>();
+
+                public int Compare(Referable a, Referable b)
+                {
+                    var ca = Index.ContainsKey(a);
+                    var cb = Index.ContainsKey(b);
+
+                    if (!ca && !cb)
+                        return 0;
+                    // make CDs without usage to appear at end of list
+                    if (!ca)
+                        return +1;
+                    if (!cb)
+                        return -1;
+
+                    var ia = Index[a];
+                    var ib = Index[b];
+
+                    if (ia == ib)
+                        return 0;
+                    if (ia < ib)
+                        return -1;
+                    return +1;
+                }
+            }
+
             // validation
 
             public virtual void Validate(AasValidationRecordList results)
@@ -2024,6 +2063,28 @@ namespace AdminShellNS
             {
                 return ("" + identification?.ToString() + " " + administration?.ToString()).Trim();
             }
+
+            // sorting
+
+            public class ComparerIdentification : IComparer<Identifiable>
+            {
+                public int Compare(Identifiable a, Identifiable b)
+                {
+                    if (a.identification == null && b.identification == null)
+                        return 0;
+                    if (a.identification == null)
+                        return +1;
+                    if (b.identification == null)
+                        return -1;
+
+                    var vc = String.Compare(a.identification.idType, b.identification.idType);
+                    if (vc != 0)
+                        return vc;
+
+                    return String.Compare(a.identification.id, b.identification.id);
+                }
+            }
+
         }
 
         public class JsonModelTypeWrapper
@@ -3491,6 +3552,10 @@ namespace AdminShellNS
                 this.Add(cd);
                 return cd;
             }
+
+            // sorting
+
+
         }
 
         public class ConceptDictionary : Referable
@@ -4382,6 +4447,27 @@ namespace AdminShellNS
 
                 // ok
                 return res;
+            }
+
+            // Sorting
+
+            public Referable.ComparerIndexed CreateIndexedComparerCdsForSmUsage()
+            {
+                var cmp = new Referable.ComparerIndexed();
+                int nr = 0;
+                foreach (var sm in FindAllSubmodelGroupedByAAS())
+                    foreach (var sme in sm.FindDeep<SubmodelElement>())
+                    {
+                        if (sme.semanticId == null)
+                            continue;
+                        var cd = this.FindConceptDescription(sme.semanticId);
+                        if (cd == null)
+                            continue;
+                        if (cmp.Index.ContainsKey(cd))
+                            continue;
+                        cmp.Index[cd] = nr++;
+                    }
+                return cmp;
             }
 
             // Validation

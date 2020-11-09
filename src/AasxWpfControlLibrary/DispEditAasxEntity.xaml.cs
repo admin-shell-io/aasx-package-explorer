@@ -539,9 +539,12 @@ namespace AasxPackageExplorer
                         });
                 }
 
-                // Copy Concept Descriptions
+                //
+                // Concept Descriptions
+                //
                 if (envItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
+                    // Copy
                     helper.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
                             () => { return helper.packages.AuxAvailable;  },
@@ -575,10 +578,62 @@ namespace AasxPackageExplorer
 
                             return new ModifyRepo.LambdaActionNone();
                         });
+
+                    // Sort
+                    helper.AddHintBubble(stack, hintMode, new[] {
+                        new HintCheck(
+                            () => { return true;  },
+                            "The sort operation permanently changes the order of ConceptDescriptions in the " +
+                            "environment. It cannot be reverted!",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                    var g = helper.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
+                    var cb = helper.AddSmallComboBoxTo(g, 0, 0,  
+                        margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
+                        minWidth:150,                           
+                        items: new[] { 
+                        "idShort", "Id", "Usage in Submodels"
+                    });
+                    cb.SelectedIndex = 0;
+                    repo.RegisterControl(
+                        helper.AddSmallButtonTo(g, 0, 1, content: "Sort!",
+                            margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0)),
+                        (o) =>
+                        {
+                            if (MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                               "Perform sort operation? This operation can not be reverted!", "ConceptDescriptions",
+                               MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                            {
+                                var success = false;
+                                if (cb.SelectedIndex == 0)
+                                {
+                                    env.ConceptDescriptions.Sort(new AdminShell.Referable.ComparerIdShort());
+                                    success = true;
+                                }
+                                if (cb.SelectedIndex == 1)
+                                {
+                                    env.ConceptDescriptions.Sort(new AdminShell.Identifiable.ComparerIdentification());
+                                    success = true;
+                                }
+                                if (cb.SelectedIndex == 2)
+                                {
+                                    var cmp = env.CreateIndexedComparerCdsForSmUsage();
+                                    env.ConceptDescriptions.Sort(cmp);
+                                    success = true;
+                                }
+
+                                if (success)
+                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null);
+                            }
+
+                            return new ModifyRepo.LambdaActionNone();
+                        });
                 }
             }
             else if (envItemType == VisualElementEnvironmentItem.ItemType.SupplFiles && packages.MainStorable)
             {
+                // Files
+
                 helper.AddGroup(stack, "Supplementary file to add:", levelColors[1][0], levelColors[1][1]);
 
                 var g = helper.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
@@ -1640,7 +1695,7 @@ namespace AasxPackageExplorer
                     // value == SubmodelElement is displayed
                     helper.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", levelColors[1][0], levelColors[1][1]);
-                    var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                    var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
@@ -2156,7 +2211,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
 
-                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 for (int dirNdx = 0; dirNdx < 3; dirNdx++)
                 {
@@ -2245,7 +2300,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
 
-                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 helper.AddHintBubble(
                     substack, hintMode,

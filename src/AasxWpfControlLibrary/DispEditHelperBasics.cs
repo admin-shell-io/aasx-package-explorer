@@ -288,6 +288,18 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
+        public Grid AddSmallGridTo(
+            Grid g, int row, int col, 
+            int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
+        {
+            var inner = AddSmallGrid(rows, cols, colWidths, margin);
+            inner.Margin = margin;
+            Grid.SetRow(inner, row);
+            Grid.SetColumn(inner, col);
+            g.Children.Add(inner);
+            return (inner);
+        }
+
         public TextBox AddSmallTextBoxTo(
             Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush foreground = null, Brush background = null,
@@ -513,6 +525,7 @@ namespace AasxPackageExplorer
         public StackPanel AddSubStackPanel(StackPanel view, string caption)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+            AddSmallLabelTo(g, 0, 0, content: caption);
             var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
 
             // in total
@@ -520,6 +533,20 @@ namespace AasxPackageExplorer
 
             // done
             return (sp);
+        }
+
+        public Grid AddSubGrid(StackPanel view, string caption,
+            int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
+        {
+            var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+            AddSmallLabelTo(g, 0, 0, content: caption);
+            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin);
+
+            // in total
+            view.Children.Add(g);
+
+            // done
+            return (inner);
         }
 
         public void AddKeyValueRef(
@@ -810,21 +837,6 @@ namespace AasxPackageExplorer
             x.VerticalAlignment = VerticalAlignment.Center;
 
             // 1 + action button
-#if never
-            for (int i = 0; i < numButton; i++)
-            {
-                int currentI = i;
-                repo.RegisterControl(
-                    ElemViewAddSmallButtonTo(
-                        g, 0, 1+i,
-                        margin: new Thickness(0, 0, 5, 0),
-                        padding: new Thickness(5,0,5,0),
-                        content: "" + actionStr[i]),
-                    (o) => {
-                        return action(currentI); // button # as argument!
-                    });
-            }
-#else
             var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new Thickness(5, 0, 5, 0));
             for (int i = 0; i < numButton; i++)
             {
@@ -840,7 +852,7 @@ namespace AasxPackageExplorer
                         return action(currentI); // button # as argument!
                     });
             }
-#endif
+
             // in total
             view.Children.Add(g);
         }
@@ -1649,7 +1661,7 @@ namespace AasxPackageExplorer
             for (int i = 0; i < qualifiers.Count; i++)
             {
                 var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 AddGroup(
                     substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo,
