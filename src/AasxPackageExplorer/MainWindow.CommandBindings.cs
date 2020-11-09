@@ -2089,7 +2089,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportPredefineConcepts()
         {
             // trivial things
-            if (packages.MainAvailable)
+            if (!packages.MainAvailable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -2141,7 +2141,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ConvertElement()
         {
             // trivial things
-            if (packages.MainStorable)
+            if (!packages.MainStorable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open for storage", "Error", 
@@ -2210,7 +2210,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportTable()
         {
             // trivial things
-            if (packages.MainAvailable)
+            if (!packages.MainAvailable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -2256,7 +2256,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_NewSubmodelFromPlugin()
         {
             // trivial things
-            if (packages.MainStorable)
+            if (!packages.MainStorable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open for storage", "Error"
