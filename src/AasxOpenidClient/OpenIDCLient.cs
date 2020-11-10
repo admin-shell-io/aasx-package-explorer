@@ -58,6 +58,7 @@ namespace AasxOpenIdClient
             string caption = "Connect with " + tag + ".dat";
             string message = "";
 
+            bool withOpenidFile = false;
             if (value != "")
             {
                 dataServer = value;
@@ -85,6 +86,7 @@ namespace AasxOpenIdClient
                     Console.WriteLine(tag + ".dat " + " can not be read!");
                     return;
                 }
+                withOpenidFile = true;
             }
 
             message =
@@ -119,8 +121,17 @@ namespace AasxOpenIdClient
             if (token != "")
                 client.SetBearerToken(token);
 
-            string operation = "/server/listaas/";
+            string operation = "";
             string lastOperation = "";
+            if (withOpenidFile)
+            {
+                operation = "authenticate";
+                lastOperation = "/server/listaas/";
+            }
+            else
+            {
+                operation = "/server/listaas/";
+            }
 
             while (operation != "" && operation != "error")
             {
@@ -217,8 +228,11 @@ namespace AasxOpenIdClient
                     case "authenticate":
                         try
                         {
-                            //// var certificate = new X509Certificate2(certPfx, certPfxPW);
                             X509SigningCredentials x509Credential = null;
+                            if (withOpenidFile)
+                            {
+                                x509Credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));
+                            }
 
                             var response = await RequestTokenAsync(x509Credential);
                             token = response.AccessToken;
@@ -346,55 +360,55 @@ namespace AasxOpenIdClient
             string[] x5c = null;
             string certFileName = certPfx;
             string password = certPfxPW;
+            X509Certificate2 certificate = null;
 
-            X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
-            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-
-            //// X509Certificate2Collection xc = new X509Certificate2Collection();
-            //// xc.Import(certFileName, password, X509KeyStorageFlags.PersistKeySet);
-
-            X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
-            X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
-                X509FindType.FindByTimeValid, DateTime.Now, false);
-
-            Boolean rootCertFound = false;
-            X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
-            foreach (X509Certificate2 fc in fcollection)
+            if (credential == null)
             {
-                X509Chain fch = new X509Chain();
-                fch.Build(fc);
-                foreach (X509ChainElement element in fch.ChainElements)
+                X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+                X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
+                X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
+                    X509FindType.FindByTimeValid, DateTime.Now, false);
+
+                Boolean rootCertFound = false;
+                X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
+                foreach (X509Certificate2 fc in fcollection)
                 {
-                    if (rootCertSubject.Contains(element.Certificate.Subject))
+                    X509Chain fch = new X509Chain();
+                    fch.Build(fc);
+                    foreach (X509ChainElement element in fch.ChainElements)
                     {
-                        rootCertFound = true;
-                        fcollection2.Add(fc);
+                        if (rootCertSubject.Contains(element.Certificate.Subject))
+                        {
+                            rootCertFound = true;
+                            fcollection2.Add(fc);
+                        }
                     }
                 }
-            }
-            if (rootCertFound)
-                fcollection = fcollection2;
+                if (rootCertFound)
+                    fcollection = fcollection2;
 
-            X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
-                "Test Certificate Select",
-                "Select a certificate from the following list to get information on that certificate",
-                X509SelectionFlag.SingleSelection);
-            X509Certificate2 certificate = null;
-            if (scollection.Count != 0)
-            {
-                certificate = scollection[0];
-                X509Chain ch = new X509Chain();
-                ch.Build(certificate);
-
-                string[] X509Base64 = new string[ch.ChainElements.Count];
-
-                int j = 0;
-                foreach (X509ChainElement element in ch.ChainElements)
+                X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                    "Test Certificate Select",
+                    "Select a certificate from the following list to get information on that certificate",
+                    X509SelectionFlag.SingleSelection);
+                if (scollection.Count != 0)
                 {
-                    X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
-                }
+                    certificate = scollection[0];
+                    X509Chain ch = new X509Chain();
+                    ch.Build(certificate);
 
-                x5c = X509Base64;
+                    string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                    int j = 0;
+                    foreach (X509ChainElement element in ch.ChainElements)
+                    {
+                        X509Base64[j++] = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                    }
+
+                    x5c = X509Base64;
+                }
             }
             else
             {
