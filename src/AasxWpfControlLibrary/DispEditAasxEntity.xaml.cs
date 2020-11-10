@@ -19,6 +19,7 @@ using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+using AasxPackageExplorer;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -50,15 +51,7 @@ namespace AasxPackageExplorer
 
         private DispEditHelperModules helper = new DispEditHelperModules();
 
-        private class CopyPasteBuffer
-        {
-            public bool duplicate = false;
-            public AdminShell.Referable parentContainer = null;
-            public AdminShell.SubmodelElementWrapper wrapper = null;
-            public AdminShell.SubmodelElement sme = null;
-        }
-
-        private CopyPasteBuffer theCopyPaste = null;
+        private DispEditHelperCopyPaste.CopyPasteBuffer theCopyPaste = new DispEditHelperCopyPaste.CopyPasteBuffer();
 
         static string PackageSourcePath = "";
         static string PackageTargetFn = "";
@@ -156,6 +149,16 @@ namespace AasxPackageExplorer
             if (editMode && !embedded)
             {
                 helper.EntityListUpDownDeleteHelper<AdminShell.Asset>(stack, repo, env.Assets, asset, env, "Asset:");
+            }
+
+            // Cut, copy, paste within list of Assets
+            if (editMode && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.Asset>(
+                    stack, repo, this.theCopyPaste,
+                    env.Assets, asset, (o) => { return new AdminShell.Asset(o); },
+                    label: "Buffer:");
             }
 
             // print code sheet
@@ -827,6 +830,17 @@ namespace AasxPackageExplorer
                 helper.EntityListUpDownDeleteHelper<AdminShell.AdministrationShell>(
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
 
+                // Cut, copy, paste within list of AASes
+                if (editMode && env != null)
+                {
+                    // cut/ copy / paste
+                    helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
+                        stack, repo, this.theCopyPaste,
+                        env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
+                        label: "Buffer:");
+                }
+
+                // Submodels
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -1124,20 +1138,40 @@ namespace AasxPackageExplorer
                     levelColors[0][0], levelColors[0][1]);
 
                 helper.AddAction(stack, "Submodel:", new[] { "Delete" }, repo, (buttonNdx) =>
-               {
-                   if (buttonNdx == 0)
-                       if (helper.flyoutProvider != null &&
-                            MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "Delete selected Submodel? This operation can not be reverted!", "AASX",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                       {
-                           if (env.Submodels.Contains(submodel))
-                               env.Submodels.Remove(submodel);
-                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
-                       }
+                {
+                    if (buttonNdx == 0)
+                        if (helper.flyoutProvider != null &&
+                             MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                                 "Delete selected Submodel? This operation can not be reverted!", "AASX",
+                                 MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        {
+                            if (env.Submodels.Contains(submodel))
+                                env.Submodels.Remove(submodel);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
+                        }
 
-                   return new ModifyRepo.LambdaActionNone();
-               });
+                    return new ModifyRepo.LambdaActionNone();
+                });
+            }
+
+            // Cut, copy, paste within an aas
+            if (editMode && smref != null && submodel != null && aas != null)
+            {
+                // cut/ copy / paste
+                helper.DispSubmodelCutCopyPasteHelper<AdminShell.SubmodelRef>(stack, repo, this.theCopyPaste, 
+                    aas.submodelRefs, smref, (sr) => { return new AdminShell.SubmodelRef(sr); },
+                    smref, submodel,
+                    label: "Buffer:");
+            }
+            else
+            // Cut, copy, paste within the Submodels
+            if (editMode && smref == null && submodel != null && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispSubmodelCutCopyPasteHelper<AdminShell.Submodel>(stack, repo, this.theCopyPaste,
+                    env.Submodels, submodel, (sm) => { return new AdminShell.Submodel(sm, shallowCopy: false); },
+                    smref, submodel,
+                    label: "Buffer:");
             }
 
             // normal edit of the submodel
@@ -1402,6 +1436,16 @@ namespace AasxPackageExplorer
             {
                 helper.EntityListUpDownDeleteHelper<AdminShell.ConceptDescription>(
                     stack, repo, env.ConceptDescriptions, cd, env, "CD:");
+            }
+
+            // Cut, copy, paste within list of CDs
+            if (editMode && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.ConceptDescription>(
+                    stack, repo, this.theCopyPaste,
+                    env.ConceptDescriptions, cd, (o) => { return new AdminShell.ConceptDescription(o); },
+                    label: "Buffer:");
             }
 
             // Referable
@@ -1796,6 +1840,9 @@ namespace AasxPackageExplorer
             // cut/ copy / paste
             if (parentContainer != null)
             {
+                helper.DispSmeCutCopyPasteHelper(stack, repo, parentContainer, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
+#if _in_refactoring
                 helper.AddAction(
                     stack, "Buffer:",
                     new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
@@ -1920,6 +1967,7 @@ namespace AasxPackageExplorer
 
                         return new ModifyRepo.LambdaActionNone();
                     });
+#endif
             }
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -2462,7 +2510,8 @@ namespace AasxPackageExplorer
                     "or an external repository, such as IEC CDD or eCl@ss or " +
                     "a company / consortia repository.",
                     checkForCD: true,
-                    addExistingEntities: AdminShell.Key.ConceptDescription);
+                    addExistingEntities: AdminShell.Key.ConceptDescription,
+                    cpb: theCopyPaste);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
@@ -2743,16 +2792,19 @@ namespace AasxPackageExplorer
                     stack, "value", p, ref p.value, null, repo,
                     v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
-            else if (sme is AdminShell.ReferenceElement)
+            else if (sme is AdminShell.ReferenceElement rfe)
             {
-                var p = sme as AdminShell.ReferenceElement;
+                // buffer Key for later
+                var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // group
                 helper.AddGroup(stack, "ReferenceElement", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return p.value == null || p.value.IsEmpty; },
+                            () => { return rfe.value == null || rfe.value.IsEmpty; },
                             "Please choose the target of the reference. " +
                                 "You refer to any Referable, if local within the AAS environment or outside. " +
                                 "The semantics of your reference shall be described " +
@@ -2760,15 +2812,17 @@ namespace AasxPackageExplorer
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                        stack, repo, p.value, "Target reference:", "Create data element!",
+                        stack, repo, rfe.value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            p.value = new AdminShell.Reference();
+                            rfe.value = new AdminShell.Reference();
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, 
+                    helper.AddKeyListKeys(stack, "value", rfe.value.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeys: bufferKeys.Item2,
                         jumpLambda: (kl) => {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
@@ -2777,8 +2831,13 @@ namespace AasxPackageExplorer
             else
             if (sme is AdminShell.RelationshipElement rele)
             {
+                // buffer Key for later
+                var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // group
                 helper.AddGroup(stack, "" + sme.GetElementName(), levelColors[0][0], levelColors[0][1]);
 
+                // members
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -2801,6 +2860,8 @@ namespace AasxPackageExplorer
                     helper.AddKeyListKeys(
                         stack, "first", rele.first.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeys: bufferKeys.Item2,
                         jumpLambda: (kl) => { 
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl)); 
                         });
@@ -2828,6 +2889,8 @@ namespace AasxPackageExplorer
                     helper.AddKeyListKeys(
                         stack, "second", rele.second.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeys: bufferKeys.Item2,
                         jumpLambda: (kl) => {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });

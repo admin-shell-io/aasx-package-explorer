@@ -20,7 +20,7 @@ namespace AasxPackageExplorer
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperBasics
+    public class DispEditHelperModules : DispEditHelperCopyPaste
     {
         //
         // Inject a number of customised function in modules
@@ -490,7 +490,8 @@ namespace AasxPackageExplorer
             Action<AdminShell.SemanticId> setOutput,
             string statement = null,
             bool checkForCD = false,
-            string addExistingEntities = null)
+            string addExistingEntities = null,
+            CopyPasteBuffer cpb = null)
         {
             // access
             if (stack == null)
@@ -499,6 +500,7 @@ namespace AasxPackageExplorer
             // members
             this.AddGroup(stack, "Semantic ID:", levelColors[1][0], levelColors[1][1]);
 
+            // hint
             this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -515,6 +517,10 @@ namespace AasxPackageExplorer
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
+            // add from Copy Buffer
+            var bufferKeys = CopyPasteBuffer.PreparePresetsForListKeys(cpb);
+
+            // add the keys
             if (this.SafeguardAccess(
                     stack, repo, semanticId, "semanticId:", "Create data element!",
                     v =>
@@ -526,6 +532,8 @@ namespace AasxPackageExplorer
                     stack, "semanticId", semanticId.Keys, repo,
                     packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
+                    addPresetNames: bufferKeys.Item1,
+                    addPresetKeys: bufferKeys.Item2,
                     jumpLambda: (kl) => {
                         return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                     });

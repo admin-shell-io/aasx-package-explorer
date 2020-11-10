@@ -112,7 +112,7 @@ namespace AasxPackageExplorer
         public ModifyRepo repo = null;
 
         public DispEditHighlight.HighlightFieldInfo highlightField = null;
-        private FrameworkElement lastHighlightedField = null;
+        private FrameworkElement lastHighlightedField = null;        
 
         //
         // Highlighting
@@ -1619,7 +1619,7 @@ namespace AasxPackageExplorer
 
                     return new ModifyRepo.LambdaActionNone();
                 });
-        }
+        }        
 
         public void QualifierHelper(StackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
