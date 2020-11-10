@@ -115,11 +115,11 @@ namespace AasxPackageExplorer
                         bufferKey = AdminShell.KeyList.CreateNew(
                             new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
                                     cpbi.entity.identification.idType, cpbi.entity.identification.id));
-                    
+
                     if (cpb.item is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
                         bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetSemanticKey());
 
-                    if (cpb.item is CopyPasteItemSME cpbsme && cpbsme.sme != null 
+                    if (cpb.item is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
                     {
                         // index parents for ALL Submodels -> parent for our SME shall be set by this ..
@@ -184,7 +184,7 @@ namespace AasxPackageExplorer
                     {
                         // present
                         var item = cpb?.item as CopyPasteItemSME;
-                        if (cpb == null || !cpb.valid || item?.sme == null || item?.wrapper == null ||
+                        if (!cpb.valid || item?.sme == null || item?.wrapper == null ||
                             item?.parentContainer == null)
                         {
                             if (this.flyoutProvider != null)
@@ -262,7 +262,7 @@ namespace AasxPackageExplorer
                                 this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
                                     pcsm.submodelElements, item.wrapper, null);
 
-                            if (item.parentContainer is AdminShell.SubmodelElementCollection pcsmc 
+                            if (item.parentContainer is AdminShell.SubmodelElementCollection pcsmc
                                 && item.wrapper != null)
                                 this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
                                     pcsmc.value, item.wrapper, null);
@@ -285,7 +285,7 @@ namespace AasxPackageExplorer
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,
-            Func<T,T> cloneEntity,
+            Func<T, T> cloneEntity,
             AdminShell.SubmodelRef smref,
             AdminShell.Submodel sm,
             string label = "Buffer:") where T : new()
@@ -295,8 +295,10 @@ namespace AasxPackageExplorer
                 return;
 
             // integrity
+			// ReSharper disable RedundantCast
             if (entity as object != smref as object && entity as object != sm as object)
                 return;
+			// ReSharper enable RedundantCast
 
             // use an action
             this.AddAction(
@@ -326,7 +328,7 @@ namespace AasxPackageExplorer
                         if (cpb?.item is CopyPasteItemSubmodel item)
                         {
                             // for pasting into, buffer item(s) need to be SME
-                            if (cpb == null || !cpb.valid || item?.sm == null 
+                            if (!cpb.valid || item?.sm == null
                                 || item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
@@ -353,8 +355,8 @@ namespace AasxPackageExplorer
                             // may delete original
                             if (!cpb.duplicate)
                             {
-                                    this.DeleteElementInList<T>(
-                                            item.parentContainer as List<T>, (T)item.entity, null);
+                                this.DeleteElementInList<T>(
+                                        item.parentContainer as List<T>, (T)item.entity, null);
 
                                 // the buffer is tainted
                                 cpb.Clear();
@@ -379,7 +381,7 @@ namespace AasxPackageExplorer
                         if (cpb?.item is CopyPasteItemSME item)
                         {
                             // for pasting into, buffer item(s) need to be SME
-                            if (cpb == null || item?.sme == null || item?.wrapper == null ||
+                            if (item?.sme == null || item?.wrapper == null ||
                                 item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
@@ -420,7 +422,7 @@ namespace AasxPackageExplorer
                             // try to focus
                             return new ModifyRepo.LambdaActionRedrawAllElements(
                                 nextFocus: smw2.submodelElement, isExpanded: true);
-                        } 
+                        }
                         else
                         {
                             this.flyoutProvider?.MessageBoxFlyoutShow(
@@ -462,7 +464,7 @@ namespace AasxPackageExplorer
                         // user feedback
                         Log.Info(
                             0, StoredPrint.ColorBlue,
-                            "Stored {0} '{1}' to internal buffer.{1}", 
+                            "Stored {0} '{1}' to internal buffer.{1}",
                             "" + entity.GetElementName(),
                             "" + entity.idShort,
                             cpb.duplicate
@@ -476,7 +478,7 @@ namespace AasxPackageExplorer
                         if (cpb?.item is CopyPasteItemIdentifiable item)
                         {
                             // for pasting into, buffer item(s) need to be SME
-                            if (cpb == null || !cpb.valid || item?.entity == null
+                            if (!cpb.valid || item?.entity == null
                                 || item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
@@ -522,7 +524,7 @@ namespace AasxPackageExplorer
                                 "Copy & Paste",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
                         }
-                    }                  
+                    }
 
                     return new ModifyRepo.LambdaActionNone();
                 });

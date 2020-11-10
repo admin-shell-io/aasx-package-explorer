@@ -17,9 +17,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxPackageExplorer;
 using AasxWpfControlLibrary;
 using AdminShellNS;
-using AasxPackageExplorer;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -215,7 +215,7 @@ namespace AasxPackageExplorer
                             }
                         }
                     }
-                    if (i == 1)
+                    if (i == 1 && env != null)
                     {
                         var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                         uc.Text = asset.identification.id;
@@ -511,7 +511,7 @@ namespace AasxPackageExplorer
                                                     // copy ONLY if not existing in destination
                                                     // rationale: do not potential harm the source content, 
                                                     // even when voiding destination integrity
-                                                    if (rve.thePackage.IsLocalFile(fn) 
+                                                    if (rve.thePackage.IsLocalFile(fn)
                                                         && !packages.Main.IsLocalFile(fn))
                                                     {
                                                         var tmpFile =
@@ -591,10 +591,10 @@ namespace AasxPackageExplorer
                             severityLevel: HintCheck.Severity.Notice)
                     });
                     var g = helper.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
-                    var cb = helper.AddSmallComboBoxTo(g, 0, 0,  
+                    var cb = helper.AddSmallComboBoxTo(g, 0, 0,
                         margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
-                        minWidth:150,                           
-                        items: new[] { 
+                        minWidth: 150,
+                        items: new[] {
                         "idShort", "Id", "Usage in Submodels"
                     });
                     cb.SelectedIndex = 0;
@@ -831,14 +831,10 @@ namespace AasxPackageExplorer
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
 
                 // Cut, copy, paste within list of AASes
-                if (editMode && env != null)
-                {
-                    // cut/ copy / paste
-                    helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
-                        stack, repo, this.theCopyPaste,
-                        env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
-                        label: "Buffer:");
-                }
+				helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
+					stack, repo, this.theCopyPaste,
+					env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
+					label: "Buffer:");
 
                 // Submodels
                 helper.AddHintBubble(
@@ -876,7 +872,7 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionNone();
 
                             // select existing Submodel
-                            var ks = helper.SmartSelectAasEntityKeys(packages, PackageCentral.Selector.Main, 
+                            var ks = helper.SmartSelectAasEntityKeys(packages, PackageCentral.Selector.Main,
                                 "Submodel");
                             if (ks != null)
                             {
@@ -1062,7 +1058,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Derived From", levelColors[1][0], levelColors[1][1]);
                 helper.AddKeyListKeys(
-                    stack, "derivedFrom", aas.derivedFrom.Keys, repo, 
+                    stack, "derivedFrom", aas.derivedFrom.Keys, repo,
                     packages, PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell");
             }
 
@@ -1085,7 +1081,7 @@ namespace AasxPackageExplorer
                 }))
             {
                 helper.AddGroup(stack, "Asset Reference", levelColors[1][0], levelColors[1][1]);
-                helper.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo, 
+                helper.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
                     packages, PackageCentral.Selector.Main, "Asset");
             }
 
@@ -1116,7 +1112,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "SubmodelReference", levelColors[0][0], levelColors[0][1]);
                 helper.AddKeyListKeys(
-                    stack, "submodelRef", smref.Keys, repo, 
+                    stack, "submodelRef", smref.Keys, repo,
                     packages, PackageCentral.Selector.Main, "SubmodelRef Submodel ",
                     takeOverLambdaAction: new ModifyRepo.LambdaActionRedrawAllElements(smref));
             }
@@ -1155,10 +1151,11 @@ namespace AasxPackageExplorer
             }
 
             // Cut, copy, paste within an aas
+			// Resharper disable once ConditionIsAlwaysTrueOrFalse
             if (editMode && smref != null && submodel != null && aas != null)
             {
                 // cut/ copy / paste
-                helper.DispSubmodelCutCopyPasteHelper<AdminShell.SubmodelRef>(stack, repo, this.theCopyPaste, 
+                helper.DispSubmodelCutCopyPasteHelper<AdminShell.SubmodelRef>(stack, repo, this.theCopyPaste,
                     aas.submodelRefs, smref, (sr) => { return new AdminShell.SubmodelRef(sr); },
                     smref, submodel,
                     label: "Buffer:");
@@ -1170,7 +1167,7 @@ namespace AasxPackageExplorer
                 // cut/ copy / paste
                 helper.DispSubmodelCutCopyPasteHelper<AdminShell.Submodel>(stack, repo, this.theCopyPaste,
                     env.Submodels, submodel, (sm) => { return new AdminShell.Submodel(sm, shallowCopy: false); },
-                    smref, submodel,
+                    null, submodel,
                     label: "Buffer:");
             }
 
@@ -1243,7 +1240,7 @@ namespace AasxPackageExplorer
                                 packages, PackageCentral.Selector.MainAux,
                                 "SubmodelElement") as VisualElementSubmodelElement;
 
-                            if (rve != null)
+                            if (rve != null && env != null)
                             {
                                 var mdo = rve.GetMainDataObject();
                                 if (mdo != null && mdo is AdminShell.SubmodelElement)
@@ -1350,7 +1347,7 @@ namespace AasxPackageExplorer
                         new[] { "Rename" },
                         (i) =>
                         {
-                            if (i == 0)
+                            if (i == 0 && env != null)
                             {
                                 var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                                 uc.Text = submodel.identification.id;
@@ -1489,7 +1486,7 @@ namespace AasxPackageExplorer
                 new[] { "Rename" },
                 (i) =>
                 {
-                    if (i == 0)
+                    if (i == 0 && env != null)
                     {
                         var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                         uc.Text = cd.identification.id;
@@ -1550,7 +1547,7 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.embeddedDataSpecification,
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
-                addPresetKeyLists: new[] { 
+                addPresetKeyLists: new[] {
                     AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
                 dataSpecRefsAreUsual: true);
 
@@ -1714,7 +1711,7 @@ namespace AasxPackageExplorer
                                 if (buttonNdx == 0 || buttonNdx == 1)
                                 {
                                     var rve = helper.SmartSelectAasEntityVisualElement(
-                                        packages, PackageCentral.Selector.MainAux, 
+                                        packages, PackageCentral.Selector.MainAux,
                                         "SubmodelElement") as VisualElementSubmodelElement;
 
                                     if (rve != null)
@@ -2212,7 +2209,7 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
-                                packages, PackageCentral.Selector.MainAux, 
+                                packages, PackageCentral.Selector.MainAux,
                                 "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null)
@@ -2610,7 +2607,7 @@ namespace AasxPackageExplorer
                 {
                     helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
                     helper.AddKeyListKeys(
-                        stack, "valueId", p.valueId.Keys, repo, 
+                        stack, "valueId", p.valueId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
                 }
             }
@@ -2650,7 +2647,7 @@ namespace AasxPackageExplorer
                 {
                     helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
                     helper.AddKeyListKeys(
-                        stack, "valueId", mlp.valueId.Keys, repo, 
+                        stack, "valueId", mlp.valueId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
                 }
             }
@@ -2820,11 +2817,12 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "value", rfe.value.Keys, repo, 
+                    helper.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) => {
+                        jumpLambda: (kl) =>
+                        {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
@@ -2859,12 +2857,13 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "first", rele.first.Keys, repo, 
+                        stack, "first", rele.first.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) => { 
-                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl)); 
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
 
@@ -2888,11 +2887,12 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "second", rele.second.Keys, repo, 
+                        stack, "second", rele.second.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) => {
+                        jumpLambda: (kl) =>
+                        {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
@@ -2983,7 +2983,7 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "Asset", ent.assetRef.Keys, repo, packages, PackageCentral.Selector.MainAuxFileRepo, 
+                        stack, "Asset", ent.assetRef.Keys, repo, packages, PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.AllElements);
                 }
 
@@ -3087,7 +3087,7 @@ namespace AasxPackageExplorer
             }
 
             // normal reference
-            helper.AddKeyListKeys(stack, "containedElement", reference.Keys, repo, 
+            helper.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
                 packages, PackageCentral.Selector.Main, AdminShell.Key.AllElements);
         }
 

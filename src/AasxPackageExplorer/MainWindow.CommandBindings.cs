@@ -2144,7 +2144,7 @@ namespace AasxPackageExplorer
             if (!packages.MainStorable)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open for storage", "Error", 
+                    "An AASX package needs to be open for storage", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }

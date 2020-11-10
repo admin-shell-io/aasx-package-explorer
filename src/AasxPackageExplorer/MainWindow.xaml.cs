@@ -674,7 +674,7 @@ namespace AasxPackageExplorer
                     onlyReFocus: true));
         }
 
-       
+
 
         private void MainTimer_HandleLogMessages()
         {

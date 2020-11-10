@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
@@ -1941,7 +1942,8 @@ namespace AdminShellNS
             {
                 public int Compare(Referable a, Referable b)
                 {
-                    return String.Compare(a.idShort, b.idShort);
+                    return String.Compare(a?.idShort, b?.idShort, 
+                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
                 }
             }
 
@@ -2074,18 +2076,20 @@ namespace AdminShellNS
             {
                 public int Compare(Identifiable a, Identifiable b)
                 {
-                    if (a.identification == null && b.identification == null)
+                    if (a?.identification == null && b?.identification == null)
                         return 0;
-                    if (a.identification == null)
+                    if (a?.identification == null)
                         return +1;
-                    if (b.identification == null)
+                    if (b?.identification == null)
                         return -1;
 
-                    var vc = String.Compare(a.identification.idType, b.identification.idType);
+                    var vc = String.Compare(a.identification.idType, b.identification.idType,
+                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
                     if (vc != 0)
                         return vc;
 
-                    return String.Compare(a.identification.id, b.identification.id);
+                    return String.Compare(a.identification.id, b.identification.id,
+                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
                 }
             }
 

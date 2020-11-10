@@ -444,7 +444,7 @@ namespace AasxPackageExplorer
 
         public void RebuildAasxElements(
             PackageCentral packages,
-            PackageCentral.Selector selector, 
+            PackageCentral.Selector selector,
             bool editMode = false, string filterElementName = null)
         {
             // clear tree
@@ -461,8 +461,8 @@ namespace AasxPackageExplorer
                     displayedTreeViewLines.Add(xx);
 
                 // more?
-                if (packages.AuxAvailable && 
-                    (selector == PackageCentral.Selector.MainAux 
+                if (packages.AuxAvailable &&
+                    (selector == PackageCentral.Selector.MainAux
                      || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(

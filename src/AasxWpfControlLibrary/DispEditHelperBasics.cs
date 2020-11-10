@@ -90,6 +90,7 @@ namespace AasxPackageExplorer
     // Helpers
     //
 
+    // ReSharper disable once UnusedType.Global
     public class DispEditHelperBasics
     {
         //
@@ -112,7 +113,7 @@ namespace AasxPackageExplorer
         public ModifyRepo repo = null;
 
         public DispEditHighlight.HighlightFieldInfo highlightField = null;
-        private FrameworkElement lastHighlightedField = null;        
+        private FrameworkElement lastHighlightedField = null;
 
         //
         // Highlighting
@@ -289,7 +290,7 @@ namespace AasxPackageExplorer
         }
 
         public Grid AddSmallGridTo(
-            Grid g, int row, int col, 
+            Grid g, int row, int col,
             int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
         {
             var inner = AddSmallGrid(rows, cols, colWidths, margin);
@@ -1198,7 +1199,8 @@ namespace AasxPackageExplorer
 
             // presets?
             var presetNo = 0;
-            if (addPresetNames != null && addPresetKeyLists != null && addPresetNames.Length == addPresetKeyLists.Length)
+            if (addPresetNames != null && addPresetKeyLists != null
+                && addPresetNames.Length == addPresetKeyLists.Length)
                 presetNo = addPresetNames.Length;
 
             if (repo == null)
@@ -1471,7 +1473,7 @@ namespace AasxPackageExplorer
                         AddSmallContextMenuItemTo(
                                 g, 0 + i + rowOfs, 5,
                                 "\u2261",
-                                repo, new [] {
+                                repo, new[] {
                                     "\u2702", "Delete",
                                     "\u25b2", "Move Up",
                                     "\u25bc", "Move Down",
@@ -1619,7 +1621,7 @@ namespace AasxPackageExplorer
 
                     return new ModifyRepo.LambdaActionNone();
                 });
-        }        
+        }
 
         public void QualifierHelper(StackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
@@ -1691,7 +1693,7 @@ namespace AasxPackageExplorer
                         }))
                 {
                     AddKeyListKeys(
-                        substack, "semanticId", qual.semanticId.Keys, repo, 
+                        substack, "semanticId", qual.semanticId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: AdminShell.Key.AllElements,
                         addEclassIrdi: true);
@@ -1713,7 +1715,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo, 
+                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements);
                 }
 

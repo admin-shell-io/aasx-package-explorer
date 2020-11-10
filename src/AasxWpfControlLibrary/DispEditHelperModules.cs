@@ -342,7 +342,7 @@ namespace AasxPackageExplorer
                             this.AddKeyListKeys(
                                 stack, String.Format("reference[{0}]", i),
                                 hasDataSpecification[i].dataSpecification.Keys,
-                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux, 
+                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists);
                 }
@@ -397,7 +397,7 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
                             stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
-                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux, 
+                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true);
                 }
@@ -534,7 +534,8 @@ namespace AasxPackageExplorer
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addPresetNames: bufferKeys.Item1,
                     addPresetKeyLists: bufferKeys.Item2,
-                    jumpLambda: (kl) => {
+                    jumpLambda: (kl) =>
+                    {
                         return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                     });
         }
@@ -666,7 +667,7 @@ namespace AasxPackageExplorer
                     }))
             {
                 this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo, 
+                    stack, "unitId", dsiec.unitId.Keys, repo,
                     packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true);
             }

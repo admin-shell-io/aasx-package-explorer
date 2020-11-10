@@ -1,10 +1,10 @@
-﻿using AasxPackageExplorer;
-using AdminShellNS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxPackageExplorer;
+using AdminShellNS;
 
 namespace AasxWpfControlLibrary
 {
@@ -75,19 +75,5 @@ namespace AasxWpfControlLibrary
             get { return Aux?.AasEnv != null; }
         }
 
-        /*
-        private AdminShellPackageEnv[] ProvideAuxPackages(
-           bool showAuxPackage = false, bool showRepoFiles = false)
-        {
-            var auxes = new List<AdminShellPackageEnv>();
-            if (showAuxPackage && packages.Aux != null)
-                auxes.Add(packages.Aux);
-            if (showRepoFiles && packages.FileRepository != null)
-                auxes.Add(packages.FileRepository.MakeUpFakePackage());
-            if (auxes.Count < 1)
-                return null;
-            return auxes.ToArray();
-        }
-        */
     }
 }
