@@ -1135,7 +1135,7 @@ namespace AasxPackageExplorer
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromPool = false,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
+            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
             ModifyRepo.LambdaAction takeOverLambdaAction = null)
         {
@@ -1198,7 +1198,7 @@ namespace AasxPackageExplorer
 
             // presets?
             var presetNo = 0;
-            if (addPresetNames != null && addPresetKeys != null && addPresetNames.Length == addPresetKeys.Length)
+            if (addPresetNames != null && addPresetKeyLists != null && addPresetNames.Length == addPresetKeyLists.Length)
                 presetNo = addPresetNames.Length;
 
             if (repo == null)
@@ -1333,7 +1333,7 @@ namespace AasxPackageExplorer
 
                 for (int i = 0; i < presetNo; i++)
                 {
-                    var closureKey = addPresetKeys[i];
+                    var closureKey = addPresetKeyLists[i];
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 7 + i,
@@ -1342,7 +1342,7 @@ namespace AasxPackageExplorer
                             content: "" + addPresetNames[i]),
                         (o) =>
                         {
-                            keys.Add(closureKey);
+                            keys.AddRange(closureKey);
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         });
                 }

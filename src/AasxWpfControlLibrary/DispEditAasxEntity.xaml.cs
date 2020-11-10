@@ -1550,7 +1550,8 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.embeddedDataSpecification,
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
-                addPresetKeys: new[] { AdminShell.DataSpecificationIEC61360.GetKey() },
+                addPresetKeyLists: new[] { 
+                    AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
                 dataSpecRefsAreUsual: true);
 
             // the IEC61360 Content
@@ -1840,7 +1841,7 @@ namespace AasxPackageExplorer
             // cut/ copy / paste
             if (parentContainer != null)
             {
-                helper.DispSmeCutCopyPasteHelper(stack, repo, parentContainer, this.theCopyPaste, wrapper, sme,
+                helper.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
                     label: "Buffer:");
 #if _in_refactoring
                 helper.AddAction(
@@ -2822,7 +2823,7 @@ namespace AasxPackageExplorer
                     helper.AddKeyListKeys(stack, "value", rfe.value.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
-                        addPresetKeys: bufferKeys.Item2,
+                        addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) => {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
@@ -2861,7 +2862,7 @@ namespace AasxPackageExplorer
                         stack, "first", rele.first.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
-                        addPresetKeys: bufferKeys.Item2,
+                        addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) => { 
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl)); 
                         });
@@ -2890,7 +2891,7 @@ namespace AasxPackageExplorer
                         stack, "second", rele.second.Keys, repo, 
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
-                        addPresetKeys: bufferKeys.Item2,
+                        addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) => {
                             return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });

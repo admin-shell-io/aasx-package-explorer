@@ -156,7 +156,7 @@ namespace AasxPackageExplorer
                         return;
                     }
 
-            // if not, compare assit ids
+            // if not, compare asset ids
             if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
                 foreach (var fm in this.TheAasxRepo.FileMap)
                     if (aid == fm.AssetId.Trim().ToLower())

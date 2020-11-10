@@ -72,6 +72,7 @@ namespace AasxPackageExplorer
 
         public class CopyPasteItemSME : CopyPasteItemBase
         {
+            public AdminShell.AdministrationShellEnv env = null;
             public AdminShell.Referable parentContainer = null;
             public AdminShell.SubmodelElementWrapper wrapper = null;
             public AdminShell.SubmodelElement sme = null;
@@ -79,9 +80,11 @@ namespace AasxPackageExplorer
             public CopyPasteItemSME() { }
 
             public CopyPasteItemSME(
+                AdminShell.AdministrationShellEnv env,
                 AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
                 AdminShell.SubmodelElement sme)
             {
+                this.env = env;
                 this.parentContainer = parentContainer;
                 this.wrapper = wrapper;
                 this.sme = sme;
@@ -101,22 +104,36 @@ namespace AasxPackageExplorer
                 this.item = null;
             }
 
-            public static Tuple<string[], AdminShell.Key[]> PreparePresetsForListKeys(
+            public static Tuple<string[], AdminShell.KeyList[]> PreparePresetsForListKeys(
                 CopyPasteBuffer cpb, string label = "Paste")
             {
                 // add from Copy Buffer
-                AdminShell.Key bufferKey = null;
+                AdminShell.KeyList bufferKey = null;
                 if (cpb != null && cpb.valid)
                 {
                     if (cpb.item is CopyPasteItemIdentifiable cpbi && cpbi.entity?.identification != null)
-                        bufferKey = new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
-                                    cpbi.entity.identification.idType, cpbi.entity.identification.id);
+                        bufferKey = AdminShell.KeyList.CreateNew(
+                            new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
+                                    cpbi.entity.identification.idType, cpbi.entity.identification.id));
+                    
                     if (cpb.item is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
-                        bufferKey = cpbsm.sm.GetSemanticKey();
+                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetSemanticKey());
+
+                    if (cpb.item is CopyPasteItemSME cpbsme && cpbsme.sme != null 
+                        && cpbsme.env.Submodels != null)
+                    {
+                        // index parents for ALL Submodels -> parent for our SME shall be set by this ..
+                        foreach (var sm in cpbsme.env?.Submodels)
+                            sm?.SetAllParents();
+
+                        // collect buffer list
+                        bufferKey = new AdminShell.KeyList();
+                        cpbsme.sme.CollectReferencesByParent(bufferKey);
+                    }
                 }
 
                 // result
-                return new Tuple<string[], AdminShell.Key[]>(
+                return new Tuple<string[], AdminShell.KeyList[]>(
                     (bufferKey == null) ? null : new[] { label },
                     (bufferKey == null) ? null : new[] { bufferKey }
                 );
@@ -129,6 +146,7 @@ namespace AasxPackageExplorer
 
         public void DispSmeCutCopyPasteHelper(
             Panel stack, ModifyRepo repo,
+            AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer,
             CopyPasteBuffer cpb,
             AdminShell.SubmodelElementWrapper wrapper,
@@ -150,7 +168,7 @@ namespace AasxPackageExplorer
                         // store info
                         cpb.valid = true;
                         cpb.duplicate = buttonNdx == 1;
-                        cpb.item = new CopyPasteItemSME(parentContainer, wrapper, sme);
+                        cpb.item = new CopyPasteItemSME(env, parentContainer, wrapper, sme);
 
                         // user feedback
                         Log.Info(

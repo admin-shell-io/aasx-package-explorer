@@ -1759,6 +1759,10 @@ namespace AdminShellNS
 
             public void CollectReferencesByParent(List<Key> refs)
             {
+                // access
+                if (refs == null)
+                    return;
+
                 // check, if this is identifiable
                 if (this is Identifiable)
                 {

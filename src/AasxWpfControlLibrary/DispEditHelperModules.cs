@@ -287,7 +287,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditEntityHasDataSpecificationReferences(StackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
+            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false)
         {
             // access
@@ -344,7 +344,7 @@ namespace AasxPackageExplorer
                                 hasDataSpecification[i].dataSpecification.Keys,
                                 repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux, 
                                 addExistingEntities: null /* "All" */,
-                                addPresetNames: addPresetNames, addPresetKeys: addPresetKeys);
+                                addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists);
                 }
             }
         }
@@ -533,7 +533,7 @@ namespace AasxPackageExplorer
                     packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addPresetNames: bufferKeys.Item1,
-                    addPresetKeys: bufferKeys.Item2,
+                    addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) => {
                         return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                     });
