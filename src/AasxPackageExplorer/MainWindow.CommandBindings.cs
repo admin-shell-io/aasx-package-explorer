@@ -1153,41 +1153,63 @@ namespace AasxPackageExplorer
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
+                string value = "";
                 string input = uc.Text.ToLower();
-                string tag = "openid1";
-                tag = input.Substring(0, tag.Length);
-                if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                if (input != "http://localhost:1111")
                 {
-                    string value = input.Substring(tag.Length);
-                    if (thePackageEnv.IsOpen)
+                    bool connect = false;
+                    string tag = "http";
+                    tag = input.Substring(0, tag.Length);
+                    if (tag == "http")
                     {
-                        thePackageEnv.Close();
+                        connect = true;
+                        tag = "openid ";
+                        value = input;
                     }
-                    File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
-                    await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
+                    else
+                    {
+                        tag = "openid1";
+                        tag = input.Substring(0, tag.Length);
+                        if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                        {
+                            connect = true;
+                            value = input.Substring(tag.Length);
+                        }
+                    }
 
-                    if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
-                        UiLoadPackageWithNew(
-                            ref thePackageEnv,
-                            new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
-                            AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
-                    return;
+                    if (connect)
+                    {
+                        if (thePackageEnv.IsOpen)
+                        {
+                            thePackageEnv.Close();
+                        }
+                        File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
+                        await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
+
+                        if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
+                            UiLoadPackageWithNew(
+                                ref thePackageEnv,
+                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                                AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    }
                 }
-
-                var url = uc.Text;
-                Log.Info($"Connecting to REST server {url} ..");
-
-                try
+                else
                 {
-                    var client = new AasxRestServerLibrary.AasxRestClient(url);
-                    theOnlineConnection = client;
-                    var pe = client.OpenPackageByAasEnv();
-                    if (pe != null)
-                        UiLoadPackageWithNew(ref thePackageEnv, pe, uc.Text, onlyAuxiliary: false);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, $"Connecting to REST server {url}");
+                    var url = uc.Text;
+                    Log.Info($"Connecting to REST server {url} ..");
+
+                    try
+                    {
+                        var client = new AasxRestServerLibrary.AasxRestClient(url);
+                        theOnlineConnection = client;
+                        var pe = client.OpenPackageByAasEnv();
+                        if (pe != null)
+                            UiLoadPackageWithNew(ref thePackageEnv, pe, uc.Text, onlyAuxiliary: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Connecting to REST server {url}");
+                    }
                 }
             }
         }
