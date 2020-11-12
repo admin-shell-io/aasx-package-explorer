@@ -58,6 +58,13 @@ namespace AasxPackageExplorer
         static string PackageTargetDir = "/aasx";
         static bool PackageEmbedAsThumbnail = false;
 
+        public class UploadAssistance
+        {
+            public string SourcePath = "";
+            public string TargetPath = "/aasx/files";
+        }
+        public UploadAssistance uploadAssistance = new UploadAssistance();
+
         #region Public events and properties
         //
         // Public events and properties
@@ -2709,9 +2716,8 @@ namespace AasxPackageExplorer
                     stack, "max", rng, ref rng.max, null, repo,
                     v => { rng.max = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
-            else if (sme is AdminShell.File)
+            else if (sme is AdminShell.File fl)
             {
-                var p = sme as AdminShell.File;
                 helper.AddGroup(stack, "File", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
@@ -2720,14 +2726,14 @@ namespace AasxPackageExplorer
                         new HintCheck(
                             () =>
                             {
-                                return p.mimeType == null || p.mimeType.Trim().Length < 1 ||
-                                    p.mimeType.IndexOf('/') < 1 || p.mimeType.EndsWith("/");
+                                return fl.mimeType == null || fl.mimeType.Trim().Length < 1 ||
+                                    fl.mimeType.IndexOf('/') < 1 || fl.mimeType.EndsWith("/");
                             },
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 helper.AddKeyValueRef(
-                    stack, "mimeType", p, ref p.mimeType, null, repo,
-                    v => { p.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    stack, "mimeType", fl, ref fl.mimeType, null, repo,
+                    v => { fl.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
@@ -2735,35 +2741,157 @@ namespace AasxPackageExplorer
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return p.value == null || p.value.Trim().Length < 1; },
+                            () => { return fl.value == null || fl.value.Trim().Length < 1; },
                             "The path to an external file or a file relative the AASX package root('/'). " +
                                 "Files are typically relative to '/aasx/' or sub-directories of it. " +
                                 "External files typically comply to an URL, e.g. starting with 'https://..'.",
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return p.value.IndexOf('\\') >= 0; },
+                            () => { return fl.value.IndexOf('\\') >= 0; },
                             "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 helper.AddKeyValueRef(
-                    stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitle: "Choose supplementary file",
-                    auxButtonLambda: (o) =>
+                    stack, "value", fl, ref fl.value, null, repo,
+                    v => { fl.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "Choose supplementary file", "Remove" },
+                    auxButtonToolTips: new[] { "Select existing supplementary files", 
+                        "Remove existing supplementary file and clear value." },
+                    auxButtonLambda: (bi) =>
                     {
-                        var ve = helper.SmartSelectAasEntityVisualElement(
-                                    packages, PackageCentral.Selector.Main, "File");
-                        if (ve != null)
+                        if (bi == 0)
                         {
-                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
-                            if (sf != null)
+                            // Select
+                            var ve = helper.SmartSelectAasEntityVisualElement(
+                                        packages, PackageCentral.Selector.Main, "File");
+                            if (ve != null)
                             {
-                                p.value = sf.uri.ToString();
+                                var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
+                                if (sf != null)
+                                {
+                                    fl.value = sf.uri.ToString();
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+                            }
+                        }
+                        
+                        if (bi == 1 && fl.value.HasContent())
+                        {
+                            if (helper.flyoutProvider != null &&
+                                MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                                "Delete selected entity? This operation can not be reverted!", "AASX",
+                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                            {
+                                try
+                                {
+                                    // try find ..
+                                    var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                    var psf = psfs?.FindByUri(fl.value);
+                                    if (psf == null)
+                                    {
+                                        Log.Error($"Not able to locate supplmentary file {fl.value} for removal! Skipping!");
+                                    } 
+                                    else
+                                    {
+                                        Log.Info($"Removing file {fl.value} ..");
+                                        packages.Main.DeleteSupplementaryFile(psf);
+                                        Log.Info($"Added {fl.value} to pending package items to be deleted. " +
+                                            "A save-operation might be required.");
+                                    }                                   
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Removing file {fl.value} in package");
+                                }
+
+                                // clear value
+                                fl.value = "";
+
+                                // show empty
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                             }
                         }
                         return new ModifyRepo.LambdaActionNone();
                     });
+
+                if (editMode && uploadAssistance != null)
+                {
+                    helper.AddGroup(stack, "Supplementary file upload assistance", levelColors[1][0], levelColors[1][1]);
+
+                    helper.AddKeyValueRef(
+                        stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
+                        v =>
+                        {
+                            this.uploadAssistance.TargetPath = v as string;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                    helper.AddKeyDropTarget(
+                        stack, "Source file to add", 
+                        !(this.uploadAssistance.SourcePath.HasContent()) 
+                            ? "(Please drop a file to set source file to add)"
+                            : this.uploadAssistance.SourcePath, 
+                        null, repo,
+                        v =>
+                        {
+                            this.uploadAssistance.SourcePath = v as string;
+                            return new ModifyRepo.LambdaActionNone();
+                        }, minHeight: 40);
+
+                    helper.AddAction(
+                    stack, "Action", new[] { "Select source file", "Add or update to AASX" }, repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var dlg = new Microsoft.Win32.OpenFileDialog();
+                                var res = dlg.ShowDialog();
+                                if (res == true)
+                                {                                    
+                                    this.uploadAssistance.SourcePath = dlg.FileName;
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                try
+                                {
+
+                                    var ptd = uploadAssistance.TargetPath.Trim();
+                                    var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
+                                    packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        uploadAssistance.SourcePath, ptd, ptfn, 
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (targetPath == null)
+                                    {
+                                        Log.Error($"Error adding file {uploadAssistance.SourcePath} to package");
+                                    }
+                                    else
+                                    {
+                                        Log.Info(
+                                            $"Added {ptfn} to pending package items. A save-operation is required.");
+                                        fl.mimeType = mimeType;
+                                        fl.value = targetPath;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                                }
+
+                                // refresh dialogue
+                                uploadAssistance.SourcePath = "";
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+                }
             }
             else if (sme is AdminShell.Blob)
             {

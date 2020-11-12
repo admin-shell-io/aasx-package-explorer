@@ -322,6 +322,44 @@ namespace AasxPackageExplorer
             return (tb);
         }
 
+        public Border AddSmallDropBoxTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string text = "", Brush borderBrush = null, Brush background = null, 
+            Thickness borderThickness = new Thickness(), int minHeight = 0)
+        {
+            var brd = new Border();
+            brd.Margin = margin;
+            brd.Padding = padding;
+            brd.Tag = "DropBox";
+
+            brd.BorderBrush = Brushes.DarkBlue;
+            if (borderBrush != null)
+                brd.BorderBrush = borderBrush;
+
+            brd.Background = Brushes.LightBlue;
+            if (background != null)
+                brd.Background = background;
+
+            brd.BorderThickness = borderThickness;
+
+            if (minHeight > 0)
+                brd.MinHeight = minHeight;
+
+            var tb = new TextBlock();
+            tb.VerticalAlignment = VerticalAlignment.Center;
+            tb.HorizontalAlignment = HorizontalAlignment.Center;
+            tb.TextWrapping = TextWrapping.Wrap;
+            tb.FontSize = 10.0;
+            tb.Text = text;
+
+            brd.Child = tb;
+            
+            Grid.SetRow(brd, row);
+            Grid.SetColumn(brd, col);
+            g.Children.Add(brd);
+            return (brd);
+        }
+
         public ComboBox AddSmallComboBoxTo(
             Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush foreground = null, Brush background = null,
@@ -612,7 +650,8 @@ namespace AasxPackageExplorer
             var g = new Grid();
             g.Margin = new Thickness(0, 1, 0, 1);
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(this.standardFirstColWidth);
+            gc1.Width = GridLength.Auto;
+            gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new ColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
@@ -700,6 +739,57 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
+        public void AddKeyDropTarget(
+            StackPanel view, string key, string value, string nullValue = null,
+            ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
+        {
+            // draw anyway?
+            if (repo != null && value == null)
+            {
+                // generate default value
+                value = "";
+            }
+            else
+            {
+                // normal handling
+                if (value == null && nullValue == null)
+                    return;
+                if (value == null)
+                    value = nullValue;
+            }
+
+            // Grid
+            var g = new Grid();
+            g.Margin = new Thickness(0, 1, 0, 1);
+            var gc1 = new ColumnDefinition();
+            gc1.Width = new GridLength(this.standardFirstColWidth);
+            g.ColumnDefinitions.Add(gc1);
+            var gc2 = new ColumnDefinition();
+            gc2.Width = new GridLength(1.0, GridUnitType.Star);
+            g.ColumnDefinitions.Add(gc2);
+
+            // Label for key
+            AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: "" + key + ":");
+
+            // Label / TextBox for value
+            if (repo == null)
+            {
+                // view only
+                AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: "" + value);                
+            }            
+            else
+            {
+                // interactive
+                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), borderThickness: new Thickness(1),
+                    text: "" + value, minHeight: minHeight);
+                repo.RegisterControl(brd,
+                    setValue);
+            }
+
+            // in total
+            view.Children.Add(g);
+        }
+
         public void AddKeyMultiValue(StackPanel view, string key, string[][] value, string[] widths)
         {
             // draw anyway?
@@ -718,7 +808,8 @@ namespace AasxPackageExplorer
             g.Margin = new Thickness(0, 0, 0, 0);
 
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(this.standardFirstColWidth);
+            gc1.Width = GridLength.Auto;
+            gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
@@ -817,7 +908,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1+x button
@@ -884,7 +976,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(this.standardFirstColWidth);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
@@ -1158,7 +1251,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(this.standardFirstColWidth);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
