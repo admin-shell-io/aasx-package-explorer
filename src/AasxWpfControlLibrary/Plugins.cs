@@ -132,11 +132,13 @@ namespace AasxPackageExplorer
             return LoadedPlugins[pname];
         }
 
-        public static void TrySearchPlugins(string searchDir, List<OptionsInformation.PluginDllInfo> infos)
+        public static List<OptionsInformation.PluginDllInfo> TrySearchPlugins(string searchDir)
         {
             // access
-            if (!Directory.Exists(searchDir) || infos == null)
-                return;
+            if (!Directory.Exists(searchDir))
+                return new List<OptionsInformation.PluginDllInfo>();
+
+            var infos = new List<OptionsInformation.PluginDllInfo>();
 
             // try get files
             // see: https://stackoverflow.com/questions/9830069/searching-for-file-in-directories-recursively/9830116
@@ -154,14 +156,20 @@ namespace AasxPackageExplorer
                     infos.Add(pi);
                 }
             }
+
+            return infos;
         }
 
-        public static void TryActivatePlugins(List<OptionsInformation.PluginDllInfo> pluginDll)
+        public static Dictionary<string, PluginInstance> TryActivatePlugins(
+            IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDll)
         {
+            var loadedPlugins = new Dictionary<string, PluginInstance>();
+
             for (int index = 0; index < pluginDll.Count; index++)
+            {
                 try
                 {
-                    Log.Info("Trying load .dll at {0}", pluginDll[index].Path);
+                    Log.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
 
                     // make full path
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
@@ -202,12 +210,15 @@ namespace AasxPackageExplorer
 
                     // adding
                     Log.Info(".. adding plugin {0}", pi.name);
-                    LoadedPlugins.Add(pi.name, pi);
+                    loadedPlugins.Add(pi.name, pi);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Trying activate plugin index {index}");
+                    Log.Error(ex, $"Trying to activate the plugin at index {index}");
                 }
+            }
+
+            return loadedPlugins;
         }
 
         public static AasxPluginResultLicense CompileAllLicenses()
@@ -246,26 +257,26 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// Execute lambda for all loaded plugins and correlate with source plugin-dll-information.
-        /// Returns a list of results of the lambda.
         /// </summary>
-        public static List<object> TryForAllLoadedPlugins(
-            OptionsInformation opt, string exceptionWhere,
-            Func<OptionsInformation.PluginDllInfo, PluginInstance, object> lambda)
+        public static void TryForAllLoadedPlugins(
+            IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos,
+            Dictionary<string, PluginInstance> loadedPlugins,
+            string exceptionWhere,
+            Action<OptionsInformation.PluginDllInfo, PluginInstance> lambda)
         {
             // access
-            var res = new List<object>();
-            if (opt == null || lambda == null)
-                return res;
+            if (pluginDllInfos == null || lambda == null)
+                return;
 
             // try to find matching plugins according to options
-            for (int sourceIndex = 0; sourceIndex < opt.PluginDll.Count; sourceIndex++)
+            for (int sourceIndex = 0; sourceIndex < pluginDllInfos.Count; sourceIndex++)
             {
                 // options
-                var dllinfo = opt.PluginDll[sourceIndex];
+                var dllInfo = pluginDllInfos[sourceIndex];
 
                 // loaded plug in?
                 PluginInstance piFound = null;
-                foreach (var lpi in LoadedPlugins.Values)
+                foreach (var lpi in loadedPlugins.Values)
                     if (lpi.SourceIndex == sourceIndex)
                         piFound = lpi;
 
@@ -276,48 +287,45 @@ namespace AasxPackageExplorer
                 // yes!
                 try
                 {
-                    var res2 = lambda(dllinfo, piFound);
-                    res.Add(res2);
+                    lambda(dllInfo, piFound);
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, exceptionWhere);
                 }
             }
-
-            // OK
-            return res;
         }
 
-        /// <summary>
-        /// Takes the <c>opt</c> and tries to write them to the associated plugin.
-        /// </summary>
-        public static void TrGetDefaultOptionsForPlugins(OptionsInformation opt)
+        public static void TryGetDefaultOptionsForPlugins(
+            IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos,
+            Dictionary<string, PluginInstance> loadedPlugins)
         {
-            TryForAllLoadedPlugins(opt, "Trying get json options from Plugins", (dllinfo, lpi) =>
+            TryForAllLoadedPlugins(
+                pluginDllInfos,
+                loadedPlugins,
+                "Trying to get json options from Plugins",
+                (dllInfo, lpi) =>
             {
                 var popt = lpi.InvokeAction("get-json-options") as AasxPluginResultBaseObject;
                 if (popt != null && popt.obj != null && popt.obj is string)
-                    dllinfo.DefaultOptions = Newtonsoft.Json.Linq.JValue.Parse((popt.obj as string)); ;
-
-                return true;
+                    dllInfo.DefaultOptions = Newtonsoft.Json.Linq.JValue.Parse(popt.obj as string);
             });
         }
 
-        /// <summary>
-        /// Takes the <c>opt</c> and tries to write them to the associated plugin.
-        /// </summary>
-        public static void TrySetOptionsForPlugins(OptionsInformation opt)
+        public static void TrySetOptionsForPlugins(
+            IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos,
+            Dictionary<string, PluginInstance> loadedPlugins)
         {
-            TryForAllLoadedPlugins(opt, "Trying set json options to plugins", (dllinfo, lpi) =>
+            TryForAllLoadedPlugins(
+                pluginDllInfos,
+                loadedPlugins,
+                "Trying to set json options to plugins",
+                (dllInfo, pluginInstance) =>
             {
-                if (dllinfo.Options != null)
-                {
-                    var jsonStr = dllinfo.Options.ToString(Formatting.None);
-                    lpi.InvokeAction("set-json-options", jsonStr);
-                }
+                if (dllInfo.Options == null) return;
 
-                return true;
+                var jsonStr = dllInfo.Options.ToString(Formatting.None);
+                pluginInstance.InvokeAction("set-json-options", jsonStr);
             });
         }
 
@@ -327,14 +335,14 @@ namespace AasxPackageExplorer
                 return;
 
             // over all loaded plugins
-            foreach (var pi in LoadedPlugins.Values)
+            foreach (var pluginInstance in LoadedPlugins.Values)
             {
                 // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     for (int i = 0; i < 999; i++)
                     {
-                        var x = pi.CheckForLogMessage();
+                        var x = pluginInstance.CheckForLogMessage();
                         if (x == null)
                             break;
 
@@ -343,13 +351,13 @@ namespace AasxPackageExplorer
                         {
                             if (duplicateLog != null)
                                 duplicateLog(new StoredPrint(xs));
-                            Log.Info("[{0}] {1}", "" + pi.name, x);
+                            Log.Info("[{0}] {1}", "" + pluginInstance.name, x);
                         }
 
                         var xsp = x as StoredPrint;
                         if (xsp != null)
                         {
-                            xsp.msg = $"[{"" + pi.name}] " + xsp.msg;
+                            xsp.msg = $"[{"" + pluginInstance.name}] " + xsp.msg;
                             if (duplicateLog != null)
                                 duplicateLog(xsp);
                             Log.LogInstance.Append(xsp);

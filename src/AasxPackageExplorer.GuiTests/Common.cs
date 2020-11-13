@@ -41,7 +41,7 @@ namespace AasxPackageExplorer.GuiTests
 
             if (!File.Exists(pth))
             {
-                throw new FileNotFoundException($"The Article-ovel sample AASX could not be found: {pth}");
+                throw new FileNotFoundException($"The sample AASX could not be found: {pth}");
             }
 
             return pth;

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using AasxGlobalLogging;
-using JetBrains.Annotations;
 
 /*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -27,11 +20,89 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für "App.xaml"
-    /// </summary>
     public partial class App : Application
     {
+        /// <summary>
+        /// Infers application options based on the command-line arguments.
+        /// </summary>
+        /// <param name="exePath">path to AasxPackageExplorer.exe</param>
+        /// <param name="args">command-line arguments</param>
+        /// <returns>inferred options</returns>
+        public static OptionsInformation InferOptions(string exePath, string[] args)
+        {
+            var optionsInformation = new OptionsInformation();
+
+            // there is a special case for having "no" command line options ..
+            string directAasx = null;
+            if (args.Length == 1 && !args[0].StartsWith("-"))
+            {
+                directAasx = args[0];
+                Log.Info("Direct request to load AASX {0} ..", directAasx);
+            }
+
+            // If no command-line args given, read options via default filename
+            if (directAasx != null || args.Length < 1)
+            {
+                var defFn = System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(exePath),
+                    System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
+
+                Log.Info("The default options are expected in the JSON file: {0}", defFn);
+                if (File.Exists(defFn))
+                {
+                    Log.Info("Loading the default options from: {0}", defFn);
+                    OptionsInformation.ReadJson(defFn, optionsInformation);
+                }
+                else
+                {
+                    Log.Info(
+                        "The JSON file with the default options does not exist;" +
+                        "no default options were loaded: {0}", defFn);
+                }
+
+                // overrule
+                if (directAasx != null)
+                {
+                    Log.Info($"Loading the AASX from: {directAasx}");
+                    optionsInformation.AasxToLoad = directAasx;
+                }
+            }
+            else
+            {
+                // 2nd parse options
+                Log.Info($"Parsing {args.Length} command-line option(s)...");
+
+                for (var i = 0; i < args.Length; i++)
+                    Log.Info($"Command-line option: {i}: {args[i]}");
+
+                OptionsInformation.ParseArgs(args, optionsInformation);
+            }
+
+            // 3rd further commandline options in extra file
+            if (optionsInformation.OptionsTextFn != null)
+            {
+                Log.Info($"Parsing options from a non-default options file: {optionsInformation.OptionsTextFn}");
+                var fullFilename = System.IO.Path.GetFullPath(optionsInformation.OptionsTextFn);
+                OptionsInformation.TryReadOptionsFile(fullFilename, optionsInformation);
+            }
+
+            return optionsInformation;
+        }
+
+        public static Dictionary<string, Plugins.PluginInstance> LoadAndActivatePlugins(
+            IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos)
+        {
+            // Plugins to be loaded
+            if (pluginDllInfos.Count == 0) return new Dictionary<string, Plugins.PluginInstance>();
+
+            Log.Info($"Trying to load and activate {pluginDllInfos.Count} plug-in(s)...");
+            var loadedPlugins = Plugins.TryActivatePlugins(pluginDllInfos);
+
+            Plugins.TrySetOptionsForPlugins(pluginDllInfos, loadedPlugins);
+
+            return loadedPlugins;
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             // allow long term logging (for report box)
@@ -40,72 +111,40 @@ namespace AasxPackageExplorer
             // Build up of options
             Log.Info("Application startup.");
 
-            // there is a special case for having "no" command line options ..
-            string directAasx = null;
-            if (e.Args.Length == 1 && !e.Args[0].StartsWith("-"))
-            {
-                directAasx = e.Args[0];
-                Log.Info("Direct request to load AASX {0} ..", directAasx);
-            }
+            var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
 
-            // If no command line args given, read options via default filename
-            if (directAasx != null || e.Args.Length < 1)
-            {
-                var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
-                var defFn = System.IO.Path.Combine(
-                            System.IO.Path.GetDirectoryName("" + exePath),
-                            System.IO.Path.GetFileNameWithoutExtension("" + exePath) + ".options.json");
-
-                Log.Info("Check {0} for default options in JSON ..", defFn);
-                if (File.Exists(defFn))
-                    Options.Curr.ReadJson(defFn);
-
-                // overrule
-                if (directAasx != null)
-                    Options.Curr.AasxToLoad = directAasx;
-            }
-            else
-            {
-                // 2nd parse options
-                Log.Info("Parsing commandline options ..");
-                foreach (var a in e.Args)
-                    Log.Info("argument {0}", a);
-                Options.Curr.ParseArgs(e.Args);
-            }
-
-            // 3rd further commandline options in extra file
-            if (Options.Curr.OptionsTextFn != null)
-            {
-                Log.Info("Parsing options from distinct file {0} ..", Options.Curr.OptionsTextFn);
-                var fullfn = System.IO.Path.GetFullPath(Options.Curr.OptionsTextFn);
-                Options.Curr.TryReadOptionsFile(fullfn);
-            }
+            Options.ReplaceCurr(InferOptions(exePath, e.Args));
 
             // search for plugins?
             if (Options.Curr.PluginDir != null)
             {
                 var searchDir = System.IO.Path.Combine(
-                    System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location),
+                    System.IO.Path.GetDirectoryName(exePath),
                     Options.Curr.PluginDir);
-                Log.Info("Searching for plug-ins in {0} ..", searchDir);
-                Plugins.TrySearchPlugins(searchDir, Options.Curr.PluginDll);
+
+                Log.Info("Searching for the plugins in the plugin directory: {0}", searchDir);
+
+                var pluginDllInfos = Plugins.TrySearchPlugins(searchDir);
+
+                Log.Info($"Found {pluginDllInfos.Count} plugin(s) in the plugin directory: {searchDir}");
+
+                Options.Curr.PluginDll.AddRange(pluginDllInfos);
             }
 
-            // Plugins to be loaded
-            Log.Info("Try load and activate plug-ins ..");
-            Plugins.TryActivatePlugins(Options.Curr.PluginDll);
-            Plugins.TrySetOptionsForPlugins(Options.Curr);
+
+            Log.Info($"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
+            Plugins.LoadedPlugins = LoadAndActivatePlugins(Options.Curr.PluginDll);
 
             // at end, write all default options to JSON?
             if (Options.Curr.WriteDefaultOptionsFN != null)
             {
                 // info
-                var fullfn = System.IO.Path.GetFullPath(Options.Curr.WriteDefaultOptionsFN);
-                Log.Info("Writing resulting options into JSON {0}", fullfn);
+                var fullFilename = System.IO.Path.GetFullPath(Options.Curr.WriteDefaultOptionsFN);
+                Log.Info($"Writing resulting options to a JSON file: {fullFilename}");
 
                 // retrieve
-                Plugins.TrGetDefaultOptionsForPlugins(Options.Curr);
-                Options.Curr.WriteJson(fullfn);
+                Plugins.TryGetDefaultOptionsForPlugins(Options.Curr.PluginDll, Plugins.LoadedPlugins);
+                OptionsInformation.WriteJson(Options.Curr, fullFilename);
             }
 
             // colors
@@ -140,42 +179,3 @@ namespace AasxPackageExplorer
         }
     }
 }
-
-
-//
-// Licenses
-//
-
-// CefSharp
-// see: https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE
-
-// Copyright © 2010-2018 The CefSharp Authors. All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//    * Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
-//
-//    * Redistributions in binary form must reproduce the above
-//      copyright notice, this list of conditions and the following disclaimer
-//      in the documentation and/or other materials provided with the
-//      distribution.
-//
-//    * Neither the name of Google Inc. nor the name Chromium Embedded
-//      Framework nor the name CefSharp nor the names of its contributors
-//      may be used to endorse or promote products derived from this software
-//      without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

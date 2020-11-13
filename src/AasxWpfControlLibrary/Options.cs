@@ -67,7 +67,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Instantanously replaces the Options singleton instance with the data provided.
+        /// Instantaneously replaces the Options singleton instance with the data provided.
         /// </summary>
         /// <param name="io"></param>
         public static void ReplaceCurr(OptionsInformation io)
@@ -395,29 +395,29 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Will save options to a file. Catches exceptions.
         /// </summary>
-        public void WriteJson(string fn)
+        public static void WriteJson(OptionsInformation optionsInformation, string filename)
         {
             // execute in-line, in order to represent to correct order to the human operator
             try
             {
-                var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
-                File.WriteAllText(fn, jsonStr);
+                var jsonStr = JsonConvert.SerializeObject(optionsInformation, Formatting.Indented);
+                File.WriteAllText(filename, jsonStr);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"When writing options JSON file {fn}");
+                Log.Error(ex, $"When writing options to a JSON file: {filename}");
             }
         }
 
         /// <summary>
-        /// Will read options from a file into this instance.
+        /// Will read options from a file into the given instance.
         /// </summary>
-        public void ReadJson(string fn)
+        public static void ReadJson(string fn, OptionsInformation optionsInformation)
         {
             try
             {
                 var jsonStr = File.ReadAllText(fn);
-                JsonConvert.PopulateObject(jsonStr, this);
+                JsonConvert.PopulateObject(jsonStr, optionsInformation);
             }
             catch (Exception ex)
             {
@@ -425,11 +425,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        /// <summary>
-        /// Parse given commandline arguments.
-        /// </summary>
-        /// <param name="args"></param>
-        public void ParseArgs(string[] args)
+        public static void ParseArgs(string[] args, OptionsInformation optionsInformation)
         {
             for (int index = 0; index < args.Length; index++)
             {
@@ -439,32 +435,32 @@ namespace AasxPackageExplorer
                 // flags
                 if (arg == "-maximized")
                 {
-                    WindowMaximized = true;
+                    optionsInformation.WindowMaximized = true;
                     continue;
                 }
                 if (arg == "-noflyouts")
                 {
-                    UseFlyovers = false;
+                    optionsInformation.UseFlyovers = false;
                     continue;
                 }
                 if (arg == "-intbrowse")
                 {
-                    InternalBrowser = true;
+                    optionsInformation.InternalBrowser = true;
                     continue;
                 }
                 if (arg == "-twopass")
                 {
-                    EclassTwoPass = true;
+                    optionsInformation.EclassTwoPass = true;
                     continue;
                 }
                 if (arg == "-indirect-load-save")
                 {
-                    IndirectLoadSave = true;
+                    optionsInformation.IndirectLoadSave = true;
                     continue;
                 }
                 if (arg == "-load-without-prompt")
                 {
-                    LoadWithoutPrompt = true;
+                    optionsInformation.LoadWithoutPrompt = true;
                     continue;
                 }
 
@@ -476,7 +472,7 @@ namespace AasxPackageExplorer
                     index++;
 
                     // execute in-line, in order to represent to correct order to the human operator
-                    this.ReadJson(fn);
+                    OptionsInformation.ReadJson(fn, optionsInformation);
 
                     // next arg
                     continue;
@@ -484,11 +480,11 @@ namespace AasxPackageExplorer
                 if (arg == "-write-json" && morearg > 0)
                 {
                     // parse
-                    var fn = System.IO.Path.GetFullPath(args[index + 1]);
+                    var filename = System.IO.Path.GetFullPath(args[index + 1]);
                     index++;
 
                     // do
-                    WriteJson(fn);
+                    OptionsInformation.WriteJson(optionsInformation, filename);
 
                     // next arg
                     continue;
@@ -498,140 +494,140 @@ namespace AasxPackageExplorer
                 if (arg == "-left" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowLeft = i;
+                        optionsInformation.WindowLeft = i;
                     index++;
                     continue;
                 }
                 if (arg == "-top" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowTop = i;
+                        optionsInformation.WindowTop = i;
                     index++;
                     continue;
                 }
                 if (arg == "-width" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowWidth = i;
+                        optionsInformation.WindowWidth = i;
                     index++;
                     continue;
                 }
                 if (arg == "-height" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowHeight = i;
+                        optionsInformation.WindowHeight = i;
                     index++;
                     continue;
                 }
 
                 if (arg == "-id-aas" && morearg > 0)
                 {
-                    TemplateIdAas = args[index + 1];
+                    optionsInformation.TemplateIdAas = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-asset" && morearg > 0)
                 {
-                    TemplateIdAsset = args[index + 1];
+                    optionsInformation.TemplateIdAsset = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-sm-template" && morearg > 0)
                 {
-                    TemplateIdSubmodelTemplate = args[index + 1];
+                    optionsInformation.TemplateIdSubmodelTemplate = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-sm-instance" && morearg > 0)
                 {
-                    TemplateIdSubmodelInstance = args[index + 1];
+                    optionsInformation.TemplateIdSubmodelInstance = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-cd" && morearg > 0)
                 {
-                    TemplateIdConceptDescription = args[index + 1];
+                    optionsInformation.TemplateIdConceptDescription = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-eclass" && morearg > 0)
                 {
-                    EclassDir = args[index + 1];
+                    optionsInformation.EclassDir = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-qualifiers" && morearg > 0)
                 {
-                    QualifiersFile = args[index + 1];
+                    optionsInformation.QualifiersFile = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-logo" && morearg > 0)
                 {
-                    LogoFile = args[index + 1];
+                    optionsInformation.LogoFile = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-aasxrepo" && morearg > 0)
                 {
-                    AasxRepositoryFn = args[index + 1];
+                    optionsInformation.AasxRepositoryFn = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-contenthome" && morearg > 0)
                 {
-                    ContentHome = args[index + 1];
+                    optionsInformation.ContentHome = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-splash" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        SplashTime = i;
+                        optionsInformation.SplashTime = i;
                     index++;
                     continue;
                 }
                 if (arg == "-options" && morearg > 0)
                 {
-                    OptionsTextFn = args[index + 1];
+                    optionsInformation.OptionsTextFn = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-backupdir" && morearg > 0)
                 {
-                    BackupDir = args[index + 1];
+                    optionsInformation.BackupDir = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-resthost" && morearg > 0)
                 {
-                    RestServerHost = args[index + 1];
+                    optionsInformation.RestServerHost = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-restport" && morearg > 0)
                 {
-                    RestServerPort = args[index + 1];
+                    optionsInformation.RestServerPort = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-rem" && morearg > 0)
                 {
                     // Add one argument to the plugin list
-                    Remarks.Add(args[index + 1]);
+                    optionsInformation.Remarks.Add(args[index + 1]);
                     index++;
                     continue;
                 }
                 if (arg == "-write-all-json" && morearg > 0)
                 {
                     // will be executed very late!
-                    WriteDefaultOptionsFN = args[index + 1];
+                    optionsInformation.WriteDefaultOptionsFN = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-plugin-dir" && morearg > 0)
                 {
-                    PluginDir = args[index + 1];
+                    optionsInformation.PluginDir = args[index + 1];
                     index++;
                     continue;
                 }
@@ -640,14 +636,15 @@ namespace AasxPackageExplorer
                 if (arg == "-p" && morearg > 0)
                 {
                     // Add exactly one following argument to the plugin list
-                    PluginArgs.Add(args[index + 1]);
+                    optionsInformation.PluginArgs.Add(args[index + 1]);
                     index += 1;
                     continue;
                 }
                 if (arg == "-dll" && morearg > 0)
                 {
-                    PluginDll.Add(new PluginDllInfo(args[index + 1], PluginArgs.ToArray()));
-                    PluginArgs.Clear();
+                    optionsInformation.PluginDll.Add(
+                        new PluginDllInfo(args[index + 1], optionsInformation.PluginArgs.ToArray()));
+                    optionsInformation.PluginArgs.Clear();
                     index++;
                     continue;
                 }
@@ -663,7 +660,7 @@ namespace AasxPackageExplorer
                             try
                             {
                                 var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
-                                AccentColors.Add(i, c);
+                                optionsInformation.AccentColors.Add(i, c);
                             }
                             catch { }
                             // ReSharper enable EmptyGeneralCatchClause
@@ -681,22 +678,23 @@ namespace AasxPackageExplorer
                 if (!arg.StartsWith("-"))
                 {
                     if (System.IO.File.Exists(args[index]))
-                        AasxToLoad = args[index];
+                        optionsInformation.AasxToLoad = args[index];
                 }
             }
         }
 
-        public void TryReadOptionsFile(string fn)
+        public static void TryReadOptionsFile(string filename, OptionsInformation optionsInformation)
         {
             try
             {
-                var optionsTxt = File.ReadAllText(fn);
-                var options = optionsTxt.Split(new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                ParseArgs(options);
+                var optionsTxt = File.ReadAllText(filename);
+                var argsFromFile = optionsTxt.Split(
+                    new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                OptionsInformation.ParseArgs(argsFromFile, optionsInformation);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Reading options file: " + fn);
+                Log.Error(ex, "Reading options file: " + filename);
             }
         }
 
