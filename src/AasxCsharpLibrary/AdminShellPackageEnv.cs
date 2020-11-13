@@ -875,6 +875,10 @@ namespace AdminShellNS
             return res;
         }
 
+        /// <remarks>
+        /// Ensures:
+        /// <ul><li><c>result == null || result.CanRead</c></li></ul>
+        /// </remarks>
         public Stream GetLocalThumbnailStream(ref Uri thumbUri)
         {
             // access
@@ -893,13 +897,34 @@ namespace AdminShellNS
                 }
             if (thumbPart == null)
                 throw (new Exception("Unable to find AASX thumbnail. Aborting!"));
-            return thumbPart.GetStream(FileMode.Open);
+
+            var result = thumbPart.GetStream(FileMode.Open);
+
+            // Post-condition
+            if (!(result == null || result.CanRead))
+            {
+                throw new InvalidOperationException("Unexpected unreadable result stream");
+            }
+
+            return result;
         }
 
+        /// <remarks>
+        /// Ensures:
+        /// <ul><li><c>result == null || result.CanRead</c></li></ul>
+        /// </remarks>
         public Stream GetLocalThumbnailStream()
         {
             Uri dummy = null;
-            return GetLocalThumbnailStream(ref dummy);
+            var result = GetLocalThumbnailStream(ref dummy);
+
+            // Post-condition
+            if (!(result == null || result.CanRead))
+            {
+                throw new InvalidOperationException("Unexpected unreadable result stream");
+            }
+
+            return result;
         }
 
         public List<AdminShellPackageSupplementaryFile> GetListOfSupplementaryFiles()

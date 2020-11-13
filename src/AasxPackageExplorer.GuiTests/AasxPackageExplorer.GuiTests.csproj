@@ -10,5 +10,10 @@
     <PackageReference Include="FlaUI.UIA3" Version="3.2.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+
+    <!-- see https://stackoverflow.com/a/38383064/1600678 -->
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+  <ItemGroup>
   </ItemGroup>
 </Project>
