@@ -815,14 +815,16 @@ namespace AdminShellNS
             // ReSharper enable EmptyGeneralCatchClause
         }
 
-        public Stream GetStreamFromUriOrLocalPackage(string uriString)
+        public Stream GetStreamFromUriOrLocalPackage(string uriString,
+            FileMode mode = FileMode.Open,
+            FileAccess access = FileAccess.Read)
         {
             // local
             if (this.IsLocalFile(uriString))
-                return GetLocalStreamFromPackage(uriString);
+                return GetLocalStreamFromPackage(uriString, mode);
 
             // no ..
-            return File.Open(uriString, FileMode.Open, FileAccess.Read);
+            return File.Open(uriString, mode, access);
         }
 
         public byte[] GetByteArrayFromUriOrLocalPackage(string uriString)
@@ -857,7 +859,7 @@ namespace AdminShellNS
             return isLocal;
         }
 
-        public Stream GetLocalStreamFromPackage(string uriString)
+        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open)
         {
             // access
             if (this.openPackage == null)
@@ -868,7 +870,7 @@ namespace AdminShellNS
             if (part == null)
                 throw (new Exception(
                     string.Format($"Cannot access URI {uriString} in {this.fn} not opened. Aborting!")));
-            return part.GetStream(FileMode.Open);
+            return part.GetStream(mode);
         }
 
         public long GetStreamSizeFromPackage(string uriString)

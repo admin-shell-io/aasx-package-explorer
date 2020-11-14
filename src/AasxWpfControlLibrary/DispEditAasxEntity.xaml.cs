@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -2583,11 +2584,35 @@ namespace AasxPackageExplorer
                             "The value of the Property. " +
                                 "Please provide a string representation " +
                                 "(without quotes, '.' as decimal separator, in XML number representation).",
+                            severityLevel: HintCheck.Severity.Notice,
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return true == p.value?.Contains('\r') || true == p.value?.Contains('\n'); },
+                            "It is strongly not recommended to have multi-line properties. " +
+                            "However, the technological possibility is given.",
                             severityLevel: HintCheck.Severity.Notice)
+
                     });
                 helper.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "\u2261" },
+                    auxButtonToolTips: new[] { "Edit in multiline editor" },
+                    auxButtonLambda: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new TextEditorFlyout($"Edit Property '{"" + p.idShort}'");
+                            uc.Text = p.value;
+                            helper.flyoutProvider?.StartFlyoverModal(uc);
+                            if (uc.Result)
+                            {
+                                p.value = uc.Text;
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2754,9 +2779,8 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(
                     stack, "value", fl, ref fl.value, null, repo,
                     v => { fl.value = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitles: new[] { "Choose supplementary file", "Remove" },
-                    auxButtonToolTips: new[] { "Select existing supplementary files", 
-                        "Remove existing supplementary file and clear value." },
+                    auxButtonTitles: new[] { "Choose supplementary file",  },
+                    auxButtonToolTips: new[] { "Select existing supplementary files" },
                     auxButtonLambda: (bi) =>
                     {
                         if (bi == 0)
@@ -2774,13 +2798,118 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        
-                        if (bi == 1 && fl.value.HasContent())
+                                                
+                        return new ModifyRepo.LambdaActionNone();
+                    });
+
+                if (editMode && uploadAssistance != null && packages.Main != null)
+                {
+                    // More file actions
+                    helper.AddAction(
+                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
+                        repo,
+                        (buttonNdx) =>
                         {
-                            if (helper.flyoutProvider != null &&
-                                MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "Delete selected entity? This operation can not be reverted!", "AASX",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                            if (buttonNdx == 0 && fl.value.HasContent())
+                            {
+                                if (helper.flyoutProvider != null &&
+                                    MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "Delete selected entity? This operation can not be reverted!", "AASX",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                {
+                                    try
+                                    {
+                                        // try find ..
+                                        var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                        var psf = psfs?.FindByUri(fl.value);
+                                        if (psf == null)
+                                        {
+                                            Log.Error($"Not able to locate supplmentary file {fl.value} for removal! " +
+                                                $"Aborting!");
+                                        }
+                                        else
+                                        {
+                                            Log.Info($"Removing file {fl.value} ..");
+                                            packages.Main.DeleteSupplementaryFile(psf);
+                                            Log.Info($"Added {fl.value} to pending package items to be deleted. " +
+                                                "A save-operation might be required.");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Error(ex, $"Removing file {fl.value} in package");
+                                    }
+
+                                    // clear value
+                                    fl.value = "";
+
+                                    // show empty
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                // ask for a name
+                                var uc = new TextBoxFlyout("Name of text file to create",
+                                        MessageBoxImage.Question);
+                                uc.Text = "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                                helper.flyoutProvider?.StartFlyoverModal(uc);
+                                if (!uc.Result)
+                                {
+                                    return new ModifyRepo.LambdaActionNone();
+                                }
+
+                                var ptd = "/aasx/";
+                                var ptfn = uc.Text.Trim();
+                                packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                // make sure the name is not already existing
+                                var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                var psf = psfs?.FindByUri(ptd + ptfn);
+                                if (psf != null)
+                                {
+                                    helper.flyoutProvider?.MessageBoxFlyoutShow(
+                                        $"The supplementary file {ptd + ptfn} is already existing in the " +
+                                        "package. Please re-try with a different file name.", "Create text file",
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return new ModifyRepo.LambdaActionNone();
+                                }
+
+                                // try execute
+                                try
+                                {
+                                    // make temp file
+                                    var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".txt");
+                                    System.IO.File.WriteAllText(tempFn, "");
+
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        tempFn, ptd, ptfn,
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (targetPath == null)
+                                    {
+                                        Log.Error($"Error creating text-file {ptd + ptfn} within package");
+                                    }
+                                    else
+                                    {
+                                        Log.Info(
+                                            $"Added empty text-file {ptd + ptfn} to pending package items. " +
+                                            $"A save-operation is required.");
+                                        fl.mimeType = mimeType;
+                                        fl.value = targetPath;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Creating text-file {ptd + ptfn} within package");
+                                }
+                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                            }
+
+                            if (buttonNdx == 2)
                             {
                                 try
                                 {
@@ -2789,34 +2918,63 @@ namespace AasxPackageExplorer
                                     var psf = psfs?.FindByUri(fl.value);
                                     if (psf == null)
                                     {
-                                        Log.Error($"Not able to locate supplmentary file {fl.value} for removal! Skipping!");
-                                    } 
-                                    else
+                                        Log.Error($"Not able to locate supplmentary file {fl.value} for edit. " +
+                                            $"Aborting!");
+                                        return new ModifyRepo.LambdaActionNone();
+                                    }
+
+                                    // try read ..
+                                    Log.Info($"Reading text-file {fl.value} ..");
+                                    string contents;
+                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(fl.value))
                                     {
-                                        Log.Info($"Removing file {fl.value} ..");
-                                        packages.Main.DeleteSupplementaryFile(psf);
-                                        Log.Info($"Added {fl.value} to pending package items to be deleted. " +
-                                            "A save-operation might be required.");
-                                    }                                   
+                                        using (var sr = new StreamReader(stream))
+                                        {
+                                            // read contents
+                                            contents = sr.ReadToEnd();                                            
+                                        }
+                                    }
+
+                                    // test
+                                    if (contents == null)
+                                    {
+                                        Log.Error($"Not able to read contents from  supplmentary file {fl.value} " +
+                                            $"for edit. Aborting!");
+                                        return new ModifyRepo.LambdaActionNone();
+                                    }
+
+                                    // edit
+                                    var uc = new TextEditorFlyout($"Edit tex-file '{fl.value}'");
+                                    uc.Text = contents;
+                                    helper.flyoutProvider?.StartFlyoverModal(uc);
+                                    if (!uc.Result)
+                                        return new ModifyRepo.LambdaActionNone();
+
+                                    // save
+                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
+                                        fl.value, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                    {
+                                        using (var sw = new StreamWriter(stream))
+                                        {
+                                            // write contents
+                                            sw.Write(uc.Text);
+                                        }
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Error(ex, $"Removing file {fl.value} in package");
+                                    Log.Error(ex, $"Edit text-file {fl.value} in package.");
                                 }
 
-                                // clear value
-                                fl.value = "";
-
-                                // show empty
+                                // reshow
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                             }
-                        }
-                        return new ModifyRepo.LambdaActionNone();
-                    });
 
-                if (editMode && uploadAssistance != null)
-                {
-                    helper.AddGroup(stack, "Supplementary file upload assistance", levelColors[1][0], levelColors[1][1]);
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                    // Further file assistance
+                    helper.AddGroup(stack, "Supplementary file assistance", levelColors[1][0], levelColors[1][1]);
 
                     helper.AddKeyValueRef(
                         stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
@@ -2839,7 +2997,8 @@ namespace AasxPackageExplorer
                         }, minHeight: 40);
 
                     helper.AddAction(
-                    stack, "Action", new[] { "Select source file", "Add or update to AASX" }, repo,
+                    stack, "Action", new[] { "Select source file", "Add or update to AASX" },
+                        repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
@@ -2847,7 +3006,7 @@ namespace AasxPackageExplorer
                                 var dlg = new Microsoft.Win32.OpenFileDialog();
                                 var res = dlg.ShowDialog();
                                 if (res == true)
-                                {                                    
+                                {
                                     this.uploadAssistance.SourcePath = dlg.FileName;
                                     return new ModifyRepo.LambdaActionRedrawEntity();
                                 }
@@ -2865,7 +3024,7 @@ namespace AasxPackageExplorer
                                     var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
 
                                     var targetPath = packages.Main.AddSupplementaryFileToStore(
-                                        uploadAssistance.SourcePath, ptd, ptfn, 
+                                        uploadAssistance.SourcePath, ptd, ptfn,
                                         embedAsThumb: false, useMimeType: mimeType);
 
                                     if (targetPath == null)
@@ -2889,13 +3048,13 @@ namespace AasxPackageExplorer
                                 uploadAssistance.SourcePath = "";
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                             }
+
                             return new ModifyRepo.LambdaActionNone();
                         });
                 }
             }
-            else if (sme is AdminShell.Blob)
+            else if (sme is AdminShell.Blob blb)
             {
-                var p = sme as AdminShell.Blob;
                 helper.AddGroup(stack, "Blob", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
@@ -2903,20 +3062,37 @@ namespace AasxPackageExplorer
                     new[] {
                         new HintCheck(
                             () => {
-                                return p.mimeType == null || p.mimeType.Trim().Length < 1 ||
-                                    p.mimeType.IndexOf('/') < 1 || p.mimeType.EndsWith("/");
+                                return blb.mimeType == null || blb.mimeType.Trim().Length < 1 ||
+                                    blb.mimeType.IndexOf('/') < 1 || blb.mimeType.EndsWith("/");
                             },
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 helper.AddKeyValueRef(
-                    stack, "mimeType", p, ref p.mimeType, null, repo,
-                    v => { p.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    stack, "mimeType", blb, ref blb.mimeType, null, repo,
+                    v => { blb.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 helper.AddKeyValueRef(
-                    stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    stack, "value", blb, ref blb.value, null, repo,
+                    v => { blb.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "\u2261" },
+                    auxButtonToolTips: new[] { "Edit in multiline editor" },
+                    auxButtonLambda: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new TextEditorFlyout($"Edit Blob '{"" + blb.idShort}'");
+                            uc.Text = blb.value;
+                            helper.flyoutProvider?.StartFlyoverModal(uc);
+                            if (uc.Result)
+                            {
+                                blb.value = uc.Text;
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
             }
             else if (sme is AdminShell.ReferenceElement rfe)
             {

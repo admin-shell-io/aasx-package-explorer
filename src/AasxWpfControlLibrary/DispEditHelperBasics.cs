@@ -316,6 +316,12 @@ namespace AasxPackageExplorer
             tb.Text = text;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
+
+            // (MIHO, 2020-11-13): constrain to one line
+            tb.AcceptsReturn = false;
+            tb.MaxLines = 3;
+            tb.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+
             Grid.SetRow(tb, row);
             Grid.SetColumn(tb, col);
             g.Children.Add(tb);
@@ -1566,7 +1572,7 @@ namespace AasxPackageExplorer
                         // button [hamburger]
                         AddSmallContextMenuItemTo(
                                 g, 0 + i + rowOfs, 5,
-                                "\u2261",
+                                "\u22ee",
                                 repo, new[] {
                                     "\u2702", "Delete",
                                     "\u25b2", "Move Up",
