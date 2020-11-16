@@ -64,9 +64,12 @@ namespace AasxPackageExplorer
                         if (i_propGroup == 0)
                         {
                             sm.Add(propGroup[0]);
-                            if (rows[7] != "") propGroup[0].semanticId = new AdminShellV20.SemanticId(
-                                AdminShell.Reference.CreateNew(
-                                    "ConceptDescription", false, "IRI", rows[7]));
+                            if (rows.Length > 3)
+                            {
+                                if (rows[7] != "") propGroup[0].semanticId = new AdminShellV20.SemanticId(
+                                     AdminShell.Reference.CreateNew(
+                                         "ConceptDescription", false, "IRI", rows[7]));
+                            }
                             propGroup[0].kind = AdminShellV20.ModelingKind.CreateAsInstance();
                         }
                         else
