@@ -4,8 +4,9 @@ author: Michael Hoffmeister
 
 This software is licensed under the Apache Public License 2.0 (APL-2.0) 
 (see below).
-The AutomationML.Engine is licensed under the MIT license (MIT) 
+The AvalonEdit component, is licensed under the MIT license (MIT)
 (see below).
+
 
 This application is a sample application for demonstration of the features 
 of the Administration Shell.

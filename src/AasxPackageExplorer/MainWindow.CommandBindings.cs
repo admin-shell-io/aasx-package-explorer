@@ -1179,16 +1179,16 @@ namespace AasxPackageExplorer
 
                     if (connect)
                     {
-                        if (thePackageEnv.IsOpen)
+                        if (packages.Main.IsOpen)
                         {
-                            thePackageEnv.Close();
+                            packages.Main.Close();
                         }
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                         await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                ref thePackageEnv,
+                                packages.MainContainer,
                                 new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     }
@@ -1204,7 +1204,7 @@ namespace AasxPackageExplorer
                         theOnlineConnection = client;
                         var pe = client.OpenPackageByAasEnv();
                         if (pe != null)
-                            UiLoadPackageWithNew(ref thePackageEnv, pe, uc.Text, onlyAuxiliary: false);
+                            UiLoadPackageWithNew(packages.MainContainer, pe, uc.Text, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {

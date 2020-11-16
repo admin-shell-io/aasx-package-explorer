@@ -17,7 +17,7 @@ Author: Michael Hoffmeister
 
 The Newtonsoft.JSON serialization is licensed under the MIT License (MIT).
 
-The Microsoft Microsoft Automatic Graph Layout, MSAGL, is licensed under the MIT license (MIT).
+The AvalonEdit component, is licensed under the MIT license (MIT).
 */
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -106,7 +106,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             if (action == "get-licenses")
             {
                 var lic = new AasxPluginResultLicense();
-                lic.shortLicense = "The browser functionality is licensed under the cefSharp license (see below).";
+                lic.shortLicense = "The AvalonEdit component, is licensed under the MIT license (MIT).";
 
                 lic.isStandardLicense = true;
                 lic.longLicense = AasxPluginHelper.LoadLicenseTxtFromAssemblyDir(
