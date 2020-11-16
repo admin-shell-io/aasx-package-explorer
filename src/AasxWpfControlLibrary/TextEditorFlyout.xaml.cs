@@ -41,8 +41,6 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public enum DialogueOptions { None, FilterAllControlKeys };
-
         public bool Result = false;
 
         private PluginInstance pluginInstance = null;
@@ -50,7 +48,7 @@ namespace AasxPackageExplorer
         private Control textControl = null;
 
         private string bufferedText = "";
-                    
+
         public TextEditorFlyout(
             string caption)
         {

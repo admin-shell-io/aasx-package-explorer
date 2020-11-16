@@ -36,7 +36,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
         <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Caption .."/></TextBlock>
         
-        <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="4" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="ButtonOk_Click"/>
+        <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="2" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="ButtonOk_Click"/>
 
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
         

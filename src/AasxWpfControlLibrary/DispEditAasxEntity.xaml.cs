@@ -839,10 +839,10 @@ namespace AasxPackageExplorer
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
 
                 // Cut, copy, paste within list of AASes
-				helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
-					stack, repo, this.theCopyPaste,
-					env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
-					label: "Buffer:");
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
+                    stack, repo, this.theCopyPaste,
+                    env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
+                    label: "Buffer:");
 
                 // Submodels
                 helper.AddHintBubble(
@@ -1159,7 +1159,7 @@ namespace AasxPackageExplorer
             }
 
             // Cut, copy, paste within an aas
-			// Resharper disable once ConditionIsAlwaysTrueOrFalse
+            // Resharper disable once ConditionIsAlwaysTrueOrFalse
             if (editMode && smref != null && submodel != null && aas != null)
             {
                 // cut/ copy / paste
@@ -2779,7 +2779,7 @@ namespace AasxPackageExplorer
                 helper.AddKeyValueRef(
                     stack, "value", fl, ref fl.value, null, repo,
                     v => { fl.value = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitles: new[] { "Choose supplementary file",  },
+                    auxButtonTitles: new[] { "Choose supplementary file", },
                     auxButtonToolTips: new[] { "Select existing supplementary files" },
                     auxButtonLambda: (bi) =>
                     {
@@ -2798,7 +2798,7 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                                                
+
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -2931,7 +2931,7 @@ namespace AasxPackageExplorer
                                         using (var sr = new StreamReader(stream))
                                         {
                                             // read contents
-                                            contents = sr.ReadToEnd();                                            
+                                            contents = sr.ReadToEnd();
                                         }
                                     }
 
@@ -2985,10 +2985,10 @@ namespace AasxPackageExplorer
                         });
 
                     helper.AddKeyDropTarget(
-                        stack, "Source file to add", 
-                        !(this.uploadAssistance.SourcePath.HasContent()) 
+                        stack, "Source file to add",
+                        !(this.uploadAssistance.SourcePath.HasContent())
                             ? "(Please drop a file to set source file to add)"
-                            : this.uploadAssistance.SourcePath, 
+                            : this.uploadAssistance.SourcePath,
                         null, repo,
                         v =>
                         {

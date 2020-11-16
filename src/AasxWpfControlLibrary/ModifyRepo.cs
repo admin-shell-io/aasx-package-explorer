@@ -153,7 +153,7 @@ namespace AasxPackageExplorer
 
                         // Assuming you have one file that you care about, pass it off to whatever
                         // handling code you have defined.
-                        if (files != null && files.Length > 0 
+                        if (files != null && files.Length > 0
                             && sender4 is FrameworkElement fe2 && items.ContainsKey(fe2))
                         {
                             var it2 = items[fe2];

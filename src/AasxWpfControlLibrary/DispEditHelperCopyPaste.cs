@@ -295,10 +295,10 @@ namespace AasxPackageExplorer
                 return;
 
             // integrity
-			// ReSharper disable RedundantCast
+            // ReSharper disable RedundantCast
             if (entity as object != smref as object && entity as object != sm as object)
                 return;
-			// ReSharper enable RedundantCast
+            // ReSharper enable RedundantCast
 
             // use an action
             this.AddAction(

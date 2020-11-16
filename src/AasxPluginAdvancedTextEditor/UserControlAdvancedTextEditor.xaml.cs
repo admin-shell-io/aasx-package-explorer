@@ -22,190 +22,189 @@ namespace AasxPluginAdvancedTextEditor
     /// </summary>
     public partial class UserControlAdvancedTextEditor : UserControl
     {
-		//
-		// Init
-		//
+        //
+        // Init
+        //
 
         public UserControlAdvancedTextEditor()
-		{
-			InitializeComponent();
-
-			this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
-
-			propertyGridComboBox.SelectedIndex = 2;
-
-			//textEditor.TextArea.SelectionBorder = null;
-
-			//textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
-			//textEditor.SyntaxHighlighting = customHighlighting;
-			// initial highlighting now set by XAML
-
-			textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
-			textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
-			SearchPanel.Install(textEditor);
-		}
-
-		//
-		// Interface
-		//
-
-		string currentFileName;
-
-		public string Text
         {
-			get { return textEditor.Text; }
-			set { textEditor.Text = value; }
+            InitializeComponent();
+
+            this.SetValue(TextOptions.TextFormattingModeProperty, TextFormattingMode.Display);
+
+            propertyGridComboBox.SelectedIndex = 2;
+
+            textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
+            textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
+            SearchPanel.Install(textEditor);
         }
 
-		private string mimeType = "";
-		public string MimeType
-		{
-			set 
-			{
-				this.mimeType = value;
-				TrySetMimeType(this.mimeType);
-			}
-		}
+        //
+        // Interface
+        //
 
-		//
-		// Commands
-		//
+        string currentFileName;
 
-		private void TrySetMimeType(string mimeType)
+        public string Text
         {
-			// access
-			if (this.highlightingComboBox == null)
-				return;
-			mimeType = ("" + mimeType).Trim().ToLower();
+            get { return textEditor.Text; }
+            set { textEditor.Text = value; }
+        }
 
-			// transfer to appropriate tag
-			var tag = "";
-			var m = Regex.Match(mimeType, @"(text|application)\/(\w+)");
-			if (m.Success && m.Groups.Count >= 3)
-				tag = m.Groups[2].ToString();
-			if (!tag.HasContent())
-				return;
+        private string mimeType = "";
+        public string MimeType
+        {
+            set
+            {
+                this.mimeType = value;
+                TrySetMimeType(this.mimeType);
+            }
+        }
 
-			// activate mime type via setting the selection of the combo box
-			foreach (var item in highlightingComboBox.Items)
-				if (("" + item).Trim().ToLower() == tag)
-				{
-					highlightingComboBox.SelectedItem = item;
-					break;
-				}
-		}
+        //
+        // Commands
+        //
 
-		private void UserControl_Loaded(object sender, RoutedEventArgs e)
-		{
-			// try apply stored mime type
-			TrySetMimeType(this.mimeType);
-		}
+        private void TrySetMimeType(string mimeType)
+        {
+            // access
+            if (this.highlightingComboBox == null)
+                return;
+            mimeType = ("" + mimeType).Trim().ToLower();
 
-		void openFileClick(object sender, RoutedEventArgs e)
-		{
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.CheckFileExists = true;
-			if (dlg.ShowDialog() ?? false)
-			{
-				currentFileName = dlg.FileName;
-				textEditor.Load(currentFileName);
-				textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(currentFileName));
-			}
-		}
+            // transfer to appropriate tag
+            var tag = "";
+            var m = Regex.Match(mimeType, @"(text|application)\/(\w+)");
+            if (m.Success && m.Groups.Count >= 3)
+                tag = m.Groups[2].ToString();
+            if (!tag.HasContent())
+                return;
 
-		void saveFileClick(object sender, EventArgs e)
-		{
-			if (currentFileName == null)
-			{
-				SaveFileDialog dlg = new SaveFileDialog();
-				dlg.DefaultExt = ".txt";
-				if (dlg.ShowDialog() ?? false)
-				{
-					currentFileName = dlg.FileName;
-				}
-				else
-				{
-					return;
-				}
-			}
-			textEditor.Save(currentFileName);
-		}
+            // activate mime type via setting the selection of the combo box
+            foreach (var item in highlightingComboBox.Items)
+                if (("" + item).Trim().ToLower() == tag)
+                {
+                    highlightingComboBox.SelectedItem = item;
+                    break;
+                }
+        }
 
-		void propertyGridComboBoxSelectionChanged(object sender, RoutedEventArgs e)
-		{
-			if (propertyGrid == null)
-				return;
-			switch (propertyGridComboBox.SelectedIndex)
-			{
-				case 0:
-					propertyGrid.SelectedObject = textEditor;
-					break;
-				case 1:
-					propertyGrid.SelectedObject = textEditor.TextArea;
-					break;
-				case 2:
-					propertyGrid.SelectedObject = textEditor.Options;
-					break;
-			}
-		}
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // try apply stored mime type
+            TrySetMimeType(this.mimeType);
+        }
 
-		void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
-		{
-		}
+        void openFileClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.CheckFileExists = true;
+            if (dlg.ShowDialog() ?? false)
+            {
+                currentFileName = dlg.FileName;
+                textEditor.Load(currentFileName);
+                textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinitionByExtension(
+                    Path.GetExtension(currentFileName));
+            }
+        }
 
-		void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
-		{			
-		}
+        void saveFileClick(object sender, EventArgs e)
+        {
+            if (currentFileName == null)
+            {
+                SaveFileDialog dlg = new SaveFileDialog();
+                dlg.DefaultExt = ".txt";
+                if (dlg.ShowDialog() ?? false)
+                {
+                    currentFileName = dlg.FileName;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            textEditor.Save(currentFileName);
+        }
 
-		#region Folding
-		FoldingManager foldingManager;
-		object foldingStrategy;
+        void propertyGridComboBoxSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (propertyGrid == null)
+                return;
+            switch (propertyGridComboBox.SelectedIndex)
+            {
+                case 0:
+                    propertyGrid.SelectedObject = textEditor;
+                    break;
+                case 1:
+                    propertyGrid.SelectedObject = textEditor.TextArea;
+                    break;
+                case 2:
+                    propertyGrid.SelectedObject = textEditor.Options;
+                    break;
+            }
+        }
 
-		void HighlightingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (textEditor.SyntaxHighlighting == null)
-			{
-				foldingStrategy = null;
-			}
-			else
-			{
-				switch (textEditor.SyntaxHighlighting.Name)
-				{
-					case "XML":
-						foldingStrategy = new XmlFoldingStrategy();
-						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
-						break;
-					case "C#":
-					case "C++":
-					case "PHP":
-					case "Java":
-						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.CSharp.CSharpIndentationStrategy(textEditor.Options);
-						break;
-					default:
-						textEditor.TextArea.IndentationStrategy = new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
-						foldingStrategy = null;
-						break;
-				}
-			}
-			if (foldingStrategy != null)
-			{
-				if (foldingManager == null)
-					foldingManager = FoldingManager.Install(textEditor.TextArea);
-				UpdateFoldings();
-			}
-			else
-			{
-				if (foldingManager != null)
-				{
-					FoldingManager.Uninstall(foldingManager);
-					foldingManager = null;
-				}
-			}
-		}
+        void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+        }
 
-		void UpdateFoldings()
-		{
-		}
+        void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+        }
+
+        #region Folding
+        FoldingManager foldingManager;
+        object foldingStrategy;
+
+        void HighlightingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (textEditor.SyntaxHighlighting == null)
+            {
+                foldingStrategy = null;
+            }
+            else
+            {
+                switch (textEditor.SyntaxHighlighting.Name)
+                {
+                    case "XML":
+                        foldingStrategy = new XmlFoldingStrategy();
+                        textEditor.TextArea.IndentationStrategy =
+                            new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
+                        break;
+                    case "C#":
+                    case "C++":
+                    case "PHP":
+                    case "Java":
+                        textEditor.TextArea.IndentationStrategy =
+                            new ICSharpCode.AvalonEdit.Indentation.CSharp.CSharpIndentationStrategy(
+                                textEditor.Options);
+                        break;
+                    default:
+                        textEditor.TextArea.IndentationStrategy =
+                            new ICSharpCode.AvalonEdit.Indentation.DefaultIndentationStrategy();
+                        foldingStrategy = null;
+                        break;
+                }
+            }
+            if (foldingStrategy != null)
+            {
+                if (foldingManager == null)
+                    foldingManager = FoldingManager.Install(textEditor.TextArea);
+                UpdateFoldings();
+            }
+            else
+            {
+                if (foldingManager != null)
+                {
+                    FoldingManager.Uninstall(foldingManager);
+                    foldingManager = null;
+                }
+            }
+        }
+
+        void UpdateFoldings()
+        {
+        }
         #endregion
     }
 }

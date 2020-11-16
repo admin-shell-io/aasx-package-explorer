@@ -330,7 +330,7 @@ namespace AasxPackageExplorer
 
         public Border AddSmallDropBoxTo(
             Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
-            string text = "", Brush borderBrush = null, Brush background = null, 
+            string text = "", Brush borderBrush = null, Brush background = null,
             Thickness borderThickness = new Thickness(), int minHeight = 0)
         {
             var brd = new Border();
@@ -359,7 +359,7 @@ namespace AasxPackageExplorer
             tb.Text = text;
 
             brd.Child = tb;
-            
+
             Grid.SetRow(brd, row);
             Grid.SetColumn(brd, col);
             g.Children.Add(brd);
@@ -781,13 +781,13 @@ namespace AasxPackageExplorer
             if (repo == null)
             {
                 // view only
-                AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: "" + value);                
-            }            
+                AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: "" + value);
+            }
             else
             {
                 // interactive
-                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), borderThickness: new Thickness(1),
-                    text: "" + value, minHeight: minHeight);
+                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
+                    borderThickness: new Thickness(1), text: "" + value, minHeight: minHeight);
                 repo.RegisterControl(brd,
                     setValue);
             }

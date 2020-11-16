@@ -28,7 +28,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         private LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
-        private AdvancedTextEditOptions options = 
+        private AdvancedTextEditOptions options =
             new AdvancedTextEditOptions();
 
         private UserControlAdvancedTextEditor theEditControl = null;
@@ -136,7 +136,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return res;
             }
 
-            if (action == "set-content" && args != null && args.Length >= 2 
+            if (action == "set-content" && args != null && args.Length >= 2
                 && args[0] is string && args[1] is string
                 && this.theEditControl != null)
             {

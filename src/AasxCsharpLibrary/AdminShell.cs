@@ -1942,7 +1942,7 @@ namespace AdminShellNS
             {
                 public int Compare(Referable a, Referable b)
                 {
-                    return String.Compare(a?.idShort, b?.idShort, 
+                    return String.Compare(a?.idShort, b?.idShort,
                         CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
                 }
             }
