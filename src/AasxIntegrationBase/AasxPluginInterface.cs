@@ -43,6 +43,12 @@ namespace AasxIntegrationBase
         }
     }
 
+    public class AasxPluginResultGenerateSubmodel : AasxPluginResultBase
+    {
+        public AdminShell.Submodel sm;
+        public AdminShell.ListOfConceptDescriptions cds;
+    }
+
     public class AasxPluginResultEventBase : AasxPluginResultBase
     {
         public string info = null;

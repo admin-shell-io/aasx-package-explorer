@@ -112,6 +112,19 @@ namespace AasxPluginGenericForms
             return shelfCntl;
         }
 
+        public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
+        {
+            if (this.currentFormInst?.subscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = this.currentFormInst.subscribeForNextEventReturn;
+                this.currentFormInst.subscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+        }
+
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             // user control was loaded, all options shall be set and outer grid is loaded fully ..
@@ -163,6 +176,7 @@ namespace AasxPluginGenericForms
 
             // take over existing data
             this.currentFormInst = new FormInstanceSubmodel(currentFormRecord.FormSubmodel);
+            this.currentFormInst.InitReferable(currentFormRecord.FormSubmodel, theSubmodel);
             this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
             this.currentFormInst.outerEventStack = theEventStack;
 
@@ -197,7 +211,7 @@ namespace AasxPluginGenericForms
                     try
                     {
                         this.currentFormInst.AddOrUpdateDifferentElementsToCollection(
-                            currentElements, thePackage, addFilesToPackage: true);
+                            currentElements, thePackage, addFilesToPackage: true, editSource: true);
                     }
                     catch (Exception ex)
                     {

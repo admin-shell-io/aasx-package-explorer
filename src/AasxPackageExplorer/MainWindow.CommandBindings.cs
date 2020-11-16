@@ -1153,41 +1153,63 @@ namespace AasxPackageExplorer
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
+                string value = "";
                 string input = uc.Text.ToLower();
-                string tag = "openid1";
-                tag = input.Substring(0, tag.Length);
-                if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                if (input != "http://localhost:1111")
                 {
-                    string value = input.Substring(tag.Length);
-                    if (packages.Main.IsOpen)
+                    bool connect = false;
+                    string tag = "http";
+                    tag = input.Substring(0, tag.Length);
+                    if (tag == "http")
                     {
-                        packages.Main.Close();
+                        connect = true;
+                        tag = "openid ";
+                        value = input;
                     }
-                    File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
-                    await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
+                    else
+                    {
+                        tag = "openid1";
+                        tag = input.Substring(0, tag.Length);
+                        if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                        {
+                            connect = true;
+                            value = input.Substring(tag.Length);
+                        }
+                    }
 
-                    if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
-                        UiLoadPackageWithNew(
-                            packages.MainContainer,
-                            new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
-                            AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
-                    return;
+                    if (connect)
+                    {
+                        if (thePackageEnv.IsOpen)
+                        {
+                            thePackageEnv.Close();
+                        }
+                        File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
+                        await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
+
+                        if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
+                            UiLoadPackageWithNew(
+                                ref thePackageEnv,
+                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                                AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                    }
                 }
-
-                var url = uc.Text;
-                Log.Info($"Connecting to REST server {url} ..");
-
-                try
+                else
                 {
-                    var client = new AasxRestServerLibrary.AasxRestClient(url);
-                    theOnlineConnection = client;
-                    var pe = client.OpenPackageByAasEnv();
-                    if (pe != null)
-                        UiLoadPackageWithNew(packages.MainContainer, pe, uc.Text, onlyAuxiliary: false);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, $"Connecting to REST server {url}");
+                    var url = uc.Text;
+                    Log.Info($"Connecting to REST server {url} ..");
+
+                    try
+                    {
+                        var client = new AasxRestServerLibrary.AasxRestClient(url);
+                        theOnlineConnection = client;
+                        var pe = client.OpenPackageByAasEnv();
+                        if (pe != null)
+                            UiLoadPackageWithNew(ref thePackageEnv, pe, uc.Text, onlyAuxiliary: false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"Connecting to REST server {url}");
+                    }
                 }
             }
         }
@@ -2329,23 +2351,31 @@ namespace AasxPackageExplorer
                 }
 
                 // try to invoke plugin to get submodel
-                AasxPluginResultBaseObject gsres = null;
+                AdminShell.Submodel smres = null;
+                AdminShell.ListOfConceptDescriptions cdres = null;
                 try
                 {
-                    gsres = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBaseObject;
+                    var res = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBase;
+                    if (res is AasxPluginResultBaseObject rbo)
+                    {
+                        smres = rbo.obj as AdminShell.Submodel;
+                    }
+                    if (res is AasxPluginResultGenerateSubmodel rgsm)
+                    {
+                        smres = rgsm.sm;
+                        cdres = rgsm.cds;
+                    }
                 }
                 catch { }
 
                 // something
-                var smres = gsres?.obj as AdminShell.Submodel;
-                if (gsres == null || smres == null)
+                if (smres == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing plugins. Aborting.", "New Submodel from plugins",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
 
                 try
                 {
@@ -2358,10 +2388,29 @@ namespace AasxPackageExplorer
                         smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
-                    // add
+                    // add Submodel
                     var smref = new AdminShell.SubmodelRef(smres.GetReference());
                     ve1.theAas.AddSubmodelRef(smref);
                     packages.Main.AasEnv.Submodels.Add(smres);
+
+                    // add ConceptDescriptions?
+                    if (cdres != null && cdres.Count > 0)
+                    {
+                        int nr = 0;
+                        foreach (var cd in cdres)
+                        {
+                            if (cd == null || cd.identification == null)
+                                continue;
+                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
+                            if (cdFound != null)
+                                continue;
+                            // ok, add
+                            var newCd = new AdminShell.ConceptDescription(cd);
+                            ve1.theEnv.ConceptDescriptions.Add(newCd);
+                            nr++;
+                        }
+                        Log.Info($"added {nr} ConceptDescritions for Submodel {smres.idShort}.");
+                    }
 
                     // redisplay
                     // add to "normal" event quoue

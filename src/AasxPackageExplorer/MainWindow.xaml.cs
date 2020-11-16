@@ -462,7 +462,7 @@ namespace AasxPackageExplorer
                         this.AssetId.Text = WpfStringAddWrapChars(
                             AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
 
-                    // asset thumbail
+                    // asset thumbnail
                     // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
@@ -470,20 +470,22 @@ namespace AasxPackageExplorer
                         if (packages.MainAvailable)
                             try
                             {
-                                var thumbStream = packages.Main.GetLocalThumbnailStream();
-
-                                // load image
-                                if (thumbStream != null)
+                                using (var thumbStream = packages.Main.GetLocalThumbnailStream())
                                 {
-                                    var bi = new BitmapImage();
-                                    bi.BeginInit();
-                                    bi.CacheOption = BitmapCacheOption.OnLoad;
-                                    bi.StreamSource = thumbStream;
-                                    bi.EndInit();
-                                    this.AssetPic.Source = bi;
-                                    // note: no closing required!
-                                }
+                                    // load image
+                                    if (thumbStream != null)
+                                    {
+                                        var bi = new BitmapImage();
+                                        bi.BeginInit();
 
+                                        // See https://stackoverflow.com/a/5346766/1600678
+                                        bi.CacheOption = BitmapCacheOption.OnLoad;
+
+                                        bi.StreamSource = thumbStream;
+                                        bi.EndInit();
+                                        this.AssetPic.Source = bi;
+                                    }
+                                }
                             }
                             catch { }
 
@@ -491,20 +493,20 @@ namespace AasxPackageExplorer
                             this.theOnlineConnection.IsConnected())
                             try
                             {
-                                var thumbStream = this.theOnlineConnection.GetThumbnailStream();
-
-                                if (thumbStream != null)
+                                using (var thumbStream = this.theOnlineConnection.GetThumbnailStream())
                                 {
-                                    var ms = new MemoryStream();
-                                    thumbStream.CopyTo(ms);
-                                    ms.Flush();
-                                    var bitmapdata = ms.ToArray();
+                                    if (thumbStream != null)
+                                    {
+                                        using (var ms = new MemoryStream())
+                                        {
+                                            thumbStream.CopyTo(ms);
+                                            ms.Flush();
+                                            var bitmapdata = ms.ToArray();
 
-                                    ms.Close();
-                                    thumbStream.Close();
-
-                                    var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
-                                    this.AssetPic.Source = bi;
+                                            var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
+                                            this.AssetPic.Source = bi;
+                                        }
+                                    }
                                 }
                             }
                             catch { }

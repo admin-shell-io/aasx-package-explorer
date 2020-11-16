@@ -243,6 +243,11 @@ namespace AasxIntegrationBase.AasForms
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            // access
+            var dc = IndividualDataContext.CreateDataContext(this.DataContext);
+            if (dc == null)
+                return;
+
             if (sender == ButtonInstanceCollapse)
             {
                 // access

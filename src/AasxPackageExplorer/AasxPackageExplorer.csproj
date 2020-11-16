@@ -37,14 +37,30 @@
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="AasxPackageExplorer.options.json">
+
+  <!-- The default options for Debug differ from Release such that the plugin directory is
+       ".", while Release's plugin directory is ".\\plugins" -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="AasxPackageExplorer.options-for-debug.json">
+      <Link>AasxPackageExplorer.options.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="options-debug.json">
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Update="AasxPackageExplorer.options-for-release.json">
+      <Link>AasxPackageExplorer.options.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="options.pref">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="backup\README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="plugins\README.md">

@@ -4,7 +4,7 @@
     {
       "$type": "Record",
       "FormTag": "TEC",
-      "FormTitle": "Technical data (sheet) model",
+      "FormTitle": "Technical data (sheet) model (v1.1)",
       "FormSubmodel": {
         "$type": "FormSubmodel",
         "FormTitle": "Submodel",

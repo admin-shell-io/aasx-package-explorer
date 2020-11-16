@@ -477,6 +477,16 @@ namespace AasxIntegrationBase.AasForms
 
     public class FormInstanceSubmodel : FormInstanceBase, IFormListOfDifferent
     {
+        /// <summary>
+        /// The Submodel is maintained by the instance
+        /// </summary>
+        public AdminShell.Submodel sm = null;
+
+        /// <summary>
+        /// This links to a Submodel, from which the instance was read/ edited.
+        /// </summary>
+        public AdminShell.Submodel sourceSM = null;
+
         public FormInstanceListOfDifferent PairInstances = new FormInstanceListOfDifferent();
 
         public FormInstanceSubmodel() { }
@@ -495,6 +505,28 @@ namespace AasxIntegrationBase.AasForms
                 var pair = new FormDescInstancesPair(subDesc, los);
                 PairInstances.Add(pair);
             }
+        }
+
+        public void InitReferable(FormDescSubmodel desc, AdminShell.Submodel source)
+        {
+            if (desc == null)
+                return;
+
+            // create sm here! (different than handling of SME!!)
+            this.sm = new AdminShell.Submodel();
+            this.sourceSM = source;
+
+            sm.idShort = desc.PresetIdShort;
+            if (source?.idShort != null)
+                sm.idShort = source.idShort;
+            sm.category = desc.PresetCategory;
+            if (desc.PresetDescription != null)
+                sm.description = new AdminShell.Description(desc.PresetDescription);
+            if (source?.description != null)
+                sm.description = new AdminShell.Description(source.description);
+
+            if (desc.KeySemanticId != null)
+                sm.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -520,12 +552,24 @@ namespace AasxIntegrationBase.AasForms
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
         public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
-            bool addFilesToPackage = false)
+            AdminShell.SubmodelElementWrapperCollection elements,
+            AdminShellPackageEnv packageEnv = null,
+            bool addFilesToPackage = false,
+            bool editSource = false)
         {
+            // SM itself?
+            if (this.sm != null && Touched && this.sourceSM != null && editSource)
+            {
+                if (this.sm.idShort != null)
+                    this.sourceSM.idShort = "" + this.sm.idShort;
+                if (this.sm.description != null)
+                    this.sourceSM.description = new AdminShell.Description(this.sm.description);
+            }
+
+            // SM as a set of elements
             if (this.PairInstances != null)
                 return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
-                    elements, packageEnv, addFilesToPackage);
+                        elements, packageEnv, addFilesToPackage);
             return null;
         }
     }
@@ -544,7 +588,7 @@ namespace AasxIntegrationBase.AasForms
 
         protected void InitReferable(FormDescSubmodelElement desc, AdminShell.SubmodelElement source)
         {
-            if (desc == null)
+            if (desc == null || sme == null)
                 return;
 
             sme.idShort = desc.PresetIdShort;
@@ -677,9 +721,14 @@ namespace AasxIntegrationBase.AasForms
             AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
+            // SMEC as Refrable
+            this.ProcessSmeForRender(packageEnv: null, addFilesToPackage: false, editSource: true);
+
+            // SMEC as list of items
             if (this.PairInstances != null)
                 return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
                     elements, packageEnv, addFilesToPackage);
+
             return null;
         }
 
@@ -968,7 +1017,6 @@ namespace AasxIntegrationBase.AasForms
 
     public class FormInstanceReferenceElement : FormInstanceSubmodelElement
     {
-
         public FormInstanceReferenceElement(
             FormInstanceListOfSame parentInstance, FormDescReferenceElement parentDesc,
             AdminShell.SubmodelElement source = null, bool deepCopy = false)

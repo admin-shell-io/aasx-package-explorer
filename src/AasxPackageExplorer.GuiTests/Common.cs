@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FlaUI.Core.AutomationElements;  // necessary extension for AsLabel() and other methods
+﻿using System.Linq;
+using FlaUI.Core.AutomationElements; // necessary extension for AsLabel() and other methods
 using Application = FlaUI.Core.Application;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
@@ -18,7 +17,7 @@ namespace AasxPackageExplorer.GuiTests
 {
     static class Common
     {
-        public static List<string> ListAasxPaths()
+        public static string PathTo01FestoAasx()
         {
             var variable = "SAMPLE_AASX_DIR";
 
@@ -38,13 +37,14 @@ namespace AasxPackageExplorer.GuiTests
                     $"{sampleAasxDir}; did you download the samples with DownloadSamples.ps1?");
             }
 
-            var result = Directory.GetFiles(sampleAasxDir)
-                .Where(p => Path.GetExtension(p) == ".aasx")
-                .ToList();
+            var pth = Path.Combine(sampleAasxDir, "01_Festo.aasx");
 
-            result.Sort();
+            if (!File.Exists(pth))
+            {
+                throw new FileNotFoundException($"The Article-ovel sample AASX could not be found: {pth}");
+            }
 
-            return result;
+            return pth;
         }
 
 
@@ -110,7 +110,9 @@ namespace AasxPackageExplorer.GuiTests
             const string automationId = "LabelNumberErrors";
 
             var numberErrors = Retry.Find(
-                () => (application.HasExited) ? null : mainWindow.FindFirstChild(cf => cf.ByAutomationId(automationId)),
+                () => (application.HasExited)
+                    ? null
+                    : mainWindow.FindFirstChild(cf => cf.ByAutomationId(automationId)),
                 new RetrySettings { ThrowOnTimeout = true, Timeout = TimeSpan.FromSeconds(5) });
 
             Assert.IsFalse(application.HasExited,
@@ -122,7 +124,7 @@ namespace AasxPackageExplorer.GuiTests
             Assert.AreEqual("No errors", numberErrors.AsLabel().Text, "Expected no errors on startup");
         }
 
-        public static void AssertLoad(Application application, Window mainWindow, string path)
+        public static void AssertLoadAasx(Application application, Window mainWindow, string path)
         {
             if (!File.Exists(path))
             {
