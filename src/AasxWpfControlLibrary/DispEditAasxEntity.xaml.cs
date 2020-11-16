@@ -2603,7 +2603,7 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0)
                         {
                             var uc = new TextEditorFlyout($"Edit Property '{"" + p.idShort}'");
-                            uc.Text = p.value;
+                            uc.SetMimeTypeAndText("", p.value);
                             helper.flyoutProvider?.StartFlyoverModal(uc);
                             if (uc.Result)
                             {
@@ -2944,8 +2944,8 @@ namespace AasxPackageExplorer
                                     }
 
                                     // edit
-                                    var uc = new TextEditorFlyout($"Edit tex-file '{fl.value}'");
-                                    uc.Text = contents;
+                                    var uc = new TextEditorFlyout($"Edit text-file '{fl.value}'");
+                                    uc.SetMimeTypeAndText(fl.mimeType, contents);
                                     helper.flyoutProvider?.StartFlyoverModal(uc);
                                     if (!uc.Result)
                                         return new ModifyRepo.LambdaActionNone();
@@ -3083,7 +3083,7 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0)
                         {
                             var uc = new TextEditorFlyout($"Edit Blob '{"" + blb.idShort}'");
-                            uc.Text = blb.value;
+                            uc.SetMimeTypeAndText(blb.mimeType, blb.value);
                             helper.flyoutProvider?.StartFlyoverModal(uc);
                             if (uc.Result)
                             {
