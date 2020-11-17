@@ -183,7 +183,11 @@ namespace AdminShellNS
                 if (currLine >= lines.Length)
                     return "";
                 // access current line
+                /* TODO (MIHO, 2020-11-12): replace with Regex for multi language. Ideally have Exception messages
+                   always as English. */
                 var p = lines[currLine].IndexOf(" in ", StringComparison.Ordinal);
+                if (p < 0)
+                    p = lines[currLine].IndexOf(" bei ", StringComparison.Ordinal);
                 if (p < 0)
                 {
                     // advance to next oldest line

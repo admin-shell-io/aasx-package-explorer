@@ -101,7 +101,7 @@ namespace AasxPackageExplorer
             {
                 // info
                 var fullfn = System.IO.Path.GetFullPath(Options.Curr.WriteDefaultOptionsFN);
-                Log.Info("Writing resulting options into JSOnN {0}", fullfn);
+                Log.Info("Writing resulting options into JSON {0}", fullfn);
 
                 // retrieve
                 Plugins.TrGetDefaultOptionsForPlugins(Options.Curr);

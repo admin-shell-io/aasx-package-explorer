@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 
 /*
@@ -43,10 +44,7 @@ namespace AasxPackageExplorer
         #region Members
         // ============
 
-        public AasxFileRepository theFileRepository = null;
-
-        public AdminShellPackageEnv thePackageEnv = new AdminShellPackageEnv();
-        public AdminShellPackageEnv thePackageAux = null;
+        public PackageCentral packages = new PackageCentral();
 
         private string showContentPackageUri = null;
         private VisualElementGeneric currentEntityForUpdate = null;
@@ -133,10 +131,10 @@ namespace AasxPackageExplorer
         public void RedrawAllAasxElements()
         {
             var t = "AASX Package Explorer";
-            if (thePackageEnv != null)
-                t += " - " + System.IO.Path.GetFileName(thePackageEnv.Filename);
-            if (thePackageAux != null)
-                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(thePackageAux.Filename) + ")";
+            if (packages.MainAvailable)
+                t += " - " + System.IO.Path.GetFileName(packages.Main.Filename);
+            if (packages.AuxAvailable)
+                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(packages.Aux.Filename) + ")";
             this.Title = t;
 
             // clear the right section, first (might be rebuild by callback from below)
@@ -145,7 +143,7 @@ namespace AasxPackageExplorer
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                this.thePackageEnv?.AasEnv, this.thePackageEnv, null, MenuItemWorkspaceEdit.IsChecked);
+                packages, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked);
             DisplayElements.Refresh();
 
         }
@@ -183,17 +181,21 @@ namespace AasxPackageExplorer
         }
 
         public void UiLoadPackageWithNew(
-            ref AdminShellPackageEnv packenv, AdminShellPackageEnv packnew, string info = "",
+            PackageContainer packContainer, AdminShellPackageEnv packnew, string info = "",
             bool onlyAuxiliary = false,
             bool doNotNavigateAfterLoaded = false)
         {
+            // access
+            if (packContainer == null)
+                return;
+
             Log.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
             // loading
             try
             {
-                if (packenv != null)
-                    packenv.Close();
-                packenv = packnew;
+                if (packContainer.Env != null)
+                    packContainer.Env.Close();
+                packContainer.Env = packnew;
             }
             catch (Exception ex)
             {
@@ -255,11 +257,11 @@ namespace AasxPackageExplorer
         public bool UiCheckIfActivateLoadedNavTo()
         {
             // access
-            if (this.thePackageEnv?.AasEnv == null || this.DisplayElements == null)
+            if (packages.Main?.AasEnv == null || this.DisplayElements == null)
                 return false;
 
             // use convenience function
-            foreach (var sm in this.thePackageEnv.AasEnv.FindAllSubmodelGroupedByAAS())
+            foreach (var sm in packages.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
                 var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
@@ -272,7 +274,7 @@ namespace AasxPackageExplorer
                 var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo.value);
 
                 // lookup business objects
-                var bo = this.thePackageEnv?.AasEnv.FindReferableByReference(sri.CleanReference);
+                var bo = packages.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
                 if (bo == null)
                     return false;
 
@@ -304,8 +306,8 @@ namespace AasxPackageExplorer
             if (repo == null)
             {
                 // disable completely
-                this.theFileRepository = null;
-                this.RepoControl.FileRepository = this.theFileRepository;
+                packages.FileRepository = null;
+                this.RepoControl.FileRepository = packages.FileRepository;
                 this.RepoControl.Visibility = Visibility.Visible;
                 if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
                     this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(0.0);
@@ -313,8 +315,8 @@ namespace AasxPackageExplorer
             else
             {
                 // enable, what has been stored
-                this.theFileRepository = repo;
-                this.RepoControl.FileRepository = this.theFileRepository;
+                packages.FileRepository = repo;
+                this.RepoControl.FileRepository = packages.FileRepository;
                 this.RepoControl.Visibility = Visibility.Visible;
                 if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
                     this.ColumnAasRepoGrid.RowDefinitions[2].Height =
@@ -353,7 +355,7 @@ namespace AasxPackageExplorer
                         if (ext == ".aasx")
                         {
                             // add?
-                            this.theFileRepository?.AddByAasxFn(fn);
+                            packages.FileRepository?.AddByAasxFn(fn);
 
                             // handled, but may be more to come ..
                             e.Handled = true;
@@ -369,8 +371,7 @@ namespace AasxPackageExplorer
             // make UI visible settings ..
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                package, entity, editMode, hintMode,
-                ProvideAuxPackages(true, true),
+                packages, entity, editMode, hintMode,
                 flyoutProvider: this,
                 hightlightField: hightlightField);
 
@@ -440,7 +441,7 @@ namespace AasxPackageExplorer
 
             // the AAS will cause some more visual effects
             var tvlaas = DisplayElements.SelectedItem as VisualElementAdminShell;
-            if (thePackageEnv != null && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
+            if (packages.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
             {
                 // AAS
                 // update graphic left
@@ -466,10 +467,10 @@ namespace AasxPackageExplorer
                     try
                     {
                         // identify which stream to use..
-                        if (thePackageEnv != null)
+                        if (packages.MainAvailable)
                             try
                             {
-                                using (var thumbStream = thePackageEnv.GetLocalThumbnailStream())
+                                using (var thumbStream = packages.Main.GetLocalThumbnailStream())
                                 {
                                     // load image
                                     if (thumbStream != null)
@@ -522,7 +523,7 @@ namespace AasxPackageExplorer
 
             // for all, prepare the display
             PrepareDispEditEntity(
-                thePackageEnv, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked,
+                packages.Main, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked,
                 MenuItemWorkspaceHints.IsChecked, hightlightField: hightlightField);
 
         }
@@ -592,7 +593,7 @@ namespace AasxPackageExplorer
             this.RepoControl.FileDoubleClick += (fi) =>
             {
                 // which file?
-                var fn = this.theFileRepository?.GetFullFilename(fi);
+                var fn = packages.FileRepository?.GetFullFilename(fi);
                 if (fn == null)
                     return;
 
@@ -608,13 +609,13 @@ namespace AasxPackageExplorer
                 }
 
                 // start animation
-                this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                 // try load ..
                 try
                 {
                     var pkg = LoadPackageFromFile(fn);
-                    UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -640,7 +641,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     var pkg = LoadPackageFromFile(fn);
-                    UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -675,18 +676,7 @@ namespace AasxPackageExplorer
                     onlyReFocus: true));
         }
 
-        private AdminShellPackageEnv[] ProvideAuxPackages(
-            bool showAuxPackage = false, bool showRepoFiles = false)
-        {
-            var auxes = new List<AdminShellPackageEnv>();
-            if (showAuxPackage && this.thePackageAux != null)
-                auxes.Add(this.thePackageAux);
-            if (showRepoFiles && this.theFileRepository != null)
-                auxes.Add(this.theFileRepository.MakeUpFakePackage());
-            if (auxes.Count < 1)
-                return null;
-            return auxes.ToArray();
-        }
+
 
         private void MainTimer_HandleLogMessages()
         {
@@ -748,9 +738,8 @@ namespace AasxPackageExplorer
                         DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
                         // what to do?
-                        if (temp is ModifyRepo.LambdaActionRedrawAllElements)
+                        if (temp is ModifyRepo.LambdaActionRedrawAllElements wish)
                         {
-                            var wish = temp as ModifyRepo.LambdaActionRedrawAllElements;
                             // edit mode affects the total element view
                             if (!wish.OnlyReFocus)
                                 RedrawAllAasxElements();
@@ -776,6 +765,12 @@ namespace AasxPackageExplorer
                             // rework list
                             ContentTakeOver_Click(null, null);
                         }
+
+                        if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
+                        {
+                            // handle it by UI
+                            UiHandleNavigateTo(tempNavTo.targetReference);
+                        }
                     }
                 }
             }
@@ -789,11 +784,11 @@ namespace AasxPackageExplorer
             AdminShell.Reference requireReferable = null)
         {
             // access
-            if (this.theFileRepository == null)
+            if (packages.FileRepository == null)
                 return null;
 
             // which file?
-            var fn = this.theFileRepository?.GetFullFilename(fi);
+            var fn = packages.FileRepository?.GetFullFilename(fi);
             if (fn == null)
                 return null;
 
@@ -834,10 +829,10 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    this.theFileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                    packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                     // activate
-                    UiLoadPackageWithNew(ref thePackageEnv, pkg, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
 
                 // return bo to focus
@@ -845,6 +840,99 @@ namespace AasxPackageExplorer
             }
 
             return null;
+        }
+
+        private void UiHandleNavigateTo(AdminShell.Reference targetReference)
+        {
+            // access
+            if (targetReference == null || targetReference.Count < 1)
+                return;
+
+            // make a copy of the Reference for searching
+            VisualElementGeneric veFound = null;
+            var work = new AdminShell.Reference(targetReference);
+
+            try
+            {
+                // remember some further supplementary search information
+                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
+                work = sri.CleanReference;
+
+                // incrementally make it unprecise
+                while (work.Count > 0)
+                {
+                    // try to find a business object in the package
+                    AdminShell.Referable bo = null;
+                    if (packages.MainAvailable && packages.Main.AasEnv != null)
+                        bo = packages.Main.AasEnv.FindReferableByReference(work);
+
+                    // if not, may be in aux package
+                    if (bo == null && packages.Aux != null && packages.Aux.AasEnv != null)
+                        bo = packages.Aux.AasEnv.FindReferableByReference(work);
+
+                    // if not, may look into the AASX file repo
+                    if (bo == null && packages.FileRepository != null)
+                    {
+                        // find?
+                        AasxFileRepository.FileItem fi = null;
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
+                            fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
+                            fi = packages.FileRepository.FindByAasId(work[0].value.Trim());
+
+                        bo = LoadFromFilerepository(fi, work);
+                    }
+
+                    // still yes?
+                    if (bo != null)
+                    {
+                        // try to look up in visual elements
+                        if (this.DisplayElements != null)
+                        {
+                            var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
+                                alsoDereferenceObjects: true, sri: sri);
+                            if (ve != null)
+                            {
+                                veFound = ve;
+                                break;
+                            }
+                        }
+                    }
+
+                    // make it more unprecice
+                    work.Keys.RemoveAt(work.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "While retrieving element requested for navigate to");
+            }
+
+            // if successful, try to display it
+            try
+            {
+                if (veFound != null)
+                {
+                    // show ve
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+                    // remember in history
+                    ButtonHistory.Push(veFound);
+                    // fake selection
+                    RedrawElementView();
+                    DisplayElements.Refresh();
+                    ContentTakeOver.IsEnabled = false;
+                }
+                else
+                {
+                    // everything is in default state, push adequate button history
+                    var veTop = this.DisplayElements.GetDefaultVisualElement();
+                    ButtonHistory.Push(veTop);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "While displaying element requested for navigate to");
+            }
         }
 
         private void MainTimer_HandlePlugins()
@@ -862,91 +950,7 @@ namespace AasxPackageExplorer
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
                     if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
                     {
-                        // make a copy of the Reference for searching
-                        VisualElementGeneric veFound = null;
-                        var work = new AdminShell.Reference(evtNavTo.targetReference);
-
-                        try
-                        {
-                            // remember some further supplementary search information
-                            var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
-                            work = sri.CleanReference;
-
-                            // incrementally make it unprecise
-                            while (work.Count > 0)
-                            {
-                                // try to find a business object in the package
-                                AdminShell.Referable bo = null;
-                                if (thePackageEnv != null && thePackageEnv.AasEnv != null)
-                                    bo = thePackageEnv.AasEnv.FindReferableByReference(work);
-
-                                // if not, may be in aux package
-                                if (bo == null && thePackageAux != null && thePackageAux.AasEnv != null)
-                                    bo = thePackageAux.AasEnv.FindReferableByReference(work);
-
-                                // if not, may look into the AASX file repo
-                                if (bo == null && this.theFileRepository != null)
-                                {
-                                    // find?
-                                    AasxFileRepository.FileItem fi = null;
-                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
-                                        fi = this.theFileRepository.FindByAssetId(work[0].value.Trim());
-                                    if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
-                                        fi = this.theFileRepository.FindByAasId(work[0].value.Trim());
-
-                                    bo = LoadFromFilerepository(fi, work);
-                                }
-
-                                // still yes?
-                                if (bo != null)
-                                {
-                                    // try to look up in visual elements
-                                    if (this.DisplayElements != null)
-                                    {
-                                        var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                                            alsoDereferenceObjects: true, sri: sri);
-                                        if (ve != null)
-                                        {
-                                            veFound = ve;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                // make it more unprecice
-                                work.Keys.RemoveAt(work.Count - 1);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "While retrieving element requested by plug-in");
-                        }
-
-                        // if successful, try to display it
-                        try
-                        {
-                            if (veFound != null)
-                            {
-                                // show ve
-                                DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
-                                // remember in history
-                                ButtonHistory.Push(veFound);
-                                // fake selection
-                                RedrawElementView();
-                                DisplayElements.Refresh();
-                                ContentTakeOver.IsEnabled = false;
-                            }
-                            else
-                            {
-                                // everything is in default state, bush adequate button history
-                                var veTop = this.DisplayElements.GetDefaultVisualElement();
-                                ButtonHistory.Push(veTop);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "While displaying element requested by plug-in");
-                        }
+                        UiHandleNavigateTo(evtNavTo.targetReference);
                     }
                     #endregion
 
@@ -993,8 +997,8 @@ namespace AasxPackageExplorer
                     if (evSelectEntity != null)
                     {
                         var uc = new SelectAasEntityFlyout(
-                            thePackageEnv.AasEnv, evSelectEntity.filterEntities, thePackageEnv,
-                            this.ProvideAuxPackages(true, true));
+                            packages, PackageCentral.Selector.MainAuxFileRepo,
+                            evSelectEntity.filterEntities);
                         this.StartFlyoverModal(uc);
                         if (uc.ResultKeys != null)
                         {
@@ -1062,12 +1066,12 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (this.theFileRepository != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
+                if (packages.FileRepository != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = this.theFileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = packages.FileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
                         Log.Error($"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
@@ -1267,7 +1271,7 @@ namespace AasxPackageExplorer
             // ReSharper disable EmptyGeneralCatchClause
             try
             {
-                thePackageEnv.Close();
+                packages.Main.Close();
             }
             catch (Exception)
             { }
@@ -1290,7 +1294,7 @@ namespace AasxPackageExplorer
 
         private void ShowContent_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == ShowContent && this.showContentPackageUri != null && this.thePackageEnv != null)
+            if (sender == ShowContent && this.showContentPackageUri != null && packages.MainAvailable)
             {
                 Log.Info("Trying display content {0} ..", this.showContentPackageUri);
                 try
@@ -1302,7 +1306,7 @@ namespace AasxPackageExplorer
                         && !this.showContentPackageUri.ToLower().Trim().StartsWith("https://"))
                     {
                         // make it as file
-                        contentUri = thePackageEnv.MakePackageFileAvailableAsTempFile(this.showContentPackageUri);
+                        contentUri = packages.Main.MakePackageFileAvailableAsTempFile(this.showContentPackageUri);
                     }
 
                     BrowserDisplayLocalFile(contentUri);
@@ -1595,7 +1599,7 @@ namespace AasxPackageExplorer
                     string fn = files[0];
                     try
                     {
-                        UiLoadPackageWithNew(ref thePackageEnv, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
+                        UiLoadPackageWithNew(packages.MainContainer, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -1613,7 +1617,7 @@ namespace AasxPackageExplorer
             // MIHO 2020-09-14: removed this from the check below
             //// && (Math.Abs(dragStartPoint.X) < 0.001 && Math.Abs(dragStartPoint.Y) < 0.001)
             if (e.LeftButton == MouseButtonState.Pressed && !isDragging && this.showContentPackageUri != null &&
-                this.thePackageEnv != null)
+                packages.MainAvailable)
             {
                 Point position = e.GetPosition(null);
                 if (Math.Abs(position.X - dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
@@ -1630,7 +1634,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         // hastily prepare temp file ..
-                        var tempfile = thePackageEnv.MakePackageFileAvailableAsTempFile(
+                        var tempfile = packages.Main.MakePackageFileAvailableAsTempFile(
                             this.showContentPackageUri, keepFilename: true);
 
                         // Package the data.

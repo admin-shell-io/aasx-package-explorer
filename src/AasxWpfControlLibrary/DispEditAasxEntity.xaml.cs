@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,6 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxPackageExplorer;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 
 /*
@@ -42,27 +45,26 @@ namespace AasxPackageExplorer
     public partial class DispEditAasxEntity : UserControl
     {
 
-        private AdminShellPackageEnv thePackage = null;
+        private PackageCentral packages = null;
         private VisualElementGeneric theEntity = null;
 
         private ModifyRepo theModifyRepo = new ModifyRepo();
 
         private DispEditHelperModules helper = new DispEditHelperModules();
 
-        private class CopyPasteBuffer
-        {
-            public bool duplicate = false;
-            public AdminShell.Referable parentContainer = null;
-            public AdminShell.SubmodelElementWrapper wrapper = null;
-            public AdminShell.SubmodelElement sme = null;
-        }
-
-        private CopyPasteBuffer theCopyPaste = null;
+        private DispEditHelperCopyPaste.CopyPasteBuffer theCopyPaste = new DispEditHelperCopyPaste.CopyPasteBuffer();
 
         static string PackageSourcePath = "";
         static string PackageTargetFn = "";
         static string PackageTargetDir = "/aasx";
         static bool PackageEmbedAsThumbnail = false;
+
+        public class UploadAssistance
+        {
+            public string SourcePath = "";
+            public string TargetPath = "/aasx/files";
+        }
+        public UploadAssistance uploadAssistance = new UploadAssistance();
 
         #region Public events and properties
         //
@@ -93,17 +95,22 @@ namespace AasxPackageExplorer
                     var temp = theModifyRepo.WishForOutsideAction[0];
                     theModifyRepo.WishForOutsideAction.RemoveAt(0);
 
+                    // trivial?
+                    if (temp is ModifyRepo.LambdaActionNone)
+                        continue;
+
                     // what?
                     if (temp is ModifyRepo.LambdaActionRedrawEntity)
-                        if (thePackage != null && theEntity != null)
+                    {
+                        // redraw ourselves?
+                        if (packages != null && theEntity != null)
                             DisplayOrEditVisualAasxElement(
-                                thePackage, theEntity, helper.editMode, helper.hintMode,
-                                auxPackages: helper.auxPackages, flyoutProvider: helper.flyoutProvider);
-                    if (temp is ModifyRepo.LambdaActionRedrawAllElements
-                        || temp is ModifyRepo.LambdaActionContentsChanged
-                        || temp is ModifyRepo.LambdaActionContentsTakeOver)
-                        // Unfortunately twice as ugly
-                        this.WishForOutsideAction.Add(temp);
+                                packages, theEntity, helper.editMode, helper.hintMode,
+                                flyoutProvider: helper.flyoutProvider);
+                    }
+
+                    // all other elements refer to superior functionality
+                    this.WishForOutsideAction.Add(temp);
                 }
             }
         }
@@ -140,7 +147,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityAsset(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
             bool editMode, ModifyRepo repo, StackPanel stack, Brush[][] levelColors, bool embedded = false,
             bool hintMode = false)
         {
@@ -150,6 +157,16 @@ namespace AasxPackageExplorer
             if (editMode && !embedded)
             {
                 helper.EntityListUpDownDeleteHelper<AdminShell.Asset>(stack, repo, env.Assets, asset, env, "Asset:");
+            }
+
+            // Cut, copy, paste within list of Assets
+            if (editMode && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.Asset>(
+                    stack, repo, this.theCopyPaste,
+                    env.Assets, asset, (o) => { return new AdminShell.Asset(o); },
+                    label: "Buffer:");
             }
 
             // print code sheet
@@ -206,7 +223,7 @@ namespace AasxPackageExplorer
                             }
                         }
                     }
-                    if (i == 1)
+                    if (i == 1 && env != null)
                     {
                         var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                         uc.Text = asset.identification.id;
@@ -270,7 +287,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityAasEnv(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env,
             VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, StackPanel stack,
             Brush[][] levelColors, bool hintMode = false)
         {
@@ -358,7 +375,7 @@ namespace AasxPackageExplorer
                 {
                     helper.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
-                            () => { return helper.auxPackages != null;  },
+                            () => { return helper.packages.AuxAvailable;  },
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -372,8 +389,8 @@ namespace AasxPackageExplorer
                             if (buttonNdx == 0 || buttonNdx == 1 || buttonNdx == 2)
                             {
                                 var rve = helper.SmartSelectAasEntityVisualElement(
-                                    package.AasEnv, AdminShell.Key.AAS, package: package,
-                                    auxPackages: helper.auxPackages) as VisualElementAdminShell;
+                                    packages, PackageCentral.Selector.MainAux,
+                                    AdminShell.Key.AAS) as VisualElementAdminShell;
 
                                 if (rve != null)
                                 {
@@ -492,7 +509,7 @@ namespace AasxPackageExplorer
                                         //
                                         // Copy suppl files
                                         //
-                                        if (copySupplFiles && rve.thePackage != null && package != rve.thePackage)
+                                        if (copySupplFiles && rve.thePackage != null && packages.Main != rve.thePackage)
                                         {
                                             // copy conditions met
                                             foreach (var fn in potentialSupplFilesToCopy.Values)
@@ -502,13 +519,14 @@ namespace AasxPackageExplorer
                                                     // copy ONLY if not existing in destination
                                                     // rationale: do not potential harm the source content, 
                                                     // even when voiding destination integrity
-                                                    if (rve.thePackage.IsLocalFile(fn) && !package.IsLocalFile(fn))
+                                                    if (rve.thePackage.IsLocalFile(fn)
+                                                        && !packages.Main.IsLocalFile(fn))
                                                     {
                                                         var tmpFile =
                                                             rve.thePackage.MakePackageFileAvailableAsTempFile(fn);
                                                         var targetDir = System.IO.Path.GetDirectoryName(fn);
                                                         var targetFn = System.IO.Path.GetFileName(fn);
-                                                        package.AddSupplementaryFileToStore(
+                                                        packages.Main.AddSupplementaryFileToStore(
                                                             tmpFile, targetDir, targetFn, false);
                                                     }
                                                 }
@@ -532,12 +550,15 @@ namespace AasxPackageExplorer
                         });
                 }
 
-                // Copy Concept Descriptions
+                //
+                // Concept Descriptions
+                //
                 if (envItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
+                    // Copy
                     helper.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
-                            () => { return helper.auxPackages != null;  },
+                            () => { return helper.packages.AuxAvailable;  },
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -549,8 +570,8 @@ namespace AasxPackageExplorer
                             if (buttonNdx == 0)
                             {
                                 var rve = helper.SmartSelectAasEntityVisualElement(
-                                    package.AasEnv, "ConceptDescription", package: package,
-                                    auxPackages: helper.auxPackages) as VisualElementConceptDescription;
+                                    packages, PackageCentral.Selector.MainAux,
+                                    "ConceptDescription") as VisualElementConceptDescription;
                                 if (rve != null)
                                 {
                                     var mdo = rve.GetMainDataObject();
@@ -568,10 +589,62 @@ namespace AasxPackageExplorer
 
                             return new ModifyRepo.LambdaActionNone();
                         });
+
+                    // Sort
+                    helper.AddHintBubble(stack, hintMode, new[] {
+                        new HintCheck(
+                            () => { return true;  },
+                            "The sort operation permanently changes the order of ConceptDescriptions in the " +
+                            "environment. It cannot be reverted!",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                    var g = helper.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
+                    var cb = helper.AddSmallComboBoxTo(g, 0, 0,
+                        margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
+                        minWidth: 150,
+                        items: new[] {
+                        "idShort", "Id", "Usage in Submodels"
+                    });
+                    cb.SelectedIndex = 0;
+                    repo.RegisterControl(
+                        helper.AddSmallButtonTo(g, 0, 1, content: "Sort!",
+                            margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0)),
+                        (o) =>
+                        {
+                            if (MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                               "Perform sort operation? This operation can not be reverted!", "ConceptDescriptions",
+                               MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                            {
+                                var success = false;
+                                if (cb.SelectedIndex == 0)
+                                {
+                                    env.ConceptDescriptions.Sort(new AdminShell.Referable.ComparerIdShort());
+                                    success = true;
+                                }
+                                if (cb.SelectedIndex == 1)
+                                {
+                                    env.ConceptDescriptions.Sort(new AdminShell.Identifiable.ComparerIdentification());
+                                    success = true;
+                                }
+                                if (cb.SelectedIndex == 2)
+                                {
+                                    var cmp = env.CreateIndexedComparerCdsForSmUsage();
+                                    env.ConceptDescriptions.Sort(cmp);
+                                    success = true;
+                                }
+
+                                if (success)
+                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null);
+                            }
+
+                            return new ModifyRepo.LambdaActionNone();
+                        });
                 }
             }
-            else if (envItemType == VisualElementEnvironmentItem.ItemType.SupplFiles && package != null)
+            else if (envItemType == VisualElementEnvironmentItem.ItemType.SupplFiles && packages.MainStorable)
             {
+                // Files
+
                 helper.AddGroup(stack, "Supplementary file to add:", levelColors[1][0], levelColors[1][1]);
 
                 var g = helper.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
@@ -637,7 +710,7 @@ namespace AasxPackageExplorer
                             var ptd = PackageTargetDir;
                             if (PackageEmbedAsThumbnail)
                                 ptd = "/";
-                            package.AddSupplementaryFileToStore(
+                            packages.Main.AddSupplementaryFileToStore(
                                 PackageSourcePath, ptd, PackageTargetFn, PackageEmbedAsThumbnail);
                             Log.Info(
                                 "Added {0} to pending package items. A save-operation is required.",
@@ -705,7 +778,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntitySupplementaryFile(
-            AdminShellPackageEnv package, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
+            PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
             StackPanel stack, Brush[][] levelColors)
         {
             //
@@ -713,7 +786,7 @@ namespace AasxPackageExplorer
             //
             helper.AddGroup(stack, "Supplementary file for package of AASX", levelColors[0][0], levelColors[0][1]);
 
-            if (editMode && package != null && psf != null)
+            if (editMode && packages.MainStorable && psf != null)
             {
                 helper.AddAction(stack, "Action", new[] { "Delete" }, repo, (buttonNdx) =>
                {
@@ -725,7 +798,7 @@ namespace AasxPackageExplorer
                        {
                            try
                            {
-                               package.DeleteSupplementaryFile(psf);
+                               packages.Main.DeleteSupplementaryFile(psf);
                                Log.Info(
                                "Added {0} to pending package items to be deleted. " +
                                    "A save-operation might be required.", PackageSourcePath);
@@ -751,7 +824,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityAas(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
             bool editMode, ModifyRepo repo, StackPanel stack, Brush[][] levelColors, bool hintMode = false)
         {
             helper.AddGroup(stack, "Asset Administration Shell", levelColors[0][0], levelColors[0][1]);
@@ -765,6 +838,13 @@ namespace AasxPackageExplorer
                 helper.EntityListUpDownDeleteHelper<AdminShell.AdministrationShell>(
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
 
+                // Cut, copy, paste within list of AASes
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
+                    stack, repo, this.theCopyPaste,
+                    env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
+                    label: "Buffer:");
+
+                // Submodels
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -800,7 +880,8 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionNone();
 
                             // select existing Submodel
-                            var ks = helper.SmartSelectAasEntityKeys(package.AasEnv, "Submodel");
+                            var ks = helper.SmartSelectAasEntityKeys(packages, PackageCentral.Selector.Main,
+                                "Submodel");
                             if (ks != null)
                             {
                                 // create ref
@@ -849,7 +930,7 @@ namespace AasxPackageExplorer
 
                 helper.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
-                        () => { return helper.auxPackages != null;  },
+                        () => { return helper.packages.AuxAvailable;  },
                         "You have opened an auxiliary AASX package. You can copy elements from it!",
                         severityLevel: HintCheck.Severity.Notice)
                 });
@@ -861,8 +942,8 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
-                            package.AasEnv, "SubmodelRef", package: package,
-                            auxPackages: helper.auxPackages) as VisualElementSubmodelRef;
+                                packages, PackageCentral.Selector.MainAux,
+                                "SubmodelRef") as VisualElementSubmodelRef;
 
                             if (rve != null)
                             {
@@ -985,7 +1066,8 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Derived From", levelColors[1][0], levelColors[1][1]);
                 helper.AddKeyListKeys(
-                    stack, "derivedFrom", aas.derivedFrom.Keys, repo, package, "AssetAdministrationShell");
+                    stack, "derivedFrom", aas.derivedFrom.Keys, repo,
+                    packages, PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell");
             }
 
             // assetRef
@@ -1007,7 +1089,8 @@ namespace AasxPackageExplorer
                 }))
             {
                 helper.AddGroup(stack, "Asset Reference", levelColors[1][0], levelColors[1][1]);
-                helper.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo, package, "Asset");
+                helper.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
+                    packages, PackageCentral.Selector.Main, "Asset");
             }
 
             //
@@ -1017,7 +1100,7 @@ namespace AasxPackageExplorer
             if (asset != null)
             {
                 DisplayOrEditAasEntityAsset(
-                    package, env, asset, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, env, asset, editMode, repo, stack, levelColors, hintMode: hintMode);
             }
         }
 
@@ -1028,7 +1111,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntitySubmodelOrRef(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, ModifyRepo repo,
             StackPanel stack, Brush[][] levelColors, bool hintMode = false)
         {
@@ -1037,7 +1120,8 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "SubmodelReference", levelColors[0][0], levelColors[0][1]);
                 helper.AddKeyListKeys(
-                    stack, "submodelRef", smref.Keys, repo, package, "SubmodelRef Submodel ",
+                    stack, "submodelRef", smref.Keys, repo,
+                    packages, PackageCentral.Selector.Main, "SubmodelRef Submodel ",
                     takeOverLambdaAction: new ModifyRepo.LambdaActionRedrawAllElements(smref));
             }
 
@@ -1058,20 +1142,41 @@ namespace AasxPackageExplorer
                     levelColors[0][0], levelColors[0][1]);
 
                 helper.AddAction(stack, "Submodel:", new[] { "Delete" }, repo, (buttonNdx) =>
-               {
-                   if (buttonNdx == 0)
-                       if (helper.flyoutProvider != null &&
-                            MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "Delete selected Submodel? This operation can not be reverted!", "AASX",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                       {
-                           if (env.Submodels.Contains(submodel))
-                               env.Submodels.Remove(submodel);
-                           return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
-                       }
+                {
+                    if (buttonNdx == 0)
+                        if (helper.flyoutProvider != null &&
+                             MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                                 "Delete selected Submodel? This operation can not be reverted!", "AASX",
+                                 MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        {
+                            if (env.Submodels.Contains(submodel))
+                                env.Submodels.Remove(submodel);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
+                        }
 
-                   return new ModifyRepo.LambdaActionNone();
-               });
+                    return new ModifyRepo.LambdaActionNone();
+                });
+            }
+
+            // Cut, copy, paste within an aas
+            // Resharper disable once ConditionIsAlwaysTrueOrFalse
+            if (editMode && smref != null && submodel != null && aas != null)
+            {
+                // cut/ copy / paste
+                helper.DispSubmodelCutCopyPasteHelper<AdminShell.SubmodelRef>(stack, repo, this.theCopyPaste,
+                    aas.submodelRefs, smref, (sr) => { return new AdminShell.SubmodelRef(sr); },
+                    smref, submodel,
+                    label: "Buffer:");
+            }
+            else
+            // Cut, copy, paste within the Submodels
+            if (editMode && smref == null && submodel != null && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispSubmodelCutCopyPasteHelper<AdminShell.Submodel>(stack, repo, this.theCopyPaste,
+                    env.Submodels, submodel, (sm) => { return new AdminShell.Submodel(sm, shallowCopy: false); },
+                    null, submodel,
+                    label: "Buffer:");
             }
 
             // normal edit of the submodel
@@ -1128,7 +1233,7 @@ namespace AasxPackageExplorer
 
                 helper.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
-                        () => { return helper.auxPackages != null;  },
+                        () => { return helper.packages.AuxAvailable;  },
                         "You have opened an auxiliary AASX package. You can copy elements from it!",
                         severityLevel: HintCheck.Severity.Notice)
                 });
@@ -1140,12 +1245,10 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
-                                package.AasEnv,
-                                "SubmodelElement",
-                                package: package,
-                                auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+                                packages, PackageCentral.Selector.MainAux,
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
-                            if (rve != null)
+                            if (rve != null && env != null)
                             {
                                 var mdo = rve.GetMainDataObject();
                                 if (mdo != null && mdo is AdminShell.SubmodelElement)
@@ -1252,7 +1355,7 @@ namespace AasxPackageExplorer
                         new[] { "Rename" },
                         (i) =>
                         {
-                            if (i == 0)
+                            if (i == 0 && env != null)
                             {
                                 var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                                 uc.Text = submodel.identification.id;
@@ -1327,7 +1430,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityConceptDescription(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
             ModifyRepo repo, StackPanel stack, Brush[][] levelColors, bool embedded = false, bool hintMode = false)
         {
@@ -1338,6 +1441,16 @@ namespace AasxPackageExplorer
             {
                 helper.EntityListUpDownDeleteHelper<AdminShell.ConceptDescription>(
                     stack, repo, env.ConceptDescriptions, cd, env, "CD:");
+            }
+
+            // Cut, copy, paste within list of CDs
+            if (editMode && env != null)
+            {
+                // cut/ copy / paste
+                helper.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.ConceptDescription>(
+                    stack, repo, this.theCopyPaste,
+                    env.ConceptDescriptions, cd, (o) => { return new AdminShell.ConceptDescription(o); },
+                    label: "Buffer:");
             }
 
             // Referable
@@ -1381,7 +1494,7 @@ namespace AasxPackageExplorer
                 new[] { "Rename" },
                 (i) =>
                 {
-                    if (i == 0)
+                    if (i == 0 && env != null)
                     {
                         var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
                         uc.Text = cd.identification.id;
@@ -1442,7 +1555,8 @@ namespace AasxPackageExplorer
             helper.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.embeddedDataSpecification,
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
-                addPresetKeys: new[] { AdminShell.DataSpecificationIEC61360.GetKey() },
+                addPresetKeyLists: new[] {
+                    AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
                 dataSpecRefsAreUsual: true);
 
             // the IEC61360 Content
@@ -1480,7 +1594,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityOperationVariable(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.OperationVariable ov, bool editMode,
             ModifyRepo repo, StackPanel stack, Brush[][] levelColors, bool hintMode = false)
         {
@@ -1593,7 +1707,7 @@ namespace AasxPackageExplorer
 
                         helper.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck(
-                                () => { return helper.auxPackages != null;  },
+                                () => { return helper.packages.AuxAvailable;  },
                                 "You have opened an auxiliary AASX package. You can copy elements from it!",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
@@ -1605,9 +1719,8 @@ namespace AasxPackageExplorer
                                 if (buttonNdx == 0 || buttonNdx == 1)
                                 {
                                     var rve = helper.SmartSelectAasEntityVisualElement(
-                                        package.AasEnv, "SubmodelElement",
-                                        package: package,
-                                        auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+                                        packages, PackageCentral.Selector.MainAux,
+                                        "SubmodelElement") as VisualElementSubmodelElement;
 
                                     if (rve != null)
                                     {
@@ -1632,11 +1745,11 @@ namespace AasxPackageExplorer
                     // value == SubmodelElement is displayed
                     helper.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", levelColors[1][0], levelColors[1][1]);
-                    var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                    var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
-                            package, env, parentContainer, ov.value, null, editMode, repo,
+                            packages, env, parentContainer, ov.value, null, editMode, repo,
                             substack, levelColors, hintMode);
                 }
             }
@@ -1650,7 +1763,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntitySubmodelElement(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
             AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, StackPanel stack,
             Brush[][] levelColors, bool hintMode = false)
@@ -1733,6 +1846,9 @@ namespace AasxPackageExplorer
             // cut/ copy / paste
             if (parentContainer != null)
             {
+                helper.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
+#if _in_refactoring
                 helper.AddAction(
                     stack, "Buffer:",
                     new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
@@ -1857,6 +1973,7 @@ namespace AasxPackageExplorer
 
                         return new ModifyRepo.LambdaActionNone();
                     });
+#endif
             }
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -1892,7 +2009,8 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0)
                         {
                             // select existing CD
-                            var ks = helper.SmartSelectAasEntityKeys(package.AasEnv);
+                            var ks = helper.SmartSelectAasEntityKeys(
+                                        packages, PackageCentral.Selector.MainAuxFileRepo);
                             if (ks != null)
                             {
                                 // set the semantic id
@@ -2088,7 +2206,7 @@ namespace AasxPackageExplorer
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return helper.auxPackages != null;  },
+                            () => { return helper.packages.AuxAvailable;  },
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                 });
@@ -2099,8 +2217,8 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
-                                package.AasEnv, "SubmodelElement", package: package,
-                                auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+                                packages, PackageCentral.Selector.MainAux,
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null)
                             {
@@ -2147,7 +2265,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
 
-                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 for (int dirNdx = 0; dirNdx < 3; dirNdx++)
                 {
@@ -2192,7 +2310,7 @@ namespace AasxPackageExplorer
                         substack, hintMode,
                         new[] {
                             new HintCheck(
-                                () => { return helper.auxPackages != null;  },
+                                () => { return helper.packages.AuxAvailable;  },
                                 "You have opened an auxiliary AASX package. You can copy elements from it!",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
@@ -2204,8 +2322,8 @@ namespace AasxPackageExplorer
                             if (buttonNdx == 0 || buttonNdx == 1)
                             {
                                 var rve = helper.SmartSelectAasEntityVisualElement(
-                                    package.AasEnv, "OperationVariable", package: package,
-                                    auxPackages: helper.auxPackages) as VisualElementOperationVariable;
+                                    packages, PackageCentral.Selector.MainAux,
+                                    "OperationVariable") as VisualElementOperationVariable;
 
                                 if (rve != null)
                                 {
@@ -2236,7 +2354,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
 
-                var substack = helper.AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 helper.AddHintBubble(
                     substack, hintMode,
@@ -2290,7 +2408,7 @@ namespace AasxPackageExplorer
                     substack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return helper.auxPackages != null;  },
+                            () => { return helper.packages.AuxAvailable;  },
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -2301,8 +2419,8 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 0)
                         {
                             var rve = helper.SmartSelectAasEntityVisualElement(
-                                package.AasEnv, "SubmodelElement", package: package,
-                                auxPackages: helper.auxPackages) as VisualElementSubmodelElement;
+                                packages, PackageCentral.Selector.MainAux,
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null)
                             {
@@ -2398,7 +2516,8 @@ namespace AasxPackageExplorer
                     "or an external repository, such as IEC CDD or eCl@ss or " +
                     "a company / consortia repository.",
                     checkForCD: true,
-                    addExistingEntities: AdminShell.Key.ConceptDescription);
+                    addExistingEntities: AdminShell.Key.ConceptDescription,
+                    cpb: theCopyPaste);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
@@ -2426,7 +2545,7 @@ namespace AasxPackageExplorer
                     else
                     {
                         DisplayOrEditAasEntityConceptDescription(
-                            package, env, sme, cd, editMode, repo, stack, levelColors,
+                            packages, env, sme, cd, editMode, repo, stack, levelColors,
                             embedded: true,
                             hintMode: hintMode);
                     }
@@ -2465,11 +2584,35 @@ namespace AasxPackageExplorer
                             "The value of the Property. " +
                                 "Please provide a string representation " +
                                 "(without quotes, '.' as decimal separator, in XML number representation).",
+                            severityLevel: HintCheck.Severity.Notice,
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return true == p.value?.Contains('\r') || true == p.value?.Contains('\n'); },
+                            "It is strongly not recommended to have multi-line properties. " +
+                            "However, the technological possibility is given.",
                             severityLevel: HintCheck.Severity.Notice)
+
                     });
                 helper.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "\u2261" },
+                    auxButtonToolTips: new[] { "Edit in multiline editor" },
+                    auxButtonLambda: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new TextEditorFlyout($"Edit Property '{"" + p.idShort}'");
+                            uc.SetMimeTypeAndText("", p.value);
+                            helper.flyoutProvider?.StartFlyoverModal(uc);
+                            if (uc.Result)
+                            {
+                                p.value = uc.Text;
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2496,7 +2639,8 @@ namespace AasxPackageExplorer
                 {
                     helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
                     helper.AddKeyListKeys(
-                        stack, "valueId", p.valueId.Keys, repo, package, AdminShell.Key.GlobalReference);
+                        stack, "valueId", p.valueId.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
                 }
             }
             else if (sme is AdminShell.MultiLanguageProperty)
@@ -2535,7 +2679,8 @@ namespace AasxPackageExplorer
                 {
                     helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
                     helper.AddKeyListKeys(
-                        stack, "valueId", mlp.valueId.Keys, repo, package, AdminShell.Key.GlobalReference);
+                        stack, "valueId", mlp.valueId.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
                 }
             }
             else if (sme is AdminShell.Range)
@@ -2596,9 +2741,8 @@ namespace AasxPackageExplorer
                     stack, "max", rng, ref rng.max, null, repo,
                     v => { rng.max = v as string; return new ModifyRepo.LambdaActionNone(); });
             }
-            else if (sme is AdminShell.File)
+            else if (sme is AdminShell.File fl)
             {
-                var p = sme as AdminShell.File;
                 helper.AddGroup(stack, "File", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
@@ -2607,14 +2751,14 @@ namespace AasxPackageExplorer
                         new HintCheck(
                             () =>
                             {
-                                return p.mimeType == null || p.mimeType.Trim().Length < 1 ||
-                                    p.mimeType.IndexOf('/') < 1 || p.mimeType.EndsWith("/");
+                                return fl.mimeType == null || fl.mimeType.Trim().Length < 1 ||
+                                    fl.mimeType.IndexOf('/') < 1 || fl.mimeType.EndsWith("/");
                             },
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 helper.AddKeyValueRef(
-                    stack, "mimeType", p, ref p.mimeType, null, repo,
-                    v => { p.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    stack, "mimeType", fl, ref fl.mimeType, null, repo,
+                    v => { fl.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
@@ -2622,38 +2766,295 @@ namespace AasxPackageExplorer
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return p.value == null || p.value.Trim().Length < 1; },
+                            () => { return fl.value == null || fl.value.Trim().Length < 1; },
                             "The path to an external file or a file relative the AASX package root('/'). " +
                                 "Files are typically relative to '/aasx/' or sub-directories of it. " +
                                 "External files typically comply to an URL, e.g. starting with 'https://..'.",
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return p.value.IndexOf('\\') >= 0; },
+                            () => { return fl.value.IndexOf('\\') >= 0; },
                             "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 helper.AddKeyValueRef(
-                    stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); },
-                    auxButtonTitle: "Choose supplementary file",
-                    auxButtonLambda: (o) =>
+                    stack, "value", fl, ref fl.value, null, repo,
+                    v => { fl.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "Choose supplementary file", },
+                    auxButtonToolTips: new[] { "Select existing supplementary files" },
+                    auxButtonLambda: (bi) =>
                     {
-                        var ve = helper.SmartSelectAasEntityVisualElement(package.AasEnv, "File", package: package);
-                        if (ve != null)
+                        if (bi == 0)
                         {
-                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
-                            if (sf != null)
+                            // Select
+                            var ve = helper.SmartSelectAasEntityVisualElement(
+                                        packages, PackageCentral.Selector.Main, "File");
+                            if (ve != null)
                             {
-                                p.value = sf.uri.ToString();
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
+                                if (sf != null)
+                                {
+                                    fl.value = sf.uri.ToString();
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
                             }
                         }
+
                         return new ModifyRepo.LambdaActionNone();
                     });
+
+                if (editMode && uploadAssistance != null && packages.Main != null)
+                {
+                    // More file actions
+                    helper.AddAction(
+                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
+                        repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0 && fl.value.HasContent())
+                            {
+                                if (helper.flyoutProvider != null &&
+                                    MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "Delete selected entity? This operation can not be reverted!", "AASX",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                {
+                                    try
+                                    {
+                                        // try find ..
+                                        var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                        var psf = psfs?.FindByUri(fl.value);
+                                        if (psf == null)
+                                        {
+                                            Log.Error($"Not able to locate supplmentary file {fl.value} for removal! " +
+                                                $"Aborting!");
+                                        }
+                                        else
+                                        {
+                                            Log.Info($"Removing file {fl.value} ..");
+                                            packages.Main.DeleteSupplementaryFile(psf);
+                                            Log.Info($"Added {fl.value} to pending package items to be deleted. " +
+                                                "A save-operation might be required.");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Error(ex, $"Removing file {fl.value} in package");
+                                    }
+
+                                    // clear value
+                                    fl.value = "";
+
+                                    // show empty
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                // ask for a name
+                                var uc = new TextBoxFlyout("Name of text file to create",
+                                        MessageBoxImage.Question);
+                                uc.Text = "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+                                helper.flyoutProvider?.StartFlyoverModal(uc);
+                                if (!uc.Result)
+                                {
+                                    return new ModifyRepo.LambdaActionNone();
+                                }
+
+                                var ptd = "/aasx/";
+                                var ptfn = uc.Text.Trim();
+                                packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                // make sure the name is not already existing
+                                var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                var psf = psfs?.FindByUri(ptd + ptfn);
+                                if (psf != null)
+                                {
+                                    helper.flyoutProvider?.MessageBoxFlyoutShow(
+                                        $"The supplementary file {ptd + ptfn} is already existing in the " +
+                                        "package. Please re-try with a different file name.", "Create text file",
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return new ModifyRepo.LambdaActionNone();
+                                }
+
+                                // try execute
+                                try
+                                {
+                                    // make temp file
+                                    var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".txt");
+                                    System.IO.File.WriteAllText(tempFn, "");
+
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        tempFn, ptd, ptfn,
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (targetPath == null)
+                                    {
+                                        Log.Error($"Error creating text-file {ptd + ptfn} within package");
+                                    }
+                                    else
+                                    {
+                                        Log.Info(
+                                            $"Added empty text-file {ptd + ptfn} to pending package items. " +
+                                            $"A save-operation is required.");
+                                        fl.mimeType = mimeType;
+                                        fl.value = targetPath;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Creating text-file {ptd + ptfn} within package");
+                                }
+                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                            }
+
+                            if (buttonNdx == 2)
+                            {
+                                try
+                                {
+                                    // try find ..
+                                    var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                    var psf = psfs?.FindByUri(fl.value);
+                                    if (psf == null)
+                                    {
+                                        Log.Error($"Not able to locate supplmentary file {fl.value} for edit. " +
+                                            $"Aborting!");
+                                        return new ModifyRepo.LambdaActionNone();
+                                    }
+
+                                    // try read ..
+                                    Log.Info($"Reading text-file {fl.value} ..");
+                                    string contents;
+                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(fl.value))
+                                    {
+                                        using (var sr = new StreamReader(stream))
+                                        {
+                                            // read contents
+                                            contents = sr.ReadToEnd();
+                                        }
+                                    }
+
+                                    // test
+                                    if (contents == null)
+                                    {
+                                        Log.Error($"Not able to read contents from  supplmentary file {fl.value} " +
+                                            $"for edit. Aborting!");
+                                        return new ModifyRepo.LambdaActionNone();
+                                    }
+
+                                    // edit
+                                    var uc = new TextEditorFlyout($"Edit text-file '{fl.value}'");
+                                    uc.SetMimeTypeAndText(fl.mimeType, contents);
+                                    helper.flyoutProvider?.StartFlyoverModal(uc);
+                                    if (!uc.Result)
+                                        return new ModifyRepo.LambdaActionNone();
+
+                                    // save
+                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
+                                        fl.value, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                    {
+                                        using (var sw = new StreamWriter(stream))
+                                        {
+                                            // write contents
+                                            sw.Write(uc.Text);
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Edit text-file {fl.value} in package.");
+                                }
+
+                                // reshow
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                    // Further file assistance
+                    helper.AddGroup(stack, "Supplementary file assistance", levelColors[1][0], levelColors[1][1]);
+
+                    helper.AddKeyValueRef(
+                        stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
+                        v =>
+                        {
+                            this.uploadAssistance.TargetPath = v as string;
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+
+                    helper.AddKeyDropTarget(
+                        stack, "Source file to add",
+                        !(this.uploadAssistance.SourcePath.HasContent())
+                            ? "(Please drop a file to set source file to add)"
+                            : this.uploadAssistance.SourcePath,
+                        null, repo,
+                        v =>
+                        {
+                            this.uploadAssistance.SourcePath = v as string;
+                            return new ModifyRepo.LambdaActionNone();
+                        }, minHeight: 40);
+
+                    helper.AddAction(
+                    stack, "Action", new[] { "Select source file", "Add or update to AASX" },
+                        repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                var dlg = new Microsoft.Win32.OpenFileDialog();
+                                var res = dlg.ShowDialog();
+                                if (res == true)
+                                {
+                                    this.uploadAssistance.SourcePath = dlg.FileName;
+                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                }
+                            }
+
+                            if (buttonNdx == 1)
+                            {
+                                try
+                                {
+
+                                    var ptd = uploadAssistance.TargetPath.Trim();
+                                    var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
+                                    packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                        uploadAssistance.SourcePath, ptd, ptfn,
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (targetPath == null)
+                                    {
+                                        Log.Error($"Error adding file {uploadAssistance.SourcePath} to package");
+                                    }
+                                    else
+                                    {
+                                        Log.Info(
+                                            $"Added {ptfn} to pending package items. A save-operation is required.");
+                                        fl.mimeType = mimeType;
+                                        fl.value = targetPath;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Error(ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                                }
+
+                                // refresh dialogue
+                                uploadAssistance.SourcePath = "";
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+
+                            return new ModifyRepo.LambdaActionNone();
+                        });
+                }
             }
-            else if (sme is AdminShell.Blob)
+            else if (sme is AdminShell.Blob blb)
             {
-                var p = sme as AdminShell.Blob;
                 helper.AddGroup(stack, "Blob", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
@@ -2661,31 +3062,51 @@ namespace AasxPackageExplorer
                     new[] {
                         new HintCheck(
                             () => {
-                                return p.mimeType == null || p.mimeType.Trim().Length < 1 ||
-                                    p.mimeType.IndexOf('/') < 1 || p.mimeType.EndsWith("/");
+                                return blb.mimeType == null || blb.mimeType.Trim().Length < 1 ||
+                                    blb.mimeType.IndexOf('/') < 1 || blb.mimeType.EndsWith("/");
                             },
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 helper.AddKeyValueRef(
-                    stack, "mimeType", p, ref p.mimeType, null, repo,
-                    v => { p.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    stack, "mimeType", blb, ref blb.mimeType, null, repo,
+                    v => { blb.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 helper.AddKeyValueRef(
-                    stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    stack, "value", blb, ref blb.value, null, repo,
+                    v => { blb.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    auxButtonTitles: new[] { "\u2261" },
+                    auxButtonToolTips: new[] { "Edit in multiline editor" },
+                    auxButtonLambda: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new TextEditorFlyout($"Edit Blob '{"" + blb.idShort}'");
+                            uc.SetMimeTypeAndText(blb.mimeType, blb.value);
+                            helper.flyoutProvider?.StartFlyoverModal(uc);
+                            if (uc.Result)
+                            {
+                                blb.value = uc.Text;
+                                return new ModifyRepo.LambdaActionRedrawEntity();
+                            }
+                        }
+                        return new ModifyRepo.LambdaActionNone();
+                    });
             }
-            else if (sme is AdminShell.ReferenceElement)
+            else if (sme is AdminShell.ReferenceElement rfe)
             {
-                var p = sme as AdminShell.ReferenceElement;
+                // buffer Key for later
+                var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // group
                 helper.AddGroup(stack, "ReferenceElement", levelColors[0][0], levelColors[0][1]);
 
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return p.value == null || p.value.IsEmpty; },
+                            () => { return rfe.value == null || rfe.value.IsEmpty; },
                             "Please choose the target of the reference. " +
                                 "You refer to any Referable, if local within the AAS environment or outside. " +
                                 "The semantics of your reference shall be described " +
@@ -2693,22 +3114,33 @@ namespace AasxPackageExplorer
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (helper.SafeguardAccess(
-                        stack, repo, p.value, "Target reference:", "Create data element!",
+                        stack, repo, rfe.value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            p.value = new AdminShell.Reference();
+                            rfe.value = new AdminShell.Reference();
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "value", p.value.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        auxPackages: helper.auxPackages);
+                    helper.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeyLists: bufferKeys.Item2,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
                 }
             }
             else
             if (sme is AdminShell.RelationshipElement rele)
             {
+                // buffer Key for later
+                var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // group
                 helper.AddGroup(stack, "" + sme.GetElementName(), levelColors[0][0], levelColors[0][1]);
 
+                // members
                 helper.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -2728,8 +3160,15 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddKeyListKeys(stack, "first", rele.first.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        jumpLambda: (kl) => { return new ModifyRepo.LambdaActionNone(); });
+                    helper.AddKeyListKeys(
+                        stack, "first", rele.first.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeyLists: bufferKeys.Item2,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
                 }
 
                 helper.AddHintBubble(
@@ -2752,7 +3191,14 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "second", rele.second.Keys, repo, thePackage, AdminShell.Key.AllElements);
+                        stack, "second", rele.second.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeyLists: bufferKeys.Item2,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
                 }
 
                 // specifically for annotated relationship?
@@ -2841,8 +3287,8 @@ namespace AasxPackageExplorer
                         }))
                 {
                     helper.AddKeyListKeys(
-                        stack, "Asset", ent.assetRef.Keys, repo, thePackage, AdminShell.Key.AllElements,
-                        auxPackages: helper.auxPackages);
+                        stack, "Asset", ent.assetRef.Keys, repo, packages, PackageCentral.Selector.MainAuxFileRepo,
+                        AdminShell.Key.AllElements);
                 }
 
             }
@@ -2857,7 +3303,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntityView(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
             AdminShell.View view, bool editMode, ModifyRepo repo, StackPanel stack, Brush[][] levelColors,
             bool hintMode = false)
         {
@@ -2888,7 +3334,8 @@ namespace AasxPackageExplorer
                     {
                         if (buttonNdx == 0)
                         {
-                            var ks = helper.SmartSelectAasEntityKeys(package.AasEnv, "SubmodelElement");
+                            var ks = helper.SmartSelectAasEntityKeys(
+                                        packages, PackageCentral.Selector.Main, "SubmodelElement");
                             if (ks != null)
                             {
                                 view.AddContainedElement(ks);
@@ -2927,7 +3374,7 @@ namespace AasxPackageExplorer
         }
 
         public void DisplayOrEditAasEntityViewReference(
-            AdminShellPackageEnv package, AdminShell.AdministrationShellEnv env, AdminShell.View view,
+            PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
             AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, StackPanel stack,
             Brush[][] levelColors)
         {
@@ -2944,7 +3391,8 @@ namespace AasxPackageExplorer
             }
 
             // normal reference
-            helper.AddKeyListKeys(stack, "containedElement", reference.Keys, repo, package, "Asset");
+            helper.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
+                packages, PackageCentral.Selector.Main, AdminShell.Key.AllElements);
         }
 
         //
@@ -2975,10 +3423,9 @@ namespace AasxPackageExplorer
         }
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
-            AdminShellPackageEnv package,
+            PackageCentral packages,
             VisualElementGeneric entity,
             bool editMode, bool hintMode = false,
-            AdminShellPackageEnv[] auxPackages = null,
             IFlyoutProvider flyoutProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
@@ -3019,10 +3466,9 @@ namespace AasxPackageExplorer
             hintMode = hintMode && editMode;
 
             // remember objects for UI thread / redrawing
-            this.thePackage = package;
+            this.packages = packages;
             this.theEntity = entity;
-            helper.package = package;
-            helper.auxPackages = auxPackages;
+            helper.packages = packages;
             helper.flyoutProvider = flyoutProvider;
             helper.levelColors = levelColors;
             helper.highlightField = hightlightField;
@@ -3046,19 +3492,19 @@ namespace AasxPackageExplorer
             {
                 var x = entity as VisualElementEnvironmentItem;
                 DisplayOrEditAasEntityAasEnv(
-                    package, x.theEnv, x.theItemType, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theItemType, editMode, repo, stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementAdminShell)
             {
                 var x = entity as VisualElementAdminShell;
                 DisplayOrEditAasEntityAas(
-                    package, x.theEnv, x.theAas, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theAas, editMode, repo, stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementAsset)
             {
                 var x = entity as VisualElementAsset;
                 DisplayOrEditAasEntityAsset(
-                    package, x.theEnv, x.theAsset, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theAsset, editMode, repo, stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelRef)
             {
@@ -3067,42 +3513,42 @@ namespace AasxPackageExplorer
                 if (x.Parent is VisualElementAdminShell xpaas)
                     aas = xpaas.theAas;
                 DisplayOrEditAasEntitySubmodelOrRef(
-                    package, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, repo, stack, levelColors,
+                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, repo, stack, levelColors,
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodel)
             {
                 var x = entity as VisualElementSubmodel;
                 DisplayOrEditAasEntitySubmodelOrRef(
-                    package, x.theEnv, null, null, x.theSubmodel, editMode, repo, stack, levelColors,
+                    packages, x.theEnv, null, null, x.theSubmodel, editMode, repo, stack, levelColors,
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelElement)
             {
                 var x = entity as VisualElementSubmodelElement;
                 DisplayOrEditAasEntitySubmodelElement(
-                    package, x.theEnv, x.theContainer, x.theWrapper, x.theWrapper.submodelElement, editMode,
+                    packages, x.theEnv, x.theContainer, x.theWrapper, x.theWrapper.submodelElement, editMode,
                     repo, stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementOperationVariable)
             {
                 var x = entity as VisualElementOperationVariable;
                 DisplayOrEditAasEntityOperationVariable(
-                    package, x.theEnv, x.theContainer, x.theOpVar, editMode, repo,
+                    packages, x.theEnv, x.theContainer, x.theOpVar, editMode, repo,
                     stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementConceptDescription)
             {
                 var x = entity as VisualElementConceptDescription;
                 DisplayOrEditAasEntityConceptDescription(
-                    package, x.theEnv, null, x.theCD, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, null, x.theCD, editMode, repo, stack, levelColors, hintMode: hintMode);
             }
             else if (entity is VisualElementView)
             {
                 var x = entity as VisualElementView;
                 if (x.Parent != null && x.Parent is VisualElementAdminShell xpaas)
                     DisplayOrEditAasEntityView(
-                        package, x.theEnv, xpaas.theAas, x.theView, editMode, repo, stack, levelColors,
+                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, repo, stack, levelColors,
                         hintMode: hintMode);
                 else
                     helper.AddGroup(stack, "View is corrupted!", levelColors[0][0], levelColors[0][1]);
@@ -3112,7 +3558,7 @@ namespace AasxPackageExplorer
                 var x = entity as VisualElementReference;
                 if (x.Parent != null && x.Parent is VisualElementView xpev)
                     DisplayOrEditAasEntityViewReference(
-                        package, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
+                        packages, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
                         editMode, repo, stack, levelColors);
                 else
                     helper.AddGroup(stack, "Reference is corrupted!", levelColors[0][0], levelColors[0][1]);
@@ -3121,7 +3567,7 @@ namespace AasxPackageExplorer
             if (entity is VisualElementSupplementalFile)
             {
                 var x = entity as VisualElementSupplementalFile;
-                DisplayOrEditAasEntitySupplementaryFile(package, x.theFile, editMode, repo, stack, levelColors);
+                DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, repo, stack, levelColors);
             }
             else if (entity is VisualElementPluginExtension)
             {

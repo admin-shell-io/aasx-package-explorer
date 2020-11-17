@@ -54,6 +54,19 @@ namespace AdminShellNS
 
     }
 
+    public class ListOfAasSupplementaryFile : List<AdminShellPackageSupplementaryFile>
+    {
+        public AdminShellPackageSupplementaryFile FindByUri(string path)
+        {
+            if (path == null)
+                return null;
+            foreach (var x in this)
+                if (x?.uri?.ToString().Trim() == path.Trim())
+                    return x;
+            return null;
+        }
+    }
+
     /// <summary>
     /// Provides (static?) helpers for serializing AAS..
     /// </summary>
@@ -150,10 +163,10 @@ namespace AdminShellNS
 
         private AdminShell.AdministrationShellEnv aasenv = new AdminShell.AdministrationShellEnv();
         private Package openPackage = null;
-        private List<AdminShellPackageSupplementaryFile> pendingFilesToAdd =
-            new List<AdminShellPackageSupplementaryFile>();
-        private List<AdminShellPackageSupplementaryFile> pendingFilesToDelete =
-            new List<AdminShellPackageSupplementaryFile>();
+        private ListOfAasSupplementaryFile pendingFilesToAdd =
+            new ListOfAasSupplementaryFile();
+        private ListOfAasSupplementaryFile pendingFilesToDelete =
+            new ListOfAasSupplementaryFile();
 
         public AdminShellPackageEnv()
         {
@@ -802,14 +815,16 @@ namespace AdminShellNS
             // ReSharper enable EmptyGeneralCatchClause
         }
 
-        public Stream GetStreamFromUriOrLocalPackage(string uriString)
+        public Stream GetStreamFromUriOrLocalPackage(string uriString,
+            FileMode mode = FileMode.Open,
+            FileAccess access = FileAccess.Read)
         {
             // local
             if (this.IsLocalFile(uriString))
-                return GetLocalStreamFromPackage(uriString);
+                return GetLocalStreamFromPackage(uriString, mode);
 
             // no ..
-            return File.Open(uriString, FileMode.Open, FileAccess.Read);
+            return File.Open(uriString, mode, access);
         }
 
         public byte[] GetByteArrayFromUriOrLocalPackage(string uriString)
@@ -844,7 +859,7 @@ namespace AdminShellNS
             return isLocal;
         }
 
-        public Stream GetLocalStreamFromPackage(string uriString)
+        public Stream GetLocalStreamFromPackage(string uriString, FileMode mode = FileMode.Open)
         {
             // access
             if (this.openPackage == null)
@@ -855,7 +870,7 @@ namespace AdminShellNS
             if (part == null)
                 throw (new Exception(
                     string.Format($"Cannot access URI {uriString} in {this.fn} not opened. Aborting!")));
-            return part.GetStream(FileMode.Open);
+            return part.GetStream(mode);
         }
 
         public long GetStreamSizeFromPackage(string uriString)
@@ -927,10 +942,10 @@ namespace AdminShellNS
             return result;
         }
 
-        public List<AdminShellPackageSupplementaryFile> GetListOfSupplementaryFiles()
+        public ListOfAasSupplementaryFile GetListOfSupplementaryFiles()
         {
             // new result
-            var result = new List<AdminShellPackageSupplementaryFile>();
+            var result = new ListOfAasSupplementaryFile();
 
             // access
             if (this.openPackage != null)
@@ -1045,13 +1060,18 @@ namespace AdminShellNS
                 targetFn = Regex.Replace(targetFn, @"[^A-Za-z0-9-.]+", "_");
         }
 
-        public void AddSupplementaryFileToStore(
+        /// <summary>
+        /// Add a file as supplementary file to package. Operation will be pending, package needs to be saved in order
+        /// materialize embedding.
+        /// </summary>
+        /// <returns>Target path of file in package</returns>
+        public string AddSupplementaryFileToStore(
             string sourcePath, string targetDir, string targetFn, bool embedAsThumb,
             AdminShellPackageSupplementaryFile.SourceGetByteChunk sourceGetBytesDel = null, string useMimeType = null)
         {
             // beautify parameters
             if ((sourcePath == null && sourceGetBytesDel == null) || targetDir == null || targetFn == null)
-                return;
+                return null;
 
             // build target path
             targetDir = targetDir.Trim();
@@ -1065,6 +1085,9 @@ namespace AdminShellNS
 
             // base funciton
             AddSupplementaryFileToStore(sourcePath, targetPath, embedAsThumb, sourceGetBytesDel, useMimeType);
+
+            // return target path
+            return targetPath;
         }
 
         public void AddSupplementaryFileToStore(string sourcePath, string targetPath, bool embedAsThumb,
