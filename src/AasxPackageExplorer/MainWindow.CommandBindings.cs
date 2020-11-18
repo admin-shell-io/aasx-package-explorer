@@ -49,7 +49,7 @@ namespace AasxPackageExplorer
 {
     /// <summary>
     /// This partial class contains all command bindings, such as for the main menu, in order to reduce the
-    /// comlexity of MainWindow.xaml.cs
+    /// complexity of MainWindow.xaml.cs
     /// </summary>
     public partial class MainWindow : Window, IFlyoutProvider
     {
@@ -93,6 +93,10 @@ namespace AasxPackageExplorer
 
         private void CommandBinding_GeneralDispatch(string cmd)
         {
+            if (cmd == null)
+            {
+                throw new ArgumentNullException($"Unexpected null {nameof(cmd)}");
+            }
             if (cmd == "new")
             {
                 if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
@@ -119,7 +123,7 @@ namespace AasxPackageExplorer
             if (cmd == "open" || cmd == "openaux")
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+                dlg.InitialDirectory = DetermineInitialDirectory(packages.Main?.Filename);
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
                     "AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
@@ -151,6 +155,12 @@ namespace AasxPackageExplorer
                     return;
                 }
 
+                if (packages.Main == null)
+                {
+                    throw new NullReferenceException(
+                        $"packages.Main unexpectedly null when executing the command: {cmd}");
+                }
+
                 try
                 {
                     // save
@@ -174,6 +184,12 @@ namespace AasxPackageExplorer
 
             if (cmd == "saveas")
             {
+                if (packages.Main == null)
+                {
+                    throw new NullReferenceException(
+                        $"packages.Main unexpectedly null when executing the command: {cmd}");
+                }
+
                 var dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
                 dlg.FileName = packages.Main.Filename;
