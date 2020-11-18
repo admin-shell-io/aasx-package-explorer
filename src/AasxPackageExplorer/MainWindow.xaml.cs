@@ -31,6 +31,12 @@ namespace AasxPackageExplorer
 {
     public partial class MainWindow : Window, IFlyoutProvider
     {
+        #region Dependencies
+        // (mristin, 2020-11-18): consider injecting OptionsInformation, Package environment *etc.* to the main window
+        // to make it traceable and testable.
+        private readonly Pref _pref;
+        #endregion
+
         #region Members
         // ============
 
@@ -48,8 +54,9 @@ namespace AasxPackageExplorer
         #region Init Component
         //====================
 
-        public MainWindow()
+        public MainWindow(Pref pref)
         {
+            _pref = pref;
             InitializeComponent();
         }
 
@@ -241,7 +248,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be 
+        /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
         /// found to be activated
         /// </summary>
         public bool UiCheckIfActivateLoadedNavTo()
@@ -1203,7 +1210,16 @@ namespace AasxPackageExplorer
             var cmd = ruic.Text?.Trim().ToLower();
 
             // see: MainWindow.CommandBindings.cs
-            this.CommandBinding_GeneralDispatch(cmd);
+            try
+            {
+                this.CommandBinding_GeneralDispatch(cmd);
+            }
+            catch (Exception err)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to execute the command {cmd}: {err}");
+            }
+
         }
 
 

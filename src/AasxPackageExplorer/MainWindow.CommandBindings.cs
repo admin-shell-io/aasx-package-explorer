@@ -39,24 +39,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-/*
-Copyright (c) 2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
-Author: Andreas Orzelski
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
-
 namespace AasxPackageExplorer
 {
     /// <summary>
@@ -109,6 +91,7 @@ namespace AasxPackageExplorer
             {
                 throw new ArgumentNullException($"Unexpected null {nameof(cmd)}");
             }
+
             if (cmd == "new")
             {
                 if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
@@ -139,6 +122,7 @@ namespace AasxPackageExplorer
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
                     "AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
+
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
@@ -399,7 +383,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "about")
             {
-                var ab = new AboutBox();
+                var ab = new AboutBox(_pref);
                 ab.ShowDialog();
             }
 
