@@ -1,4 +1,7 @@
-﻿using Assert = NUnit.Framework.Assert;
+﻿using System.Linq;
+using FlaUI.Core.AutomationElements;
+using Assert = NUnit.Framework.Assert;
+using AssertionException = NUnit.Framework.AssertionException;
 using Retry = FlaUI.Core.Tools.Retry;
 using TestAttribute = NUnit.Framework.TestAttribute;
 using TimeSpan = System.TimeSpan;
@@ -13,6 +16,51 @@ namespace AasxPackageExplorer.GuiTests
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
                 Common.AssertNoErrors(application, mainWindow);
+            });
+        }
+
+        [Test]
+        public void Test_that_splash_screen_does_not_break_the_app()
+        {
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Retry.WhileNull(() =>
+                        // ReSharper disable once AccessToDisposedClosure
+                        application.GetAllTopLevelWindows(automation)
+                            .FirstOrDefault((w) => w.Title == "AASX Package Explorer Splash Screen"),
+                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
+                    timeoutMessage: "Could not find the splash screen"
+                );
+
+                Common.AssertNoErrors(application, mainWindow);
+            }, new Run { Args = new[] { "-splash", "5000" } });
+        }
+
+        [Test]
+        public void Test_that_about_does_not_break_the_app()
+        {
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                var helpMenuItem = mainWindow
+                    .FindFirstDescendant(
+                        cf => cf.ByClassName("MenuItem").And(cf.ByName("Help")))
+                    .AsMenuItem();
+
+                helpMenuItem.Click();
+
+                var aboutMenuItem = helpMenuItem
+                    .FindFirstChild(cf => cf.ByName("About .."))
+                    .AsMenuItem();
+
+                aboutMenuItem.Click();
+
+                Retry.WhileNull(() =>
+                        // ReSharper disable once AccessToDisposedClosure
+                        application.GetAllTopLevelWindows(automation)
+                            .FirstOrDefault((w) => w.Title == "About"),
+                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
+                    timeoutMessage: "Could not find the about window"
+                );
             });
         }
 
@@ -43,8 +91,14 @@ namespace AasxPackageExplorer.GuiTests
                 Assert.IsNotNull(assetPic, $"Could not find the element: {automationId}");
 
                 // The dimensions of the image will not be set properly if the image could not be loaded.
-                Assert.AreEqual(
-                    (106, 79), (assetPic.BoundingRectangle.Height, assetPic.BoundingRectangle.Width));
+                if (assetPic.BoundingRectangle.Height <= 1 ||
+                    assetPic.BoundingRectangle.Width <= 1)
+                {
+                    throw new AssertionException(
+                        "The assert picture has unexpected dimensions: " +
+                        $"width is {assetPic.BoundingRectangle.Width} and " +
+                        $"height is {assetPic.BoundingRectangle.Height}");
+                }
             });
         }
     }
