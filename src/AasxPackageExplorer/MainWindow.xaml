@@ -51,6 +51,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
         <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
         <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
+        <RoutedUICommand x:Key="Submodel2Proto" Text="Submodel2Proto" />
         <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
         <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
         <RoutedUICommand x:Key="OPCUAi4aasImport" Text="OPCUAi4aasImport" />
@@ -201,6 +202,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
         <CommandBinding Command="{StaticResource BMEcatImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CSVImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportAML}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource Submodel2Proto}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpcUaImportNodeSet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasExport}" Executed="CommandBinding_Executed"/>
@@ -344,6 +346,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+                            <MenuItem Header="Export Submodel as Protocol Buffers .." Command="{StaticResource Submodel2Proto}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">
@@ -573,7 +576,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             <DockPanel Grid.Row="3" Margin="0,2,0,0">
                 <Button x:Name="ButtonReport" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Report ..</Button>
                 <Button x:Name="ButtonClear" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Clear</Button>
-                <Label x:Name="LabelNumberErrors" DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0" VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Content="No errors"/>
+                <Label x:Name="LabelNumberErrors" DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0" VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Content="Errors: 0"/>
                 <Label x:Name="Message" VerticalContentAlignment="Center"></Label>
             </DockPanel>
 

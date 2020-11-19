@@ -25,6 +25,7 @@
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
+    <ProjectReference Include="..\AasxProtoBuffExport\AasxProtoBuffExport.csproj" />
     <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />

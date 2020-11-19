@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxProtoBuffExport;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
@@ -473,6 +474,9 @@ namespace AasxPackageExplorer
 
             if (cmd == "exportaml")
                 CommandBinding_ExportAML();
+
+            if (cmd == "submodel2proto")
+                CommandBinding_Submodel2Proto();
 
             if (cmd == "opcuai4aasexport")
                 CommandBinding_ExportOPCUANodeSet();
@@ -2024,6 +2028,50 @@ namespace AasxPackageExplorer
             }
 
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
+
+        public void CommandBinding_Submodel2Proto()
+        {
+            VisualElementSubmodelRef ve1 = null;
+
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow("No valid SubModel selected.", 
+                    "Submodel Write", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            else
+            {
+                if (Options.Curr.UseFlyovers)
+                {
+                    this.StartFlyover(new EmptyFlyout());
+                }
+
+                bool createRestApi = false;
+                if (MessageBoxResult.Yes == MessageBoxFlyoutShow("Create RESTfull HTTP API Endpoints?", 
+                    "Protocol Buffer Generatore", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                {
+                    createRestApi = true;
+                }
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+                string assetID = (ve1.Parent as AasxPackageExplorer.VisualElementAdminShell).theAas.idShort;
+                string smID = ve1.theSubmodel.idShort;
+                dlg.FileName = assetID + "_" + smID + ".proto";
+                dlg.Filter = "Protobuffer files (*.proto)|*.proto|All files (*.*)|*.*";
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog();
+                if (res == true)
+                {
+                    ProtoBuffExport proto = new ProtoBuffExport();
+                    proto.exportProtoFile(dlg.FileName, Path.GetFileName(packages.Main.Filename),
+                        assetID, ve1.theSubmodel, createRestApi);
+                }
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
         }
 
         public void CommandBinding_CopyClipboardElementJson()
