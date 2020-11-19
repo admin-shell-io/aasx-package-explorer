@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AasxPackageExplorer"
         mc:Ignorable="d"
-        Title="CustomSplashScreenNew" Width="650" Height="350" Background="White" WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Image_MouseDown">
+        Title="AASX Package Explorer Splash Screen" Width="650" Height="350" Background="White" WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Image_MouseDown">
 
     <!-- -->    
     

@@ -8,6 +8,7 @@ using File = System.IO.File;
 using FileNotFoundException = System.IO.FileNotFoundException;
 using InvalidOperationException = System.InvalidOperationException;
 using Path = System.IO.Path;
+using Regex = System.Text.RegularExpressions.Regex;
 using Retry = FlaUI.Core.Tools.Retry;
 using TimeSpan = System.TimeSpan;
 using UIA3Automation = FlaUI.UIA3.UIA3Automation;
@@ -15,6 +16,12 @@ using Window = FlaUI.Core.AutomationElements.Window;
 
 namespace AasxPackageExplorer.GuiTests
 {
+    public class Run
+    {
+        public string[] Args = { "-splash", "0" };
+        public bool DontKill = false;
+    }
+
     static class Common
     {
         public static string PathTo01FestoAasx()
@@ -50,13 +57,16 @@ namespace AasxPackageExplorer.GuiTests
 
         public delegate void Implementation(Application application, UIA3Automation automation, Window mainWindow);
 
+        public static readonly string[] DefaultArgs = { "-splash", "0" };
+
         /// <summary>
         /// Finds the main AASX Package Explorer window and executes the code dependent on it.
         /// </summary>
         /// <remarks>This method is necessary since splash screen confuses FlaUI and prevents us from
         /// easily determining the main window.</remarks>
         /// <param name="implementation">Code to be executed</param>
-        public static void RunWithMainWindow(Implementation implementation)
+        /// <param name="run">Run options. If null, a new run with default values is used</param>
+        public static void RunWithMainWindow(Implementation implementation, Run? run = null)
         {
             string environmentVariable = "AASX_PACKAGE_EXPLORER_RELEASE_DIR";
             string releaseDir = System.Environment.GetEnvironmentVariable(environmentVariable);
@@ -75,24 +85,38 @@ namespace AasxPackageExplorer.GuiTests
                     $"could not be found in the release directory: {pathToExe}; did you compile it properly before?");
             }
 
-            var app = Application.Launch(pathToExe);
+            var resolvedRun = run ?? new Run();
+
+            // See https://stackoverflow.com/questions/5510343/escape-command-line-arguments-in-c-sharp
+            string joinedArgs = string.Join(
+                " ",
+                resolvedRun.Args
+                    .Select(arg => Regex.Replace(arg, @"(\\*)" + "\"", @"$1$1\" + "\"")));
+
+            var app = Application.Launch(pathToExe, joinedArgs);
             try
             {
-                using (var automation = new UIA3Automation())
-                {
-                    // ReSharper disable once AccessToDisposedClosure
-                    Retry.WhileEmpty(() => app.GetAllTopLevelWindows(automation));
+                using var automation = new UIA3Automation();
 
-                    var mainWindow = app
-                        .GetAllTopLevelWindows(automation)
-                        .First((w) => w.Title == "AASX Package Explorer");
+                var mainWindow = Retry.Find(() =>
+                        // ReSharper disable once AccessToDisposedClosure
+                        app.GetAllTopLevelWindows(automation)
+                            .FirstOrDefault((w) => w.Title == "AASX Package Explorer"),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the main window"
+                    }).AsWindow();
 
-                    implementation(app, automation, mainWindow);
-                }
+                implementation(app, automation, mainWindow);
             }
             finally
             {
-                app.Kill();
+                if (!resolvedRun.DontKill)
+                {
+                    app.Kill();
+                }
             }
         }
 
@@ -146,7 +170,8 @@ namespace AasxPackageExplorer.GuiTests
 
             Retry.WhileEmpty(
                 () => mainWindow.ModalWindows,
-                throwOnTimeout: true, timeout: TimeSpan.FromSeconds(10));
+                throwOnTimeout: true, timeout: TimeSpan.FromSeconds(10),
+                timeoutMessage: "Could not find the modal windows of the main window");
 
             Assert.AreEqual(1, mainWindow.ModalWindows.Length);
 

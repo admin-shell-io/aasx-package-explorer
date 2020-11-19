@@ -170,8 +170,11 @@ namespace AasxPackageExplorer
             }
 
             // show splash (required for licenses of open source)
-            var splash = new CustomSplashScreenNew();
-            splash.Show();
+            if (Options.Curr.SplashTime != 0)
+            {
+                var splash = new CustomSplashScreenNew();
+                splash.Show();
+            }
 
             // show main window
             MainWindow wnd = new MainWindow();
