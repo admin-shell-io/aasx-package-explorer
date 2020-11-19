@@ -573,7 +573,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             <DockPanel Grid.Row="3" Margin="0,2,0,0">
                 <Button x:Name="ButtonReport" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Report ..</Button>
                 <Button x:Name="ButtonClear" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Clear</Button>
-                <Label x:Name="LabelNumberErrors" DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0" VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Content="Errors: 0"/>
+                <Label x:Name="LabelNumberErrors" DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0" VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Content="No errors"/>
                 <Label x:Name="Message" VerticalContentAlignment="Center"></Label>
             </DockPanel>
 
