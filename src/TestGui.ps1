@@ -123,6 +123,8 @@ function Main
     $env:SAMPLE_AASX_DIR = $samplesDir
     $env:AASX_PACKAGE_EXPLORER_RELEASE_DIR = $TargetDir
 
+    $testResultsPath = Join-Path $artefactsDir "GuiTestResults.xml"
+
     Push-Location
     try
     {
@@ -133,12 +135,14 @@ function Main
         {
             & $nunit3Console `
                 --stoponerror `
+                --result=$testResultsPath `
                 $absTestDlls
         }
         else
         {
             & $nunit3Console `
                 --test=$Test `
+                --result=$testResultsPath `
                 --stoponerror `
                 $absTestDlls
         }
