@@ -42,6 +42,11 @@ jobs:
         run: powershell .\InstallToolsForStyle.ps1
         if: always()
 
+      - name: Check headers
+        working-directory: src
+        run: powershell .\CheckHeaders.ps1
+        if: always()
+
       - name: Check format
         working-directory: src
         run: powershell .\CheckFormat.ps1

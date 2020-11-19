@@ -7,6 +7,14 @@
              xmlns:local="clr-namespace:AasxDictionaryImport"
              mc:Ignorable="d" 
              Title="Dictionary Import" Width="1000" Height="500" MinWidth="550" MinHeight="200">
+    <!--
+    Copyright (c) 2020 SICK AG <info@sick.de>
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -133,6 +133,7 @@ namespace CheckScript
             var scriptsLabels = new List<(string, string)>
             {
                 ("CheckLicenses.ps1", "Licenses"),
+                ("CheckHeaders.ps1", "Headers"),
                 ("CheckFormat.ps1", "Format"),
                 ("CheckBiteSized.ps1", "BiteSized"),
                 ("CheckDeadCode.ps1", "DeadCode"),
