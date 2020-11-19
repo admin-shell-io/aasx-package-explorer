@@ -1563,7 +1563,7 @@ namespace AasxPackageExplorer
             try
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(PUTURL);
-                client.PutSubmodel(json);
+                client.PutSubmodelAsync(json);
             }
             catch (Exception ex)
             {
