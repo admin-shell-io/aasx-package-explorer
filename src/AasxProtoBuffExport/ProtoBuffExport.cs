@@ -109,8 +109,8 @@ namespace AasxProtoBuffExport
                     protoMsg.Add("}\n\n");
 
                     //Getter
-                    String probufEntry = "  rpc Get_" + prop.idShort + " (google.protobuf.Empty)"
-                        +" returns (" + propVar + ")";
+                    String probufEntry = "  rpc Get_" + prop.idShort
+                        + " (google.protobuf.Empty) returns (" + propVar + ")";
                     if (createRestApi)
                     {
                         probufEntry += "{ \n    option (google.api.http) = {\n      get: \"/" + assetID + "/" +
