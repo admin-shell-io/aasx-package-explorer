@@ -95,7 +95,7 @@ namespace AasxPackageExplorer.GuiTests
                     assetPic.BoundingRectangle.Width <= 1)
                 {
                     throw new AssertionException(
-                        "The assert picture has unexpected dimensions: " +
+                        "The asset picture has unexpected dimensions: " +
                         $"width is {assetPic.BoundingRectangle.Width} and " +
                         $"height is {assetPic.BoundingRectangle.Height}");
                 }

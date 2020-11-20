@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AasxPackageExplorer"
         mc:Ignorable="d"
-        Title="AASX Package Explorer Splash Screen" Width="650" Height="350" Background="White" WindowStyle="None" WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Image_MouseDown">
+        Title="AASX Package Explorer Splash Screen" Width="650" Height="350" Background="White" WindowStyle="None"
+        WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Window_MouseDown">
     <!--
     Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -27,7 +28,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-        
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -59,7 +60,7 @@
                     <TextBlock x:Name="TextBlockVersion">Unknown version</TextBlock>
                     <TextBlock x:Name="TextBlockBuildDate">Unknown build date!</TextBlock>
                 </StackPanel>
-                
+
             </Grid>
 
         </Border>

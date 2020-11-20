@@ -27,8 +27,11 @@ namespace AasxPackageExplorer
 {
     public partial class AboutBox : Window
     {
-        public AboutBox()
+        private readonly Pref _pref;
+
+        public AboutBox(Pref pref)
         {
+            _pref = pref;
             InitializeComponent();
         }
 
@@ -37,12 +40,12 @@ namespace AasxPackageExplorer
             // HEADER
             this.HeaderText.Text = "AASX Package Explorer\n" +
                 "Copyright (c) 2018-2020 Festo AG & Co. KG and further (see below)\n" +
-                "Authors: " + Options.Curr.PrefAuthors + " (see below)\n" +
+                "Authors: " + _pref.Authors + " (see below)\n" +
                 "This software is licensed under the Apache License 2.0 (see below)" + "\n" +
-                "Version: " + Options.Curr.PrefVersion + "\n" +
-                "Build date: " + Options.Curr.PrefBuildDate;
+                "Version: " + _pref.Version + "\n" +
+                "Build date: " + _pref.BuildDate;
 
-            this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + Options.Curr.PrefLicenseLong;
+            this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + _pref.LicenseLong;
 
             // try to include plug-ins as well
             var lic = Plugins.CompileAllLicenses();

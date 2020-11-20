@@ -28,14 +28,14 @@ namespace AasxPackageExplorer
 {
     public partial class CustomSplashScreenNew : Window
     {
-        public CustomSplashScreenNew()
+        public CustomSplashScreenNew(Pref pref)
         {
             InitializeComponent();
 
             // set new values here
-            this.TextBlockAuthors.Text = Options.Curr.PrefAuthors;
-            this.TextBlockLicenses.Text = Options.Curr.PrefLicenseShort;
-            this.TextBlockVersion.Text = Options.Curr.PrefVersion;
+            this.TextBlockAuthors.Text = pref.Authors;
+            this.TextBlockLicenses.Text = pref.LicenseShort;
+            this.TextBlockVersion.Text = pref.Version;
             this.TextBlockBuildDate.Text = "";
 
             // try to include plug-ins as well
@@ -53,7 +53,7 @@ namespace AasxPackageExplorer
             };
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             this.Close();
         }
