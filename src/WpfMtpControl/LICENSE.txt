@@ -11,7 +11,7 @@ Copyright (c) 2019-2020 Fraunhofer IOSB-INA Lemgo,
     zur Foerderung der angewandten Forschung e.V.
 
 Copyright (c) 2020 Schneider Electric Automation GmbH
-<marco.mendes@se.com>,
+<https://www.se.com/ww/en/work/support>,
 author: Marco Mendes
 
 Copyright (c) 2020 SICK AG <info@sick.de>
@@ -74,13 +74,14 @@ MIT license (MIT, see below).
 
 The ExcelDataReader is licensed under the MIT license (MIT, see below).
 
+Portions copyright (c) by OPC Foundation, Inc. and licensed under the
+Reciprocal Community License (RCL, see below)
+
 The OPC UA Example Code of OPC UA Standard is licensed under the MIT license
 (MIT, see below).
 
 The MSAGL (Microsoft Automatic Graph Layout) is licensed under the MIT license
-(MIT) (see below)
-
-
+(MIT, see below)
 -------------------------------------------------------------------------------
 
 
@@ -952,7 +953,7 @@ With resepect to OPC UA Example Code
  * Copyright (c) 2005-2019 The OPC Foundation, Inc. All rights reserved.
  *
  * OPC Foundation MIT License 1.00
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -961,7 +962,7 @@ With resepect to OPC UA Example Code
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
@@ -976,19 +977,30 @@ With resepect to OPC UA Example Code
  * The complete license agreement can be found here:
  * http://opcfoundation.org/License/MIT/1.00/
 
+With respect to OPC Foundation
+==============================
 
+RCL License
+Reciprocal Community License 1.00 (RCL1.00)
+Version 1.00, June 24, 2009
+Copyright (C) 2008,2009 OPC Foundation, Inc., All Rights Reserved.
+
+https://opcfoundation.org/license/rcl.html
+
+Remark: PHOENIX CONTACT GmbH & Co. KG and Festo SE & Co. KG are members
+of OPC foundation.
 
 With respect to MSAGL (Microsoft Automatic Graph Layout)
 ========================================================
 (see: https://github.com/microsoft/automatic-graph-layout/blob/master/LICENSE)
 
-Microsoft Automatic Graph Layout, MSAGL 
+Microsoft Automatic Graph Layout, MSAGL
 
 Copyright (c) Microsoft Corporation
 
-All rights reserved. 
+All rights reserved.
 
-MIT License 
+MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
