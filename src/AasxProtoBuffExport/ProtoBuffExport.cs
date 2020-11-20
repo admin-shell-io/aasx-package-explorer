@@ -84,7 +84,7 @@ namespace AasxProtoBuffExport
 
                     if (createRestApi)
                     {
-                        probufEntry += 
+                        probufEntry +=
                             "{ \n    option (google.api.http) = {\n      post: \"/" + assetID
                             + "/" + subModel.idShort + "/"
                             + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
