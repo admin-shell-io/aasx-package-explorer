@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using AdminShellNS;
@@ -13,7 +13,7 @@ namespace AasxProtoBuffExport
 
         }
 
-        public void exportProtoFile(string protoFileName, string aasxPackageFileName, 
+        public void exportProtoFile(string protoFileName, string aasxPackageFileName,
                                     string assetID, Submodel subModel, bool createRestApi)
         {
             string subModelID = subModel.idShort;
@@ -36,7 +36,7 @@ namespace AasxProtoBuffExport
 
                         inVar = "InVar" + assetID + subModelID + op.idShort;
                         protoMsg.Add(
-                            "// InputVariablen of Operation " + sme.submodelElement.idShort + 
+                            "// InputVariablen of Operation " + sme.submodelElement.idShort +
                             " in Submodule " + subModel.idShort + " of Asset " + assetID);
                         protoMsg.Add("message " + inVar + " {");
                         foreach (AdminShellV20.OperationVariable inPut in op.inputVariable)
@@ -46,13 +46,13 @@ namespace AasxProtoBuffExport
                                 AdminShellV20.Property inProp = inPut.value.submodelElement as AdminShellV20.Property;
 
                                 protoMsg.Add(
-                                    "  " + toProtoType(inProp.valueType) + " " + inProp.idShort + " = " + 
+                                    "  " + toProtoType(inProp.valueType) + " " + inProp.idShort + " = " +
                                     varIndex + ";");
                             }
                             else
                             {
 
-                                protoMsg.Add("  string " + inPut.value.submodelElement.idShort 
+                                protoMsg.Add("  string " + inPut.value.submodelElement.idShort
                                              + " = " + varIndex + ";");
 
                             }
@@ -67,14 +67,14 @@ namespace AasxProtoBuffExport
                     //outputVariable
                     outVar = "OutVar" + assetID + subModelID + op.idShort;
                     protoMsg.Add(
-                        "// outputVariablen of Operation " + sme.submodelElement.idShort + 
+                        "// outputVariablen of Operation " + sme.submodelElement.idShort +
                         " in Submodule " + subModel.idShort + " of Asset " + assetID);
                     protoMsg.Add("message " + outVar + " {");
                     varIndex = 1;
                     foreach (AdminShellV20.OperationVariable output in op.outputVariable)
                     {
                         AdminShellV20.Property outProp = output.value.submodelElement as AdminShellV20.Property;
-                        protoMsg.Add("  " + toProtoType(outProp.valueType) + " " + outProp.idShort 
+                        protoMsg.Add("  " + toProtoType(outProp.valueType) + " " + outProp.idShort
                                      + " = " + varIndex + ";");
                         varIndex++;
                     }
@@ -85,8 +85,8 @@ namespace AasxProtoBuffExport
                     if (createRestApi)
                     {
                         probufEntry += 
-                            "{ \n    option (google.api.http) = {\n      post: \"/" + assetID 
-                            + "/" + subModel.idShort + "/" 
+                            "{ \n    option (google.api.http) = {\n      post: \"/" + assetID
+                            + "/" + subModel.idShort + "/"
                             + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
                     }
                     else
@@ -102,7 +102,7 @@ namespace AasxProtoBuffExport
                     AdminShellV20.Property prop = sme.submodelElement as AdminShellV20.Property;
 
                     String propVar = "PropVar" + assetID + subModelID + prop.idShort;
-                    protoMsg.Add("// Variablen of Property " + sme.submodelElement.idShort + " in Submodul " 
+                    protoMsg.Add("// Variablen of Property " + sme.submodelElement.idShort + " in Submodul "
                                  + subModel.idShort + " of Asset " + assetID);
                     protoMsg.Add("message " + propVar + " {");
                     protoMsg.Add("  " + toProtoType(prop.valueType) + " " + prop.idShort + " = 1;");
@@ -113,7 +113,7 @@ namespace AasxProtoBuffExport
                         +" returns (" + propVar + ")";
                     if (createRestApi)
                     {
-                        probufEntry += "{ \n    option (google.api.http) = {\n      get: \"/" + assetID + "/" + 
+                        probufEntry += "{ \n    option (google.api.http) = {\n      get: \"/" + assetID + "/" +
                             subModel.idShort + "/" + prop.idShort + "\"\n    };\n  }\n";
                     }
                     else
@@ -131,9 +131,9 @@ namespace AasxProtoBuffExport
                         if (createRestApi)
                         {
 
-                            probufEntry += 
-                               "{ \n    option (google.api.http) = {\n      post: \"/" + 
-                               assetID + "/" + subModel.idShort + "/" + prop.idShort + 
+                            probufEntry +=
+                               "{ \n    option (google.api.http) = {\n      post: \"/" +
+                               assetID + "/" + subModel.idShort + "/" + prop.idShort +
                                "\"\n	  body: \"*\"\n    };\n  }\n";
                         }
                         else
@@ -149,7 +149,7 @@ namespace AasxProtoBuffExport
             {
                 s.WriteLine("/*############################################################");
                 s.WriteLine("###### AASX IDL .proto-File from AASX Package Explorer  ######");
-                s.WriteLine("###### Generated from {0} at {1}  ######", aasxPackageFileName, 
+                s.WriteLine("###### Generated from {0} at {1}  ######", aasxPackageFileName,
                             DateTime.Now.ToString("MM/dd/yyyy HH:mm"));
                 s.WriteLine("############################################################*/");
                 s.WriteLine("syntax = \"proto3\";");
