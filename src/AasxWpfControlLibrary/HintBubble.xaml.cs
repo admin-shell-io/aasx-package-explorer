@@ -24,9 +24,6 @@ using System.Windows.Shapes;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für HintBubble.xaml
-    /// </summary>
     public partial class HintBubble : UserControl
     {
         public HintBubble()

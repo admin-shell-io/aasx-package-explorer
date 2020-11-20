@@ -25,9 +25,6 @@ using System.Windows.Shapes;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für AboutBox.xaml
-    /// </summary>
     public partial class AboutBox : Window
     {
         public AboutBox()

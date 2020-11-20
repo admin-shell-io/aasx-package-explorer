@@ -32,9 +32,6 @@ using static WpfMtpControl.MtpData;
 
 namespace WpfMtpControl
 {
-    /// <summary>
-    /// Interaktionslogik für MtpVisuViewer.xaml
-    /// </summary>
     public partial class MtpVisuViewer : UserControl
     {
         //

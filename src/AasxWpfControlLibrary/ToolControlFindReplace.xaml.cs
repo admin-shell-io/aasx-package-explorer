@@ -26,9 +26,6 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für ToolControlFindReplace.xaml
-    /// </summary>
     public partial class ToolControlFindReplace : UserControl
     {
         //

@@ -29,9 +29,6 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window, IFlyoutProvider
     {
         #region Members

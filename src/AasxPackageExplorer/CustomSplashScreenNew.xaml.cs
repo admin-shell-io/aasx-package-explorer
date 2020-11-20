@@ -26,9 +26,6 @@ using System.Windows.Threading;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für CustomSplahsScreen.xaml
-    /// </summary>
     public partial class CustomSplashScreenNew : Window
     {
         public CustomSplashScreenNew()

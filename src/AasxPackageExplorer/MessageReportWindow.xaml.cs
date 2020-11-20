@@ -25,9 +25,6 @@ using AasxIntegrationBase;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für MessageReportWindow.xaml
-    /// </summary>
     public partial class MessageReportWindow : Window
     {
         public MessageReportWindow()

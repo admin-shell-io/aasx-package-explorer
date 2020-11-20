@@ -43,9 +43,6 @@ namespace AasxPackageExplorer
 
     // ReSharper enable ClassNeverInstantiated.Global
 
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class SelectQualifierPresetFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlClosed ControlClosed;

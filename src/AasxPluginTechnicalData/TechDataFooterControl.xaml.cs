@@ -27,9 +27,6 @@ using AdminShellNS;
 
 namespace AasxPluginTechnicalData
 {
-    /// <summary>
-    /// Interaktionslogik für TechDataFooterControl.xaml
-    /// </summary>
     public partial class TechDataFooterControl : UserControl
     {
         public TechDataFooterControl()

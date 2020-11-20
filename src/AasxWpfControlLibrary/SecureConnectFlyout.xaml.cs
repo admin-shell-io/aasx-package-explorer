@@ -73,9 +73,6 @@ namespace AasxPackageExplorer
     {
     }
 
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class SecureConnectFlyout : UserControl, IFlyoutControl
     {
         //

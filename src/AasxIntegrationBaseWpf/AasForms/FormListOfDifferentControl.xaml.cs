@@ -21,9 +21,6 @@ using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
 {
-    /// <summary>
-    /// Interaktionslogik for FormElementControl.xaml
-    /// </summary>
     public partial class FormListOfDifferentControl : UserControl, IFormListControl
     {
         // Members

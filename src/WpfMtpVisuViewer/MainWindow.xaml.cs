@@ -30,9 +30,6 @@ using WpfMtpControl.DataSources;
 
 namespace WpfMtpVisuViewer
 {
-    /// <summary>
-    /// Interaktionslogik für MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public WpfMtpControl.MtpVisuOpcUaClient client = new WpfMtpControl.MtpVisuOpcUaClient();

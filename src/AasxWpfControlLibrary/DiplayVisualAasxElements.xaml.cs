@@ -34,9 +34,6 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    /// <summary>
-    /// Interaktionslogik für DiplayAasxElements.xaml
-    /// </summary>
     public partial class DiplayVisualAasxElements : UserControl
     {
         private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();

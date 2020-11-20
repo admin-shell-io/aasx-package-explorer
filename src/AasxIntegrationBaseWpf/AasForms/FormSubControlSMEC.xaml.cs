@@ -25,9 +25,6 @@ using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
 {
-    /// <summary>
-    /// Interaktionslogik für AasFormSubControlProperty.xaml
-    /// </summary>
     public partial class FormSubControlSMEC : UserControl, IFormListControl
     {
         // Members

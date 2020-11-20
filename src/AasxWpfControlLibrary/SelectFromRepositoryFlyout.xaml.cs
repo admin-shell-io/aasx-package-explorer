@@ -27,9 +27,6 @@ using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class SelectFromRepositoryFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlClosed ControlClosed;

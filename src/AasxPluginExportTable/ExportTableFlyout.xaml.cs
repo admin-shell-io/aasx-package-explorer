@@ -31,9 +31,6 @@ using Newtonsoft.Json;
 
 namespace AasxPluginExportTable
 {
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class ExportTableFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlClosed ControlClosed;

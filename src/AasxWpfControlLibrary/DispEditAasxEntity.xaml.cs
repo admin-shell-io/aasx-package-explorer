@@ -33,9 +33,6 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für DispEditAasEntity.xaml
-    /// </summary>
     public partial class DispEditAasxEntity : UserControl
     {
 
