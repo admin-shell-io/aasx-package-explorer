@@ -34,7 +34,9 @@ namespace AasxProtoBuffExport
                     {
 
                         inVar = "InVar" + assetID + subModelID + op.idShort;
-                        protoMsg.Add("// InputVariablen of Operation " + sme.submodelElement.idShort + " in Submodul " + subModel.idShort + " of Asset " + assetID);
+                        protoMsg.Add(
+                            "// InputVariablen of Operation " + sme.submodelElement.idShort + 
+                            " in Submodule " + subModel.idShort + " of Asset " + assetID);
                         protoMsg.Add("message " + inVar + " {");
                         foreach (AdminShellV20.OperationVariable inPut in op.inputVariable)
                         {
@@ -42,7 +44,9 @@ namespace AasxProtoBuffExport
                             {
                                 AdminShellV20.Property inProp = inPut.value.submodelElement as AdminShellV20.Property;
 
-                                protoMsg.Add("  " + toProtoType(inProp.valueType) + " " + inProp.idShort + " = " + varIndex + ";");
+                                protoMsg.Add(
+                                    "  " + toProtoType(inProp.valueType) + " " + inProp.idShort + " = " + 
+                                    varIndex + ";");
                             }
                             else
                             {
@@ -60,7 +64,9 @@ namespace AasxProtoBuffExport
                     }
                     //outputVariable
                     outVar = "OutVar" + assetID + subModelID + op.idShort;
-                    protoMsg.Add("// outputVariablen of Operation " + sme.submodelElement.idShort + " in Submodul " + subModel.idShort + " of Asset " + assetID);
+                    protoMsg.Add(
+                        "// outputVariablen of Operation " + sme.submodelElement.idShort + 
+                        " in Submodule " + subModel.idShort + " of Asset " + assetID);
                     protoMsg.Add("message " + outVar + " {");
                     varIndex = 1;
                     foreach (AdminShellV20.OperationVariable output in op.outputVariable)
@@ -75,7 +81,9 @@ namespace AasxProtoBuffExport
 
                     if (createRestApi)
                     {
-                        probufEntry += "{ \n    option (google.api.http) = {\n      post: \"/" + assetID + "/" + subModel.idShort + "/" + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
+                        probufEntry += 
+                            "{ \n    option (google.api.http) = {\n      post: \"/" + assetID + "/" + subModel.idShort + "/" 
+                            + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
                     }
                     else
                     {
@@ -115,7 +123,10 @@ namespace AasxProtoBuffExport
                         if (createRestApi)
                         {
 
-                            probufEntry += "{ \n    option (google.api.http) = {\n      post: \"/" + assetID + "/" + subModel.idShort + "/" + prop.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
+                            probufEntry += 
+                               "{ \n    option (google.api.http) = {\n      post: \"/" + 
+                               assetID + "/" + subModel.idShort + "/" + prop.idShort + 
+                               "\"\n	  body: \"*\"\n    };\n  }\n";
                         }
                         else
                         {
