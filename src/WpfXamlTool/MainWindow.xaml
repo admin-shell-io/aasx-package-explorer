@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="WPF XAML Tool for effective XAML snippet creation" Height="450" Width="800" Loaded="Window_Loaded"
         DragEnter="Window_DragEnter" Drop="Window_Drop">
+    <!--
+    Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
     <Grid Background="#303030">
 
         <Grid.RowDefinitions>
