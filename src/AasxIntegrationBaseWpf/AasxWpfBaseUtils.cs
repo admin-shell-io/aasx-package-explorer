@@ -20,6 +20,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AdminShellNS;
 
+using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
+
 namespace AasxIntegrationBase
 {
     public static class AasxWpfBaseUtils
@@ -205,14 +207,19 @@ namespace AasxIntegrationBase
             }
             else
             {
-                if (sp.color == StoredPrint.ColorRed)
+                switch (sp.color)
                 {
-                    tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
-                }
-
-                if (sp.color == StoredPrint.ColorBlue)
-                {
-                    tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                    default:
+                        throw ExhaustiveMatch.Failed(sp.color);
+                    case StoredPrint.Color.Red:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
+                        break;
+                    case StoredPrint.Color.Blue:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                        break;
+                    case StoredPrint.Color.Black:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
+                        break;
                 }
             }
 

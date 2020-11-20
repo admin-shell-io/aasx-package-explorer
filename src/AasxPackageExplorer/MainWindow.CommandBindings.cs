@@ -954,8 +954,8 @@ namespace AasxPackageExplorer
                     for (double j = 0; j < 1; j += 0.0025)
                         sb.Append($"{j}");
                     logger.Info("The output is: {0} gives {1} was {0}", i, sb.ToString());
-                    logger.Info(0, StoredPrint.ColorBlue, "This is blue");
-                    logger.Info(0, StoredPrint.ColorRed, "This is red");
+                    logger.Info(StoredPrint.Color.Blue, "This is blue");
+                    logger.Info(StoredPrint.Color.Red, "This is red");
                     logger.Error("This is an error!");
                     logger.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
                     logger.Info("----");

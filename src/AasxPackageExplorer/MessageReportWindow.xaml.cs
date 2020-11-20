@@ -27,20 +27,16 @@ namespace AasxPackageExplorer
 {
     public partial class MessageReportWindow : Window
     {
-        public MessageReportWindow()
+        public MessageReportWindow(IEnumerable<StoredPrint> storedPrints)
         {
             InitializeComponent();
-        }
 
-        public void Append(StoredPrint sp)
-        {
-            // access
-            if (sp == null || sp.msg == null)
-                return;
-
-            // add to rich text box
-            AasxWpfBaseUtils.StoredPrintToRichTextBox(
-                this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: link_Click);
+            foreach (var sp in storedPrints)
+            {
+                // Add to rich text box
+                AasxWpfBaseUtils.StoredPrintToRichTextBox(
+                    this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: link_Click);
+            }
         }
 
         protected void link_Click(object sender, RoutedEventArgs e)

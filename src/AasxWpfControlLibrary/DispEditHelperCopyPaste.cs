@@ -181,7 +181,7 @@ namespace AasxPackageExplorer
 
                         // user feedback
                         Log.Info(
-                            0, StoredPrint.ColorBlue,
+                            StoredPrint.Color.Blue,
                             "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.idShort,
                             "" + sme?.GetElementName(),
                             cpb.duplicate
@@ -324,7 +324,7 @@ namespace AasxPackageExplorer
 
                         // user feedback
                         Log.Info(
-                            0, StoredPrint.ColorBlue,
+                            StoredPrint.Color.Blue,
                             "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.idShort,
                             cpb.duplicate
                                 ? " Paste will duplicate."
@@ -472,7 +472,7 @@ namespace AasxPackageExplorer
 
                         // user feedback
                         Log.Info(
-                            0, StoredPrint.ColorBlue,
+                            StoredPrint.Color.Blue,
                             "Stored {0} '{1}' to internal buffer.{1}",
                             "" + entity.GetElementName(),
                             "" + entity.idShort,

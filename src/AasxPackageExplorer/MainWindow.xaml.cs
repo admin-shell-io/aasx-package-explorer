@@ -12,9 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,6 +24,8 @@ using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+
+using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
 {
@@ -688,23 +688,31 @@ namespace AasxPackageExplorer
                 Message.Content = "" + sp.msg;
 
                 // display
-                if (sp.color == StoredPrint.ColorBlack)
+                switch (sp.color)
                 {
-                    Message.Background = Brushes.White;
-                    Message.Foreground = Brushes.Black;
-                    Message.FontWeight = FontWeights.Normal;
-                }
-                if (sp.color == StoredPrint.ColorBlue)
-                {
-                    Message.Background = Brushes.LightBlue;
-                    Message.Foreground = Brushes.Black;
-                    Message.FontWeight = FontWeights.Normal;
-                }
-                if (sp.color == StoredPrint.ColorRed)
-                {
-                    Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
-                    Message.Foreground = Brushes.White;
-                    Message.FontWeight = FontWeights.Bold;
+                    default:
+                        throw ExhaustiveMatch.Failed(sp.color);
+                    case StoredPrint.Color.Black:
+                        {
+                            Message.Background = Brushes.White;
+                            Message.Foreground = Brushes.Black;
+                            Message.FontWeight = FontWeights.Normal;
+                            break;
+                        }
+                    case StoredPrint.Color.Blue:
+                        {
+                            Message.Background = Brushes.LightBlue;
+                            Message.Foreground = Brushes.Black;
+                            Message.FontWeight = FontWeights.Normal;
+                            break;
+                        }
+                    case StoredPrint.Color.Red:
+                        {
+                            Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                            Message.Foreground = Brushes.White;
+                            Message.FontWeight = FontWeights.Bold;
+                            break;
+                        }
                 }
             }
 
@@ -1179,24 +1187,27 @@ namespace AasxPackageExplorer
                 }
 #endif
 
-                // create window
 
-                var dlg = new MessageReportWindow();
-                dlg.Append(new StoredPrint(head));
 
-                if (true)
+                // Collect all the stored log prints
+                IEnumerable<StoredPrint> Prints()
                 {
                     var prints = Log.LogInstance.GetStoredLongTermPrints();
                     if (prints != null)
+                    {
+                        yield return new StoredPrint(head);
+
                         foreach (var sp in prints)
                         {
-                            dlg.Append(sp);
+                            yield return sp;
                             if (sp.stackTrace != null)
-                                dlg.Append(new StoredPrint("    Stacktrace: " + sp.stackTrace));
+                                yield return new StoredPrint("    Stacktrace: " + sp.stackTrace);
                         }
+                    }
                 }
 
                 // show dialogue
+                var dlg = new MessageReportWindow(Prints());
                 dlg.ShowDialog();
             }
         }

@@ -125,5 +125,44 @@ namespace AasxPackageExplorer.GuiTests
                 Assert.AreEqual("Errors: 1", numberErrors.AsLabel().Text);
             });
         }
+
+        [Test]
+        public void Test_that_error_report_doesnt_break_the_app()
+        {
+            using var tmpDir = new TemporaryDirectory();
+            var path = Path.Combine(tmpDir.Path, "invalid.aasx");
+            File.WriteAllText(path, "totally invalid");
+
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertLoadAasx(application, mainWindow, path);
+
+                var numberErrors = Retry.Find(
+                    () => (application.HasExited)
+                        ? null
+                        : mainWindow.FindFirstChild(cf => cf.ByAutomationId("LabelNumberErrors")),
+                    new RetrySettings { ThrowOnTimeout = true, Timeout = TimeSpan.FromSeconds(5) });
+
+                Assert.AreEqual("Errors: 1", numberErrors.AsLabel().Text);
+
+                var buttonReport = Retry.Find(
+                    () => mainWindow.FindFirstChild(cf => cf.ByAutomationId("ButtonReport")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the report button"
+                    }).AsButton();
+
+                buttonReport.Click();
+
+                Retry.WhileNull(() =>
+                        // ReSharper disable once AccessToDisposedClosure
+                        application.GetAllTopLevelWindows(automation)
+                            .FirstOrDefault((w) => w.Title == "Message Report"),
+                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
+                    timeoutMessage: "Could not find the 'Message Report' window");
+            });
+        }
     }
 }
