@@ -28,9 +28,6 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für SelectAasEntityDialogue.xaml
-    /// </summary>
     public partial class SelectEclassEntity : Window
     {
         private string eclassFullPath = null;

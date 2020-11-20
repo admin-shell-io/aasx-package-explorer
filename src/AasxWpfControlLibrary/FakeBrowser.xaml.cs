@@ -24,9 +24,6 @@ using System.Windows.Shapes;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für FakeBrowser.xaml
-    /// </summary>
     public partial class FakeBrowser : UserControl
     {
         public FakeBrowser()

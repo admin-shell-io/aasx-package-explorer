@@ -41,9 +41,6 @@ using Newtonsoft.Json;
 
 namespace AasxPluginImageMap
 {
-    /// <summary>
-    /// Interaktionslogik für ImageMapControl.xaml
-    /// </summary>
     public partial class ImageMapControl : UserControl
     {
         #region Members

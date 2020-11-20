@@ -29,9 +29,6 @@ using AdminShellNS;
 
 namespace AasxPluginTechnicalData
 {
-    /// <summary>
-    /// Interaktionslogik für TechnicalDataViewControl.xaml
-    /// </summary>
     public partial class TechnicalDataViewControl : UserControl
     {
         public TechnicalDataViewControl()

@@ -28,9 +28,6 @@ using static AasxPackageExplorer.Plugins;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class TextEditorFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlClosed ControlClosed;

@@ -29,9 +29,6 @@ using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     [JetBrains.Annotations.UsedImplicitly]
     public partial class TransparentComboBox : UserControl
     {

@@ -30,9 +30,6 @@ using WpfMtpControl.DataSources;
 
 namespace AasxPluginMtpViewer
 {
-    /// <summary>
-    /// Interaktionslogik für WpfMtpControlWrapper.xaml
-    /// </summary>
     public partial class WpfMtpControlWrapper : UserControl
     {
         // internal members

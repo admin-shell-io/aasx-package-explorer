@@ -25,9 +25,6 @@ using AasxIntegrationBase;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für AasxFileRepoControl.xaml
-    /// </summary>
     public partial class AasxFileRepoControl : UserControl
     {
         //

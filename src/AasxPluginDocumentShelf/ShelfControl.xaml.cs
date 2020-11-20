@@ -37,9 +37,6 @@ using Newtonsoft.Json;
 
 namespace AasxPluginDocumentShelf
 {
-    /// <summary>
-    /// Interaktionslogik für ShelfControl.xaml
-    /// </summary>
     public partial class ShelfControl : UserControl
     {
         #region Members

@@ -25,9 +25,6 @@ using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
 {
-    /// <summary>
-    /// Interaktionslogik für FormSubControlProperty.xaml
-    /// </summary>
     public partial class FormSubControlMultiLangProp : UserControl
     {
         /// <summary>

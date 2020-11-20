@@ -33,9 +33,6 @@ using Newtonsoft.Json;
 
 namespace AasxPluginGenericForms
 {
-    /// <summary>
-    /// Interaktionslogik für ShelfControl.xaml
-    /// </summary>
     public partial class GenericFormsControl : UserControl
     {
         #region Members

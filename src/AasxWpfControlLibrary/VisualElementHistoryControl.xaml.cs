@@ -40,9 +40,6 @@ namespace AasxPackageExplorer
         }
     }
 
-    /// <summary>
-    /// Interaktionslogik für VisualElementHistoryControl.xaml
-    /// </summary>
     public partial class VisualElementHistoryControl : UserControl
     {
         // members

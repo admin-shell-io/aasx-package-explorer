@@ -29,9 +29,6 @@ using JetBrains.Annotations;
 
 namespace AasxPluginTechnicalData
 {
-    /// <summary>
-    /// Interaktionslogik für TechDataHeaderControl.xaml
-    /// </summary>
     public partial class TechDataHeaderControl : UserControl
     {
         public TechDataHeaderControl()

@@ -24,9 +24,6 @@ using System.Windows.Shapes;
 
 namespace Mtp.DynamicInstances
 {
-    /// <summary>
-    /// Interaktionslogik für MtpViewAnaView.xaml
-    /// </summary>
     public partial class MtpViewBinViewLarge : UserControl
     {
         public MtpViewBinViewLarge()
