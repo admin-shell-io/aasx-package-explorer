@@ -2039,7 +2039,7 @@ namespace AasxPackageExplorer
 
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
-                MessageBoxFlyoutShow("No valid SubModel selected.", 
+                MessageBoxFlyoutShow("No valid SubModel selected.",
                     "Submodel Write", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -2051,7 +2051,7 @@ namespace AasxPackageExplorer
                 }
 
                 bool createRestApi = false;
-                if (MessageBoxResult.Yes == MessageBoxFlyoutShow("Create RESTfull HTTP API Endpoints?", 
+                if (MessageBoxResult.Yes == MessageBoxFlyoutShow("Create RESTfull HTTP API Endpoints?",
                     "Protocol Buffer Generatore", MessageBoxButton.YesNo, MessageBoxImage.Question))
                 {
                     createRestApi = true;
