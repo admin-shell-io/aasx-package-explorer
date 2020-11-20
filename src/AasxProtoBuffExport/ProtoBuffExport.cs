@@ -13,7 +13,8 @@ namespace AasxProtoBuffExport
 
         }
 
-        public void exportProtoFile(string protoFileName, string aasxPackageFileName, string assetID, Submodel subModel, bool createRestApi)
+        public void exportProtoFile(string protoFileName, string aasxPackageFileName, 
+                                    string assetID, Submodel subModel, bool createRestApi)
         {
             string subModelID = subModel.idShort;
             List<String> protoService = new List<String>();
@@ -51,7 +52,8 @@ namespace AasxProtoBuffExport
                             else
                             {
 
-                                protoMsg.Add("  string " + inPut.value.submodelElement.idShort + " = " + varIndex + ";");
+                                protoMsg.Add("  string " + inPut.value.submodelElement.idShort 
+                                             + " = " + varIndex + ";");
 
                             }
                             varIndex++;
@@ -72,7 +74,8 @@ namespace AasxProtoBuffExport
                     foreach (AdminShellV20.OperationVariable output in op.outputVariable)
                     {
                         AdminShellV20.Property outProp = output.value.submodelElement as AdminShellV20.Property;
-                        protoMsg.Add("  " + toProtoType(outProp.valueType) + " " + outProp.idShort + " = " + varIndex + ";");
+                        protoMsg.Add("  " + toProtoType(outProp.valueType) + " " + outProp.idShort 
+                                     + " = " + varIndex + ";");
                         varIndex++;
                     }
                     protoMsg.Add("}\n\n");
@@ -82,7 +85,8 @@ namespace AasxProtoBuffExport
                     if (createRestApi)
                     {
                         probufEntry += 
-                            "{ \n    option (google.api.http) = {\n      post: \"/" + assetID + "/" + subModel.idShort + "/" 
+                            "{ \n    option (google.api.http) = {\n      post: \"/" + assetID 
+                            + "/" + subModel.idShort + "/" 
                             + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
                     }
                     else
@@ -98,7 +102,8 @@ namespace AasxProtoBuffExport
                     AdminShellV20.Property prop = sme.submodelElement as AdminShellV20.Property;
 
                     String propVar = "PropVar" + assetID + subModelID + prop.idShort;
-                    protoMsg.Add("// Variablen of Property " + sme.submodelElement.idShort + " in Submodul " + subModel.idShort + " of Asset " + assetID);
+                    protoMsg.Add("// Variablen of Property " + sme.submodelElement.idShort + " in Submodul " 
+                                 + subModel.idShort + " of Asset " + assetID);
                     protoMsg.Add("message " + propVar + " {");
                     protoMsg.Add("  " + toProtoType(prop.valueType) + " " + prop.idShort + " = 1;");
                     protoMsg.Add("}\n\n");
@@ -107,7 +112,8 @@ namespace AasxProtoBuffExport
                     String probufEntry = "  rpc Get_" + prop.idShort + " (google.protobuf.Empty) returns (" + propVar + ")";
                     if (createRestApi)
                     {
-                        probufEntry += "{ \n    option (google.api.http) = {\n      get: \"/" + assetID + "/" + subModel.idShort + "/" + prop.idShort + "\"\n    };\n  }\n";
+                        probufEntry += "{ \n    option (google.api.http) = {\n      get: \"/" + assetID + "/" + 
+                            subModel.idShort + "/" + prop.idShort + "\"\n    };\n  }\n";
                     }
                     else
                     {
@@ -119,7 +125,8 @@ namespace AasxProtoBuffExport
                     //Setter
                     if (!prop.category.ToUpper().Equals("CONSTANT"))
                     {
-                        probufEntry = "  rpc Set_" + prop.idShort + " (" + propVar + ")  returns (google.protobuf.Empty)";
+                        probufEntry = "  rpc Set_" + prop.idShort + " (" + propVar + ")  "
+                            + "returns (google.protobuf.Empty)";
                         if (createRestApi)
                         {
 
@@ -141,7 +148,8 @@ namespace AasxProtoBuffExport
             {
                 s.WriteLine("/*############################################################");
                 s.WriteLine("###### AASX IDL .proto-File from AASX Package Explorer  ######");
-                s.WriteLine("###### Generated from {0} at {1}  ######", aasxPackageFileName, DateTime.Now.ToString("MM/dd/yyyy HH:mm"));
+                s.WriteLine("###### Generated from {0} at {1}  ######", aasxPackageFileName, 
+                            DateTime.Now.ToString("MM/dd/yyyy HH:mm"));
                 s.WriteLine("############################################################*/");
                 s.WriteLine("syntax = \"proto3\";");
                 s.WriteLine("");
