@@ -6,6 +6,15 @@
              xmlns:local="clr-namespace:Mtp.DynamicInstances"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="40">
+    <!--
+    Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
     <Border Background="#202020" BorderThickness="1" BorderBrush="DarkGray" CornerRadius="2,2,2,2">
         <Grid x:Name="viewGrid" Margin="0">
             <Grid.RowDefinitions>
