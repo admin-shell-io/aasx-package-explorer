@@ -79,6 +79,7 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        if: github.repository == 'admin-shell-io/aasx-package-explorer'
         run: |
           $headRef = ${env:HEAD_REF}
           if (${env:GITHUB_REF}.StartsWith("refs/pull/"))
