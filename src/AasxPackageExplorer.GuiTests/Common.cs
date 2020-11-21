@@ -1,17 +1,22 @@
 ﻿using System.Linq;
-using FlaUI.Core.AutomationElements; // necessary extension for AsLabel() and other methods
+using FlaUI.Core.AutomationElements;
+using NUnit.Framework; // necessary extension for AsLabel() and other methods
 using Application = FlaUI.Core.Application;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
 using Directory = System.IO.Directory;
+using Exception = System.Exception;
 using File = System.IO.File;
 using FileNotFoundException = System.IO.FileNotFoundException;
 using InvalidOperationException = System.InvalidOperationException;
 using Path = System.IO.Path;
+using Process = System.Diagnostics.Process;
+using ProcessStartInfo = System.Diagnostics.ProcessStartInfo;
 using Regex = System.Text.RegularExpressions.Regex;
 using Retry = FlaUI.Core.Tools.Retry;
 using TimeSpan = System.TimeSpan;
 using UIA3Automation = FlaUI.UIA3.UIA3Automation;
+using Win32Exception = System.ComponentModel.Win32Exception;
 using Window = FlaUI.Core.AutomationElements.Window;
 
 namespace AasxPackageExplorer.GuiTests
@@ -93,7 +98,42 @@ namespace AasxPackageExplorer.GuiTests
                 resolvedRun.Args
                     .Select(arg => Regex.Replace(arg, @"(\\*)" + "\"", @"$1$1\" + "\"")));
 
-            var app = Application.Launch(pathToExe, joinedArgs);
+            var psi = new ProcessStartInfo
+            {
+                FileName = pathToExe,
+                Arguments = joinedArgs,
+                RedirectStandardError = true,
+                WorkingDirectory = ".",
+                UseShellExecute = false
+            };
+
+            bool gotStderr = false;
+
+            var process = new Process { StartInfo = psi };
+            try
+            {
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        gotStderr = true;
+                        TestContext.Error.WriteLine(e.Data);
+                    }
+                };
+
+                process.Start();
+                process.BeginErrorReadLine();
+            }
+            catch (Exception)
+            {
+                TestContext.Error.WriteLine(
+                    $"Failed to launch the process: FileName: {psi.FileName}, " +
+                    $"Arguments: {psi.Arguments}, Working directory: {psi.WorkingDirectory}");
+                throw;
+            }
+
+            var app = new Application(process, false);
+
             try
             {
                 using var automation = new UIA3Automation();
@@ -117,6 +157,12 @@ namespace AasxPackageExplorer.GuiTests
                 {
                     app.Kill();
                 }
+            }
+
+            if (gotStderr)
+            {
+                throw new AssertionException(
+                    "Unexpected writes to standard error. Please see the test context for more detail.");
             }
         }
 
