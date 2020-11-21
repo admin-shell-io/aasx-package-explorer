@@ -7,19 +7,21 @@
         xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AasxWpfControlLibrary"
         mc:Ignorable="d"
         x:Name="mainWindow"
-        Title="AASX Package Explorer" Height="350" Width="700" Loaded="Window_Loaded" AllowDrop="True" 
-        DragEnter="Window_DragEnter" Drop="Window_Drop" Closing="Window_Closing" SizeChanged="Window_SizeChanged" 
+        Title="AASX Package Explorer" Height="350" Width="700" Loaded="Window_Loaded" AllowDrop="True"
+        DragEnter="Window_DragEnter" Drop="Window_Drop" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
         PreviewKeyDown="mainWindow_PreviewKeyDown" >
+    <!--
+    Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
 
-    <!-- Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, author: Michael Hoffmeister
-The browser functionality is under the cefSharp license (see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-The JSON serialization is under the MIT license (see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0). -->
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
 
     <!-- TODO: fix again -->
     <!-- ReSharper disable Xaml.MissingGridIndex -->
-    
+
     <Window.Resources>
         <RoutedUICommand x:Key="New" Text="New" />
         <RoutedUICommand x:Key="Open" Text="Open" />
@@ -333,7 +335,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                             <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
-                            <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>                            
+                            <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
                         </MenuItem>
                         <MenuItem Header="Export ..">
                             <MenuItem Header="Export AutomationML .." Command="{StaticResource ExportAML}"/>
@@ -379,7 +381,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                     </MenuItem>
                 </Menu>
 
-                <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50" 
+                <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50"
                         VisualElementRequested="ButtonHistory_ObjectRequested"
                         HomeRequested="ButtonHistory_HomeRequested"/>
 
@@ -444,14 +446,14 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                     <ColumnDefinition Width="250" />
                 </Grid.ColumnDefinitions>
 
-                <GridSplitter HorizontalAlignment="Right" 
-                      VerticalAlignment="Stretch" 
+                <GridSplitter HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
                       Grid.Column="1" ResizeBehavior="PreviousAndNext"
                       Grid.Row="0"
                       Width="5" Background="#FFBCBCBC"/>
 
-                <GridSplitter HorizontalAlignment="Right" 
-                      VerticalAlignment="Stretch" 
+                <GridSplitter HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
                       Grid.Column="3" ResizeBehavior="PreviousAndNext"
                       Grid.Row="0"
                       Width="5" Background="#FFBCBCBC"/>
@@ -469,8 +471,8 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <GridSplitter HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Top" 
+                    <GridSplitter HorizontalAlignment="Stretch"
+                      VerticalAlignment="Top"
                       Grid.Row="1" Grid.Column="0"
                       ResizeBehavior="PreviousAndNext"
                       Height="5" Background="#FFBCBCBC"/>
@@ -492,7 +494,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
                     </Viewbox>
 
                     <local:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0" AllowDrop="True" Drop="RepoControl_Drop">
-                        
+
                     </local:AasxFileRepoControl>
 
                 </Grid>
@@ -576,7 +578,12 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
             <DockPanel Grid.Row="3" Margin="0,2,0,0">
                 <Button x:Name="ButtonReport" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Report ..</Button>
                 <Button x:Name="ButtonClear" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Clear</Button>
-                <Label x:Name="LabelNumberErrors" DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0" VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Content="Errors: 0"/>
+
+                <Label x:Name="LabelNumberErrors"
+                       DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0"
+                       VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1"
+                       Content="No errors"/>
+
                 <Label x:Name="Message" VerticalContentAlignment="Center"></Label>
             </DockPanel>
 
@@ -584,7 +591,7 @@ The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www
 
         <!--
         <local:SelectFromRepository Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-            
+
         </local:SelectFromRepository>
         -->
 

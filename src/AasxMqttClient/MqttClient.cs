@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Client.Options;
-
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -20,12 +10,20 @@ Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo,
     zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>
 Author: Florian Pethig
 
-For Mqtt Content:
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
-MIT License
-
-MQTTnet Copyright (c) 2016-2019 Christian Kratky
+This source code may use other Open Source software components (see LICENSE.txt).
 */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AdminShellNS;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
 
 namespace AasxMqttClient
 {

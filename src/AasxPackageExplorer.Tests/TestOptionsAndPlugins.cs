@@ -129,6 +129,18 @@ namespace AasxPackageExplorer.Tests
         }
 
         [Test]
+        public void TestPluginsArePassedArguments()
+        {
+            var optionsInformation = App.InferOptions(
+                "NonExistingAasxPackageExplorer.exe",
+                new[] { "-p", "-something", "-dll", "ACME-plugins\\AasxSomeACMEPlugin.dll" });
+
+            Assert.AreEqual(1, optionsInformation.PluginDll.Count);
+            Assert.AreEqual("ACME-plugins\\AasxSomeACMEPlugin.dll", optionsInformation.PluginDll[0].Path);
+            Assert.That(optionsInformation.PluginDll[0].Args, Is.EquivalentTo(new[] { "-something" }));
+        }
+
+        [Test]
         public void TestPluginsAreSearchedInPluginsDirectory()
         {
             using (var tmpDir = new TemporaryDirectory())
@@ -148,6 +160,15 @@ namespace AasxPackageExplorer.Tests
                 Assert.AreEqual(null, pluginDllInfos[0].DefaultOptions);
                 Assert.AreEqual(pluginPath, pluginDllInfos[0].Path);
             }
+        }
+
+        [Test]
+        public void TestThatSplashTimeIsSet()
+        {
+            var optionsInformation = App.InferOptions(
+                "NonExistingAasxPackageExplorer.exe", new[] { "-splash", "1984" });
+
+            Assert.AreEqual(1984, optionsInformation.SplashTime);
         }
     }
 

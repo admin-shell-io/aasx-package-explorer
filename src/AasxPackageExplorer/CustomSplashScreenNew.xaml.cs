@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,36 +24,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
-
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für CustomSplahsScreen.xaml
-    /// </summary>
     public partial class CustomSplashScreenNew : Window
     {
-        public CustomSplashScreenNew()
+        public CustomSplashScreenNew(Pref pref)
         {
             InitializeComponent();
 
             // set new values here
-            this.TextBlockAuthors.Text = Options.Curr.PrefAuthors;
-            this.TextBlockLicenses.Text = Options.Curr.PrefLicenseShort;
-            this.TextBlockVersion.Text = Options.Curr.PrefVersion;
+            this.TextBlockAuthors.Text = pref.Authors;
+            this.TextBlockLicenses.Text = pref.LicenseShort;
+            this.TextBlockVersion.Text = pref.Version;
             this.TextBlockBuildDate.Text = "";
 
             // try to include plug-ins as well
@@ -62,7 +53,7 @@ namespace AasxPackageExplorer
             };
         }
 
-        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             this.Close();
         }

@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -12,22 +21,6 @@ using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
-
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
 
 namespace AasxPackageExplorer
 {
@@ -85,105 +78,6 @@ namespace AasxPackageExplorer
     /// </summary>
     public class OptionsInformation
     {
-        /// <summary>
-        /// The authors of the application. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefAuthors = "Michael Hoffmeister, Andreas Orzelski and further";
-
-        /// <summary>
-        /// The current (used) licenses of the application. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefLicenseShort =
-            "This software is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
-            "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
-            "The Zxing.Net Dot Matrix Code (DMC) generation is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The Grapevine REST server framework is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The AutomationML.Engine is licensed under the MIT license (MIT)." +
-            "The MQTT server and client is licensed " +
-            "under the MIT license (MIT)." + Environment.NewLine +
-            "The IdentityModel OpenID client is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The jose-jwt object signing and encryption is licensed " +
-            "under the MIT license (MIT).";
-
-        /// <summary>
-        /// The last build date of the application. Based on a resource file. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefBuildDate
-        {
-            get
-            {
-                using (var stream =
-                    Assembly
-                        .GetExecutingAssembly()
-                        .GetManifestResourceStream("AasxWpfControlLibrary.Resources.BuildDate.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        string fileContents = tr.ReadToEnd();
-                        if (fileContents.Length > 20)
-                            fileContents = fileContents.Substring(0, 20) + "..";
-                        return (fileContents.Trim());
-                    }
-                }
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// The license texts of the application. Based on a resource file. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefLicenseLong
-        {
-            get
-            {
-                return AasxPluginHelper.LoadLicenseTxtFromAssemblyDir("LICENSE.txt", Assembly.GetEntryAssembly());
-            }
-        }
-
-        /// <summary>
-        /// The current version string of the application. Use of Options as singleton.
-        /// Note: in the past, there was a semantic version such as "1.9.8.3", but
-        /// this was not maintained properly. Now, a version is derived from the
-        /// build data with the intention, that the according tag in Github-Releases
-        /// will be identical.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefVersion
-        {
-            get
-            {
-                var bdate = "" + PrefBuildDate;
-                var version = "(not available)";
-
-                // %date% in European format (e.g. during development)
-                var m = Regex.Match(bdate, @"(\d+)\.(\d+)\.(\d+)");
-                if (m.Success && m.Groups.Count >= 4)
-                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
-                        + m.Groups[3].Value + "-"
-                        + m.Groups[2].Value + "-"
-                        + m.Groups[1].Value;
-
-                // %date% in US local (e.g. from continous integration from Github)
-                m = Regex.Match(bdate, @"(\d+)\/(\d+)\/(\d+)");
-                if (m.Success && m.Groups.Count >= 4)
-                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
-                        + m.Groups[3].Value + "-"
-                        + m.Groups[1].Value + "-"
-                        + m.Groups[2].Value;
-
-                return version;
-            }
-        }
-
         /// <summary>
         /// This file shall be loaded at start of application
         /// </summary>
@@ -348,22 +242,15 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// For such operations as query repository, do load a new AASX file without
-        /// prmpting the user.
+        /// prompting the user.
         /// </summary>
         public bool LoadWithoutPrompt = false;
 
         /// <summary>
-        /// Point to a list of SecureConnectPresets for the respective dialogie
+        /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
-
-        /// <summary>
-        /// Contains a list of strings which shall be handled over to plugins.
-        /// New: only for internal use, will be found in the DllInfos
-        /// </summary>
-        [JsonIgnore]
-        private List<string> PluginArgs = new List<string>();
 
         public class PluginDllInfo
         {
@@ -391,6 +278,8 @@ namespace AasxPackageExplorer
         /// </summary>
         [SettableOption]
         public List<PluginDllInfo> PluginDll = new List<PluginDllInfo>();
+
+
 
         /// <summary>
         /// Will save options to a file. Catches exceptions.
@@ -427,6 +316,9 @@ namespace AasxPackageExplorer
 
         public static void ParseArgs(string[] args, OptionsInformation optionsInformation)
         {
+            // This is a sweep line for plugin arguments.
+            var pluginArgs = new List<string>();
+
             for (int index = 0; index < args.Length; index++)
             {
                 var arg = args[index].Trim().ToLower();
@@ -632,19 +524,20 @@ namespace AasxPackageExplorer
                     continue;
                 }
 
-                // (temporary) options for plugins and DLL path
+                // Sweep-line options for plugins and DLL path
                 if (arg == "-p" && morearg > 0)
                 {
-                    // Add exactly one following argument to the plugin list
-                    optionsInformation.PluginArgs.Add(args[index + 1]);
+                    // Add exactly one following argument to the sweep line of plugin arguments
+                    pluginArgs.Add(args[index + 1]);
                     index += 1;
                     continue;
                 }
                 if (arg == "-dll" && morearg > 0)
                 {
+                    // Process and reset the sweep line
                     optionsInformation.PluginDll.Add(
-                        new PluginDllInfo(args[index + 1], optionsInformation.PluginArgs.ToArray()));
-                    optionsInformation.PluginArgs.Clear();
+                        new PluginDllInfo(args[index + 1], pluginArgs.ToArray()));
+                    pluginArgs.Clear();
                     index++;
                     continue;
                 }

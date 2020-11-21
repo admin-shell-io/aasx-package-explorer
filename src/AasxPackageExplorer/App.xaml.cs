@@ -1,22 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Windows;
-using AasxGlobalLogging;
-
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
+This source code may use other Open Source software components (see LICENSE.txt).
 */
+
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
+using AasxGlobalLogging;
 
 namespace AasxPackageExplorer
 {
@@ -131,7 +125,6 @@ namespace AasxPackageExplorer
                 Options.Curr.PluginDll.AddRange(pluginDllInfos);
             }
 
-
             Log.Info($"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
             Plugins.LoadedPlugins = LoadAndActivatePlugins(Options.Curr.PluginDll);
 
@@ -169,15 +162,17 @@ namespace AasxPackageExplorer
                 }
             }
 
+            Pref pref = Pref.Read();
+
             // show splash (required for licenses of open source)
             if (Options.Curr.SplashTime != 0)
             {
-                var splash = new CustomSplashScreenNew();
+                var splash = new CustomSplashScreenNew(pref);
                 splash.Show();
             }
 
             // show main window
-            MainWindow wnd = new MainWindow();
+            MainWindow wnd = new MainWindow(pref);
             wnd.Show();
         }
     }

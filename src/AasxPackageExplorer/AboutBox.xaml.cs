@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,30 +23,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
-
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für AboutBox.xaml
-    /// </summary>
     public partial class AboutBox : Window
     {
-        public AboutBox()
+        private readonly Pref _pref;
+
+        public AboutBox(Pref pref)
         {
+            _pref = pref;
             InitializeComponent();
         }
 
@@ -46,12 +40,12 @@ namespace AasxPackageExplorer
             // HEADER
             this.HeaderText.Text = "AASX Package Explorer\n" +
                 "Copyright (c) 2018-2020 Festo AG & Co. KG and further (see below)\n" +
-                "Authors: " + Options.Curr.PrefAuthors + " (see below)\n" +
+                "Authors: " + _pref.Authors + " (see below)\n" +
                 "This software is licensed under the Apache License 2.0 (see below)" + "\n" +
-                "Version: " + Options.Curr.PrefVersion + "\n" +
-                "Build date: " + Options.Curr.PrefBuildDate;
+                "Version: " + _pref.Version + "\n" +
+                "Build date: " + _pref.BuildDate;
 
-            this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + Options.Curr.PrefLicenseLong;
+            this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + _pref.LicenseLong;
 
             // try to include plug-ins as well
             var lic = Plugins.CompileAllLicenses();

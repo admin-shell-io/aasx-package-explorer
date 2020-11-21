@@ -1,17 +1,27 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
+
+Copyright (c) 2019 Fraunhofer IOSB-INA Lemgo,
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V. <florian.pethig@iosb-ina.fraunhofer.de>
+Author: Florian Pethig
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MQTTnet;
 using MQTTnet.Server;
-
-/* For Mqtt Content:
-
-MIT License
-
-MQTTnet Copyright (c) 2016-2019 Christian Kratky
-*/
 
 namespace AasxMqttServer
 {
