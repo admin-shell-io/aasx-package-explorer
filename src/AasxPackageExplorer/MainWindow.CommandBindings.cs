@@ -129,14 +129,33 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     RememberForInitialDirectory(dlg.FileName);
-                    if (cmd == "open")
-                        UiLoadPackageWithNew(
-                            packages.MainContainer, new AdminShellPackageEnv(dlg.FileName), dlg.FileName,
-                            onlyAuxiliary: false);
-                    if (cmd == "openaux")
-                        UiLoadPackageWithNew(
-                            packages.AuxContainer,
-                            new AdminShellPackageEnv(dlg.FileName), dlg.FileName, onlyAuxiliary: true);
+
+                    AdminShellPackageEnv packnew = null;
+                    try
+                    {
+                        packnew = new AdminShellPackageEnv(dlg.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, $"When opening {dlg.FileName}");
+                    }
+
+                    if (packnew != null)
+                    {
+                        switch (cmd)
+                        {
+                            case "open":
+                                UiLoadPackageWithNew(
+                                    packages.MainContainer, packnew, dlg.FileName, onlyAuxiliary: false);
+                                break;
+                            case "openaux":
+                                UiLoadPackageWithNew(
+                                    packages.AuxContainer, packnew, dlg.FileName, onlyAuxiliary: true);
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
+                        }
+                    }
                 }
             }
 

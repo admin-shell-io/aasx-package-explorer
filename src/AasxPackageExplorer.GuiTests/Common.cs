@@ -239,8 +239,6 @@ namespace AasxPackageExplorer.GuiTests
                 throw new AssertionException(
                     "The application unexpectedly exited. " +
                     $"Check manually why the file could not be opened: {path}");
-
-            AssertNoErrors(application, mainWindow);
         }
     }
 }
