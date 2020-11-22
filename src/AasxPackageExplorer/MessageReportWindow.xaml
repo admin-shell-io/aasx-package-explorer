@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AasxPackageExplorer"
         mc:Ignorable="d"
-        Title="Message Report" Height="600" Width="800">
+        Title="Message Report"
+        Height="600" 
+        Width="800">
     <!--
     Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
