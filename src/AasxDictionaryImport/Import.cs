@@ -11,7 +11,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Linq;
 using System.Windows.Input;
-using AasxGlobalLogging;
 using AdminShellNS;
 
 namespace AasxDictionaryImport
@@ -124,7 +123,8 @@ namespace AasxDictionaryImport
         {
             if (context.UnknownReferences.Count > 0)
             {
-                Log.Info($"Found {context.UnknownReferences.Count} unknown references during import: " +
+                AasxPackageExplorer.Log.Singleton.Info(
+                    $"Found {context.UnknownReferences.Count} unknown references during import: " +
                     string.Join(", ", context.UnknownReferences));
             }
         }
