@@ -161,13 +161,29 @@ namespace AasxRestServerLibrary
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
             handler.AllowAutoRedirect = false;
+
             var hClient = new HttpClient(handler)
             {
                 BaseAddress = uri
             };
             StringContent queryString = new StringContent(payload);
             await hClient.PutAsync(fullname, queryString);
-           
+
+            /*
+            try
+            {
+                var hClient = new HttpClient(handler)
+                {
+                    BaseAddress = uri
+                };
+                StringContent queryString = new StringContent(payload);
+                await hClient.PutAsync(fullname, queryString);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            */
             /*
             var request = new RestRequest(fullname);
             request.HttpMethod = Grapevine.Shared.HttpMethod.PUT;
