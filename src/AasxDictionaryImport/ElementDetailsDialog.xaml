@@ -7,6 +7,14 @@
              xmlns:local="clr-namespace:AasxDictionaryImport"
              mc:Ignorable="d"
              MinWidth="300" MinHeight="200" SizeToContent="WidthAndHeight">
+    <!--
+    Copyright (c) 2020 SICK AG <info@sick.de>
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
     <DockPanel Margin="5" LastChildFill="False">
         <Grid x:Name="Grid" DockPanel.Dock="Top" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>

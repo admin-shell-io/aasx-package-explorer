@@ -37,11 +37,24 @@
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="AasxPackageExplorer.options.json">
+
+  <!-- The default options for Debug differ from Release such that the plugin directory is
+       ".", while Release's plugin directory is ".\\plugins" -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="AasxPackageExplorer.options-for-debug.json">
+      <Link>AasxPackageExplorer.options.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="options-debug.json">
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <None Update="AasxPackageExplorer.options-for-release.json">
+      <Link>AasxPackageExplorer.options.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="options.pref">
@@ -87,6 +100,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="jose-jwt" Version="2.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

@@ -6,7 +6,13 @@ param(
 
     [Parameter(HelpMessage = "If set, execute only the given tests")]
     [string]
-    $Test = ""
+    $Test = "",
+
+    [Parameter(HelpMessage = `
+        "If set, runs the integration tests against the given directory")]
+    [string]
+    $TargetDir = ""
+
 )
 
 <#
@@ -47,9 +53,29 @@ function Main
 
     Set-Location $PSScriptRoot
 
-    $artefactsDir = GetArtefactsDir
+    if($TargetDir -eq "")
+    {
+        $artefactsDir = GetArtefactsDir
 
-    $targetDir = Join-Path $artefactsDir "build" | Join-Path -ChildPath "Debug"
+        $TargetDir = Join-Path $artefactsDir "build" | Join-Path -ChildPath "Debug"
+    }
+
+    if (!(Test-Path $TargetDir))
+    {
+        throw (
+            "The build directory (containing the binaries against which " +
+            "we will run the integration tests) does not exist: $TargetDir; " +
+            "did you maybe forget to BuildForDebug.ps1?"
+        )
+    }
+    else
+    {
+        Write-Host
+        Write-Host (
+            "The following build will be used for the tests: " +
+            ">>> $TargetDir <<<")
+        Write-Host
+    }
 
     $samplesDir = GetSamplesDir
     if(!(Test-Path $samplesDir))
@@ -62,16 +88,16 @@ function Main
         )
     }
 
-    # Glob test DLLs relative to $targetDir
+    # Glob test DLLs relative to $TargetDir
     $testDlls = Get-ChildItem `
-        -Path (Join-Path $targetDir "*.GuiTests.dll") `
+        -Path (Join-Path $TargetDir "*.GuiTests.dll") `
         -File `
         -Name
 
     [string[]]$absTestDlls = @()
     foreach ($testDll in $testDlls)
     {
-        $absTestDll = Join-Path $targetDir $testDll
+        $absTestDll = Join-Path $TargetDir $testDll
         if (!(Test-Path $absTestDll))
         {
             throw "Assertion violated, test DLL could not be found: $absTestDll"
@@ -84,7 +110,7 @@ function Main
         Push-Location
         try
         {
-            Set-Location $targetDir
+            Set-Location $TargetDir
             & $nunit3Console $absTestDlls --explore
         }
         finally
@@ -95,24 +121,28 @@ function Main
     }
 
     $env:SAMPLE_AASX_DIR = $samplesDir
-    $env:AASX_PACKAGE_EXPLORER_RELEASE_DIR = $targetDir
+    $env:AASX_PACKAGE_EXPLORER_RELEASE_DIR = $TargetDir
+
+    $testResultsPath = Join-Path $artefactsDir "GuiTestResults.xml"
 
     Push-Location
     try
     {
-        Set-Location $targetDir
+        Set-Location $TargetDir
 
         # If -Test is not specified, run all the tests
         if ($Test -eq "")
         {
             & $nunit3Console `
                 --stoponerror `
+                --result=$testResultsPath `
                 $absTestDlls
         }
         else
         {
             & $nunit3Console `
                 --test=$Test `
+                --result=$testResultsPath `
                 --stoponerror `
                 $absTestDlls
         }

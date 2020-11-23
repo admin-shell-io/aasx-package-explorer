@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,51 +23,31 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
-
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// Interaktionslogik für SelectFromRepository.xaml
-    /// </summary>
     public partial class SelectAasEntityFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlClosed ControlClosed;
 
+        PackageCentral packages = null;
+        PackageCentral.Selector selector;
         private string theFilter = null;
-        private AdminShellPackageEnv thePackage = null;
-        private AdminShell.AdministrationShellEnv theEnv = null;
-        private AdminShellPackageEnv[] theAuxPackages = null;
 
         public AdminShell.KeyList ResultKeys = null;
         public VisualElementGeneric ResultVisualElement = null;
 
         public SelectAasEntityFlyout(
-            AdminShell.AdministrationShellEnv env,
-            string filter = null,
-            AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector,
+            string filter = null)
         {
             InitializeComponent();
-            thePackage = package;
-            theAuxPackages = auxPackages;
-            theEnv = env;
+            this.packages = packages;
+            this.selector = selector;
             theFilter = filter;
         }
 
@@ -266,7 +255,7 @@ namespace AasxPackageExplorer
         private void FilterFor(string filter)
         {
             filter = ApplyFullFilterString(filter);
-            DisplayElements.RebuildAasxElements(theEnv, thePackage, theAuxPackages, true, filter);
+            DisplayElements.RebuildAasxElements(packages, selector, true, filter);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)

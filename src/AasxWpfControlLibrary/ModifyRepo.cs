@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,21 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AasxGlobalLogging;
-
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
+using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
@@ -55,53 +50,60 @@ namespace AasxPackageExplorer
         }
         public class LambdaActionContentsChanged : LambdaAction { }
         public class LambdaActionContentsTakeOver : LambdaAction { }
+        public class LambdaActionNavigateTo : LambdaAction
+        {
+            public LambdaActionNavigateTo() { }
+            public LambdaActionNavigateTo(AdminShell.Reference targetReference)
+            {
+                this.targetReference = targetReference;
+            }
+            public AdminShell.Reference targetReference;
+        }
 
         // some flags for the main application
         public List<LambdaAction> WishForOutsideAction = new List<LambdaAction>();
 
         public class RepoItem
         {
-            public Control control = null;
+            public FrameworkElement fwElem = null;
             public Func<object, LambdaAction> setValueLambda = null;
             public object originalValue = null;
             public LambdaAction takeOverLambda = null;
         }
 
-        private Dictionary<Control, RepoItem> items = new Dictionary<Control, RepoItem>();
+        private Dictionary<FrameworkElement, RepoItem> items = new Dictionary<FrameworkElement, RepoItem>();
 
         public void AddWishForAction(LambdaAction la)
         {
             WishForOutsideAction.Add(la);
         }
 
-        public Control RegisterControl(
-            Control c, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
+        public FrameworkElement RegisterControl(
+            FrameworkElement fe, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
             // add item
             var it = new RepoItem();
-            it.control = c;
+            it.fwElem = fe;
             it.setValueLambda = setValue;
             it.takeOverLambda = takeOverLambda;
-            items.Add(c, it);
+            items.Add(fe, it);
 
             // put callbacks accordingly
-            if (c is TextBox)
+            if (fe is TextBox)
             {
-                var tb = c as TextBox;
+                var tb = fe as TextBox;
                 it.originalValue = "" + tb.Text;
                 tb.TextChanged += Tb_TextChanged;
                 tb.KeyUp += Tb_KeyUp;
             }
 
-            if (c is Button)
+            if (fe is Button btn)
             {
-                var b = c as Button;
-                b.Click += B_Click;
+                btn.Click += B_Click;
             }
 
-            if (c is ComboBox)
+            if (fe is ComboBox cb)
             {
-                var cb = c as ComboBox;
                 it.originalValue = "" + cb.Text;
                 cb.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
                   new System.Windows.Controls.TextChangedEventHandler(Tb_TextChanged));
@@ -113,15 +115,63 @@ namespace AasxPackageExplorer
                     cb.KeyUp += Tb_KeyUp;
             }
 
-            if (c is CheckBox)
+            if (fe is CheckBox ch)
             {
-                var cb = c as CheckBox;
-                it.originalValue = cb.IsChecked;
-                cb.Checked += Cb_Checked;
-                cb.Unchecked += Cb_Checked;
+                it.originalValue = ch.IsChecked;
+                ch.Checked += Cb_Checked;
+                ch.Unchecked += Cb_Checked;
             }
 
-            return c;
+            if (fe is MenuItem mi)
+            {
+                mi.Click += B_Click;
+            }
+
+            if (fe is Border brd && brd.Tag is string tag && tag == "DropBox")
+            {
+                brd.AllowDrop = true;
+                brd.DragEnter += (object sender2, DragEventArgs e2) =>
+                {
+                    e2.Effects = DragDropEffects.Copy;
+                };
+                brd.PreviewDragOver += (object sender3, DragEventArgs e3) =>
+                {
+                    e3.Handled = true;
+                };
+                brd.Drop += (object sender4, DragEventArgs e4) =>
+                {
+                    if (e4.Data.GetDataPresent(DataFormats.FileDrop, true))
+                    {
+                        // Note that you can have more than one file.
+                        string[] files = (string[])e4.Data.GetData(DataFormats.FileDrop);
+
+                        // Assuming you have one file that you care about, pass it off to whatever
+                        // handling code you have defined.
+                        if (files != null && files.Length > 0
+                            && sender4 is FrameworkElement fe2 && items.ContainsKey(fe2))
+                        {
+                            var it2 = items[fe2];
+                            if (it2.fwElem is Border brd2 && it2.setValueLambda != null)
+                            {
+                                // update UI
+                                if (brd2.Child is TextBlock tb2)
+                                    tb2.Text = "" + files[0];
+
+                                // value changed
+                                it2.setValueLambda(files[0]);
+
+                                // contents changed
+                                WishForOutsideAction.Add(new LambdaActionContentsChanged());
+                            }
+
+                        }
+                    }
+
+                    e4.Handled = true;
+                };
+            }
+
+            return fe;
         }
 
         private void Cb_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -132,7 +182,7 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is ComboBox cb && it.setValueLambda != null)
+                    if (it.fwElem is ComboBox cb && it.setValueLambda != null)
                         it.setValueLambda((string)cb.SelectedItem);
 
                     // contents changed
@@ -156,7 +206,7 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is CheckBox cb && it.setValueLambda != null)
+                    if (it.fwElem is CheckBox cb && it.setValueLambda != null)
                         it.setValueLambda(cb.IsChecked == true);
 
                     // contents changed
@@ -181,9 +231,9 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is Button)
+                    if (it.fwElem is Button || it.fwElem is MenuItem)
                     {
-                        var action = it.setValueLambda(null);
+                        var action = it.setValueLambda(it.fwElem);
                         if (action != null)
                             WishForOutsideAction.Add(action);
                     }
@@ -203,9 +253,9 @@ namespace AasxPackageExplorer
                 if (sender is Control && items.ContainsKey(sender as Control))
                 {
                     var it = items[sender as Control];
-                    if (it.control is TextBox tb && it.setValueLambda != null)
+                    if (it.fwElem is TextBox tb && it.setValueLambda != null)
                         it.setValueLambda(tb.Text);
-                    if (it.control is ComboBox cb && it.setValueLambda != null)
+                    if (it.fwElem is ComboBox cb && it.setValueLambda != null)
                         it.setValueLambda(cb.Text);
 
                     // contents changed
@@ -253,9 +303,9 @@ namespace AasxPackageExplorer
             {
                 foreach (var it in items.Values)
                 {
-                    if (it.control != null && it.originalValue != null)
+                    if (it.fwElem != null && it.originalValue != null)
                     {
-                        if (it.control is TextBox tb)
+                        if (it.fwElem is TextBox tb)
                             tb.Text = it.originalValue as string;
                     }
 

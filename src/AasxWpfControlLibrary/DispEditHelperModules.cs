@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -20,7 +29,7 @@ namespace AasxPackageExplorer
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperBasics
+    public class DispEditHelperModules : DispEditHelperCopyPaste
     {
         //
         // Inject a number of customised function in modules
@@ -287,7 +296,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditEntityHasDataSpecificationReferences(StackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
+            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false)
         {
             // access
@@ -342,8 +351,9 @@ namespace AasxPackageExplorer
                             this.AddKeyListKeys(
                                 stack, String.Format("reference[{0}]", i),
                                 hasDataSpecification[i].dataSpecification.Keys,
-                                repo, package, addExistingEntities: null /* "All" */,
-                                addPresetNames: addPresetNames, addPresetKeys: addPresetKeys);
+                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                                addExistingEntities: null /* "All" */,
+                                addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists);
                 }
             }
         }
@@ -395,7 +405,8 @@ namespace AasxPackageExplorer
                 {
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo, package,
+                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true);
                 }
@@ -488,7 +499,8 @@ namespace AasxPackageExplorer
             Action<AdminShell.SemanticId> setOutput,
             string statement = null,
             bool checkForCD = false,
-            string addExistingEntities = null)
+            string addExistingEntities = null,
+            CopyPasteBuffer cpb = null)
         {
             // access
             if (stack == null)
@@ -497,6 +509,7 @@ namespace AasxPackageExplorer
             // members
             this.AddGroup(stack, "Semantic ID:", levelColors[1][0], levelColors[1][1]);
 
+            // hint
             this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -513,6 +526,10 @@ namespace AasxPackageExplorer
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
+            // add from Copy Buffer
+            var bufferKeys = CopyPasteBuffer.PreparePresetsForListKeys(cpb);
+
+            // add the keys
             if (this.SafeguardAccess(
                     stack, repo, semanticId, "semanticId:", "Create data element!",
                     v =>
@@ -522,8 +539,14 @@ namespace AasxPackageExplorer
                     }))
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
-                    package: package,
-                    addExistingEntities: addExistingEntities, addFromPool: true);
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                    addExistingEntities: addExistingEntities, addFromPool: true,
+                    addPresetNames: bufferKeys.Item1,
+                    addPresetKeyLists: bufferKeys.Item2,
+                    jumpLambda: (kl) =>
+                    {
+                        return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                    });
         }
 
         //
@@ -653,7 +676,8 @@ namespace AasxPackageExplorer
                     }))
             {
                 this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo, package,
+                    stack, "unitId", dsiec.unitId.Keys, repo,
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true);
             }
 
@@ -765,7 +789,7 @@ namespace AasxPackageExplorer
                     levelColors[1][0], levelColors[1][1]);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
-                    repo, package, "Submodel");
+                    repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.Main, "Submodel");
             }
         }
     }

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +19,8 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AdminShellNS;
+
+using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxIntegrationBase
 {
@@ -196,14 +207,19 @@ namespace AasxIntegrationBase
             }
             else
             {
-                if (sp.color == StoredPrint.ColorRed)
+                switch (sp.color)
                 {
-                    tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
-                }
-
-                if (sp.color == StoredPrint.ColorBlue)
-                {
-                    tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                    default:
+                        throw ExhaustiveMatch.Failed(sp.color);
+                    case StoredPrint.Color.Red:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
+                        break;
+                    case StoredPrint.Color.Blue:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                        break;
+                    case StoredPrint.Color.Black:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
+                        break;
                 }
             }
 

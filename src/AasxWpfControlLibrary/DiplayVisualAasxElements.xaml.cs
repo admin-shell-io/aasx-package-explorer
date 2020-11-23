@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,23 +23,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxWpfControlLibrary;
 using AdminShellNS;
 using JetBrains.Annotations;
-
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
 
 namespace AasxPackageExplorer
 {
@@ -39,9 +34,6 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    /// <summary>
-    /// Interaktionslogik für DiplayAasxElements.xaml
-    /// </summary>
     public partial class DiplayVisualAasxElements : UserControl
     {
         private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();
@@ -442,32 +434,44 @@ namespace AasxPackageExplorer
         }
 
         public void RebuildAasxElements(
-            AdminShell.AdministrationShellEnv env = null,
-            AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null, bool editMode = false, string filterElementName = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector,
+            bool editMode = false, string filterElementName = null)
         {
             // clear tree
             displayedTreeViewLines = new List<VisualElementGeneric>();
 
             // valid?
-            if (env != null)
+            if (packages.MainAvailable)
             {
 
                 // generate lines, add
                 var x = Generators.GenerateVisualElementsFromShellEnv(
-                    treeViewLineCache, env, package, editMode, expandMode: 1);
+                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
 
                 // more?
-                if (auxPackages != null)
-                    foreach (var aux in auxPackages)
-                    {
-                        var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                            treeViewLineCache, aux.AasEnv, aux, editMode, expandMode: 1);
-                        foreach (var xx in x2)
-                            displayedTreeViewLines.Add(xx);
-                    }
+                if (packages.AuxAvailable &&
+                    (selector == PackageCentral.Selector.MainAux
+                     || selector == PackageCentral.Selector.MainAuxFileRepo))
+                {
+                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux, editMode, expandMode: 1);
+                    foreach (var xx in x2)
+                        displayedTreeViewLines.Add(xx);
+                }
+
+                // more?
+                if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
+                {
+                    var pkg = packages.FileRepository.MakeUpFakePackage();
+
+                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                        treeViewLineCache, pkg?.AasEnv, pkg, editMode, expandMode: 1);
+                    foreach (var xx in x2)
+                        displayedTreeViewLines.Add(xx);
+                }
 
                 // may be filter
                 if (filterElementName != null)
@@ -481,7 +485,7 @@ namespace AasxPackageExplorer
                     // emergency
                     displayedTreeViewLines.Add(
                         new VisualElementEnvironmentItem(
-                            null /* no parent */, treeViewLineCache, package, env,
+                            null /* no parent */, treeViewLineCache, packages.Main, packages.Main?.AasEnv,
                             VisualElementEnvironmentItem.ItemType.EmptySet));
                 }
 

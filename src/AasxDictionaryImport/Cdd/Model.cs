@@ -1,10 +1,10 @@
 ﻿/*
- * Copyright (c) 2020 SICK AG <info@sick.de>
- *
- * This software is licensed under the Apache License 2.0 (Apache-2.0).
- * The ExcelDataReder dependency is licensed under the MIT license
- * (https://github.com/ExcelDataReader/ExcelDataReader/blob/develop/LICENSE).
- */
+Copyright (c) 2020 SICK AG <info@sick.de>
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
 
 #nullable enable
 

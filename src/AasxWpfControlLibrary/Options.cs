@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -12,22 +21,6 @@ using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
-
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-The Grapevine REST server framework is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
 
 namespace AasxPackageExplorer
 {
@@ -67,7 +60,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Instantanously replaces the Options singleton instance with the data provided.
+        /// Instantaneously replaces the Options singleton instance with the data provided.
         /// </summary>
         /// <param name="io"></param>
         public static void ReplaceCurr(OptionsInformation io)
@@ -85,105 +78,6 @@ namespace AasxPackageExplorer
     /// </summary>
     public class OptionsInformation
     {
-        /// <summary>
-        /// The authors of the application. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefAuthors = "Michael Hoffmeister, Andreas Orzelski and further";
-
-        /// <summary>
-        /// The current (used) licenses of the application. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefLicenseShort =
-            "This software is licensed under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The Newtonsoft.JSON serialization is licensed under the MIT License (MIT)." + Environment.NewLine +
-            "The QR code generation is licensed under the MIT license (MIT)." + Environment.NewLine +
-            "The Zxing.Net Dot Matrix Code (DMC) generation is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The Grapevine REST server framework is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The AutomationML.Engine is licensed under the MIT license (MIT)." +
-            "The MQTT server and client is licensed " +
-            "under the MIT license (MIT)." + Environment.NewLine +
-            "The IdentityModel OpenID client is licensed " +
-            "under the Apache License 2.0 (Apache-2.0)." + Environment.NewLine +
-            "The jose-jwt object signing and encryption is licensed " +
-            "under the MIT license (MIT).";
-
-        /// <summary>
-        /// The last build date of the application. Based on a resource file. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefBuildDate
-        {
-            get
-            {
-                using (var stream =
-                    Assembly
-                        .GetExecutingAssembly()
-                        .GetManifestResourceStream("AasxWpfControlLibrary.Resources.BuildDate.txt"))
-                {
-                    if (stream != null)
-                    {
-                        TextReader tr = new StreamReader(stream);
-                        string fileContents = tr.ReadToEnd();
-                        if (fileContents.Length > 20)
-                            fileContents = fileContents.Substring(0, 20) + "..";
-                        return (fileContents.Trim());
-                    }
-                }
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// The license texts of the application. Based on a resource file. Use of Options as singleton.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefLicenseLong
-        {
-            get
-            {
-                return AasxPluginHelper.LoadLicenseTxtFromAssemblyDir("LICENSE.txt", Assembly.GetEntryAssembly());
-            }
-        }
-
-        /// <summary>
-        /// The current version string of the application. Use of Options as singleton.
-        /// Note: in the past, there was a semantic version such as "1.9.8.3", but
-        /// this was not maintained properly. Now, a version is derived from the
-        /// build data with the intention, that the according tag in Github-Releases
-        /// will be identical.
-        /// </summary>
-        [JsonIgnore]
-        public string PrefVersion
-        {
-            get
-            {
-                var bdate = "" + PrefBuildDate;
-                var version = "(not available)";
-
-                // %date% in European format (e.g. during development)
-                var m = Regex.Match(bdate, @"(\d+)\.(\d+)\.(\d+)");
-                if (m.Success && m.Groups.Count >= 4)
-                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
-                        + m.Groups[3].Value + "-"
-                        + m.Groups[2].Value + "-"
-                        + m.Groups[1].Value;
-
-                // %date% in US local (e.g. from continous integration from Github)
-                m = Regex.Match(bdate, @"(\d+)\/(\d+)\/(\d+)");
-                if (m.Success && m.Groups.Count >= 4)
-                    version = "v" + ((m.Groups[3].Value.Length == 2) ? "20" : "")
-                        + m.Groups[3].Value + "-"
-                        + m.Groups[1].Value + "-"
-                        + m.Groups[2].Value;
-
-                return version;
-            }
-        }
-
         /// <summary>
         /// This file shall be loaded at start of application
         /// </summary>
@@ -348,22 +242,15 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// For such operations as query repository, do load a new AASX file without
-        /// prmpting the user.
+        /// prompting the user.
         /// </summary>
         public bool LoadWithoutPrompt = false;
 
         /// <summary>
-        /// Point to a list of SecureConnectPresets for the respective dialogie
+        /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
-
-        /// <summary>
-        /// Contains a list of strings which shall be handled over to plugins.
-        /// New: only for internal use, will be found in the DllInfos
-        /// </summary>
-        [JsonIgnore]
-        private List<string> PluginArgs = new List<string>();
 
         public class PluginDllInfo
         {
@@ -392,32 +279,34 @@ namespace AasxPackageExplorer
         [SettableOption]
         public List<PluginDllInfo> PluginDll = new List<PluginDllInfo>();
 
+
+
         /// <summary>
         /// Will save options to a file. Catches exceptions.
         /// </summary>
-        public void WriteJson(string fn)
+        public static void WriteJson(OptionsInformation optionsInformation, string filename)
         {
             // execute in-line, in order to represent to correct order to the human operator
             try
             {
-                var jsonStr = JsonConvert.SerializeObject(this, Formatting.Indented);
-                File.WriteAllText(fn, jsonStr);
+                var jsonStr = JsonConvert.SerializeObject(optionsInformation, Formatting.Indented);
+                File.WriteAllText(filename, jsonStr);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"When writing options JSON file {fn}");
+                Log.Error(ex, $"When writing options to a JSON file: {filename}");
             }
         }
 
         /// <summary>
-        /// Will read options from a file into this instance.
+        /// Will read options from a file into the given instance.
         /// </summary>
-        public void ReadJson(string fn)
+        public static void ReadJson(string fn, OptionsInformation optionsInformation)
         {
             try
             {
                 var jsonStr = File.ReadAllText(fn);
-                JsonConvert.PopulateObject(jsonStr, this);
+                JsonConvert.PopulateObject(jsonStr, optionsInformation);
             }
             catch (Exception ex)
             {
@@ -425,12 +314,11 @@ namespace AasxPackageExplorer
             }
         }
 
-        /// <summary>
-        /// Parse given commandline arguments.
-        /// </summary>
-        /// <param name="args"></param>
-        public void ParseArgs(string[] args)
+        public static void ParseArgs(string[] args, OptionsInformation optionsInformation)
         {
+            // This is a sweep line for plugin arguments.
+            var pluginArgs = new List<string>();
+
             for (int index = 0; index < args.Length; index++)
             {
                 var arg = args[index].Trim().ToLower();
@@ -439,32 +327,32 @@ namespace AasxPackageExplorer
                 // flags
                 if (arg == "-maximized")
                 {
-                    WindowMaximized = true;
+                    optionsInformation.WindowMaximized = true;
                     continue;
                 }
                 if (arg == "-noflyouts")
                 {
-                    UseFlyovers = false;
+                    optionsInformation.UseFlyovers = false;
                     continue;
                 }
                 if (arg == "-intbrowse")
                 {
-                    InternalBrowser = true;
+                    optionsInformation.InternalBrowser = true;
                     continue;
                 }
                 if (arg == "-twopass")
                 {
-                    EclassTwoPass = true;
+                    optionsInformation.EclassTwoPass = true;
                     continue;
                 }
                 if (arg == "-indirect-load-save")
                 {
-                    IndirectLoadSave = true;
+                    optionsInformation.IndirectLoadSave = true;
                     continue;
                 }
                 if (arg == "-load-without-prompt")
                 {
-                    LoadWithoutPrompt = true;
+                    optionsInformation.LoadWithoutPrompt = true;
                     continue;
                 }
 
@@ -476,7 +364,7 @@ namespace AasxPackageExplorer
                     index++;
 
                     // execute in-line, in order to represent to correct order to the human operator
-                    this.ReadJson(fn);
+                    OptionsInformation.ReadJson(fn, optionsInformation);
 
                     // next arg
                     continue;
@@ -484,11 +372,11 @@ namespace AasxPackageExplorer
                 if (arg == "-write-json" && morearg > 0)
                 {
                     // parse
-                    var fn = System.IO.Path.GetFullPath(args[index + 1]);
+                    var filename = System.IO.Path.GetFullPath(args[index + 1]);
                     index++;
 
                     // do
-                    WriteJson(fn);
+                    OptionsInformation.WriteJson(optionsInformation, filename);
 
                     // next arg
                     continue;
@@ -498,156 +386,158 @@ namespace AasxPackageExplorer
                 if (arg == "-left" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowLeft = i;
+                        optionsInformation.WindowLeft = i;
                     index++;
                     continue;
                 }
                 if (arg == "-top" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowTop = i;
+                        optionsInformation.WindowTop = i;
                     index++;
                     continue;
                 }
                 if (arg == "-width" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowWidth = i;
+                        optionsInformation.WindowWidth = i;
                     index++;
                     continue;
                 }
                 if (arg == "-height" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        WindowHeight = i;
+                        optionsInformation.WindowHeight = i;
                     index++;
                     continue;
                 }
 
                 if (arg == "-id-aas" && morearg > 0)
                 {
-                    TemplateIdAas = args[index + 1];
+                    optionsInformation.TemplateIdAas = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-asset" && morearg > 0)
                 {
-                    TemplateIdAsset = args[index + 1];
+                    optionsInformation.TemplateIdAsset = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-sm-template" && morearg > 0)
                 {
-                    TemplateIdSubmodelTemplate = args[index + 1];
+                    optionsInformation.TemplateIdSubmodelTemplate = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-sm-instance" && morearg > 0)
                 {
-                    TemplateIdSubmodelInstance = args[index + 1];
+                    optionsInformation.TemplateIdSubmodelInstance = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-id-cd" && morearg > 0)
                 {
-                    TemplateIdConceptDescription = args[index + 1];
+                    optionsInformation.TemplateIdConceptDescription = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-eclass" && morearg > 0)
                 {
-                    EclassDir = args[index + 1];
+                    optionsInformation.EclassDir = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-qualifiers" && morearg > 0)
                 {
-                    QualifiersFile = args[index + 1];
+                    optionsInformation.QualifiersFile = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-logo" && morearg > 0)
                 {
-                    LogoFile = args[index + 1];
+                    optionsInformation.LogoFile = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-aasxrepo" && morearg > 0)
                 {
-                    AasxRepositoryFn = args[index + 1];
+                    optionsInformation.AasxRepositoryFn = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-contenthome" && morearg > 0)
                 {
-                    ContentHome = args[index + 1];
+                    optionsInformation.ContentHome = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-splash" && morearg > 0)
                 {
                     if (Int32.TryParse(args[index + 1], out int i))
-                        SplashTime = i;
+                        optionsInformation.SplashTime = i;
                     index++;
                     continue;
                 }
                 if (arg == "-options" && morearg > 0)
                 {
-                    OptionsTextFn = args[index + 1];
+                    optionsInformation.OptionsTextFn = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-backupdir" && morearg > 0)
                 {
-                    BackupDir = args[index + 1];
+                    optionsInformation.BackupDir = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-resthost" && morearg > 0)
                 {
-                    RestServerHost = args[index + 1];
+                    optionsInformation.RestServerHost = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-restport" && morearg > 0)
                 {
-                    RestServerPort = args[index + 1];
+                    optionsInformation.RestServerPort = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-rem" && morearg > 0)
                 {
                     // Add one argument to the plugin list
-                    Remarks.Add(args[index + 1]);
+                    optionsInformation.Remarks.Add(args[index + 1]);
                     index++;
                     continue;
                 }
                 if (arg == "-write-all-json" && morearg > 0)
                 {
                     // will be executed very late!
-                    WriteDefaultOptionsFN = args[index + 1];
+                    optionsInformation.WriteDefaultOptionsFN = args[index + 1];
                     index++;
                     continue;
                 }
                 if (arg == "-plugin-dir" && morearg > 0)
                 {
-                    PluginDir = args[index + 1];
+                    optionsInformation.PluginDir = args[index + 1];
                     index++;
                     continue;
                 }
 
-                // (temporary) options for plugins and DLL path
+                // Sweep-line options for plugins and DLL path
                 if (arg == "-p" && morearg > 0)
                 {
-                    // Add exactly one following argument to the plugin list
-                    PluginArgs.Add(args[index + 1]);
+                    // Add exactly one following argument to the sweep line of plugin arguments
+                    pluginArgs.Add(args[index + 1]);
                     index += 1;
                     continue;
                 }
                 if (arg == "-dll" && morearg > 0)
                 {
-                    PluginDll.Add(new PluginDllInfo(args[index + 1], PluginArgs.ToArray()));
-                    PluginArgs.Clear();
+                    // Process and reset the sweep line
+                    optionsInformation.PluginDll.Add(
+                        new PluginDllInfo(args[index + 1], pluginArgs.ToArray()));
+                    pluginArgs.Clear();
                     index++;
                     continue;
                 }
@@ -663,7 +553,7 @@ namespace AasxPackageExplorer
                             try
                             {
                                 var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
-                                AccentColors.Add(i, c);
+                                optionsInformation.AccentColors.Add(i, c);
                             }
                             catch { }
                             // ReSharper enable EmptyGeneralCatchClause
@@ -681,22 +571,23 @@ namespace AasxPackageExplorer
                 if (!arg.StartsWith("-"))
                 {
                     if (System.IO.File.Exists(args[index]))
-                        AasxToLoad = args[index];
+                        optionsInformation.AasxToLoad = args[index];
                 }
             }
         }
 
-        public void TryReadOptionsFile(string fn)
+        public static void TryReadOptionsFile(string filename, OptionsInformation optionsInformation)
         {
             try
             {
-                var optionsTxt = File.ReadAllText(fn);
-                var options = optionsTxt.Split(new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                ParseArgs(options);
+                var optionsTxt = File.ReadAllText(filename);
+                var argsFromFile = optionsTxt.Split(
+                    new[] { '\r', '\n', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                OptionsInformation.ParseArgs(argsFromFile, optionsInformation);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Reading options file: " + fn);
+                Log.Error(ex, "Reading options file: " + filename);
             }
         }
 

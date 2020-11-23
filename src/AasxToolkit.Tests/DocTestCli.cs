@@ -8,26 +8,26 @@ namespace AasxToolkit.Tests
     public class DocTest_Cli_cs
     {
         [Test]
-        public void AtLine189AndColumn16()
+        public void AtLine198AndColumn16()
         {
             Assert.AreEqual("", Cli.Indentation.Indent("", "  "));
         }
 
         [Test]
-        public void AtLine190AndColumn16()
+        public void AtLine199AndColumn16()
         {
             Assert.AreEqual("  test", Cli.Indentation.Indent("test", "  "));
         }
 
         [Test]
-        public void AtLine191AndColumn16()
+        public void AtLine200AndColumn16()
         {
             var nl = System.Environment.NewLine;
             Assert.AreEqual($"  test{nl}  me", Cli.Indentation.Indent("test\nme", "  "));
         }
 
         [Test]
-        public void AtLine195AndColumn16()
+        public void AtLine204AndColumn16()
         {
             var nl = System.Environment.NewLine;
             Assert.AreEqual($"  test{nl}  me", Cli.Indentation.Indent("test\r\nme", "  "));

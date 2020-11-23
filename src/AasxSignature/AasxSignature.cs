@@ -1,9 +1,14 @@
-﻿/* Copyright(c) 2020 Schneider Electric Automation GmbH <marco.mendes@se.com>, author: Marco Mendes */
+﻿/*
+Copyright(c) 2020 Schneider Electric Automation GmbH <marco.mendes@se.com>
+Author: Marco Mendes
 
-/*
 This file has been shortened to include only the features needed by AASX Package Explorer.
 The original file is available at: obsolete/2020-07-20/AasxLibrary/AasxLibrary.cs
- */
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
 
 using System;
 using System.Collections.Generic;

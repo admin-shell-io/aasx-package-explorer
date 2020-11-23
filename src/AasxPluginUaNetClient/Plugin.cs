@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>,
+Author: Michael Hoffmeister.
 
-/* Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>, 
- * author: Michael Hoffmeister.
- * Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>, author: Andreas Orzelski
-*/
+Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
+Author: Andreas Orzelski
 
-/* For OPC Content
+For OPC Content:
 
 Copyright (c) 1996-2016, OPC Foundation. All rights reserved.
 The source code in this file is covered under a dual-license scenario:
@@ -24,6 +18,14 @@ This source code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE
 */
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {

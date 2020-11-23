@@ -1,4 +1,13 @@
-﻿using System;
+/*
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -12,22 +21,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AasxGlobalLogging;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary;
 using AdminShellNS;
-
-/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
-
-The browser functionality is under the cefSharp license
-(see https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE).
-
-The JSON serialization is under the MIT license
-(see https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md).
-
-The QR code generation is under the MIT license (see https://github.com/codebude/QRCoder/blob/master/LICENSE.txt).
-
-The Dot Matrix Code (DMC) generation is under Apache license v.2 (see http://www.apache.org/licenses/LICENSE-2.0).
-*/
 
 namespace AasxPackageExplorer
 {
@@ -89,6 +84,7 @@ namespace AasxPackageExplorer
     // Helpers
     //
 
+    // ReSharper disable once UnusedType.Global
     public class DispEditHelperBasics
     {
         //
@@ -97,8 +93,7 @@ namespace AasxPackageExplorer
 
         private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
-        public AdminShellPackageEnv package = null;
-        public AdminShellPackageEnv[] auxPackages = null;
+        public PackageCentral packages = null;
 
         public IFlyoutProvider flyoutProvider = null;
 
@@ -288,6 +283,18 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
+        public Grid AddSmallGridTo(
+            Grid g, int row, int col,
+            int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
+        {
+            var inner = AddSmallGrid(rows, cols, colWidths, margin);
+            inner.Margin = margin;
+            Grid.SetRow(inner, row);
+            Grid.SetColumn(inner, col);
+            g.Children.Add(inner);
+            return (inner);
+        }
+
         public TextBox AddSmallTextBoxTo(
             Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush foreground = null, Brush background = null,
@@ -303,10 +310,54 @@ namespace AasxPackageExplorer
             tb.Text = text;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
+
+            // (MIHO, 2020-11-13): constrain to one line
+            tb.AcceptsReturn = false;
+            tb.MaxLines = 3;
+            tb.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+
             Grid.SetRow(tb, row);
             Grid.SetColumn(tb, col);
             g.Children.Add(tb);
             return (tb);
+        }
+
+        public Border AddSmallDropBoxTo(
+            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            string text = "", Brush borderBrush = null, Brush background = null,
+            Thickness borderThickness = new Thickness(), int minHeight = 0)
+        {
+            var brd = new Border();
+            brd.Margin = margin;
+            brd.Padding = padding;
+            brd.Tag = "DropBox";
+
+            brd.BorderBrush = Brushes.DarkBlue;
+            if (borderBrush != null)
+                brd.BorderBrush = borderBrush;
+
+            brd.Background = Brushes.LightBlue;
+            if (background != null)
+                brd.Background = background;
+
+            brd.BorderThickness = borderThickness;
+
+            if (minHeight > 0)
+                brd.MinHeight = minHeight;
+
+            var tb = new TextBlock();
+            tb.VerticalAlignment = VerticalAlignment.Center;
+            tb.HorizontalAlignment = HorizontalAlignment.Center;
+            tb.TextWrapping = TextWrapping.Wrap;
+            tb.FontSize = 10.0;
+            tb.Text = text;
+
+            brd.Child = tb;
+
+            Grid.SetRow(brd, row);
+            Grid.SetColumn(brd, col);
+            g.Children.Add(brd);
+            return (brd);
         }
 
         public ComboBox AddSmallComboBoxTo(
@@ -367,6 +418,53 @@ namespace AasxPackageExplorer
             Grid.SetRow(but, row);
             Grid.SetColumn(but, col);
             g.Children.Add(but);
+            return (but);
+        }
+
+        public Button AddSmallContextMenuItemTo(
+            Grid g, int row, int col,
+            string content,
+            ModifyRepo repo,
+            string[] menuHeaders,
+            Func<object, ModifyRepo.LambdaAction> menuItemLambda,
+            Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+            Brush foreground = null, Brush background = null)
+        {
+            // construct button
+            var but = new Button();
+            but.Margin = margin;
+            but.Padding = padding;
+            if (foreground != null)
+                but.Foreground = foreground;
+            if (background != null)
+                but.Background = background;
+            but.Content = content;
+            Grid.SetRow(but, row);
+            Grid.SetColumn(but, col);
+            g.Children.Add(but);
+
+            // on demand: construct and register context menu
+            if (menuHeaders != null && menuHeaders.Length >= 2 && menuItemLambda != null)
+            {
+                but.Click += (sender, e) =>
+                {
+                    var nmi = menuHeaders.Length / 2;
+                    var cm = new ContextMenu();
+                    for (int i = 0; i < nmi; i++)
+                    {
+                        var mi = new MenuItem();
+                        mi.Icon = "" + menuHeaders[2 * i + 0];
+                        mi.Header = "" + menuHeaders[2 * i + 1];
+                        mi.Tag = i;
+                        cm.Items.Add(mi);
+                        repo.RegisterControl(mi, menuItemLambda);
+                    }
+                    cm.PlacementTarget = but;
+                    cm.IsOpen = true;
+                };
+            }
+
+            // ok
             return (but);
         }
 
@@ -466,6 +564,7 @@ namespace AasxPackageExplorer
         public StackPanel AddSubStackPanel(StackPanel view, string caption)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+            AddSmallLabelTo(g, 0, 0, content: caption);
             var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
 
             // in total
@@ -473,6 +572,20 @@ namespace AasxPackageExplorer
 
             // done
             return (sp);
+        }
+
+        public Grid AddSubGrid(StackPanel view, string caption,
+            int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
+        {
+            var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+            AddSmallLabelTo(g, 0, 0, content: caption);
+            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin);
+
+            // in total
+            view.Children.Add(g);
+
+            // done
+            return (inner);
         }
 
         public void AddKeyValueRef(
@@ -537,7 +650,8 @@ namespace AasxPackageExplorer
             var g = new Grid();
             g.Margin = new Thickness(0, 1, 0, 1);
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(this.standardFirstColWidth);
+            gc1.Width = GridLength.Auto;
+            gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new ColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
@@ -625,6 +739,57 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
+        public void AddKeyDropTarget(
+            StackPanel view, string key, string value, string nullValue = null,
+            ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
+        {
+            // draw anyway?
+            if (repo != null && value == null)
+            {
+                // generate default value
+                value = "";
+            }
+            else
+            {
+                // normal handling
+                if (value == null && nullValue == null)
+                    return;
+                if (value == null)
+                    value = nullValue;
+            }
+
+            // Grid
+            var g = new Grid();
+            g.Margin = new Thickness(0, 1, 0, 1);
+            var gc1 = new ColumnDefinition();
+            gc1.Width = new GridLength(this.standardFirstColWidth);
+            g.ColumnDefinitions.Add(gc1);
+            var gc2 = new ColumnDefinition();
+            gc2.Width = new GridLength(1.0, GridUnitType.Star);
+            g.ColumnDefinitions.Add(gc2);
+
+            // Label for key
+            AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: "" + key + ":");
+
+            // Label / TextBox for value
+            if (repo == null)
+            {
+                // view only
+                AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: "" + value);
+            }
+            else
+            {
+                // interactive
+                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2),
+                    borderThickness: new Thickness(1), text: "" + value, minHeight: minHeight);
+                repo.RegisterControl(brd,
+                    setValue);
+            }
+
+            // in total
+            view.Children.Add(g);
+        }
+
         public void AddKeyMultiValue(StackPanel view, string key, string[][] value, string[] widths)
         {
             // draw anyway?
@@ -643,7 +808,8 @@ namespace AasxPackageExplorer
             g.Margin = new Thickness(0, 0, 0, 0);
 
             var gc1 = new ColumnDefinition();
-            gc1.Width = new GridLength(this.standardFirstColWidth);
+            gc1.Width = GridLength.Auto;
+            gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
@@ -742,7 +908,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1+x button
@@ -763,21 +930,6 @@ namespace AasxPackageExplorer
             x.VerticalAlignment = VerticalAlignment.Center;
 
             // 1 + action button
-#if never
-            for (int i = 0; i < numButton; i++)
-            {
-                int currentI = i;
-                repo.RegisterControl(
-                    ElemViewAddSmallButtonTo(
-                        g, 0, 1+i,
-                        margin: new Thickness(0, 0, 5, 0),
-                        padding: new Thickness(5,0,5,0),
-                        content: "" + actionStr[i]),
-                    (o) => {
-                        return action(currentI); // button # as argument!
-                    });
-            }
-#else
             var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new Thickness(5, 0, 5, 0));
             for (int i = 0; i < numButton; i++)
             {
@@ -793,7 +945,7 @@ namespace AasxPackageExplorer
                         return action(currentI); // button # as argument!
                     });
             }
-#endif
+
             // in total
             view.Children.Add(g);
         }
@@ -824,7 +976,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(this.standardFirstColWidth);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
@@ -950,42 +1103,26 @@ namespace AasxPackageExplorer
         }
 
         public List<AdminShell.Key> SmartSelectAasEntityKeys(
-            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages, PackageCentral.Selector selector, string filter = null)
         {
-            if (this.flyoutProvider == null)
-            {
-                var dlg = new SelectAasEntityDialogueByTree(env, filter, package, auxPackages);
-                if (dlg.ShowDialog() == true)
-                    return dlg.ResultKeys;
-            }
-            else
-            {
-                var uc = new SelectAasEntityFlyout(env, filter, package, auxPackages);
-                this.flyoutProvider.StartFlyoverModal(uc);
-                if (uc.ResultKeys != null)
-                    return uc.ResultKeys;
-            }
+            var uc = new SelectAasEntityFlyout(packages, selector, filter);
+            this.flyoutProvider.StartFlyoverModal(uc);
+            if (uc.ResultKeys != null)
+                return uc.ResultKeys;
+
             return null;
         }
 
         public VisualElementGeneric SmartSelectAasEntityVisualElement(
-            AdminShell.AdministrationShellEnv env, string filter = null, AdminShellPackageEnv package = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            PackageCentral packages,
+            PackageCentral.Selector selector,
+            string filter = null)
         {
-            if (this.flyoutProvider == null)
-            {
-                var dlg = new SelectAasEntityDialogueByTree(env, filter, package, auxPackages);
-                if (dlg.ShowDialog() == true)
-                    return dlg.ResultVisualElement;
-            }
-            else
-            {
-                var uc = new SelectAasEntityFlyout(env, filter, package, auxPackages);
-                this.flyoutProvider.StartFlyoverModal(uc);
-                if (uc.ResultVisualElement != null)
-                    return uc.ResultVisualElement;
-            }
+            var uc = new SelectAasEntityFlyout(packages, selector, filter);
+            this.flyoutProvider.StartFlyoverModal(uc);
+            if (uc.ResultVisualElement != null)
+                return uc.ResultVisualElement;
+
             return null;
         }
 
@@ -1087,14 +1224,14 @@ namespace AasxPackageExplorer
             StackPanel view, string key,
             AdminShell.KeyList keys,
             ModifyRepo repo = null,
-            AdminShellPackageEnv package = null,
+            PackageCentral packages = null,
+            PackageCentral.Selector selector = PackageCentral.Selector.Main,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromPool = false,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
+            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null,
-            AdminShellPackageEnv[] auxPackages = null)
+            ModifyRepo.LambdaAction takeOverLambdaAction = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1114,7 +1251,8 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new ColumnDefinition();
-            gc.Width = new GridLength(this.standardFirstColWidth);
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
@@ -1138,12 +1276,9 @@ namespace AasxPackageExplorer
             g.ColumnDefinitions.Add(gc);
 
             // 5 .. buttons behind it
-            for (int i = 0; i < 3; i++)
-            {
-                gc = new ColumnDefinition();
-                gc.Width = new GridLength(1.0, GridUnitType.Auto);
-                g.ColumnDefinitions.Add(gc);
-            }
+            gc = new ColumnDefinition();
+            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
@@ -1158,7 +1293,8 @@ namespace AasxPackageExplorer
 
             // presets?
             var presetNo = 0;
-            if (addPresetNames != null && addPresetKeys != null && addPresetNames.Length == addPresetKeys.Length)
+            if (addPresetNames != null && addPresetKeyLists != null
+                && addPresetNames.Length == addPresetKeyLists.Length)
                 presetNo = addPresetNames.Length;
 
             if (repo == null)
@@ -1169,11 +1305,11 @@ namespace AasxPackageExplorer
             if (keys != null)
             {
                 // populate [+], [Select], [eCl@ss], [Copy] buttons
-                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#" });
+                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
 
-                var g2 = AddSmallGrid(1, 5 + presetNo, colDescs.ToArray());
+                var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
                 Grid.SetRow(g2, 0);
                 Grid.SetColumn(g2, 1);
                 Grid.SetColumnSpan(g2, 7);
@@ -1229,7 +1365,7 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
-                if (addExistingEntities != null && package != null)
+                if (addExistingEntities != null && packages.MainAvailable)
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 3,
@@ -1238,8 +1374,7 @@ namespace AasxPackageExplorer
                             content: "Add existing"),
                         (o) =>
                         {
-                            var k2 = SmartSelectAasEntityKeys(package.AasEnv, addExistingEntities,
-                                        auxPackages: auxPackages);
+                            var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
                             if (k2 != null)
                             {
                                 keys.AddRange(k2);
@@ -1266,9 +1401,21 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                     });
 
+                if (jumpLambda != null)
+                    repo.RegisterControl(
+                        AddSmallButtonTo(
+                            g2, 0, 5,
+                            margin: new Thickness(2, 2, 2, 2),
+                            padding: new Thickness(5, 0, 5, 0),
+                            content: "Jump"),
+                        (o) =>
+                        {
+                            return jumpLambda(keys);
+                        });
+
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 5,
+                        g2, 0, 6,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Clipboard"),
@@ -1282,16 +1429,16 @@ namespace AasxPackageExplorer
 
                 for (int i = 0; i < presetNo; i++)
                 {
-                    var closureKey = addPresetKeys[i];
+                    var closureKey = addPresetKeyLists[i];
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 6 + i,
+                            g2, 0, 7 + i,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "" + addPresetNames[i]),
                         (o) =>
                         {
-                            keys.Add(closureKey);
+                            keys.AddRange(closureKey);
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         });
                 }
@@ -1416,53 +1563,46 @@ namespace AasxPackageExplorer
                                 keys[currentI] == this.highlightField.containingObject)
                             this.HighligtStateElement(tbValue, true);
 
-                        // button [-]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
+                        // button [hamburger]
+                        AddSmallContextMenuItemTo(
                                 g, 0 + i + rowOfs, 5,
+                                "\u22ee",
+                                repo, new[] {
+                                    "\u2702", "Delete",
+                                    "\u25b2", "Move Up",
+                                    "\u25bc", "Move Down",
+                                },
                                 margin: new Thickness(2, 2, 2, 2),
                                 padding: new Thickness(5, 0, 5, 0),
-                                content: "-"),
-                            (o) =>
-                            {
-                                keys.RemoveAt(currentI);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                menuItemLambda: (o) =>
+                                {
+                                    var action = false;
 
-                        // button [up]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
-                                g, 0 + i + rowOfs, 6,
-                                margin: new Thickness(2, 2, 2, 2),
-                                padding: new Thickness(5, 0, 5, 0),
-                                content: "\U0001f805"),
-                            (o) =>
-                            {
-                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                    if (o is MenuItem mi && mi.Tag is int ti)
+                                        switch (ti)
+                                        {
+                                            case 0:
+                                                keys.RemoveAt(currentI);
+                                                action = true;
+                                                break;
+                                            case 1:
+                                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
+                                                action = true;
+                                                break;
+                                            case 2:
+                                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
+                                                action = true;
+                                                break;
+                                        }
 
-                        // button [down]
-                        repo.RegisterControl(
-                            AddSmallButtonTo(
-                                g, 0 + i + rowOfs, 7,
-                                margin: new Thickness(2, 2, 2, 2),
-                                padding: new Thickness(5, 0, 5, 0),
-                                content: "\U0001f807"),
-                            (o) =>
-                            {
-                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
-                                if (takeOverLambdaAction != null)
-                                    return takeOverLambdaAction;
-                                else
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
-                            });
+                                    if (action)
+                                        if (takeOverLambdaAction != null)
+                                            return takeOverLambdaAction;
+                                        else
+                                            return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new ModifyRepo.LambdaActionNone();
+                                });
+
                     }
 
             // in total
@@ -1617,7 +1757,7 @@ namespace AasxPackageExplorer
             for (int i = 0; i < qualifiers.Count; i++)
             {
                 var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "     "); // just a bit spacing to the left
+                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 AddGroup(
                     substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo,
@@ -1647,7 +1787,8 @@ namespace AasxPackageExplorer
                         }))
                 {
                     AddKeyListKeys(
-                        substack, "semanticId", qual.semanticId.Keys, repo, package,
+                        substack, "semanticId", qual.semanticId.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: AdminShell.Key.AllElements,
                         addEclassIrdi: true);
                 }
@@ -1668,7 +1809,8 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo, package, AdminShell.Key.AllElements);
+                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo,
+                        packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements);
                 }
 
             }

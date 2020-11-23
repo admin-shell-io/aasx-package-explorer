@@ -17,14 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.0.0
-        with:
-          vs-version: 15
-
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.2
-
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
@@ -56,6 +48,7 @@ jobs:
 
       - name: Install coveralls.net (to send test coverage)
         working-directory: src
+        if: github.repository == 'admin-shell-io/aasx-package-explorer'
         run: dotnet tool install coveralls.net --version 2.0.0-beta0002
 
       - name: Build
@@ -87,6 +80,7 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        if: github.repository == 'admin-shell-io/aasx-package-explorer'
         run: |
           $headRef = ${env:HEAD_REF}
           if (${env:GITHUB_REF}.StartsWith("refs/pull/"))

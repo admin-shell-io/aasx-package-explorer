@@ -93,6 +93,10 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net461\\AasxPluginImageMap.dll",
       "Args": []
     },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net461\\AasxPluginAdvancedTextEditor.dll",
+      "Args": []
+    },
     /* Festo specific from here on */
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
