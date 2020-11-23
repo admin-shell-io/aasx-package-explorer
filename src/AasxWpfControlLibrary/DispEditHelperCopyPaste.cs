@@ -9,19 +9,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using AasxGlobalLogging;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary;
 using AdminShellNS;
 
 namespace AasxPackageExplorer
@@ -180,7 +170,7 @@ namespace AasxPackageExplorer
                         cpb.item = new CopyPasteItemSME(env, parentContainer, wrapper, sme);
 
                         // user feedback
-                        Log.Info(
+                        AasxPackageExplorer.Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.idShort,
                             "" + sme?.GetElementName(),
@@ -205,7 +195,7 @@ namespace AasxPackageExplorer
                         }
 
                         // user feedback
-                        Log.Info(
+                        AasxPackageExplorer.Log.Singleton.Info(
                             "Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.",
                             "" + item.sme.idShort, "" + item.sme.GetElementName());
 
@@ -323,7 +313,7 @@ namespace AasxPackageExplorer
                         cpb.item = new CopyPasteItemSubmodel(parentContainer, entity, smref, sm);
 
                         // user feedback
-                        Log.Info(
+                        AasxPackageExplorer.Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.idShort,
                             cpb.duplicate
@@ -349,7 +339,7 @@ namespace AasxPackageExplorer
                             }
 
                             // user feedback
-                            Log.Info(
+                            AasxPackageExplorer.Log.Singleton.Info(
                                 "Pasting buffer with Submodel '{0}' to internal buffer.",
                                 "" + item.sm.idShort);
 
@@ -402,7 +392,7 @@ namespace AasxPackageExplorer
                             }
 
                             // user feedback
-                            Log.Info(
+                            AasxPackageExplorer.Log.Singleton.Info(
                                 "Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.",
                                 "" + item.sme.idShort, "" + item.sme.GetElementName());
 
@@ -471,7 +461,7 @@ namespace AasxPackageExplorer
                         cpb.item = new CopyPasteItemIdentifiable(parentContainer, entity);
 
                         // user feedback
-                        Log.Info(
+                        AasxPackageExplorer.Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored {0} '{1}' to internal buffer.{1}",
                             "" + entity.GetElementName(),
@@ -499,7 +489,7 @@ namespace AasxPackageExplorer
                             }
 
                             // user feedback
-                            Log.Info(
+                            AasxPackageExplorer.Log.Singleton.Info(
                                 "Pasting buffer with {0} '{1}' to internal buffer.",
                                 "" + item.entity.GetElementName(),
                                 "" + item.entity.idShort);

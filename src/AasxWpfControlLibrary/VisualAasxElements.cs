@@ -11,11 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using AasxGlobalLogging;
 using AdminShellNS;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -1062,7 +1058,7 @@ namespace AasxPackageExplorer
                         {
                             var sm = env.FindSubmodel(smr);
                             if (sm == null)
-                                Log.Error("Cannot find some submodel!");
+                                AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");
                             else
                                 referencedSubmodels.Add(sm);
 
@@ -1175,7 +1171,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Generating tree of visual elements");
+                AasxPackageExplorer.Log.Singleton.Error(ex, "Generating tree of visual elements");
             }
 
             // end

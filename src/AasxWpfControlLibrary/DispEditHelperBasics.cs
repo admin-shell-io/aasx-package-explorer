@@ -12,14 +12,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using AasxGlobalLogging;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
@@ -1218,7 +1214,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Executing refactoring");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, "Executing refactoring");
                 }
             }
 
@@ -1428,7 +1424,7 @@ namespace AasxPackageExplorer
                     {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
                         Clipboard.SetText(st);
-                        Log.Info("Keys written to clipboard.");
+                        AasxPackageExplorer.Log.Singleton.Info("Keys written to clipboard.");
                         return new ModifyRepo.LambdaActionNone();
                     });
 
@@ -1748,7 +1744,8 @@ namespace AasxPackageExplorer
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                                AasxPackageExplorer.Log.Singleton.Error(
+                                    ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
                             }
                         }
 

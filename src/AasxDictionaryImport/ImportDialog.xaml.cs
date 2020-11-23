@@ -17,7 +17,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using AasxGlobalLogging;
 
 namespace AasxDictionaryImport
 {
@@ -201,7 +200,7 @@ namespace AasxDictionaryImport
                 }
                 catch (Model.ImportException ex)
                 {
-                    Log.Error(ex, "Could not load the selected data source.");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, "Could not load the selected data source.");
                     MessageBox.Show(
                      "Could not load the selected data source.\n" +
                      "Details: " + ex.Message,
