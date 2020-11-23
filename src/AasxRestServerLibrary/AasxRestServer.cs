@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -403,15 +403,16 @@ namespace AasxRestServerLibrary
 
         public static void Stop()
         {
-            // ReSharper disable EmptyGeneralCatchClause
             if (startedRestServer != null)
                 try
                 {
                     startedRestServer.Stop();
                     startedRestServer = null;
                 }
-                catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
         }
     }
 }

@@ -548,15 +548,16 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < 10; i++)
                         if (arg == $"-c{i:0}" && morearg > 0)
                         {
-                            // ReSharper disable EmptyGeneralCatchClause
                             // ReSharper disable PossibleNullReferenceException
                             try
                             {
                                 var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
                                 optionsInformation.AccentColors.Add(i, c);
                             }
-                            catch { }
-                            // ReSharper enable EmptyGeneralCatchClause
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
                             // ReSharper enable PossibleNullReferenceException
 
                             index++;

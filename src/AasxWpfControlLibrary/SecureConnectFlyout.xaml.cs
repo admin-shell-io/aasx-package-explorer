@@ -251,14 +251,15 @@ namespace AasxPackageExplorer
                 // save
                 if (true == dlg.ShowDialog())
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = this.ThisToPreset();
                         pr.SaveToFile(dlg.FileName);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
             }
 
@@ -273,14 +274,15 @@ namespace AasxPackageExplorer
                 // save
                 if (true == dlg.ShowDialog())
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = SecureConnectPreset.LoadFromFile(dlg.FileName);
                         this.ActivatePreset(pr);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
             }
 

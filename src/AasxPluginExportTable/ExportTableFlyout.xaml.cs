@@ -225,14 +225,15 @@ namespace AasxPluginExportTable
                 // save
                 if (true == dlg.ShowDialog())
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = this.ThisToPreset();
                         pr.SaveToFile(dlg.FileName);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
             }
 
@@ -247,14 +248,15 @@ namespace AasxPluginExportTable
                 // save
                 if (true == dlg.ShowDialog())
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var pr = ExportTableRecord.LoadFromFile(dlg.FileName);
                         this.ThisFromPreset(pr);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -987,7 +987,6 @@ namespace AasxPackageExplorer
             if (Plugins.LoadedPlugins != null)
                 foreach (var lpi in Plugins.LoadedPlugins.Values)
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var x =
@@ -996,8 +995,10 @@ namespace AasxPackageExplorer
                         if (x != null && (bool)x.obj)
                             pluginsToCheck.Add(lpi);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
 
             // many operytions -> make it bulletproof
@@ -1072,7 +1073,6 @@ namespace AasxPackageExplorer
                             // check for visual extensions
                             foreach (var lpi in pluginsToCheck)
                             {
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     var ext = lpi.InvokeAction(
@@ -1085,8 +1085,10 @@ namespace AasxPackageExplorer
                                         tiSm.Members.Add(tiExt);
                                     }
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
                             }
 
                             // recursively into the submodel elements

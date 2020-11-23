@@ -187,7 +187,6 @@ namespace AasxPluginDocumentShelf
                     theDocEntitiesToPreview.RemoveAt(0);
                 }
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     // temp input
@@ -240,8 +239,10 @@ namespace AasxPluginDocumentShelf
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             // over all items in order to check, if a prepared image shall be displayed
@@ -258,7 +259,6 @@ namespace AasxPluginDocumentShelf
                     de.ImageReadyToBeLoaded = null;
 
                     // try load
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         // convert here, as the tick-Thread in STA / UI thread
@@ -275,15 +275,20 @@ namespace AasxPluginDocumentShelf
                                 {
                                     File.Delete(fn);
                                 }
-                                catch { }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                         // remember in the cache
                         if (referableHashToCachedBitmap != null &&
                             !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
                             referableHashToCachedBitmap[de.ReferableHash] = bi;
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
             }
         }

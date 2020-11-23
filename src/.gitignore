@@ -1,3 +1,6 @@
+# Throw-away scripts
+deleteme.py
+
 # AASX Package Explorer-specific ignores
 artefacts/
 */bin/

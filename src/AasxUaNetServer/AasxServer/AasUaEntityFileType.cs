@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -200,8 +200,9 @@ namespace AasOpcUaServer
             {
                 s = package.GetLocalStreamFromPackage(file.value);
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return false;
             }
 
@@ -378,8 +379,10 @@ namespace AasOpcUaServer
                     instData.UpdateSize(Convert.ToUInt64(instData.packHandler.GetLength(fh)));
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.Error(ex, "The method could not be executed.");
+
                 // treat every exception the same
                 return new ServiceResult(StatusCodes.BadInvalidArgument);
             }

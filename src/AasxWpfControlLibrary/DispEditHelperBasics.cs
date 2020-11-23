@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -124,7 +124,6 @@ namespace AasxPackageExplorer
                 this.lastHighlightedField = fe;
 
             // be a little careful
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 // Textbox
@@ -176,7 +175,10 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                        }
 
                         cb.Focus();
                     }
@@ -187,21 +189,24 @@ namespace AasxPackageExplorer
                     }
                 }
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
         }
 
         public void ClearHighlights()
         {
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 if (this.lastHighlightedField == null)
                     return;
                 HighligtStateElement(this.lastHighlightedField, highlighted: false);
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
         }
 
         //

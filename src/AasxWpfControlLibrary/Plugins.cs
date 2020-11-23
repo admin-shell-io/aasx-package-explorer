@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -223,7 +223,6 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pi in LoadedPlugins.Values)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var x = pi.InvokeAction("get-licenses") as AasxPluginResultLicense;
@@ -239,8 +238,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             // OK
@@ -329,7 +330,6 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pluginInstance in LoadedPlugins.Values)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     for (int i = 0; i < 999; i++)
@@ -358,8 +358,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
         }
 

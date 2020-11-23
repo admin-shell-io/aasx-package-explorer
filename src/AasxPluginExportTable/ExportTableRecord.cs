@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -756,29 +756,31 @@ namespace AasxPluginExportTable
             // colors
             if (cr.Bg != null)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 // ReSharper disable PossibleNullReferenceException
                 try
                 {
                     var bgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Bg);
                     cell.Style.Fill.BackgroundColor = XLColor.FromArgb(bgc.A, bgc.R, bgc.G, bgc.B);
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
                 // ReSharper enable PossibleNullReferenceException
             }
 
             if (cr.Fg != null)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 // ReSharper disable PossibleNullReferenceException
                 try
                 {
                     var fgc = (System.Windows.Media.Color)ColorConverter.ConvertFromString(cr.Fg);
                     cell.Style.Font.FontColor = XLColor.FromArgb(fgc.A, fgc.R, fgc.G, fgc.B);
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
                 // ReSharper enable PossibleNullReferenceException
             }
 
@@ -969,7 +971,6 @@ namespace AasxPluginExportTable
 
                 if (cr.Bg != null)
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     // ReSharper disable PossibleNullReferenceException
                     try
                     {
@@ -983,8 +984,10 @@ namespace AasxPluginExportTable
                             Val = ShadingPatternValues.Clear
                         });
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                     // ReSharper enable PossibleNullReferenceException
                 }
             }
@@ -1002,7 +1005,6 @@ namespace AasxPluginExportTable
 
             if (cr.Fg != null || cr.Font != null)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var rp = new RunProperties();
@@ -1026,8 +1028,10 @@ namespace AasxPluginExportTable
 
                     run.RunProperties = rp;
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             para.Append(run);

@@ -168,7 +168,6 @@ namespace AasxPackageExplorer
             {
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
@@ -246,8 +245,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
         }
 
@@ -279,7 +280,6 @@ namespace AasxPackageExplorer
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
@@ -345,8 +345,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             // 2st pass: search all unit files only for unit-IRDIs
@@ -360,7 +362,6 @@ namespace AasxPackageExplorer
 
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
 
@@ -414,8 +415,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
         }
@@ -612,7 +615,6 @@ namespace AasxPackageExplorer
             // Phase 2: fix some shortcomings
             //
 
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
@@ -647,8 +649,10 @@ namespace AasxPackageExplorer
                     }
                 }
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
 
             // ok
             return res;

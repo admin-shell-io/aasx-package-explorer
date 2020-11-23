@@ -355,7 +355,6 @@ namespace AasxPluginBomStructure
                     // now, try to finally draw relationships
                     if (pass == 3)
                     {
-                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             // build label text
@@ -393,8 +392,10 @@ namespace AasxPluginBomStructure
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.LineWidth = 1;
                         }
-                        catch { }
-                        // ReSharper enable EmptyGeneralCatchClause
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                        }
                     }
                 }
 
@@ -426,7 +427,6 @@ namespace AasxPluginBomStructure
                     if (pass == 3 && parentRef != null)
                     {
                         // get nodes
-                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             if (!referableToNode.ContainsKey(parentRef) || !referableToNode.ContainsKey(prop))
@@ -442,8 +442,10 @@ namespace AasxPluginBomStructure
                             e.Attr.LineWidth = 2;
                             e.Attr.Weight = 10;
                         }
-                        catch { }
-                        // ReSharper enable EmptyGeneralCatchClause
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                        }
                     }
                 }
 
@@ -661,7 +663,6 @@ namespace AasxPluginBomStructure
             if (e != null && e.Clicks > 1 && e.LeftButtonIsPressed && theViewer != null && this.eventStack != null)
             {
                 // double-click detected, can access the viewer?
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var x = theViewer.ObjectUnderMouseCursor;
@@ -691,8 +692,10 @@ namespace AasxPluginBomStructure
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
         }
 
@@ -742,7 +745,6 @@ namespace AasxPluginBomStructure
             if (cb == null || theGraph == null || theViewer == null)
                 return;
 
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 // try to remember preferred setting
@@ -759,8 +761,10 @@ namespace AasxPluginBomStructure
                 theViewer.Graph = null;
                 theViewer.Graph = theGraph;
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
         }
     }
 }
