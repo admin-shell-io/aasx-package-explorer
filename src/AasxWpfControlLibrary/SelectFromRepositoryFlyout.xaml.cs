@@ -95,8 +95,9 @@ namespace AasxPackageExplorer
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 this.TheAasxRepo = null;
                 return false;
             }

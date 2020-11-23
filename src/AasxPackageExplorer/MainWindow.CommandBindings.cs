@@ -56,7 +56,6 @@ namespace AasxPackageExplorer
 
         public string DetermineInitialDirectory(string existingFn = null)
         {
-            // ReSharper disable EmptyGeneralCatchClause
             string res = null;
 
             if (existingFn != null)
@@ -64,7 +63,10 @@ namespace AasxPackageExplorer
                 {
                     res = System.IO.Path.GetDirectoryName(existingFn);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
             // may be can used last?
             if (res == null && lastFnForInitialDirectory != null)
@@ -72,9 +74,11 @@ namespace AasxPackageExplorer
                 {
                     res = System.IO.Path.GetDirectoryName(lastFnForInitialDirectory);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
-            // ReSharper enable EmptyGeneralCatchClause
             return res;
         }
 
@@ -1444,7 +1448,10 @@ namespace AasxPackageExplorer
                         worker.CancelAsync();
                         worker.Dispose();
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
 #endif
             });
         }
@@ -2349,7 +2356,10 @@ namespace AasxPackageExplorer
                                         ));
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
             }
 
             // could be nothing
@@ -2397,7 +2407,10 @@ namespace AasxPackageExplorer
                         cdres = rgsm.cds;
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
                 // something
                 if (smres == null)

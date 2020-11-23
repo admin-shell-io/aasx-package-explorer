@@ -225,11 +225,7 @@ namespace AasxIntegrationBase
             if (ex == null)
                 return;
 
-            var s = String.Format("Error {0}: {1} {2} at {3}.",
-                where,
-                ex.Message,
-                ((ex.InnerException != null) ? ex.InnerException.Message : ""),
-                AdminShellNS.AdminShellUtil.ShortLocation(ex));
+            var s = AdminShellNS.Logging.FormatError(ex, where);
 
             var p = new StoredPrint(StoredPrint.Color.Red, s, isError: true);
             p.stackTrace = ex.StackTrace;

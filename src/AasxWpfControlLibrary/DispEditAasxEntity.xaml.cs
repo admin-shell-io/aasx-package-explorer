@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -225,7 +225,6 @@ namespace AasxPackageExplorer
                             {
                                 var res = false;
 
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     res = env.RenameIdentifiable<AdminShell.Asset>(
@@ -233,8 +232,10 @@ namespace AasxPackageExplorer
                                         new AdminShell.Identification(
                                             asset.identification.idType, uc.Text));
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                                 if (!res)
                                     helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -1357,7 +1358,6 @@ namespace AasxPackageExplorer
                                     {
                                         var res = false;
 
-                                        // ReSharper disable EmptyGeneralCatchClause
                                         try
                                         {
                                             res = env.RenameIdentifiable<AdminShell.Submodel>(
@@ -1365,8 +1365,10 @@ namespace AasxPackageExplorer
                                                 new AdminShell.Identification(
                                                     submodel.identification.idType, uc.Text));
                                         }
-                                        catch { }
-                                        // ReSharper enable EmptyGeneralCatchClause
+                                        catch (Exception ex)
+                                        {
+                                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                        }
 
                                         if (!res)
                                             helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -1496,15 +1498,16 @@ namespace AasxPackageExplorer
                             {
                                 var res = false;
 
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
                                         cd.identification,
                                         new AdminShell.Identification(cd.identification.idType, uc.Text));
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                                 if (!res)
                                     helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -3568,7 +3571,6 @@ namespace AasxPackageExplorer
                 // create controls
                 object result = null;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     // replace at top level
@@ -3577,8 +3579,10 @@ namespace AasxPackageExplorer
                         result = x.thePlugin.InvokeAction(
                             "fill-panel-visual-extension", x.thePackage, x.theReferable, theMasterPanel);
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
                 // add?
                 if (result == null)

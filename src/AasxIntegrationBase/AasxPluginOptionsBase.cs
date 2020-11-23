@@ -69,7 +69,6 @@ namespace AasxIntegrationBase
             // search
             var files = Directory.GetFiles(baseDir, "*.add-options.json");
 
-            // ReSharper disable EmptyGeneralCatchClause
             foreach (var fn in files)
                 try
                 {
@@ -81,7 +80,6 @@ namespace AasxIntegrationBase
                 {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
-            // ReSharper enable EmptyGeneralCatchClause
         }
     }
 }

@@ -143,9 +143,9 @@ namespace WpfMtpControl
                                     nids.Add(ir.nid);
                                     this.nodeIdToItemRef.Add(ir.nid, ir);
                                 }
-                                catch
+                                catch (Exception ex)
                                 {
-                                    // ignored
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                                 }
                             }
 

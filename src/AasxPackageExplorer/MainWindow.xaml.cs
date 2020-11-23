@@ -460,7 +460,6 @@ namespace AasxPackageExplorer
                             AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
 
                     // asset thumbnail
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         // identify which stream to use..
@@ -484,7 +483,10 @@ namespace AasxPackageExplorer
                                     }
                                 }
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
 
                         if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
                             this.theOnlineConnection.IsConnected())
@@ -506,15 +508,18 @@ namespace AasxPackageExplorer
                                     }
                                 }
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
 
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // no error, intended behaviour, as thumbnail might not exist / be faulty in some way
                         // (not violating the spec)
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     }
-                    // ReSharper enable EmptyGeneralCatchClause
                 }
             }
 
@@ -547,7 +552,10 @@ namespace AasxPackageExplorer
                     this.LogoImage.Source = bi;
                     this.LogoImage.UpdateLayout();
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
             // adding the CEF Browser conditionally
             theContentBrowser.Start(Options.Curr.ContentHome, Options.Curr.InternalBrowser);
@@ -1285,14 +1293,14 @@ namespace AasxPackageExplorer
             }
 
             Log.Info("Closing ..");
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 packages.Main.Close();
             }
-            catch (Exception)
-            { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
 
             e.Cancel = false;
         }

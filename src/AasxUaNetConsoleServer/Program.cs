@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -123,9 +123,9 @@ namespace Net46ConsoleServer
                     return await Task.FromResult((result.KeyChar == 'y') || (result.KeyChar == 'Y')
                         || (result.KeyChar == '\r'));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // intentionally fall through
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
             }
             return await Task.FromResult(true);
