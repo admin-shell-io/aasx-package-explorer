@@ -638,7 +638,7 @@ namespace AasxPluginBomStructure
             theViewer = viewer;
             theReferable = sm;
 
-            // return viewer for advanced manilulation
+            // return viewer for advanced manipulation
             return viewer;
 
         }
