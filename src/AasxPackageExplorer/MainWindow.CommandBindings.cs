@@ -1210,7 +1210,7 @@ namespace AasxPackageExplorer
 
                     if (connect)
                     {
-                        if (packages.Main.IsOpen)
+                        if (packages.Main != null && packages.Main.IsOpen)
                         {
                             packages.Main.Close();
                         }
