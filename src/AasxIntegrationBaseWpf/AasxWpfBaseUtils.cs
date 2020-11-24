@@ -142,7 +142,6 @@ namespace AasxIntegrationBase
             if (package == null || path == null)
                 return null;
 
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 var thumbStream = package.GetLocalStreamFromPackage(path);
@@ -160,8 +159,10 @@ namespace AasxIntegrationBase
                 // give this back
                 return bi;
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
 
             return null;
         }
@@ -236,7 +237,6 @@ namespace AasxIntegrationBase
                 var link = new Hyperlink(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
                 link.IsEnabled = true;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     link.Inlines.Add("" + sp.linkTxt + Environment.NewLine);
@@ -244,8 +244,10 @@ namespace AasxIntegrationBase
                     if (linkClickHandler != null)
                         link.Click += linkClickHandler;
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
         }
     }

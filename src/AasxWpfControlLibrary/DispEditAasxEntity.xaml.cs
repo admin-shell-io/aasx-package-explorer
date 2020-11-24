@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -9,25 +9,15 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using AasxGlobalLogging;
 using AasxIntegrationBase;
-using AasxPackageExplorer;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 
@@ -176,7 +166,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "When printing, an error occurred");
+                        AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
                     }
 
                     if (helper.flyoutProvider != null) helper.flyoutProvider.CloseFlyover();
@@ -225,7 +215,6 @@ namespace AasxPackageExplorer
                             {
                                 var res = false;
 
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     res = env.RenameIdentifiable<AdminShell.Asset>(
@@ -233,8 +222,10 @@ namespace AasxPackageExplorer
                                         new AdminShell.Identification(
                                             asset.identification.idType, uc.Text));
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                                 if (!res)
                                     helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -494,7 +485,7 @@ namespace AasxPackageExplorer
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Error(ex, $"copying AAS");
+                                            AasxPackageExplorer.Log.Singleton.Error(ex, $"copying AAS");
                                         }
 
                                         //
@@ -523,7 +514,8 @@ namespace AasxPackageExplorer
                                                 }
                                                 catch (Exception ex)
                                                 {
-                                                    Log.Error(ex, $"copying supplementary file {fn}");
+                                                    AasxPackageExplorer.Log.Singleton.Error(
+                                                        ex, $"copying supplementary file {fn}");
                                                 }
                                             }
                                         }
@@ -703,13 +695,13 @@ namespace AasxPackageExplorer
                                 ptd = "/";
                             packages.Main.AddSupplementaryFileToStore(
                                 PackageSourcePath, ptd, PackageTargetFn, PackageEmbedAsThumbnail);
-                            Log.Info(
+                            AasxPackageExplorer.Log.Singleton.Info(
                                 "Added {0} to pending package items. A save-operation is required.",
                                 PackageSourcePath);
                         }
                         catch (Exception ex)
                         {
-                            Log.Error(ex, "Adding file to package");
+                            AasxPackageExplorer.Log.Singleton.Error(ex, "Adding file to package");
                         }
                         PackageSourcePath = "";
                         PackageTargetFn = "";
@@ -790,13 +782,13 @@ namespace AasxPackageExplorer
                            try
                            {
                                packages.Main.DeleteSupplementaryFile(psf);
-                               Log.Info(
+                               AasxPackageExplorer.Log.Singleton.Info(
                                "Added {0} to pending package items to be deleted. " +
                                    "A save-operation might be required.", PackageSourcePath);
                            }
                            catch (Exception ex)
                            {
-                               Log.Error(ex, "Deleting file in package");
+                               AasxPackageExplorer.Log.Singleton.Error(ex, "Deleting file in package");
                            }
                            return new ModifyRepo.LambdaActionRedrawAllElements(
                            nextFocus: VisualElementEnvironmentItem.GiveDataObject(
@@ -1357,7 +1349,6 @@ namespace AasxPackageExplorer
                                     {
                                         var res = false;
 
-                                        // ReSharper disable EmptyGeneralCatchClause
                                         try
                                         {
                                             res = env.RenameIdentifiable<AdminShell.Submodel>(
@@ -1365,8 +1356,10 @@ namespace AasxPackageExplorer
                                                 new AdminShell.Identification(
                                                     submodel.identification.idType, uc.Text));
                                         }
-                                        catch { }
-                                        // ReSharper enable EmptyGeneralCatchClause
+                                        catch (Exception ex)
+                                        {
+                                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                        }
 
                                         if (!res)
                                             helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -1496,15 +1489,16 @@ namespace AasxPackageExplorer
                             {
                                 var res = false;
 
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
                                         cd.identification,
                                         new AdminShell.Identification(cd.identification.idType, uc.Text));
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                                 if (!res)
                                     helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -2815,20 +2809,23 @@ namespace AasxPackageExplorer
                                         var psf = psfs?.FindByUri(fl.value);
                                         if (psf == null)
                                         {
-                                            Log.Error($"Not able to locate supplmentary file {fl.value} for removal! " +
+                                            AasxPackageExplorer.Log.Singleton.Error(
+                                                $"Not able to locate supplmentary file {fl.value} for removal! " +
                                                 $"Aborting!");
                                         }
                                         else
                                         {
-                                            Log.Info($"Removing file {fl.value} ..");
+                                            AasxPackageExplorer.Log.Singleton.Info($"Removing file {fl.value} ..");
                                             packages.Main.DeleteSupplementaryFile(psf);
-                                            Log.Info($"Added {fl.value} to pending package items to be deleted. " +
+                                            AasxPackageExplorer.Log.Singleton.Info(
+                                                $"Added {fl.value} to pending package items to be deleted. " +
                                                 "A save-operation might be required.");
                                         }
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Error(ex, $"Removing file {fl.value} in package");
+                                        AasxPackageExplorer.Log.Singleton.Error(
+                                            ex, $"Removing file {fl.value} in package");
                                     }
 
                                     // clear value
@@ -2882,11 +2879,12 @@ namespace AasxPackageExplorer
 
                                     if (targetPath == null)
                                     {
-                                        Log.Error($"Error creating text-file {ptd + ptfn} within package");
+                                        AasxPackageExplorer.Log.Singleton.Error(
+                                            $"Error creating text-file {ptd + ptfn} within package");
                                     }
                                     else
                                     {
-                                        Log.Info(
+                                        AasxPackageExplorer.Log.Singleton.Info(
                                             $"Added empty text-file {ptd + ptfn} to pending package items. " +
                                             $"A save-operation is required.");
                                         fl.mimeType = mimeType;
@@ -2895,7 +2893,8 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Error(ex, $"Creating text-file {ptd + ptfn} within package");
+                                    AasxPackageExplorer.Log.Singleton.Error(
+                                        ex, $"Creating text-file {ptd + ptfn} within package");
                                 }
                                 return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
                             }
@@ -2909,13 +2908,14 @@ namespace AasxPackageExplorer
                                     var psf = psfs?.FindByUri(fl.value);
                                     if (psf == null)
                                     {
-                                        Log.Error($"Not able to locate supplmentary file {fl.value} for edit. " +
+                                        AasxPackageExplorer.Log.Singleton.Error(
+                                            $"Not able to locate supplmentary file {fl.value} for edit. " +
                                             $"Aborting!");
                                         return new ModifyRepo.LambdaActionNone();
                                     }
 
                                     // try read ..
-                                    Log.Info($"Reading text-file {fl.value} ..");
+                                    AasxPackageExplorer.Log.Singleton.Info($"Reading text-file {fl.value} ..");
                                     string contents;
                                     using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(fl.value))
                                     {
@@ -2929,7 +2929,8 @@ namespace AasxPackageExplorer
                                     // test
                                     if (contents == null)
                                     {
-                                        Log.Error($"Not able to read contents from  supplmentary file {fl.value} " +
+                                        AasxPackageExplorer.Log.Singleton.Error(
+                                            $"Not able to read contents from  supplmentary file {fl.value} " +
                                             $"for edit. Aborting!");
                                         return new ModifyRepo.LambdaActionNone();
                                     }
@@ -2954,7 +2955,8 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Error(ex, $"Edit text-file {fl.value} in package.");
+                                    AasxPackageExplorer.Log.Singleton.Error(
+                                        ex, $"Edit text-file {fl.value} in package.");
                                 }
 
                                 // reshow
@@ -3020,11 +3022,12 @@ namespace AasxPackageExplorer
 
                                     if (targetPath == null)
                                     {
-                                        Log.Error($"Error adding file {uploadAssistance.SourcePath} to package");
+                                        AasxPackageExplorer.Log.Singleton.Error(
+                                            $"Error adding file {uploadAssistance.SourcePath} to package");
                                     }
                                     else
                                     {
-                                        Log.Info(
+                                        AasxPackageExplorer.Log.Singleton.Info(
                                             $"Added {ptfn} to pending package items. A save-operation is required.");
                                         fl.mimeType = mimeType;
                                         fl.value = targetPath;
@@ -3032,7 +3035,8 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.Error(ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                                    AasxPackageExplorer.Log.Singleton.Error(
+                                        ex, $"Adding file {uploadAssistance.SourcePath} to package");
                                 }
 
                                 // refresh dialogue
@@ -3568,7 +3572,6 @@ namespace AasxPackageExplorer
                 // create controls
                 object result = null;
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     // replace at top level
@@ -3577,8 +3580,10 @@ namespace AasxPackageExplorer
                         result = x.thePlugin.InvokeAction(
                             "fill-panel-visual-extension", x.thePackage, x.theReferable, theMasterPanel);
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
                 // add?
                 if (result == null)

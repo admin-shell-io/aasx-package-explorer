@@ -264,8 +264,10 @@ namespace AasOpcUaServer
                         {
                             stream.Close();
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                        }
 
                         // stop afterwards
                         if (theServerOptions.FinalizeAction != null)

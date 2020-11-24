@@ -48,7 +48,6 @@ namespace WpfMtpControl
         private static void PrepareColor(string preset, ref Brush color)
         {
             // going mad about this ..
-            // ReSharper disable once EmptyGeneralCatchClause
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once PossibleNullReferenceException
             if (preset.HasContent())
@@ -58,7 +57,10 @@ namespace WpfMtpControl
                     if (c != null)
                         color = new SolidColorBrush(c);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
         }
 
         public void Prepare()

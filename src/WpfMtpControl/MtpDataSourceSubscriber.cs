@@ -68,8 +68,10 @@ namespace WpfMtpControl
                         if (si.ConvertToType == typeof(uint))
                             o = Convert.ToUInt32(o);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+
                         // on any error, simply do not call lambda
                         return;
                     }

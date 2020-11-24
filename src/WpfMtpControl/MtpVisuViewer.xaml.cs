@@ -599,8 +599,9 @@ namespace WpfMtpControl
                 if (ratio > 0.05)
                     ApplyCanvasZoom(1.0f / ratio);
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 ApplyCanvasZoom(1.0f);
             }
         }

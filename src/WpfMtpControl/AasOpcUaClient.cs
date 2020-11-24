@@ -67,7 +67,6 @@ namespace WpfMtpControl
         {
             // start server as a worker (will start in the background)
             // ReSharper disable once LocalVariableHidesMember
-            // ReSharper disable EmptyGeneralCatchClause
             var worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += (s1, e1) =>
@@ -87,8 +86,9 @@ namespace WpfMtpControl
                         Thread.Sleep(200);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
             };
             worker.RunWorkerCompleted += (s1, e1) =>
@@ -96,7 +96,6 @@ namespace WpfMtpControl
                 ;
             };
             worker.RunWorkerAsync();
-            // ReSharper enable EmptyGeneralCatchClause
         }
 
         public void Cancel()
@@ -107,9 +106,9 @@ namespace WpfMtpControl
                     worker.CancelAsync();
                     worker.Dispose();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
         }
 
@@ -141,8 +140,9 @@ namespace WpfMtpControl
             {
                 config = await application.LoadApplicationConfiguration(false);
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.Error(ex, "Error reading the config file");
                 exitCode = AasOpcUaClientStatus.ErrorReadConfigFile;
                 return;
             }

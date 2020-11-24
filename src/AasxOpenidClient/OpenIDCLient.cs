@@ -80,10 +80,9 @@ namespace AasxOpenIdClient
                         outputDir = sr.ReadLine();
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(tag + ".dat " + " can not be read!");
+                    AdminShellNS.LogInternally.That.Error(ex, $"The file {tag}.dat can not be read.");
                     return;
                 }
                 withOpenidFile = true;
@@ -208,9 +207,9 @@ namespace AasxOpenIdClient
                                         Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
                                         File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
                                     }
-                                    catch (Exception e)
+                                    catch (Exception ex)
                                     {
-                                        Console.WriteLine(e.Message);
+                                        AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {operation}");
                                         lastOperation = operation;
                                         operation = "error";
                                     }
@@ -218,9 +217,9 @@ namespace AasxOpenIdClient
                                     break;
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine(e.Message);
+                            AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {operation}");
                             lastOperation = operation;
                             operation = "error";
                         }
@@ -245,16 +244,15 @@ namespace AasxOpenIdClient
                             operation = lastOperation;
                             lastOperation = "";
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine(e.Message);
+                            AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {operation}");
                             lastOperation = operation;
                             operation = "error";
                         }
                         break;
                     case "error":
-                        Console.WriteLine("Can not " + lastOperation + "!");
-                        System.Windows.Forms.MessageBox.Show("Can not " + lastOperation + "!",
+                        System.Windows.Forms.MessageBox.Show($"Can not perform: {lastOperation}",
                             "Error", MessageBoxButtons.OK);
                         break;
                 }
@@ -344,10 +342,9 @@ namespace AasxOpenIdClient
                 Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
                 File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("Can not get .AASX!");
+                AdminShellNS.LogInternally.That.Error(ex, $"Can not get .AASX.");
                 return;
             }
         }

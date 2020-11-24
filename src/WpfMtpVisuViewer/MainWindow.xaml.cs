@@ -82,9 +82,9 @@ namespace WpfMtpVisuViewer
                     var x = testOpcUaClient.ReadSubmodelElementValueAsString(
                         "|var|CODESYS Control Win V3.Application.SENSORS.L001.V", 2);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
 
             if (testOpcUaClient != null && opcCounter % 100 == 0)
@@ -93,9 +93,9 @@ namespace WpfMtpVisuViewer
                     testOpcUaClient.Cancel();
                     testOpcUaClient.Close();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
         }
 

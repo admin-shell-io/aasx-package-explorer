@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -337,8 +337,9 @@ namespace AasxPackageExplorer
                 if (!Path.IsPathRooted(fn) && this.Filename != null)
                     fn = Path.Combine(Path.GetDirectoryName(this.Filename), fn);
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return null;
             }
 
@@ -360,7 +361,6 @@ namespace AasxPackageExplorer
                 basePath += "\\";
 
             // each file
-            // ReSharper disable EmptyGeneralCatchClause
             foreach (var fi in this.FileMap)
                 try
                 {
@@ -373,8 +373,10 @@ namespace AasxPackageExplorer
 
                     fi.Filename = relPath;
                 }
-                catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
         }
 
         public void AddByAas(AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas, string fn)
@@ -392,7 +394,6 @@ namespace AasxPackageExplorer
 
             // try determine tag
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            // ReSharper disable EmptyGeneralCatchClause
             var tag = "";
             try
             {
@@ -405,8 +406,10 @@ namespace AasxPackageExplorer
                 if (tag == null || tag.Length < 3)
                     tag = ("" + threeFn).SubstringMax(0, 3).ToUpper();
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
             // ReSharper enable ConditionIsAlwaysTrueOrFalse
 
             // build description
@@ -445,7 +448,10 @@ namespace AasxPackageExplorer
                 // close directly!
                 pkg.Close();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
         }
 
         // Converter
@@ -547,8 +553,9 @@ namespace AasxPackageExplorer
                             if (asset.identification != null)
                                 assetIds.Add(asset.identification.id);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     res = false;
                 }
 
