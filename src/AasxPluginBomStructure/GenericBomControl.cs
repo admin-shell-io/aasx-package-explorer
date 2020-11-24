@@ -42,8 +42,13 @@ namespace AasxPluginBomStructure
 
         private Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node> referableToNode =
             new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
+
         private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation =
             new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
+
+        private Dictionary<AdminShell.Referable, AdminShell.ReferenceElement> referableByReference =
+            new Dictionary<AdminShell.Referable, AdminShell.ReferenceElement>();
+
         private AdminShell.AdministrationShellEnv env;
         private int maxNodeId = 1;
 
@@ -52,6 +57,7 @@ namespace AasxPluginBomStructure
         public GenericBomCreator(AdminShell.AdministrationShellEnv env)
         {
             this.env = env;
+            // disbale the next 2 lines for better debugging
             this.refStore = new AasReferenceStore();
             this.refStore.Index(env);
         }
@@ -313,6 +319,29 @@ namespace AasxPluginBomStructure
             return sb.ToString();
         }
 
+        private string EvaluateEdgeLabel(AdminShell.Referable rel, AdminShell.SemanticId semanticId)
+        {
+            // build label text
+            var labelText = rel.ToIdShortString();
+            if (semanticId != null && semanticId.Count == 1)
+                labelText += " : " + semanticId[0].value;
+            if (semanticId != null && semanticId.Count > 1)
+                labelText += " : " + semanticId.ToString();
+
+            // even CD?
+            if (semanticId != null && semanticId.Count > 0)
+            {
+                var cd = this.FindReferableByReference(
+                    new AdminShell.Reference(
+                        semanticId)) as AdminShell.ConceptDescription;
+                if (cd != null)
+                    labelText += " = " + cd.ToIdShortString();
+            }
+
+            // return
+            return labelText;
+        }
+
         public void RecurseOnLayout(
             int pass,
             Microsoft.Msagl.Drawing.Graph graph,
@@ -335,11 +364,8 @@ namespace AasxPluginBomStructure
                         "{0} Recurse pass {1} SME {2}",
                         new String(' ', depth), pass, "" + smw.submodelElement?.idShort);
 
-                if (smw.submodelElement is AdminShell.RelationshipElement)
+                if (smw.submodelElement is AdminShell.RelationshipElement rel)
                 {
-                    // access
-                    var rel = (smw.submodelElement as AdminShell.RelationshipElement);
-
                     // for adding Nodes to the graph, we need in advance the knowledge, if a property
                     // is connected by a BOM relationship ..
                     if (pass == 1)
@@ -358,22 +384,8 @@ namespace AasxPluginBomStructure
                         // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
-                            // build label text
-                            var labelText = rel.ToIdShortString();
-                            if (rel.semanticId != null && rel.semanticId.Count == 1)
-                                labelText += " : " + rel.semanticId[0].value;
-                            if (rel.semanticId != null && rel.semanticId.Count > 1)
-                                labelText += " : " + rel.semanticId.ToString();
-
-                            // even CD?
-                            if (rel.semanticId != null && rel.semanticId.Count > 0)
-                            {
-                                var cd = this.FindReferableByReference(
-                                    new AdminShell.Reference(
-                                        rel.semanticId)) as AdminShell.ConceptDescription;
-                                if (cd != null)
-                                    labelText += " = " + cd.ToIdShortString();
-                            }
+                            // get the label
+                            var labelText = EvaluateEdgeLabel(rel, rel.semanticId);
 
                             // format it
                             labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
@@ -389,6 +401,49 @@ namespace AasxPluginBomStructure
                             var n2 = referableToNode[x2];
                             var e = graph.AddEdge(n1.Id, labelText, n2.Id);
                             e.UserData = rel;
+                            e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
+                            e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
+                            e.Attr.LineWidth = 1;
+                        }
+                        catch { }
+                        // ReSharper enable EmptyGeneralCatchClause
+                    }
+                }
+
+                if (smw.submodelElement is AdminShell.ReferenceElement rfe)
+                {
+                    // for adding Nodes to the graph, we need in advance the knowledge, if a property
+                    // is connected by a BOM relationship ..
+                    if (pass == 1)
+                    {
+                        var x1 = this.FindReferableByReference(rfe.value);
+                        if (x1 != null)
+                            referableByReference[x1] = rfe;
+                    }
+
+                    // now, try to finally draw relationships
+                    if (pass == 3)
+                    {
+                        // ReSharper disable EmptyGeneralCatchClause
+                        try
+                        {
+                            // get the label
+                            var labelText = EvaluateEdgeLabel(rfe, rfe.semanticId);
+
+                            // format it
+                            labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
+
+                            // now add
+                            var x1 = parentRef;
+                            var x2 = this.FindReferableByReference(rfe.value);
+
+                            if (x1 == null || x2 == null)
+                                continue;
+
+                            var n1 = referableToNode[x1];
+                            var n2 = referableToNode[x2];
+                            var e = graph.AddEdge(n1.Id, labelText, n2.Id);
+                            e.UserData = rfe;
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.LineWidth = 1;
@@ -601,9 +656,9 @@ namespace AasxPluginBomStructure
 
             using (var tw = new StreamWriter("bomgraph.log"))
             {
-                creator.RecurseOnLayout(1, graph, null, sm.submodelElements, 1, tw);
-                creator.RecurseOnLayout(2, graph, null, sm.submodelElements, 1, tw);
-                creator.RecurseOnLayout(3, graph, null, sm.submodelElements, 1, tw);
+                creator.RecurseOnLayout(1, graph, sm, sm.submodelElements, 1, tw);
+                creator.RecurseOnLayout(2, graph, sm, sm.submodelElements, 1, tw);
+                creator.RecurseOnLayout(3, graph, sm, sm.submodelElements, 1, tw);
             }
 
             // make default or (already) preferred settings
