@@ -15,11 +15,11 @@ namespace AdminShellNS
     {
         public static string FormatError(Exception ex, string where)
         {
-            return string.Format("Error {0}: {1} {2} at {3}.",
+            return string.Format("Error: {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
-                ((ex.InnerException != null) ? ex.InnerException.Message : ""),
-                AdminShellUtil.ShortLocation(ex));
+                (ex.InnerException != null) ? ex.InnerException.Message : "",
+                ex.StackTrace);
         }
     }
 
@@ -30,7 +30,7 @@ namespace AdminShellNS
         /// </summary>
         public void Error(Exception ex, string where)
         {
-            System.Console.WriteLine(Logging.FormatError(ex, where));
+            System.Console.Error.WriteLine(Logging.FormatError(ex, where));
         }
 
         /// <summary>
@@ -38,7 +38,10 @@ namespace AdminShellNS
         /// </summary>
         public void SilentlyIgnoredError(Exception ex)
         {
-            Error(ex, "The exception is silently ignored.");
+            System.Console.Error.WriteLine("The exception is silently ignored: {0} {1} at {2}.",
+                ex.Message,
+                ((ex.InnerException != null) ? ex.InnerException.Message : ""),
+                ex.StackTrace);
         }
     }
 

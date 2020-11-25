@@ -1,5 +1,6 @@
 *["AAS", " ", "\"Festo_3S7PM0CP4BD\" ", " ", "[IRI, smart.festo.com/demo/aas/1/1/454576463545648365874] of [IRI, HTTP://PK.FESTO.COM/3S7PM0CP4BD, Instance]"]
 **["SM", " ", "\"Nameplate\" ", " ", "[IRI, www.company.com/ids/sm/4343_5072_7091_3242]"]
+***["HSU", " ", "Nameplate Submodel of the HSU", " ", "ready"]
 ***["Prop", " ", "\"ManufacturerName\" ", " ", "= Festo AG & Co. KG"]
 ***["Prop", " ", "\"ManufacturerProductDesignation\" ", " ", "= OVEL Vacuum generator"]
 ***["SMC", " ", "\"PhysicalAddress\" ", " ", "(5 elements)"]

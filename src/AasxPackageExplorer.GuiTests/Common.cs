@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FlaUI.Core.AutomationElements;
 using NUnit.Framework; // necessary extension for AsLabel() and other methods
+
 using Application = FlaUI.Core.Application;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
@@ -16,7 +17,6 @@ using Regex = System.Text.RegularExpressions.Regex;
 using Retry = FlaUI.Core.Tools.Retry;
 using TimeSpan = System.TimeSpan;
 using UIA3Automation = FlaUI.UIA3.UIA3Automation;
-using Win32Exception = System.ComponentModel.Win32Exception;
 using Window = FlaUI.Core.AutomationElements.Window;
 
 namespace AasxPackageExplorer.GuiTests
@@ -107,7 +107,7 @@ namespace AasxPackageExplorer.GuiTests
                 FileName = pathToExe,
                 Arguments = joinedArgs,
                 RedirectStandardError = true,
-                WorkingDirectory = ".",
+                WorkingDirectory = releaseDir,
                 UseShellExecute = false
             };
 
@@ -145,7 +145,8 @@ namespace AasxPackageExplorer.GuiTests
                 var mainWindow = Retry.Find(() =>
                         // ReSharper disable once AccessToDisposedClosure
                         app.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title.StartsWith("AASX Package Explorer")),
+                            .FirstOrDefault(
+                                (w) => w.AutomationId == "mainWindow"),
                     new RetrySettings
                     {
                         ThrowOnTimeout = true,
@@ -187,7 +188,13 @@ namespace AasxPackageExplorer.GuiTests
                 () => (application.HasExited)
                     ? null
                     : mainWindow.FindFirstChild(cf => cf.ByAutomationId(automationId)),
-                new RetrySettings { ThrowOnTimeout = true, Timeout = TimeSpan.FromSeconds(5) });
+                new RetrySettings
+                {
+                    ThrowOnTimeout = true,
+                    Timeout = TimeSpan.FromSeconds(5),
+                    TimeoutMessage = "Could not find the label for error number" +
+                                     $" in the main window named {mainWindow.Name}: {automationId}"
+                });
 
             Assert.IsFalse(application.HasExited,
                 "Application unexpectedly exited while searching for number of errors label");

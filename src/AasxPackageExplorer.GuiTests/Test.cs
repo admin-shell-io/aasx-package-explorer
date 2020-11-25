@@ -34,7 +34,7 @@ namespace AasxPackageExplorer.GuiTests
                 Retry.WhileNull(() =>
                         // ReSharper disable once AccessToDisposedClosure
                         application.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title == "AASX Package Explorer Splash Screen"),
+                            .FirstOrDefault((w) => w.AutomationId == "splashScreen"),
                     throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
                     timeoutMessage: "Could not find the splash screen"
                 );
