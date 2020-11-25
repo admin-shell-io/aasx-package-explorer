@@ -21,7 +21,7 @@ jobs:
         env:
           REPOSITORY: ${{ github.repository }}
         run: |
-          Write-Host "The repository is: ${env:GITHUB_REF}"
+          Write-Host "The repository is: ${env:REPOSITORY}"
 
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
