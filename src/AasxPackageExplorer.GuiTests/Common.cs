@@ -29,7 +29,7 @@ namespace AasxPackageExplorer.GuiTests
 
     static class Common
     {
-        public static string PathTo01FestoAasx()
+        private static string SampleAasxDir()
         {
             var variable = "SAMPLE_AASX_DIR";
 
@@ -49,7 +49,12 @@ namespace AasxPackageExplorer.GuiTests
                     $"{sampleAasxDir}; did you download the samples with DownloadSamples.ps1?");
             }
 
-            var pth = Path.Combine(sampleAasxDir, "01_Festo.aasx");
+            return sampleAasxDir;
+        }
+
+        public static string PathTo01FestoAasx()
+        {
+            var pth = Path.Combine(SampleAasxDir(), "01_Festo.aasx");
 
             if (!File.Exists(pth))
             {
@@ -58,7 +63,6 @@ namespace AasxPackageExplorer.GuiTests
 
             return pth;
         }
-
 
         public delegate void Implementation(Application application, UIA3Automation automation, Window mainWindow);
 
@@ -141,7 +145,7 @@ namespace AasxPackageExplorer.GuiTests
                 var mainWindow = Retry.Find(() =>
                         // ReSharper disable once AccessToDisposedClosure
                         app.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title == "AASX Package Explorer"),
+                            .FirstOrDefault((w) => w.Title.StartsWith("AASX Package Explorer")),
                     new RetrySettings
                     {
                         ThrowOnTimeout = true,
@@ -212,6 +216,13 @@ namespace AasxPackageExplorer.GuiTests
                 .FindFirstChild(cf => cf.ByName("Open .."))
                 .AsMenuItem();
 
+            if (openMenuItem == null)
+            {
+                throw new AssertionException(
+                    "The open menu item is null. You need to thoroughly inspect what happened -- " +
+                    "this is quite strange.");
+            }
+
             openMenuItem.Click();
 
             Retry.WhileEmpty(
@@ -239,6 +250,29 @@ namespace AasxPackageExplorer.GuiTests
                 throw new AssertionException(
                     "The application unexpectedly exited. " +
                     $"Check manually why the file could not be opened: {path}");
+        }
+
+        /// <summary>
+        /// Adds quotes around the text and escapes a couple of common special characters.
+        /// </summary>
+        /// <remarks>Do not use System.Text.Json.JsonSerializer since it escapes so many common
+        /// characters that the output is unreadable.
+        /// See <a href="https://github.com/dotnet/runtime/issues/1564">this GitHub issue</a></remarks>
+        public static string Quote(string text)
+        {
+            string escaped =
+                text
+                    .Replace("\\", "\\\\")
+                    .Replace("\"", "\\\"")
+                    .Replace("\n", "\\n")
+                    .Replace("\r", "\\r")
+                    .Replace("\t", "\\t")
+                    .Replace("\a", "\\b")
+                    .Replace("\b", "\\b")
+                    .Replace("\v", "\\v")
+                    .Replace("\f", "\\f");
+
+            return $"\"{escaped}\"";
         }
     }
 }
