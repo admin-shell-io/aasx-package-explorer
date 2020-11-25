@@ -86,16 +86,18 @@ jobs:
         env:
           HEAD_REF: ${{ github.head_ref }}
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        if: github.repository == 'admin-shell-io/aasx-package-explorer'
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          $headRef = ${env:HEAD_REF}
+          # At the moment we only run coveralls on master.
+          # However, we leave this legacy logic here in case we introduce
+          # new branching policy or new coverage publishing rules.
           if (${env:GITHUB_REF}.StartsWith("refs/pull/"))
           {
-            $branch = $headRef -Replace 'refs/heads/', ''
+            $branch = ${env:HEAD_REF} -Replace 'refs/heads/', ''
           }
           else
           {
-            $branch = ${env:GITHUB_REF} -replace 'refs/heads/', ''
+            $branch = ${env:GITHUB_REF} -Replace 'refs/heads/', ''
           }
 
           $commit = $env:GITHUB_SHA
