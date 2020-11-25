@@ -18,6 +18,31 @@ using AdminShellNS;
 namespace AasxWpfControlLibrary
 {
     /// <summary>
+    /// The source of a package in terms of where the package was loaded from.
+    /// Source infornmation shall be derived from this base class
+    /// </summary>
+    public class PackageSourceBase
+    {
+    }
+
+    /// <summary>
+    /// Package source from a local file. Can be uses as open package.
+    /// </summary>
+    public class PackageSourceLocalFile : PackageSourceBase
+    {
+        public string Path;
+    }
+
+    /// <summary>
+    /// Package source from a registry. Package needs to be loaded and stored there.
+    /// </summary>
+    public class PackageSourceRegistry : PackageSourceBase
+    {
+        public Uri Server;
+        public string AasxIndex;
+    }
+
+    /// <summary>
     /// The container wraps an AdminShellPackageEnv with the availability to re-new the package env
     /// and to transport further information (future use)
     /// </summary>
