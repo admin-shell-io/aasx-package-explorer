@@ -1,5 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Interop;
 using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
 using File = System.IO.File;
@@ -163,6 +168,97 @@ namespace AasxPackageExplorer.GuiTests
                     throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
                     timeoutMessage: "Could not find the 'Message Report' window");
             });
+        }
+
+        [Test]
+        public void Test_that_tree_doesnt_change()
+        {
+            var path = Common.PathTo01FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                if (tree == null)
+                {
+                    throw new AssertionException("tree unexpectedly null");
+                }
+
+                static string RenderTree(Tree aTree)
+                {
+                    using var sw = new StringWriter();
+
+                    void RenderItem(TreeItem item, int level)
+                    {
+                        item.Patterns.ScrollItem.Pattern.ScrollIntoView();
+
+                        // Collect all text children to create a label
+                        var children = item.FindAllChildren(
+                            cf => cf.ByClassName("TextBlock"));
+
+                        var label = "[" + string.Join(", ",
+                            children.Select(c => Common.Quote(c.AsLabel().Text))) + "]";
+
+                        sw.WriteLine($"{new string('*', level)}{label}");
+
+                        // Expand
+                        var expander = item
+                            .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                            .AsToggleButton();
+
+                        if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                        {
+                            expander.Click(false);
+                        }
+
+                        foreach (var subitem in item.Items)
+                        {
+                            RenderItem(subitem, level + 1);
+                        }
+                    }
+
+                    foreach (var item in aTree.Items)
+                    {
+                        RenderItem(item, 1);
+                    }
+
+                    return sw.ToString();
+                }
+
+                string got = RenderTree(tree);
+
+                string relExpectedPth = Path.Combine(
+                    "TestResources", "AasxPackageExplorer.GuiTests",
+                    "ExpectedTrees", $"{Path.GetFileName(path)}.tree.txt");
+
+                string expectedPth = Path.Combine(TestContext.CurrentContext.TestDirectory, relExpectedPth);
+                string expected = File.ReadAllText(expectedPth);
+
+                string gotPth = Path.Combine(
+                    TestContext.CurrentContext.TestDirectory,
+                    Path.GetDirectoryName(relExpectedPth),
+                    Path.GetFileName(relExpectedPth) + ".got");
+                File.WriteAllText(gotPth, got);
+
+                Assert.AreEqual(got, expected,
+                    "The expected tree structure does not coincide with the tree structure rendered from the UI. " +
+                    "If you made changes to UI, please make sure you update the file containing expected values " +
+                    $"accordingly (search for the file {relExpectedPth}).\n\n" +
+                    $"The test used the file available in the test context: {expectedPth} " +
+                    $"(you probably don't want to change *that* file, but the original one in the source code)\n\n" +
+                    $"The tree structure obtained from the application was stored " +
+                    $"for your convenience to: {gotPth}\n\n" +
+                    $"Use a diff tool to inspect the differences.");
+            }, new Run { Args = new[] { "-splash", "0", path } });
         }
     }
 }
