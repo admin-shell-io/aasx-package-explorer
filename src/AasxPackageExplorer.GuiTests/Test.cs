@@ -264,7 +264,7 @@ namespace AasxPackageExplorer.GuiTests
         }
 
         [Test]
-        public void Test_that_document_shelf_doesnt_break()
+        public void Test_that_document_shelf_doesnt_break_the_app()
         {
             var path = Common.PathTo34FestoAasx();
             Common.RunWithMainWindow((application, automation, mainWindow) =>
@@ -326,6 +326,78 @@ namespace AasxPackageExplorer.GuiTests
                 var shelfControl = mainWindow.FindFirstDescendant(
                     cf => cf.ByAutomationId("shelfControl"));
                 Assert.IsNotNull(shelfControl, "Could not find 'shelfControl' by automation ID");
+            }, new Run { Args = new[] { "-splash", "0", path } });
+        }
+
+        [Test]
+        public void Test_that_technical_viewer_doesnt_break_the_app()
+        {
+            var path = Common.PathTo34FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                Assert.AreEqual(1, tree.Items.Length,
+                    $"Expected only one node at the root, but got: {tree.Items.Length}");
+
+                var root = tree.Items[0];
+
+                // Find the ZVEI tree item
+
+                const string technicalDataZveiLabel = "\"TechnicalData ZVEI\" ";
+
+                TreeItem? technicalDataZvei = root.Items.FirstOrDefault(
+                    item =>
+                        item.FindFirstChild(
+                            cf =>
+                                cf.ByClassName("TextBlock").And(
+                                    cf.ByName(technicalDataZveiLabel))) != null);
+
+                Assert.IsNotNull(technicalDataZvei,
+                    $"Could not find the item in the tree containing the text block '{technicalDataZveiLabel}'");
+
+
+                var expander = technicalDataZvei!
+                    .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                    .AsToggleButton();
+
+                if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                {
+                    expander.Click();
+                }
+
+                const string technicalDataViewerLabel = "Technical Data Viewer";
+
+                var technicalDataViewer = technicalDataZvei.FindFirstDescendant(
+                    cf => cf.ByClassName("TextBlock").And(
+                        cf.ByName(technicalDataViewerLabel)));
+
+                Assert.IsNotNull(technicalDataViewer,
+                    $"Could not find the text block '{technicalDataViewerLabel}'");
+
+                var technicalDataViewControl =
+                    mainWindow.FindFirstDescendant(cf => cf.ByClassName("TechnicalDataViewControl"));
+                Assert.IsNull(
+                    technicalDataViewControl,
+                    "Unexpectedly found the control with class name 'TechnicalDataViewControl'");
+
+                technicalDataViewer.Click();
+
+                technicalDataViewControl =
+                    mainWindow.FindFirstDescendant(cf => cf.ByClassName("TechnicalDataViewControl"));
+                Assert.IsNotNull(
+                    technicalDataViewControl, "Could not find the control with class name 'TechnicalDataViewControl'");
+
             }, new Run { Args = new[] { "-splash", "0", path } });
         }
     }
