@@ -502,7 +502,7 @@
                 </local:DiplayVisualAasxElements>
 
                 <TabControl x:Name="ElementTabControl" Grid.Column="4">
-                    <TabItem Header="Element">
+                    <TabItem x:Name="elementTabItem" Header="Element">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -552,7 +552,7 @@
 
                     </TabItem>
 
-                    <TabItem Header="Content">
+                    <TabItem Header="Content" x:Name="elementTabContent">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
