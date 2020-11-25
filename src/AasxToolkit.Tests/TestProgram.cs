@@ -58,8 +58,14 @@ namespace AasxToolkit.Tests
                                 "save", Path.Combine(tmpDir.Path, "saved.xml")
                             });
 
+                        if (consoleCap.Error() != "")
+                        {
+                            throw new AssertionException(
+                                $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                                consoleCap.Error());
+                        }
+
                         Assert.AreEqual(0, code);
-                        Assert.AreEqual("", consoleCap.Error());
                     }
                 }
             }
@@ -84,8 +90,14 @@ namespace AasxToolkit.Tests
                                 "export-template", Path.Combine(tmpDir.Path, "exported.template")
                             });
 
+                        if (consoleCap.Error() != "")
+                        {
+                            throw new AssertionException(
+                                $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                                consoleCap.Error());
+                        }
+
                         Assert.AreEqual(0, code);
-                        Assert.AreEqual("", consoleCap.Error());
                     }
                 }
             }
@@ -111,8 +123,14 @@ namespace AasxToolkit.Tests
                                 "save", Path.Combine(tmpDir.Path, "saved.xml")
                             });
 
+                        if (consoleCap.Error() != "")
+                        {
+                            throw new AssertionException(
+                                $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                                consoleCap.Error());
+                        }
+
                         Assert.AreEqual(0, code);
-                        Assert.AreEqual("", consoleCap.Error());
                     }
                 }
             }
@@ -137,8 +155,14 @@ namespace AasxToolkit.Tests
                                     "save", Path.Combine(tmpDir.Path, "saved.xml")
                                 });
 
+                            if (consoleCap.Error() != "")
+                            {
+                                throw new AssertionException(
+                                    $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                                    consoleCap.Error());
+                            }
+
                             Assert.AreEqual(0, code);
-                            Assert.AreEqual("", consoleCap.Error());
                         }
                     }
                 }
@@ -154,8 +178,15 @@ namespace AasxToolkit.Tests
                 {
                     int code = AasxToolkit.Program.MainWithExitCode(new string[] { });
 
+                    if (consoleCap.Error() != "")
+                    {
+                        throw new AssertionException(
+                            $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                            consoleCap.Error());
+                    }
+
                     Assert.AreEqual(0, code);
-                    Assert.AreEqual("", consoleCap.Error());
+
                     Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
                 }
             }
@@ -172,8 +203,15 @@ namespace AasxToolkit.Tests
                 {
                     int code = AasxToolkit.Program.MainWithExitCode(new[] { helpArg });
 
+                    if (consoleCap.Error() != "")
+                    {
+                        throw new AssertionException(
+                            $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                            consoleCap.Error());
+                    }
+
                     Assert.AreEqual(0, code);
-                    Assert.AreEqual("", consoleCap.Error());
+
                     Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
                 }
             }
@@ -186,9 +224,70 @@ namespace AasxToolkit.Tests
                     int code = AasxToolkit.Program.MainWithExitCode(
                         new[] { "load", "doesnt-exist.aasx", "help" });
 
+                    if (consoleCap.Error() != "")
+                    {
+                        throw new AssertionException(
+                            $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                            consoleCap.Error());
+                    }
+
                     Assert.AreEqual(0, code);
-                    Assert.AreEqual("", consoleCap.Error());
+
                     Assert.IsTrue(consoleCap.Output().StartsWith("AasxToolkit:"));  // Start of the help message
+                }
+            }
+        }
+
+        public class TestValidation
+        {
+            [Test]
+            public void TestAgainstSampleData()
+            {
+                var samplePaths = new List<string>
+                {
+                    Path.Combine(
+                        TestContext.CurrentContext.TestDirectory,
+                        "TestResources\\AasxToolkit.Tests\\sample.xml")
+                    /*
+                     TODO (mristin, 2020-10-30): add json once the validation is in place.
+                     Michael Hoffmeister had it almost done today.
+                     
+                    Path.Combine(
+                        TestContext.CurrentContext.TestDirectory,
+                        "TestResources\\AasxToolkit.Tests\\sample.json")
+                        
+                        dead-csharp ignore this comment
+                        */
+                };
+
+                foreach (string samplePath in samplePaths)
+                {
+                    if (!File.Exists(samplePath))
+                    {
+                        throw new FileNotFoundException($"The sample file could not be found: {samplePath}");
+                    }
+
+                    using (var tmpDir = new TemporaryDirectory())
+                    {
+                        using (var consoleCap = new ConsoleCapture())
+                        {
+                            string extension = Path.GetExtension(samplePath);
+                            string tmpPath = Path.Combine(tmpDir.Path, $"to-be-validated{extension}");
+
+                            int code = AasxToolkit.Program.MainWithExitCode(
+                                new[] { "load", samplePath, "check+fix", "save", tmpPath, "validate", tmpPath });
+
+                            if (consoleCap.Error() != "")
+                            {
+                                var nl = System.Environment.NewLine;
+                                throw new AssertionException(
+                                    $"Expected no stderr for the sample file {samplePath}, but got:{nl}" +
+                                    $"{consoleCap.Error()}");
+                            }
+
+                            Assert.AreEqual(0, code);
+                        }
+                    }
                 }
             }
         }

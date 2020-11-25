@@ -133,18 +133,22 @@ namespace AasxToolkit
                                 var recs = new AasValidationRecordList();
 
                                 string extension = Path.GetExtension(validate.Path).ToLower();
-                                if (extension == @".xml")
+                                if (extension == ".xml")
                                 {
                                     Console.Out.WriteLine($"Validating file {validate.Path} against XSD ..");
 
-                                    var stream = File.Open(validate.Path, FileMode.Open, FileAccess.Read);
-                                    AasSchemaValidation.ValidateXML(recs, stream);
+                                    using (var stream = File.Open(validate.Path, FileMode.Open, FileAccess.Read))
+                                    {
+                                        AasSchemaValidation.ValidateXML(recs, stream);
+                                    }
                                 }
                                 else if (extension == ".json")
                                 {
                                     Console.Out.WriteLine($"Validating file {validate.Path} against JSON ..");
-                                    var stream = File.Open(validate.Path, FileMode.Open, FileAccess.Read);
-                                    AasSchemaValidation.ValidateJSONAlternative(recs, stream);
+                                    using (var stream = File.Open(validate.Path, FileMode.Open, FileAccess.Read))
+                                    {
+                                        AasSchemaValidation.ValidateJSONAlternative(recs, stream);
+                                    }
                                 }
                                 else
                                 {
