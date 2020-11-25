@@ -245,7 +245,9 @@ namespace AasxPackageExplorer.GuiTests
 
                 string gotPth = Path.Combine(
                     TestContext.CurrentContext.TestDirectory,
-                    Path.GetDirectoryName(relExpectedPth),
+                    Path.GetDirectoryName(relExpectedPth) ??
+                        throw new InvalidOperationException(
+                            $"Unexpected null directory from: {relExpectedPth}"),
                     Path.GetFileName(relExpectedPth) + ".got");
                 File.WriteAllText(gotPth, got);
 
@@ -254,10 +256,76 @@ namespace AasxPackageExplorer.GuiTests
                     "If you made changes to UI, please make sure you update the file containing expected values " +
                     $"accordingly (search for the file {relExpectedPth}).\n\n" +
                     $"The test used the file available in the test context: {expectedPth} " +
-                    $"(you probably don't want to change *that* file, but the original one in the source code)\n\n" +
-                    $"The tree structure obtained from the application was stored " +
+                    "(you probably don't want to change *that* file, but the original one in the source code)\n\n" +
+                    "The tree structure obtained from the application was stored " +
                     $"for your convenience to: {gotPth}\n\n" +
-                    $"Use a diff tool to inspect the differences.");
+                    "Use a diff tool to inspect the differences.");
+            }, new Run { Args = new[] { "-splash", "0", path } });
+        }
+
+        [Test]
+        public void Test_that_document_shelf_doesnt_break()
+        {
+            var path = Common.PathTo34FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                Assert.AreEqual(1, tree.Items.Length,
+                    $"Expected only one node at the root, but got: {tree.Items.Length}");
+
+                var root = tree.Items[0];
+
+                // Find documentation
+
+                const string documentationLabel = "\"Documentation\" ";
+
+                TreeItem? documentationItem = root.Items.FirstOrDefault(
+                    item =>
+                        item.FindFirstChild(
+                            cf =>
+                                cf.ByClassName("TextBlock").And(
+                                    cf.ByName(documentationLabel))) != null);
+
+                Assert.IsNotNull(documentationItem,
+                    $"Could not find the item in the tree containing the text block '{documentationLabel}'");
+
+                var expander = documentationItem!
+                    .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                    .AsToggleButton();
+
+                if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                {
+                    expander.Click(false);
+                }
+
+                // Find Document shelf
+
+                const string documentShelfLabel = "Document Shelf";
+
+                var documentShelfTextBlock = documentationItem.FindFirstDescendant(
+                    cf => cf.ByClassName("TextBlock").And(cf.ByName(documentShelfLabel)));
+
+                Assert.IsNotNull(documentShelfTextBlock,
+                    $"Could not find the text block in the tree '{documentShelfLabel}'");
+
+                documentShelfTextBlock.Click();
+
+                Common.AssertNoErrors(application, mainWindow);
+
+                var shelfControl = mainWindow.FindFirstDescendant(
+                    cf => cf.ByAutomationId("shelfControl"));
+                Assert.IsNotNull(shelfControl, "Could not find 'shelfControl' by automation ID");
             }, new Run { Args = new[] { "-splash", "0", path } });
         }
     }

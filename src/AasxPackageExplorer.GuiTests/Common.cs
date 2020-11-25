@@ -27,11 +27,11 @@ namespace AasxPackageExplorer.GuiTests
         public bool DontKill = false;
     }
 
-    static class Common
+    internal static class Common
     {
         private static string SampleAasxDir()
         {
-            var variable = "SAMPLE_AASX_DIR";
+            const string variable = "SAMPLE_AASX_DIR";
 
             var sampleAasxDir = System.Environment.GetEnvironmentVariable(variable);
             if (sampleAasxDir == null)
@@ -55,6 +55,18 @@ namespace AasxPackageExplorer.GuiTests
         public static string PathTo01FestoAasx()
         {
             var pth = Path.Combine(SampleAasxDir(), "01_Festo.aasx");
+
+            if (!File.Exists(pth))
+            {
+                throw new FileNotFoundException($"The sample AASX could not be found: {pth}");
+            }
+
+            return pth;
+        }
+
+        public static string PathTo34FestoAasx()
+        {
+            var pth = Path.Combine(SampleAasxDir(), "34_Festo.aasx");
 
             if (!File.Exists(pth))
             {
