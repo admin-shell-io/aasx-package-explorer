@@ -17,6 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Display repository name
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          Write-Host "The repository is: ${env:REPOSITORY}"
+
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
