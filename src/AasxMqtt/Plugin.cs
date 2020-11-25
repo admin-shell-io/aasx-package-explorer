@@ -70,14 +70,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 Log.Info("Starting Mqtt Server...");
 
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     AASMqttServer.MqttSeverStartAsync().Wait();
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
-
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
 
                 // return as plain object
                 var res = new AasxPluginResultBaseObject();

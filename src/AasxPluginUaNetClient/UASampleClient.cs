@@ -52,10 +52,7 @@ namespace SampleClient
             }
             catch (Exception ex)
             {
-                Utils.Trace("ServiceResultException:" + ex.Message);
-                Console.WriteLine("Exception: {0}", ex.Message);
-                //// Console.WriteLine("press any key to continue");
-                //// Console.ReadKey();
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return;
             }
 
@@ -68,9 +65,9 @@ namespace SampleClient
                     eArgs.Cancel = true;
                 };
             }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
 
             // wait for timeout or Ctrl-C

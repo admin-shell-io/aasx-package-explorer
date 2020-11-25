@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -11,11 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using AasxGlobalLogging;
 using AdminShellNS;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -987,7 +983,6 @@ namespace AasxPackageExplorer
             if (Plugins.LoadedPlugins != null)
                 foreach (var lpi in Plugins.LoadedPlugins.Values)
                 {
-                    // ReSharper disable EmptyGeneralCatchClause
                     try
                     {
                         var x =
@@ -996,8 +991,10 @@ namespace AasxPackageExplorer
                         if (x != null && (bool)x.obj)
                             pluginsToCheck.Add(lpi);
                     }
-                    catch { }
-                    // ReSharper enable EmptyGeneralCatchClause
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
                 }
 
             // many operytions -> make it bulletproof
@@ -1061,7 +1058,7 @@ namespace AasxPackageExplorer
                         {
                             var sm = env.FindSubmodel(smr);
                             if (sm == null)
-                                Log.Error("Cannot find some submodel!");
+                                AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");
                             else
                                 referencedSubmodels.Add(sm);
 
@@ -1072,7 +1069,6 @@ namespace AasxPackageExplorer
                             // check for visual extensions
                             foreach (var lpi in pluginsToCheck)
                             {
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     var ext = lpi.InvokeAction(
@@ -1085,8 +1081,10 @@ namespace AasxPackageExplorer
                                         tiSm.Members.Add(tiExt);
                                     }
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
                             }
 
                             // recursively into the submodel elements
@@ -1173,7 +1171,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Generating tree of visual elements");
+                AasxPackageExplorer.Log.Singleton.Error(ex, "Generating tree of visual elements");
             }
 
             // end

@@ -10,7 +10,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-using AasxGlobalLogging;
 
 namespace AasxPackageExplorer
 {
@@ -31,7 +30,7 @@ namespace AasxPackageExplorer
             if (args.Length == 1 && !args[0].StartsWith("-"))
             {
                 directAasx = args[0];
-                Log.Info("Direct request to load AASX {0} ..", directAasx);
+                AasxPackageExplorer.Log.Singleton.Info("Direct request to load AASX {0} ..", directAasx);
             }
 
             // If no command-line args given, read options via default filename
@@ -41,15 +40,17 @@ namespace AasxPackageExplorer
                     System.IO.Path.GetDirectoryName(exePath),
                     System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
 
-                Log.Info("The default options are expected in the JSON file: {0}", defFn);
+                AasxPackageExplorer.Log.Singleton.Info(
+                    "The default options are expected in the JSON file: {0}", defFn);
                 if (File.Exists(defFn))
                 {
-                    Log.Info("Loading the default options from: {0}", defFn);
+                    AasxPackageExplorer.Log.Singleton.Info(
+                        "Loading the default options from: {0}", defFn);
                     OptionsInformation.ReadJson(defFn, optionsInformation);
                 }
                 else
                 {
-                    Log.Info(
+                    AasxPackageExplorer.Log.Singleton.Info(
                         "The JSON file with the default options does not exist;" +
                         "no default options were loaded: {0}", defFn);
                 }
@@ -57,17 +58,17 @@ namespace AasxPackageExplorer
                 // overrule
                 if (directAasx != null)
                 {
-                    Log.Info($"Loading the AASX from: {directAasx}");
+                    AasxPackageExplorer.Log.Singleton.Info($"Loading the AASX from: {directAasx}");
                     optionsInformation.AasxToLoad = directAasx;
                 }
             }
             else
             {
                 // 2nd parse options
-                Log.Info($"Parsing {args.Length} command-line option(s)...");
+                AasxPackageExplorer.Log.Singleton.Info($"Parsing {args.Length} command-line option(s)...");
 
                 for (var i = 0; i < args.Length; i++)
-                    Log.Info($"Command-line option: {i}: {args[i]}");
+                    AasxPackageExplorer.Log.Singleton.Info($"Command-line option: {i}: {args[i]}");
 
                 OptionsInformation.ParseArgs(args, optionsInformation);
             }
@@ -75,7 +76,8 @@ namespace AasxPackageExplorer
             // 3rd further commandline options in extra file
             if (optionsInformation.OptionsTextFn != null)
             {
-                Log.Info($"Parsing options from a non-default options file: {optionsInformation.OptionsTextFn}");
+                AasxPackageExplorer.Log.Singleton.Info(
+                    $"Parsing options from a non-default options file: {optionsInformation.OptionsTextFn}");
                 var fullFilename = System.IO.Path.GetFullPath(optionsInformation.OptionsTextFn);
                 OptionsInformation.TryReadOptionsFile(fullFilename, optionsInformation);
             }
@@ -89,7 +91,8 @@ namespace AasxPackageExplorer
             // Plugins to be loaded
             if (pluginDllInfos.Count == 0) return new Dictionary<string, Plugins.PluginInstance>();
 
-            Log.Info($"Trying to load and activate {pluginDllInfos.Count} plug-in(s)...");
+            AasxPackageExplorer.Log.Singleton.Info(
+                $"Trying to load and activate {pluginDllInfos.Count} plug-in(s)...");
             var loadedPlugins = Plugins.TryActivatePlugins(pluginDllInfos);
 
             Plugins.TrySetOptionsForPlugins(pluginDllInfos, loadedPlugins);
@@ -100,10 +103,10 @@ namespace AasxPackageExplorer
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             // allow long term logging (for report box)
-            Log.LogInstance.EnableLongTermStore();
+            AasxPackageExplorer.Log.Singleton.EnableLongTermStore();
 
             // Build up of options
-            Log.Info("Application startup.");
+            AasxPackageExplorer.Log.Singleton.Info("Application startup.");
 
             var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
 
@@ -116,16 +119,20 @@ namespace AasxPackageExplorer
                     System.IO.Path.GetDirectoryName(exePath),
                     Options.Curr.PluginDir);
 
-                Log.Info("Searching for the plugins in the plugin directory: {0}", searchDir);
+                AasxPackageExplorer.Log.Singleton.Info(
+                    "Searching for the plugins in the plugin directory: {0}", searchDir);
 
                 var pluginDllInfos = Plugins.TrySearchPlugins(searchDir);
 
-                Log.Info($"Found {pluginDllInfos.Count} plugin(s) in the plugin directory: {searchDir}");
+                AasxPackageExplorer.Log.Singleton.Info(
+                    $"Found {pluginDllInfos.Count} plugin(s) in the plugin directory: {searchDir}");
 
                 Options.Curr.PluginDll.AddRange(pluginDllInfos);
             }
 
-            Log.Info($"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
+            AasxPackageExplorer.Log.Singleton.Info(
+                $"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
+
             Plugins.LoadedPlugins = LoadAndActivatePlugins(Options.Curr.PluginDll);
 
             // at end, write all default options to JSON?
@@ -133,7 +140,7 @@ namespace AasxPackageExplorer
             {
                 // info
                 var fullFilename = System.IO.Path.GetFullPath(Options.Curr.WriteDefaultOptionsFN);
-                Log.Info($"Writing resulting options to a JSON file: {fullFilename}");
+                AasxPackageExplorer.Log.Singleton.Info($"Writing resulting options to a JSON file: {fullFilename}");
 
                 // retrieve
                 Plugins.TryGetDefaultOptionsForPlugins(Options.Curr.PluginDll, Plugins.LoadedPlugins);

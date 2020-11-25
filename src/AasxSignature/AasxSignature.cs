@@ -78,9 +78,9 @@ namespace AasxSignature
                                     relationship.SourceUri, PackageRelationshipSelectorType.Id, relationship.Id));
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Ignore the exception
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     }
                 }
 
@@ -106,9 +106,9 @@ namespace AasxSignature
                     {
                         dlg.InitialDirectory = System.IO.Path.GetDirectoryName("\\");
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Ignore the exception
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     }
                     dlg.Filter = ".pfx files (*.pfx)|*.pfx";
                     dlg.ShowDialog();

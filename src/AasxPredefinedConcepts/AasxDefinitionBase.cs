@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -129,8 +129,9 @@ namespace AasxPredefinedConcepts
                 var r = JsonConvert.DeserializeObject<T>(entry.contents);
                 return r;
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return null;
             }
         }

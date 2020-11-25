@@ -190,13 +190,14 @@ namespace AasxIntegrationBase.AasForms
                             if (inst.SubInstances.Count > this.minRows)
                             {
                                 // carefully delete
-                                // ReSharper disable EmptyGeneralCatchClause
                                 try
                                 {
                                     masterInst.SubInstances.Remove(subInst);
                                 }
-                                catch { }
-                                // ReSharper enable EmptyGeneralCatchClause
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
                                 // redraw
                                 UpdateDisplay();

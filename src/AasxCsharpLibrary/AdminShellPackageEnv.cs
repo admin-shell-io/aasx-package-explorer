@@ -85,7 +85,6 @@ namespace AdminShellNS
         public static string TryReadXmlFirstElementNamespaceURI(Stream s)
         {
             string res = null;
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 var xr = System.Xml.XmlReader.Create(s);
@@ -107,8 +106,10 @@ namespace AdminShellNS
                 }
                 xr.Close();
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
 
             // return to zero pos
             s.Seek(0, SeekOrigin.Begin);
@@ -482,7 +483,6 @@ namespace AdminShellNS
                     // fn could be changed, therefore close "old" package first
                     if (this.openPackage != null)
                     {
-                        // ReSharper disable EmptyGeneralCatchClause
                         try
                         {
                             this.openPackage.Close();
@@ -494,8 +494,10 @@ namespace AdminShellNS
                                     System.IO.File.Copy(this.fn, fn);
                             }
                         }
-                        catch { }
-                        // ReSharper enable EmptyGeneralCatchClause
+                        catch (Exception ex)
+                        {
+                            LogInternally.That.SilentlyIgnoredError(ex);
+                        }
                         this.openPackage = null;
                     }
 
@@ -562,15 +564,16 @@ namespace AdminShellNS
                              || (name.StartsWith("aasenv-with-no-id")))
                         {
                             // try kill specpart
-                            // ReSharper disable EmptyGeneralCatchClause
                             try
                             {
                                 originPart.DeleteRelationship(specRel.Id);
                                 package.DeletePart(specPart.Uri);
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                LogInternally.That.SilentlyIgnoredError(ex);
+                            }
                             finally { specPart = null; specRel = null; }
-                            // ReSharper enable EmptyGeneralCatchClause
                         }
                     }
 
@@ -793,7 +796,6 @@ namespace AdminShellNS
                 return;
 
             // we do it not caring on any errors
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 // get index in form
@@ -820,8 +822,10 @@ namespace AdminShellNS
                     serializer.Serialize(s, this.aasenv, nss);
                 }
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
         }
 
         public Stream GetStreamFromUriOrLocalPackage(string uriString,
@@ -849,8 +853,9 @@ namespace AdminShellNS
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return null;
             }
         }
@@ -895,7 +900,11 @@ namespace AdminShellNS
                     res = s.Length;
                 }
             }
-            catch { return 0; }
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+                return 0;
+            }
             return res;
         }
 

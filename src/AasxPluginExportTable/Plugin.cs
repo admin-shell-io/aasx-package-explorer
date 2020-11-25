@@ -146,14 +146,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // get the output file
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
                         System.AppDomain.CurrentDomain.BaseDirectory);
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
                 dlg.Title = "Select text file to be exported";
 
                 if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)

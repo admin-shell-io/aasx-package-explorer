@@ -9,17 +9,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Media;
-using AasxGlobalLogging;
-using AasxIntegrationBase;
-using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -294,7 +286,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"When writing options to a JSON file: {filename}");
+                AasxPackageExplorer.Log.Singleton.Error(ex, $"When writing options to a JSON file: {filename}");
             }
         }
 
@@ -310,7 +302,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "When reading options JSON file");
+                AasxPackageExplorer.Log.Singleton.Error(ex, "When reading options JSON file");
             }
         }
 
@@ -548,15 +540,16 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < 10; i++)
                         if (arg == $"-c{i:0}" && morearg > 0)
                         {
-                            // ReSharper disable EmptyGeneralCatchClause
                             // ReSharper disable PossibleNullReferenceException
                             try
                             {
                                 var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
                                 optionsInformation.AccentColors.Add(i, c);
                             }
-                            catch { }
-                            // ReSharper enable EmptyGeneralCatchClause
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
                             // ReSharper enable PossibleNullReferenceException
 
                             index++;
@@ -587,7 +580,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Reading options file: " + filename);
+                AasxPackageExplorer.Log.Singleton.Error(ex, "Reading options file: " + filename);
             }
         }
 

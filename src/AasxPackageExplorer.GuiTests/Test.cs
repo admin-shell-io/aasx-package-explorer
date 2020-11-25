@@ -2,6 +2,8 @@
 using FlaUI.Core.AutomationElements;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
+using File = System.IO.File;
+using Path = System.IO.Path;
 using Retry = FlaUI.Core.Tools.Retry;
 using TestAttribute = NUnit.Framework.TestAttribute;
 using TimeSpan = System.TimeSpan;
@@ -71,6 +73,7 @@ namespace AasxPackageExplorer.GuiTests
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
                 Common.AssertLoadAasx(application, mainWindow, path);
+                Common.AssertNoErrors(application, mainWindow);
             });
         }
 
@@ -81,6 +84,7 @@ namespace AasxPackageExplorer.GuiTests
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
                 Common.AssertLoadAasx(application, mainWindow, path);
+                Common.AssertNoErrors(application, mainWindow);
 
                 const string automationId = "AssetPic";
 
@@ -99,6 +103,65 @@ namespace AasxPackageExplorer.GuiTests
                         $"width is {assetPic.BoundingRectangle.Width} and " +
                         $"height is {assetPic.BoundingRectangle.Height}");
                 }
+            });
+        }
+
+        [Test]
+        public void Test_that_opening_an_invalid_AASX_does_not_break_the_app()
+        {
+            using var tmpDir = new TemporaryDirectory();
+            var path = Path.Combine(tmpDir.Path, "invalid.aasx");
+            File.WriteAllText(path, "totally invalid");
+
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertLoadAasx(application, mainWindow, path);
+                var numberErrors = Retry.Find(
+                    () => (application.HasExited)
+                        ? null
+                        : mainWindow.FindFirstChild(cf => cf.ByAutomationId("LabelNumberErrors")),
+                    new RetrySettings { ThrowOnTimeout = true, Timeout = TimeSpan.FromSeconds(5) });
+
+                Assert.AreEqual("Errors: 1", numberErrors.AsLabel().Text);
+            });
+        }
+
+        [Test]
+        public void Test_that_error_report_doesnt_break_the_app()
+        {
+            using var tmpDir = new TemporaryDirectory();
+            var path = Path.Combine(tmpDir.Path, "invalid.aasx");
+            File.WriteAllText(path, "totally invalid");
+
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertLoadAasx(application, mainWindow, path);
+
+                var numberErrors = Retry.Find(
+                    () => (application.HasExited)
+                        ? null
+                        : mainWindow.FindFirstChild(cf => cf.ByAutomationId("LabelNumberErrors")),
+                    new RetrySettings { ThrowOnTimeout = true, Timeout = TimeSpan.FromSeconds(5) });
+
+                Assert.AreEqual("Errors: 1", numberErrors.AsLabel().Text);
+
+                var buttonReport = Retry.Find(
+                    () => mainWindow.FindFirstChild(cf => cf.ByAutomationId("ButtonReport")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the report button"
+                    }).AsButton();
+
+                buttonReport.Click();
+
+                Retry.WhileNull(() =>
+                        // ReSharper disable once AccessToDisposedClosure
+                        application.GetAllTopLevelWindows(automation)
+                            .FirstOrDefault((w) => w.Title == "Message Report"),
+                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
+                    timeoutMessage: "Could not find the 'Message Report' window");
             });
         }
     }

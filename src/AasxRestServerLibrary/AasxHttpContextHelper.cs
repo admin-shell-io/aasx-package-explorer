@@ -81,7 +81,6 @@ namespace AasxRestServerLibrary
             // over all query strings
             foreach (var kr in queryStrings.AllKeys)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var k = kr.Trim().ToLower();
@@ -97,8 +96,10 @@ namespace AasxRestServerLibrary
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             // done

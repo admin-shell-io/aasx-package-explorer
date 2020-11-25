@@ -4514,7 +4514,10 @@ namespace AdminShellNS
                     {
                         rec.Fix.Invoke();
                     }
-                    catch { res--; }
+                    catch
+                    {
+                        res--;
+                    }
                 }
 
                 // return number of applied fixes

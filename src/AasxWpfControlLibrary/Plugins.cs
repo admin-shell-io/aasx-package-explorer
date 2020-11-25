@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
@@ -10,13 +10,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using AasxGlobalLogging;
 using AasxIntegrationBase;
-using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -161,7 +156,7 @@ namespace AasxPackageExplorer
             {
                 try
                 {
-                    Log.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
+                    AasxPackageExplorer.Log.Singleton.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
 
                     // make full path
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
@@ -174,7 +169,8 @@ namespace AasxPackageExplorer
                     var tp = asm.GetType("AasxIntegrationBase.AasxPlugin");
                     if (tp == null)
                     {
-                        Log.Error("Cannot find class AasxIntegrationBase.AasxPlugin within .dll.");
+                        AasxPackageExplorer.Log.Singleton.Error(
+                            "Cannot find class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
                     }
 
@@ -182,7 +178,8 @@ namespace AasxPackageExplorer
                     IAasxPluginInterface ob = (IAasxPluginInterface)Activator.CreateInstance(tp);
                     if (ob == null)
                     {
-                        Log.Error("Cannot create instance from class AasxIntegrationBase.AasxPlugin within .dll.");
+                        AasxPackageExplorer.Log.Singleton.Error(
+                            "Cannot create instance from class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
                     }
 
@@ -190,7 +187,7 @@ namespace AasxPackageExplorer
                     var pi = PluginInstance.CreateNew(index, asm, tp, ob, pluginDll[index].Args);
                     if (pi == null)
                     {
-                        Log.Error(
+                        AasxPackageExplorer.Log.Singleton.Error(
                             "Cannot invoke methods within instance from " +
                                 "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
@@ -201,12 +198,12 @@ namespace AasxPackageExplorer
                     pi.BasicInvokeMethod("InitPlugin", singleArg);
 
                     // adding
-                    Log.Info(".. adding plugin {0}", pi.name);
+                    AasxPackageExplorer.Log.Singleton.Info(".. adding plugin {0}", pi.name);
                     loadedPlugins.Add(pi.name, pi);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Trying to activate the plugin at index {index}");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"Trying to activate the plugin at index {index}");
                 }
             }
 
@@ -223,7 +220,6 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pi in LoadedPlugins.Values)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     var x = pi.InvokeAction("get-licenses") as AasxPluginResultLicense;
@@ -239,8 +235,10 @@ namespace AasxPackageExplorer
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
 
             // OK
@@ -283,7 +281,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, exceptionWhere);
+                    AasxPackageExplorer.Log.Singleton.Error(ex, exceptionWhere);
                 }
             }
         }
@@ -329,7 +327,6 @@ namespace AasxPackageExplorer
             // over all loaded plugins
             foreach (var pluginInstance in LoadedPlugins.Values)
             {
-                // ReSharper disable EmptyGeneralCatchClause
                 try
                 {
                     for (int i = 0; i < 999; i++)
@@ -343,7 +340,7 @@ namespace AasxPackageExplorer
                         {
                             if (duplicateLog != null)
                                 duplicateLog(new StoredPrint(xs));
-                            Log.Info("[{0}] {1}", "" + pluginInstance.name, x);
+                            AasxPackageExplorer.Log.Singleton.Info("[{0}] {1}", "" + pluginInstance.name, x);
                         }
 
                         var xsp = x as StoredPrint;
@@ -352,14 +349,16 @@ namespace AasxPackageExplorer
                             xsp.msg = $"[{"" + pluginInstance.name}] " + xsp.msg;
                             if (duplicateLog != null)
                                 duplicateLog(xsp);
-                            Log.LogInstance.Append(xsp);
+                            AasxPackageExplorer.Log.Singleton.Append(xsp);
                             if (xsp.isError)
-                                Log.LogInstance.NumberErrors++;
+                                AasxPackageExplorer.Log.Singleton.NumberErrors++;
                         }
                     }
                 }
-                catch { }
-                // ReSharper enable EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
             }
         }
 

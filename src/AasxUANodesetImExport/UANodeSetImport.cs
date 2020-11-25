@@ -161,13 +161,14 @@ namespace AasxUANodesetImExport
         private static UANode getRoot()
         {
             //the root node will always have the BrowseName AASAssetAdministrationShell
-            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 return InformationModel.Items.First(x => x.BrowseName == "1:AASAssetAdministrationShell");
             }
-            catch { }
-            // ReSharper enable EmptyGeneralCatchClause
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
             return null;
         }
 
