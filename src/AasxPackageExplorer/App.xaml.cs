@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
+
 namespace AasxPackageExplorer
 {
     public partial class App : Application
@@ -25,62 +26,45 @@ namespace AasxPackageExplorer
         {
             var optionsInformation = new OptionsInformation();
 
-            // there is a special case for having "no" command line options ..
-            string directAasx = null;
-            if (args.Length == 1 && !args[0].StartsWith("-"))
-            {
-                directAasx = args[0];
-                AasxPackageExplorer.Log.Singleton.Info("Direct request to load AASX {0} ..", directAasx);
-            }
+            // Load the default command-line options from a file with a conventional file name
 
-            // If no command-line args given, read options via default filename
-            if (directAasx != null || args.Length < 1)
-            {
-                var defFn = System.IO.Path.Combine(
-                    System.IO.Path.GetDirectoryName(exePath),
-                    System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
+            var pathToDefaultOptions = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
 
+            AasxPackageExplorer.Log.Singleton.Info(
+                "The default options are expected in the JSON file: {0}", pathToDefaultOptions);
+            if (File.Exists(pathToDefaultOptions))
+            {
                 AasxPackageExplorer.Log.Singleton.Info(
-                    "The default options are expected in the JSON file: {0}", defFn);
-                if (File.Exists(defFn))
-                {
-                    AasxPackageExplorer.Log.Singleton.Info(
-                        "Loading the default options from: {0}", defFn);
-                    OptionsInformation.ReadJson(defFn, optionsInformation);
-                }
-                else
-                {
-                    AasxPackageExplorer.Log.Singleton.Info(
-                        "The JSON file with the default options does not exist;" +
-                        "no default options were loaded: {0}", defFn);
-                }
-
-                // overrule
-                if (directAasx != null)
-                {
-                    AasxPackageExplorer.Log.Singleton.Info($"Loading the AASX from: {directAasx}");
-                    optionsInformation.AasxToLoad = directAasx;
-                }
+                    "Loading the default options from: {0}", pathToDefaultOptions);
+                OptionsInformation.ReadJson(pathToDefaultOptions, optionsInformation);
             }
             else
             {
-                // 2nd parse options
-                AasxPackageExplorer.Log.Singleton.Info($"Parsing {args.Length} command-line option(s)...");
-
-                for (var i = 0; i < args.Length; i++)
-                    AasxPackageExplorer.Log.Singleton.Info($"Command-line option: {i}: {args[i]}");
-
-                OptionsInformation.ParseArgs(args, optionsInformation);
-            }
-
-            // 3rd further commandline options in extra file
-            if (optionsInformation.OptionsTextFn != null)
-            {
                 AasxPackageExplorer.Log.Singleton.Info(
-                    $"Parsing options from a non-default options file: {optionsInformation.OptionsTextFn}");
-                var fullFilename = System.IO.Path.GetFullPath(optionsInformation.OptionsTextFn);
-                OptionsInformation.TryReadOptionsFile(fullFilename, optionsInformation);
+                    "The JSON file with the default options does not exist;" +
+                    "no default options were loaded: {0}", pathToDefaultOptions);
             }
+
+            // Cover the special case for having a single positional command-line option
+
+            if (args.Length == 1 && !args[0].StartsWith("-"))
+            {
+                string directAasx = args[0];
+                AasxPackageExplorer.Log.Singleton.Info("Direct request to load AASX {0} ..", directAasx);
+                optionsInformation.AasxToLoad = directAasx;
+            }
+
+            // Parse options from the command-line and execute the directives on the fly (such as parsing and
+            // overruling given in the additional option files, *e.g.*, through "-read-json" and "-options")
+
+            AasxPackageExplorer.Log.Singleton.Info($"Parsing {args.Length} command-line option(s)...");
+
+            for (var i = 0; i < args.Length; i++)
+                AasxPackageExplorer.Log.Singleton.Info($"Command-line option: {i}: {args[i]}");
+
+            OptionsInformation.ParseArgs(args, optionsInformation);
 
             return optionsInformation;
         }

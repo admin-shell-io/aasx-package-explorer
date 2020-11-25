@@ -28,7 +28,7 @@ namespace AasxPackageExplorer.Tests
     public class TestParseArguments
     {
         [Test]
-        public void TestDefaultsWithoutAnyArguments()
+        public void Test_defaults_without_any_arguments()
         {
             string exePath = Common.AasxPackageExplorerExe();
             var optionsInformation = App.InferOptions(exePath, new string[] { });
@@ -40,9 +40,97 @@ namespace AasxPackageExplorer.Tests
             Assert.AreEqual(".", optionsInformation.PluginDir);
         }
 
+        [Test]
+        public void Test_overrule_plugin_dir_in_command_line()
+        {
+            string exePath = Common.AasxPackageExplorerExe();
+            var optionsInformation = App.InferOptions(
+                exePath, new[] { "-plugin-dir", "/somewhere/over/the/rainbow" });
+
+            Assert.AreEqual("/somewhere/over/the/rainbow", optionsInformation.PluginDir);
+        }
 
         [Test]
-        public void TestPluginPathsFromJsonOptions()
+        public void Test_directly_load_AASX()
+        {
+            string exePath = Common.AasxPackageExplorerExe();
+            var optionsInformation = App.InferOptions(
+                exePath, new[] { "/somewhere/over/the/rainbow.aasx" });
+
+            Assert.AreEqual("/somewhere/over/the/rainbow.aasx", optionsInformation.AasxToLoad);
+        }
+
+        [Test]
+        public void Test_that_command_line_arguments_after_the_additional_config_file_overrule()
+        {
+            using (var tmpDir = new TemporaryDirectory())
+            {
+                var jsonOptionsPath = Path.Combine(tmpDir.Path, "options-test.json");
+
+                const string text = @"{ ""PluginDir"": ""/somewhere/from/the/additional"" }";
+                File.WriteAllText(jsonOptionsPath, text);
+
+                string exePath = Common.AasxPackageExplorerExe();
+                var optionsInformation = App.InferOptions(
+                    exePath, new[]
+                    {
+                        "-read-json", jsonOptionsPath,
+                        "-plugin-dir", "/somewhere/from/the/command/line",
+                    });
+
+                Assert.AreEqual("/somewhere/from/the/command/line", optionsInformation.PluginDir);
+            }
+        }
+
+        [Test]
+        public void Test_that_additional_config_file_after_the_command_lines_overrules()
+        {
+            using (var tmpDir = new TemporaryDirectory())
+            {
+                var jsonOptionsPath = Path.Combine(tmpDir.Path, "options-test.json");
+
+                const string text = @"{ ""PluginDir"": ""/somewhere/from/the/additional"" }";
+                File.WriteAllText(jsonOptionsPath, text);
+
+                string exePath = Common.AasxPackageExplorerExe();
+                var optionsInformation = App.InferOptions(
+                    exePath, new[]
+                    {
+                        "-plugin-dir", "/somewhere/from/the/command/line",
+                        "-read-json", jsonOptionsPath
+                    });
+
+                Assert.AreEqual("/somewhere/from/the/additional", optionsInformation.PluginDir);
+            }
+        }
+
+        [Test]
+        public void Test_that_multiple_additional_config_files_are_possible()
+        {
+            using (var tmpDir = new TemporaryDirectory())
+            {
+                var jsonOptionsOnePath = Path.Combine(tmpDir.Path, "options-test-one.json");
+                File.WriteAllText(jsonOptionsOnePath,
+                    @"{ ""PluginDir"": ""/somewhere/from/the/additional-one"" }");
+
+                var jsonOptionsTwoPath = Path.Combine(tmpDir.Path, "options-test-one.json");
+                File.WriteAllText(jsonOptionsTwoPath,
+                    @"{ ""PluginDir"": ""/somewhere/from/the/additional-two"" }");
+
+                string exePath = Common.AasxPackageExplorerExe();
+                var optionsInformation = App.InferOptions(
+                    exePath, new[]
+                    {
+                        "-read-json", jsonOptionsOnePath,
+                        "-read-json", jsonOptionsTwoPath
+                    });
+
+                Assert.AreEqual("/somewhere/from/the/additional-two", optionsInformation.PluginDir);
+            }
+        }
+
+        [Test]
+        public void Test_plugin_paths_from_JSON_options()
         {
             string exePath = Common.AasxPackageExplorerExe();
 
@@ -102,7 +190,7 @@ namespace AasxPackageExplorer.Tests
         }
 
         [Test]
-        public void TestPluginPathsFromDefaultJsonOptions()
+        public void Test_plugin_paths_from_default_JSON_options()
         {
             using (var tmpDir = new TemporaryDirectory())
             {
@@ -129,7 +217,7 @@ namespace AasxPackageExplorer.Tests
         }
 
         [Test]
-        public void TestPluginsArePassedArguments()
+        public void Test_plugins_are_passed_arguments()
         {
             var optionsInformation = App.InferOptions(
                 "NonExistingAasxPackageExplorer.exe",
@@ -141,7 +229,7 @@ namespace AasxPackageExplorer.Tests
         }
 
         [Test]
-        public void TestPluginsAreSearchedInPluginsDirectory()
+        public void Test_plugins_are_searched_in_plugins_directory()
         {
             using (var tmpDir = new TemporaryDirectory())
             {
@@ -163,7 +251,7 @@ namespace AasxPackageExplorer.Tests
         }
 
         [Test]
-        public void TestThatSplashTimeIsSet()
+        public void Test_that_splash_time_is_set()
         {
             var optionsInformation = App.InferOptions(
                 "NonExistingAasxPackageExplorer.exe", new[] { "-splash", "1984" });
@@ -175,7 +263,7 @@ namespace AasxPackageExplorer.Tests
     public class TestLoadPlugins
     {
         [Test]
-        public void TestThatItWorks()
+        public void Test_that_it_works()
         {
             using (var tmpDir = new TemporaryDirectory())
             {
