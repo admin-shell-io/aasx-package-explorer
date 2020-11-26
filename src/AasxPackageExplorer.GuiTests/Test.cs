@@ -83,6 +83,19 @@ namespace AasxPackageExplorer.GuiTests
         }
 
         [Test]
+        public void Test_to_load_and_reload_sample_aasxes()
+        {
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertLoadAasx(application, mainWindow, Common.PathTo01FestoAasx());
+                Common.AssertNoErrors(application, mainWindow);
+
+                Common.AssertLoadAasx(application, mainWindow, Common.PathTo34FestoAasx());
+                Common.AssertNoErrors(application, mainWindow);
+            });
+        }
+
+        [Test]
         public void Test_that_the_asset_image_is_displayed()
         {
             var path = Common.PathTo01FestoAasx();
