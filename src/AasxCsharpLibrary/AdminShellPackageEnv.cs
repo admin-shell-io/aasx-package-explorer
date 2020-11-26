@@ -267,13 +267,26 @@ namespace AdminShellNS
         /// <remarks><paramref name="fn"/> is unequal <paramref name="fnToLoad"/> if indirectLoadSave is used.</remarks>
         private static (AdminShell.AdministrationShellEnv, Package) LoadPackageAasx(string fn, string fnToLoad)
         {
-            AdminShell.AdministrationShellEnv aasenv;
+            AdminShell.AdministrationShellEnv aasEnv;
             Package openPackage = null;
+
+            Package package;
+            try
+            {
+                package = Package.Open(fnToLoad, FileMode.Open);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    fn == fnToLoad
+                        ? $"While opening the package to read AASX {fn} " +
+                          $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}"
+                        : $"While opening the package to read AASX {fn} indirectly from {fnToLoad} " +
+                          $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
 
             try
             {
-                var package = Package.Open(fnToLoad, FileMode.Open);
-
                 // get the origin from the package
                 PackagePart originPart = null;
                 var xs = package.GetRelationshipsByType(
@@ -312,7 +325,7 @@ namespace AdminShellNS
                                     new AdminShellConverters.JsonAasxConverter(
                                         "modelType", "name"));
 
-                                aasenv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
+                                aasEnv = (AdminShell.AdministrationShellEnv)serializer.Deserialize(
                                     file, typeof(AdminShell.AdministrationShellEnv));
                             }
                         }
@@ -322,10 +335,10 @@ namespace AdminShellNS
                         using (var s = specPart.GetStream(FileMode.Open))
                         {
                             // own catch loop to be more specific
-                            aasenv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
+                            aasEnv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
                             openPackage = package;
 
-                            if (aasenv == null)
+                            if (aasEnv == null)
                                 throw new Exception("Type error for XML file!");
                         }
                     }
@@ -333,18 +346,31 @@ namespace AdminShellNS
                 catch (Exception ex)
                 {
                     throw new Exception(
-                        $"While reading AAS {fn} spec " +
-                        $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+                        fn == fnToLoad
+                            ? $"While reading spec from the AASX {fn} " +
+                              $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}"
+                            : $"While reading spec from the {fn} (and indirectly over {fnToLoad}) " +
+                              $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                    $"While reading AASX {fn} " +
-                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+                    fn == fnToLoad
+                        ? $"While reading the AASX {fn} " +
+                          $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}"
+                        : $"While reading the {fn} (and indirectly over {fnToLoad}) " +
+                          $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+            finally
+            {
+                if (openPackage == null)
+                {
+                    package.Close();
+                }
             }
 
-            return (aasenv, openPackage);
+            return (aasEnv, openPackage);
         }
 
         public bool Load(string fn, bool indirectLoadSave = false)
