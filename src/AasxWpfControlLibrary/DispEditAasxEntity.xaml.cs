@@ -2778,7 +2778,7 @@ namespace AasxPackageExplorer
                                 var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
                                 if (sf != null)
                                 {
-                                    fl.value = sf.uri.ToString();
+                                    fl.value = sf.Uri.ToString();
                                     return new ModifyRepo.LambdaActionRedrawEntity();
                                 }
                             }
