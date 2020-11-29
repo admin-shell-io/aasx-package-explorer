@@ -60,19 +60,6 @@ namespace AasxRestServerLibrary
                 this.proxy.Address = newUri;
                 this.proxy.Credentials = new NetworkCredential(username, password);
             }
-            else
-            {
-                /*
-                var pi = WebRequest.GetSystemWebProxy();
-                //
-                 TODO (Michael Hoffmeister, 2020-08-01): Andreas, check this. 
-                 System.Net.WebProxy.GetDefaultProxy was deprecated.
-                //
-                this.proxy = (WebProxy)pi;
-                if (this.proxy != null)
-                    this.proxy.UseDefaultCredentials = true;
-                */
-            }
         }
 
         // interface
@@ -177,35 +164,6 @@ namespace AasxRestServerLibrary
             };
             StringContent queryString = new StringContent(payload);
             await hClient.PutAsync(fullname, queryString);
-
-            /*
-            try
-            {
-                var hClient = new HttpClient(handler)
-                {
-                    BaseAddress = uri
-                };
-                StringContent queryString = new StringContent(payload);
-                await hClient.PutAsync(fullname, queryString);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            */
-            /*
-            var request = new RestRequest(fullname);
-            request.HttpMethod = Grapevine.Shared.HttpMethod.PUT;
-            request.ContentType = Grapevine.Shared.ContentType.JSON;
-            request.Payload = payload;
-            if (this.proxy != null)
-                request.Proxy = this.proxy;
-            var response = client.Execute(request);
-            if (response.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception(
-                    $"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
-            return response.GetContent();
-            */
         }
 
         public string UpdatePropertyValue(

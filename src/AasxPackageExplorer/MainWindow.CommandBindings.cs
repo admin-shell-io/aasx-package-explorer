@@ -1208,7 +1208,7 @@ namespace AasxPackageExplorer
 
                         var handler = new HttpClientHandler();
                         handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
-                        // handler.AllowAutoRedirect = false;
+                        //// handler.AllowAutoRedirect = false;
                         string dataServer = "";
                         if (prefix == tag)
                             dataServer = "http://admin-shell-io.com:52001";
