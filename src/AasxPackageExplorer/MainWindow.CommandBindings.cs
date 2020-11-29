@@ -1189,7 +1189,7 @@ namespace AasxPackageExplorer
                 if (input != "http://localhost:1111")
                 {
                     bool connect = false;
-                    
+
                     string tag = "http://admin-shell-io.com:52001/server/aasxbyasset/";
                     string prefix = "";
                     if (input.Length > tag.Length)
@@ -1218,7 +1218,7 @@ namespace AasxPackageExplorer
                         {
                             BaseAddress = new Uri(dataServer)
                         };
-                        input = input.Substring(dataServer.Length, input.Length-dataServer.Length);
+                        input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
                         client.DefaultRequestHeaders.Add("Accept", "application/aas");
                         var response2 = await client.GetAsync(input);
                         String urlContents = await response2.Content.ReadAsStringAsync();
