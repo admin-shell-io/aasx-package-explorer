@@ -172,7 +172,7 @@ namespace AasxOpenIdClient
                                 operation = "error";
                                 continue;
                             }
-                            String urlContents = urlContents = await response2.Content.ReadAsStringAsync();
+                            String urlContents = await response2.Content.ReadAsStringAsync();
                             switch (operation)
                             {
                                 case "/server/listaas/":
