@@ -1231,7 +1231,8 @@ namespace AasxPackageExplorer
                             string fileData = parsed3.SelectToken("fileData").Value<string>();
 
                             var enc = new System.Text.ASCIIEncoding();
-                            var fileString4 = Jose.JWT.Decode(fileData, enc.GetBytes(AasxOpenIdClient.OpenIDClient.secretString),
+                            var fileString4 = Jose.JWT.Decode(
+                                fileData, enc.GetBytes(AasxOpenIdClient.OpenIDClient.secretString),
                                 JwsAlgorithm.HS256);
                             var parsed4 = JObject.Parse(fileString4);
 
