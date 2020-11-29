@@ -1227,7 +1227,7 @@ namespace AasxPackageExplorer
                         {
                             var parsed3 = JObject.Parse(urlContents);
 
-                            string fileName = parsed3.SelectToken("fileName").Value<string>();
+                            //// string fileName = parsed3.SelectToken("fileName").Value<string>();
                             string fileData = parsed3.SelectToken("fileData").Value<string>();
 
                             var enc = new System.Text.ASCIIEncoding();
