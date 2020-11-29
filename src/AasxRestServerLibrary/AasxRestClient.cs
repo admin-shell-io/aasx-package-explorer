@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
@@ -58,17 +59,6 @@ namespace AasxRestServerLibrary
                 Uri newUri = new Uri(proxyAddress);
                 this.proxy.Address = newUri;
                 this.proxy.Credentials = new NetworkCredential(username, password);
-            }
-            else
-            {
-                var pi = WebRequest.GetSystemWebProxy();
-                /*
-                 TODO (Michael Hoffmeister, 2020-08-01): Andreas, check this. 
-                 System.Net.WebProxy.GetDefaultProxy was deprecated.
-                */
-                this.proxy = (WebProxy)pi;
-                if (this.proxy != null)
-                    this.proxy.UseDefaultCredentials = true;
             }
         }
 
@@ -160,20 +150,20 @@ namespace AasxRestServerLibrary
             return response.GetContent();
         }
 
-        public string PutSubmodel(string payload)
+        public async void PutSubmodelAsync(string payload)
         {
             string fullname = "/aas/id/submodels/";
-            var request = new RestRequest(fullname);
-            request.HttpMethod = Grapevine.Shared.HttpMethod.PUT;
-            request.ContentType = Grapevine.Shared.ContentType.JSON;
-            request.Payload = payload;
-            if (this.proxy != null)
-                request.Proxy = this.proxy;
-            var response = client.Execute(request);
-            if (response.StatusCode != Grapevine.Shared.HttpStatusCode.Ok)
-                throw new Exception(
-                    $"REST {response.ResponseUri} response {response.StatusCode} with {response.StatusDescription}");
-            return response.GetContent();
+
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            handler.AllowAutoRedirect = false;
+
+            var hClient = new HttpClient(handler)
+            {
+                BaseAddress = uri
+            };
+            StringContent queryString = new StringContent(payload);
+            await hClient.PutAsync(fullname, queryString);
         }
 
         public string UpdatePropertyValue(
