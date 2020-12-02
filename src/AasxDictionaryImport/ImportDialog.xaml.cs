@@ -28,7 +28,7 @@ namespace AasxDictionaryImport
     /// accessed using the GetResult method.
     /// <para>
     /// The data source can be selected using a combo box.  If the user wants to use other data sources than those
-    /// shipped with the AASX Package Exlporer, they can select a custom directory.  This dialog could be extended by
+    /// shipped with the AASX Package Explorer, they can select a custom directory.  This dialog could be extended by
     /// adding another button that fetches a data source from the network.
     /// </para>
     /// </summary>
@@ -236,12 +236,14 @@ namespace AasxDictionaryImport
 
         private void ViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Model.IElement? element = null;
-
-            if (sender is TreeViewItem treeViewItem && treeViewItem.IsSelected)
-                element = (treeViewItem.DataContext as ElementWrapper)?.Element;
-            else if (sender is ListViewItem listViewItem && listViewItem.IsSelected)
-                element = listViewItem.DataContext as Model.IElement;
+            Model.IElement? element = sender switch
+            {
+                TreeViewItem { IsSelected: true } treeViewItem =>
+                    (treeViewItem.DataContext as ElementWrapper)?.Element,
+                ListViewItem { IsSelected: true } listViewItem =>
+                    listViewItem.DataContext as Model.IElement,
+                _ => null
+            };
 
             if (element != null)
             {
