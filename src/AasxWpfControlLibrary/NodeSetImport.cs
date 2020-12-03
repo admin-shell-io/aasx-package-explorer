@@ -253,8 +253,11 @@ namespace AasxPackageExplorer
                 {
                     if (parentNodes.TryGetValue(n.ParentNodeId, out UaNode p))
                     {
-                        n.parent = p;
-                        p.children.Add(n);
+                        if (p != null)
+                        {
+                            n.parent = p;
+                            p.children.Add(n);
+                        }
                     }
                 }
             }
