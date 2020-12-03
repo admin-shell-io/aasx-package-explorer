@@ -4,6 +4,32 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+
+  <!--
+      (mristin, 2020-11-25)
+      We have to skip publishing this plugin in Debug configuration as it breaks the tests
+      and does not load properly.
+
+      The reported error is:
+      Error: Failed to load the license from the plugin: Net46AasxServerPlugin
+      from artefacts\build\Debug\AasxPluginUaNetServer.dll:
+      Ein Aufrufziel hat einen Ausnahmefehler verursacht. Die Datei oder Assembly "Opc.Ua.Configuration,
+      Version=1.4.360.0, Culture=neutral, PublicKeyToken=bfa7a73c5cf4b6e8" oder eine Abhõngigkeit davon wurde
+      nicht gefunden. Die gefundene Manifestdefinition der Assembly stimmt nicht mit dem Assemblyverweis überein.
+      (Ausnahme von HRESULT: 0x80131040) at    bei System.RuntimeMethodHandle.InvokeMethod(Object target,
+      Object[] arguments, Signature sig, Boolean constructor)
+        bei System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+        bei System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder,
+            Object[] parameters, CultureInfo culture)
+        bei System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters)
+        bei AasxPackageExplorer.Plugins.PluginInstance.BasicInvokeMethod(String mname, Object[] args)
+        bei AasxPackageExplorer.Plugins.PluginInstance.InvokeAction(String name, Object[] args)
+        bei AasxPackageExplorer.Plugins.CompileAllLicenses()
+  -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />

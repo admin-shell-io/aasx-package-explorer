@@ -237,7 +237,8 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    AdminShellNS.LogInternally.That.Error(
+                        ex, $"Failed to load the license from the plugin: {pi.name} from {pi.asm.Location}");
                 }
             }
 
