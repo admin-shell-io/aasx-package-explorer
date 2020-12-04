@@ -169,7 +169,9 @@ namespace AasxPackageExplorer
                             case "uax:DateTime":
                             case "uax:Boolean":
                             case "uax:Int32":
+                            case "uax:Int16":
                             case "uax:ByteString":
+                            case "uax:Float":
                                 currentNode.Value = reader.Value;
                                 break;
                             case "Description":
@@ -257,6 +259,10 @@ namespace AasxPackageExplorer
                         {
                             n.parent = p;
                             p.children.Add(n);
+                        }
+                        else
+                        {
+                            roots.Add(n);
                         }
                     }
                 }
