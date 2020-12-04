@@ -10,11 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 
-using AasxAmlImExport;
-using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using Newtonsoft.Json;

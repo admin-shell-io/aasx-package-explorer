@@ -1327,7 +1327,9 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
 
 
+#pragma warning disable 618
             WFormattedText formattedText = new WFormattedText(
+#pragma warning restore 618
                 text,
                 System.Globalization.CultureInfo.CurrentCulture,
                 WFlowDirection.LeftToRight,
