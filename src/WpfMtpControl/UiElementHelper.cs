@@ -403,7 +403,18 @@ namespace WpfMtpControl
                     this.EmSize,
                     Brushes.Black,
                     new NumberSubstitution(),
-                    TextFormattingMode.Display);
+                    TextFormattingMode.Display,
+                    /*
+                     * (mristin, 2020-12-04)
+                     * The following argument, pixelsPerDip, is a complicated one. We set it here to value 1.0
+                     * since we are simply upgrading NET Framework from 4.6.1 to 4.7.2.
+                     *
+                     * See https://github.com/Microsoft/WPF-Samples/tree/master/PerMonitorDPI,
+                     * https://stackoverflow.com/questions/40277388 and
+                     * https://social.msdn.microsoft.com/Forums/vstudio/en-US/ef99bb56-df57-411a-a158-cad1eaa63850
+                     */
+                    1.0
+                    );
 
                 return new Size(formattedText.Width, formattedText.Height);
             }
