@@ -22,27 +22,61 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    public class AasCntlBrushes
+    public enum AasCntlGridUnitType { Auto = 0, Pixel = 1, Star = 2 }
+
+    public class AasCntlGridLength
     {
-        public static AasCntlBrush Black { get { return new AasCntlBrush(0xff000000u); } }
-        public static AasCntlBrush DarkBlue { get { return new AasCntlBrush(0xff00008bu); } }
-        public static AasCntlBrush LightBlue { get { return new AasCntlBrush(0xffadd8e6u); } }
-        public static AasCntlBrush White { get { return new AasCntlBrush(0xffffffffu); } }
+        public double Value = 1.0;
+        public AasCntlGridUnitType Type = AasCntlGridUnitType.Auto;
+
+        public static AasCntlGridLength Auto { get { return new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto); } }
+
+        public AasCntlGridLength() { }
+
+        public AasCntlGridLength(double value, AasCntlGridUnitType type = AasCntlGridUnitType.Auto)
+        {
+            this.Value = value;
+            this.Type = type;
+        }
+
+        public GridLength GetWpfGridLength()
+        {
+            return new GridLength(this.Value, (GridUnitType)((int)Type));
+        }
     }
 
-    public class AasCntlColumnDefinition : ColumnDefinition
+    public class AasCntlColumnDefinition
     {
+        public AasCntlGridLength Width;
+        public double? MinWidth;
+
+        public ColumnDefinition GetWpfColumnDefinition()
+        {
+            var res = new ColumnDefinition();
+            if (this.Width != null)
+                res.Width = this.Width.GetWpfGridLength();
+            if (this.MinWidth.HasValue)
+                res.MinWidth = this.MinWidth.Value;
+            return res;
+        }
     }
 
-    public class AasCntlRowDefinition : RowDefinition
+    public class AasCntlRowDefinition
     {
+        public AasCntlGridLength Height;
+        public double? MinHeight;
+
+        public RowDefinition GetWpfRowDefinition()
+        {
+            var res = new RowDefinition();
+            if (this.Height != null)
+                res.Height = this.Height.GetWpfGridLength();
+            if (this.MinHeight.HasValue)
+                res.MinHeight = this.MinHeight.Value;
+            return res;
+        }
     }
 
-    /*
-    public class AasCntlGridLength : GridLength
-    {
-    }
-    */
 
     public class AasCntlBrush
     {
@@ -70,6 +104,14 @@ namespace AasxPackageExplorer
         {
             return new SolidColorBrush(solidColorBrush);
         }
+    }
+
+    public class AasCntlBrushes
+    {
+        public static AasCntlBrush Black { get { return new AasCntlBrush(0xff000000u); } }
+        public static AasCntlBrush DarkBlue { get { return new AasCntlBrush(0xff00008bu); } }
+        public static AasCntlBrush LightBlue { get { return new AasCntlBrush(0xffadd8e6u); } }
+        public static AasCntlBrush White { get { return new AasCntlBrush(0xffffffffu); } }
     }
 
     public class AasCntlThickness
@@ -102,6 +144,8 @@ namespace AasxPackageExplorer
 
     public class AasCntlUIElement
     {
+        public int? GridRow, GridRowSpan, GridColumn, GridColumnSpan;
+
         protected UIElement wpfElement = null;
 
         public virtual void RenderUIElement(UIElement el) { }
@@ -241,13 +285,13 @@ namespace AasxPackageExplorer
 
     public class AasCntlGrid : AasCntlPanel
     {
-        public List<RowDefinition> RowDefinitions = new List<RowDefinition>();
-        public List<ColumnDefinition> ColumnDefinitions = new List<ColumnDefinition>();
+        public List<AasCntlRowDefinition> RowDefinitions = new List<AasCntlRowDefinition>();
+        public List<AasCntlColumnDefinition> ColumnDefinitions = new List<AasCntlColumnDefinition>();
 
-        public static void SetRow(AasCntlUIElement element, int value) { }
-        public static void SetRowSpan(AasCntlUIElement element, int value) { }
-        public static void SetColumn(AasCntlUIElement element, int value) { }
-        public static void SetColumnSpan(AasCntlUIElement element, int value) { }
+        public static void SetRow(AasCntlUIElement el, int value) { if (el != null) el.GridRow = value; }        
+        public static void SetRowSpan(AasCntlUIElement el, int value) { if (el != null) el.GridRowSpan = value; }
+        public static void SetColumn(AasCntlUIElement el, int value) { if (el != null) el.GridColumn = value; }
+        public static void SetColumnSpan(AasCntlUIElement el, int value) { if (el != null) el.GridColumnSpan = value; }
 
         public virtual new void RenderUIElement(UIElement el)
         {
@@ -256,11 +300,28 @@ namespace AasxPackageExplorer
             {
                 if (this.RowDefinitions != null)
                     foreach (var rd in this.RowDefinitions)
-                        sp.RowDefinitions.Add(rd);
+                        sp.RowDefinitions.Add(rd.GetWpfRowDefinition());
 
                 if (this.ColumnDefinitions != null)
                     foreach (var cd in this.ColumnDefinitions)
-                        sp.ColumnDefinitions.Add(cd);
+                        sp.ColumnDefinitions.Add(cd.GetWpfColumnDefinition());
+
+                // make sure to target only already realized children
+                foreach (var cel in this.Children)
+                {
+                    var celwpf = cel.GetWpfElement();
+                    if (sp.Children.Contains(celwpf))
+                    {
+                        if (cel.GridRow.HasValue)
+                            Grid.SetRow(celwpf, cel.GridRow.Value);
+                        if (cel.GridRowSpan.HasValue)
+                            Grid.SetRowSpan(celwpf, cel.GridRowSpan.Value);
+                        if (cel.GridColumn.HasValue)
+                            Grid.SetColumn(celwpf, cel.GridColumn.Value);
+                        if (cel.GridColumnSpan.HasValue)
+                            Grid.SetColumnSpan(celwpf, cel.GridColumnSpan.Value);
+                    }
+                }
             }
         }
 

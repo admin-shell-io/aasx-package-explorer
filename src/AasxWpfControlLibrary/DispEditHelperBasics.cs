@@ -224,7 +224,7 @@ namespace AasxPackageExplorer
             {
                 var gc = new AasCntlColumnDefinition();
                 // default
-                gc.Width = new GridLength(1.0, GridUnitType.Star);
+                gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
                 // width definition
                 if (colWidths != null && colWidths.Length > ci && colWidths[ci] != null)
                 {
@@ -239,11 +239,11 @@ namespace AasxPackageExplorer
                         kind = m.Groups[2].ToString().Trim();
                     }
                     if (kind == "#")
-                        gc.Width = new GridLength(scale, GridUnitType.Auto);
+                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Auto);
                     if (kind == "*")
-                        gc.Width = new GridLength(scale, GridUnitType.Star);
+                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Star);
                     if (kind == ":")
-                        gc.Width = new GridLength(scale, GridUnitType.Pixel);
+                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Pixel);
                 }
                 g.ColumnDefinitions.Add(gc);
             }
@@ -504,14 +504,14 @@ namespace AasxPackageExplorer
             g.Margin = new AasCntlThickness(0, 13, 0, 0);
 
             var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = new GridLength(1.0, GridUnitType.Star);
+            gc1.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.ColumnDefinitions.Add(gc1);
 
             var auxButton = repo != null && auxButtonTitle != null && auxButtonLambda != null;
             if (auxButton)
             {
                 var gc3 = new AasCntlColumnDefinition();
-                gc3.Width = new GridLength(1.0, GridUnitType.Auto);
+                gc3.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                 g.ColumnDefinitions.Add(gc3);
             }
 
@@ -656,18 +656,18 @@ namespace AasxPackageExplorer
             var g = new AasCntlGrid();
             g.Margin = new AasCntlThickness(0, 1, 0, 1);
             var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = GridLength.Auto;
+            gc1.Width = AasCntlGridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AasCntlColumnDefinition();
-            gc2.Width = new GridLength(1.0, GridUnitType.Star);
+            gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
             if (auxButton)
                 for (int i = 0; i < intButtonTitles.Count; i++)
                 {
                     var gc3 = new AasCntlColumnDefinition();
-                    gc3.Width = new GridLength(1.0, GridUnitType.Auto);
+                    gc3.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                     g.ColumnDefinitions.Add(gc3);
                 }
 
@@ -768,10 +768,10 @@ namespace AasxPackageExplorer
             var g = new AasCntlGrid();
             g.Margin = new AasCntlThickness(0, 1, 0, 1);
             var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = new GridLength(this.standardFirstColWidth);
+            gc1.Width = new AasCntlGridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
             var gc2 = new AasCntlColumnDefinition();
-            gc2.Width = new GridLength(1.0, GridUnitType.Star);
+            gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
             // Label for key
@@ -814,7 +814,7 @@ namespace AasxPackageExplorer
             g.Margin = new AasCntlThickness(0, 0, 0, 0);
 
             var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = GridLength.Auto;
+            gc1.Width = AasCntlGridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
 
@@ -822,14 +822,14 @@ namespace AasxPackageExplorer
             {
                 var gc2 = new AasCntlColumnDefinition();
                 if (widths[c] == "*")
-                    gc2.Width = new GridLength(1.0, GridUnitType.Star);
+                    gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
                 else
                 if (widths[c] == "#")
-                    gc2.Width = new GridLength(1.0, GridUnitType.Auto);
+                    gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                 else
                 {
                     if (Int32.TryParse(widths[c], out int i))
-                        gc2.Width = new GridLength(i);
+                        gc2.Width = new AasCntlGridLength(i);
                 }
                 g.ColumnDefinitions.Add(gc2);
             }
@@ -837,7 +837,7 @@ namespace AasxPackageExplorer
             for (int r = 0; r < rows; r++)
             {
                 var gr = new AasCntlRowDefinition();
-                gr.Height = new GridLength(1.0, GridUnitType.Auto);
+                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
@@ -914,7 +914,7 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new AasCntlColumnDefinition();
-            gc.Width = GridLength.Auto;
+            gc.Width = AasCntlGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
@@ -922,13 +922,13 @@ namespace AasxPackageExplorer
             for (int i = 0; i < 1 /* numButton*/ ; i++)
             {
                 gc = new AasCntlColumnDefinition();
-                gc.Width = new GridLength(1.0, GridUnitType.Star);
+                gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
                 g.ColumnDefinitions.Add(gc);
             }
 
             // 0 row
             var gr = new AasCntlRowDefinition();
-            gr.Height = new GridLength(1.0, GridUnitType.Star);
+            gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.RowDefinitions.Add(gr);
 
             // key label
@@ -982,30 +982,30 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new AasCntlColumnDefinition();
-            gc.Width = GridLength.Auto;
+            gc.Width = AasCntlGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 values
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Star);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 3 buttons behind it
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
                 var gr = new AasCntlRowDefinition();
-                gr.Height = new GridLength(1.0, GridUnitType.Auto);
+                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
@@ -1257,40 +1257,40 @@ namespace AasxPackageExplorer
 
             // 0 key
             var gc = new AasCntlColumnDefinition();
-            gc.Width = GridLength.Auto;
+            gc.Width = AasCntlGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 local
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 3 id type
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 4 value
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Star);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 5 .. buttons behind it
             gc = new AasCntlColumnDefinition();
-            gc.Width = new GridLength(1.0, GridUnitType.Auto);
+            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
                 var gr = new AasCntlRowDefinition();
-                gr.Height = new GridLength(1.0, GridUnitType.Auto);
+                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
