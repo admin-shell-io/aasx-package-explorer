@@ -144,7 +144,7 @@ namespace AasxPackageExplorer
         //
 
         public void DispSmeCutCopyPasteHelper(
-            Panel stack, ModifyRepo repo,
+            AasCntlPanel stack, ModifyRepo repo,
             AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer,
             CopyPasteBuffer cpb,
@@ -280,7 +280,7 @@ namespace AasxPackageExplorer
         }
 
         public void DispSubmodelCutCopyPasteHelper<T>(
-            Panel stack, ModifyRepo repo,
+            AasCntlPanel stack, ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,
@@ -436,7 +436,7 @@ namespace AasxPackageExplorer
         }
 
         public void DispPlainIdentifiableCutCopyPasteHelper<T>(
-            Panel stack, ModifyRepo repo,
+            AasCntlPanel stack, ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,

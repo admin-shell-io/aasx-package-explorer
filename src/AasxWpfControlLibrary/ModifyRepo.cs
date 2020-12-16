@@ -74,6 +74,13 @@ namespace AasxPackageExplorer
             WishForOutsideAction.Add(la);
         }
 
+        public AasCntlFrameworkElement RegisterControl(
+            AasCntlFrameworkElement fe, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
+        {
+            // TODO MIHO
+            return (fe);
+        }
+
         public FrameworkElement RegisterControl(
             FrameworkElement fe, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {

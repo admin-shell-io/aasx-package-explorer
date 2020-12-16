@@ -109,6 +109,11 @@ namespace AasxPackageExplorer
         // Highlighting
         //
 
+        public void HighligtStateElement(AasCntlFrameworkElement fe, bool highlighted)
+        {
+            // TODO MIHO
+        }
+
         public void HighligtStateElement(FrameworkElement fe, bool highlighted)
         {
             // access
@@ -203,21 +208,21 @@ namespace AasxPackageExplorer
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
-        }
+        }       
 
         //
         // small widget handling
         //
 
-        public Grid AddSmallGrid(int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
+        public AasCntlGrid AddSmallGrid(int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
         {
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = margin;
 
             // Cols
             for (int ci = 0; ci < cols; ci++)
             {
-                var gc = new ColumnDefinition();
+                var gc = new AasCntlColumnDefinition();
                 // default
                 gc.Width = new GridLength(1.0, GridUnitType.Star);
                 // width definition
@@ -246,31 +251,31 @@ namespace AasxPackageExplorer
             // Rows
             for (int ri = 0; ri < rows; ri++)
             {
-                var gr = new RowDefinition();
+                var gr = new AasCntlRowDefinition();
                 g.RowDefinitions.Add(gr);
             }
 
             return g;
         }
 
-        public WrapPanel AddSmallWrapPanelTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null)
+        public AasCntlWrapPanel AddSmallWrapPanelTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Brush background = null)
         {
-            var wp = new WrapPanel();
+            var wp = new AasCntlWrapPanel();
             wp.Margin = margin;
             if (background != null)
                 wp.Background = background;
-            Grid.SetRow(wp, row);
-            Grid.SetColumn(wp, col);
+            AasCntlGrid.SetRow(wp, row);
+            AasCntlGrid.SetColumn(wp, col);
             g.Children.Add(wp);
             return (wp);
         }
 
-        public StackPanel AddSmallStackPanelTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Brush background = null,
+        public AasCntlStackPanel AddSmallStackPanelTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Brush background = null,
             bool setVertical = false, bool setHorizontal = false)
         {
-            var sp = new StackPanel();
+            var sp = new AasCntlStackPanel();
             sp.Margin = margin;
             if (background != null)
                 sp.Background = background;
@@ -278,30 +283,30 @@ namespace AasxPackageExplorer
                 sp.Orientation = Orientation.Vertical;
             if (setHorizontal)
                 sp.Orientation = Orientation.Horizontal;
-            Grid.SetRow(sp, row);
-            Grid.SetColumn(sp, col);
+            AasCntlGrid.SetRow(sp, row);
+            AasCntlGrid.SetColumn(sp, col);
             g.Children.Add(sp);
             return (sp);
         }
 
-        public Grid AddSmallGridTo(
-            Grid g, int row, int col,
+        public AasCntlGrid AddSmallGridTo(
+            AasCntlGrid g, int row, int col,
             int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
         {
             var inner = AddSmallGrid(rows, cols, colWidths, margin);
             inner.Margin = margin;
-            Grid.SetRow(inner, row);
-            Grid.SetColumn(inner, col);
+            AasCntlGrid.SetRow(inner, row);
+            AasCntlGrid.SetColumn(inner, col);
             g.Children.Add(inner);
             return (inner);
         }
 
-        public TextBox AddSmallTextBoxTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlTextBox AddSmallTextBoxTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush foreground = null, Brush background = null,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
-            var tb = new TextBox();
+            var tb = new AasCntlTextBox();
             tb.Margin = margin;
             tb.Padding = padding;
             if (foreground != null)
@@ -317,18 +322,18 @@ namespace AasxPackageExplorer
             tb.MaxLines = 3;
             tb.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-            Grid.SetRow(tb, row);
-            Grid.SetColumn(tb, col);
+            AasCntlGrid.SetRow(tb, row);
+            AasCntlGrid.SetColumn(tb, col);
             g.Children.Add(tb);
             return (tb);
         }
 
-        public Border AddSmallDropBoxTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlBorder AddSmallDropBoxTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush borderBrush = null, Brush background = null,
             Thickness borderThickness = new Thickness(), int minHeight = 0)
         {
-            var brd = new Border();
+            var brd = new AasCntlBorder();
             brd.Margin = margin;
             brd.Padding = padding;
             brd.Tag = "DropBox";
@@ -355,19 +360,19 @@ namespace AasxPackageExplorer
 
             brd.Child = tb;
 
-            Grid.SetRow(brd, row);
-            Grid.SetColumn(brd, col);
+            AasCntlGrid.SetRow(brd, row);
+            AasCntlGrid.SetColumn(brd, col);
             g.Children.Add(brd);
             return (brd);
         }
 
-        public ComboBox AddSmallComboBoxTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlComboBox AddSmallComboBoxTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string text = "", Brush foreground = null, Brush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
-            var cb = new ComboBox();
+            var cb = new AasCntlComboBox();
             cb.Margin = margin;
             cb.Padding = padding;
             if (foreground != null)
@@ -386,13 +391,13 @@ namespace AasxPackageExplorer
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
             cb.HorizontalAlignment = HorizontalAlignment.Left;
-            Grid.SetRow(cb, row);
-            Grid.SetColumn(cb, col);
+            AasCntlGrid.SetRow(cb, row);
+            AasCntlGrid.SetColumn(cb, col);
             g.Children.Add(cb);
             return (cb);
         }
 
-        public void SmallComboBoxSelectNearestItem(ComboBox cb, string text)
+        public void SmallComboBoxSelectNearestItem(AasCntlComboBox cb, string text)
         {
             if (cb == null || text == null)
                 return;
@@ -404,11 +409,11 @@ namespace AasxPackageExplorer
                 cb.SelectedIndex = foundI;
         }
 
-        public Button AddSmallButtonTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlButton AddSmallButtonTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", Brush foreground = null, Brush background = null)
         {
-            var but = new Button();
+            var but = new AasCntlButton();
             but.Margin = margin;
             but.Padding = padding;
             if (foreground != null)
@@ -416,14 +421,14 @@ namespace AasxPackageExplorer
             if (background != null)
                 but.Background = background;
             but.Content = content;
-            Grid.SetRow(but, row);
-            Grid.SetColumn(but, col);
+            AasCntlGrid.SetRow(but, row);
+            AasCntlGrid.SetColumn(but, col);
             g.Children.Add(but);
             return (but);
         }
 
-        public Button AddSmallContextMenuItemTo(
-            Grid g, int row, int col,
+        public AasCntlButton AddSmallContextMenuItemTo(
+            AasCntlGrid g, int row, int col,
             string content,
             ModifyRepo repo,
             string[] menuHeaders,
@@ -432,7 +437,7 @@ namespace AasxPackageExplorer
             Brush foreground = null, Brush background = null)
         {
             // construct button
-            var but = new Button();
+            var but = new AasCntlButton();
             but.Margin = margin;
             but.Padding = padding;
             if (foreground != null)
@@ -440,8 +445,8 @@ namespace AasxPackageExplorer
             if (background != null)
                 but.Background = background;
             but.Content = content;
-            Grid.SetRow(but, row);
-            Grid.SetColumn(but, col);
+            AasCntlGrid.SetRow(but, row);
+            AasCntlGrid.SetColumn(but, col);
             g.Children.Add(but);
 
             // on demand: construct and register context menu
@@ -460,7 +465,7 @@ namespace AasxPackageExplorer
                         cm.Items.Add(mi);
                         repo.RegisterControl(mi, menuItemLambda);
                     }
-                    cm.PlacementTarget = but;
+                    cm.PlacementTarget = but.GetWpfElement();
                     cm.IsOpen = true;
                 };
             }
@@ -469,12 +474,12 @@ namespace AasxPackageExplorer
             return (but);
         }
 
-        public CheckBox AddSmallCheckBoxTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlCheckBox AddSmallCheckBoxTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
             Nullable<VerticalAlignment> verticalContentAlignment = null)
         {
-            var cb = new CheckBox();
+            var cb = new AasCntlCheckBox();
             cb.Margin = margin;
             cb.Padding = padding;
             if (foreground != null)
@@ -485,40 +490,40 @@ namespace AasxPackageExplorer
             cb.IsChecked = isChecked;
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
-            Grid.SetRow(cb, row);
-            Grid.SetColumn(cb, col);
+            AasCntlGrid.SetRow(cb, row);
+            AasCntlGrid.SetColumn(cb, col);
             g.Children.Add(cb);
             return (cb);
         }
 
-        public void AddGroup(StackPanel view, string name, Brush background, Brush foreground,
+        public void AddGroup(AasCntlStackPanel view, string name, Brush background, Brush foreground,
             ModifyRepo repo = null,
             string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null)
         {
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 13, 0, 0);
 
-            var gc1 = new ColumnDefinition();
+            var gc1 = new AasCntlColumnDefinition();
             gc1.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc1);
 
             var auxButton = repo != null && auxButtonTitle != null && auxButtonLambda != null;
             if (auxButton)
             {
-                var gc3 = new ColumnDefinition();
+                var gc3 = new AasCntlColumnDefinition();
                 gc3.Width = new GridLength(1.0, GridUnitType.Auto);
                 g.ColumnDefinitions.Add(gc3);
             }
 
-            var l = new Label();
+            var l = new AasCntlLabel();
             l.Margin = new Thickness(0, 0, 0, 0);
             l.Padding = new Thickness(5, 0, 0, 0);
             l.Background = background;
             l.Foreground = foreground;
             l.Content = "" + name;
             l.FontWeight = FontWeights.Bold;
-            Grid.SetRow(l, 0);
-            Grid.SetColumn(l, 0);
+            AasCntlGrid.SetRow(l, 0);
+            AasCntlGrid.SetColumn(l, 0);
             g.Children.Add(l);
             view.Children.Add(g);
 
@@ -534,11 +539,11 @@ namespace AasxPackageExplorer
             }
         }
 
-        public TextBlock AddSmallLabelTo(
-            Grid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
+        public AasCntlTextBlock AddSmallLabelTo(
+            AasCntlGrid g, int row, int col, Thickness margin = new Thickness(), Thickness padding = new Thickness(),
             string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
         {
-            var lab = new SelectableTextBlock();
+            var lab = new AasCntlTextBlock();
 
             lab.Margin = margin;
             lab.Padding = padding;
@@ -549,8 +554,8 @@ namespace AasxPackageExplorer
             if (setBold)
                 lab.FontWeight = FontWeights.Bold;
             lab.Text = content;
-            Grid.SetRow(lab, row);
-            Grid.SetColumn(lab, col);
+            AasCntlGrid.SetRow(lab, row);
+            AasCntlGrid.SetColumn(lab, col);
             g.Children.Add(lab);
             return (lab);
         }
@@ -562,7 +567,7 @@ namespace AasxPackageExplorer
         /// <param name="view">Panel to be added to</param>
         /// <param name="caption">Caption</param>
         /// <returns>Sub-panel, to which can be added</returns>
-        public StackPanel AddSubStackPanel(StackPanel view, string caption)
+        public AasCntlStackPanel AddSubStackPanel(AasCntlStackPanel view, string caption)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
             AddSmallLabelTo(g, 0, 0, content: caption);
@@ -575,7 +580,7 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
-        public Grid AddSubGrid(StackPanel view, string caption,
+        public AasCntlGrid AddSubGrid(AasCntlStackPanel view, string caption,
             int rows, int cols, string[] colWidths = null, Thickness margin = new Thickness())
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
@@ -590,7 +595,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyValueRef(
-            StackPanel view, string key, object containingObject, ref string value, string nullValue = null,
+            AasCntlStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
             string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
@@ -608,7 +613,7 @@ namespace AasxPackageExplorer
 
 
         public void AddKeyValue(
-            StackPanel view, string key, string value, string nullValue = null,
+            AasCntlStackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
             string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
@@ -648,20 +653,20 @@ namespace AasxPackageExplorer
             var auxButton = repo != null && intButtonTitles.Count > 0 && auxButtonLambda != null;
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 1, 0, 1);
-            var gc1 = new ColumnDefinition();
+            var gc1 = new AasCntlColumnDefinition();
             gc1.Width = GridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
-            var gc2 = new ColumnDefinition();
+            var gc2 = new AasCntlColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
             if (auxButton)
                 for (int i = 0; i < intButtonTitles.Count; i++)
                 {
-                    var gc3 = new ColumnDefinition();
+                    var gc3 = new AasCntlColumnDefinition();
                     gc3.Width = new GridLength(1.0, GridUnitType.Auto);
                     g.ColumnDefinitions.Add(gc3);
                 }
@@ -731,7 +736,7 @@ namespace AasxPackageExplorer
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: intButtonTitles[i]),
-                        lmb) as Button;
+                        lmb) as AasCntlButton;
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
                 }
@@ -741,7 +746,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyDropTarget(
-            StackPanel view, string key, string value, string nullValue = null,
+            AasCntlStackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
         {
             // draw anyway?
@@ -760,12 +765,12 @@ namespace AasxPackageExplorer
             }
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 1, 0, 1);
-            var gc1 = new ColumnDefinition();
+            var gc1 = new AasCntlColumnDefinition();
             gc1.Width = new GridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
-            var gc2 = new ColumnDefinition();
+            var gc2 = new AasCntlColumnDefinition();
             gc2.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
@@ -791,7 +796,7 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddKeyMultiValue(StackPanel view, string key, string[][] value, string[] widths)
+        public void AddKeyMultiValue(AasCntlStackPanel view, string key, string[][] value, string[] widths)
         {
             // draw anyway?
             if (value == null)
@@ -805,17 +810,17 @@ namespace AasxPackageExplorer
                     cols = r.Length;
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 0, 0, 0);
 
-            var gc1 = new ColumnDefinition();
+            var gc1 = new AasCntlColumnDefinition();
             gc1.Width = GridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
             {
-                var gc2 = new ColumnDefinition();
+                var gc2 = new AasCntlColumnDefinition();
                 if (widths[c] == "*")
                     gc2.Width = new GridLength(1.0, GridUnitType.Star);
                 else
@@ -831,30 +836,30 @@ namespace AasxPackageExplorer
 
             for (int r = 0; r < rows; r++)
             {
-                var gr = new RowDefinition();
+                var gr = new AasCntlRowDefinition();
                 gr.Height = new GridLength(1.0, GridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
             // Label for key
-            var l1 = new Label();
+            var l1 = new AasCntlLabel();
             l1.Margin = new Thickness(0, 0, 0, 0);
             l1.Padding = new Thickness(5, 0, 0, 0);
             l1.Content = "" + key + ":";
-            Grid.SetRow(l1, 0);
-            Grid.SetColumn(l1, 0);
+            AasCntlGrid.SetRow(l1, 0);
+            AasCntlGrid.SetColumn(l1, 0);
             g.Children.Add(l1);
 
             // Label for any values
             for (int r = 0; r < rows; r++)
                 for (int c = 0; c < cols; c++)
                 {
-                    var l2 = new Label();
+                    var l2 = new AasCntlLabel();
                     l2.Margin = new Thickness(0, 0, 0, 0);
                     l2.Padding = new Thickness(2, 0, 0, 0);
                     l2.Content = "" + value[r][c];
-                    Grid.SetRow(l2, 0 + r);
-                    Grid.SetColumn(l2, 1 + c);
+                    AasCntlGrid.SetRow(l2, 0 + r);
+                    AasCntlGrid.SetColumn(l2, 1 + c);
                     g.Children.Add(l2);
                 }
 
@@ -862,7 +867,7 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddCheckBox(Panel panel, string key, bool initialValue, string additionalInfo = "",
+        public void AddCheckBox(AasCntlStackPanel panel, string key, bool initialValue, string additionalInfo = "",
                 Action<bool> valueChanged = null)
         {
             // make grid
@@ -895,7 +900,7 @@ namespace AasxPackageExplorer
             panel.Children.Add(g);
         }
 
-        public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
+        public void AddAction(AasCntlPanel view, string key, string[] actionStr, ModifyRepo repo = null,
                 Func<int, ModifyRepo.LambdaAction> action = null)
         {
             // access 
@@ -904,11 +909,11 @@ namespace AasxPackageExplorer
             var numButton = actionStr.Length;
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 5, 0, 5);
 
             // 0 key
-            var gc = new ColumnDefinition();
+            var gc = new AasCntlColumnDefinition();
             gc.Width = GridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
@@ -916,13 +921,13 @@ namespace AasxPackageExplorer
             // 1+x button
             for (int i = 0; i < 1 /* numButton*/ ; i++)
             {
-                gc = new ColumnDefinition();
+                gc = new AasCntlColumnDefinition();
                 gc.Width = new GridLength(1.0, GridUnitType.Star);
                 g.ColumnDefinitions.Add(gc);
             }
 
             // 0 row
-            var gr = new RowDefinition();
+            var gr = new AasCntlRowDefinition();
             gr.Height = new GridLength(1.0, GridUnitType.Star);
             g.RowDefinitions.Add(gr);
 
@@ -935,7 +940,7 @@ namespace AasxPackageExplorer
             for (int i = 0; i < numButton; i++)
             {
                 int currentI = i;
-                var b = new Button();
+                var b = new AasCntlButton();
                 b.Content = "" + actionStr[i];
                 b.Margin = new Thickness(2, 2, 2, 2);
                 b.Padding = new Thickness(5, 0, 5, 0);
@@ -952,14 +957,14 @@ namespace AasxPackageExplorer
         }
 
         public void AddAction(
-            StackPanel view, string key, string actionStr, ModifyRepo repo = null,
+            AasCntlStackPanel view, string key, string actionStr, ModifyRepo repo = null,
             Func<int, ModifyRepo.LambdaAction> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
 
         public void AddKeyListLangStr(
-            StackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
+            AasCntlStackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -972,34 +977,34 @@ namespace AasxPackageExplorer
                 rowOfs = 1;
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 0, 0, 0);
 
             // 0 key
-            var gc = new ColumnDefinition();
+            var gc = new AasCntlColumnDefinition();
             gc.Width = GridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 values
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 3 buttons behind it
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
-                var gr = new RowDefinition();
+                var gr = new AasCntlRowDefinition();
                 gr.Height = new GridLength(1.0, GridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
@@ -1222,7 +1227,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyListKeys(
-            StackPanel view, string key,
+            AasCntlStackPanel view, string key,
             AdminShell.KeyList keys,
             ModifyRepo repo = null,
             PackageCentral packages = null,
@@ -1247,44 +1252,44 @@ namespace AasxPackageExplorer
                 rowOfs = 1;
 
             // Grid
-            var g = new Grid();
+            var g = new AasCntlGrid();
             g.Margin = new Thickness(0, 0, 0, 0);
 
             // 0 key
-            var gc = new ColumnDefinition();
+            var gc = new AasCntlColumnDefinition();
             gc.Width = GridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 local
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 3 id type
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 4 value
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 5 .. buttons behind it
-            gc = new ColumnDefinition();
+            gc = new AasCntlColumnDefinition();
             gc.Width = new GridLength(1.0, GridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
-                var gr = new RowDefinition();
+                var gr = new AasCntlRowDefinition();
                 gr.Height = new GridLength(1.0, GridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
@@ -1311,9 +1316,9 @@ namespace AasxPackageExplorer
                     colDescs.Add("#");
 
                 var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
-                Grid.SetRow(g2, 0);
-                Grid.SetColumn(g2, 1);
-                Grid.SetColumnSpan(g2, 7);
+                AasCntlGrid.SetRow(g2, 0);
+                AasCntlGrid.SetColumn(g2, 1);
+                AasCntlGrid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
 
                 if (addFromPool)
@@ -1497,7 +1502,7 @@ namespace AasxPackageExplorer
                                 keys[currentI].type = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             },
-                            takeOverLambda: takeOverLambdaAction) as ComboBox;
+                            takeOverLambda: takeOverLambdaAction) as AasCntlComboBox;
                         SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
                         // check here, if to hightlight
@@ -1615,7 +1620,7 @@ namespace AasxPackageExplorer
         //
 
         public bool SafeguardAccess(
-            StackPanel view, ModifyRepo repo, object data, string key, string actionStr,
+            AasCntlStackPanel view, ModifyRepo repo, object data, string key, string actionStr,
             Func<int, ModifyRepo.LambdaAction> action)
         {
             if (repo != null && data == null)
@@ -1683,7 +1688,7 @@ namespace AasxPackageExplorer
         }
 
         public void EntityListUpDownDeleteHelper<T>(
-            Panel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
+            AasCntlPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
             object nextFocus = null)
         {
             if (nextFocus == null)
@@ -1718,7 +1723,7 @@ namespace AasxPackageExplorer
                 });
         }
 
-        public void QualifierHelper(StackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
+        public void QualifierHelper(AasCntlStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
             if (editMode)
             {
@@ -1852,17 +1857,7 @@ namespace AasxPackageExplorer
                     IdentifyTargetsForEclassImportOfCDs(env, childs, ref targets);
                 }
             }
-        }
-
-        // dead-csharp off
-        /*
-        public class  ImportEclassArgs
-        {
-            public EclassUtils.SearchJobData jobData;
-            public ProgressBar progress;
-        }
-        */
-        // dead-csharp on
+        }        
 
         public bool ImportEclassCDsForTargets(AdminShell.AdministrationShellEnv env, object startMainDataElement,
                 List<AdminShell.SubmodelElement> targets)
@@ -1946,7 +1941,7 @@ namespace AasxPackageExplorer
         // Hinting
         //
 
-        public void AddHintBubble(StackPanel view, bool hintMode, HintCheck[] hints)
+        public void AddHintBubble(AasCntlStackPanel view, bool hintMode, HintCheck[] hints)
         {
             // access
             if (!hintMode || view == null || hints == null)
@@ -1982,7 +1977,7 @@ namespace AasxPackageExplorer
                 return;
 
             // show!
-            var bubble = new HintBubble();
+            var bubble = new AasCntlHintBubble();
             bubble.Margin = new Thickness(2, 4, 2, 0);
             bubble.Text = string.Join("\r\n", textsToShow);
             if (highestSev == HintCheck.Severity.High)
@@ -1998,7 +1993,7 @@ namespace AasxPackageExplorer
             view.Children.Add(bubble);
         }
 
-        public void AddHintBubble(StackPanel view, bool hintMode, HintCheck hint)
+        public void AddHintBubble(AasCntlStackPanel view, bool hintMode, HintCheck hint)
         {
             AddHintBubble(view, hintMode, new[] { hint });
         }
