@@ -166,14 +166,14 @@ namespace AasxPackageExplorer
         public VerticalAlignment VerticalAlignment;
         public HorizontalAlignment HorizontalAlignment;
 
-        public double? MinHeight = 0.0;
-        public double? MinWidth = 0.0;
-        public double? MaxHeight = 0.0;
-        public double? MaxWidth = 0.0;
+        public double? MinHeight;
+        public double? MinWidth;
+        public double? MaxHeight;
+        public double? MaxWidth;
 
         public object Tag = null;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is FrameworkElement fe)
@@ -193,7 +193,7 @@ namespace AasxPackageExplorer
             }
         }
        
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is FrameworkElement)
                 return wpfElement;
@@ -207,7 +207,7 @@ namespace AasxPackageExplorer
     {
         public VerticalAlignment VerticalContentAlignment;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Control co)
@@ -216,7 +216,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is Control)
                 return wpfElement;
@@ -228,7 +228,7 @@ namespace AasxPackageExplorer
 
     public class AasCntlContentControl : AasCntlControl
     {
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is ContentControl cc)
@@ -236,7 +236,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is ContentControl)
                 return wpfElement;
@@ -250,7 +250,7 @@ namespace AasxPackageExplorer
     {
         public virtual UIElement Child { get; set; }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is Decorator)
                 return wpfElement;
@@ -265,7 +265,7 @@ namespace AasxPackageExplorer
         public AasCntlBrush Background;
         public List<AasCntlUIElement> Children = new List<AasCntlUIElement>();
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Panel pan)
@@ -293,7 +293,7 @@ namespace AasxPackageExplorer
         public static void SetColumn(AasCntlUIElement el, int value) { if (el != null) el.GridColumn = value; }
         public static void SetColumnSpan(AasCntlUIElement el, int value) { if (el != null) el.GridColumnSpan = value; }
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Grid sp)
@@ -325,7 +325,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is Grid)
                 return wpfElement;
@@ -337,18 +337,19 @@ namespace AasxPackageExplorer
 
     public class AasCntlStackPanel : AasCntlPanel
     {
-        public Orientation Orientation = Orientation.Horizontal;
+        public Orientation? Orientation;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is StackPanel sp)
             {
-                sp.Orientation = this.Orientation;
+                if (this.Orientation.HasValue)
+                    sp.Orientation = this.Orientation.Value;
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             if (wpfElement is StackPanel)
                 return wpfElement;
@@ -360,18 +361,19 @@ namespace AasxPackageExplorer
 
     public class AasCntlWrapPanel : AasCntlPanel
     {
-        public Orientation Orientation = Orientation.Horizontal;
+        public Orientation? Orientation;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is WrapPanel sp)
             {
-                sp.Orientation = this.Orientation;
+                if (this.Orientation.HasValue)
+                    sp.Orientation = this.Orientation.Value;
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new WrapPanel();
             this.RenderUIElement(el);
@@ -386,7 +388,7 @@ namespace AasxPackageExplorer
         public AasCntlBrush BorderBrush = null;
         public AasCntlThickness Padding;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Border brd)
@@ -402,7 +404,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new Border();
             this.RenderUIElement(el);
@@ -419,7 +421,7 @@ namespace AasxPackageExplorer
         public Nullable<FontWeight> FontWeight = null;
         public string Content = null;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Label lb)
@@ -436,7 +438,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new Label();
             this.RenderUIElement(el);
@@ -453,7 +455,7 @@ namespace AasxPackageExplorer
         public Nullable<FontWeight> FontWeight = null;
         public string Text = null;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is TextBlock tb)
@@ -468,7 +470,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new TextBlock();
             this.RenderUIElement(el);
@@ -478,7 +480,7 @@ namespace AasxPackageExplorer
 
     public class AasCntlHintBubble : AasCntlTextBox
     {
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is HintBubble hb)
@@ -491,7 +493,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new HintBubble();
             this.RenderUIElement(el);
@@ -512,7 +514,7 @@ namespace AasxPackageExplorer
 
         public string Text = null;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is TextBox tb)
@@ -529,7 +531,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new TextBox();
             this.RenderUIElement(el);
@@ -550,7 +552,7 @@ namespace AasxPackageExplorer
 
         public int? SelectedIndex;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is ComboBox cb)
@@ -567,7 +569,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new ComboBox();
             this.RenderUIElement(el);
@@ -585,7 +587,7 @@ namespace AasxPackageExplorer
 
         public bool? IsChecked;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is CheckBox cb)
@@ -600,7 +602,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new CheckBox();
             this.RenderUIElement(el);
@@ -619,7 +621,7 @@ namespace AasxPackageExplorer
 
         public event RoutedEventHandler Click;
 
-        public virtual new void RenderUIElement(UIElement el)
+        public override void RenderUIElement(UIElement el)
         {
             base.RenderUIElement(el);
             if (el is Button btn)
@@ -633,7 +635,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public virtual new UIElement GetWpfElement()
+        public override UIElement GetWpfElement()
         {
             var el = new Button();
             this.RenderUIElement(el);
