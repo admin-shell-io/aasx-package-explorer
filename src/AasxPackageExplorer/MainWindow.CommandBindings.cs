@@ -1195,7 +1195,7 @@ namespace AasxPackageExplorer
                 string value = "";
                 string input = uc.Text.ToLower();
                 lastConnectInput = input;
-                if (input != "http://localhost:1111")
+                if (!input.StartsWith("http://localhost:1111"))
                 {
                     bool connect = false;
 
