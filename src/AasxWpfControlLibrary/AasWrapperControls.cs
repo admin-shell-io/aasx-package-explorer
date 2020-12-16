@@ -34,11 +34,35 @@ namespace AasxPackageExplorer
     public class AasCntlGridLength : GridLength
     {
     }
-
-    public class AasCntlThickness : Thickness
-    {
-    }
     */
+
+    public class AasCntlThickness
+    {
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Right { get; set; }
+        public double Bottom { get; set; }
+
+        public AasCntlThickness() { }
+        
+        public AasCntlThickness(double all) 
+        { 
+            Left = all; Top = all; Right = all; Bottom = all; 
+        }
+        
+        public AasCntlThickness(double left, double top, double right, double bottom) 
+        {
+            Left = left;
+            Top = top;
+            Right = right;
+            Bottom = bottom;
+        }
+
+        public Thickness GetWpfTickness()
+        {
+            return new Thickness(Left, Top, Right, Bottom);
+        }
+    }
 
     public class AasCntlUIElement
     {
@@ -58,7 +82,7 @@ namespace AasxPackageExplorer
 
     public class AasCntlFrameworkElement : AasCntlUIElement
     {
-        public Thickness Margin = new Thickness();
+        public AasCntlThickness Margin;
         public VerticalAlignment VerticalAlignment;
         public HorizontalAlignment HorizontalAlignment;
 
@@ -74,7 +98,8 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is FrameworkElement fe)
             {
-                fe.Margin = this.Margin;
+                if (this.Margin != null)
+                    fe.Margin = this.Margin.GetWpfTickness();
                 fe.VerticalAlignment = this.VerticalAlignment;   
                 if (this.MinHeight.HasValue)
                     fe.MinHeight = this.MinHeight.Value;
@@ -259,9 +284,9 @@ namespace AasxPackageExplorer
     public class AasCntlBorder : AasCntlDecorator
     {
         public Brush Background = null;
-        public Thickness BorderThickness = new Thickness();
+        public AasCntlThickness BorderThickness;
         public Brush BorderBrush = null;
-        public Thickness Padding = new Thickness();
+        public AasCntlThickness Padding;
 
         public virtual new void RenderUIElement(UIElement el)
         {
@@ -269,9 +294,11 @@ namespace AasxPackageExplorer
             if (el is Border brd)
             {
                 brd.Background = this.Background;
-                brd.BorderThickness = this.BorderThickness;
+                if (this.BorderThickness != null)
+                    brd.BorderThickness = this.BorderThickness.GetWpfTickness();
                 brd.BorderBrush = this.BorderBrush;
-                brd.Padding = this.Padding;
+                if (this.Padding != null)
+                    brd.Padding = this.Padding.GetWpfTickness();
             }
         }
 
@@ -285,9 +312,9 @@ namespace AasxPackageExplorer
 
     public class AasCntlLabel : AasCntlContentControl
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public Brush Background;
+        public Brush Foreground;
+        public AasCntlThickness Padding;
 
         public Nullable<FontWeight> FontWeight = null;
         public string Content = null;
@@ -301,7 +328,8 @@ namespace AasxPackageExplorer
                 lb.Foreground = this.Foreground;
                 if (this.FontWeight != null)
                     lb.FontWeight = this.FontWeight.Value;
-                lb.Padding = this.Padding;
+                if (this.Padding != null)
+                    lb.Padding = this.Padding.GetWpfTickness();
                 lb.Content = this.Content;
             }
         }
@@ -316,9 +344,9 @@ namespace AasxPackageExplorer
 
     public class AasCntlTextBlock : AasCntlFrameworkElement
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public Brush Background;
+        public Brush Foreground;
+        public AasCntlThickness Padding;
 
         public Nullable<FontWeight> FontWeight = null;
         public string Text = null;
@@ -332,7 +360,8 @@ namespace AasxPackageExplorer
                 tb.Foreground = this.Foreground;
                 if (this.FontWeight != null)
                     tb.FontWeight = this.FontWeight.Value;
-                tb.Padding = this.Padding;
+                if (this.Padding != null)
+                    tb.Padding = this.Padding.GetWpfTickness();
                 tb.Text = this.Text;
             }
         }
@@ -354,7 +383,8 @@ namespace AasxPackageExplorer
             {
                 hb.Background = this.Background;
                 hb.Foreground = this.Foreground;
-                hb.Padding = this.Padding;
+                if (this.Padding != null)
+                    hb.Padding = this.Padding.GetWpfTickness();
                 hb.Text = this.Text;
             }
         }
@@ -371,7 +401,7 @@ namespace AasxPackageExplorer
     {
         public Brush Background = null;
         public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public AasCntlThickness Padding;
 
         public ScrollBarVisibility VerticalScrollBarVisibility;
 
@@ -387,7 +417,8 @@ namespace AasxPackageExplorer
             {
                 tb.Background = this.Background;
                 tb.Foreground = this.Foreground;
-                tb.Padding = this.Padding;
+                if (this.Padding != null)
+                    tb.Padding = this.Padding.GetWpfTickness();
                 tb.VerticalScrollBarVisibility = this.VerticalScrollBarVisibility;
                 tb.AcceptsReturn = this.AcceptsReturn;
                 if (this.MaxLines != null)
@@ -408,7 +439,7 @@ namespace AasxPackageExplorer
     {
         public Brush Background = null;
         public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public AasCntlThickness Padding;
 
         public bool? IsEditable;
 
@@ -424,7 +455,8 @@ namespace AasxPackageExplorer
             {
                 cb.Background = this.Background;
                 cb.Foreground = this.Foreground;
-                cb.Padding = this.Padding;
+                if (this.Padding != null)
+                    cb.Padding = this.Padding.GetWpfTickness();
                 if (this.IsEditable.HasValue)
                     cb.IsEditable = this.IsEditable.Value;
                 cb.Text = this.Text;
@@ -445,7 +477,7 @@ namespace AasxPackageExplorer
     {
         public Brush Background = null;
         public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public AasCntlThickness Padding;
 
         public string Content = null;
 
@@ -460,7 +492,8 @@ namespace AasxPackageExplorer
                 cb.Foreground = this.Foreground;
                 if (this.IsChecked.HasValue)
                     cb.IsChecked = this.IsChecked.Value;
-                cb.Padding = this.Padding;
+                if (this.Padding != null)
+                    cb.Padding = this.Padding.GetWpfTickness();
                 cb.Content = this.Content;
             }
         }
@@ -477,7 +510,7 @@ namespace AasxPackageExplorer
     {
         public Brush Background = null;
         public Brush Foreground = null;
-        public Thickness Padding = new Thickness();
+        public AasCntlThickness Padding;
 
         public string Content = null;
         public string ToolTip = null;
@@ -491,7 +524,8 @@ namespace AasxPackageExplorer
             {
                 btn.Background = this.Background;
                 btn.Foreground = this.Foreground;
-                btn.Padding = this.Padding;
+                if (this.Padding != null)
+                    btn.Padding = this.Padding.GetWpfTickness();
                 btn.Content = this.Content;
                 btn.ToolTip = this.ToolTip;
             }

@@ -583,7 +583,7 @@ namespace AasxPackageExplorer
                     });
                     var g = helper.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
                     var cb = helper.AddSmallComboBoxTo(g, 0, 0,
-                        margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
+                        margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0),
                         minWidth: 150,
                         items: new[] {
                         "idShort", "Id", "Usage in Submodels"
@@ -591,7 +591,7 @@ namespace AasxPackageExplorer
                     cb.SelectedIndex = 0;
                     repo.RegisterControl(
                         helper.AddSmallButtonTo(g, 0, 1, content: "Sort!",
-                            margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0)),
+                            margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0)),
                         (o) =>
                         {
                             if (MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -631,9 +631,9 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Supplementary file to add:", levelColors[1][0], levelColors[1][1]);
 
                 var g = helper.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
-                helper.AddSmallLabelTo(g, 0, 0, padding: new Thickness(2, 0, 0, 0), content: "Source path: ");
+                helper.AddSmallLabelTo(g, 0, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Source path: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 0, 1, margin: new Thickness(2, 2, 2, 2), text: PackageSourcePath),
+                    helper.AddSmallTextBoxTo(g, 0, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageSourcePath),
                     (o) =>
                     {
                         if (o is string)
@@ -642,7 +642,7 @@ namespace AasxPackageExplorer
                     });
                 repo.RegisterControl(
                     helper.AddSmallButtonTo(
-                        g, 0, 2, margin: new Thickness(2, 2, 2, 2), padding: new Thickness(5, 0, 5, 0),
+                        g, 0, 2, margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0),
                         content: "Select"),
                         (o) =>
                         {
@@ -656,18 +656,18 @@ namespace AasxPackageExplorer
                             }
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         });
-                helper.AddSmallLabelTo(g, 1, 0, padding: new Thickness(2, 0, 0, 0), content: "Target filename: ");
+                helper.AddSmallLabelTo(g, 1, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Target filename: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 1, 1, margin: new Thickness(2, 2, 2, 2), text: PackageTargetFn),
+                    helper.AddSmallTextBoxTo(g, 1, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageTargetFn),
                     (o) =>
                     {
                         if (o is string)
                             PackageTargetFn = o as string;
                         return new ModifyRepo.LambdaActionNone();
                     });
-                helper.AddSmallLabelTo(g, 2, 0, padding: new Thickness(2, 0, 0, 0), content: "Target path: ");
+                helper.AddSmallLabelTo(g, 2, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Target path: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 2, 1, margin: new Thickness(2, 2, 2, 2), text: PackageTargetDir),
+                    helper.AddSmallTextBoxTo(g, 2, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageTargetDir),
                     (o) =>
                     {
                         if (o is string)
@@ -675,7 +675,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallCheckBoxTo(g, 3, 1, margin: new Thickness(2, 2, 2, 2),
+                    helper.AddSmallCheckBoxTo(g, 3, 1, margin: new AasCntlThickness(2, 2, 2, 2),
                     content: "Embed as thumbnail (only one file per package!)", isChecked: PackageEmbedAsThumbnail),
                     (o) =>
                     {
@@ -684,8 +684,8 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallButtonTo(g, 4, 1, margin: new Thickness(2, 2, 2, 2),
-                    padding: new Thickness(5, 0, 5, 0), content: "Add file to package"),
+                    helper.AddSmallButtonTo(g, 4, 1, margin: new AasCntlThickness(2, 2, 2, 2),
+                    padding: new AasCntlThickness(5, 0, 5, 0), content: "Add file to package"),
                     (o) =>
                     {
                         try
@@ -739,12 +739,12 @@ namespace AasxPackageExplorer
                 // overview information
 
                 var g = helper.AddSmallGrid(
-                    6, 1, new[] { "*" }, margin: new Thickness(5, 5, 0, 0));
+                    6, 1, new[] { "*" }, margin: new AasCntlThickness(5, 5, 0, 0));
                 helper.AddSmallLabelTo(
                     g, 0, 0, content: "This structure hold the main entites of Administration shells.");
                 helper.AddSmallLabelTo(
                     g, 1, 0, content: String.Format("#admin shells: {0}.", env.AdministrationShells.Count),
-                    margin: new Thickness(0, 5, 0, 0));
+                    margin: new AasCntlThickness(0, 5, 0, 0));
                 helper.AddSmallLabelTo(g, 2, 0, content: String.Format("#assets: {0}.", env.Assets.Count));
                 helper.AddSmallLabelTo(g, 3, 0, content: String.Format("#submodels: {0}.", env.Submodels.Count));
                 helper.AddSmallLabelTo(
