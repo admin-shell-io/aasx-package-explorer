@@ -1195,7 +1195,8 @@ namespace AasxPackageExplorer
                 string value = "";
                 string input = uc.Text.ToLower();
                 lastConnectInput = input;
-                if (!input.StartsWith("http://localhost:1111"))                {
+                if (!input.StartsWith("http://localhost:1111"))
+                {
                     bool connect = false;
 
                     string tag = "http://admin-shell-io.com:52001/server/aasxbyasset/";
