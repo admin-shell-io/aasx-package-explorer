@@ -129,7 +129,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAsset(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
-            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, Brush[][] levelColors, bool embedded = false,
+            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool embedded = false,
             bool hintMode = false)
         {
             helper.AddGroup(stack, "Asset", levelColors[0][0], levelColors[0][1]);
@@ -271,7 +271,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            Brush[][] levelColors, bool hintMode = false)
+            AasCntlBrush[][] levelColors, bool hintMode = false)
         {
             helper.AddGroup(stack, "Environment of Asset Administration Shells", levelColors[0][0], levelColors[0][1]);
 
@@ -762,7 +762,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntitySupplementaryFile(
             PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
-            AasCntlStackPanel stack, Brush[][] levelColors)
+            AasCntlStackPanel stack, AasCntlBrush[][] levelColors)
         {
             //
             // Package
@@ -808,7 +808,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAas(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
-            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, Brush[][] levelColors, bool hintMode = false)
+            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
         {
             helper.AddGroup(stack, "Asset Administration Shell", levelColors[0][0], levelColors[0][1]);
 
@@ -1096,7 +1096,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntitySubmodelOrRef(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, ModifyRepo repo,
-            AasCntlStackPanel stack, Brush[][] levelColors, bool hintMode = false)
+            AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
@@ -1416,7 +1416,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityConceptDescription(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
-            ModifyRepo repo, AasCntlStackPanel stack, Brush[][] levelColors, bool embedded = false, bool hintMode = false)
+            ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool embedded = false, bool hintMode = false)
         {
             helper.AddGroup(stack, "ConceptDescription", levelColors[0][0], levelColors[0][1]);
 
@@ -1581,7 +1581,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityOperationVariable(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.OperationVariable ov, bool editMode,
-            ModifyRepo repo, AasCntlStackPanel stack, Brush[][] levelColors, bool hintMode = false)
+            ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1751,7 +1751,7 @@ namespace AasxPackageExplorer
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
             AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            Brush[][] levelColors, bool hintMode = false)
+            AasCntlBrush[][] levelColors, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -3299,7 +3299,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityView(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, ModifyRepo repo, AasCntlStackPanel stack, Brush[][] levelColors,
+            AdminShell.View view, bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors,
             bool hintMode = false)
         {
             //
@@ -3371,7 +3371,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityViewReference(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
             AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            Brush[][] levelColors)
+            AasCntlBrush[][] levelColors)
         {
             //
             // View
@@ -3440,19 +3440,19 @@ namespace AasxPackageExplorer
             var stack = ClearDisplayDefautlStack();
 
             // ReSharper disable CoVariantArrayConversion
-            Brush[][] levelColors = new Brush[][]
+            AasCntlBrush[][] levelColors = new AasCntlBrush[][]
             {
                 new [] {
-                    (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"],
-                    Brushes.White
+                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"]),
+                    AasCntlBrushes.White
                 },
                 new [] {
-                    (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"],
-                    Brushes.Black
+                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AasCntlBrushes.Black
                 },
                 new [] {
-                    (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"],
-                    Brushes.Black
+                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AasCntlBrushes.Black
                 }
             };
             // ReSharper enable CoVariantArrayConversion

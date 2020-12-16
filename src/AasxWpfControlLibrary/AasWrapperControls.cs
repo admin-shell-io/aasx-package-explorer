@@ -22,6 +22,14 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
+    public class AasCntlBrushes
+    {
+        public static AasCntlBrush Black { get { return new AasCntlBrush(0xff000000u); } }
+        public static AasCntlBrush DarkBlue { get { return new AasCntlBrush(0xff00008bu); } }
+        public static AasCntlBrush LightBlue { get { return new AasCntlBrush(0xffadd8e6u); } }
+        public static AasCntlBrush White { get { return new AasCntlBrush(0xffffffffu); } }
+    }
+
     public class AasCntlColumnDefinition : ColumnDefinition
     {
     }
@@ -35,6 +43,34 @@ namespace AasxPackageExplorer
     {
     }
     */
+
+    public class AasCntlBrush
+    {
+        private Color solidColorBrush = Colors.Black;
+
+        public AasCntlBrush() { }
+
+        public AasCntlBrush(Color c)
+        {
+            solidColorBrush = c;
+        }
+
+        public AasCntlBrush(SolidColorBrush b)
+        {
+            solidColorBrush = b.Color;
+        }
+
+        public AasCntlBrush(UInt32 c)
+        {
+            byte[] bytes = BitConverter.GetBytes(c);
+            solidColorBrush = Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
+        }
+
+        public Brush GetWpfBrush()
+        {
+            return new SolidColorBrush(solidColorBrush);
+        }
+    }
 
     public class AasCntlThickness
     {
@@ -182,7 +218,7 @@ namespace AasxPackageExplorer
 
     public class AasCntlPanel : AasCntlFrameworkElement
     {
-        public Brush Background = null;
+        public AasCntlBrush Background;
         public List<AasCntlUIElement> Children = new List<AasCntlUIElement>();
 
         public virtual new void RenderUIElement(UIElement el)
@@ -191,7 +227,8 @@ namespace AasxPackageExplorer
             if (el is Panel pan)
             {
                 // normal members
-                pan.Background = this.Background;
+                if (this.Background != null)
+                    pan.Background = this.Background.GetWpfBrush();
 
                 // children
                 pan.Children.Clear();
@@ -283,9 +320,9 @@ namespace AasxPackageExplorer
 
     public class AasCntlBorder : AasCntlDecorator
     {
-        public Brush Background = null;
+        public AasCntlBrush Background = null;
         public AasCntlThickness BorderThickness;
-        public Brush BorderBrush = null;
+        public AasCntlBrush BorderBrush = null;
         public AasCntlThickness Padding;
 
         public virtual new void RenderUIElement(UIElement el)
@@ -293,10 +330,12 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is Border brd)
             {
-                brd.Background = this.Background;
+                if (this.Background != null)
+                    brd.Background = this.Background.GetWpfBrush();
                 if (this.BorderThickness != null)
                     brd.BorderThickness = this.BorderThickness.GetWpfTickness();
-                brd.BorderBrush = this.BorderBrush;
+                if (this.BorderBrush != null)
+                    brd.BorderBrush = this.BorderBrush.GetWpfBrush();
                 if (this.Padding != null)
                     brd.Padding = this.Padding.GetWpfTickness();
             }
@@ -312,8 +351,8 @@ namespace AasxPackageExplorer
 
     public class AasCntlLabel : AasCntlContentControl
     {
-        public Brush Background;
-        public Brush Foreground;
+        public AasCntlBrush Background;
+        public AasCntlBrush Foreground;
         public AasCntlThickness Padding;
 
         public Nullable<FontWeight> FontWeight = null;
@@ -324,8 +363,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is Label lb)
             {
-                lb.Background = this.Background;
-                lb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    lb.Background = this.Background.GetWpfBrush();
+                if (this.Foreground != null)
+                    lb.Foreground = this.Foreground.GetWpfBrush();
                 if (this.FontWeight != null)
                     lb.FontWeight = this.FontWeight.Value;
                 if (this.Padding != null)
