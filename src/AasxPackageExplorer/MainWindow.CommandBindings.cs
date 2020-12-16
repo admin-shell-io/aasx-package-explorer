@@ -1177,15 +1177,24 @@ namespace AasxPackageExplorer
             this.StartFlyoverModal(uc, closingAction: () => { });
         }
 
+        static string lastConnectInput = "";
         public async void CommandBinding_ConnectRest()
         {
             var uc = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
-            uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
+            if (lastConnectInput == "")
+            {
+                uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
+            }
+            else
+            {
+                uc.Text = lastConnectInput;
+            }
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
                 string value = "";
                 string input = uc.Text.ToLower();
+                lastConnectInput = input;
                 if (input != "http://localhost:1111")
                 {
                     bool connect = false;
