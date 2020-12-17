@@ -150,13 +150,18 @@ namespace AasxPackageExplorer
 
         public virtual void RenderUIElement(UIElement el) { }
 
-        public virtual UIElement GetWpfElement()
+        public UIElement GetWpfElementTemplated<T>() where T : UIElement, new()
         {
-            if (wpfElement is UIElement)
+            if (wpfElement is T)
                 return wpfElement;
-            wpfElement = new UIElement();
+            wpfElement = new T();
             this.RenderUIElement(wpfElement);
             return wpfElement;
+        }
+
+        public virtual UIElement GetWpfElement()
+        {
+            return GetWpfElementTemplated<UIElement>();
         }
     }
 
@@ -192,15 +197,12 @@ namespace AasxPackageExplorer
                 fe.Tag = this.Tag;
             }
         }
-       
+
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is FrameworkElement)
-                return wpfElement;
-            wpfElement = new FrameworkElement();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<FrameworkElement>();
         }
+
     }
 
     public class AasCntlControl : AasCntlFrameworkElement
@@ -218,11 +220,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is Control)
-                return wpfElement;
-            wpfElement = new Control();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<Control>();
         }
     }
 
@@ -238,11 +236,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is ContentControl)
-                return wpfElement;
-            wpfElement = new ContentControl();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<ContentControl>();
         }
     }
 
@@ -252,11 +246,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is Decorator)
-                return wpfElement;
-            wpfElement = new Decorator();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<Decorator>();
         }
     }    
 
@@ -327,11 +317,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is Grid)
-                return wpfElement;
-            wpfElement = new Grid();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<Grid>();
         }
     }
 
@@ -351,11 +337,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            if (wpfElement is StackPanel)
-                return wpfElement;
-            wpfElement = new StackPanel();
-            this.RenderUIElement(wpfElement);
-            return wpfElement;
+            return GetWpfElementTemplated<StackPanel>();
         }
     }
 
@@ -375,9 +357,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new WrapPanel();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<WrapPanel>();
         }
     }    
 
@@ -406,9 +386,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new Border();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<Border>();
         }
     }
 
@@ -440,9 +418,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new Label();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<Label>();
         }
     }
 
@@ -460,8 +436,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is TextBlock tb)
             {
-                tb.Background = this.Background;
-                tb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    tb.Background = this.Background;
+                if (this.Foreground != null)
+                    tb.Foreground = this.Foreground;
                 if (this.FontWeight != null)
                     tb.FontWeight = this.FontWeight.Value;
                 if (this.Padding != null)
@@ -472,9 +450,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new TextBlock();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<TextBlock>();
         }
     }
 
@@ -485,8 +461,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is HintBubble hb)
             {
-                hb.Background = this.Background;
-                hb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    hb.Background = this.Background;
+                if (this.Foreground != null)
+                    hb.Foreground = this.Foreground;
                 if (this.Padding != null)
                     hb.Padding = this.Padding.GetWpfTickness();
                 hb.Text = this.Text;
@@ -495,9 +473,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new HintBubble();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<HintBubble>();
         }
     }
 
@@ -519,8 +495,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is TextBox tb)
             {
-                tb.Background = this.Background;
-                tb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    tb.Background = this.Background;
+                if (this.Foreground != null)
+                    tb.Foreground = this.Foreground;
                 if (this.Padding != null)
                     tb.Padding = this.Padding.GetWpfTickness();
                 tb.VerticalScrollBarVisibility = this.VerticalScrollBarVisibility;
@@ -533,9 +511,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new TextBox();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<TextBox>();
         }
     }
 
@@ -557,8 +533,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is ComboBox cb)
             {
-                cb.Background = this.Background;
-                cb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    cb.Background = this.Background;
+                if (this.Foreground != null)
+                    cb.Foreground = this.Foreground;
                 if (this.Padding != null)
                     cb.Padding = this.Padding.GetWpfTickness();
                 if (this.IsEditable.HasValue)
@@ -571,9 +549,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new ComboBox();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<ComboBox>();
         }
     }
 
@@ -592,8 +568,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is CheckBox cb)
             {
-                cb.Background = this.Background;
-                cb.Foreground = this.Foreground;
+                if (this.Background != null)
+                    cb.Background = this.Background;
+                if (this.Foreground != null)
+                    cb.Foreground = this.Foreground;
                 if (this.IsChecked.HasValue)
                     cb.IsChecked = this.IsChecked.Value;
                 if (this.Padding != null)
@@ -604,9 +582,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new CheckBox();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<CheckBox>();
         }
     }
 
@@ -626,8 +602,10 @@ namespace AasxPackageExplorer
             base.RenderUIElement(el);
             if (el is Button btn)
             {
-                btn.Background = this.Background;
-                btn.Foreground = this.Foreground;
+                if (this.Background != null)
+                    btn.Background = this.Background;
+                if (this.Foreground != null)
+                    btn.Foreground = this.Foreground;
                 if (this.Padding != null)
                     btn.Padding = this.Padding.GetWpfTickness();
                 btn.Content = this.Content;
@@ -637,9 +615,7 @@ namespace AasxPackageExplorer
 
         public override UIElement GetWpfElement()
         {
-            var el = new Button();
-            this.RenderUIElement(el);
-            return el;
+            return GetWpfElementTemplated<Button>();
         }
     }
 }
