@@ -61,26 +61,58 @@ namespace AasxPackageExplorer
 
         public class RepoItem
         {
+            public AasCntlFrameworkElement aasCntl = null;
             public FrameworkElement fwElem = null;
             public Func<object, LambdaAction> setValueLambda = null;
             public object originalValue = null;
             public LambdaAction takeOverLambda = null;
         }
 
-        private Dictionary<FrameworkElement, RepoItem> items = new Dictionary<FrameworkElement, RepoItem>();
+        private List<RepoItem> items = new List<RepoItem>();
+
+        private Dictionary<FrameworkElement, RepoItem> fwElemToItem = 
+                    new Dictionary<FrameworkElement, RepoItem>();
+        private Dictionary<AasCntlFrameworkElement, RepoItem> aasCntlToItem = 
+                    new Dictionary<AasCntlFrameworkElement, RepoItem>();
 
         public void AddWishForAction(LambdaAction la)
         {
             WishForOutsideAction.Add(la);
         }
 
+        /// <summary>
+        /// This function attaches lambdas accordingly to a give user control.
+        /// It is to be used, when an abstract AasCntl... is being created and the according WPF element
+        /// will be activated later.
+        /// </summary>
+        /// <param name="fe">User control</param>
+        /// <param name="setValue">Lambda called, whenever the value is changed</param>
+        /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
+        /// <returns>Passes thru the user control</returns>
         public AasCntlFrameworkElement RegisterControl(
-            AasCntlFrameworkElement fe, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
+            AasCntlFrameworkElement cntl, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
-            // TODO MIHO
-            return (fe);
+            // store for LATER activation
+            var it = new RepoItem();
+            it.aasCntl = cntl;
+            it.setValueLambda = setValue;
+            it.takeOverLambda = takeOverLambda;
+            
+            items.Add(it);
+            aasCntlToItem.Add(cntl, it);
+
+            // pass through
+            return (cntl);
         }
 
+        /// <summary>
+        /// This function attaches lambdas accordingly to a give user control.
+        /// It is to be used, when a WPF dialogue is build up directly.
+        /// </summary>
+        /// <param name="fe">User control</param>
+        /// <param name="setValue">Lambda called, whenever the value is changed</param>
+        /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
+        /// <returns>Passes thru the user control</returns>
         public FrameworkElement RegisterControl(
             FrameworkElement fe, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
@@ -89,7 +121,35 @@ namespace AasxPackageExplorer
             it.fwElem = fe;
             it.setValueLambda = setValue;
             it.takeOverLambda = takeOverLambda;
-            items.Add(fe, it);
+
+            items.Add(it);
+            fwElemToItem.Add(fe, it);
+
+            // activate directly
+            ActivateFwElem(it);
+
+            // pass through
+            return fe;
+        }
+
+        public void ActivateAasCntl(AasCntlFrameworkElement aasCntl, FrameworkElement fe)
+        {
+            // access and book keeping
+            if (aasCntl == null || fe == null || !aasCntlToItem.ContainsKey(aasCntl))
+                return;
+            var it = aasCntlToItem[aasCntl];
+            it.fwElem = fe;
+
+            // now, activate
+            ActivateFwElem(it);
+        }
+
+        private void ActivateFwElem(RepoItem it)
+        {
+            // access
+            var fe = it?.fwElem;
+            if (fe == null)
+                return;
 
             // put callbacks accordingly
             if (fe is TextBox)
@@ -151,9 +211,9 @@ namespace AasxPackageExplorer
                         // Assuming you have one file that you care about, pass it off to whatever
                         // handling code you have defined.
                         if (files != null && files.Length > 0
-                            && sender4 is FrameworkElement fe2 && items.ContainsKey(fe2))
+                            && sender4 is FrameworkElement fe2 && fwElemToItem.ContainsKey(fe2))
                         {
-                            var it2 = items[fe2];
+                            var it2 = fwElemToItem[fe2];
                             if (it2.fwElem is Border brd2 && it2.setValueLambda != null)
                             {
                                 // update UI
@@ -173,8 +233,6 @@ namespace AasxPackageExplorer
                     e4.Handled = true;
                 };
             }
-
-            return fe;
         }
 
         private void Cb_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -182,9 +240,9 @@ namespace AasxPackageExplorer
             try
             {
                 // sender shall be in dictionary
-                if (sender is Control && items.ContainsKey(sender as Control))
+                if (sender is Control && fwElemToItem.ContainsKey(sender as Control))
                 {
-                    var it = items[sender as Control];
+                    var it = fwElemToItem[sender as Control];
                     if (it.fwElem is ComboBox cb && it.setValueLambda != null)
                         it.setValueLambda((string)cb.SelectedItem);
 
@@ -206,9 +264,9 @@ namespace AasxPackageExplorer
             try
             {
                 // sender shall be in dictionary
-                if (sender is Control && items.ContainsKey(sender as Control))
+                if (sender is Control && fwElemToItem.ContainsKey(sender as Control))
                 {
-                    var it = items[sender as Control];
+                    var it = fwElemToItem[sender as Control];
                     if (it.fwElem is CheckBox cb && it.setValueLambda != null)
                         it.setValueLambda(cb.IsChecked == true);
 
@@ -231,9 +289,9 @@ namespace AasxPackageExplorer
             try
             {
                 // sender shall be in dictionary
-                if (sender is Control && items.ContainsKey(sender as Control))
+                if (sender is Control && fwElemToItem.ContainsKey(sender as Control))
                 {
-                    var it = items[sender as Control];
+                    var it = fwElemToItem[sender as Control];
                     if (it.fwElem is Button || it.fwElem is MenuItem)
                     {
                         var action = it.setValueLambda(it.fwElem);
@@ -253,9 +311,9 @@ namespace AasxPackageExplorer
             try
             {
                 // sender shall be in dictionary
-                if (sender is Control && items.ContainsKey(sender as Control))
+                if (sender is Control && fwElemToItem.ContainsKey(sender as Control))
                 {
-                    var it = items[sender as Control];
+                    var it = fwElemToItem[sender as Control];
                     if (it.fwElem is TextBox tb && it.setValueLambda != null)
                         it.setValueLambda(tb.Text);
                     if (it.fwElem is ComboBox cb && it.setValueLambda != null)
@@ -281,9 +339,9 @@ namespace AasxPackageExplorer
                     // send a take over
                     WishForOutsideAction.Add(new LambdaActionContentsTakeOver());
                     // more?
-                    if (sender is Control && items.ContainsKey(sender as Control))
+                    if (sender is Control && fwElemToItem.ContainsKey(sender as Control))
                     {
-                        var it = items[sender as Control];
+                        var it = fwElemToItem[sender as Control];
                         if (it.takeOverLambda != null)
                             WishForOutsideAction.Add(it.takeOverLambda);
                     }
@@ -298,13 +356,15 @@ namespace AasxPackageExplorer
         public void Clear()
         {
             items.Clear();
+            fwElemToItem.Clear();
+            aasCntlToItem.Clear();
         }
 
         public void CallUndoChanges()
         {
             try
             {
-                foreach (var it in items.Values)
+                foreach (var it in fwElemToItem.Values)
                 {
                     if (it.fwElem != null && it.originalValue != null)
                     {
