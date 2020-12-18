@@ -71,9 +71,9 @@ namespace AasxPackageExplorer
                         if (cntl.Margin != null)
                             wpf.Margin = cntl.Margin.GetWpfTickness();
                         if (cntl.VerticalAlignment.HasValue)
-                            wpf.VerticalAlignment = cntl.VerticalAlignment.Value;
+                            wpf.VerticalAlignment = (VerticalAlignment)((int)cntl.VerticalAlignment.Value);
                         if (cntl.HorizontalAlignment.HasValue)
-                            wpf.HorizontalAlignment = cntl.HorizontalAlignment.Value;
+                            wpf.HorizontalAlignment = (HorizontalAlignment)((int) cntl.HorizontalAlignment.Value);
                         if (cntl.MinHeight.HasValue)
                             wpf.MinHeight = cntl.MinHeight.Value;
                         if (cntl.MinWidth.HasValue)
@@ -91,9 +91,11 @@ namespace AasxPackageExplorer
                    if (a is AasCntlControl cntl && b is Control wpf)
                    {
                        if (cntl.VerticalContentAlignment.HasValue)
-                           wpf.VerticalContentAlignment = cntl.VerticalContentAlignment.Value;
+                           wpf.VerticalContentAlignment = 
+                            (VerticalAlignment)((int) cntl.VerticalContentAlignment.Value);
                        if (cntl.HorizontalContentAlignment.HasValue)
-                           wpf.HorizontalContentAlignment = cntl.HorizontalContentAlignment.Value;
+                           wpf.HorizontalContentAlignment = 
+                            (HorizontalAlignment)((int) cntl.HorizontalContentAlignment.Value);
                    }
                 }),
 
