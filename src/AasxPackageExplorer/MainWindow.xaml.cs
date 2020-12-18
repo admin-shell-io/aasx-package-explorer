@@ -215,8 +215,9 @@ namespace AasxPackageExplorer
             // further actions
             try
             {
-                if (!doNotNavigateAfterLoaded)
-                    UiCheckIfActivateLoadedNavTo();
+                // TODO MIHO
+                //if (!doNotNavigateAfterLoaded)
+                //    UiCheckIfActivateLoadedNavTo();
             }
             catch (Exception ex)
             {

@@ -3400,7 +3400,8 @@ namespace AasxPackageExplorer
         {
             theMasterPanel.Children.Clear();
             var sp = new AasCntlStackPanel();
-            var spwpf = sp.GetOrCreateWpfElement();
+            // TODO MIHO
+            var spwpf = new Label(); // sp.GetOrCreateWpfElement();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
             return sp;
@@ -3624,7 +3625,7 @@ namespace AasxPackageExplorer
 #if MONOUI
 #else
             theMasterPanel.Children.Clear();
-            var spwpf = stack.GetOrCreateWpfElement();
+            var spwpf = displayContext.GetOrCreateWpfElement(stack);
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
 #endif

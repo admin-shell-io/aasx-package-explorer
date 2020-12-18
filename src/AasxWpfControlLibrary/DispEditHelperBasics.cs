@@ -465,7 +465,8 @@ namespace AasxPackageExplorer
                         cm.Items.Add(mi);
                         repo.RegisterControl(mi, menuItemLambda);
                     }
-                    cm.PlacementTarget = but.GetOrCreateWpfElement();
+                    // TODO MIHO
+                    cm.PlacementTarget = null; // but.GetOrCreateWpfElement();
                     cm.IsOpen = true;
                 };
             }
