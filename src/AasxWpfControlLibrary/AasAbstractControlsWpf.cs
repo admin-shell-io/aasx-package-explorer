@@ -26,6 +26,7 @@ namespace AasxPackageExplorer
     {
         public AasCntlDisplayContextWpf Context;
         public UIElement WpfElement;
+        public int actiCnt = 0;
 
         public AasCntlDisplayDataWpf(AasCntlDisplayContextWpf Context)
         {
@@ -332,9 +333,14 @@ namespace AasxPackageExplorer
             if (dd == null)
                 return null;
 
-            // only return
-            if (!allowCreate)
+            // most specialized class or in recursion/ creation of base classes?
+            var topClass = superType == null;
+
+            // return, if already created and not (still) in recursion/ creation of base classes
+            if (dd.WpfElement != null && topClass)
                 return dd.WpfElement;
+            if (!allowCreate)
+                return null;
 
             // identify render rec
             var searchType = (superType != null) ? superType : aasCntl.GetType();
@@ -349,7 +355,7 @@ namespace AasxPackageExplorer
                 return null;
 
             // create wpfElement accordingly?
-            if (dd.WpfElement == null)
+            if (dd.WpfElement == null && topClass)
                 dd.WpfElement = (UIElement) Activator.CreateInstance(foundRR.WpfType);
             if (dd.WpfElement == null)
                 return null;
@@ -360,13 +366,13 @@ namespace AasxPackageExplorer
                 GetOrCreateWpfElement(aasCntl, superType: bt);
 
             // perform the render action (for this level of attributes, second)
-            if (aasCntl is AasCntlComboBox cb && cb.Items.Count == 3)
-                // TODO MIHO
-                ;
-            foundRR.InitLambda?.Invoke(aasCntl, dd.WpfElement);            
+            foundRR.InitLambda?.Invoke(aasCntl, dd.WpfElement);
 
             // call action
-            UIElementWasRendered(aasCntl, dd.WpfElement);
+            if (topClass)
+            {
+                UIElementWasRendered(aasCntl, dd.WpfElement);
+            }
 
             // result
             return dd.WpfElement;
@@ -377,6 +383,9 @@ namespace AasxPackageExplorer
             // ModifyRepo works on fwElems ..
             if (ModifyRepo != null && aasCntl is AasCntlFrameworkElement aasCntlFe && el is FrameworkElement elFe)
             {
+                if (aasCntl.DisplayData is AasCntlDisplayDataWpf dd)
+                    dd.actiCnt++;
+
                 ModifyRepo.ActivateAasCntl(aasCntlFe, elFe);
             }
         }

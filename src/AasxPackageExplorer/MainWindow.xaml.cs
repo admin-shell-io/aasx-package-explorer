@@ -1399,6 +1399,9 @@ namespace AasxPackageExplorer
 
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
+            // TODO MIHO 
+            return;
+
             var x = DisplayElements.SelectedItem;
             x?.RefreshFromMainData();
             DisplayElements.Refresh();
