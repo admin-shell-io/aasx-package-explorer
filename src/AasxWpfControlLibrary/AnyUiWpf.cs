@@ -45,6 +45,70 @@ namespace AnyUi
             InitRenderRecs();
         }
 
+        public Brush GetWpfBrush(AnyUiBrush br)
+        {
+            if (br == null)
+                return Brushes.Transparent;
+            var c = br.Color;
+            return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
+        }
+
+        public AnyUiColor GetAnyUiColor(Color c)
+        {
+            if (c == null)
+                return AnyUiColors.Transparent;
+            return AnyUiColor.FromArgb(c.A, c.R, c.G, c.B);
+        }
+
+        public AnyUiBrush GetAnyUiBrush(SolidColorBrush br)
+        {
+            if (br == null)
+                return AnyUiBrushes.Transparent;
+            return new AnyUiBrush(GetAnyUiColor(br.Color));
+        }
+
+        public GridLength GetWpfGridLength(AnyUiGridLength gl)
+        {
+            if (gl == null)
+                return GridLength.Auto;
+            return new GridLength(gl.Value, (GridUnitType)((int)gl.Type));
+        }
+
+        public ColumnDefinition GetWpfColumnDefinition(AnyUiColumnDefinition cd)
+        {
+            var res = new ColumnDefinition();
+            if (cd?.Width != null)
+                res.Width = GetWpfGridLength(cd.Width);
+            if (cd?.MinWidth.HasValue == true)
+                res.MinWidth = cd.MinWidth.Value;
+            return res;
+        }
+
+        public RowDefinition GetWpfRowDefinition(AnyUiRowDefinition rd)
+        {
+            var res = new RowDefinition();
+            if (rd?.Height != null)
+                res.Height = GetWpfGridLength(rd.Height);
+            if (rd?.MinHeight.HasValue == true)
+                res.MinHeight = rd.MinHeight.Value;
+            return res;
+        }
+
+        public Thickness GetWpfTickness(AnyUiThickness tn)
+        {
+            if (tn == null)
+                return new Thickness(0);
+            return new Thickness(tn.Left, tn.Top, tn.Right, tn.Bottom);
+        }
+
+        public FontWeight GetFontWeight(AnyUiFontWeight wt)
+        {
+            var res = FontWeights.Normal;
+            if (wt == AnyUiFontWeight.Bold)
+                res = FontWeights.Bold;
+            return res;
+        }
+
         private class RenderRec
         {
             public Type CntlType;
@@ -71,7 +135,7 @@ namespace AnyUi
                     if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf)
                     {
                         if (cntl.Margin != null)
-                            wpf.Margin = cntl.Margin.GetWpfTickness();
+                            wpf.Margin = GetWpfTickness(cntl.Margin);
                         if (cntl.VerticalAlignment.HasValue)
                             wpf.VerticalAlignment = (VerticalAlignment)((int)cntl.VerticalAlignment.Value);
                         if (cntl.HorizontalAlignment.HasValue)
@@ -121,7 +185,7 @@ namespace AnyUi
                    {
                        // normal members
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background.GetWpfBrush();
+                           wpf.Background = GetWpfBrush(cntl.Background);
 
                        // children
                        wpf.Children.Clear();
@@ -137,11 +201,11 @@ namespace AnyUi
                    {
                        if (cntl.RowDefinitions != null)
                            foreach (var rd in cntl.RowDefinitions)
-                               wpf.RowDefinitions.Add(rd.GetWpfRowDefinition());
+                               wpf.RowDefinitions.Add(GetWpfRowDefinition(rd));
 
                        if (cntl.ColumnDefinitions != null)
                            foreach (var cd in cntl.ColumnDefinitions)
-                               wpf.ColumnDefinitions.Add(cd.GetWpfColumnDefinition());
+                               wpf.ColumnDefinitions.Add(GetWpfColumnDefinition(cd));
 
                        // make sure to target only already realized children
                        foreach (var cel in cntl.Children)
@@ -185,13 +249,13 @@ namespace AnyUi
                    if (a is AnyUiBorder cntl && b is Border wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background.GetWpfBrush();
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.BorderThickness != null)
-                           wpf.BorderThickness = cntl.BorderThickness.GetWpfTickness();
+                           wpf.BorderThickness = GetWpfTickness(cntl.BorderThickness);
                        if (cntl.BorderBrush != null)
-                           wpf.BorderBrush = cntl.BorderBrush.GetWpfBrush();
+                           wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                    }
                 }),
 
@@ -200,13 +264,13 @@ namespace AnyUi
                    if (a is AnyUiLabel cntl && b is Label wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background.GetWpfBrush();
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground.GetWpfBrush();
-                       if (cntl.FontWeight != null)
-                           wpf.FontWeight = cntl.FontWeight.Value;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                       if (cntl.FontWeight.HasValue)
+                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                        wpf.Content = cntl.Content;
                    }
                 }),
@@ -216,13 +280,17 @@ namespace AnyUi
                    if (a is AnyUiTextBlock cntl && b is TextBlock wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
-                       if (cntl.FontWeight != null)
-                           wpf.FontWeight = cntl.FontWeight.Value;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                       if (cntl.FontWeight.HasValue)
+                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.TextWrapping.HasValue)
+                            wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
+                        if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                        wpf.Text = cntl.Text;
                    }
                 }),
@@ -232,11 +300,11 @@ namespace AnyUi
                    if (a is AnyUiHintBubble cntl && b is HintBubble wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                        wpf.Text = cntl.Text;
                    }
                 }),
@@ -246,12 +314,12 @@ namespace AnyUi
                    if (a is AnyUiTextBox cntl && b is TextBox wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
-                       wpf.VerticalScrollBarVisibility = cntl.VerticalScrollBarVisibility;
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
+                       wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
                        wpf.AcceptsReturn = cntl.AcceptsReturn;
                        if (cntl.MaxLines != null)
                            wpf.MaxLines = cntl.MaxLines.Value;
@@ -264,11 +332,11 @@ namespace AnyUi
                    if (a is AnyUiComboBox cntl && b is ComboBox wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                        if (cntl.IsEditable.HasValue)
                            wpf.IsEditable = cntl.IsEditable.Value;
 
@@ -290,13 +358,13 @@ namespace AnyUi
                    if (a is AnyUiCheckBox cntl && b is CheckBox wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
                        if (cntl.IsChecked.HasValue)
                            wpf.IsChecked = cntl.IsChecked.Value;
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                        wpf.Content = cntl.Content;
                    }
                 }),
@@ -306,11 +374,11 @@ namespace AnyUi
                    if (a is AnyUiButton cntl && b is Button wpf)
                    {
                        if (cntl.Background != null)
-                           wpf.Background = cntl.Background;
+                           wpf.Background = GetWpfBrush(cntl.Background);
                        if (cntl.Foreground != null)
-                           wpf.Foreground = cntl.Foreground;
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
                        if (cntl.Padding != null)
-                           wpf.Padding = cntl.Padding.GetWpfTickness();
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
                        wpf.Content = cntl.Content;
                        wpf.ToolTip = cntl.ToolTip;
                    }

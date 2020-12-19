@@ -78,6 +78,17 @@ namespace AasxPackageExplorer
     }
 
     //
+    // Color palette
+    //    
+
+    public class DispLevelColors
+    {
+        public AnyUiBrushTuple
+            MainSection, SubSection, SubSubSection,
+            HintSeverityHigh, HintSeverityNotice;
+    }
+
+    //
     // Helpers
     //
 
@@ -94,7 +105,7 @@ namespace AasxPackageExplorer
 
         public IFlyoutProvider flyoutProvider = null;
 
-        public AnyUiBrush[][] levelColors = null;
+        public DispLevelColors levelColors = null;
 
         public int standardFirstColWidth = 100;
 
@@ -304,7 +315,7 @@ namespace AasxPackageExplorer
 
         public AnyUiTextBox AddSmallTextBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string text = "", Brush foreground = null, Brush background = null,
+            string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
             var tb = new AnyUiTextBox();
@@ -321,7 +332,7 @@ namespace AasxPackageExplorer
             // (MIHO, 2020-11-13): constrain to one line
             tb.AcceptsReturn = false;
             tb.MaxLines = 3;
-            tb.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            tb.VerticalScrollBarVisibility = AnyUiScrollBarVisibility.Auto;
 
             AnyUiGrid.SetRow(tb, row);
             AnyUiGrid.SetColumn(tb, col);
@@ -352,10 +363,10 @@ namespace AasxPackageExplorer
             if (minHeight > 0)
                 brd.MinHeight = minHeight;
 
-            var tb = new TextBlock();
-            tb.VerticalAlignment = VerticalAlignment.Center;
-            tb.HorizontalAlignment = HorizontalAlignment.Center;
-            tb.TextWrapping = TextWrapping.Wrap;
+            var tb = new AnyUiTextBlock();
+            tb.VerticalAlignment = AnyUiVerticalAlignment.Center;
+            tb.HorizontalAlignment = AnyUiHorizontalAlignment.Center;
+            tb.TextWrapping = AnyUiTextWrapping.Wrap;
             tb.FontSize = 10.0;
             tb.Text = text;
 
@@ -369,7 +380,7 @@ namespace AasxPackageExplorer
 
         public AnyUiComboBox AddSmallComboBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string text = "", Brush foreground = null, Brush background = null,
+            string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
             AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
@@ -412,7 +423,7 @@ namespace AasxPackageExplorer
 
         public AnyUiButton AddSmallButtonTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string content = "", Brush foreground = null, Brush background = null)
+            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null)
         {
             var but = new AnyUiButton();
             but.Margin = margin;
@@ -435,7 +446,7 @@ namespace AasxPackageExplorer
             string[] menuHeaders,
             Func<object, ModifyRepo.LambdaAction> menuItemLambda,
             AnyUiThickness margin = null, AnyUiThickness padding = null,
-            Brush foreground = null, Brush background = null)
+            AnyUiBrush foreground = null, AnyUiBrush background = null)
         {
             // construct button
             var but = new AnyUiButton();
@@ -453,7 +464,7 @@ namespace AasxPackageExplorer
             // on demand: construct and register context menu
             if (menuHeaders != null && menuHeaders.Length >= 2 && menuItemLambda != null)
             {
-                but.Click += (sender, e) =>
+                but.Click = () =>
                 {
                     var nmi = menuHeaders.Length / 2;
                     var cm = new ContextMenu();
@@ -478,7 +489,7 @@ namespace AasxPackageExplorer
 
         public AnyUiCheckBox AddSmallCheckBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
+            string content = "", bool isChecked = false, AnyUiBrush foreground = null, AnyUiBrush background = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
             var cb = new AnyUiCheckBox();
@@ -496,6 +507,13 @@ namespace AasxPackageExplorer
             AnyUiGrid.SetColumn(cb, col);
             g.Children.Add(cb);
             return (cb);
+        }
+
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
+            ModifyRepo repo = null,
+            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null)
+        {
+            AddGroup(view, name, colors?.Bg, colors?.Fg, repo, auxButtonTitle, auxButtonLambda);
         }
 
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
@@ -523,7 +541,7 @@ namespace AasxPackageExplorer
             l.Background = background;
             l.Foreground = foreground;
             l.Content = "" + name;
-            l.FontWeight = FontWeights.Bold;
+            l.FontWeight = AnyUiFontWeight.Bold;
             AnyUiGrid.SetRow(l, 0);
             AnyUiGrid.SetColumn(l, 0);
             g.Children.Add(l);
@@ -543,7 +561,7 @@ namespace AasxPackageExplorer
 
         public AnyUiTextBlock AddSmallLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
+            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false)
         {
             var lab = new AnyUiTextBlock();
 
@@ -554,7 +572,7 @@ namespace AasxPackageExplorer
             if (background != null)
                 lab.Background = background;
             if (setBold)
-                lab.FontWeight = FontWeights.Bold;
+                lab.FontWeight = AnyUiFontWeight.Bold;
             lab.Text = content;
             AnyUiGrid.SetRow(lab, row);
             AnyUiGrid.SetColumn(lab, col);
@@ -1769,7 +1787,8 @@ namespace AasxPackageExplorer
                 var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 AddGroup(
-                    substack, $"Qualifier {1 + i}", levelColors[2][0], levelColors[2][1], repo,
+                    substack, $"Qualifier {1 + i}", 
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     auxButtonTitle: "Delete",
                     auxButtonLambda: (o) =>
                     {
@@ -1984,13 +2003,13 @@ namespace AasxPackageExplorer
             bubble.Text = string.Join("\r\n", textsToShow);
             if (highestSev == HintCheck.Severity.High)
             {
-                bubble.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["FocusErrorBrush"];
-                bubble.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom("#ffffff"));
+                bubble.Background = levelColors?.HintSeverityHigh.Bg; 
+                bubble.Foreground = levelColors?.HintSeverityHigh.Fg;
             }
             if (highestSev == HintCheck.Severity.Notice)
             {
-                bubble.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"];
-                bubble.Foreground = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
+                bubble.Background = levelColors?.HintSeverityNotice.Bg;
+                bubble.Foreground = levelColors?.HintSeverityNotice.Fg;
             }
             view.Children.Add(bubble);
         }

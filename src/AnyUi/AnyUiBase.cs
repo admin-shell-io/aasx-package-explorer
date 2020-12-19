@@ -13,13 +13,14 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using AasxIntegrationBase;
-using AasxWpfControlLibrary;
-using AdminShellNS;
+//using AasxIntegrationBase;
+//using AasxWpfControlLibrary;
+//using AdminShellNS;
 
+/// <summary>
+/// This namespace implements an UI approach which can be implemented by any UI system, hence the name.
+/// For better PascalCasing, the 'i' is lowercase by intention. In written text, it shall be: "Any UI"
+/// </summary>
 namespace AnyUi
 {
     //
@@ -32,6 +33,12 @@ namespace AnyUi
     public enum AnyUiVerticalAlignment { Top = 0, Center = 1, Bottom = 2, Stretch = 3 }
 
     public enum AnyUiOrientation { Horizontal = 0, Vertical = 1}
+
+    public enum AnyUiScrollBarVisibility { Disabled = 0, Auto = 1, Hidden = 2, Visible = 3 }
+
+    public enum AnyUiTextWrapping { WrapWithOverflow = 0, NoWrap = 1, Wrap = 2 }
+
+    public enum AnyUiFontWeight { Normal = 0, Bold = 1 }
 
     public class AnyUiGridLength
     {
@@ -46,80 +53,116 @@ namespace AnyUi
         {
             this.Value = value;
             this.Type = type;
-        }
-
-        public GridLength GetWpfGridLength()
-        {
-            return new GridLength(this.Value, (GridUnitType)((int)Type));
-        }
+        }        
     }
 
     public class AnyUiColumnDefinition
     {
         public AnyUiGridLength Width;
-        public double? MinWidth;
-
-        public ColumnDefinition GetWpfColumnDefinition()
-        {
-            var res = new ColumnDefinition();
-            if (this.Width != null)
-                res.Width = this.Width.GetWpfGridLength();
-            if (this.MinWidth.HasValue)
-                res.MinWidth = this.MinWidth.Value;
-            return res;
-        }
+        public double? MinWidth;        
     }
 
     public class AnyUiRowDefinition
     {
         public AnyUiGridLength Height;
         public double? MinHeight;
+    }
 
-        public RowDefinition GetWpfRowDefinition()
+    public class AnyUiColor
+    {
+        public byte A { get; set; }
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+
+        public AnyUiColor()
         {
-            var res = new RowDefinition();
-            if (this.Height != null)
-                res.Height = this.Height.GetWpfGridLength();
-            if (this.MinHeight.HasValue)
-                res.MinHeight = this.MinHeight.Value;
+            A = 0xff;
+        }
+
+        public AnyUiColor(UInt32 c)
+        {
+            byte[] bytes = BitConverter.GetBytes(c);
+            A = bytes[3];
+            R = bytes[2];
+            G = bytes[1];
+            B = bytes[0];
+        }
+
+        public static AnyUiColor FromArgb(byte a, byte r, byte g, byte b)
+        {
+            var res = new AnyUiColor();
+            res.A = a;
+            res.R = r;
+            res.G = g;
+            res.B = b;
+            return res;
+        }
+
+        public static AnyUiColor FromRgb(byte r, byte g, byte b)
+        {
+            var res = new AnyUiColor();
+            res.A = 0xff;
+            res.R = r;
+            res.G = g;
+            res.B = b;
             return res;
         }
     }
 
+    public class AnyUiColors
+    {
+        public static AnyUiColor Transparent { get { return new AnyUiColor(0x00000000u); } }
+        public static AnyUiColor Black { get { return new AnyUiColor(0xff000000u); } }
+        public static AnyUiColor DarkBlue { get { return new AnyUiColor(0xff00008bu); } }
+        public static AnyUiColor LightBlue { get { return new AnyUiColor(0xffadd8e6u); } }
+        public static AnyUiColor White { get { return new AnyUiColor(0xffffffffu); } }
+    }
+
     public class AnyUiBrush
     {
-        private Color solidColorBrush = Colors.Black;
+        private AnyUiColor solidColorBrush = AnyUiColors.Black;
+
+        public AnyUiColor Color { get { return solidColorBrush;  } }
 
         public AnyUiBrush() { }
 
-        public AnyUiBrush(Color c)
+        public AnyUiBrush(AnyUiColor c)
         {
             solidColorBrush = c;
         }
 
-        public AnyUiBrush(SolidColorBrush b)
-        {
-            solidColorBrush = b.Color;
-        }
+        //public AnyUiBrush(SolidColorBrush b)
+        //{
+        //    solidColorBrush = b.Color;
+        //}
 
         public AnyUiBrush(UInt32 c)
-        {
-            byte[] bytes = BitConverter.GetBytes(c);
-            solidColorBrush = Color.FromArgb(bytes[3], bytes[2], bytes[1], bytes[0]);
-        }
-
-        public Brush GetWpfBrush()
-        {
-            return new SolidColorBrush(solidColorBrush);
+        {            
+            solidColorBrush = new AnyUiColor(c);
         }
     }
 
     public class AnyUiBrushes
     {
+        public static AnyUiBrush Transparent { get { return new AnyUiBrush(0x00000000u); } }
         public static AnyUiBrush Black { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }
         public static AnyUiBrush LightBlue { get { return new AnyUiBrush(0xffadd8e6u); } }
         public static AnyUiBrush White { get { return new AnyUiBrush(0xffffffffu); } }
+    }
+
+    public class AnyUiBrushTuple
+    {
+        public AnyUiBrush Bg, Fg;
+
+        public AnyUiBrushTuple() { }
+
+        public AnyUiBrushTuple(AnyUiBrush bg, AnyUiBrush fg)
+        {
+            this.Bg = bg;
+            this.Fg = fg;
+        }
     }
 
     public class AnyUiThickness
@@ -142,11 +185,6 @@ namespace AnyUi
             Top = top;
             Right = right;
             Bottom = bottom;
-        }
-
-        public Thickness GetWpfTickness()
-        {
-            return new Thickness(Left, Top, Right, Bottom);
         }
     }
 
@@ -210,7 +248,7 @@ namespace AnyUi
 
     public class AnyUiDecorator : AnyUiFrameworkElement
     {
-        public virtual UIElement Child { get; set; }
+        public virtual AnyUiUIElement Child { get; set; }
     }    
 
     public class AnyUiPanel : AnyUiFrameworkElement
@@ -254,19 +292,19 @@ namespace AnyUi
         public AnyUiBrush Background;
         public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
-
-        public Nullable<FontWeight> FontWeight = null;
+        public AnyUiFontWeight? FontWeight;
         public string Content = null;
 
     }
 
     public class AnyUiTextBlock : AnyUiFrameworkElement
     {
-        public Brush Background;
-        public Brush Foreground;
+        public AnyUiBrush Background;
+        public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
-
-        public Nullable<FontWeight> FontWeight = null;
+        public AnyUiTextWrapping? TextWrapping;
+        public AnyUiFontWeight? FontWeight;
+        public double? FontSize;
         public string Text = null;
 
     }
@@ -277,11 +315,11 @@ namespace AnyUi
 
     public class AnyUiTextBox : AnyUiControl
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
+        public AnyUiBrush Background = null;
+        public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
-        public ScrollBarVisibility VerticalScrollBarVisibility;
+        public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
 
         public bool AcceptsReturn;
         public Nullable<int> MaxLines;
@@ -292,8 +330,8 @@ namespace AnyUi
 
     public class AnyUiComboBox : AnyUiControl
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
+        public AnyUiBrush Background = null;
+        public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public bool? IsEditable;
@@ -307,8 +345,8 @@ namespace AnyUi
 
     public class AnyUiCheckBox : AnyUiContentControl
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
+        public AnyUiBrush Background = null;
+        public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;
@@ -319,14 +357,16 @@ namespace AnyUi
 
     public class AnyUiButton : AnyUiContentControl
     {
-        public Brush Background = null;
-        public Brush Foreground = null;
+        public AnyUiBrush Background = null;
+        public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;
         public string ToolTip = null;
 
-        public event RoutedEventHandler Click;
+        // public event RoutedEventHandler Click;
+
+        public Action Click;
 
     }
 }

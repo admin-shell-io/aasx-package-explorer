@@ -98,7 +98,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Referable:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Referable:", levelColors.SubSection);
 
             // members
             this.AddHintBubble(stack, hintMode, new[] {
@@ -186,7 +186,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Identifiable:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Identifiable:", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -304,7 +304,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
@@ -381,7 +381,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionRedrawEntity();
                     }))
             {
-                this.AddGroup(stack, $"{entityName}:", levelColors[1][0], levelColors[1][1]);
+                this.AddGroup(stack, $"{entityName}:", levelColors.SubSection);
 
                 if (editMode)
                 {
@@ -426,7 +426,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Kind:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Kind:", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -463,7 +463,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Kind:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Kind:", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -507,7 +507,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Semantic ID:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Semantic ID:", levelColors.SubSection);
 
             // hint
             this.AddHintBubble(
@@ -562,7 +562,7 @@ namespace AasxPackageExplorer
                 return;
 
             // members
-            this.AddGroup(stack, "Qualifiable:", levelColors[1][0], levelColors[1][1]);
+            this.AddGroup(stack, "Qualifiable:", levelColors.SubSection);
 
             if (this.SafeguardAccess(
                 stack, repo, qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",
@@ -590,7 +590,7 @@ namespace AasxPackageExplorer
 
             // members
             this.AddGroup(
-                        stack, "Data Specification Content IEC61360:", levelColors[1][0], levelColors[1][1]);
+                        stack, "Data Specification Content IEC61360:", levelColors.SubSection);
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -786,7 +786,7 @@ namespace AasxPackageExplorer
             {
                 this.AddGroup(
                     stack, $"{entityName} - Reference to describing Submodel:",
-                    levelColors[1][0], levelColors[1][1]);
+                    levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
                     repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.Main, "Submodel");

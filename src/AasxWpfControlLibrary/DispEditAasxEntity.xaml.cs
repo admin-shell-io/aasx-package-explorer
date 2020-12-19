@@ -130,10 +130,10 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAsset(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
-            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool embedded = false,
+            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false)
         {
-            helper.AddGroup(stack, "Asset", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "Asset", helper.levelColors.MainSection);
 
             // Up/ down/ del
             if (editMode && !embedded)
@@ -249,7 +249,7 @@ namespace AasxPackageExplorer
                 (k) => { asset.kind = k; });
 
             // special Submode references
-            helper.AddGroup(stack, "Submodel references with special meaning", levelColors[1][0], levelColors[1][1]);
+            helper.AddGroup(stack, "Submodel references with special meaning", helper.levelColors.SubSection);
 
             // AssetIdentificationModelRef
             helper.DisplayOrEditEntitySubmodelRef(stack, asset.assetIdentificationModelRef,
@@ -272,9 +272,9 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            AnyUiBrush[][] levelColors, bool hintMode = false)
+            bool hintMode = false)
         {
-            helper.AddGroup(stack, "Environment of Asset Administration Shells", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "Environment of Asset Administration Shells", helper.levelColors.MainSection);
 
             // automatically and silently fix errors
             if (env.AdministrationShells == null)
@@ -629,7 +629,7 @@ namespace AasxPackageExplorer
             {
                 // Files
 
-                helper.AddGroup(stack, "Supplementary file to add:", levelColors[1][0], levelColors[1][1]);
+                helper.AddGroup(stack, "Supplementary file to add:", helper.levelColors.SubSection);
 
                 var g = helper.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
                 helper.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Source path: ");
@@ -763,12 +763,12 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntitySupplementaryFile(
             PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
-            AnyUiStackPanel stack, AnyUiBrush[][] levelColors)
+            AnyUiStackPanel stack)
         {
             //
             // Package
             //
-            helper.AddGroup(stack, "Supplementary file for package of AASX", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "Supplementary file for package of AASX", helper.levelColors.MainSection);
 
             if (editMode && packages.MainStorable && psf != null)
             {
@@ -809,14 +809,14 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAas(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
-            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
+            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool hintMode = false)
         {
-            helper.AddGroup(stack, "Asset Administration Shell", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "Asset Administration Shell", helper.levelColors.MainSection);
 
             // Entities
             if (editMode)
             {
-                helper.AddGroup(stack, "Editing of entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of entities", helper.levelColors.MainSection);
 
                 // Up/ down/ del
                 helper.EntityListUpDownDeleteHelper<AdminShell.AdministrationShell>(
@@ -1048,7 +1048,7 @@ namespace AasxPackageExplorer
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
             {
-                helper.AddGroup(stack, "Derived From", levelColors[1][0], levelColors[1][1]);
+                helper.AddGroup(stack, "Derived From", helper.levelColors.SubSection);
                 helper.AddKeyListKeys(
                     stack, "derivedFrom", aas.derivedFrom.Keys, repo,
                     packages, PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell");
@@ -1072,7 +1072,7 @@ namespace AasxPackageExplorer
                     return new ModifyRepo.LambdaActionRedrawEntity();
                 }))
             {
-                helper.AddGroup(stack, "Asset Reference", levelColors[1][0], levelColors[1][1]);
+                helper.AddGroup(stack, "Asset Reference", helper.levelColors.SubSection);
                 helper.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
                     packages, PackageCentral.Selector.Main, "Asset");
             }
@@ -1084,7 +1084,7 @@ namespace AasxPackageExplorer
             if (asset != null)
             {
                 DisplayOrEditAasEntityAsset(
-                    packages, env, asset, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, env, asset, editMode, repo, stack, hintMode: hintMode);
             }
         }
 
@@ -1097,12 +1097,12 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntitySubmodelOrRef(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, ModifyRepo repo,
-            AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
+            AnyUiStackPanel stack, bool hintMode = false)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
             {
-                helper.AddGroup(stack, "SubmodelReference", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "SubmodelReference", helper.levelColors.MainSection);
                 helper.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
                     packages, PackageCentral.Selector.Main, "SubmodelRef Submodel ",
@@ -1112,7 +1112,7 @@ namespace AasxPackageExplorer
             // entities when under AAS (smref)
             if (editMode && smref != null)
             {
-                helper.AddGroup(stack, "Editing of entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of entities", helper.levelColors.MainSection);
 
                 helper.EntityListUpDownDeleteHelper<AdminShell.SubmodelRef>(
                     stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:");
@@ -1123,7 +1123,7 @@ namespace AasxPackageExplorer
             {
                 helper.AddGroup(
                     stack, "Editing of entities (environment's Submodel collection)",
-                    levelColors[0][0], levelColors[0][1]);
+                    helper.levelColors.MainSection);
 
                 helper.AddAction(stack, "Submodel:", new[] { "Delete" }, repo, (buttonNdx) =>
                 {
@@ -1324,7 +1324,7 @@ namespace AasxPackageExplorer
             {
 
                 // Submodel
-                helper.AddGroup(stack, "Submodel", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Submodel", helper.levelColors.MainSection);
 
                 // Referable
                 helper.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
@@ -1417,9 +1417,9 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityConceptDescription(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
-            ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool embedded = false, bool hintMode = false)
+            ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
         {
-            helper.AddGroup(stack, "ConceptDescription", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "ConceptDescription", helper.levelColors.MainSection);
 
             // Up/ down/ del
             if (editMode && !embedded)
@@ -1522,7 +1522,7 @@ namespace AasxPackageExplorer
                 "isCaseOf");
 
             // joint header for data spec ref and content
-            helper.AddGroup(stack, "HasDataSpecification:", levelColors[1][0], levelColors[1][1]);
+            helper.AddGroup(stack, "HasDataSpecification:", helper.levelColors.SubSection);
 
             // check, if there is a IEC61360 content amd, subsequently, also a according data specification
             var esc = cd.IEC61360DataSpec;
@@ -1582,7 +1582,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityOperationVariable(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.OperationVariable ov, bool editMode,
-            ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
+            ModifyRepo repo, AnyUiStackPanel stack, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1594,7 +1594,7 @@ namespace AasxPackageExplorer
 
             if (editMode)
             {
-                helper.AddGroup(stack, "Editing of entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of entities", helper.levelColors.MainSection);
 
                 // entities
                 if (parentContainer != null && parentContainer is AdminShell.Operation)
@@ -1611,12 +1611,12 @@ namespace AasxPackageExplorer
             // always an OperationVariable
             if (true)
             {
-                helper.AddGroup(stack, "OperationVariable", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "OperationVariable", helper.levelColors.MainSection);
 
                 if (ov.value == null)
                 {
                     helper.AddGroup(
-                        stack, "OperationVariable value is not set!", levelColors[1][0], levelColors[1][1]);
+                        stack, "OperationVariable value is not set!", helper.levelColors.SubSection);
 
                     if (editMode)
                     {
@@ -1730,13 +1730,13 @@ namespace AasxPackageExplorer
 
                     // value == SubmodelElement is displayed
                     helper.AddGroup(
-                        stack, "OperationVariable value (is a SubmodelElement)", levelColors[1][0], levelColors[1][1]);
+                        stack, "OperationVariable value (is a SubmodelElement)", helper.levelColors.SubSection);
                     var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
                             packages, env, parentContainer, ov.value, null, editMode, repo,
-                            substack, levelColors, hintMode);
+                            substack, hintMode);
                 }
             }
         }
@@ -1752,7 +1752,7 @@ namespace AasxPackageExplorer
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
             AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            AnyUiBrush[][] levelColors, bool hintMode = false)
+            bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1775,7 +1775,7 @@ namespace AasxPackageExplorer
 
             if (editMode)
             {
-                helper.AddGroup(stack, "Editing of entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of entities", helper.levelColors.MainSection);
 
                 // for sake of space efficiency, smuggle "Refactor" into this
                 var horizStack = new AnyUiWrapPanel();
@@ -2129,7 +2129,7 @@ namespace AasxPackageExplorer
 
             if (editMode && (sme is AdminShell.SubmodelElementCollection || sme is AdminShell.Entity))
             {
-                helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of sub-ordinate entities", helper.levelColors.MainSection);
 
                 List<AdminShell.SubmodelElementWrapper> listOfSMEW = null;
                 if (sme is AdminShell.SubmodelElementCollection)
@@ -2235,7 +2235,7 @@ namespace AasxPackageExplorer
 
             if (jumpToCD != null && editMode)
             {
-                helper.AddGroup(stack, "Navigation of entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Navigation of entities", helper.levelColors.MainSection);
 
                 helper.AddAction(stack, "Navigate to:", new[] { "Concept Description" }, repo, (buttonNdx) =>
                {
@@ -2249,7 +2249,7 @@ namespace AasxPackageExplorer
 
             if (editMode && sme is AdminShell.Operation smo)
             {
-                helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of sub-ordinate entities", helper.levelColors.MainSection);
 
                 var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
@@ -2264,7 +2264,7 @@ namespace AasxPackageExplorer
                             AdminShell.OperationVariable.Direction.InOut
                         })[dirNdx];
 
-                    helper.AddGroup(substack, "OperationVariables " + names, levelColors[1][0], levelColors[1][1]);
+                    helper.AddGroup(substack, "OperationVariables " + names, helper.levelColors.SubSection);
 
                     helper.AddHintBubble(
                         substack, hintMode,
@@ -2338,7 +2338,7 @@ namespace AasxPackageExplorer
 
             if (editMode && sme is AdminShell.AnnotatedRelationshipElement are)
             {
-                helper.AddGroup(stack, "Editing of sub-ordinate entities", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Editing of sub-ordinate entities", helper.levelColors.MainSection);
 
                 var substack = helper.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
@@ -2439,7 +2439,7 @@ namespace AasxPackageExplorer
                 helper.AddGroup(
                     stack,
                     $"Submodel Element ({"" + sme?.GetElementName()})",
-                    levelColors[0][0], levelColors[0][1]);
+                    helper.levelColors.MainSection);
 
                 // Referable
                 helper.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
@@ -2526,12 +2526,12 @@ namespace AasxPackageExplorer
                     {
                         helper.AddGroup(
                             stack, "ConceptDescription cannot be looked up within the AAS environment!",
-                            levelColors[0][0], levelColors[0][1]);
+                            helper.levelColors.MainSection);
                     }
                     else
                     {
                         DisplayOrEditAasEntityConceptDescription(
-                            packages, env, sme, cd, editMode, repo, stack, levelColors,
+                            packages, env, sme, cd, editMode, repo, stack,
                             embedded: true,
                             hintMode: hintMode);
                     }
@@ -2545,7 +2545,7 @@ namespace AasxPackageExplorer
             if (sme is AdminShell.Property)
             {
                 var p = sme as AdminShell.Property;
-                helper.AddGroup(stack, "Property", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Property", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2623,7 +2623,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
+                    helper.AddGroup(stack, "ValueID", helper.levelColors.SubSection);
                     helper.AddKeyListKeys(
                         stack, "valueId", p.valueId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
@@ -2632,7 +2632,7 @@ namespace AasxPackageExplorer
             else if (sme is AdminShell.MultiLanguageProperty)
             {
                 var mlp = sme as AdminShell.MultiLanguageProperty;
-                helper.AddGroup(stack, "MultiLanguageProperty", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "MultiLanguageProperty", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2663,7 +2663,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
-                    helper.AddGroup(stack, "ValueID", levelColors[1][0], levelColors[1][1]);
+                    helper.AddGroup(stack, "ValueID", helper.levelColors.SubSection);
                     helper.AddKeyListKeys(
                         stack, "valueId", mlp.valueId.Keys, repo,
                         packages, PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
@@ -2672,7 +2672,7 @@ namespace AasxPackageExplorer
             else if (sme is AdminShell.Range)
             {
                 var rng = sme as AdminShell.Range;
-                helper.AddGroup(stack, "Range", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Range", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2729,7 +2729,7 @@ namespace AasxPackageExplorer
             }
             else if (sme is AdminShell.File fl)
             {
-                helper.AddGroup(stack, "File", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "File", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -2968,7 +2968,7 @@ namespace AasxPackageExplorer
                         });
 
                     // Further file assistance
-                    helper.AddGroup(stack, "Supplementary file assistance", levelColors[1][0], levelColors[1][1]);
+                    helper.AddGroup(stack, "Supplementary file assistance", helper.levelColors.SubSection);
 
                     helper.AddKeyValueRef(
                         stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
@@ -3051,7 +3051,7 @@ namespace AasxPackageExplorer
             }
             else if (sme is AdminShell.Blob blb)
             {
-                helper.AddGroup(stack, "Blob", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Blob", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -3096,7 +3096,7 @@ namespace AasxPackageExplorer
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
 
                 // group
-                helper.AddGroup(stack, "ReferenceElement", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "ReferenceElement", helper.levelColors.MainSection);
 
                 helper.AddHintBubble(
                     stack, hintMode,
@@ -3134,7 +3134,7 @@ namespace AasxPackageExplorer
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
 
                 // group
-                helper.AddGroup(stack, "" + sme.GetElementName(), levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "" + sme.GetElementName(), helper.levelColors.MainSection);
 
                 // members
                 helper.AddHintBubble(
@@ -3204,13 +3204,13 @@ namespace AasxPackageExplorer
             }
             else if (sme is AdminShell.Capability)
             {
-                helper.AddGroup(stack, "Capability", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Capability", helper.levelColors.MainSection);
                 helper.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
             else
             if (sme is AdminShell.SubmodelElementCollection smc)
             {
-                helper.AddGroup(stack, "SubmodelElementCollection", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "SubmodelElementCollection", helper.levelColors.MainSection);
                 if (smc.value != null)
                     helper.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else
@@ -3225,7 +3225,7 @@ namespace AasxPackageExplorer
             else if (sme is AdminShell.Operation)
             {
                 var p = sme as AdminShell.Operation;
-                helper.AddGroup(stack, "Operation", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Operation", helper.levelColors.MainSection);
                 if (p.inputVariable != null)
                     helper.AddKeyValue(stack, "# of input vars.", "" + p.inputVariable.Count);
                 if (p.outputVariable != null)
@@ -3236,7 +3236,7 @@ namespace AasxPackageExplorer
             else if (sme is AdminShell.Entity)
             {
                 var ent = sme as AdminShell.Entity;
-                helper.AddGroup(stack, "Entity", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Entity", helper.levelColors.MainSection);
 
                 if (ent.statements != null)
                     helper.AddKeyValue(stack, "# of statements", "" + ent.statements.Count);
@@ -3289,7 +3289,7 @@ namespace AasxPackageExplorer
 
             }
             else
-                helper.AddGroup(stack, "Submodel Element is unknown!", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Submodel Element is unknown!", helper.levelColors.MainSection);
         }
 
         //
@@ -3300,13 +3300,13 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityView(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors,
+            AdminShell.View view, bool editMode, ModifyRepo repo, AnyUiStackPanel stack, 
             bool hintMode = false)
         {
             //
             // View
             //
-            helper.AddGroup(stack, "View", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "View", helper.levelColors.MainSection);
 
             if (editMode)
             {
@@ -3371,13 +3371,12 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityViewReference(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
-            AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            AnyUiBrush[][] levelColors)
+            AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AnyUiStackPanel stack)
         {
             //
             // View
             //
-            helper.AddGroup(stack, "Reference (containedElement) of View ", levelColors[0][0], levelColors[0][1]);
+            helper.AddGroup(stack, "Reference (containedElement) of View ", helper.levelColors.MainSection);
 
             if (editMode)
             {
@@ -3445,26 +3444,37 @@ namespace AasxPackageExplorer
             var stack = new AnyUiStackPanel();
 #endif
 
-            // ReSharper disable CoVariantArrayConversion
-            AnyUiBrush[][] levelColors = new AnyUiBrush[][]
+            // create display context for WPF
+            var displayContext = new AnyUiDisplayContextWpf(helper.repo);
+
+            // ReSharper disable CoVariantArrayConversion            
+            var levelColors = new DispLevelColors()
             {
-                new [] {
-                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"]),
-                    AnyUiBrushes.White
-                },
-                new [] {
-                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black
-                },
-                new [] {
-                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black
-                }
+                MainSection = new AnyUiBrushTuple(
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["DarkestAccentColor"]),
+                    AnyUiBrushes.White),
+                SubSection = new AnyUiBrushTuple(
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black),
+                SubSubSection = new AnyUiBrushTuple(
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black),
+                HintSeverityHigh = new AnyUiBrushTuple(
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["FocusErrorBrush"]),
+                    AnyUiBrushes.White),
+                HintSeverityNotice = new AnyUiBrushTuple(
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["DarkestAccentColor"]))
             };
             // ReSharper enable CoVariantArrayConversion
 
             // hint mode disable, when not edit
-
             hintMode = hintMode && editMode;
 
             // remember objects for UI thread / redrawing
@@ -3486,9 +3496,6 @@ namespace AasxPackageExplorer
             helper.hintMode = hintMode;
             helper.repo = repo;
 
-            // create display context for WPF
-            var displayContext = new AnyUiDisplayContextWpf(helper.repo);
-
             //
             // Dispatch
             //
@@ -3497,19 +3504,19 @@ namespace AasxPackageExplorer
             {
                 var x = entity as VisualElementEnvironmentItem;
                 DisplayOrEditAasEntityAasEnv(
-                    packages, x.theEnv, x.theItemType, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theItemType, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAdminShell)
             {
                 var x = entity as VisualElementAdminShell;
                 DisplayOrEditAasEntityAas(
-                    packages, x.theEnv, x.theAas, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theAas, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAsset)
             {
                 var x = entity as VisualElementAsset;
                 DisplayOrEditAasEntityAsset(
-                    packages, x.theEnv, x.theAsset, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, x.theAsset, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelRef)
             {
@@ -3518,14 +3525,14 @@ namespace AasxPackageExplorer
                 if (x.Parent is VisualElementAdminShell xpaas)
                     aas = xpaas.theAas;
                 DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, repo, stack, levelColors,
+                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, repo, stack, 
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodel)
             {
                 var x = entity as VisualElementSubmodel;
                 DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, null, null, x.theSubmodel, editMode, repo, stack, levelColors,
+                    packages, x.theEnv, null, null, x.theSubmodel, editMode, repo, stack, 
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelElement)
@@ -3533,30 +3540,30 @@ namespace AasxPackageExplorer
                 var x = entity as VisualElementSubmodelElement;
                 DisplayOrEditAasEntitySubmodelElement(
                     packages, x.theEnv, x.theContainer, x.theWrapper, x.theWrapper.submodelElement, editMode,
-                    repo, stack, levelColors, hintMode: hintMode);
+                    repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementOperationVariable)
             {
                 var x = entity as VisualElementOperationVariable;
                 DisplayOrEditAasEntityOperationVariable(
                     packages, x.theEnv, x.theContainer, x.theOpVar, editMode, repo,
-                    stack, levelColors, hintMode: hintMode);
+                    stack, hintMode: hintMode);
             }
             else if (entity is VisualElementConceptDescription)
             {
                 var x = entity as VisualElementConceptDescription;
                 DisplayOrEditAasEntityConceptDescription(
-                    packages, x.theEnv, null, x.theCD, editMode, repo, stack, levelColors, hintMode: hintMode);
+                    packages, x.theEnv, null, x.theCD, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementView)
             {
                 var x = entity as VisualElementView;
                 if (x.Parent != null && x.Parent is VisualElementAdminShell xpaas)
                     DisplayOrEditAasEntityView(
-                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, repo, stack, levelColors,
+                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, repo, stack, 
                         hintMode: hintMode);
                 else
-                    helper.AddGroup(stack, "View is corrupted!", levelColors[0][0], levelColors[0][1]);
+                    helper.AddGroup(stack, "View is corrupted!", helper.levelColors.MainSection);
             }
             else if (entity is VisualElementReference)
             {
@@ -3564,15 +3571,15 @@ namespace AasxPackageExplorer
                 if (x.Parent != null && x.Parent is VisualElementView xpev)
                     DisplayOrEditAasEntityViewReference(
                         packages, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
-                        editMode, repo, stack, levelColors);
+                        editMode, repo, stack);
                 else
-                    helper.AddGroup(stack, "Reference is corrupted!", levelColors[0][0], levelColors[0][1]);
+                    helper.AddGroup(stack, "Reference is corrupted!", helper.levelColors.MainSection);
             }
             else
             if (entity is VisualElementSupplementalFile)
             {
                 var x = entity as VisualElementSupplementalFile;
-                DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, repo, stack, levelColors);
+                DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, repo, stack);
             }
             else if (entity is VisualElementPluginExtension)
             {
@@ -3607,7 +3614,7 @@ namespace AasxPackageExplorer
 
                     // helping message
                     helper.AddGroup(
-                        stack, "Entity from Plugin cannot be rendered!", levelColors[0][0], levelColors[0][1]);
+                        stack, "Entity from Plugin cannot be rendered!", helper.levelColors.MainSection);
                 }
                 else
                 {
@@ -3619,7 +3626,7 @@ namespace AasxPackageExplorer
 
             }
             else
-                helper.AddGroup(stack, "Entity is unknown!", levelColors[0][0], levelColors[0][1]);
+                helper.AddGroup(stack, "Entity is unknown!", helper.levelColors.MainSection);
 
             // now render master stack
 
