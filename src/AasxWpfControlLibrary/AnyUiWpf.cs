@@ -17,28 +17,29 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary;
+using AasxPackageExplorer;
 using AdminShellNS;
+using AasxWpfControlLibrary;
 
-namespace AasxPackageExplorer
+namespace AnyUi
 {
-    public class AasCntlDisplayDataWpf : AasCntlDisplayDataBase
+    public class AnyUiDisplayDataWpf : AnyUiDisplayDataBase
     {
-        public AasCntlDisplayContextWpf Context;
+        public AnyUiDisplayContextWpf Context;
         public UIElement WpfElement;
         public int actiCnt = 0;
 
-        public AasCntlDisplayDataWpf(AasCntlDisplayContextWpf Context)
+        public AnyUiDisplayDataWpf(AnyUiDisplayContextWpf Context)
         {
             this.Context = Context;
         }
     }
 
-    public class AasCntlDisplayContextWpf : AasCntlDisplayContextBase
+    public class AnyUiDisplayContextWpf : AnyUiContextBase
     {
         public ModifyRepo ModifyRepo;
 
-        public AasCntlDisplayContextWpf(ModifyRepo modifyRepo)
+        public AnyUiDisplayContextWpf(ModifyRepo modifyRepo)
         {
             ModifyRepo = modifyRepo;
             InitRenderRecs();
@@ -48,9 +49,9 @@ namespace AasxPackageExplorer
         {
             public Type CntlType;
             public Type WpfType;
-            public Action<AasCntlUIElement, UIElement> InitLambda;
+            public Action<AnyUiUIElement, UIElement> InitLambda;
 
-            public RenderRec(Type cntlType, Type wpfType, Action<AasCntlUIElement, UIElement> initLambda = null)
+            public RenderRec(Type cntlType, Type wpfType, Action<AnyUiUIElement, UIElement> initLambda = null)
             {
                 CntlType = cntlType;
                 WpfType = wpfType;
@@ -65,9 +66,9 @@ namespace AasxPackageExplorer
             RenderRecs.Clear();
             RenderRecs.AddRange(new[]
             {
-                new RenderRec(typeof(AasCntlFrameworkElement), typeof(FrameworkElement), (a, b) =>
+                new RenderRec(typeof(AnyUiFrameworkElement), typeof(FrameworkElement), (a, b) =>
                 {
-                    if (a is AasCntlFrameworkElement cntl && b is FrameworkElement wpf)
+                    if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf)
                     {
                         if (cntl.Margin != null)
                             wpf.Margin = cntl.Margin.GetWpfTickness();
@@ -87,9 +88,9 @@ namespace AasxPackageExplorer
                     }
                 }),
 
-                new RenderRec(typeof(AasCntlControl), typeof(Control), (a, b) =>
+                new RenderRec(typeof(AnyUiControl), typeof(Control), (a, b) =>
                 {
-                   if (a is AasCntlControl cntl && b is Control wpf)
+                   if (a is AnyUiControl cntl && b is Control wpf)
                    {
                        if (cntl.VerticalContentAlignment.HasValue)
                            wpf.VerticalContentAlignment = 
@@ -100,23 +101,23 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlContentControl), typeof(ContentControl), (a, b) =>
+                new RenderRec(typeof(AnyUiContentControl), typeof(ContentControl), (a, b) =>
                 {
-                   if (a is AasCntlContentControl cntl && b is ContentControl wpf)
+                   if (a is AnyUiContentControl cntl && b is ContentControl wpf)
                    {
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlDecorator), typeof(Decorator), (a, b) =>
+                new RenderRec(typeof(AnyUiDecorator), typeof(Decorator), (a, b) =>
                 {
-                   if (a is AasCntlDecorator cntl && b is Decorator wpf)
+                   if (a is AnyUiDecorator cntl && b is Decorator wpf)
                    {
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlPanel), typeof(Panel), (a, b) =>
+                new RenderRec(typeof(AnyUiPanel), typeof(Panel), (a, b) =>
                 {
-                   if (a is AasCntlPanel cntl && b is Panel wpf)
+                   if (a is AnyUiPanel cntl && b is Panel wpf)
                    {
                        // normal members
                        if (cntl.Background != null)
@@ -130,9 +131,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlGrid), typeof(Grid), (a, b) =>
+                new RenderRec(typeof(AnyUiGrid), typeof(Grid), (a, b) =>
                 {
-                   if (a is AasCntlGrid cntl && b is Grid wpf)
+                   if (a is AnyUiGrid cntl && b is Grid wpf)
                    {
                        if (cntl.RowDefinitions != null)
                            foreach (var rd in cntl.RowDefinitions)
@@ -161,27 +162,27 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlStackPanel), typeof(StackPanel), (a, b) =>
+                new RenderRec(typeof(AnyUiStackPanel), typeof(StackPanel), (a, b) =>
                 {
-                   if (a is AasCntlStackPanel cntl && b is StackPanel wpf)
+                   if (a is AnyUiStackPanel cntl && b is StackPanel wpf)
                    {
                        if (cntl.Orientation.HasValue)
-                           wpf.Orientation = cntl.Orientation.Value;
+                           wpf.Orientation = (Orientation)((int) cntl.Orientation.Value);
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlWrapPanel), typeof(WrapPanel), (a, b) =>
+                new RenderRec(typeof(AnyUiWrapPanel), typeof(WrapPanel), (a, b) =>
                 {
-                   if (a is AasCntlWrapPanel cntl && b is WrapPanel wpf)
+                   if (a is AnyUiWrapPanel cntl && b is WrapPanel wpf)
                    {
                        if (cntl.Orientation.HasValue)
-                           wpf.Orientation = cntl.Orientation.Value;
+                           wpf.Orientation = (Orientation)((int) cntl.Orientation.Value);
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlBorder), typeof(Border), (a, b) =>
+                new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b) =>
                 {
-                   if (a is AasCntlBorder cntl && b is Border wpf)
+                   if (a is AnyUiBorder cntl && b is Border wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background.GetWpfBrush();
@@ -194,9 +195,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlLabel), typeof(Label), (a, b) =>
+                new RenderRec(typeof(AnyUiLabel), typeof(Label), (a, b) =>
                 {
-                   if (a is AasCntlLabel cntl && b is Label wpf)
+                   if (a is AnyUiLabel cntl && b is Label wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background.GetWpfBrush();
@@ -210,9 +211,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlTextBlock), typeof(TextBlock), (a, b) =>
+                new RenderRec(typeof(AnyUiTextBlock), typeof(TextBlock), (a, b) =>
                 {
-                   if (a is AasCntlTextBlock cntl && b is TextBlock wpf)
+                   if (a is AnyUiTextBlock cntl && b is TextBlock wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -226,9 +227,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlHintBubble), typeof(HintBubble), (a, b) =>
+                new RenderRec(typeof(AnyUiHintBubble), typeof(HintBubble), (a, b) =>
                 {
-                   if (a is AasCntlHintBubble cntl && b is HintBubble wpf)
+                   if (a is AnyUiHintBubble cntl && b is HintBubble wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -240,9 +241,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlTextBox), typeof(TextBox), (a, b) =>
+                new RenderRec(typeof(AnyUiTextBox), typeof(TextBox), (a, b) =>
                 {
-                   if (a is AasCntlTextBox cntl && b is TextBox wpf)
+                   if (a is AnyUiTextBox cntl && b is TextBox wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -258,9 +259,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlComboBox), typeof(ComboBox), (a, b) =>
+                new RenderRec(typeof(AnyUiComboBox), typeof(ComboBox), (a, b) =>
                 {
-                   if (a is AasCntlComboBox cntl && b is ComboBox wpf)
+                   if (a is AnyUiComboBox cntl && b is ComboBox wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -284,9 +285,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlCheckBox), typeof(CheckBox), (a, b) =>
+                new RenderRec(typeof(AnyUiCheckBox), typeof(CheckBox), (a, b) =>
                 {
-                   if (a is AasCntlCheckBox cntl && b is CheckBox wpf)
+                   if (a is AnyUiCheckBox cntl && b is CheckBox wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -300,9 +301,9 @@ namespace AasxPackageExplorer
                    }
                 }),
 
-                new RenderRec(typeof(AasCntlButton), typeof(Button), (a, b) =>
+                new RenderRec(typeof(AnyUiButton), typeof(Button), (a, b) =>
                 {
-                   if (a is AasCntlButton cntl && b is Button wpf)
+                   if (a is AnyUiButton cntl && b is Button wpf)
                    {
                        if (cntl.Background != null)
                            wpf.Background = cntl.Background;
@@ -318,18 +319,18 @@ namespace AasxPackageExplorer
         }
 
         public UIElement GetOrCreateWpfElement(
-            AasCntlUIElement aasCntl,
+            AnyUiUIElement AnyUi,
             Type superType = null,
             bool allowCreate = true)
         {
             // access
-            if (aasCntl == null)
+            if (AnyUi == null)
                 return null;
 
             // have data attached to cntl
-            if (aasCntl.DisplayData == null)
-                aasCntl.DisplayData = new AasCntlDisplayDataWpf(this);
-            var dd = aasCntl?.DisplayData as AasCntlDisplayDataWpf;
+            if (AnyUi.DisplayData == null)
+                AnyUi.DisplayData = new AnyUiDisplayDataWpf(this);
+            var dd = AnyUi?.DisplayData as AnyUiDisplayDataWpf;
             if (dd == null)
                 return null;
 
@@ -343,7 +344,7 @@ namespace AasxPackageExplorer
                 return null;
 
             // identify render rec
-            var searchType = (superType != null) ? superType : aasCntl.GetType();
+            var searchType = (superType != null) ? superType : AnyUi.GetType();
             RenderRec foundRR = null;
             foreach (var rr in RenderRecs)
                 if (rr?.CntlType == searchType)
@@ -363,30 +364,30 @@ namespace AasxPackageExplorer
             // recurse (first)
             var bt = searchType.BaseType;
             if (bt != null)
-                GetOrCreateWpfElement(aasCntl, superType: bt);
+                GetOrCreateWpfElement(AnyUi, superType: bt);
 
             // perform the render action (for this level of attributes, second)
-            foundRR.InitLambda?.Invoke(aasCntl, dd.WpfElement);
+            foundRR.InitLambda?.Invoke(AnyUi, dd.WpfElement);
 
             // call action
             if (topClass)
             {
-                UIElementWasRendered(aasCntl, dd.WpfElement);
+                UIElementWasRendered(AnyUi, dd.WpfElement);
             }
 
             // result
             return dd.WpfElement;
         }
 
-        public void UIElementWasRendered(AasCntlUIElement aasCntl, UIElement el)
+        public void UIElementWasRendered(AnyUiUIElement AnyUi, UIElement el)
         {
             // ModifyRepo works on fwElems ..
-            if (ModifyRepo != null && aasCntl is AasCntlFrameworkElement aasCntlFe && el is FrameworkElement elFe)
+            if (ModifyRepo != null && AnyUi is AnyUiFrameworkElement AnyUiFe && el is FrameworkElement elFe)
             {
-                if (aasCntl.DisplayData is AasCntlDisplayDataWpf dd)
+                if (AnyUi.DisplayData is AnyUiDisplayDataWpf dd)
                     dd.actiCnt++;
 
-                ModifyRepo.ActivateAasCntl(aasCntlFe, elFe);
+                ModifyRepo.ActivateAnyUi(AnyUiFe, elFe);
             }
         }
     }

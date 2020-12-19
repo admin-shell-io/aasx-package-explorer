@@ -21,6 +21,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -86,7 +87,7 @@ namespace AasxPackageExplorer
         // Referable
         //
 
-        public void DisplayOrEditEntityReferable(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
             AdminShell.Referable referable,
             DispEditInjectAction injectToIdShort = null,
             HintCheck[] addHintsCategory = null,
@@ -174,7 +175,7 @@ namespace AasxPackageExplorer
         // Identifiable
         //
 
-        public void DisplayOrEditEntityIdentifiable(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityIdentifiable(AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
             DispEditInjectAction injectToId = null,
@@ -292,7 +293,7 @@ namespace AasxPackageExplorer
         // Data Specification
         //
 
-        public void DisplayOrEditEntityHasDataSpecificationReferences(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
@@ -361,7 +362,7 @@ namespace AasxPackageExplorer
         // List of References
         //
 
-        public void DisplayOrEditEntityListOfReferences(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
             List<AdminShell.Reference> references,
             Action<List<AdminShell.Reference>> setOutput,
             string entityName,
@@ -416,7 +417,7 @@ namespace AasxPackageExplorer
         // Kind
         //
 
-        public void DisplayOrEditEntityAssetKind(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityAssetKind(AnyUiStackPanel stack,
             AdminShell.AssetKind kind,
             Action<AdminShell.AssetKind> setOutput)
         {
@@ -452,7 +453,7 @@ namespace AasxPackageExplorer
                     new[] { "Template", "Instance" });
         }
 
-        public void DisplayOrEditEntityModelingKind(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityModelingKind(AnyUiStackPanel stack,
             AdminShell.ModelingKind kind,
             Action<AdminShell.ModelingKind> setOutput,
             string instanceExceptionStatement = null)
@@ -493,7 +494,7 @@ namespace AasxPackageExplorer
         // HasSemantic
         //
 
-        public void DisplayOrEditEntitySemanticId(AasCntlStackPanel stack,
+        public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
             AdminShell.SemanticId semanticId,
             Action<AdminShell.SemanticId> setOutput,
             string statement = null,
@@ -552,7 +553,7 @@ namespace AasxPackageExplorer
         // Qualifiable
         //
 
-        public void DisplayOrEditEntityQualifierCollection(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityQualifierCollection(AnyUiStackPanel stack,
             AdminShell.QualifierCollection qualifiers,
             Action<AdminShell.QualifierCollection> setOutput)
         {
@@ -580,7 +581,7 @@ namespace AasxPackageExplorer
         // DataSpecificationIEC61360
         //
 
-        public void DisplayOrEditEntityDataSpecificationIEC61360(AasCntlStackPanel stack,
+        public void DisplayOrEditEntityDataSpecificationIEC61360(AnyUiStackPanel stack,
             AdminShell.DataSpecificationIEC61360 dsiec)
         {
             // access
@@ -758,7 +759,7 @@ namespace AasxPackageExplorer
         // special Submodel References
         // 
 
-        public void DisplayOrEditEntitySubmodelRef(AasCntlStackPanel stack,
+        public void DisplayOrEditEntitySubmodelRef(AnyUiStackPanel stack,
             AdminShell.SubmodelRef smref,
             Action<AdminShell.SubmodelRef> setOutput,
             string entityName)

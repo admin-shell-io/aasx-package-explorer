@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -61,7 +62,7 @@ namespace AasxPackageExplorer
 
         public class RepoItem
         {
-            public AasCntlFrameworkElement aasCntl = null;
+            public AnyUiFrameworkElement AnyUi = null;
             public FrameworkElement fwElem = null;
             public Func<object, LambdaAction> setValueLambda = null;
             public object originalValue = null;
@@ -72,8 +73,8 @@ namespace AasxPackageExplorer
 
         private Dictionary<FrameworkElement, RepoItem> fwElemToItem = 
                     new Dictionary<FrameworkElement, RepoItem>();
-        private Dictionary<AasCntlFrameworkElement, RepoItem> aasCntlToItem = 
-                    new Dictionary<AasCntlFrameworkElement, RepoItem>();
+        private Dictionary<AnyUiFrameworkElement, RepoItem> AnyUiToItem = 
+                    new Dictionary<AnyUiFrameworkElement, RepoItem>();
 
         public void AddWishForAction(LambdaAction la)
         {
@@ -82,24 +83,24 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// This function attaches lambdas accordingly to a give user control.
-        /// It is to be used, when an abstract AasCntl... is being created and the according WPF element
+        /// It is to be used, when an abstract AnyUi... is being created and the according WPF element
         /// will be activated later.
         /// </summary>
         /// <param name="fe">User control</param>
         /// <param name="setValue">Lambda called, whenever the value is changed</param>
         /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
-        public AasCntlFrameworkElement RegisterControl(
-            AasCntlFrameworkElement cntl, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
+        public AnyUiFrameworkElement RegisterControl(
+            AnyUiFrameworkElement cntl, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
             // store for LATER activation
             var it = new RepoItem();
-            it.aasCntl = cntl;
+            it.AnyUi = cntl;
             it.setValueLambda = setValue;
             it.takeOverLambda = takeOverLambda;
 
             items.Add(it);
-            aasCntlToItem.Add(cntl, it);
+            AnyUiToItem.Add(cntl, it);
 
             // pass through
             return (cntl);
@@ -132,19 +133,19 @@ namespace AasxPackageExplorer
             return fe;
         }
 
-        public void ActivateAasCntl(AasCntlFrameworkElement aasCntl, FrameworkElement fe)
+        public void ActivateAnyUi(AnyUiFrameworkElement AnyUi, FrameworkElement fe)
         {
             // access and book keeping
-            if (aasCntl == null || fe == null || !aasCntlToItem.ContainsKey(aasCntl))
+            if (AnyUi == null || fe == null || !AnyUiToItem.ContainsKey(AnyUi))
                 return;
-            var it = aasCntlToItem[aasCntl];
+            var it = AnyUiToItem[AnyUi];
             it.fwElem = fe;
 
             // add to framework elems index
             if (!fwElemToItem.ContainsKey(fe))
                 fwElemToItem.Add(fe, it);
 
-            if (aasCntl is AasCntlComboBox cb && it.takeOverLambda != null)
+            if (AnyUi is AnyUiComboBox cb && it.takeOverLambda != null)
                 ;
 
             // now, activate
@@ -364,7 +365,7 @@ namespace AasxPackageExplorer
         {
             items.Clear();
             fwElemToItem.Clear();
-            aasCntlToItem.Clear();
+            AnyUiToItem.Clear();
         }
 
         public void CallUndoChanges()

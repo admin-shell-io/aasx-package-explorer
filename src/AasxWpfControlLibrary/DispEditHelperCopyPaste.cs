@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -144,7 +145,7 @@ namespace AasxPackageExplorer
         //
 
         public void DispSmeCutCopyPasteHelper(
-            AasCntlPanel stack, ModifyRepo repo,
+            AnyUiPanel stack, ModifyRepo repo,
             AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer,
             CopyPasteBuffer cpb,
@@ -280,7 +281,7 @@ namespace AasxPackageExplorer
         }
 
         public void DispSubmodelCutCopyPasteHelper<T>(
-            AasCntlPanel stack, ModifyRepo repo,
+            AnyUiPanel stack, ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,
@@ -436,7 +437,7 @@ namespace AasxPackageExplorer
         }
 
         public void DispPlainIdentifiableCutCopyPasteHelper<T>(
-            AasCntlPanel stack, ModifyRepo repo,
+            AnyUiPanel stack, ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,

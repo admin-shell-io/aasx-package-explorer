@@ -20,6 +20,7 @@ using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -129,7 +130,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAsset(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
-            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool embedded = false,
+            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool embedded = false,
             bool hintMode = false)
         {
             helper.AddGroup(stack, "Asset", levelColors[0][0], levelColors[0][1]);
@@ -270,8 +271,8 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
-            VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            AasCntlBrush[][] levelColors, bool hintMode = false)
+            VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            AnyUiBrush[][] levelColors, bool hintMode = false)
         {
             helper.AddGroup(stack, "Environment of Asset Administration Shells", levelColors[0][0], levelColors[0][1]);
 
@@ -583,7 +584,7 @@ namespace AasxPackageExplorer
                     });
                     var g = helper.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
                     var cb = helper.AddSmallComboBoxTo(g, 0, 0,
-                        margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0),
+                        margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                         minWidth: 150,
                         items: new[] {
                         "idShort", "Id", "Usage in Submodels"
@@ -591,7 +592,7 @@ namespace AasxPackageExplorer
                     cb.SelectedIndex = 0;
                     repo.RegisterControl(
                         helper.AddSmallButtonTo(g, 0, 1, content: "Sort!",
-                            margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0)),
+                            margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0)),
                         (o) =>
                         {
                             if (MessageBoxResult.Yes == helper.flyoutProvider.MessageBoxFlyoutShow(
@@ -631,9 +632,9 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Supplementary file to add:", levelColors[1][0], levelColors[1][1]);
 
                 var g = helper.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
-                helper.AddSmallLabelTo(g, 0, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Source path: ");
+                helper.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Source path: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 0, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageSourcePath),
+                    helper.AddSmallTextBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageSourcePath),
                     (o) =>
                     {
                         if (o is string)
@@ -642,7 +643,7 @@ namespace AasxPackageExplorer
                     });
                 repo.RegisterControl(
                     helper.AddSmallButtonTo(
-                        g, 0, 2, margin: new AasCntlThickness(2, 2, 2, 2), padding: new AasCntlThickness(5, 0, 5, 0),
+                        g, 0, 2, margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                         content: "Select"),
                         (o) =>
                         {
@@ -656,18 +657,18 @@ namespace AasxPackageExplorer
                             }
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         });
-                helper.AddSmallLabelTo(g, 1, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Target filename: ");
+                helper.AddSmallLabelTo(g, 1, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target filename: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 1, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageTargetFn),
+                    helper.AddSmallTextBoxTo(g, 1, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageTargetFn),
                     (o) =>
                     {
                         if (o is string)
                             PackageTargetFn = o as string;
                         return new ModifyRepo.LambdaActionNone();
                     });
-                helper.AddSmallLabelTo(g, 2, 0, padding: new AasCntlThickness(2, 0, 0, 0), content: "Target path: ");
+                helper.AddSmallLabelTo(g, 2, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target path: ");
                 repo.RegisterControl(
-                    helper.AddSmallTextBoxTo(g, 2, 1, margin: new AasCntlThickness(2, 2, 2, 2), text: PackageTargetDir),
+                    helper.AddSmallTextBoxTo(g, 2, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageTargetDir),
                     (o) =>
                     {
                         if (o is string)
@@ -675,7 +676,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallCheckBoxTo(g, 3, 1, margin: new AasCntlThickness(2, 2, 2, 2),
+                    helper.AddSmallCheckBoxTo(g, 3, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     content: "Embed as thumbnail (only one file per package!)", isChecked: PackageEmbedAsThumbnail),
                     (o) =>
                     {
@@ -684,8 +685,8 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 repo.RegisterControl(
-                    helper.AddSmallButtonTo(g, 4, 1, margin: new AasCntlThickness(2, 2, 2, 2),
-                    padding: new AasCntlThickness(5, 0, 5, 0), content: "Add file to package"),
+                    helper.AddSmallButtonTo(g, 4, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                    padding: new AnyUiThickness(5, 0, 5, 0), content: "Add file to package"),
                     (o) =>
                     {
                         try
@@ -739,12 +740,12 @@ namespace AasxPackageExplorer
                 // overview information
 
                 var g = helper.AddSmallGrid(
-                    6, 1, new[] { "*" }, margin: new AasCntlThickness(5, 5, 0, 0));
+                    6, 1, new[] { "*" }, margin: new AnyUiThickness(5, 5, 0, 0));
                 helper.AddSmallLabelTo(
                     g, 0, 0, content: "This structure hold the main entites of Administration shells.");
                 helper.AddSmallLabelTo(
                     g, 1, 0, content: String.Format("#admin shells: {0}.", env.AdministrationShells.Count),
-                    margin: new AasCntlThickness(0, 5, 0, 0));
+                    margin: new AnyUiThickness(0, 5, 0, 0));
                 helper.AddSmallLabelTo(g, 2, 0, content: String.Format("#assets: {0}.", env.Assets.Count));
                 helper.AddSmallLabelTo(g, 3, 0, content: String.Format("#submodels: {0}.", env.Submodels.Count));
                 helper.AddSmallLabelTo(
@@ -762,7 +763,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntitySupplementaryFile(
             PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
-            AasCntlStackPanel stack, AasCntlBrush[][] levelColors)
+            AnyUiStackPanel stack, AnyUiBrush[][] levelColors)
         {
             //
             // Package
@@ -808,7 +809,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAas(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
-            bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
+            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
         {
             helper.AddGroup(stack, "Asset Administration Shell", levelColors[0][0], levelColors[0][1]);
 
@@ -1096,7 +1097,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntitySubmodelOrRef(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, ModifyRepo repo,
-            AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
+            AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
@@ -1416,7 +1417,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityConceptDescription(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
-            ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool embedded = false, bool hintMode = false)
+            ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool embedded = false, bool hintMode = false)
         {
             helper.AddGroup(stack, "ConceptDescription", levelColors[0][0], levelColors[0][1]);
 
@@ -1581,7 +1582,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityOperationVariable(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.OperationVariable ov, bool editMode,
-            ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors, bool hintMode = false)
+            ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1750,8 +1751,8 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntitySubmodelElement(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
-            AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            AasCntlBrush[][] levelColors, bool hintMode = false)
+            AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            AnyUiBrush[][] levelColors, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1777,8 +1778,8 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Editing of entities", levelColors[0][0], levelColors[0][1]);
 
                 // for sake of space efficiency, smuggle "Refactor" into this
-                var horizStack = new AasCntlWrapPanel();
-                horizStack.Orientation = Orientation.Horizontal;
+                var horizStack = new AnyUiWrapPanel();
+                horizStack.Orientation = AnyUiOrientation.Horizontal;
                 stack.Children.Add(horizStack);
 
                 // entities helper
@@ -3299,7 +3300,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityView(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, ModifyRepo repo, AasCntlStackPanel stack, AasCntlBrush[][] levelColors,
+            AdminShell.View view, bool editMode, ModifyRepo repo, AnyUiStackPanel stack, AnyUiBrush[][] levelColors,
             bool hintMode = false)
         {
             //
@@ -3370,8 +3371,8 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityViewReference(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
-            AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AasCntlStackPanel stack,
-            AasCntlBrush[][] levelColors)
+            AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            AnyUiBrush[][] levelColors)
         {
             //
             // View
@@ -3396,10 +3397,10 @@ namespace AasxPackageExplorer
         //
         //
 
-        public AasCntlStackPanel ClearDisplayDefautlStack()
+        public AnyUiStackPanel ClearDisplayDefautlStack()
         {
             theMasterPanel.Children.Clear();
-            var sp = new AasCntlStackPanel();
+            var sp = new AnyUiStackPanel();
             // TODO MIHO
             var spwpf = new Label(); // sp.GetOrCreateWpfElement();
             DockPanel.SetDock(spwpf, Dock.Top);
@@ -3441,23 +3442,23 @@ namespace AasxPackageExplorer
 #if MONOUI
             var stack = ClearDisplayDefautlStack();
 #else
-            var stack = new AasCntlStackPanel();
+            var stack = new AnyUiStackPanel();
 #endif
 
             // ReSharper disable CoVariantArrayConversion
-            AasCntlBrush[][] levelColors = new AasCntlBrush[][]
+            AnyUiBrush[][] levelColors = new AnyUiBrush[][]
             {
                 new [] {
-                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"]),
-                    AasCntlBrushes.White
+                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"]),
+                    AnyUiBrushes.White
                 },
                 new [] {
-                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AasCntlBrushes.Black
+                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black
                 },
                 new [] {
-                    new AasCntlBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AasCntlBrushes.Black
+                    new AnyUiBrush((SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black
                 }
             };
             // ReSharper enable CoVariantArrayConversion
@@ -3486,7 +3487,7 @@ namespace AasxPackageExplorer
             helper.repo = repo;
 
             // create display context for WPF
-            var displayContext = new AasCntlDisplayContextWpf(helper.repo);
+            var displayContext = new AnyUiDisplayContextWpf(helper.repo);
 
             //
             // Dispatch
@@ -3601,7 +3602,7 @@ namespace AasxPackageExplorer
 #if MONOUI
                     stack = ClearDisplayDefautlStack();
 #else
-                    stack = new AasCntlStackPanel();
+                    stack = new AnyUiStackPanel();
 #endif
 
                     // helping message

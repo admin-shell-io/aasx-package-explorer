@@ -19,6 +19,7 @@ using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -93,7 +94,7 @@ namespace AasxPackageExplorer
 
         public IFlyoutProvider flyoutProvider = null;
 
-        public AasCntlBrush[][] levelColors = null;
+        public AnyUiBrush[][] levelColors = null;
 
         public int standardFirstColWidth = 100;
 
@@ -109,7 +110,7 @@ namespace AasxPackageExplorer
         // Highlighting
         //
 
-        public void HighligtStateElement(AasCntlFrameworkElement fe, bool highlighted)
+        public void HighligtStateElement(AnyUiFrameworkElement fe, bool highlighted)
         {
             // TODO MIHO
         }
@@ -214,17 +215,17 @@ namespace AasxPackageExplorer
         // small widget handling
         //
 
-        public AasCntlGrid AddSmallGrid(int rows, int cols, string[] colWidths = null, AasCntlThickness margin = null)
+        public AnyUiGrid AddSmallGrid(int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
         {
-            var g = new AasCntlGrid();
+            var g = new AnyUiGrid();
             g.Margin = margin;
 
             // Cols
             for (int ci = 0; ci < cols; ci++)
             {
-                var gc = new AasCntlColumnDefinition();
+                var gc = new AnyUiColumnDefinition();
                 // default
-                gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+                gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
                 // width definition
                 if (colWidths != null && colWidths.Length > ci && colWidths[ci] != null)
                 {
@@ -239,11 +240,11 @@ namespace AasxPackageExplorer
                         kind = m.Groups[2].ToString().Trim();
                     }
                     if (kind == "#")
-                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Auto);
+                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Auto);
                     if (kind == "*")
-                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Star);
+                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Star);
                     if (kind == ":")
-                        gc.Width = new AasCntlGridLength(scale, AasCntlGridUnitType.Pixel);
+                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Pixel);
                 }
                 g.ColumnDefinitions.Add(gc);
             }
@@ -251,62 +252,62 @@ namespace AasxPackageExplorer
             // Rows
             for (int ri = 0; ri < rows; ri++)
             {
-                var gr = new AasCntlRowDefinition();
+                var gr = new AnyUiRowDefinition();
                 g.RowDefinitions.Add(gr);
             }
 
             return g;
         }
 
-        public AasCntlWrapPanel AddSmallWrapPanelTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlBrush background = null)
+        public AnyUiWrapPanel AddSmallWrapPanelTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null)
         {
-            var wp = new AasCntlWrapPanel();
+            var wp = new AnyUiWrapPanel();
             wp.Margin = margin;
             if (background != null)
                 wp.Background = background;
-            AasCntlGrid.SetRow(wp, row);
-            AasCntlGrid.SetColumn(wp, col);
+            AnyUiGrid.SetRow(wp, row);
+            AnyUiGrid.SetColumn(wp, col);
             g.Children.Add(wp);
             return (wp);
         }
 
-        public AasCntlStackPanel AddSmallStackPanelTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlBrush background = null,
+        public AnyUiStackPanel AddSmallStackPanelTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
             bool setVertical = false, bool setHorizontal = false)
         {
-            var sp = new AasCntlStackPanel();
+            var sp = new AnyUiStackPanel();
             sp.Margin = margin;
             if (background != null)
                 sp.Background = background;
             if (setVertical)
-                sp.Orientation = Orientation.Vertical;
+                sp.Orientation = AnyUiOrientation.Vertical;
             if (setHorizontal)
-                sp.Orientation = Orientation.Horizontal;
-            AasCntlGrid.SetRow(sp, row);
-            AasCntlGrid.SetColumn(sp, col);
+                sp.Orientation = AnyUiOrientation.Horizontal;
+            AnyUiGrid.SetRow(sp, row);
+            AnyUiGrid.SetColumn(sp, col);
             g.Children.Add(sp);
             return (sp);
         }
 
-        public AasCntlGrid AddSmallGridTo(
-            AasCntlGrid g, int row, int col,
-            int rows, int cols, string[] colWidths = null, AasCntlThickness margin = null)
+        public AnyUiGrid AddSmallGridTo(
+            AnyUiGrid g, int row, int col,
+            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
         {
             var inner = AddSmallGrid(rows, cols, colWidths, margin);
             inner.Margin = margin;
-            AasCntlGrid.SetRow(inner, row);
-            AasCntlGrid.SetColumn(inner, col);
+            AnyUiGrid.SetRow(inner, row);
+            AnyUiGrid.SetColumn(inner, col);
             g.Children.Add(inner);
             return (inner);
         }
 
-        public AasCntlTextBox AddSmallTextBoxTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
+        public AnyUiTextBox AddSmallTextBoxTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", Brush foreground = null, Brush background = null,
-            AasCntlVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
-            var tb = new AasCntlTextBox();
+            var tb = new AnyUiTextBox();
             tb.Margin = margin;
             tb.Padding = padding;
             if (foreground != null)
@@ -322,27 +323,27 @@ namespace AasxPackageExplorer
             tb.MaxLines = 3;
             tb.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-            AasCntlGrid.SetRow(tb, row);
-            AasCntlGrid.SetColumn(tb, col);
+            AnyUiGrid.SetRow(tb, row);
+            AnyUiGrid.SetColumn(tb, col);
             g.Children.Add(tb);
             return (tb);
         }
 
-        public AasCntlBorder AddSmallDropBoxTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
-            string text = "", AasCntlBrush borderBrush = null, AasCntlBrush background = null,
-            AasCntlThickness borderThickness = null, int minHeight = 0)
+        public AnyUiBorder AddSmallDropBoxTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
+            string text = "", AnyUiBrush borderBrush = null, AnyUiBrush background = null,
+            AnyUiThickness borderThickness = null, int minHeight = 0)
         {
-            var brd = new AasCntlBorder();
+            var brd = new AnyUiBorder();
             brd.Margin = margin;
             brd.Padding = padding;
             brd.Tag = "DropBox";
 
-            brd.BorderBrush = AasCntlBrushes.DarkBlue;
+            brd.BorderBrush = AnyUiBrushes.DarkBlue;
             if (borderBrush != null)
                 brd.BorderBrush = borderBrush;
 
-            brd.Background = AasCntlBrushes.LightBlue;
+            brd.Background = AnyUiBrushes.LightBlue;
             if (background != null)
                 brd.Background = background;
 
@@ -360,19 +361,19 @@ namespace AasxPackageExplorer
 
             brd.Child = tb;
 
-            AasCntlGrid.SetRow(brd, row);
-            AasCntlGrid.SetColumn(brd, col);
+            AnyUiGrid.SetRow(brd, row);
+            AnyUiGrid.SetColumn(brd, col);
             g.Children.Add(brd);
             return (brd);
         }
 
-        public AasCntlComboBox AddSmallComboBoxTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
+        public AnyUiComboBox AddSmallComboBoxTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", Brush foreground = null, Brush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
-            AasCntlVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
-            var cb = new AasCntlComboBox();
+            var cb = new AnyUiComboBox();
             cb.Margin = margin;
             cb.Padding = padding;
             if (foreground != null)
@@ -390,14 +391,14 @@ namespace AasxPackageExplorer
             cb.IsEditable = isEditable;
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
-            cb.HorizontalAlignment = AasCntlHorizontalAlignment.Left;
-            AasCntlGrid.SetRow(cb, row);
-            AasCntlGrid.SetColumn(cb, col);
+            cb.HorizontalAlignment = AnyUiHorizontalAlignment.Left;
+            AnyUiGrid.SetRow(cb, row);
+            AnyUiGrid.SetColumn(cb, col);
             g.Children.Add(cb);
             return (cb);
         }
 
-        public void SmallComboBoxSelectNearestItem(AasCntlComboBox cb, string text)
+        public void SmallComboBoxSelectNearestItem(AnyUiComboBox cb, string text)
         {
             if (cb == null || text == null)
                 return;
@@ -409,11 +410,11 @@ namespace AasxPackageExplorer
                 cb.SelectedIndex = foundI;
         }
 
-        public AasCntlButton AddSmallButtonTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
+        public AnyUiButton AddSmallButtonTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", Brush foreground = null, Brush background = null)
         {
-            var but = new AasCntlButton();
+            var but = new AnyUiButton();
             but.Margin = margin;
             but.Padding = padding;
             if (foreground != null)
@@ -421,23 +422,23 @@ namespace AasxPackageExplorer
             if (background != null)
                 but.Background = background;
             but.Content = content;
-            AasCntlGrid.SetRow(but, row);
-            AasCntlGrid.SetColumn(but, col);
+            AnyUiGrid.SetRow(but, row);
+            AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);
             return (but);
         }
 
-        public AasCntlButton AddSmallContextMenuItemTo(
-            AasCntlGrid g, int row, int col,
+        public AnyUiButton AddSmallContextMenuItemTo(
+            AnyUiGrid g, int row, int col,
             string content,
             ModifyRepo repo,
             string[] menuHeaders,
             Func<object, ModifyRepo.LambdaAction> menuItemLambda,
-            AasCntlThickness margin = null, AasCntlThickness padding = null,
+            AnyUiThickness margin = null, AnyUiThickness padding = null,
             Brush foreground = null, Brush background = null)
         {
             // construct button
-            var but = new AasCntlButton();
+            var but = new AnyUiButton();
             but.Margin = margin;
             but.Padding = padding;
             if (foreground != null)
@@ -445,8 +446,8 @@ namespace AasxPackageExplorer
             if (background != null)
                 but.Background = background;
             but.Content = content;
-            AasCntlGrid.SetRow(but, row);
-            AasCntlGrid.SetColumn(but, col);
+            AnyUiGrid.SetRow(but, row);
+            AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);
 
             // on demand: construct and register context menu
@@ -475,12 +476,12 @@ namespace AasxPackageExplorer
             return (but);
         }
 
-        public AasCntlCheckBox AddSmallCheckBoxTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
+        public AnyUiCheckBox AddSmallCheckBoxTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", bool isChecked = false, Brush foreground = null, Brush background = null,
-            AasCntlVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
-            var cb = new AasCntlCheckBox();
+            var cb = new AnyUiCheckBox();
             cb.Margin = margin;
             cb.Padding = padding;
             if (foreground != null)
@@ -491,40 +492,40 @@ namespace AasxPackageExplorer
             cb.IsChecked = isChecked;
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
-            AasCntlGrid.SetRow(cb, row);
-            AasCntlGrid.SetColumn(cb, col);
+            AnyUiGrid.SetRow(cb, row);
+            AnyUiGrid.SetColumn(cb, col);
             g.Children.Add(cb);
             return (cb);
         }
 
-        public void AddGroup(AasCntlStackPanel view, string name, AasCntlBrush background, AasCntlBrush foreground,
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
             ModifyRepo repo = null,
             string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null)
         {
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 13, 0, 0);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 13, 0, 0);
 
-            var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc1);
 
             var auxButton = repo != null && auxButtonTitle != null && auxButtonLambda != null;
             if (auxButton)
             {
-                var gc3 = new AasCntlColumnDefinition();
-                gc3.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                var gc3 = new AnyUiColumnDefinition();
+                gc3.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 g.ColumnDefinitions.Add(gc3);
             }
 
-            var l = new AasCntlLabel();
-            l.Margin = new AasCntlThickness(0, 0, 0, 0);
-            l.Padding = new AasCntlThickness(5, 0, 0, 0);
+            var l = new AnyUiLabel();
+            l.Margin = new AnyUiThickness(0, 0, 0, 0);
+            l.Padding = new AnyUiThickness(5, 0, 0, 0);
             l.Background = background;
             l.Foreground = foreground;
             l.Content = "" + name;
             l.FontWeight = FontWeights.Bold;
-            AasCntlGrid.SetRow(l, 0);
-            AasCntlGrid.SetColumn(l, 0);
+            AnyUiGrid.SetRow(l, 0);
+            AnyUiGrid.SetColumn(l, 0);
             g.Children.Add(l);
             view.Children.Add(g);
 
@@ -533,18 +534,18 @@ namespace AasxPackageExplorer
                 repo.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 1,
-                        margin: new AasCntlThickness(2, 2, 2, 2),
-                        padding: new AasCntlThickness(5, 0, 5, 0),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
                         content: auxButtonTitle),
                     auxButtonLambda);
             }
         }
 
-        public AasCntlTextBlock AddSmallLabelTo(
-            AasCntlGrid g, int row, int col, AasCntlThickness margin = null, AasCntlThickness padding = null,
+        public AnyUiTextBlock AddSmallLabelTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", Brush foreground = null, Brush background = null, bool setBold = false)
         {
-            var lab = new AasCntlTextBlock();
+            var lab = new AnyUiTextBlock();
 
             lab.Margin = margin;
             lab.Padding = padding;
@@ -555,8 +556,8 @@ namespace AasxPackageExplorer
             if (setBold)
                 lab.FontWeight = FontWeights.Bold;
             lab.Text = content;
-            AasCntlGrid.SetRow(lab, row);
-            AasCntlGrid.SetColumn(lab, col);
+            AnyUiGrid.SetRow(lab, row);
+            AnyUiGrid.SetColumn(lab, col);
             g.Children.Add(lab);
             return (lab);
         }
@@ -568,7 +569,7 @@ namespace AasxPackageExplorer
         /// <param name="view">Panel to be added to</param>
         /// <param name="caption">Caption</param>
         /// <returns>Sub-panel, to which can be added</returns>
-        public AasCntlStackPanel AddSubStackPanel(AasCntlStackPanel view, string caption)
+        public AnyUiStackPanel AddSubStackPanel(AnyUiStackPanel view, string caption)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
             AddSmallLabelTo(g, 0, 0, content: caption);
@@ -581,8 +582,8 @@ namespace AasxPackageExplorer
             return (sp);
         }
 
-        public AasCntlGrid AddSubGrid(AasCntlStackPanel view, string caption,
-            int rows, int cols, string[] colWidths = null, AasCntlThickness margin = null)
+        public AnyUiGrid AddSubGrid(AnyUiStackPanel view, string caption,
+            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
             AddSmallLabelTo(g, 0, 0, content: caption);
@@ -596,7 +597,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyValueRef(
-            AasCntlStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
+            AnyUiStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
             string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
@@ -614,7 +615,7 @@ namespace AasxPackageExplorer
 
 
         public void AddKeyValue(
-            AasCntlStackPanel view, string key, string value, string nullValue = null,
+            AnyUiStackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
             string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
@@ -654,31 +655,31 @@ namespace AasxPackageExplorer
             var auxButton = repo != null && intButtonTitles.Count > 0 && auxButtonLambda != null;
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 1, 0, 1);
-            var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = AasCntlGridLength.Auto;
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 1, 0, 1);
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = AnyUiGridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
-            var gc2 = new AasCntlColumnDefinition();
-            gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            var gc2 = new AnyUiColumnDefinition();
+            gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
             if (auxButton)
                 for (int i = 0; i < intButtonTitles.Count; i++)
                 {
-                    var gc3 = new AasCntlColumnDefinition();
-                    gc3.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                    var gc3 = new AnyUiColumnDefinition();
+                    gc3.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                     g.ColumnDefinitions.Add(gc3);
                 }
 
             // Label for key
-            AddSmallLabelTo(g, 0, 0, padding: new AasCntlThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
 
             // Label / TextBox for value
             if (repo == null)
             {
-                AddSmallLabelTo(g, 0, 1, padding: new AasCntlThickness(2, 0, 0, 0), content: "" + value);
+                AddSmallLabelTo(g, 0, 1, padding: new AnyUiThickness(2, 0, 0, 0), content: "" + value);
             }
             else if (comboBoxItems != null)
             {
@@ -692,8 +693,8 @@ namespace AasxPackageExplorer
                 // use combo box
                 var cb = AddSmallComboBoxTo(
                     g, 0, 1,
-                    margin: new AasCntlThickness(0, 2, 2, 2),
-                    padding: new AasCntlThickness(2, 0, 2, 0),
+                    margin: new AnyUiThickness(0, 2, 2, 2),
+                    padding: new AnyUiThickness(2, 0, 2, 0),
                     text: "" + value,
                     minWidth: 60,
                     maxWidth: maxWidth,
@@ -710,7 +711,7 @@ namespace AasxPackageExplorer
             else
             {
                 // use plain text box
-                var tb = AddSmallTextBoxTo(g, 0, 1, margin: new AasCntlThickness(0, 2, 2, 2), text: "" + value);
+                var tb = AddSmallTextBoxTo(g, 0, 1, margin: new AnyUiThickness(0, 2, 2, 2), text: "" + value);
                 repo.RegisterControl(tb,
                     setValue, takeOverLambda: takeOverLambdaAction);
 
@@ -734,10 +735,10 @@ namespace AasxPackageExplorer
                     var b = repo.RegisterControl(
                         AddSmallButtonTo(
                             g, 0, 2 + i,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: intButtonTitles[i]),
-                        lmb) as AasCntlButton;
+                        lmb) as AnyUiButton;
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
                 }
@@ -747,7 +748,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyDropTarget(
-            AasCntlStackPanel view, string key, string value, string nullValue = null,
+            AnyUiStackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
         {
             // draw anyway?
@@ -766,29 +767,29 @@ namespace AasxPackageExplorer
             }
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 1, 0, 1);
-            var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = new AasCntlGridLength(this.standardFirstColWidth);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 1, 0, 1);
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = new AnyUiGridLength(this.standardFirstColWidth);
             g.ColumnDefinitions.Add(gc1);
-            var gc2 = new AasCntlColumnDefinition();
-            gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            var gc2 = new AnyUiColumnDefinition();
+            gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc2);
 
             // Label for key
-            AddSmallLabelTo(g, 0, 0, padding: new AasCntlThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
 
             // Label / TextBox for value
             if (repo == null)
             {
                 // view only
-                AddSmallLabelTo(g, 0, 1, padding: new AasCntlThickness(2, 0, 0, 0), content: "" + value);
+                AddSmallLabelTo(g, 0, 1, padding: new AnyUiThickness(2, 0, 0, 0), content: "" + value);
             }
             else
             {
                 // interactive
-                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AasCntlThickness(2, 2, 2, 2),
-                    borderThickness: new AasCntlThickness(1), text: "" + value, minHeight: minHeight);
+                var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                    borderThickness: new AnyUiThickness(1), text: "" + value, minHeight: minHeight);
                 repo.RegisterControl(brd,
                     setValue);
             }
@@ -797,7 +798,7 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddKeyMultiValue(AasCntlStackPanel view, string key, string[][] value, string[] widths)
+        public void AddKeyMultiValue(AnyUiStackPanel view, string key, string[][] value, string[] widths)
         {
             // draw anyway?
             if (value == null)
@@ -811,56 +812,56 @@ namespace AasxPackageExplorer
                     cols = r.Length;
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 0, 0, 0);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 0, 0, 0);
 
-            var gc1 = new AasCntlColumnDefinition();
-            gc1.Width = AasCntlGridLength.Auto;
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = AnyUiGridLength.Auto;
             gc1.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc1);
 
             for (int c = 0; c < cols; c++)
             {
-                var gc2 = new AasCntlColumnDefinition();
+                var gc2 = new AnyUiColumnDefinition();
                 if (widths[c] == "*")
-                    gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+                    gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
                 else
                 if (widths[c] == "#")
-                    gc2.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                    gc2.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 else
                 {
                     if (Int32.TryParse(widths[c], out int i))
-                        gc2.Width = new AasCntlGridLength(i);
+                        gc2.Width = new AnyUiGridLength(i);
                 }
                 g.ColumnDefinitions.Add(gc2);
             }
 
             for (int r = 0; r < rows; r++)
             {
-                var gr = new AasCntlRowDefinition();
-                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                var gr = new AnyUiRowDefinition();
+                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
             // Label for key
-            var l1 = new AasCntlLabel();
-            l1.Margin = new AasCntlThickness(0, 0, 0, 0);
-            l1.Padding = new AasCntlThickness(5, 0, 0, 0);
+            var l1 = new AnyUiLabel();
+            l1.Margin = new AnyUiThickness(0, 0, 0, 0);
+            l1.Padding = new AnyUiThickness(5, 0, 0, 0);
             l1.Content = "" + key + ":";
-            AasCntlGrid.SetRow(l1, 0);
-            AasCntlGrid.SetColumn(l1, 0);
+            AnyUiGrid.SetRow(l1, 0);
+            AnyUiGrid.SetColumn(l1, 0);
             g.Children.Add(l1);
 
             // Label for any values
             for (int r = 0; r < rows; r++)
                 for (int c = 0; c < cols; c++)
                 {
-                    var l2 = new AasCntlLabel();
-                    l2.Margin = new AasCntlThickness(0, 0, 0, 0);
-                    l2.Padding = new AasCntlThickness(2, 0, 0, 0);
+                    var l2 = new AnyUiLabel();
+                    l2.Margin = new AnyUiThickness(0, 0, 0, 0);
+                    l2.Padding = new AnyUiThickness(2, 0, 0, 0);
                     l2.Content = "" + value[r][c];
-                    AasCntlGrid.SetRow(l2, 0 + r);
-                    AasCntlGrid.SetColumn(l2, 1 + c);
+                    AnyUiGrid.SetRow(l2, 0 + r);
+                    AnyUiGrid.SetColumn(l2, 1 + c);
                     g.Children.Add(l2);
                 }
 
@@ -868,26 +869,26 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
-        public void AddCheckBox(AasCntlStackPanel panel, string key, bool initialValue, string additionalInfo = "",
+        public void AddCheckBox(AnyUiStackPanel panel, string key, bool initialValue, string additionalInfo = "",
                 Action<bool> valueChanged = null)
         {
             // make grid
             var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" },
-                    margin: new AasCntlThickness(0, 2, 0, 0));
+                    margin: new AnyUiThickness(0, 2, 0, 0));
 
             // Column 0 = Key
-            this.AddSmallLabelTo(g, 0, 0, padding: new AasCntlThickness(5, 0, 0, 0), content: key);
+            this.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: key);
 
             // Column 1 = Check box or info
             if (repo == null || valueChanged == null)
             {
-                this.AddSmallLabelTo(g, 0, 1, padding: new AasCntlThickness(2, 0, 0, 0),
+                this.AddSmallLabelTo(g, 0, 1, padding: new AnyUiThickness(2, 0, 0, 0),
                         content: initialValue ? "True" : "False");
             }
             else
             {
-                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AasCntlThickness(2, 2, 2, 2),
-                    content: additionalInfo, verticalContentAlignment: AasCntlVerticalAlignment.Center,
+                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                    content: additionalInfo, verticalContentAlignment: AnyUiVerticalAlignment.Center,
                     isChecked: initialValue),
                         (o) =>
                         {
@@ -901,7 +902,7 @@ namespace AasxPackageExplorer
             panel.Children.Add(g);
         }
 
-        public void AddAction(AasCntlPanel view, string key, string[] actionStr, ModifyRepo repo = null,
+        public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
                 Func<int, ModifyRepo.LambdaAction> action = null)
         {
             // access 
@@ -910,41 +911,41 @@ namespace AasxPackageExplorer
             var numButton = actionStr.Length;
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 5, 0, 5);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 5, 0, 5);
 
             // 0 key
-            var gc = new AasCntlColumnDefinition();
-            gc.Width = AasCntlGridLength.Auto;
+            var gc = new AnyUiColumnDefinition();
+            gc.Width = AnyUiGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1+x button
             for (int i = 0; i < 1 /* numButton*/ ; i++)
             {
-                gc = new AasCntlColumnDefinition();
-                gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+                gc = new AnyUiColumnDefinition();
+                gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
                 g.ColumnDefinitions.Add(gc);
             }
 
             // 0 row
-            var gr = new AasCntlRowDefinition();
-            gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            var gr = new AnyUiRowDefinition();
+            gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.RowDefinitions.Add(gr);
 
             // key label
-            var x = AddSmallLabelTo(g, 0, 0, margin: new AasCntlThickness(5, 0, 0, 0), content: "" + key);
-            x.VerticalAlignment = AasCntlVerticalAlignment.Center;
+            var x = AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key);
+            x.VerticalAlignment = AnyUiVerticalAlignment.Center;
 
             // 1 + action button
-            var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new AasCntlThickness(5, 0, 5, 0));
+            var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new AnyUiThickness(5, 0, 5, 0));
             for (int i = 0; i < numButton; i++)
             {
                 int currentI = i;
-                var b = new AasCntlButton();
+                var b = new AnyUiButton();
                 b.Content = "" + actionStr[i];
-                b.Margin = new AasCntlThickness(2, 2, 2, 2);
-                b.Padding = new AasCntlThickness(5, 0, 5, 0);
+                b.Margin = new AnyUiThickness(2, 2, 2, 2);
+                b.Padding = new AnyUiThickness(5, 0, 5, 0);
                 wp.Children.Add(b);
                 repo.RegisterControl(b,
                     (o) =>
@@ -958,14 +959,14 @@ namespace AasxPackageExplorer
         }
 
         public void AddAction(
-            AasCntlStackPanel view, string key, string actionStr, ModifyRepo repo = null,
+            AnyUiStackPanel view, string key, string actionStr, ModifyRepo repo = null,
             Func<int, ModifyRepo.LambdaAction> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
 
         public void AddKeyListLangStr(
-            AasCntlStackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
+            AnyUiStackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -978,40 +979,40 @@ namespace AasxPackageExplorer
                 rowOfs = 1;
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 0, 0, 0);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 0, 0, 0);
 
             // 0 key
-            var gc = new AasCntlColumnDefinition();
-            gc.Width = AasCntlGridLength.Auto;
+            var gc = new AnyUiColumnDefinition();
+            gc.Width = AnyUiGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 langs
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 values
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 3 buttons behind it
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
-                var gr = new AasCntlRowDefinition();
-                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                var gr = new AnyUiRowDefinition();
+                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AasCntlThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
 
             // populate [+]
             if (repo != null)
@@ -1019,8 +1020,8 @@ namespace AasxPackageExplorer
                 repo.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 3,
-                        margin: new AasCntlThickness(2, 2, 2, 2),
-                        padding: new AasCntlThickness(5, 0, 5, 0),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
                         content: "Add blank"),
                     (o) =>
                     {
@@ -1038,13 +1039,13 @@ namespace AasxPackageExplorer
                         // lang
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 1,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "[" + langStr[i].lang + "]");
 
                         // str
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 2,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "" + langStr[i].str);
                     }
                     else
@@ -1055,7 +1056,7 @@ namespace AasxPackageExplorer
                         // lang
                         var tbLang = AddSmallComboBoxTo(
                             g, 0 + i + rowOfs, 1,
-                            margin: new AasCntlThickness(0, 2, 2, 2),
+                            margin: new AnyUiThickness(0, 2, 2, 2),
                             text: "" + langStr[currentI].lang,
                             minWidth: 50,
                             items: defaultLanguages,
@@ -1076,7 +1077,7 @@ namespace AasxPackageExplorer
                         // str
                         var tbStr = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 2,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + langStr[currentI].str);
                         repo.RegisterControl(
                             tbStr,
@@ -1095,8 +1096,8 @@ namespace AasxPackageExplorer
                         repo.RegisterControl(
                             AddSmallButtonTo(
                                 g, 0 + i + rowOfs, 3,
-                                margin: new AasCntlThickness(2, 2, 2, 2),
-                                padding: new AasCntlThickness(5, 0, 5, 0),
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                padding: new AnyUiThickness(5, 0, 5, 0),
                                 content: "-"),
                             (o) =>
                             {
@@ -1228,7 +1229,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddKeyListKeys(
-            AasCntlStackPanel view, string key,
+            AnyUiStackPanel view, string key,
             AdminShell.KeyList keys,
             ModifyRepo repo = null,
             PackageCentral packages = null,
@@ -1253,50 +1254,50 @@ namespace AasxPackageExplorer
                 rowOfs = 1;
 
             // Grid
-            var g = new AasCntlGrid();
-            g.Margin = new AasCntlThickness(0, 0, 0, 0);
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 0, 0, 0);
 
             // 0 key
-            var gc = new AasCntlColumnDefinition();
-            gc.Width = AasCntlGridLength.Auto;
+            var gc = new AnyUiColumnDefinition();
+            gc.Width = AnyUiGridLength.Auto;
             gc.MinWidth = this.standardFirstColWidth;
             g.ColumnDefinitions.Add(gc);
 
             // 1 type
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 2 local
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 3 id type
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // 4 value
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Star);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc);
 
             // 5 .. buttons behind it
-            gc = new AasCntlColumnDefinition();
-            gc.Width = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+            gc = new AnyUiColumnDefinition();
+            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
             g.ColumnDefinitions.Add(gc);
 
             // rows
             for (int r = 0; r < rows + rowOfs; r++)
             {
-                var gr = new AasCntlRowDefinition();
-                gr.Height = new AasCntlGridLength(1.0, AasCntlGridUnitType.Auto);
+                var gr = new AnyUiRowDefinition();
+                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AasCntlThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
 
             // presets?
             var presetNo = 0;
@@ -1317,17 +1318,17 @@ namespace AasxPackageExplorer
                     colDescs.Add("#");
 
                 var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
-                AasCntlGrid.SetRow(g2, 0);
-                AasCntlGrid.SetColumn(g2, 1);
-                AasCntlGrid.SetColumnSpan(g2, 7);
+                AnyUiGrid.SetRow(g2, 0);
+                AnyUiGrid.SetColumn(g2, 1);
+                AnyUiGrid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
 
                 if (addFromPool)
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 1,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: "Add known"),
                         (o) =>
                         {
@@ -1351,8 +1352,8 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 2,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: "Add eCl@ss IRDI"),
                         (o) =>
                         {
@@ -1376,8 +1377,8 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 3,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: "Add existing"),
                         (o) =>
                         {
@@ -1395,8 +1396,8 @@ namespace AasxPackageExplorer
                 repo.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 4,
-                        margin: new AasCntlThickness(2, 2, 2, 2),
-                        padding: new AasCntlThickness(5, 0, 5, 0),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
                         content: "Add blank"),
                     (o) =>
                     {
@@ -1412,8 +1413,8 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 5,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: "Jump"),
                         (o) =>
                         {
@@ -1423,8 +1424,8 @@ namespace AasxPackageExplorer
                 repo.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 6,
-                        margin: new AasCntlThickness(2, 2, 2, 2),
-                        padding: new AasCntlThickness(5, 0, 5, 0),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
                         content: "Clipboard"),
                     (o) =>
                     {
@@ -1440,8 +1441,8 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 7 + i,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
-                            padding: new AasCntlThickness(5, 0, 5, 0),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
                             content: "" + addPresetNames[i]),
                         (o) =>
                         {
@@ -1459,25 +1460,25 @@ namespace AasxPackageExplorer
                         // lang
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 1,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "(" + keys[i].type + ")");
 
                         // local
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 2,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "" + ((keys[i].local) ? "(local)" : "(no-local)"));
 
                         // id type
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 3,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "[" + keys[i].idType + "]");
 
                         // value
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 4,
-                            padding: new AasCntlThickness(2, 0, 0, 0),
+                            padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "" + keys[i].value);
                     }
 
@@ -1492,18 +1493,18 @@ namespace AasxPackageExplorer
                         var cbType = repo.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
-                                margin: new AasCntlThickness(2, 2, 2, 2),
+                                margin: new AnyUiThickness(2, 2, 2, 2),
                                 text: "" + keys[currentI].type,
                                 minWidth: 100,
                                 items: AdminShell.Key.KeyElements,
                                 isEditable: false,
-                                verticalContentAlignment: AasCntlVerticalAlignment.Center),
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
                             (o) =>
                             {
                                 keys[currentI].type = o as string;
                                 return new ModifyRepo.LambdaActionNone();
                             },
-                            takeOverLambda: takeOverLambdaAction) as AasCntlComboBox;
+                            takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
                         SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
                         // check here, if to hightlight
@@ -1516,10 +1517,10 @@ namespace AasxPackageExplorer
                         repo.RegisterControl(
                             AddSmallCheckBoxTo(
                                 g, 0 + i + rowOfs, 2,
-                                margin: new AasCntlThickness(2, 2, 2, 2),
+                                margin: new AnyUiThickness(2, 2, 2, 2),
                                 content: "local",
                                 isChecked: keys[currentI].local,
-                                verticalContentAlignment: AasCntlVerticalAlignment.Center),
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
                             (o) =>
                             {
                                 keys[currentI].local = (bool)o;
@@ -1530,12 +1531,12 @@ namespace AasxPackageExplorer
                         // id type
                         var cbIdType = AddSmallComboBoxTo(
                             g, 0 + i + rowOfs, 3,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + keys[currentI].idType,
                             minWidth: 100,
                             items: AdminShell.Key.IdentifierTypeNames,
                             isEditable: false,
-                            verticalContentAlignment: AasCntlVerticalAlignment.Center);
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
                         repo.RegisterControl(
                             cbIdType,
                             (o) =>
@@ -1553,9 +1554,9 @@ namespace AasxPackageExplorer
                         // value
                         var tbValue = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 4,
-                            margin: new AasCntlThickness(2, 2, 2, 2),
+                            margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + keys[currentI].value,
-                            verticalContentAlignment: AasCntlVerticalAlignment.Center);
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
                         repo.RegisterControl(
                             tbValue,
                             (o) =>
@@ -1579,8 +1580,8 @@ namespace AasxPackageExplorer
                                     "\u25b2", "Move Up",
                                     "\u25bc", "Move Down",
                                 },
-                                margin: new AasCntlThickness(2, 2, 2, 2),
-                                padding: new AasCntlThickness(5, 0, 5, 0),
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                padding: new AnyUiThickness(5, 0, 5, 0),
                                 menuItemLambda: (o) =>
                                 {
                                     var action = false;
@@ -1621,7 +1622,7 @@ namespace AasxPackageExplorer
         //
 
         public bool SafeguardAccess(
-            AasCntlStackPanel view, ModifyRepo repo, object data, string key, string actionStr,
+            AnyUiStackPanel view, ModifyRepo repo, object data, string key, string actionStr,
             Func<int, ModifyRepo.LambdaAction> action)
         {
             if (repo != null && data == null)
@@ -1689,7 +1690,7 @@ namespace AasxPackageExplorer
         }
 
         public void EntityListUpDownDeleteHelper<T>(
-            AasCntlPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
+            AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
             object nextFocus = null)
         {
             if (nextFocus == null)
@@ -1724,7 +1725,7 @@ namespace AasxPackageExplorer
                 });
         }
 
-        public void QualifierHelper(AasCntlStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
+        public void QualifierHelper(AnyUiStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
             if (editMode)
             {
@@ -1942,7 +1943,7 @@ namespace AasxPackageExplorer
         // Hinting
         //
 
-        public void AddHintBubble(AasCntlStackPanel view, bool hintMode, HintCheck[] hints)
+        public void AddHintBubble(AnyUiStackPanel view, bool hintMode, HintCheck[] hints)
         {
             // access
             if (!hintMode || view == null || hints == null)
@@ -1978,8 +1979,8 @@ namespace AasxPackageExplorer
                 return;
 
             // show!
-            var bubble = new AasCntlHintBubble();
-            bubble.Margin = new AasCntlThickness(2, 4, 2, 0);
+            var bubble = new AnyUiHintBubble();
+            bubble.Margin = new AnyUiThickness(2, 4, 2, 0);
             bubble.Text = string.Join("\r\n", textsToShow);
             if (highestSev == HintCheck.Severity.High)
             {
@@ -1994,7 +1995,7 @@ namespace AasxPackageExplorer
             view.Children.Add(bubble);
         }
 
-        public void AddHintBubble(AasCntlStackPanel view, bool hintMode, HintCheck hint)
+        public void AddHintBubble(AnyUiStackPanel view, bool hintMode, HintCheck hint)
         {
             AddHintBubble(view, hintMode, new[] { hint });
         }
