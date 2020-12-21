@@ -82,7 +82,6 @@ namespace AasxPackageExplorer
             }
         }
 
-
         //
         // Referable
         //

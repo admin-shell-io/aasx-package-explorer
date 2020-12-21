@@ -192,51 +192,46 @@ namespace AasxPackageExplorer
                 {
                     if (i == 0)
                     {
-                        var uc = new TextBoxFlyout(
-                            "Asset ID:", MessageBoxImage.Question,
-                            TextBoxFlyout.DialogueOptions.FilterAllControlKeys);
-                        if (helper.flyoutProvider != null)
-                        {
-                            helper.flyoutProvider.StartFlyoverModal(uc);
-                            if (uc.Result)
-                            {
-                                asset.identification.id = uc.Text;
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
-                            }
+                        var uc = new AnyUiDialogueDataTextBox(
+                            "Asset ID:", null, AnyUiMessageBoxImage.Question,
+                            AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
+                        if (helper.context.StartModalDialogue(uc))
+                        { 
+                            asset.identification.id = uc.Text;
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
                         }
                     }
                     if (i == 1 && env != null)
                     {
-                        var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
-                        uc.Text = asset.identification.id;
-                        if (helper.flyoutProvider != null)
+                        var uc = new AnyUiDialogueDataTextBox(
+                            "New ID:", 
+                            symbol: AnyUiMessageBoxImage.Question,
+                            maxWidth: 1400,
+                            text: asset.identification.id);
+                        if (helper.context.StartModalDialogue(uc))
                         {
-                            helper.flyoutProvider.StartFlyoverModal(uc);
-                            if (uc.Result)
+                            var res = false;
+
+                            try
                             {
-                                var res = false;
-
-                                try
-                                {
-                                    res = env.RenameIdentifiable<AdminShell.Asset>(
-                                        asset.identification,
-                                        new AdminShell.Identification(
-                                            asset.identification.idType, uc.Text));
-                                }
-                                catch (Exception ex)
-                                {
-                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                                }
-
-                                if (!res)
-                                    helper.flyoutProvider.MessageBoxFlyoutShow(
-                                     "The renaming of the Submodel or some referring elements " +
-                                        "has not performed successfully! Please review your inputs and " +
-                                        "the AAS structure for any inconsistencies.",
-                                        "Warning",
-                                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                                return new ModifyRepo.LambdaActionRedrawAllElements(asset);
+                                res = env.RenameIdentifiable<AdminShell.Asset>(
+                                    asset.identification,
+                                    new AdminShell.Identification(
+                                        asset.identification.idType, uc.Text));
                             }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
+
+                            if (!res)
+                                helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "The renaming of the Submodel or some referring elements " +
+                                    "has not performed successfully! Please review your inputs and " +
+                                    "the AAS structure for any inconsistencies.",
+                                    "Warning",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(asset);
                         }
                     }
                     return new ModifyRepo.LambdaActionNone();
@@ -1341,36 +1336,35 @@ namespace AasxPackageExplorer
                         {
                             if (i == 0 && env != null)
                             {
-                                var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
-                                uc.Text = submodel.identification.id;
-                                if (helper.flyoutProvider != null)
+                                var uc = new AnyUiDialogueDataTextBox(
+                                    "New ID:",
+                                    symbol: AnyUiMessageBoxImage.Question,
+                                    maxWidth: 1400,
+                                    text: submodel.identification.id);
+                                if (helper.context.StartModalDialogue(uc))
                                 {
-                                    helper.flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.Result)
+                                    var res = false;
+
+                                    try
                                     {
-                                        var res = false;
-
-                                        try
-                                        {
-                                            res = env.RenameIdentifiable<AdminShell.Submodel>(
-                                                submodel.identification,
-                                                new AdminShell.Identification(
-                                                    submodel.identification.idType, uc.Text));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                                        }
-
-                                        if (!res)
-                                            helper.flyoutProvider.MessageBoxFlyoutShow(
-                                             "The renaming of the Submodel or some referring elements " +
-                                                "has not performed successfully! Please review your inputs and " +
-                                                "the AAS structure for any inconsistencies.",
-                                                "Warning",
-                                                MessageBoxButton.OK, MessageBoxImage.Warning);
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(smref);
+                                        res = env.RenameIdentifiable<AdminShell.Submodel>(
+                                            submodel.identification,
+                                            new AdminShell.Identification(
+                                                submodel.identification.idType, uc.Text));
                                     }
+                                    catch (Exception ex)
+                                    {
+                                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                    }
+
+                                    if (!res)
+                                        helper.flyoutProvider.MessageBoxFlyoutShow(
+                                            "The renaming of the Submodel or some referring elements " +
+                                            "has not performed successfully! Please review your inputs and " +
+                                            "the AAS structure for any inconsistencies.",
+                                            "Warning",
+                                            MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    return new ModifyRepo.LambdaActionRedrawAllElements(smref);
                                 }
                             }
                             return new ModifyRepo.LambdaActionNone();
@@ -1481,35 +1475,34 @@ namespace AasxPackageExplorer
                 {
                     if (i == 0 && env != null)
                     {
-                        var uc = new TextBoxFlyout("New ID:", MessageBoxImage.Question, maxWidth: 1400);
-                        uc.Text = cd.identification.id;
-                        if (helper.flyoutProvider != null)
+                        var uc = new AnyUiDialogueDataTextBox(
+                            "New ID:",
+                            symbol: AnyUiMessageBoxImage.Question,
+                            maxWidth: 1400,
+                            text: cd.identification.id);
+                        if (helper.context.StartModalDialogue(uc))
                         {
-                            helper.flyoutProvider.StartFlyoverModal(uc);
-                            if (uc.Result)
+                            var res = false;
+
+                            try
                             {
-                                var res = false;
-
-                                try
-                                {
-                                    res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
-                                        cd.identification,
-                                        new AdminShell.Identification(cd.identification.idType, uc.Text));
-                                }
-                                catch (Exception ex)
-                                {
-                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                                }
-
-                                if (!res)
-                                    helper.flyoutProvider.MessageBoxFlyoutShow(
-                                     "The renaming of the ConceptDescription or some referring elements has not " +
-                                         "performed successfully! Please review your inputs and the AAS " +
-                                         "structure for any inconsistencies.",
-                                         "Warning",
-                                         MessageBoxButton.OK, MessageBoxImage.Warning);
-                                return new ModifyRepo.LambdaActionRedrawAllElements(cd);
+                                res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
+                                    cd.identification,
+                                    new AdminShell.Identification(cd.identification.idType, uc.Text));
                             }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
+
+                            if (!res)
+                                helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "The renaming of the ConceptDescription or some referring elements has not " +
+                                        "performed successfully! Please review your inputs and the AAS " +
+                                        "structure for any inconsistencies.",
+                                        "Warning",
+                                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return new ModifyRepo.LambdaActionRedrawAllElements(cd);
                         }
                     }
                     return new ModifyRepo.LambdaActionNone();
@@ -2840,10 +2833,12 @@ namespace AasxPackageExplorer
                             if (buttonNdx == 1)
                             {
                                 // ask for a name
-                                var uc = new TextBoxFlyout("Name of text file to create",
-                                        MessageBoxImage.Question);
-                                uc.Text = "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-                                helper.flyoutProvider?.StartFlyoverModal(uc);
+                                var uc = new AnyUiDialogueDataTextBox(
+                                    "Name of text file to create",
+                                    symbol: AnyUiMessageBoxImage.Question,
+                                    maxWidth: 1400,
+                                    text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+
                                 if (!uc.Result)
                                 {
                                     return new ModifyRepo.LambdaActionNone();
@@ -3445,7 +3440,7 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            var displayContext = new AnyUiDisplayContextWpf(helper.repo);
+            var displayContext = new AnyUiDisplayContextWpf(helper.repo, helper.flyoutProvider);
 
             // ReSharper disable CoVariantArrayConversion            
             var levelColors = new DispLevelColors()
@@ -3495,6 +3490,7 @@ namespace AasxPackageExplorer
             helper.editMode = editMode;
             helper.hintMode = hintMode;
             helper.repo = repo;
+            helper.context = displayContext;
 
             //
             // Dispatch

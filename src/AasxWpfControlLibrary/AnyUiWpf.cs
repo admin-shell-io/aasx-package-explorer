@@ -38,10 +38,12 @@ namespace AnyUi
     public class AnyUiDisplayContextWpf : AnyUiContextBase
     {
         public ModifyRepo ModifyRepo;
+        public IFlyoutProvider FlyoutProvider;
 
-        public AnyUiDisplayContextWpf(ModifyRepo modifyRepo)
+        public AnyUiDisplayContextWpf(ModifyRepo modifyRepo, IFlyoutProvider flyoutProvider)
         {
             ModifyRepo = modifyRepo;
+            FlyoutProvider = flyoutProvider;
             InitRenderRecs();
         }
 
@@ -457,6 +459,30 @@ namespace AnyUi
 
                 ModifyRepo.ActivateAnyUi(AnyUiFe, elFe);
             }
+        }
+
+        //
+        // Dialogues
+        //
+        public override bool StartModalDialogue(AnyUiDialogueDataBase dialogueData)
+        {
+            // access
+            if (dialogueData == null || FlyoutProvider == null)
+                return false;
+
+            // make sure to reset
+            dialogueData.Result = false;
+
+            // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
+            if (dialogueData is AnyUiDialogueDataTextBox ddtb)
+            {
+                var uc = new TextBoxFlyout();
+                uc.DiaData = ddtb;
+                FlyoutProvider.StartFlyoverModal(uc);
+            }
+
+            // result
+            return dialogueData.Result;
         }
     }
 }

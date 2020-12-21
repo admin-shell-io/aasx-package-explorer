@@ -192,10 +192,6 @@ namespace AnyUi
     // bridge objects between AnyUI base classes and implementations
     //
 
-    public class AnyUiContextBase
-    {
-    }    
-
     public class AnyUiDisplayDataBase
     {
     }

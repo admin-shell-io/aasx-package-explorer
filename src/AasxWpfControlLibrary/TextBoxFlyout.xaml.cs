@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -31,50 +32,50 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public enum DialogueOptions { None, FilterAllControlKeys };
-
-        private DialogueOptions Options = DialogueOptions.None;
-
-        public bool Result = false;
-
-        private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataTextBox DiaData = new AnyUiDialogueDataTextBox();
 
         public TextBoxFlyout(
-            string caption, MessageBoxImage image, DialogueOptions options = DialogueOptions.None,
-            double? maxWidth = null)
+            string Caption = null,
+            AnyUiMessageBoxImage Symbol = AnyUiMessageBoxImage.None
+            )
         {
             InitializeComponent();
 
+            // set initial data
+            DiaData = new AnyUiDialogueDataTextBox(Caption, symbol: Symbol);            
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
             // texts
-            this.LabelCaption.Content = caption;
+            this.LabelCaption.Content = DiaData.Caption;
 
             // dialogue width
-            if (maxWidth.HasValue && maxWidth.Value > 200)
-                OuterGrid.MaxWidth = maxWidth.Value;
-
-            // options
-            this.Options = options;
+            if (DiaData.MaxWidth.HasValue && DiaData.MaxWidth.Value > 200)
+                OuterGrid.MaxWidth = DiaData.MaxWidth.Value;
 
             // image
             this.ImageIcon.Source = null;
-            if (image == MessageBoxImage.Error)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Hand)
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Information)
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Question)
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Warning)
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+
+            this.TextBoxText.Text = DiaData.Text;
 
             // focus
-            this.TextBoxText.Text = "";
             this.TextBoxText.Focus();
             this.TextBoxText.Select(0, 999);
             FocusManager.SetFocusedElement(this, this.TextBoxText);
@@ -88,41 +89,41 @@ namespace AasxPackageExplorer
         {
         }
 
-        //
-        // Mechanics
-        //
-
         public string Text
         {
             get
             {
-                return TextBoxText.Text;
+                return DiaData.Text;
             }
             set
             {
-                TextBoxText.Text = value;
+                DiaData.Text = value;
+                TextBoxText.Text = DiaData.Text;
             }
         }
 
+        public bool Result { get { return DiaData.Result; } }
+
+        //
+        // Mechanics
+        //
+
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Result = false;
+            DiaData.Result = false;
             ControlClosed?.Invoke();
         }
 
         private void ButtonOk_Click(object sender, RoutedEventArgs e)
         {
-            this.Result = true;
+            DiaData.Result = true;
+            DiaData.Text = TextBoxText.Text;
             ControlClosed?.Invoke();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {
-            if (this.Options == DialogueOptions.FilterAllControlKeys)
+            if (this.DiaData.Options == AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys)
             {
                 if (e.Key >= Key.F1 && e.Key <= Key.F24 || e.Key == Key.Escape || e.Key == Key.Enter ||
                         e.Key == Key.Delete || e.Key == Key.Insert)
@@ -138,14 +139,20 @@ namespace AasxPackageExplorer
 
             if (e.Key == Key.Return)
             {
-                this.Result = true;
+                DiaData.Result = true;
+                DiaData.Text = TextBoxText.Text;
                 ControlClosed?.Invoke();
             }
             if (e.Key == Key.Escape)
             {
-                this.Result = false;
+                DiaData.Result = false;
                 ControlClosed?.Invoke();
             }
+        }
+
+        private void TextBoxText_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            DiaData.Text = TextBoxText.Text;
         }
     }
 }

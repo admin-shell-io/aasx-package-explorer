@@ -47,21 +47,21 @@ namespace AasxPackageExplorer
             this.ImageIcon.Source = null;
             if (image == MessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri(
-                        "/AasxWpfControlLibrary;component/Resources/msg_question.png",
+                        "/AasxIntegrationBaseWpf;component/Resources/msg_question.png",
                         UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
         }
 

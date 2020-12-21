@@ -117,6 +117,8 @@ namespace AasxPackageExplorer
         public DispEditHighlight.HighlightFieldInfo highlightField = null;
         private FrameworkElement lastHighlightedField = null;
 
+        public AnyUiContextBase context = null;
+
         //
         // Highlighting
         //

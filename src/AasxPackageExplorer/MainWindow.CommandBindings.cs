@@ -28,6 +28,7 @@ using AasxIntegrationBase;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
+using AnyUi;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1179,7 +1180,7 @@ namespace AasxPackageExplorer
 
         public async void CommandBinding_ConnectRest()
         {
-            var uc = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
+            var uc = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
             uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
             this.StartFlyoverModal(uc);
             if (uc.Result)
@@ -1663,7 +1664,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            var input = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
+            var input = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
             input.Text = PUTURL;
             this.StartFlyoverModal(input);
             if (!input.Result)
@@ -1712,7 +1713,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            var input = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
+            var input = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
             input.Text = GETURL;
             this.StartFlyoverModal(input);
             if (!input.Result)
