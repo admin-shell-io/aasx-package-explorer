@@ -461,9 +461,28 @@ namespace AnyUi
             }
         }
 
-        //
-        // Dialogues
-        //
+        /// <summary>
+        /// Show MessageBoxFlyout with contents
+        /// </summary>
+        /// <param name="message">Message on the main screen</param>
+        /// <param name="caption">Caption string (title)</param>
+        /// <param name="buttons">Buttons according to WPF standard messagebox</param>
+        /// <param name="image">Image according to WPF standard messagebox</param>
+        /// <returns></returns>
+        public override AnyUiMessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            if (FlyoutProvider == null)
+                return AnyUiMessageBoxResult.Cancel;
+            return FlyoutProvider.MessageBoxFlyoutShow(message, caption, buttons, image);
+        }
+
+        /// <summary>
+        /// Show selected dialogues hardware-independent. The technology implementation will show the
+        /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// </summary>
+        /// <param name="dialogueData"></param>
+        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
         public override bool StartModalDialogue(AnyUiDialogueDataBase dialogueData)
         {
             // access
@@ -478,6 +497,20 @@ namespace AnyUi
             {
                 var uc = new TextBoxFlyout();
                 uc.DiaData = ddtb;
+                FlyoutProvider.StartFlyoverModal(uc);
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
+            {
+                var uc = new SelectEclassEntityFlyout();
+                uc.DiaData = ddec;
+                FlyoutProvider.StartFlyoverModal(uc);
+            }
+
+            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+            {
+                var uc = new TextEditorFlyout();
+                uc.DiaData = ddte;
                 FlyoutProvider.StartFlyoverModal(uc);
             }
 

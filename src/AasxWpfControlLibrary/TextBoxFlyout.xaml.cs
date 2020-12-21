@@ -23,8 +23,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
-using AnyUi;
 using Newtonsoft.Json;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
@@ -73,6 +73,7 @@ namespace AasxPackageExplorer
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
+            // text to edit
             this.TextBoxText.Text = DiaData.Text;
 
             // focus

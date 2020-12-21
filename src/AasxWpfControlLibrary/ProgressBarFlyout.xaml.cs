@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -35,7 +36,7 @@ namespace AasxPackageExplorer
 
         private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
 
-        public ProgressBarFlyout(string caption, string info, MessageBoxImage image)
+        public ProgressBarFlyout(string caption, string info, AnyUiMessageBoxImage image)
         {
             InitializeComponent();
 
@@ -45,21 +46,21 @@ namespace AasxPackageExplorer
 
             // image
             this.ImageIcon.Source = null;
-            if (image == MessageBoxImage.Error)
+            if (image == AnyUiMessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Hand)
+            if (image == AnyUiMessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Information)
+            if (image == AnyUiMessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Question)
+            if (image == AnyUiMessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_question.png",
                         UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Warning)
+            if (image == AnyUiMessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 

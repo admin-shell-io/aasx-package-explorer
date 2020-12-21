@@ -188,10 +188,10 @@ namespace AasxPackageExplorer
                             item?.parentContainer == null)
                         {
                             if (this.flyoutProvider != null)
-                                this.flyoutProvider.MessageBoxFlyoutShow(
+                                this.context.MessageBoxFlyoutShow(
                                     "No (valid) information for SubmodelElements in copy/paste buffer.",
                                     "Copy & Paste",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                             return new ModifyRepo.LambdaActionNone();
                         }
 
@@ -332,10 +332,10 @@ namespace AasxPackageExplorer
                                 || item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
-                                    this.flyoutProvider.MessageBoxFlyoutShow(
+                                    this.context.MessageBoxFlyoutShow(
                                         "No (valid) information for Submodels in copy/paste buffer.",
                                         "Copy & Paste",
-                                        MessageBoxButton.OK, MessageBoxImage.Information);
+                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                                 return new ModifyRepo.LambdaActionNone();
                             }
 
@@ -371,7 +371,7 @@ namespace AasxPackageExplorer
                             this.flyoutProvider?.MessageBoxFlyoutShow(
                                 "Entities for paste above/ below Submodels need to Submodels (/-References).",
                                 "Copy & Paste",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                                AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                         }
                     }
 
@@ -385,10 +385,10 @@ namespace AasxPackageExplorer
                                 item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
-                                    this.flyoutProvider.MessageBoxFlyoutShow(
+                                    this.context.MessageBoxFlyoutShow(
                                         "No (valid) information for SubmodelElements in copy/paste buffer.",
                                         "Copy & Paste",
-                                        MessageBoxButton.OK, MessageBoxImage.Information);
+                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                                 return new ModifyRepo.LambdaActionNone();
                             }
 
@@ -428,7 +428,7 @@ namespace AasxPackageExplorer
                             this.flyoutProvider?.MessageBoxFlyoutShow(
                                 "Entities for paste into Submodels need to SubmodelElements.",
                                 "Copy & Paste",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                                AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                         }
                     }
 
@@ -482,10 +482,10 @@ namespace AasxPackageExplorer
                                 || item?.parentContainer == null)
                             {
                                 if (this.flyoutProvider != null)
-                                    this.flyoutProvider.MessageBoxFlyoutShow(
+                                    this.context.MessageBoxFlyoutShow(
                                         "No (valid) information in copy/paste buffer.",
                                         "Copy & Paste",
-                                        MessageBoxButton.OK, MessageBoxImage.Information);
+                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                                 return new ModifyRepo.LambdaActionNone();
                             }
 
@@ -522,7 +522,7 @@ namespace AasxPackageExplorer
                             this.flyoutProvider?.MessageBoxFlyoutShow(
                                 "Entities for paste above/ below need to match list type.",
                                 "Copy & Paste",
-                                MessageBoxButton.OK, MessageBoxImage.Information);
+                                AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                         }
                     }
 

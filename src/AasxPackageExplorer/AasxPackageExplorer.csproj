@@ -36,6 +36,7 @@
     <ProjectReference Include="..\AasxSignature\AasxSignature.csproj" />
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
 
   <!--

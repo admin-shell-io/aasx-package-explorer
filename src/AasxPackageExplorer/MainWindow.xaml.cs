@@ -22,7 +22,7 @@ using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
-
+using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
@@ -612,10 +612,10 @@ namespace AasxPackageExplorer
                 if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
                 {
                     // ask double question
-                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                             "Load file from AASX file repository?",
                             "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                         return;
                 }
 
@@ -674,7 +674,7 @@ namespace AasxPackageExplorer
                 this.MessageBoxFlyoutShow(
                     "The application needs to be in edit mode to show found entities correctly. Aborting.",
                     "Find and Replace",
-                    MessageBoxButton.OK, MessageBoxImage.Hand);
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
                 return;
             }
 
@@ -840,10 +840,10 @@ namespace AasxPackageExplorer
                     if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
                     {
                         // ask double question
-                        if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                                 "Load file from AASX file repository?",
                                 "AASX File Repository",
-                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                                AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                             return null;
                     }
 
@@ -1293,10 +1293,10 @@ namespace AasxPackageExplorer
 
             var positiveQuestion =
                 Options.Curr.UseFlyovers &&
-                MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to proceed closing the application? Make sure, that you have saved your data before.",
                     "Exit application?",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question);
 
             if (!positiveQuestion)
             {
@@ -1595,12 +1595,12 @@ namespace AasxPackageExplorer
             currentFlyoutControl = null;
         }
 
-        public MessageBoxResult MessageBoxFlyoutShow(
-            string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        public AnyUiMessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
             if (!Options.Curr.UseFlyovers)
             {
-                return MessageBox.Show(this, message, caption, buttons, image);
+                return AnyUiMessageBoxResult.Cancel;
             }
 
             var uc = new MessageBoxFlyout(message, caption, buttons, image);

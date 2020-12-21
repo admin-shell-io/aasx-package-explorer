@@ -1155,28 +1155,24 @@ namespace AasxPackageExplorer
         }
 
         public bool SmartSelectEclassEntity(
-            SelectEclassEntityFlyout.SelectMode selectMode, ref string resIRDI,
+            AnyUiDialogueDataSelectEclassEntity.SelectMode mode, ref string resIRDI,
             ref AdminShell.ConceptDescription resCD)
         {
             var res = false;
-            var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
+            
+            // TODO (MIHO, 2020-12-21): function & if-clause is obsolete
             if (this.flyoutProvider != null)
             {
-                var uc = new SelectEclassEntityFlyout(fullfn, selectMode);
-                this.flyoutProvider.StartFlyoverModal(uc);
+                var uc = new AnyUiDialogueDataSelectEclassEntity("Select ECLASS entity ..",
+                    mode: mode);
+                this.context.StartModalDialogue(uc);
                 resIRDI = uc.ResultIRDI;
                 resCD = uc.ResultCD;
                 res = resIRDI != null;
             }
             else
             {
-                var dlg = new SelectEclassEntity(fullfn);
-                if (dlg.ShowDialog() == true)
-                {
-                    resIRDI = dlg.ResultIRDI;
-                    resCD = dlg.ResultCD;
-                    res = true;
-                }
+                res = false;
             }
             return res;
         }
@@ -1225,11 +1221,11 @@ namespace AasxPackageExplorer
                 return null;
 
             if (this.flyoutProvider != null &&
-                    MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                    AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                         "Recfactor selected entity? " +
                             "This operation will change the selected submodel element and " +
                             "delete specific attributes. It can not be reverted!",
-                        "AASX", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
             {
                 try
                 {
@@ -1374,13 +1370,13 @@ namespace AasxPackageExplorer
                             g2, 0, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "Add eCl@ss IRDI"),
+                            content: "Add ECLASS"),
                         (o) =>
                         {
                             string resIRDI = null;
                             AdminShell.ConceptDescription resCD = null;
                             if (this.SmartSelectEclassEntity(
-                                    SelectEclassEntityFlyout.SelectMode.IRDI, ref resIRDI, ref resCD))
+                                    AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
                             {
                                 keys.Add(
                                     AdminShell.Key.CreateNew(
@@ -1733,9 +1729,9 @@ namespace AasxPackageExplorer
 
                     if (buttonNdx == 2)
                         if (this.flyoutProvider != null &&
-                                MessageBoxResult.Yes == this.flyoutProvider.MessageBoxFlyoutShow(
+                                AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                     "Delete selected entity? This operation can not be reverted!", "AASX",
-                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
@@ -1901,7 +1897,7 @@ namespace AasxPackageExplorer
 
             // make a progress flyout
             var uc = new ProgressBarFlyout(
-                "Import ConceptDescriptions from eCl@ss", "Preparing ...", MessageBoxImage.Information);
+                "Import ConceptDescriptions from eCl@ss", "Preparing ...", AnyUiMessageBoxImage.Information);
             uc.Progress = 0.0;
             // show this
             this.flyoutProvider.StartFlyover(uc);

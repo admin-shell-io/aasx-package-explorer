@@ -540,6 +540,7 @@ namespace AasxPackageExplorer
                     stack, "semanticId", semanticId.Keys, repo,
                     packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
+                    addEclassIrdi: true,
                     addPresetNames: bufferKeys.Item1,
                     addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) =>
