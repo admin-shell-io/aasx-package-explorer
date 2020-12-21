@@ -1,0 +1,20 @@
+﻿@page "/"
+@using AdminShellNS
+@using BlazorUI
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@{
+    <br />
+    foreach (var aas in Program.env.AasEnv.AdministrationShells)
+    {
+        <span style="color:white;background-color:blue;">@aas.idShort</span>
+        <br />
+        <span style="color:white;background-color:blue;">@aas.identification</span>
+        <br />
+    }
+}
+
+<SurveyPrompt Title="How is Blazor working for you?" />
