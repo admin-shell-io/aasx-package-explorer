@@ -497,40 +497,57 @@ namespace AnyUi
             // make sure to reset
             dialogueData.Result = false;
 
-            // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
-            if (dialogueData is AnyUiDialogueDataTextBox ddtb)
+            // beware of exceptions
+            try
             {
-                var uc = new TextBoxFlyout();
-                uc.DiaData = ddtb;
-                FlyoutProvider.StartFlyoverModal(uc);
-            }
 
-            if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
-            {
-                var uc = new SelectEclassEntityFlyout();
-                uc.DiaData = ddec;
-                FlyoutProvider.StartFlyoverModal(uc);
-            }
+                // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
+                if (dialogueData is AnyUiDialogueDataTextBox ddtb)
+                {
+                    var uc = new TextBoxFlyout();
+                    uc.DiaData = ddtb;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
 
-            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-            {
-                var uc = new TextEditorFlyout();
-                uc.DiaData = ddte;
-                FlyoutProvider.StartFlyoverModal(uc);
-            }
+                if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
+                {
+                    var uc = new SelectEclassEntityFlyout();
+                    uc.DiaData = ddec;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
 
-            if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
-            {
-                var uc = new SelectAasEntityFlyout(Packages);
-                uc.DiaData = ddsa;
-                FlyoutProvider.StartFlyoverModal(uc);
-            }
+                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                {
+                    var uc = new TextEditorFlyout();
+                    uc.DiaData = ddte;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
 
-            if (dialogueData is AnyUiDialogueDataSelectReferableFromPool ddrf)
+                if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
+                {
+                    var uc = new SelectAasEntityFlyout(Packages);
+                    uc.DiaData = ddsa;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
+
+                if (dialogueData is AnyUiDialogueDataSelectReferableFromPool ddrf)
+                {
+                    var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
+                    uc.DiaData = ddrf;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
+
+                if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
+                {
+                    var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                    var uc = new SelectQualifierPresetFlyout(fullfn);
+                    uc.DiaData = ddsq;
+                    FlyoutProvider.StartFlyoverModal(uc);
+                }
+
+            } catch (Exception ex)
             {
-                var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
-                uc.DiaData = ddrf;
-                FlyoutProvider.StartFlyoverModal(uc);
+                Log.Singleton.Error(ex, $"while performing AnyUI dialogue {dialogueData.GetType().ToString()}");
             }
 
             // result

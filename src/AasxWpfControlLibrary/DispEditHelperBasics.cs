@@ -1765,10 +1765,9 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionNone();
                             try
                             {
-                                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                                var uc = new SelectQualifierPresetFlyout(fullfn);
-                                flyoutProvider.StartFlyoverModal(uc);
-                                if (uc.ResultQualifier != null)
+                                var uc = new AnyUiDialogueDataSelectQualifierPreset();
+                                this.context.StartModalDialogue(uc);
+                                if (uc.Result && uc.ResultQualifier != null)
                                     qualifiers.Add(uc.ResultQualifier);
                             }
                             catch (Exception ex)

@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -37,9 +38,10 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public AdminShell.Qualifier ResultQualifier = null;
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataSelectQualifierPreset DiaData = new AnyUiDialogueDataSelectQualifierPreset();
 
-        private List<QualifierPreset> ThePresets = new List<QualifierPreset>();
+        private List<QualifierPreset> thePresets = new List<QualifierPreset>();
 
         public SelectQualifierPresetFlyout(string presetFn)
         {
@@ -48,12 +50,20 @@ namespace AasxPackageExplorer
             try
             {
                 var init = File.ReadAllText(presetFn);
-                ThePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
+                thePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
             }
             catch (Exception ex)
             {
                 AasxPackageExplorer.Log.Singleton.Error(ex, $"While loading qualifier preset file ({presetFn})");
             }
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // fill listbox
+            ListBoxPresets.Items.Clear();
+            foreach (var p in thePresets)
+                ListBoxPresets.Items.Add("" + p.name);
         }
 
         //
@@ -71,21 +81,13 @@ namespace AasxPackageExplorer
         //
         // Mechanics
         //
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // fill listbox
-            ListBoxPresets.Items.Clear();
-            foreach (var p in ThePresets)
-                ListBoxPresets.Items.Add("" + p.name);
-        }
-
+       
         private bool PrepareResult()
         {
             var i = ListBoxPresets.SelectedIndex;
-            if (ThePresets != null && i >= 0 && i < ThePresets.Count)
+            if (thePresets != null && i >= 0 && i < thePresets.Count)
             {
-                this.ResultQualifier = ThePresets[i].qualifier;
+                DiaData.ResultQualifier = thePresets[i].qualifier;
                 return true;
             }
 
@@ -96,19 +98,26 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.ResultQualifier = null;
+            DiaData.Result = false;
+            DiaData.ResultQualifier = null;
             ControlClosed?.Invoke();
         }
 
         private void ListBoxPresets_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
     }
 }
