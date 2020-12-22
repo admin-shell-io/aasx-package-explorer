@@ -25,49 +25,76 @@ Welcome to your new app.
     <span>@Program.LogLine</span>
     <br />
 
+    int iChild = 0;
+    AnyUiPanel uiPanel = Program.stack;
+    Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
 
-    foreach (var ch in Program.stack.Children)
+    do
     {
-        if (ch is AnyUiLabel chlb)
+        if (iChild == uiPanel.Children.Count)
         {
-            <span>@chlb.Content</span>
-            <br />
+            uipStack.Pop(out uiPanel, out iChild);
         }
 
-        if (ch is AnyUiTextBox chtb)
+        while (iChild < uiPanel.Children.Count)
         {
-            <span>@chtb.Text</span>
-            <br />
+            var ch = uiPanel.Children[iChild];
 
-            <input @bind="CurrentValue" />
-            <span style="color:white;background-color:blue;">@CurrentValue</span>
-            <br />
-            @code { private string CurrentValue { get; set; } }
-            if (CurrentValue != null)
+            if (ch is AnyUiPanel chp)
             {
-                chtb.Text = CurrentValue; // for re-rendering the html directly
-                this.StateHasChanged();
-                CurrentValue = null;
+                <bold>ChildPanel on Level @uipStack.getIndex()</bold><br />
+
+                uipStack.Push(uiPanel, iChild);
+
+                uiPanel = chp;
+                iChild = 0;
+                continue;
             }
-        }
 
-        if (ch is AnyUiButton chbt)
-        {
-            <span>@chbt.Content</span>
-            <br />
+            if (ch is AnyUiLabel chlb)
+            {
+                <span>@chlb.Content</span>
+                <br />
+            }
 
-            <button style="color:white;background-color:blue" @onclick="() => MyClick(chbt)">@chbt.Content</button>
-            @code {
-                private void MyClick(AnyUiButton chbt)
+            if (ch is AnyUiTextBox chtb)
+            {
+                <span>@chtb.Text</span>
+                <br />
+
+                <input @bind="CurrentValue" />
+                <span style="color:white;background-color:blue;">@CurrentValue</span>
+                <br />
+                @code { private string CurrentValue { get; set; } }
+                if (CurrentValue != null)
                 {
-                    // Program.LogLine = "Clicked " + DateTime.Now.ToString();
-                    var dd = chbt?.DisplayData as Program.BlazorDisplayData;
-                    dd?.MyLambda(chbt);
+                    chtb.Text = CurrentValue; // for re-rendering the html directly
+                    this.StateHasChanged();
+                    CurrentValue = null;
                 }
             }
-            <br />
+
+            if (ch is AnyUiButton chbt)
+            {
+                <span>@chbt.Content</span>
+                <br />
+
+                <button style="color:white;background-color:blue" @onclick="() => MyClick(chbt)">@chbt.Content</button>
+                @code {
+                    private void MyClick(AnyUiButton chbt)
+                    {
+                        // Program.LogLine = "Clicked " + DateTime.Now.ToString();
+                        var dd = chbt?.DisplayData as Program.BlazorDisplayData;
+                        dd?.MyLambda(chbt);
+                    }
+                }
+                <br />
+            }
+
+            iChild++;
         }
     }
+    while (uipStack.getIndex() > 0);
 
 }
 
