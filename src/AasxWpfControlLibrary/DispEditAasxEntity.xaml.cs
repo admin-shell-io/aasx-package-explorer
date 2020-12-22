@@ -217,6 +217,40 @@ namespace AasxPackageExplorer
             helper.context = displayContext;
 
             //
+            // Test for Blazor
+            //
+
+            if (true)
+            {
+                var lab = new AnyUiLabel();
+                lab.Content = "Hallo";
+                lab.Foreground = AnyUiBrushes.DarkBlue;
+                stack.Children.Add(lab);
+
+                if (editMode)
+                {
+                    var tb = new AnyUiTextBox();
+                    tb.Foreground = AnyUiBrushes.Black;
+                    tb.Text = "Initial";
+                    stack.Children.Add(tb);
+                    repo.RegisterControl(tb, (o) =>
+                    {
+                        Log.Singleton.Info($"Text changed to .. {""+o}");                        
+                        return new ModifyRepo.LambdaActionNone();
+                    });
+
+                    var btn = new AnyUiButton();
+                    btn.Content = "Click me!";
+                    stack.Children.Add(btn);
+                    repo.RegisterControl(btn, (o) =>
+                    {
+                        Log.Singleton.Error("Button clicked!");
+                        return new ModifyRepo.LambdaActionRedrawAllElements(null);
+                    });
+                }
+            }
+
+            //
             // Dispatch
             //
 

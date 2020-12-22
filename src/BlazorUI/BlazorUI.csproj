@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
 
 </Project>
