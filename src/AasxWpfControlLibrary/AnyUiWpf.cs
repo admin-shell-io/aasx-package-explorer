@@ -20,6 +20,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
 using AasxWpfControlLibrary;
+using AnyUi.AAS;
 
 namespace AnyUi
 {
@@ -39,11 +40,15 @@ namespace AnyUi
     {
         public ModifyRepo ModifyRepo;
         public IFlyoutProvider FlyoutProvider;
+        public PackageCentral Packages;
 
-        public AnyUiDisplayContextWpf(ModifyRepo modifyRepo, IFlyoutProvider flyoutProvider)
+        public AnyUiDisplayContextWpf(
+            ModifyRepo modifyRepo, 
+            IFlyoutProvider flyoutProvider, PackageCentral packages)
         {
             ModifyRepo = modifyRepo;
             FlyoutProvider = flyoutProvider;
+            Packages = packages;
             InitRenderRecs();
         }
 
@@ -511,6 +516,20 @@ namespace AnyUi
             {
                 var uc = new TextEditorFlyout();
                 uc.DiaData = ddte;
+                FlyoutProvider.StartFlyoverModal(uc);
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
+            {
+                var uc = new SelectAasEntityFlyout(Packages);
+                uc.DiaData = ddsa;
+                FlyoutProvider.StartFlyoverModal(uc);
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectReferableFromPool ddrf)
+            {
+                var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
+                uc.DiaData = ddrf;
                 FlyoutProvider.StartFlyoverModal(uc);
             }
 

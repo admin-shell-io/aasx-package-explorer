@@ -2309,22 +2309,22 @@ namespace AasxPackageExplorer
             }
 
             // convert these to list items
-            var fol = new List<SelectFromListFlyoutItem>();
+            var fol = new List<AnyUiDialogueListItem>();
             foreach (var o in offers)
-                fol.Add(new SelectFromListFlyoutItem(o.OfferDisplay, o));
+                fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
 
             // show a list
             // prompt for this list
             var uc = new SelectFromListFlyout();
-            uc.Caption = "Select Conversion action to be executed ..";
-            uc.ListOfItems = fol;
+            uc.DiaData.Caption = "Select Conversion action to be executed ..";
+            uc.DiaData.ListOfItems = fol;
             this.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                uc.ResultItem.Tag is AasxPredefinedConcepts.Convert.ConvertOfferBase)
+            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
+                uc.DiaData.ResultItem.Tag is AasxPredefinedConcepts.Convert.ConvertOfferBase)
                 try
                 {
                     {
-                        var offer = uc.ResultItem.Tag as AasxPredefinedConcepts.Convert.ConvertOfferBase;
+                        var offer = uc.DiaData.ResultItem.Tag as AasxPredefinedConcepts.Convert.ConvertOfferBase;
                         offer?.Provider?.ExecuteOffer(
                             packages.Main, rf, offer, deleteOldCDs: true, addNewCDs: true);
                     }
@@ -2410,7 +2410,7 @@ namespace AasxPackageExplorer
             }
 
             // create a list of plugins, which are capable of generating Submodels
-            var listOfSm = new List<SelectFromListFlyoutItem>();
+            var listOfSm = new List<AnyUiDialogueListItem>();
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
                 if (lpi.HasAction("get-list-new-submodel"))
@@ -2422,7 +2422,7 @@ namespace AasxPackageExplorer
                             var lpireslist = lpires.obj as List<string>;
                             if (lpireslist != null)
                                 foreach (var smname in lpireslist)
-                                    listOfSm.Add(new SelectFromListFlyoutItem(
+                                    listOfSm.Add(new AnyUiDialogueListItem(
                                         "" + lpi.name + " | " + "" + smname,
                                         new Tuple<Plugins.PluginInstance, string>(lpi, smname)
                                         ));
@@ -2445,14 +2445,14 @@ namespace AasxPackageExplorer
 
             // prompt for this list
             var uc = new SelectFromListFlyout();
-            uc.Caption = "Select Plug-in and Submodel to be generated ..";
-            uc.ListOfItems = listOfSm;
+            uc.DiaData.Caption = "Select Plug-in and Submodel to be generated ..";
+            uc.DiaData.ListOfItems = listOfSm;
             this.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                uc.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
+            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
+                uc.DiaData.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
             {
                 // get result arguments
-                var TagTuple = uc.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
+                var TagTuple = uc.DiaData.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
                 var lpi = TagTuple?.Item1;
                 var smname = TagTuple?.Item2;
                 if (lpi == null || smname == null || smname.Length < 1)

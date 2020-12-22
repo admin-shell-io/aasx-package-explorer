@@ -25,6 +25,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -36,16 +37,36 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public string Caption = "Select item ..";
-
         public AasxPredefinedConcepts.DefinitionsPool DataSourcePools = null;
 
-        public int ResultIndex = -1;
-        public object ResultItem = null;
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataSelectReferableFromPool DiaData = new AnyUiDialogueDataSelectReferableFromPool();
 
-        public SelectFromReferablesPoolFlyout()
+        public SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool dataSourcePools)
         {
             InitializeComponent();
+            DataSourcePools = dataSourcePools;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // fill caption
+            if (DiaData.Caption != null)
+                TextBlockCaption.Text = "" + DiaData.Caption;
+
+            // entities
+            DataGridEntities.Items.Clear();
+
+            // fill listbox
+            this.ListBoxDomains.Items.Clear();
+            if (DataSourcePools != null)
+            {
+                foreach (var d in DataSourcePools.GetDomains())
+                    this.ListBoxDomains.Items.Add(d);
+                if (this.ListBoxDomains.Items.Count > 0)
+                    this.ListBoxDomains.SelectedIndex = 0;
+            }
+
         }
 
         //
@@ -64,26 +85,6 @@ namespace AasxPackageExplorer
         // Mechanics
         //
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // fill caption
-            if (this.Caption != null)
-                TextBlockCaption.Text = "" + this.Caption;
-
-            // entities
-            DataGridEntities.Items.Clear();
-
-            // fill listbox
-            this.ListBoxDomains.Items.Clear();
-            if (DataSourcePools != null)
-            {
-                foreach (var d in DataSourcePools.GetDomains())
-                    this.ListBoxDomains.Items.Add(d);
-                if (this.ListBoxDomains.Items.Count > 0)
-                    this.ListBoxDomains.SelectedIndex = 0;
-            }
-
-        }
 
         private void ListBoxDomains_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -103,8 +104,8 @@ namespace AasxPackageExplorer
         {
             if (DataGridEntities.SelectedItem != null && DataGridEntities.SelectedIndex >= 0)
             {
-                this.ResultIndex = DataGridEntities.SelectedIndex;
-                this.ResultItem = DataGridEntities.SelectedItem;
+                DiaData.ResultIndex = DataGridEntities.SelectedIndex;
+                DiaData.ResultItem = DataGridEntities.SelectedItem;
                 return true;
             }
 
@@ -115,20 +116,27 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.ResultIndex = -1;
-            this.ResultItem = null;
+            DiaData.Result = false;
+            DiaData.ResultIndex = -1;
+            DiaData.ResultItem = null;
             ControlClosed?.Invoke();
         }
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
 
     }

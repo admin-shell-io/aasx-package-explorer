@@ -1020,12 +1020,12 @@ namespace AasxPackageExplorer
                             packages, PackageCentral.Selector.MainAuxFileRepo,
                             evSelectEntity.filterEntities);
                         this.StartFlyoverModal(uc);
-                        if (uc.ResultKeys != null)
+                        if (uc.DiaData.ResultKeys != null)
                         {
                             // formulate return event
                             var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
                             retev.sourceEvent = evt;
-                            retev.resultKeys = uc.ResultKeys;
+                            retev.resultKeys = uc.DiaData.ResultKeys;
 
                             // fire back
                             lpi.InvokeAction("event-return", retev);

@@ -113,4 +113,37 @@ namespace AnyUi
             Mode = mode;
         }
     }
+
+    public class AnyUiDialogueListItem
+    {
+        public string Text = "";
+        public object Tag = null;
+
+        public AnyUiDialogueListItem() { }
+
+        public AnyUiDialogueListItem(string text, object tag)
+        {
+            this.Text = text;
+            this.Tag = tag;
+        }
+    }
+
+    public class AnyUiDialogueDataSelectFromList : AnyUiDialogueDataBase
+    {
+        // in
+        public List<AnyUiDialogueListItem> ListOfItems = null;
+        public string[] AlternativeSelectButtons = null;
+
+        // out
+        public int ResultIndex = -1;
+        public AnyUiDialogueListItem ResultItem = null;
+
+        public AnyUiDialogueDataSelectFromList(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth)
+        {
+        }
+    }
+
 }

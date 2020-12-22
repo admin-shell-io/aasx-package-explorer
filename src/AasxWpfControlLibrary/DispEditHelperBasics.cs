@@ -20,6 +20,7 @@ using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
+using AnyUi.AAS;
 
 namespace AasxPackageExplorer
 {
@@ -1133,9 +1134,11 @@ namespace AasxPackageExplorer
         public List<AdminShell.Key> SmartSelectAasEntityKeys(
             PackageCentral packages, PackageCentral.Selector selector, string filter = null)
         {
-            var uc = new SelectAasEntityFlyout(packages, selector, filter);
-            this.flyoutProvider.StartFlyoverModal(uc);
-            if (uc.ResultKeys != null)
+            var uc = new AnyUiDialogueDataSelectAasEntity(
+                caption: "Select entity of AAS ..",
+                selector: selector, filter: filter);
+            this.context.StartModalDialogue(uc);
+            if (uc.Result && uc.ResultKeys != null)
                 return uc.ResultKeys;
 
             return null;
@@ -1146,9 +1149,11 @@ namespace AasxPackageExplorer
             PackageCentral.Selector selector,
             string filter = null)
         {
-            var uc = new SelectAasEntityFlyout(packages, selector, filter);
-            this.flyoutProvider.StartFlyoverModal(uc);
-            if (uc.ResultVisualElement != null)
+            var uc = new AnyUiDialogueDataSelectAasEntity(
+                caption: "Select entity of AAS ..",
+                selector: selector, filter: filter);
+            this.context.StartModalDialogue(uc);
+            if (uc.Result && uc.ResultVisualElement != null)
                 return uc.ResultVisualElement;
 
             return null;
@@ -1185,16 +1190,16 @@ namespace AasxPackageExplorer
             AdminShell.SubmodelElementWrapper.AdequateElementEnum[] includeValues = null)
         {
             // prepare a list
-            var fol = new List<SelectFromListFlyoutItem>();
+            var fol = new List<AnyUiDialogueListItem>();
             foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues, includeValues))
-                fol.Add(new SelectFromListFlyoutItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
+                fol.Add(new AnyUiDialogueListItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
 
             // prompt for this list
-            var uc = new SelectFromListFlyout();
-            uc.Caption = caption;
+            var uc = new AnyUiDialogueDataSelectFromList(
+                caption: caption);
             uc.ListOfItems = fol;
-            this.flyoutProvider.StartFlyoverModal(uc);
-            if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
+            this.context.StartModalDialogue(uc);
+            if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
                     uc.ResultItem.Tag is AdminShell.SubmodelElementWrapper.AdequateElementEnum)
             {
                 // to which?
@@ -1348,11 +1353,12 @@ namespace AasxPackageExplorer
                             content: "Add known"),
                         (o) =>
                         {
-                            var uc = new SelectFromReferablesPoolFlyout();
-                            uc.DataSourcePools = AasxPredefinedConcepts.DefinitionsPool.Static;
-                            this.flyoutProvider.StartFlyoverModal(uc);
+                            var uc = new AnyUiDialogueDataSelectReferableFromPool(
+                                caption: "Select known entity");
+                            this.context.StartModalDialogue(uc);
 
-                            if (uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
+                            if (uc.Result && 
+                                uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
                                 && pe.Ref is AdminShell.Identifiable id
                                 && id.identification != null)
                                 keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,

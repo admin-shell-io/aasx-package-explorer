@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
 using AasxPackageExplorer;
+using AnyUi;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -178,7 +179,7 @@ namespace AasxOpenIdClient
                             switch (operation)
                             {
                                 case "/server/listaas/":
-                                    var listOfAas = new List<SelectFromListFlyoutItem>();
+                                    var listOfAas = new List<AnyUiDialogueListItem>();
                                     string[] split = urlContents.Split('\n');
                                     int i = 0;
                                     int offset = 0;
@@ -186,7 +187,7 @@ namespace AasxOpenIdClient
                                     {
                                         if (offset >= 2 && offset < split.Length - 2)
                                         {
-                                            listOfAas.Add(new SelectFromListFlyoutItem(s, new Tuple<int>(i++)));
+                                            listOfAas.Add(new AnyUiDialogueListItem(s, new Tuple<int>(i++)));
                                         }
                                         offset++;
                                     }
@@ -198,14 +199,14 @@ namespace AasxOpenIdClient
                                         return;
                                     }
                                     var uc = new SelectFromListFlyout();
-                                    uc.Caption = "Select AAS to get ..";
-                                    uc.ListOfItems = listOfAas;
+                                    uc.DiaData.Caption = "Select AAS to get ..";
+                                    uc.DiaData.ListOfItems = listOfAas;
                                     flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                                        uc.ResultItem.Tag is Tuple<int>)
+                                    if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
+                                        uc.DiaData.ResultItem.Tag is Tuple<int>)
                                     {
                                         // get result arguments
-                                        var TagTuple = uc.ResultItem.Tag as Tuple<int>;
+                                        var TagTuple = uc.DiaData.ResultItem.Tag as Tuple<int>;
                                         value = TagTuple.Item1.ToString();
                                     }
                                     else
