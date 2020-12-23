@@ -116,7 +116,7 @@ namespace AasxPackageExplorer
         public ModifyRepo repo = null;
 
         public DispEditHighlight.HighlightFieldInfo highlightField = null;
-        private FrameworkElement lastHighlightedField = null;
+        private AnyUiFrameworkElement lastHighlightedField = null;
 
         public AnyUiContextBase context = null;
 
@@ -126,11 +126,6 @@ namespace AasxPackageExplorer
 
         public void HighligtStateElement(AnyUiFrameworkElement fe, bool highlighted)
         {
-            // TODO MIHO
-        }
-
-        public void HighligtStateElement(FrameworkElement fe, bool highlighted)
-        {
             // access
             if (fe == null)
                 return;
@@ -139,76 +134,30 @@ namespace AasxPackageExplorer
             if (highlighted)
                 this.lastHighlightedField = fe;
 
+        }
+
+        /// <summary>
+        /// During renderig, the last highlighted field will be identified.
+        /// This function will perform the rendering; presuming that the controls
+        /// are already displayed by the implementation technology.
+        /// </summary>
+        public void ShowLastHighlights()
+        {
+            // any highlighted?
+            if (this.lastHighlightedField == null)
+                return;
+
+            // execute
             // be a little careful
             try
             {
-                // Textbox
-                if (fe is TextBox)
-                {
-                    var tb = fe as TextBox;
-                    if (highlighted)
-                    {
-                        tb.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
-                        tb.BorderThickness = new Thickness(3);
-                        tb.Focus();
-                        tb.SelectAll();
-                    }
-                    else
-                    {
-                        tb.BorderBrush = SystemColors.ControlDarkBrush;
-                        tb.BorderThickness = new Thickness(1);
-                    }
-                }
-
-                // Combobox
-                if (fe is ComboBox)
-                {
-                    var cb = fe as ComboBox;
-                    if (highlighted)
-                    {
-                        cb.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
-                        cb.BorderThickness = new Thickness(3);
-
-                        try
-                        {
-                            // see: https://stackoverflow.com/questions/37006596/borderbrush-to-combobox
-                            // see also: https://stackoverflow.com/questions/2285491/
-                            // wpf-findname-returns-null-when-it-should-not
-                            cb.ApplyTemplate();
-                            var cbTemp = cb.Template;
-                            if (cbTemp != null)
-                            {
-                                var toggleButton = cbTemp.FindName(
-                                    "toggleButton", cb) as System.Windows.Controls.Primitives.ToggleButton;
-                                toggleButton?.ApplyTemplate();
-                                var tgbTemp = toggleButton?.Template;
-                                if (tgbTemp != null)
-                                {
-                                    var border = tgbTemp.FindName("templateRoot", toggleButton) as Border;
-                                    if (border != null)
-                                        border.BorderBrush = new SolidColorBrush(
-                                            Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                        }
-
-                        cb.Focus();
-                    }
-                    else
-                    {
-                        cb.BorderBrush = SystemColors.ControlDarkBrush;
-                        cb.BorderThickness = new Thickness(1);
-                    }
-                }
+                this.context?.HighlightElement(this.lastHighlightedField, true);
             }
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
+
         }
 
         public void ClearHighlights()
@@ -351,7 +300,7 @@ namespace AasxPackageExplorer
             var brd = new AnyUiBorder();
             brd.Margin = margin;
             brd.Padding = padding;
-            brd.Tag = "DropBox";
+            brd.IsDropBox = true;
 
             brd.BorderBrush = AnyUiBrushes.DarkBlue;
             if (borderBrush != null)
@@ -463,28 +412,7 @@ namespace AasxPackageExplorer
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
             g.Children.Add(but);
-
-            // on demand: construct and register context menu
-            if (menuHeaders != null && menuHeaders.Length >= 2 && menuItemLambda != null)
-            {
-                but.Click = () =>
-                {
-                    var nmi = menuHeaders.Length / 2;
-                    var cm = new ContextMenu();
-                    for (int i = 0; i < nmi; i++)
-                    {
-                        var mi = new MenuItem();
-                        mi.Icon = "" + menuHeaders[2 * i + 0];
-                        mi.Header = "" + menuHeaders[2 * i + 1];
-                        mi.Tag = i;
-                        cm.Items.Add(mi);
-                        repo.RegisterControl(mi, menuItemLambda);
-                    }
-                    // TODO MIHO
-                    cm.PlacementTarget = null; // but.GetOrCreateWpfElement();
-                    cm.IsOpen = true;
-                };
-            }
+            but.SpecialAction = new AnyUiSpecialActionContextMenu(menuHeaders, menuItemLambda);
 
             // ok
             return (but);
@@ -552,7 +480,7 @@ namespace AasxPackageExplorer
 
             if (auxButton)
             {
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 1,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -721,7 +649,7 @@ namespace AasxPackageExplorer
                     maxWidth: maxWidth,
                     items: comboBoxItems,
                     isEditable: comboBoxIsEditable);
-                repo.RegisterControl(cb, setValue, takeOverLambda: takeOverLambdaAction);
+                AnyUiUIElement.RegisterControl(cb, setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
                 if (cb != null && this.highlightField != null && valueHash != null &&
@@ -733,7 +661,7 @@ namespace AasxPackageExplorer
             {
                 // use plain text box
                 var tb = AddSmallTextBoxTo(g, 0, 1, margin: new AnyUiThickness(0, 2, 2, 2), text: "" + value);
-                repo.RegisterControl(tb,
+                AnyUiUIElement.RegisterControl(tb,
                     setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
@@ -753,7 +681,7 @@ namespace AasxPackageExplorer
                         {
                             return auxButtonLambda(closureI); // exchange o with i !!
                         };
-                    var b = repo.RegisterControl(
+                    var b = AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g, 0, 2 + i,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -811,7 +739,7 @@ namespace AasxPackageExplorer
                 // interactive
                 var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     borderThickness: new AnyUiThickness(1), text: "" + value, minHeight: minHeight);
-                repo.RegisterControl(brd,
+                AnyUiUIElement.RegisterControl(brd,
                     setValue);
             }
 
@@ -908,7 +836,7 @@ namespace AasxPackageExplorer
             }
             else
             {
-                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                AnyUiUIElement.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     content: additionalInfo, verticalContentAlignment: AnyUiVerticalAlignment.Center,
                     isChecked: initialValue),
                         (o) =>
@@ -968,7 +896,7 @@ namespace AasxPackageExplorer
                 b.Margin = new AnyUiThickness(2, 2, 2, 2);
                 b.Padding = new AnyUiThickness(5, 0, 5, 0);
                 wp.Children.Add(b);
-                repo.RegisterControl(b,
+                AnyUiUIElement.RegisterControl(b,
                     (o) =>
                     {
                         return action(currentI); // button # as argument!
@@ -1038,7 +966,7 @@ namespace AasxPackageExplorer
             // populate [+]
             if (repo != null)
             {
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 3,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1082,7 +1010,7 @@ namespace AasxPackageExplorer
                             minWidth: 50,
                             items: defaultLanguages,
                             isEditable: true);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbLang,
                             (o) =>
                             {
@@ -1100,7 +1028,7 @@ namespace AasxPackageExplorer
                             g, 0 + i + rowOfs, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + langStr[currentI].str);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbStr,
                             (o) =>
                             {
@@ -1114,7 +1042,7 @@ namespace AasxPackageExplorer
                             this.HighligtStateElement(tbStr, true);
 
                         // button [-]
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             AddSmallButtonTo(
                                 g, 0 + i + rowOfs, 3,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1137,7 +1065,7 @@ namespace AasxPackageExplorer
             var uc = new AnyUiDialogueDataSelectAasEntity(
                 caption: "Select entity of AAS ..",
                 selector: selector, filter: filter);
-            this.context.StartModalDialogue(uc);
+            this.context.StartFlyoverModal(uc);
             if (uc.Result && uc.ResultKeys != null)
                 return uc.ResultKeys;
 
@@ -1152,7 +1080,7 @@ namespace AasxPackageExplorer
             var uc = new AnyUiDialogueDataSelectAasEntity(
                 caption: "Select entity of AAS ..",
                 selector: selector, filter: filter);
-            this.context.StartModalDialogue(uc);
+            this.context.StartFlyoverModal(uc);
             if (uc.Result && uc.ResultVisualElement != null)
                 return uc.ResultVisualElement;
 
@@ -1166,19 +1094,13 @@ namespace AasxPackageExplorer
             var res = false;
             
             // TODO (MIHO, 2020-12-21): function & if-clause is obsolete
-            if (this.flyoutProvider != null)
-            {
-                var uc = new AnyUiDialogueDataSelectEclassEntity("Select ECLASS entity ..",
-                    mode: mode);
-                this.context.StartModalDialogue(uc);
-                resIRDI = uc.ResultIRDI;
-                resCD = uc.ResultCD;
-                res = resIRDI != null;
-            }
-            else
-            {
-                res = false;
-            }
+            var uc = new AnyUiDialogueDataSelectEclassEntity("Select ECLASS entity ..",
+                mode: mode);
+            this.context.StartFlyoverModal(uc);
+            resIRDI = uc.ResultIRDI;
+            resCD = uc.ResultCD;
+            res = resIRDI != null;
+
             return res;
         }
 
@@ -1198,7 +1120,7 @@ namespace AasxPackageExplorer
             var uc = new AnyUiDialogueDataSelectFromList(
                 caption: caption);
             uc.ListOfItems = fol;
-            this.context.StartModalDialogue(uc);
+            this.context.StartFlyoverModal(uc);
             if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
                     uc.ResultItem.Tag is AdminShell.SubmodelElementWrapper.AdequateElementEnum)
             {
@@ -1225,12 +1147,11 @@ namespace AasxPackageExplorer
             if (en == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                 return null;
 
-            if (this.flyoutProvider != null &&
-                    AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                        "Recfactor selected entity? " +
-                            "This operation will change the selected submodel element and " +
-                            "delete specific attributes. It can not be reverted!",
-                        "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                "Recfactor selected entity? " +
+                    "This operation will change the selected submodel element and " +
+                    "delete specific attributes. It can not be reverted!",
+                "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
             {
                 try
                 {
@@ -1345,7 +1266,7 @@ namespace AasxPackageExplorer
                 g.Children.Add(g2);
 
                 if (addFromPool)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 1,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1355,7 +1276,7 @@ namespace AasxPackageExplorer
                         {
                             var uc = new AnyUiDialogueDataSelectReferableFromPool(
                                 caption: "Select known entity");
-                            this.context.StartModalDialogue(uc);
+                            this.context.StartFlyoverModal(uc);
 
                             if (uc.Result && 
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
@@ -1371,7 +1292,7 @@ namespace AasxPackageExplorer
                         });
 
                 if (addEclassIrdi)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1396,7 +1317,7 @@ namespace AasxPackageExplorer
                         });
 
                 if (addExistingEntities != null && packages.MainAvailable)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 3,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1415,7 +1336,7 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 4,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1432,7 +1353,7 @@ namespace AasxPackageExplorer
                     });
 
                 if (jumpLambda != null)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 5,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1443,7 +1364,7 @@ namespace AasxPackageExplorer
                             return jumpLambda(keys);
                         });
 
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 6,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1460,7 +1381,7 @@ namespace AasxPackageExplorer
                 for (int i = 0; i < presetNo; i++)
                 {
                     var closureKey = addPresetKeyLists[i];
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 7 + i,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1512,7 +1433,7 @@ namespace AasxPackageExplorer
                         // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
 
                         // type
-                        var cbType = repo.RegisterControl(
+                        var cbType = AnyUiUIElement.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1536,7 +1457,7 @@ namespace AasxPackageExplorer
                             this.HighligtStateElement(cbType, true);
 
                         // local
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             AddSmallCheckBoxTo(
                                 g, 0 + i + rowOfs, 2,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1559,7 +1480,7 @@ namespace AasxPackageExplorer
                             items: AdminShell.Key.IdentifierTypeNames,
                             isEditable: false,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             cbIdType,
                             (o) =>
                             {
@@ -1579,7 +1500,7 @@ namespace AasxPackageExplorer
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + keys[currentI].value,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbValue,
                             (o) =>
                             {
@@ -1608,7 +1529,7 @@ namespace AasxPackageExplorer
                                 {
                                     var action = false;
 
-                                    if (o is MenuItem mi && mi.Tag is int ti)
+                                    if (o is int ti)
                                         switch (ti)
                                         {
                                             case 0:
@@ -1734,10 +1655,9 @@ namespace AasxPackageExplorer
                     }
 
                     if (buttonNdx == 2)
-                        if (this.flyoutProvider != null &&
-                                AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                    "Delete selected entity? This operation can not be reverted!", "AASX",
-                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                "Delete selected entity? This operation can not be reverted!", "AASX",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
@@ -1761,12 +1681,12 @@ namespace AasxPackageExplorer
 
                         if (buttonNdx == 1)
                         {
-                            if (Options.Curr.QualifiersFile == null || flyoutProvider == null)
+                            if (Options.Curr.QualifiersFile == null)
                                 return new ModifyRepo.LambdaActionNone();
                             try
                             {
                                 var uc = new AnyUiDialogueDataSelectQualifierPreset();
-                                this.context.StartModalDialogue(uc);
+                                this.context.StartFlyoverModal(uc);
                                 if (uc.Result && uc.ResultQualifier != null)
                                     qualifiers.Add(uc.ResultQualifier);
                             }
@@ -1887,7 +1807,7 @@ namespace AasxPackageExplorer
                 List<AdminShell.SubmodelElement> targets)
         {
             // need dialogue and data
-            if (this.flyoutProvider == null || env == null || targets == null)
+            if (env == null || targets == null)
                 return false;
 
             // use eCl@ss utilities
@@ -1901,17 +1821,19 @@ namespace AasxPackageExplorer
                 return false;
 
             // make a progress flyout
-            var uc = new ProgressBarFlyout(
-                "Import ConceptDescriptions from eCl@ss", "Preparing ...", AnyUiMessageBoxImage.Information);
+            var uc = new AnyUiDialogueDataProgress(
+                "Import ConceptDescriptions from eCl@ss", 
+                info: "Preparing ...", symbol: AnyUiMessageBoxImage.Information);
             uc.Progress = 0.0;
             // show this
-            this.flyoutProvider.StartFlyover(uc);
+            this.context.StartFlyover(uc);
 
             // setup worker
             var worker = new BackgroundWorker();
             worker.DoWork += (sender, e) =>
             {
                 // job data
+                System.Threading.Thread.Sleep(10);
 
                 // longrunnig task for searching IRDIs ..
                 uc.Info = "Collecting eCl@ss Data ..";
@@ -1949,8 +1871,7 @@ namespace AasxPackageExplorer
             worker.RunWorkerCompleted += (sender, e) =>
             {
                 // in any case, close flyover
-                if (flyoutProvider != null)
-                    flyoutProvider.CloseFlyover();
+                this.context.CloseFlyover();
 
                 // redraw everything
                 repo.AddWishForAction(new ModifyRepo.LambdaActionRedrawAllElements(startMainDataElement));

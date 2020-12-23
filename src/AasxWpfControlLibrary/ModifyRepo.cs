@@ -24,7 +24,7 @@ namespace AasxPackageExplorer
     public class ModifyRepo
     {
         // some types for LambdaAction
-        public class LambdaAction { }
+        public class LambdaAction : AnyUiLambdaActionBase { }
         public class LambdaActionNone : LambdaAction { }
         public class LambdaActionRedrawEntity : LambdaAction { }
         public class LambdaActionRedrawAllElements : LambdaAction
@@ -93,6 +93,16 @@ namespace AasxPackageExplorer
         public AnyUiFrameworkElement RegisterControl(
             AnyUiFrameworkElement cntl, Func<object, LambdaAction> setValue, LambdaAction takeOverLambda = null)
         {
+            // access
+            if (cntl == null)
+                return null;
+
+            // crude test
+            cntl.setValueLambda = setValue;
+            cntl.takeOverLambda = takeOverLambda;
+
+            return cntl;
+
             // store for LATER activation
             var it = new RepoItem();
             it.AnyUi = cntl;
@@ -144,9 +154,6 @@ namespace AasxPackageExplorer
             // add to framework elems index
             if (!fwElemToItem.ContainsKey(fe))
                 fwElemToItem.Add(fe, it);
-
-            if (AnyUi is AnyUiComboBox cb && it.takeOverLambda != null)
-                ;
 
             // now, activate
             ActivateFwElem(it);
@@ -257,6 +264,7 @@ namespace AasxPackageExplorer
                     // contents changed
                     WishForOutsideAction.Add(new LambdaActionContentsTakeOver());
 
+                    // TODO (MIHO, 2020-12-23) remove "false"
                     if (it.takeOverLambda != null && false)
                         WishForOutsideAction.Add(it.takeOverLambda);
                 }

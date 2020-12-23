@@ -32,38 +32,54 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public bool Result = false;
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataProgress DiaData = new AnyUiDialogueDataProgress();
 
-        private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
-
-        public ProgressBarFlyout(string caption, string info, AnyUiMessageBoxImage image)
+        public ProgressBarFlyout(string caption = null, string info = null, AnyUiMessageBoxImage? symbol = null)
         {
             InitializeComponent();
 
+            // inits
+            if (caption != null)
+                DiaData.Caption = caption;
+            if (info != null)
+                DiaData.Info = info;
+            if (symbol.HasValue)
+                DiaData.Symbol = symbol.Value;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
             // texts
-            this.LabelCaption.Content = caption;
-            this.LabelInfo.Content = info;
+            this.LabelCaption.Content = DiaData.Caption;
+            this.LabelInfo.Content = DiaData.Info;
 
             // image
             this.ImageIcon.Source = null;
-            if (image == AnyUiMessageBoxImage.Error)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
-            if (image == AnyUiMessageBoxImage.Hand)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
-            if (image == AnyUiMessageBoxImage.Information)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
-            if (image == AnyUiMessageBoxImage.Question)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_question.png",
                         UriKind.RelativeOrAbsolute));
-            if (image == AnyUiMessageBoxImage.Warning)
+            if (DiaData.Symbol == AnyUiMessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
+            // wire event
+            DiaData.DataChanged += (progress, info) =>
+            {
+                Progress = progress;
+                Info = info;
+            };
         }
 
         //
@@ -112,12 +128,8 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Result = false;
+            DiaData.Result = false;
             ControlClosed?.Invoke();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
         }
 
     }

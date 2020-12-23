@@ -21,6 +21,7 @@ using AasxPackageExplorer;
 using AdminShellNS;
 using AasxWpfControlLibrary;
 using AnyUi.AAS;
+using System.Windows.Input;
 
 namespace AnyUi
 {
@@ -116,21 +117,54 @@ namespace AnyUi
             return res;
         }
 
+        //
+        // Handling of outside actions
+        //
+
+        public List<AnyUiLambdaActionBase> WishForOutsideAction = new List<AnyUiLambdaActionBase>();
+
+        /// <summary>
+        /// This function is called from multiple places inside this class to emit an labda action
+        /// to the superior logic of the application
+        /// </summary>
+        /// <param name="action"></param>
+        private void EmitOutsideAction(AnyUiLambdaActionBase action)
+        {
+            if (action == null)
+                return;
+            WishForOutsideAction.Add(action);
+        }
+
         private class RenderRec
         {
             public Type CntlType;
             public Type WpfType;
             public Action<AnyUiUIElement, UIElement> InitLambda;
+            public Action<AnyUiUIElement, UIElement, bool> HighlightLambda;
 
-            public RenderRec(Type cntlType, Type wpfType, Action<AnyUiUIElement, UIElement> initLambda = null)
+            public RenderRec(Type cntlType, Type wpfType, 
+                Action<AnyUiUIElement, UIElement> initLambda = null,
+                Action<AnyUiUIElement, UIElement, bool> highlightLambda = null)
             {
                 CntlType = cntlType;
                 WpfType = wpfType;
                 InitLambda = initLambda;
+                HighlightLambda = highlightLambda;
             }
         }
 
-        private List<RenderRec> RenderRecs = new List<RenderRec>();
+        private class ListOfRenderRec : List<RenderRec>
+        {
+            public RenderRec FindAnyUiCntl(Type searchType)
+            {
+                foreach (var rr in this)
+                    if (rr?.CntlType == searchType)
+                        return rr;
+                return null;
+            }
+        }
+
+        private ListOfRenderRec RenderRecs = new ListOfRenderRec();
 
         private void InitRenderRecs()
         {
@@ -253,17 +287,57 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b) =>
                 {
-                   if (a is AnyUiBorder cntl && b is Border wpf)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.BorderThickness != null)
-                           wpf.BorderThickness = GetWpfTickness(cntl.BorderThickness);
-                       if (cntl.BorderBrush != null)
-                           wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                   }
+                    if (a is AnyUiBorder cntl && b is Border wpf)
+                    {
+                        // members
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.BorderThickness != null)
+                            wpf.BorderThickness = GetWpfTickness(cntl.BorderThickness);
+                        if (cntl.BorderBrush != null)
+                            wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
+                        // callbacks
+                        if (cntl.IsDropBox)
+                        {
+                            wpf.AllowDrop = true;
+                            wpf.DragEnter += (object sender2, DragEventArgs e2) =>
+                            {
+                                e2.Effects = DragDropEffects.Copy;
+                            };
+                            wpf.PreviewDragOver += (object sender3, DragEventArgs e3) =>
+                            {
+                                e3.Handled = true;
+                            };
+                            wpf.Drop += (object sender4, DragEventArgs e4) =>
+                            {
+                                if (e4.Data.GetDataPresent(DataFormats.FileDrop, true))
+                                {
+                                    // Note that you can have more than one file.
+                                    string[] files = (string[])e4.Data.GetData(DataFormats.FileDrop);
+
+                                    // Assuming you have one file that you care about, pass it off to whatever
+                                    // handling code you have defined.
+                                    if (files != null && files.Length > 0
+                                        && sender4 is FrameworkElement fe2)
+                                    {
+                                        // update UI
+                                        if (wpf.Child is TextBlock tb2)
+                                            tb2.Text = "" + files[0];
+
+                                        // value changed
+                                        cntl.setValueLambda?.Invoke(files[0]);
+
+                                        // contents changed
+                                        WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                                    }
+                                }
+
+                                e4.Handled = true;
+                            };
+                        }
+                    }
                 }),
 
                 new RenderRec(typeof(AnyUiLabel), typeof(Label), (a, b) =>
@@ -318,94 +392,247 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiTextBox), typeof(TextBox), (a, b) =>
                 {
-                   if (a is AnyUiTextBox cntl && b is TextBox wpf)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                       wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
-                       wpf.AcceptsReturn = cntl.AcceptsReturn;
-                       if (cntl.MaxLines != null)
-                           wpf.MaxLines = cntl.MaxLines.Value;
-                       wpf.Text = cntl.Text;
-                   }
+                    if (a is AnyUiTextBox cntl && b is TextBox wpf)
+                    {
+                        // members
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
+                        wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
+                        wpf.AcceptsReturn = cntl.AcceptsReturn;
+                        if (cntl.MaxLines != null)
+                            wpf.MaxLines = cntl.MaxLines.Value;
+                        wpf.Text = cntl.Text;
+                        // callbacks
+                        cntl.originalValue = "" + cntl.Text;
+                        wpf.TextChanged += (sender, e) => {
+                            cntl.setValueLambda?.Invoke(wpf.Text);
+                            WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                        };
+                        wpf.KeyUp += (sender, e) =>
+                        {
+                            if (e.Key == Key.Enter)
+                            {
+                                e.Handled = true;
+                                EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                                EmitOutsideAction(cntl.takeOverLambda);
+                            }
+                        };
+                    }
+                }, highlightLambda: (a,b,highlighted) => {
+                    if (a is AnyUiTextBox cntl && b is TextBox tb)
+                    {
+                        if (highlighted)
+                        {
+                            tb.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                            tb.BorderThickness = new Thickness(3);
+                            tb.Focus();
+                            tb.SelectAll();
+                        }
+                        else
+                        {
+                            tb.BorderBrush = SystemColors.ControlDarkBrush;
+                            tb.BorderThickness = new Thickness(1);
+                        }
+                    }
                 }),
 
                 new RenderRec(typeof(AnyUiComboBox), typeof(ComboBox), (a, b) =>
                 {
-                   if (a is AnyUiComboBox cntl && b is ComboBox wpf)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                       if (cntl.IsEditable.HasValue)
-                           wpf.IsEditable = cntl.IsEditable.Value;
+                    // members
+                    if (a is AnyUiComboBox cntl && b is ComboBox wpf)
+                    {
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.IsEditable.HasValue)
+                            wpf.IsEditable = cntl.IsEditable.Value;
 
-                       if (cntl.Items != null)
-                       {
-                           // wpf.Items.Clear();
-                           foreach (var i in cntl.Items)
-                               wpf.Items.Add(i);
-                       }
+                        if (cntl.Items != null)
+                        {
+                            // wpf.Items.Clear();
+                            foreach (var i in cntl.Items)
+                                wpf.Items.Add(i);
+                        }
 
-                       wpf.Text = cntl.Text;
-                       if (cntl.SelectedIndex.HasValue)
-                           wpf.SelectedIndex = cntl.SelectedIndex.Value;
-                   }
+                        wpf.Text = cntl.Text;
+                        if (cntl.SelectedIndex.HasValue)
+                            wpf.SelectedIndex = cntl.SelectedIndex.Value;
+
+                        // callbacks
+                        cntl.originalValue = "" + cntl.Text;
+                        System.Windows.Controls.TextChangedEventHandler tceh = (sender, e) => {
+                            cntl.setValueLambda?.Invoke(wpf.Text);
+                        };
+                        wpf.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent, tceh);
+                        if (!wpf.IsEditable)
+                        {
+                            // we need this event
+                            wpf.SelectionChanged += (sender, e) => {
+                                cntl.setValueLambda((string) wpf.SelectedItem);
+                                EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                                // Note for MIHO: this was the dangerous outside event loop!
+                                EmitOutsideAction(cntl.takeOverLambda);
+                            };
+                        }
+                        else
+                        { 
+                            // if editabe, add this for comfort
+                            wpf.KeyUp += (sender, e) =>
+                            {
+                                if (e.Key == Key.Enter)
+                                {
+                                    e.Handled = true;
+                                    EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                                    EmitOutsideAction(cntl.takeOverLambda);
+                                }
+                            };
+                        }
+                    }
+                }, highlightLambda: (a,b,highlighted) => {
+                    if (a is AnyUiComboBox cntl && b is ComboBox cb)
+                    {
+                        if (highlighted)
+                        {
+                            cb.BorderBrush = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                            cb.BorderThickness = new Thickness(3);
+
+                            try
+                            {
+                                // see: https://stackoverflow.com/questions/37006596/borderbrush-to-combobox
+                                // see also: https://stackoverflow.com/questions/2285491/
+                                // wpf-findname-returns-null-when-it-should-not
+                                cb.ApplyTemplate();
+                                var cbTemp = cb.Template;
+                                if (cbTemp != null)
+                                {
+                                    var toggleButton = cbTemp.FindName(
+                                        "toggleButton", cb) as System.Windows.Controls.Primitives.ToggleButton;
+                                    toggleButton?.ApplyTemplate();
+                                    var tgbTemp = toggleButton?.Template;
+                                    if (tgbTemp != null)
+                                    {
+                                        var border = tgbTemp.FindName("templateRoot", toggleButton) as Border;
+                                        if (border != null)
+                                            border.BorderBrush = new SolidColorBrush(
+                                                Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
+
+                            cb.Focus();
+                        }
+                        else
+                        {
+                            cb.BorderBrush = SystemColors.ControlDarkBrush;
+                            cb.BorderThickness = new Thickness(1);
+                        }
+                    }
                 }),
 
                 new RenderRec(typeof(AnyUiCheckBox), typeof(CheckBox), (a, b) =>
                 {
-                   if (a is AnyUiCheckBox cntl && b is CheckBox wpf)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.IsChecked.HasValue)
-                           wpf.IsChecked = cntl.IsChecked.Value;
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                       wpf.Content = cntl.Content;
-                   }
+                    if (a is AnyUiCheckBox cntl && b is CheckBox wpf)
+                    {
+                        // members
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.IsChecked.HasValue)
+                            wpf.IsChecked = cntl.IsChecked.Value;
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
+                        wpf.Content = cntl.Content;
+                        // callbacks
+                        cntl.originalValue = cntl.IsChecked;
+                        RoutedEventHandler ceh = (sender, e) =>
+                        {
+                            cntl.setValueLambda?.Invoke(wpf.IsChecked == true);
+                            EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                            EmitOutsideAction(cntl.takeOverLambda);
+                        };
+                        wpf.Checked += ceh;
+                        wpf.Unchecked += ceh;
+                    }
                 }),
 
                 new RenderRec(typeof(AnyUiButton), typeof(Button), (a, b) =>
                 {
-                   if (a is AnyUiButton cntl && b is Button wpf)
-                   {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
-                       wpf.Content = cntl.Content;
-                       wpf.ToolTip = cntl.ToolTip;
-                   }
+                    if (a is AnyUiButton cntl && b is Button wpf)
+                    {
+                        // members
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
+                        wpf.Content = cntl.Content;
+                        wpf.ToolTip = cntl.ToolTip;
+                        // callbacks
+                        wpf.Click += (sender, e) =>
+                        {
+                            // normal procedure
+                            var action = cntl.setValueLambda?.Invoke(cntl);
+                            EmitOutsideAction(action);
+
+                            // special case
+                            if (cntl.SpecialAction is AnyUiSpecialActionContextMenu cntlcm
+                                && cntlcm.MenuItemHeaders != null)
+                            {
+                                var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                                var cm = new ContextMenu();
+                                for (int i = 0; i < nmi; i++)
+                                {
+                                    // menu item itself
+                                    var mi = new MenuItem();
+                                    mi.Icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                    mi.Header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                    mi.Tag = i;
+                                    cm.Items.Add(mi);
+
+                                    // directly attached
+                                    var bufferedI = i;
+                                    mi.Click += (sender2, e2) =>
+                                    {
+                                        var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                        EmitOutsideAction(action2);
+                                    };
+                                }
+                                // TODO MIHO
+                                cm.PlacementTarget = wpf;
+                                cm.IsOpen = true;
+                            }
+                        };
+                    }
                 })
             });
         }
 
         public UIElement GetOrCreateWpfElement(
-            AnyUiUIElement AnyUi,
+            AnyUiUIElement el,
             Type superType = null,
             bool allowCreate = true)
         {
             // access
-            if (AnyUi == null)
+            if (el == null)
                 return null;
 
             // have data attached to cntl
-            if (AnyUi.DisplayData == null)
-                AnyUi.DisplayData = new AnyUiDisplayDataWpf(this);
-            var dd = AnyUi?.DisplayData as AnyUiDisplayDataWpf;
+            if (el.DisplayData == null)
+                el.DisplayData = new AnyUiDisplayDataWpf(this);
+            var dd = el?.DisplayData as AnyUiDisplayDataWpf;
             if (dd == null)
                 return null;
 
@@ -419,14 +646,8 @@ namespace AnyUi
                 return null;
 
             // identify render rec
-            var searchType = (superType != null) ? superType : AnyUi.GetType();
-            RenderRec foundRR = null;
-            foreach (var rr in RenderRecs)
-                if (rr?.CntlType == searchType)
-                {
-                    foundRR = rr;
-                    break;
-                }
+            var searchType = (superType != null) ? superType : el.GetType();
+            var foundRR = RenderRecs.FindAnyUiCntl(searchType);
             if (foundRR == null || foundRR.WpfType == null)
                 return null;
 
@@ -439,19 +660,43 @@ namespace AnyUi
             // recurse (first)
             var bt = searchType.BaseType;
             if (bt != null)
-                GetOrCreateWpfElement(AnyUi, superType: bt);
+                GetOrCreateWpfElement(el, superType: bt);
 
             // perform the render action (for this level of attributes, second)
-            foundRR.InitLambda?.Invoke(AnyUi, dd.WpfElement);
+            foundRR.InitLambda?.Invoke(el, dd.WpfElement);
 
             // call action
             if (topClass)
             {
-                UIElementWasRendered(AnyUi, dd.WpfElement);
+                UIElementWasRendered(el, dd.WpfElement);
             }
 
             // result
             return dd.WpfElement;
+        }
+
+        /// <summary>
+        /// Graphically highlights/ marks an element to be "selected", e.g for seacg/ replace
+        /// operations.
+        /// </summary>
+        /// <param name="el">AnyUiElement</param>
+        /// <param name="highlighted">True for highlighted, set for clear state</param>
+        public override void HighlightElement(AnyUiFrameworkElement el, bool highlighted)
+        {
+            // access 
+            if (el == null)
+                return;
+            var dd = el?.DisplayData as AnyUiDisplayDataWpf;
+            if (dd?.WpfElement == null)
+                return;
+
+            // renderRec?
+            var foundRR = RenderRecs.FindAnyUiCntl(el.GetType());
+            if (foundRR?.HighlightLambda == null)
+                return;
+
+            // perform the render action (for this level of attributes, second)
+            foundRR.HighlightLambda.Invoke(el, dd.WpfElement, highlighted);
         }
 
         public void UIElementWasRendered(AnyUiUIElement AnyUi, UIElement el)
@@ -482,13 +727,76 @@ namespace AnyUi
             return FlyoutProvider.MessageBoxFlyoutShow(message, caption, buttons, image);
         }
 
+        private UserControl DispatchFlyout(AnyUiDialogueDataBase dialogueData)
+        {
+            // access
+            if (dialogueData == null)
+                return null;
+            UserControl res = null;
+
+            // dispatch
+            // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
+            if (dialogueData is AnyUiDialogueDataTextBox ddtb)
+            {
+                var uc = new TextBoxFlyout();
+                uc.DiaData = ddtb;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
+            {
+                var uc = new SelectEclassEntityFlyout();
+                uc.DiaData = ddec;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+            {
+                var uc = new TextEditorFlyout();
+                uc.DiaData = ddte;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
+            {
+                var uc = new SelectAasEntityFlyout(Packages);
+                uc.DiaData = ddsa;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectReferableFromPool ddrf)
+            {
+                var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
+                uc.DiaData = ddrf;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
+            {
+                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
+                var uc = new SelectQualifierPresetFlyout(fullfn);
+                uc.DiaData = ddsq;
+                res = uc;
+            }
+
+            if (dialogueData is AnyUiDialogueDataProgress ddpr)
+            {
+                var uc = new ProgressBarFlyout();
+                uc.DiaData = ddpr;
+                res = uc;
+            }
+
+            return res;
+        }
+
         /// <summary>
-        /// Show selected dialogues hardware-independent. The technology implementation will show the
+        /// Shows specified dialogue hardware-independent. The technology implementation will show the
         /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// Modal dialogue: this function will block, until user ends dialogue.
         /// </summary>
         /// <param name="dialogueData"></param>
         /// <returns>If the dialogue was end with "OK" or similar success.</returns>
-        public override bool StartModalDialogue(AnyUiDialogueDataBase dialogueData)
+        public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
         {
             // access
             if (dialogueData == null || FlyoutProvider == null)
@@ -500,58 +808,55 @@ namespace AnyUi
             // beware of exceptions
             try
             {
-
-                // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
-                if (dialogueData is AnyUiDialogueDataTextBox ddtb)
-                {
-                    var uc = new TextBoxFlyout();
-                    uc.DiaData = ddtb;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
-
-                if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
-                {
-                    var uc = new SelectEclassEntityFlyout();
-                    uc.DiaData = ddec;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
-
-                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-                {
-                    var uc = new TextEditorFlyout();
-                    uc.DiaData = ddte;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
-
-                if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
-                {
-                    var uc = new SelectAasEntityFlyout(Packages);
-                    uc.DiaData = ddsa;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
-
-                if (dialogueData is AnyUiDialogueDataSelectReferableFromPool ddrf)
-                {
-                    var uc = new SelectFromReferablesPoolFlyout(AasxPredefinedConcepts.DefinitionsPool.Static);
-                    uc.DiaData = ddrf;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
-
-                if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
-                {
-                    var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                    var uc = new SelectQualifierPresetFlyout(fullfn);
-                    uc.DiaData = ddsq;
-                    FlyoutProvider.StartFlyoverModal(uc);
-                }
+                var uc = DispatchFlyout(dialogueData);
+                if (uc != null)
+                    FlyoutProvider?.StartFlyoverModal(uc);
 
             } catch (Exception ex)
             {
-                Log.Singleton.Error(ex, $"while performing AnyUI dialogue {dialogueData.GetType().ToString()}");
+                Log.Singleton.Error(ex, $"while showing modal AnyUI dialogue {dialogueData.GetType().ToString()}");
             }
 
             // result
             return dialogueData.Result;
+        }
+
+        /// <summary>
+        /// Shows specified dialogue hardware-independent. The technology implementation will show the
+        /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// Non-modal: This function wil return immideately after initially displaying the dialogue.
+        /// </summary>
+        /// <param name="dialogueData"></param>
+        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
+        public override void StartFlyover(AnyUiDialogueDataBase dialogueData)
+        {
+            // access
+            if (dialogueData == null || FlyoutProvider == null)
+                return;
+
+            // make sure to reset
+            dialogueData.Result = false;
+
+            // beware of exceptions
+            try
+            {
+                var uc = DispatchFlyout(dialogueData);
+                if (uc != null)
+                    FlyoutProvider?.StartFlyover(uc);
+
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, $"while starting AnyUI dialogue {dialogueData.GetType().ToString()}");
+            }
+        }
+
+        /// <summary>
+        /// Closes started flyover dialogue-
+        /// </summary>
+        public override void CloseFlyover()
+        {
+            FlyoutProvider.CloseFlyover();
         }
     }
 }
