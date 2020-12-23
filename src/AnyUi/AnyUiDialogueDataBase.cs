@@ -146,4 +146,40 @@ namespace AnyUi
         }
     }
 
+    public class AnyUiDialogueDataProgress : AnyUiDialogueDataBase
+    {
+        public event Action<double, string> DataChanged;
+
+        // in
+        private double progress;
+        private string info = "";
+        
+        public double Progress { 
+            get { return progress; } 
+            set { progress = value; DataChanged?.Invoke(progress, info); } 
+        }
+
+        public string Info
+        {
+            get { return info; }
+            set { info = value; DataChanged?.Invoke(progress, info); }
+        }
+
+        public AnyUiMessageBoxImage Symbol;
+
+        // out
+        // currently, no out
+
+        public AnyUiDialogueDataProgress(
+            string caption = "",
+            double? maxWidth = null,
+            string info = "",
+            AnyUiMessageBoxImage symbol = AnyUiMessageBoxImage.None)
+            : base(caption, maxWidth)
+        {
+            this.info = info;
+            this.Symbol = symbol;
+        }
+    }
+
 }

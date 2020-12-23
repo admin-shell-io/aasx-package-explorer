@@ -91,6 +91,7 @@ namespace AasxPackageExplorer
 
         public void UpdateToOptions()
         {
+            TheSearchOptions.maxDepth = 1000; // shall be enough
             TheSearchOptions.findText = ComboBoxToolsFindText.Text;
             TheSearchOptions.isIgnoreCase = CheckBoxToolsFindIgnoreCase.IsChecked == true;
             TheSearchOptions.isRegex = CheckBoxToolsFindRegex.IsChecked == true;

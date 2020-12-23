@@ -197,6 +197,58 @@ namespace AnyUi
     }
 
     //
+    // Handling of events, callbacks and such
+    //
+
+    /// <summary>
+    /// Any UI defines a lot of lambda (Action<>) functions for handling events.
+    /// These lambdas can return results (commands) to the calling application,
+    /// which might be given back to higher levels of the applications to trigger
+    /// events, such as re-displaying pages or such.
+    /// </summary>
+    public class AnyUiLambdaActionBase
+    {
+    }
+
+    /// <summary>
+    /// Value of the AnyUI control were changed
+    /// </summary>
+    public class AnyUiLambdaActionContentsChanged : AnyUiLambdaActionBase
+    {
+    }
+
+    /// <summary>
+    /// Changed values shall be taken over to main application
+    /// </summary>
+    public class AnyUiLambdaActionContentsTakeOver : AnyUiLambdaActionBase
+    {
+    }
+
+    /// <summary>
+    /// This class is the base class for event handlers, which can attached to special
+    /// events of Any UI controls
+    /// </summary>
+    public class AnyUiSpecialActionBase
+    {
+    }
+
+    public class AnyUiSpecialActionContextMenu : AnyUiSpecialActionBase
+    {
+        public string[] MenuItemHeaders;
+        public Func<object, AnyUiLambdaActionBase> MenuItemLambda;
+
+        public AnyUiSpecialActionContextMenu() { }
+
+        public AnyUiSpecialActionContextMenu(
+            string[] menuItemHeaders,
+            Func<object, AnyUiLambdaActionBase> menuItemLambda)
+        {
+            MenuItemHeaders = menuItemHeaders;
+            MenuItemLambda = menuItemLambda;
+        }
+    }
+
+    //
     // Hierarchy of AnyUI graphical elements (including controls).
     // This hierarchy stems from the WPF hierarchy but should be sufficiently 
     // abstracted in order to be implemented an many UI systems
@@ -216,6 +268,26 @@ namespace AnyUi
         /// per UI element, such as the WPF UIElement.
         /// </summary>
         public AnyUiDisplayDataBase DisplayData;
+
+        /// <summary>
+        /// Stores the original (initial) value in string representation.
+        /// </summary>
+        public object originalValue = null;
+
+        /// <summary>
+        /// This callback (lambda) is activated by the control frequently, if a value update
+        /// occurs. The calling application needs to set this lambda in order to receive
+        /// value updates.
+        /// Note: currently, the function result (the lambda) is being ignored except for
+        /// Buttons
+        /// </summary>
+        public Func<object, AnyUiLambdaActionBase> setValueLambda = null;
+
+        /// <summary>
+        /// If not null, this lambda result is automatically emitted as outside action,
+        /// when the control "feels" to have a "final" selection (Enter, oder ComboBox selected)
+        /// </summary>
+        public AnyUiLambdaActionBase takeOverLambda = null;
     }
 
     public class AnyUiFrameworkElement : AnyUiUIElement
@@ -235,7 +307,7 @@ namespace AnyUi
     public class AnyUiControl : AnyUiFrameworkElement
     {
         public AnyUiVerticalAlignment? VerticalContentAlignment;
-        public AnyUiHorizontalAlignment? HorizontalContentAlignment;
+        public AnyUiHorizontalAlignment? HorizontalContentAlignment;        
     }
 
     public class AnyUiContentControl : AnyUiControl
@@ -281,6 +353,7 @@ namespace AnyUi
         public AnyUiBrush BorderBrush = null;
         public AnyUiThickness Padding;
 
+        public bool IsDropBox = false;
     }
 
     public class AnyUiLabel : AnyUiContentControl
@@ -290,7 +363,6 @@ namespace AnyUi
         public AnyUiThickness Padding;
         public AnyUiFontWeight? FontWeight;
         public string Content = null;
-
     }
 
     public class AnyUiTextBlock : AnyUiFrameworkElement
@@ -302,7 +374,6 @@ namespace AnyUi
         public AnyUiFontWeight? FontWeight;
         public double? FontSize;
         public string Text = null;
-
     }
 
     public class AnyUiHintBubble : AnyUiTextBox
@@ -321,7 +392,6 @@ namespace AnyUi
         public Nullable<int> MaxLines;
 
         public string Text = null;
-
     }
 
     public class AnyUiComboBox : AnyUiControl
@@ -336,7 +406,6 @@ namespace AnyUi
         public string Text = null;
 
         public int? SelectedIndex;
-
     }
 
     public class AnyUiCheckBox : AnyUiContentControl
@@ -348,8 +417,7 @@ namespace AnyUi
         public string Content = null;
 
         public bool? IsChecked;
-
-    }
+    }    
 
     public class AnyUiButton : AnyUiContentControl
     {
@@ -360,9 +428,6 @@ namespace AnyUi
         public string Content = null;
         public string ToolTip = null;
 
-        // public event RoutedEventHandler Click;
-
-        public Action Click;
-
+        public AnyUiSpecialActionBase SpecialAction;
     }
 }

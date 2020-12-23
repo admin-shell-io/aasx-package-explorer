@@ -56,6 +56,7 @@ namespace AasxPackageExplorer
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             // check for wishes from the modify repo
+            // TODO MIHO: remove
             if (theModifyRepo != null && theModifyRepo.WishForOutsideAction != null)
             {
                 while (theModifyRepo.WishForOutsideAction.Count > 0)
@@ -79,6 +80,32 @@ namespace AasxPackageExplorer
 
                     // all other elements refer to superior functionality
                     this.WishForOutsideAction.Add(temp);
+                }
+            }
+
+            if (helper?.context is AnyUiDisplayContextWpf dcwpf && dcwpf.WishForOutsideAction != null)
+            {
+                while (dcwpf.WishForOutsideAction.Count > 0)
+                {
+                    var temp = dcwpf.WishForOutsideAction[0];
+                    dcwpf.WishForOutsideAction.RemoveAt(0);
+
+                    // trivial?
+                    if (temp is ModifyRepo.LambdaActionNone)
+                        continue;
+
+                    // what?
+                    if (temp is ModifyRepo.LambdaActionRedrawEntity)
+                    {
+                        // redraw ourselves?
+                        if (packages != null && theEntity != null)
+                            DisplayOrEditVisualAasxElement(
+                                packages, theEntity, helper.editMode, helper.hintMode,
+                                flyoutProvider: helper.flyoutProvider);
+                    }
+
+                    // all other elements refer to superior functionality
+                    this.WishForOutsideAction.Add(temp as ModifyRepo.LambdaAction);
                 }
             }
         }
@@ -219,8 +246,8 @@ namespace AasxPackageExplorer
             //
             // Test for Blazor
             //
-
-            if (true)
+#if __test_blazor
+            if (false)
             {
                 var lab = new AnyUiLabel();
                 lab.Content = "Hallo";
@@ -249,6 +276,7 @@ namespace AasxPackageExplorer
                     });
                 }
             }
+#endif
 
             //
             // Dispatch
@@ -388,6 +416,7 @@ namespace AasxPackageExplorer
 #else
             theMasterPanel.Children.Clear();
             var spwpf = displayContext.GetOrCreateWpfElement(stack);
+            helper.ShowLastHighlights();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
 #endif

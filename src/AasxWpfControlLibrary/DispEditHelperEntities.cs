@@ -116,7 +116,7 @@ namespace AasxPackageExplorer
                         var uc = new AnyUiDialogueDataTextBox(
                             "Asset ID:", null, AnyUiMessageBoxImage.Question,
                             AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
-                        if (this.context.StartModalDialogue(uc))
+                        if (this.context.StartFlyoverModal(uc))
                         {
                             asset.identification.id = uc.Text;
                             return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
@@ -129,7 +129,7 @@ namespace AasxPackageExplorer
                             symbol: AnyUiMessageBoxImage.Question,
                             maxWidth: 1400,
                             text: asset.identification.id);
-                        if (this.context.StartModalDialogue(uc))
+                        if (this.context.StartFlyoverModal(uc))
                         {
                             var res = false;
 
@@ -1262,7 +1262,7 @@ namespace AasxPackageExplorer
                                     symbol: AnyUiMessageBoxImage.Question,
                                     maxWidth: 1400,
                                     text: submodel.identification.id);
-                                if (this.context.StartModalDialogue(uc))
+                                if (this.context.StartFlyoverModal(uc))
                                 {
                                     var res = false;
 
@@ -1401,7 +1401,7 @@ namespace AasxPackageExplorer
                             symbol: AnyUiMessageBoxImage.Question,
                             maxWidth: 1400,
                             text: cd.identification.id);
-                        if (this.context.StartModalDialogue(uc))
+                        if (this.context.StartFlyoverModal(uc))
                         {
                             var res = false;
 
@@ -2506,7 +2506,7 @@ namespace AasxPackageExplorer
                             var uc = new AnyUiDialogueDataTextEditor(
                                 caption: $"Edit Property '{"" + p.idShort}'",
                                 text: p.value);
-                            if (this.context.StartModalDialogue(uc))
+                            if (this.context.StartFlyoverModal(uc))
                             {
                                 p.value = uc.Text;
                                 return new ModifyRepo.LambdaActionRedrawEntity();
@@ -2858,7 +2858,7 @@ namespace AasxPackageExplorer
                                                 caption: $"Edit text-file '{fl.value}'",
                                                 mimeType: fl.mimeType,
                                                 text: contents);
-                                    if (!this.context.StartModalDialogue(uc))
+                                    if (!this.context.StartFlyoverModal(uc))
                                         return new ModifyRepo.LambdaActionNone();
 
                                     // save
@@ -3000,7 +3000,7 @@ namespace AasxPackageExplorer
                                                 caption: $"Edit Blob '{"" + blb.idShort}'",
                                                 mimeType: blb.mimeType,
                                                 text: blb.value);
-                            if (this.context.StartModalDialogue(uc))
+                            if (this.context.StartFlyoverModal(uc))
                             {
                                 blb.value = uc.Text;
                                 return new ModifyRepo.LambdaActionRedrawEntity();
