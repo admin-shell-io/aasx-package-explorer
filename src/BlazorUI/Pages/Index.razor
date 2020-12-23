@@ -1,14 +1,29 @@
 ﻿@page "/"
 @using AdminShellNS
+@using static AdminShellNS.AdminShellV20;
 @*using BlazorUI*@
 @using AnyUi
+@using BlazorUI.Data
+@using System
+@using System.Net;
+@inject AASService SubmodelService
 
 <div class="col-12 row">
     <br />
     <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky">
-        <h1>Hello AAS!</h1>
-
-        Welcome to the HTML renderer. The tree will be shown here.
+        @* @if (Program.isLoading)
+            {<span style="color:white;background-color:blue;">Loading...</span>} *@
+        <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
+              @bind-SelectedNode="SelectedNode"
+              @bind-ExpandedNodes="ExpandedNodes"
+              HasChildNodes="@(item => item.Childs?.Any() == true)">
+            <TitleTemplate>
+                @{ //// SubmodelService.syncSubTree(context);
+                }
+                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                <strong><span style="color:blue">@getSymbols(context)</span></strong>
+            </TitleTemplate>
+        </Tree>
         <br /><br />
     </div>
     <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
@@ -127,4 +142,310 @@
         </div>
     </div>
 </div>
+
+@code {
+
+    public class Item
+    {
+        public string Text { get; set; }
+        public IEnumerable<Item>
+        Childs
+        { get; set; }
+        public object parent { get; set; }
+        public string Type { get; set; }
+        public object Tag { get; set; }
+        public int envIndex { get; set; }
+    }
+
+    List<Item> Items = null;
+
+    IList<Item> ExpandedNodes = new List<Item>();
+    Item selectedNode;
+    Item SelectedNode
+    {
+        get { return selectedNode; }
+        set
+        {
+            selectedNode = value;
+            // OnSelectNode(selectedNode);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        // OnInitialized() allways called twice
+        //// if (hack++ == 0)
+        ////    return;
+
+        SubmodelService.buildTree();
+        Items = SubmodelService.GetTree();
+        StateHasChanged();
+
+        //ExpandedNodes.Add(Items.Skip(1).First());
+        //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
+
+        SubmodelService.NewDataAvailable += NewData;
+    }
+    public void Dispose()
+    {
+        SubmodelService.NewDataAvailable -= NewData;
+    }
+    void NewData(object source, EventArgs args)
+    {
+        Items = SubmodelService.GetTree();
+        InvokeAsync(() => this.StateHasChanged());
+    }
+
+
+    string getSymbols(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+        }
+
+        return ret;
+    }
+
+    string ViewNodeType(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+
+        if (item.Type != null)
+        {
+            ret = item.Type + " ";
+        }
+
+        object o = item.Tag;
+
+        /*
+        if (o is Referable)
+        {
+            ret = (o as Referable).GetElementName();
+            return (ret);
+        }
+        */
+
+        if (o is AdministrationShell)
+        {
+            ret += "AAS";
+        }
+        if (o is Submodel)
+        {
+            ret += "Sub";
+        }
+        if (o is SubmodelElement)
+        {
+            if (o is SubmodelElementCollection)
+            {
+                ret += "Coll";
+            }
+            if (o is Property)
+            {
+                ret += "Prop";
+            }
+        }
+        if (o is Operation)
+        {
+            ret += "Opr";
+        }
+        if (o is File)
+        {
+            ret += "File";
+        }
+        if (o is Blob)
+        {
+            ret += "Blob";
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            ret += "Range";
+        }
+        if (o is MultiLanguageProperty)
+        {
+            ret += "Lang";
+        }
+        if (o is RelationshipElement)
+        {
+            ret += "Rel";
+        }
+        if (o is ReferenceElement)
+        {
+            ret += "Ref";
+        }
+        if (o is Entity)
+        {
+            ret += "Ent";
+        }
+        if (o is AdminShellNS.AdminShellV20.BasicEvent)
+        {
+            ret += "Evt";
+        }
+
+        return (ret);
+    }
+
+    string ViewNodeID(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "NULL";
+
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+            var aas = o as AdministrationShell;
+            ret = aas.idShort;
+        }
+        if (o is Submodel)
+        {
+            var sm = o as Submodel;
+            ret = "";
+            if (sm.kind != null && sm.kind.IsTemplate)
+                ret += "<T> ";
+            ret += sm.idShort;
+        }
+        if (o is SubmodelElement)
+        {
+            var sme = o as SubmodelElement;
+            ret = "";
+            if (sme.kind != null && sme.kind.IsTemplate)
+                ret += "<T> ";
+            ret += sme.idShort;
+        }
+        if (o is File)
+        {
+            var f = o as File;
+            ret = "";
+            if (f.kind != null && f.kind.IsTemplate)
+                ret += "<T> ";
+            ret += f.idShort;
+        }
+        if (o is Blob)
+        {
+            var b = o as Blob;
+            ret = "";
+            if (b.kind != null && b.kind.IsTemplate)
+                ret += "<T> ";
+            ret += b.idShort;
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            var r = o as AdminShellNS.AdminShellV20.Range;
+            ret = "";
+            if (r.kind != null && r.kind.IsTemplate)
+                ret += "<T> ";
+            ret += r.idShort;
+        }
+        if (o is MultiLanguageProperty)
+        {
+            var mlp = o as MultiLanguageProperty;
+            ret = "";
+            if (mlp.kind != null && mlp.kind.IsTemplate)
+                ret += "<T> ";
+            ret += mlp.idShort;
+        }
+        return (ret);
+    }
+
+    string ViewNodeInfo(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+            var aas = o as AdministrationShell;
+            // ret = aas.identification.ToString();
+        }
+        if (o is Submodel)
+        {
+            var sm = o as Submodel;
+            // ret = sm.identification.ToString();
+            if (sm.qualifiers != null && sm.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        if (o is SubmodelElementCollection)
+        {
+            var sme = o as SubmodelElementCollection;
+            // ret = sm.identification.ToString();
+            if (sme.value.Count > 0)
+            {
+                ret += " #" + sme.value.Count;
+            }
+        }
+        if (o is SubmodelElement)
+        {
+            if (o is Property)
+            {
+                var prop = o as Property;
+                if (prop.value != "")
+                {
+                    ret = " = " + prop.value;
+                }
+                if (prop.qualifiers != null && prop.qualifiers.Count > 0)
+                {
+                    ret += " @QUALIFIERS";
+                }
+            }
+            if (o is File)
+            {
+                var f = o as File;
+                ret = " = " + f.value;
+                if (f.qualifiers != null && f.qualifiers.Count > 0)
+                {
+                    ret += " @QUALIFIERS";
+                }
+            }
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            var r = o as AdminShellNS.AdminShellV20.Range;
+            ret = " = " + r.min + " .. " + r.max;
+            if (r.qualifiers != null && r.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        if (o is MultiLanguageProperty)
+        {
+            var mlp = o as MultiLanguageProperty;
+            var ls = mlp.value;
+            ret = " = ";
+            for (int i = 0; i < ls.Count; i++)
+            {
+                ret += ls.langString[i].lang + " ";
+            }
+            if (mlp.qualifiers != null && mlp.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        return (ret);
+    }
+}
 

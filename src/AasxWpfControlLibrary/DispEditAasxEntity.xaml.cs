@@ -395,19 +395,33 @@ namespace AasxPackageExplorer
                 var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
                 System.IO.File.WriteAllText(@"c:\development\file.json", json);
             }
-            if (false && editMode)
+            if (editMode)
             {
-                if (count == 2)
+                if (false && count == 2)
                 {
                     count = 0;
-                    var jsonSerializerSettings = new JsonSerializerSettings()
+                    JsonSerializerSettings settings = new JsonSerializerSettings
                     {
+                        // SerializationBinder = new DisplayNameSerializationBinder(
+                        //    new[] { typeof(AasxIntegrationBase.AasForms.FormDescListOfElement), typeof(AasxIntegrationBase.AasForms.FormDescProperty) }),
+                        // SerializationBinder = new DisplayNameSerializationBinder(
+                        //     new[] { typeof(AnyUiStackPanel), typeof(AnyUiUIElement) }),
+                        // NullValueHandling = NullValueHandling.Ignore,
+                        // ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                         TypeNameHandling = TypeNameHandling.All
+                        // Formatting = Formatting.Indented
                     };
-                    var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
+
+                    var json = JsonConvert.SerializeObject(stack, settings);
                     System.IO.File.WriteAllText(@"c:\development\fileEdit.json", json);
                 }
                 count++;
+                /*
+                var writer = new System.Xml.Serialization.XmlSerializer(typeof(AnyUiUIElement));
+                var wfile = new System.IO.StreamWriter(@"c:\development\fileEdit.xml");
+                writer.Serialize(wfile, stack);
+                wfile.Close();
+                */
             }
 
 #if MONOUI
