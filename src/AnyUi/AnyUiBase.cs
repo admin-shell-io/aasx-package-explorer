@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -242,6 +243,7 @@ namespace AnyUi
     public class AnyUiSpecialActionContextMenu : AnyUiSpecialActionBase
     {
         public string[] MenuItemHeaders;
+        [JsonIgnore]
         public Func<object, AnyUiLambdaActionBase> MenuItemLambda;
 
         public AnyUiSpecialActionContextMenu() { }
@@ -288,12 +290,14 @@ namespace AnyUi
         /// Note: currently, the function result (the lambda) is being ignored except for
         /// Buttons
         /// </summary>
+        [JsonIgnore]
         public Func<object, AnyUiLambdaActionBase> setValueLambda = null;
 
         /// <summary>
         /// If not null, this lambda result is automatically emitted as outside action,
         /// when the control "feels" to have a "final" selection (Enter, oder ComboBox selected)
         /// </summary>
+        [JsonIgnore]
         public AnyUiLambdaActionBase takeOverLambda = null;
 
         /// <summary>

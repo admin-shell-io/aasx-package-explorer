@@ -395,19 +395,21 @@ namespace AasxPackageExplorer
 
             // now render master stack
 #if __export_BLAZOR
+            var fn = @"file.json";
             if (!editMode)
             {
                 count = 0;
                 var jsonSerializerSettings = new JsonSerializerSettings()
                 {
-                    TypeNameHandling = TypeNameHandling.All
+                    TypeNameHandling = TypeNameHandling.All,
+                    Formatting = Formatting.Indented
                 };
                 var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
-                System.IO.File.WriteAllText(@"c:\development\file.json", json);
+                System.IO.File.WriteAllText(fn, json);
             }
             if (editMode)
             {
-                if (false && count == 2)
+                if (true && count == 2)
                 {
                     count = 0;
                     JsonSerializerSettings settings = new JsonSerializerSettings
@@ -417,13 +419,21 @@ namespace AasxPackageExplorer
                         // SerializationBinder = new DisplayNameSerializationBinder(
                         //     new[] { typeof(AnyUiStackPanel), typeof(AnyUiUIElement) }),
                         // NullValueHandling = NullValueHandling.Ignore,
-                        // ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                        TypeNameHandling = TypeNameHandling.All
-                        // Formatting = Formatting.Indented
+                        ReferenceLoopHandling = ReferenceLoopHandling.Error,
+                        TypeNameHandling = TypeNameHandling.All,
+                        Formatting = Formatting.Indented
                     };
 
+                    //if (stack is AnyUiPanel pan)
+                    //{
+                    //    for (int i = 0; i < pan.Children.Count; i++)
+                    //    {
+                    //        var json = JsonConvert.SerializeObject(pan.Children[i], settings);
+                    //        System.IO.File.WriteAllText(fn+"."+i, json);
+                    //    }
+                    //}
                     var json = JsonConvert.SerializeObject(stack, settings);
-                    System.IO.File.WriteAllText(@"c:\development\fileEdit.json", json);
+                    System.IO.File.WriteAllText(fn, json);
                 }
                 count++;
                 /*

@@ -22,14 +22,17 @@ using AdminShellNS;
 using AasxWpfControlLibrary;
 using AnyUi.AAS;
 using System.Windows.Input;
+using Newtonsoft.Json;
 
 namespace AnyUi
 {
     public class AnyUiDisplayDataWpf : AnyUiDisplayDataBase
     {
+        [JsonIgnore]
         public AnyUiDisplayContextWpf Context;
+
+        [JsonIgnore]
         public UIElement WpfElement;
-        public int actiCnt = 0;
 
         public AnyUiDisplayDataWpf(AnyUiDisplayContextWpf Context)
         {
@@ -39,7 +42,9 @@ namespace AnyUi
 
     public class AnyUiDisplayContextWpf : AnyUiContextBase
     {
+        [JsonIgnore]
         public IFlyoutProvider FlyoutProvider;
+        [JsonIgnore]
         public PackageCentral Packages;
 
         public AnyUiDisplayContextWpf(
@@ -118,6 +123,7 @@ namespace AnyUi
         // Handling of outside actions
         //
 
+        [JsonIgnore]
         public List<AnyUiLambdaActionBase> WishForOutsideAction = new List<AnyUiLambdaActionBase>();
 
         /// <summary>
@@ -136,7 +142,9 @@ namespace AnyUi
         {
             public Type CntlType;
             public Type WpfType;
+            [JsonIgnore]
             public Action<AnyUiUIElement, UIElement> InitLambda;
+            [JsonIgnore]
             public Action<AnyUiUIElement, UIElement, bool> HighlightLambda;
 
             public RenderRec(Type cntlType, Type wpfType, 
@@ -161,6 +169,7 @@ namespace AnyUi
             }
         }
 
+        [JsonIgnore]
         private ListOfRenderRec RenderRecs = new ListOfRenderRec();
 
         private void InitRenderRecs()
