@@ -480,7 +480,7 @@ namespace AasxPackageExplorer
 
             if (auxButton)
             {
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 1,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -649,7 +649,7 @@ namespace AasxPackageExplorer
                     maxWidth: maxWidth,
                     items: comboBoxItems,
                     isEditable: comboBoxIsEditable);
-                repo.RegisterControl(cb, setValue, takeOverLambda: takeOverLambdaAction);
+                AnyUiUIElement.RegisterControl(cb, setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
                 if (cb != null && this.highlightField != null && valueHash != null &&
@@ -661,7 +661,7 @@ namespace AasxPackageExplorer
             {
                 // use plain text box
                 var tb = AddSmallTextBoxTo(g, 0, 1, margin: new AnyUiThickness(0, 2, 2, 2), text: "" + value);
-                repo.RegisterControl(tb,
+                AnyUiUIElement.RegisterControl(tb,
                     setValue, takeOverLambda: takeOverLambdaAction);
 
                 // check here, if to hightlight
@@ -681,7 +681,7 @@ namespace AasxPackageExplorer
                         {
                             return auxButtonLambda(closureI); // exchange o with i !!
                         };
-                    var b = repo.RegisterControl(
+                    var b = AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g, 0, 2 + i,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -739,7 +739,7 @@ namespace AasxPackageExplorer
                 // interactive
                 var brd = AddSmallDropBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     borderThickness: new AnyUiThickness(1), text: "" + value, minHeight: minHeight);
-                repo.RegisterControl(brd,
+                AnyUiUIElement.RegisterControl(brd,
                     setValue);
             }
 
@@ -836,7 +836,7 @@ namespace AasxPackageExplorer
             }
             else
             {
-                repo.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
+                AnyUiUIElement.RegisterControl(this.AddSmallCheckBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     content: additionalInfo, verticalContentAlignment: AnyUiVerticalAlignment.Center,
                     isChecked: initialValue),
                         (o) =>
@@ -896,7 +896,7 @@ namespace AasxPackageExplorer
                 b.Margin = new AnyUiThickness(2, 2, 2, 2);
                 b.Padding = new AnyUiThickness(5, 0, 5, 0);
                 wp.Children.Add(b);
-                repo.RegisterControl(b,
+                AnyUiUIElement.RegisterControl(b,
                     (o) =>
                     {
                         return action(currentI); // button # as argument!
@@ -966,7 +966,7 @@ namespace AasxPackageExplorer
             // populate [+]
             if (repo != null)
             {
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g, 0, 3,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1010,7 +1010,7 @@ namespace AasxPackageExplorer
                             minWidth: 50,
                             items: defaultLanguages,
                             isEditable: true);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbLang,
                             (o) =>
                             {
@@ -1028,7 +1028,7 @@ namespace AasxPackageExplorer
                             g, 0 + i + rowOfs, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + langStr[currentI].str);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbStr,
                             (o) =>
                             {
@@ -1042,7 +1042,7 @@ namespace AasxPackageExplorer
                             this.HighligtStateElement(tbStr, true);
 
                         // button [-]
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             AddSmallButtonTo(
                                 g, 0 + i + rowOfs, 3,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1266,7 +1266,7 @@ namespace AasxPackageExplorer
                 g.Children.Add(g2);
 
                 if (addFromPool)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 1,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1292,7 +1292,7 @@ namespace AasxPackageExplorer
                         });
 
                 if (addEclassIrdi)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1317,7 +1317,7 @@ namespace AasxPackageExplorer
                         });
 
                 if (addExistingEntities != null && packages.MainAvailable)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 3,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1336,7 +1336,7 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 4,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1353,7 +1353,7 @@ namespace AasxPackageExplorer
                     });
 
                 if (jumpLambda != null)
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 5,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1364,7 +1364,7 @@ namespace AasxPackageExplorer
                             return jumpLambda(keys);
                         });
 
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     AddSmallButtonTo(
                         g2, 0, 6,
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1381,7 +1381,7 @@ namespace AasxPackageExplorer
                 for (int i = 0; i < presetNo; i++)
                 {
                     var closureKey = addPresetKeyLists[i];
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         AddSmallButtonTo(
                             g2, 0, 7 + i,
                             margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1433,7 +1433,7 @@ namespace AasxPackageExplorer
                         // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
 
                         // type
-                        var cbType = repo.RegisterControl(
+                        var cbType = AnyUiUIElement.RegisterControl(
                             AddSmallComboBoxTo(
                                 g, 0 + i + rowOfs, 1,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1457,7 +1457,7 @@ namespace AasxPackageExplorer
                             this.HighligtStateElement(cbType, true);
 
                         // local
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             AddSmallCheckBoxTo(
                                 g, 0 + i + rowOfs, 2,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1480,7 +1480,7 @@ namespace AasxPackageExplorer
                             items: AdminShell.Key.IdentifierTypeNames,
                             isEditable: false,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             cbIdType,
                             (o) =>
                             {
@@ -1500,7 +1500,7 @@ namespace AasxPackageExplorer
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + keys[currentI].value,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        repo.RegisterControl(
+                        AnyUiUIElement.RegisterControl(
                             tbValue,
                             (o) =>
                             {

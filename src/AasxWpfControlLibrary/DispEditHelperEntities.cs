@@ -506,7 +506,7 @@ namespace AasxPackageExplorer
                         "idShort", "Id", "Usage in Submodels"
                     });
                     cb.SelectedIndex = 0;
-                    repo.RegisterControl(
+                    AnyUiUIElement.RegisterControl(
                         this.AddSmallButtonTo(g, 0, 1, content: "Sort!",
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0)),
                         (o) =>
@@ -549,7 +549,7 @@ namespace AasxPackageExplorer
 
                 var g = this.AddSmallGrid(5, 3, new[] { "#", "*", "#" });
                 this.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Source path: ");
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallTextBoxTo(g, 0, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageSourcePath),
                     (o) =>
                     {
@@ -557,7 +557,7 @@ namespace AasxPackageExplorer
                             PackageSourcePath = o as string;
                         return new ModifyRepo.LambdaActionNone();
                     });
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallButtonTo(
                         g, 0, 2, margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                         content: "Select"),
@@ -574,7 +574,7 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         });
                 this.AddSmallLabelTo(g, 1, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target filename: ");
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallTextBoxTo(g, 1, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageTargetFn),
                     (o) =>
                     {
@@ -583,7 +583,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
                 this.AddSmallLabelTo(g, 2, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target path: ");
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallTextBoxTo(g, 2, 1, margin: new AnyUiThickness(2, 2, 2, 2), text: PackageTargetDir),
                     (o) =>
                     {
@@ -591,7 +591,7 @@ namespace AasxPackageExplorer
                             PackageTargetDir = o as string;
                         return new ModifyRepo.LambdaActionNone();
                     });
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallCheckBoxTo(g, 3, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     content: "Embed as thumbnail (only one file per package!)", isChecked: PackageEmbedAsThumbnail),
                     (o) =>
@@ -600,7 +600,7 @@ namespace AasxPackageExplorer
                             PackageEmbedAsThumbnail = (bool)o;
                         return new ModifyRepo.LambdaActionNone();
                     });
-                repo.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     this.AddSmallButtonTo(g, 4, 1, margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0), content: "Add file to package"),
                     (o) =>

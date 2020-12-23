@@ -288,6 +288,31 @@ namespace AnyUi
         /// when the control "feels" to have a "final" selection (Enter, oder ComboBox selected)
         /// </summary>
         public AnyUiLambdaActionBase takeOverLambda = null;
+
+        /// <summary>
+        /// This function attaches the above lambdas accordingly to a give user control.
+        /// It is to be used, when an abstract AnyUi... is being created and the according WPF element
+        /// will be activated later.
+        /// Note: use of this is for legacy reasons; basically the class members can be used directly
+        /// </summary>
+        /// <param name="fe">User control</param>
+        /// <param name="setValue">Lambda called, whenever the value is changed</param>
+        /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
+        /// <returns>Passes thru the user control</returns>
+        public static AnyUiUIElement RegisterControl(
+            AnyUiUIElement cntl, Func<object, AnyUiLambdaActionBase> setValue, 
+            AnyUiLambdaActionBase takeOverLambda = null)
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // crude test
+            cntl.setValueLambda = setValue;
+            cntl.takeOverLambda = takeOverLambda;
+
+            return cntl;
+        }
     }
 
     public class AnyUiFrameworkElement : AnyUiUIElement
