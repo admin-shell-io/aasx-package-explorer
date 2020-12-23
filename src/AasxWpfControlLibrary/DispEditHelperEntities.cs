@@ -16,14 +16,15 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
+//using System.Windows;
+//using System.Windows.Controls;
+//using System.Windows.Input;
+//using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
+using AnyUi.AAS;
 
 namespace AasxPackageExplorer
 {
@@ -93,7 +94,7 @@ namespace AasxPackageExplorer
 
                     if (this.flyoutProvider != null) this.flyoutProvider.CloseFlyover();
                 }
-                return new ModifyRepo.LambdaActionNone();
+                return new AnyUiLambdaActionNone();
             });
 
             // Referable
@@ -119,7 +120,7 @@ namespace AasxPackageExplorer
                         if (this.context.StartFlyoverModal(uc))
                         {
                             asset.identification.id = uc.Text;
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
                     }
                     if (i == 1 && env != null)
@@ -152,10 +153,10 @@ namespace AasxPackageExplorer
                                     "the AAS structure for any inconsistencies.",
                                     "Warning",
                                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(asset);
+                            return new AnyUiLambdaActionRedrawAllElements(asset);
                         }
                     }
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
 
                 }),
                 checkForIri: true);
@@ -187,7 +188,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
-            VisualElementEnvironmentItem.ItemType envItemType, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            VisualElementEnvironmentItem.ItemType envItemType, bool editMode, AnyUiStackPanel stack,
             bool hintMode = false)
         {
             this.AddGroup(stack, "Environment of Asset Administration Shells", this.levelColors.MainSection);
@@ -249,24 +250,24 @@ namespace AasxPackageExplorer
                         {
                             var asset = new AdminShell.Asset();
                             env.Assets.Add(asset);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: asset);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
 
                         if (buttonNdx == 1)
                         {
                             var aas = new AdminShell.AdministrationShell();
                             env.AdministrationShells.Add(aas);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: aas);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
                         }
 
                         if (buttonNdx == 2)
                         {
                             var cd = new AdminShell.ConceptDescription();
                             env.ConceptDescriptions.Add(cd);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: cd);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: cd);
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 // Copy AAS
@@ -440,13 +441,13 @@ namespace AasxPackageExplorer
                                         //
                                         // Done
                                         //
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                                        return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: destAAS, isExpanded: true);
                                     }
                                 }
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
                 }
 
@@ -482,12 +483,12 @@ namespace AasxPackageExplorer
                                         if (env.ConceptDescriptions == null)
                                             env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
                                         env.ConceptDescriptions.Add(clone);
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: clone);
+                                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: clone);
                                     }
                                 }
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                     // Sort
@@ -534,10 +535,10 @@ namespace AasxPackageExplorer
                                 }
 
                                 if (success)
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null);
+                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: null);
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
                 }
             }
@@ -555,7 +556,7 @@ namespace AasxPackageExplorer
                     {
                         if (o is string)
                             PackageSourcePath = o as string;
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
                 AnyUiUIElement.RegisterControl(
                     this.AddSmallButtonTo(
@@ -571,7 +572,7 @@ namespace AasxPackageExplorer
                                 PackageTargetFn = System.IO.Path.GetFileName(dlg.FileName);
                                 PackageTargetFn = PackageTargetFn.Replace(" ", "_");
                             }
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         });
                 this.AddSmallLabelTo(g, 1, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target filename: ");
                 AnyUiUIElement.RegisterControl(
@@ -580,7 +581,7 @@ namespace AasxPackageExplorer
                     {
                         if (o is string)
                             PackageTargetFn = o as string;
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
                 this.AddSmallLabelTo(g, 2, 0, padding: new AnyUiThickness(2, 0, 0, 0), content: "Target path: ");
                 AnyUiUIElement.RegisterControl(
@@ -589,7 +590,7 @@ namespace AasxPackageExplorer
                     {
                         if (o is string)
                             PackageTargetDir = o as string;
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
                 AnyUiUIElement.RegisterControl(
                     this.AddSmallCheckBoxTo(g, 3, 1, margin: new AnyUiThickness(2, 2, 2, 2),
@@ -598,7 +599,7 @@ namespace AasxPackageExplorer
                     {
                         if (o is bool)
                             PackageEmbedAsThumbnail = (bool)o;
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
                 AnyUiUIElement.RegisterControl(
                     this.AddSmallButtonTo(g, 4, 1, margin: new AnyUiThickness(2, 2, 2, 2),
@@ -622,7 +623,7 @@ namespace AasxPackageExplorer
                         }
                         PackageSourcePath = "";
                         PackageTargetFn = "";
-                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                        return new AnyUiLambdaActionRedrawAllElements(
                             nextFocus: VisualElementEnvironmentItem.GiveDataObject(
                                 VisualElementEnvironmentItem.ItemType.Package));
                     });
@@ -678,7 +679,7 @@ namespace AasxPackageExplorer
         //
 
         public void DisplayOrEditAasEntitySupplementaryFile(
-            PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, ModifyRepo repo,
+            PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode, 
             AnyUiStackPanel stack)
         {
             //
@@ -707,12 +708,12 @@ namespace AasxPackageExplorer
                             {
                                 AasxPackageExplorer.Log.Singleton.Error(ex, "Deleting file in package");
                             }
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
+                            return new AnyUiLambdaActionRedrawAllElements(
                             nextFocus: VisualElementEnvironmentItem.GiveDataObject(
                                 VisualElementEnvironmentItem.ItemType.Package));
                         }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
             }
         }
@@ -725,7 +726,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityAas(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
-            bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool hintMode = false)
+            bool editMode, AnyUiStackPanel stack, bool hintMode = false)
         {
             this.AddGroup(stack, "Asset Administration Shell", this.levelColors.MainSection);
 
@@ -777,7 +778,7 @@ namespace AasxPackageExplorer
                                         "This operation is rather special. Do you want to proceed?",
                                     "Submodel sharing",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
 
                             // select existing Submodel
                             var ks = this.SmartSelectAasEntityKeys(packages, PackageCentral.Selector.Main,
@@ -790,7 +791,7 @@ namespace AasxPackageExplorer
                                 aas.submodelRefs.Add(smr);
 
                                 // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(
+                                return new AnyUiLambdaActionRedrawAllElements(
                                     nextFocus: smr, isExpanded: true);
                             }
                         }
@@ -821,11 +822,11 @@ namespace AasxPackageExplorer
                             aas.submodelRefs.Add(smr);
 
                             // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
 
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(stack, hintMode, new[] {
@@ -860,11 +861,11 @@ namespace AasxPackageExplorer
                                             rve.theEnv, mdo as AdminShell.SubmodelRef, copySubmodel: true,
                                             copyCD: true, shallowCopy: buttonNdx == 0);
                                         if (clone == null)
-                                            return new ModifyRepo.LambdaActionNone();
+                                            return new AnyUiLambdaActionNone();
                                         if (aas.submodelRefs == null)
                                             aas.submodelRefs = new List<AdminShell.SubmodelRef>();
                                         aas.submodelRefs.Add(clone);
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                                        return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: clone, isExpanded: true);
                                     }
                                     else
@@ -874,7 +875,7 @@ namespace AasxPackageExplorer
                                         // need access to source submodel
                                         var srcSub = rve.theEnv.FindSubmodel(mdo as AdminShell.SubmodelRef);
                                         if (srcSub == null)
-                                            return new ModifyRepo.LambdaActionNone();
+                                            return new AnyUiLambdaActionNone();
 
                                         // means: we have to generate a new submodel ref by using template mechanism
                                         var tid = Options.Curr.TemplateIdSubmodelInstance;
@@ -896,14 +897,14 @@ namespace AasxPackageExplorer
                                         if (aas.submodelRefs == null)
                                             aas.submodelRefs = new List<AdminShell.SubmodelRef>();
                                         aas.submodelRefs.Add(dstRef);
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                                        return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: dstRef, isExpanded: true);
                                     }
                                 }
                             }
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 // let the user control the number of entities
@@ -913,10 +914,10 @@ namespace AasxPackageExplorer
                     {
                         var view = new AdminShell.View();
                         aas.AddView(view);
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: view);
+                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
                     }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
             }
 
@@ -961,7 +962,7 @@ namespace AasxPackageExplorer
                 v =>
                 {
                     aas.derivedFrom = new AdminShell.AssetAdministrationShellRef();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
+                    return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
                 this.AddGroup(stack, "Derived From", this.levelColors.SubSection);
@@ -985,7 +986,7 @@ namespace AasxPackageExplorer
                 v =>
                 {
                     aas.assetRef = new AdminShell.AssetRef();
-                    return new ModifyRepo.LambdaActionRedrawEntity();
+                    return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
                 this.AddGroup(stack, "Asset Reference", this.levelColors.SubSection);
@@ -1012,7 +1013,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntitySubmodelOrRef(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
-            AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, ModifyRepo repo,
+            AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode, 
             AnyUiStackPanel stack, bool hintMode = false)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
@@ -1022,7 +1023,7 @@ namespace AasxPackageExplorer
                 this.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
                     packages, PackageCentral.Selector.Main, "SubmodelRef Submodel ",
-                    takeOverLambdaAction: new ModifyRepo.LambdaActionRedrawAllElements(smref));
+                    takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref));
             }
 
             // entities when under AAS (smref)
@@ -1051,10 +1052,10 @@ namespace AasxPackageExplorer
                         {
                             if (env.Submodels.Contains(submodel))
                                 env.Submodels.Remove(submodel);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
                         }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
             }
 
@@ -1125,10 +1126,10 @@ namespace AasxPackageExplorer
                                 submodel.submodelElements.Add(smw);
 
                                 // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
                             }
                         }
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(stack, hintMode, new[] {
@@ -1163,13 +1164,13 @@ namespace AasxPackageExplorer
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(
+                                    return new AnyUiLambdaActionRedrawAllElements(
                                         submodel, isExpanded: true);
                                 }
                             }
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 // create ConceptDescriptions for eCl@ss
@@ -1203,7 +1204,7 @@ namespace AasxPackageExplorer
                             // ReSharper enable RedundantCast
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddAction(
@@ -1218,7 +1219,7 @@ namespace AasxPackageExplorer
                                     "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                 "Setting Kind",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
 
                         submodel.kind = (buttonNdx == 0)
                             ? AdminShell.ModelingKind.CreateAsTemplate()
@@ -1231,7 +1232,7 @@ namespace AasxPackageExplorer
                                 : AdminShell.ModelingKind.CreateAsInstance();
                         });
 
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                     });
 
             }
@@ -1285,10 +1286,10 @@ namespace AasxPackageExplorer
                                             "the AAS structure for any inconsistencies.",
                                             "Warning",
                                             AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(smref);
+                                    return new AnyUiLambdaActionRedrawAllElements(smref);
                                 }
                             }
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         }),
                     checkForIri: submodel.kind != null && submodel.kind.IsInstance);
 
@@ -1332,7 +1333,8 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityConceptDescription(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
-            ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
+            ModifyRepo repo,
+            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
         {
             this.AddGroup(stack, "ConceptDescription", this.levelColors.MainSection);
 
@@ -1361,7 +1363,7 @@ namespace AasxPackageExplorer
                     new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
                     (v) =>
                     {
-                        ModifyRepo.LambdaAction la = new ModifyRepo.LambdaActionNone();
+                        AnyUiLambdaActionBase la = new AnyUiLambdaActionBase();
                         if ((int)v != 0)
                             return la;
 
@@ -1369,7 +1371,7 @@ namespace AasxPackageExplorer
                         if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
                         {
                             ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", cd.idShort);
-                            la = new ModifyRepo.LambdaActionRedrawEntity();
+                            la = new AnyUiLambdaActionRedrawEntity();
                         }
 
                         if (parentContainer != null & parentContainer is AdminShell.SubmodelElement)
@@ -1378,7 +1380,7 @@ namespace AasxPackageExplorer
                             if (sme.idShort == null || sme.idShort.Trim() == "")
                             {
                                 sme.idShort = cd.idShort;
-                                la = new ModifyRepo.LambdaActionRedrawEntity();
+                                la = new AnyUiLambdaActionRedrawEntity();
                             }
                         }
                         return la;
@@ -1423,10 +1425,10 @@ namespace AasxPackageExplorer
                                         "structure for any inconsistencies.",
                                         "Warning",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(cd);
+                            return new AnyUiLambdaActionRedrawAllElements(cd);
                         }
                     }
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 }),
                 checkForIri: false);
 
@@ -1480,7 +1482,7 @@ namespace AasxPackageExplorer
                     v =>
                     {
                         cd.IEC61360Content = new AdminShell.DataSpecificationIEC61360();
-                        return new ModifyRepo.LambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.IEC61360Content);
@@ -1496,7 +1498,7 @@ namespace AasxPackageExplorer
         public void DisplayOrEditAasEntityOperationVariable(
             PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.OperationVariable ov, bool editMode,
-            ModifyRepo repo, AnyUiStackPanel stack, bool hintMode = false)
+            AnyUiStackPanel stack, bool hintMode = false)
         {
             //
             // Submodel Element GENERAL
@@ -1575,10 +1577,10 @@ namespace AasxPackageExplorer
                                         ov.value = smw;
 
                                         // redraw
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
+                                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                                     }
                                 }
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             });
 
                     }
@@ -1600,9 +1602,9 @@ namespace AasxPackageExplorer
                                          "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 {
                                     ov.value = null;
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawEntity();
                                 }
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                         this.AddHintBubble(stack, hintMode, new[] {
@@ -1633,12 +1635,12 @@ namespace AasxPackageExplorer
                                                 shallowCopy: buttonNdx == 0);
 
                                             ov.value = clone;
-                                            return new ModifyRepo.LambdaActionRedrawEntity();
+                                            return new AnyUiLambdaActionRedrawEntity();
                                         }
                                     }
                                 }
 
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             });
                     }
 
@@ -1736,10 +1738,10 @@ namespace AasxPackageExplorer
                                     parMgr.Add(refactorSme);
 
                                     // redraw
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: refactorSme);
+                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: refactorSme);
                                 }
                             }
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
             }
 
@@ -1787,7 +1789,7 @@ namespace AasxPackageExplorer
                                     this.flyoutProvider.MessageBoxFlyoutShow(
                                         "No (valid) information in copy/paste buffer.", "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, MessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }
 
                             // user feedback
@@ -1867,11 +1869,11 @@ namespace AasxPackageExplorer
                             }
 
                             // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
+                            return new AnyUiLambdaActionRedrawAllElements(
                                 nextFocus: smw2.submodelElement, isExpanded: true);
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 #endif
             }
@@ -1930,7 +1932,7 @@ namespace AasxPackageExplorer
                                     sme.kind = new AdminShell.ModelingKind(parentKind);
                             }
                             // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
                         }
 
                         if (buttonNdx == 1)
@@ -1957,7 +1959,7 @@ namespace AasxPackageExplorer
                                 sme.kind = new AdminShell.ModelingKind(parentKind);
 
                             // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
                         }
 
                         if (buttonNdx == 2)
@@ -1972,7 +1974,7 @@ namespace AasxPackageExplorer
                                         "In order to do so, the commandine parameter -eclass has" +
                                         "to refer to a folder withe eCl@ss XML files.", "Information",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }
 
                             // select
@@ -2011,10 +2013,10 @@ namespace AasxPackageExplorer
                             }
 
                             // redraw
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 // create ConceptDescriptions for eCl@ss
@@ -2037,7 +2039,7 @@ namespace AasxPackageExplorer
                             this.ImportEclassCDsForTargets(env, sme, targets);
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
             }
@@ -2097,10 +2099,10 @@ namespace AasxPackageExplorer
                                     smeent.Add(sme2);
 
                                 // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
                             }
                         }
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(
@@ -2134,13 +2136,13 @@ namespace AasxPackageExplorer
                                         smesmc.value.Add(clone);
                                     if (sme is AdminShell.Entity smeent)
                                         smeent.statements.Add(clone);
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(
+                                    return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: sme, isExpanded: true);
                                 }
                             }
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
             }
 
@@ -2156,9 +2158,9 @@ namespace AasxPackageExplorer
                 {
                     if (buttonNdx == 0)
                     {
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: jumpToCD, isExpanded: true);
+                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: jumpToCD, isExpanded: true);
                     }
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
             }
 
@@ -2202,9 +2204,9 @@ namespace AasxPackageExplorer
                                 smo[dir].Add(ov);
 
                                 // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ov);
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                             }
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                     this.AddHintBubble(
@@ -2238,13 +2240,13 @@ namespace AasxPackageExplorer
                                             smo[dir] = new List<AdminShell.OperationVariable>();
 
                                         smo[dir].Add(clone);
-                                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                                        return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: smo, isExpanded: true);
                                     }
                                 }
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                 }
@@ -2299,10 +2301,10 @@ namespace AasxPackageExplorer
                                 are.annotations.Add(sme2);
 
                                 // redraw
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme2);
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
                             }
                         }
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(
@@ -2337,13 +2339,13 @@ namespace AasxPackageExplorer
                                     // ReSharper disable once PossibleNullReferenceException  -- ignore a false positive
                                     are.annotations.Add(clonesmw);
 
-                                    return new ModifyRepo.LambdaActionRedrawAllElements(
+                                    return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: clonesmw.submodelElement, isExpanded: true);
                                 }
                             }
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
             }
@@ -2376,10 +2378,10 @@ namespace AasxPackageExplorer
                                     if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
                                         ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sme.idShort);
 
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         }),
                     addHintsCategory: new[] {
                         new HintCheck(
@@ -2473,7 +2475,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", p, ref p.valueType, null, repo,
-                    v => { p.valueType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { p.valueType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2496,7 +2498,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { p.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -2509,10 +2511,10 @@ namespace AasxPackageExplorer
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 p.value = uc.Text;
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                             }
                         }
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 this.AddHintBubble(
@@ -2535,7 +2537,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             p.valueId = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
@@ -2566,7 +2568,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             mlp.value = new AdminShell.LangStringSet();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                     this.AddKeyListLangStr(stack, "value", mlp.value.langString, repo);
 
@@ -2575,7 +2577,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             mlp.valueId = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
@@ -2600,7 +2602,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", rng, ref rng.valueType, null, repo,
-                    v => { rng.valueType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { rng.valueType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2625,7 +2627,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "min", rng, ref rng.min, null, repo,
-                    v => { rng.min = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { rng.min = v as string; return new AnyUiLambdaActionNone(); });
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -2640,7 +2642,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "max", rng, ref rng.max, null, repo,
-                    v => { rng.max = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { rng.max = v as string; return new AnyUiLambdaActionNone(); });
             }
             else if (sme is AdminShell.File fl)
             {
@@ -2659,7 +2661,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", fl, ref fl.mimeType, null, repo,
-                    v => { fl.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { fl.mimeType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
@@ -2679,7 +2681,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "value", fl, ref fl.value, null, repo,
-                    v => { fl.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { fl.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "Choose supplementary file", },
                     auxButtonToolTips: new[] { "Select existing supplementary files" },
                     auxButtonLambda: (bi) =>
@@ -2695,12 +2697,12 @@ namespace AasxPackageExplorer
                                 if (sf != null)
                                 {
                                     fl.value = sf.Uri.ToString();
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 if (editMode && uploadAssistance != null && packages.Main != null)
@@ -2748,7 +2750,7 @@ namespace AasxPackageExplorer
                                     fl.value = "";
 
                                     // show empty
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
 
@@ -2763,7 +2765,7 @@ namespace AasxPackageExplorer
 
                                 if (!uc.Result)
                                 {
-                                    return new ModifyRepo.LambdaActionNone();
+                                    return new AnyUiLambdaActionNone();
                                 }
 
                                 var ptd = "/aasx/";
@@ -2779,7 +2781,7 @@ namespace AasxPackageExplorer
                                         $"The supplementary file {ptd + ptfn} is already existing in the " +
                                         "package. Please re-try with a different file name.", "Create text file",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                                    return new ModifyRepo.LambdaActionNone();
+                                    return new AnyUiLambdaActionNone();
                                 }
 
                                 // try execute
@@ -2814,7 +2816,7 @@ namespace AasxPackageExplorer
                                     AasxPackageExplorer.Log.Singleton.Error(
                                         ex, $"Creating text-file {ptd + ptfn} within package");
                                 }
-                                return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: sme);
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
                             }
 
                             if (buttonNdx == 2)
@@ -2829,7 +2831,7 @@ namespace AasxPackageExplorer
                                         AasxPackageExplorer.Log.Singleton.Error(
                                             $"Not able to locate supplmentary file {fl.value} for edit. " +
                                             $"Aborting!");
-                                        return new ModifyRepo.LambdaActionNone();
+                                        return new AnyUiLambdaActionNone();
                                     }
 
                                     // try read ..
@@ -2850,7 +2852,7 @@ namespace AasxPackageExplorer
                                         AasxPackageExplorer.Log.Singleton.Error(
                                             $"Not able to read contents from  supplmentary file {fl.value} " +
                                             $"for edit. Aborting!");
-                                        return new ModifyRepo.LambdaActionNone();
+                                        return new AnyUiLambdaActionNone();
                                     }
 
                                     // edit
@@ -2859,7 +2861,7 @@ namespace AasxPackageExplorer
                                                 mimeType: fl.mimeType,
                                                 text: contents);
                                     if (!this.context.StartFlyoverModal(uc))
-                                        return new ModifyRepo.LambdaActionNone();
+                                        return new AnyUiLambdaActionNone();
 
                                     // save
                                     using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
@@ -2879,10 +2881,10 @@ namespace AasxPackageExplorer
                                 }
 
                                 // reshow
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                     // Further file assistance
@@ -2893,7 +2895,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             this.uploadAssistance.TargetPath = v as string;
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
 
                     this.AddKeyDropTarget(
@@ -2905,7 +2907,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             this.uploadAssistance.SourcePath = v as string;
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         }, minHeight: 40);
 
                     this.AddAction(
@@ -2920,7 +2922,7 @@ namespace AasxPackageExplorer
                                 if (res == true)
                                 {
                                     this.uploadAssistance.SourcePath = dlg.FileName;
-                                    return new ModifyRepo.LambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
 
@@ -2960,10 +2962,10 @@ namespace AasxPackageExplorer
 
                                 // refresh dialogue
                                 uploadAssistance.SourcePath = "";
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                             }
 
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
                 }
             }
@@ -2983,13 +2985,13 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", blb, ref blb.mimeType, null, repo,
-                    v => { blb.mimeType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { blb.mimeType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 this.AddKeyValueRef(
                     stack, "value", blb, ref blb.value, null, repo,
-                    v => { blb.value = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { blb.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -3003,10 +3005,10 @@ namespace AasxPackageExplorer
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 blb.value = uc.Text;
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                             }
                         }
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
             }
             else if (sme is AdminShell.ReferenceElement rfe)
@@ -3033,7 +3035,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             rfe.value = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
@@ -3042,7 +3044,7 @@ namespace AasxPackageExplorer
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
             }
@@ -3072,7 +3074,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             rele.first = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddKeyListKeys(
@@ -3082,7 +3084,7 @@ namespace AasxPackageExplorer
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
 
@@ -3102,7 +3104,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             rele.second = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddKeyListKeys(
@@ -3112,7 +3114,7 @@ namespace AasxPackageExplorer
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
 
@@ -3177,7 +3179,7 @@ namespace AasxPackageExplorer
                     });
                 this.AddKeyValueRef(
                     stack, "entityType", ent, ref ent.entityType, null, repo,
-                    v => { ent.entityType = v as string; return new ModifyRepo.LambdaActionNone(); },
+                    v => { ent.entityType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxItems: AdminShell.Entity.EntityTypeNames,
                     comboBoxIsEditable: true);
 
@@ -3198,7 +3200,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             ent.assetRef = new AdminShell.AssetRef();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddKeyListKeys(
@@ -3219,7 +3221,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityView(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            AdminShell.View view, bool editMode, AnyUiStackPanel stack,
             bool hintMode = false)
         {
             //
@@ -3255,10 +3257,10 @@ namespace AasxPackageExplorer
                             {
                                 view.AddContainedElement(ks);
                             }
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: view);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
                         }
 
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
             }
             else
@@ -3290,7 +3292,7 @@ namespace AasxPackageExplorer
 
         public void DisplayOrEditAasEntityViewReference(
             PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
-            AdminShell.ContainedElementRef reference, bool editMode, ModifyRepo repo, AnyUiStackPanel stack)
+            AdminShell.ContainedElementRef reference, bool editMode, AnyUiStackPanel stack)
         {
             //
             // View

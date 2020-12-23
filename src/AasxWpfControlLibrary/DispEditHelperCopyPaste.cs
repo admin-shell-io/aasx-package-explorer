@@ -9,11 +9,12 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
+//using System.Windows;
+//using System.Windows.Controls;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
+using AnyUi.AAS;
 
 namespace AasxPackageExplorer
 {
@@ -145,7 +146,8 @@ namespace AasxPackageExplorer
         //
 
         public void DispSmeCutCopyPasteHelper(
-            AnyUiPanel stack, ModifyRepo repo,
+            AnyUiPanel stack,
+            ModifyRepo repo,
             AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer,
             CopyPasteBuffer cpb,
@@ -192,7 +194,7 @@ namespace AasxPackageExplorer
                                     "No (valid) information for SubmodelElements in copy/paste buffer.",
                                     "Copy & Paste",
                                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         }
 
                         // user feedback
@@ -272,16 +274,17 @@ namespace AasxPackageExplorer
                         }
 
                         // try to focus
-                        return new ModifyRepo.LambdaActionRedrawAllElements(
+                        return new AnyUiLambdaActionRedrawAllElements(
                             nextFocus: smw2.submodelElement, isExpanded: true);
                     }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
         }
 
         public void DispSubmodelCutCopyPasteHelper<T>(
-            AnyUiPanel stack, ModifyRepo repo,
+            AnyUiPanel stack, 
+            ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,
@@ -336,7 +339,7 @@ namespace AasxPackageExplorer
                                         "No (valid) information for Submodels in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }
 
                             // user feedback
@@ -363,7 +366,7 @@ namespace AasxPackageExplorer
                             }
 
                             // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
+                            return new AnyUiLambdaActionRedrawAllElements(
                                 nextFocus: entity2, isExpanded: true);
                         }
                         else
@@ -389,7 +392,7 @@ namespace AasxPackageExplorer
                                         "No (valid) information for SubmodelElements in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }
 
                             // user feedback
@@ -420,7 +423,7 @@ namespace AasxPackageExplorer
                             }
 
                             // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
+                            return new AnyUiLambdaActionRedrawAllElements(
                                 nextFocus: smw2.submodelElement, isExpanded: true);
                         }
                         else
@@ -432,12 +435,13 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
         }
 
         public void DispPlainIdentifiableCutCopyPasteHelper<T>(
-            AnyUiPanel stack, ModifyRepo repo,
+            AnyUiPanel stack, 
+            ModifyRepo repo,
             CopyPasteBuffer cpb,
             List<T> parentContainer,
             T entity,
@@ -486,7 +490,7 @@ namespace AasxPackageExplorer
                                         "No (valid) information in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }
 
                             // user feedback
@@ -514,7 +518,7 @@ namespace AasxPackageExplorer
                             }
 
                             // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
+                            return new AnyUiLambdaActionRedrawAllElements(
                                 nextFocus: entity2, isExpanded: true);
                         }
                         else
@@ -526,7 +530,7 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
         }
     }

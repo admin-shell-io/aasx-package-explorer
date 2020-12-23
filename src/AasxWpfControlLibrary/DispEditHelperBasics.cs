@@ -13,9 +13,9 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
+//using System.Windows;
+//using System.Windows.Controls;
+//using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
@@ -396,7 +396,7 @@ namespace AasxPackageExplorer
             string content,
             ModifyRepo repo,
             string[] menuHeaders,
-            Func<object, ModifyRepo.LambdaAction> menuItemLambda,
+            Func<object, AnyUiLambdaActionBase> menuItemLambda,
             AnyUiThickness margin = null, AnyUiThickness padding = null,
             AnyUiBrush foreground = null, AnyUiBrush background = null)
         {
@@ -442,14 +442,14 @@ namespace AasxPackageExplorer
 
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
             ModifyRepo repo = null,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null)
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null)
         {
             AddGroup(view, name, colors?.Bg, colors?.Fg, repo, auxButtonTitle, auxButtonLambda);
         }
 
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
             ModifyRepo repo = null,
-            string auxButtonTitle = null, Func<object, ModifyRepo.LambdaAction> auxButtonLambda = null)
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null)
         {
             var g = new AnyUiGrid();
             g.Margin = new AnyUiThickness(0, 13, 0, 0);
@@ -547,13 +547,13 @@ namespace AasxPackageExplorer
 
         public void AddKeyValueRef(
             AnyUiStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
-            ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
+            ModifyRepo repo = null, Func<object, AnyUiLambdaActionBase> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null,
             string[] auxButtonToolTips = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null)
+            AnyUiLambdaActionBase takeOverLambdaAction = null)
         {
             AddKeyValue(
                 view, key, value, nullValue, repo, setValue, comboBoxItems, comboBoxIsEditable,
@@ -565,12 +565,12 @@ namespace AasxPackageExplorer
 
         public void AddKeyValue(
             AnyUiStackPanel view, string key, string value, string nullValue = null,
-            ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null,
+            ModifyRepo repo = null, Func<object, AnyUiLambdaActionBase> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
-            string auxButtonTitle = null, Func<int, ModifyRepo.LambdaAction> auxButtonLambda = null,
+            string auxButtonTitle = null, Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null,
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
             Nullable<int> valueHash = null,
             object containingObject = null)
         {
@@ -674,7 +674,7 @@ namespace AasxPackageExplorer
             if (auxButton)
                 for (int i = 0; i < intButtonTitles.Count; i++)
                 {
-                    Func<object, ModifyRepo.LambdaAction> lmb = null;
+                    Func<object, AnyUiLambdaActionBase> lmb = null;
                     int closureI = i;
                     if (auxButtonLambda != null)
                         lmb = (o) =>
@@ -698,7 +698,7 @@ namespace AasxPackageExplorer
 
         public void AddKeyDropTarget(
             AnyUiStackPanel view, string key, string value, string nullValue = null,
-            ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
+            ModifyRepo repo = null, Func<object, AnyUiLambdaActionBase> setValue = null, int minHeight = 0)
         {
             // draw anyway?
             if (repo != null && value == null)
@@ -843,7 +843,7 @@ namespace AasxPackageExplorer
                         {
                             if (o is bool)
                                 valueChanged((bool)o);
-                            return new ModifyRepo.LambdaActionNone();
+                            return new AnyUiLambdaActionNone();
                         });
             }
 
@@ -852,7 +852,7 @@ namespace AasxPackageExplorer
         }
 
         public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
-                Func<int, ModifyRepo.LambdaAction> action = null)
+                Func<int, AnyUiLambdaActionBase> action = null)
         {
             // access 
             if (repo == null || action == null || actionStr == null)
@@ -909,7 +909,7 @@ namespace AasxPackageExplorer
 
         public void AddAction(
             AnyUiStackPanel view, string key, string actionStr, ModifyRepo repo = null,
-            Func<int, ModifyRepo.LambdaAction> action = null)
+            Func<int, AnyUiLambdaActionBase> action = null)
         {
             AddAction(view, key, new[] { actionStr }, repo, action);
         }
@@ -976,7 +976,7 @@ namespace AasxPackageExplorer
                     {
                         var ls = new AdminShell.LangStr();
                         langStr?.Add(ls);
-                        return new ModifyRepo.LambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionRedrawEntity();
                     });
             }
 
@@ -1015,7 +1015,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 langStr[currentI].lang = o as string;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
                         if (tbLang != null && this.highlightField != null &&
@@ -1033,7 +1033,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 langStr[currentI].str = o as string;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
                         if (tbStr != null && this.highlightField != null &&
@@ -1051,7 +1051,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 langStr.RemoveAt(currentI);
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
 
@@ -1180,8 +1180,8 @@ namespace AasxPackageExplorer
             bool addEclassIrdi = false,
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
-            Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null)
+            Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
+            AnyUiLambdaActionBase takeOverLambdaAction = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1288,7 +1288,7 @@ namespace AasxPackageExplorer
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                         });
 
                 if (addEclassIrdi)
@@ -1313,7 +1313,7 @@ namespace AasxPackageExplorer
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                         });
 
                 if (addExistingEntities != null && packages.MainAvailable)
@@ -1333,7 +1333,7 @@ namespace AasxPackageExplorer
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
-                                return new ModifyRepo.LambdaActionRedrawEntity();
+                                return new AnyUiLambdaActionRedrawEntity();
                         });
 
                 AnyUiUIElement.RegisterControl(
@@ -1349,7 +1349,7 @@ namespace AasxPackageExplorer
                         if (takeOverLambdaAction != null)
                             return takeOverLambdaAction;
                         else
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                     });
 
                 if (jumpLambda != null)
@@ -1373,9 +1373,9 @@ namespace AasxPackageExplorer
                     (o) =>
                     {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
-                        Clipboard.SetText(st);
+                        this.context?.ClipboardSetText(st);
                         AasxPackageExplorer.Log.Singleton.Info("Keys written to clipboard.");
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                 for (int i = 0; i < presetNo; i++)
@@ -1390,7 +1390,7 @@ namespace AasxPackageExplorer
                         (o) =>
                         {
                             keys.AddRange(closureKey);
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         });
                 }
             }
@@ -1445,7 +1445,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 keys[currentI].type = o as string;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             },
                             takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
                         SmallComboBoxSelectNearestItem(cbType, cbType.Text);
@@ -1467,7 +1467,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 keys[currentI].local = (bool)o;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             },
                             takeOverLambda: takeOverLambdaAction);
 
@@ -1485,7 +1485,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 keys[currentI].idType = o as string;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
                         // check here, if to hightlight
@@ -1505,7 +1505,7 @@ namespace AasxPackageExplorer
                             (o) =>
                             {
                                 keys[currentI].value = o as string;
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
                         // check here, if to hightlight
@@ -1550,8 +1550,8 @@ namespace AasxPackageExplorer
                                         if (takeOverLambdaAction != null)
                                             return takeOverLambdaAction;
                                         else
-                                            return new ModifyRepo.LambdaActionRedrawEntity();
-                                    return new ModifyRepo.LambdaActionNone();
+                                            return new AnyUiLambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionNone();
                                 });
 
                     }
@@ -1566,7 +1566,7 @@ namespace AasxPackageExplorer
 
         public bool SafeguardAccess(
             AnyUiStackPanel view, ModifyRepo repo, object data, string key, string actionStr,
-            Func<int, ModifyRepo.LambdaAction> action)
+            Func<int, AnyUiLambdaActionBase> action)
         {
             if (repo != null && data == null)
                 AddAction(view, key, actionStr, repo, action);
@@ -1645,13 +1645,13 @@ namespace AasxPackageExplorer
                     if (buttonNdx == 0)
                     {
                         MoveElementInListUpwards<T>(list, entity);
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
 
                     if (buttonNdx == 1)
                     {
                         MoveElementInListDownwards<T>(list, entity);
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
                     }
 
                     if (buttonNdx == 2)
@@ -1660,10 +1660,10 @@ namespace AasxPackageExplorer
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
                         }
 
-                    return new ModifyRepo.LambdaActionNone();
+                    return new AnyUiLambdaActionNone();
                 });
         }
 
@@ -1682,7 +1682,7 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 1)
                         {
                             if (Options.Curr.QualifiersFile == null)
-                                return new ModifyRepo.LambdaActionNone();
+                                return new AnyUiLambdaActionNone();
                             try
                             {
                                 var uc = new AnyUiDialogueDataSelectQualifierPreset();
@@ -1700,7 +1700,7 @@ namespace AasxPackageExplorer
                         if (buttonNdx == 2 && qualifiers.Count > 0)
                             qualifiers.RemoveAt(qualifiers.Count - 1);
 
-                        return new ModifyRepo.LambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionRedrawEntity();
                     });
             }
 
@@ -1716,7 +1716,7 @@ namespace AasxPackageExplorer
                     auxButtonLambda: (o) =>
                     {
                         qualifiers.Remove(qual);
-                        return new ModifyRepo.LambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionRedrawEntity();
                     });
 
                 AddHintBubble(
@@ -1734,7 +1734,7 @@ namespace AasxPackageExplorer
                         v =>
                         {
                             qual.semanticId = new AdminShell.SemanticId();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     AddKeyListKeys(
@@ -1746,18 +1746,18 @@ namespace AasxPackageExplorer
 
                 AddKeyValueRef(
                     substack, "type", qual, ref qual.type, null, repo,
-                    v => { qual.type = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { qual.type = v as string; return new AnyUiLambdaActionNone(); });
 
                 AddKeyValueRef(
                     substack, "value", qual, ref qual.value, null, repo,
-                    v => { qual.value = v as string; return new ModifyRepo.LambdaActionNone(); });
+                    v => { qual.value = v as string; return new AnyUiLambdaActionNone(); });
 
                 if (SafeguardAccess(
                         substack, repo, qual.valueId, "valueId:", "Create data element!",
                         v =>
                         {
                             qual.valueId = new AdminShell.Reference();
-                            return new ModifyRepo.LambdaActionRedrawEntity();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo,
@@ -1874,7 +1874,7 @@ namespace AasxPackageExplorer
                 this.context.CloseFlyover();
 
                 // redraw everything
-                repo.AddWishForAction(new ModifyRepo.LambdaActionRedrawAllElements(startMainDataElement));
+                this.context.EmitOutsideAction(new AnyUiLambdaActionRedrawAllElements(startMainDataElement));
             };
             worker.RunWorkerAsync();
 

@@ -128,7 +128,7 @@ namespace BlazorUI
                     //repo.RegisterControl(tb, (o) =>
                     //{
                     //    Log.Singleton.Info($"Text changed to .. {"" + o}");
-                    //    return new ModifyRepo.LambdaActionNone();
+                    //    return new AnyUiLambdaActionNone();
                     //});
 
                     var btn = new AnyUiButton();
@@ -142,7 +142,7 @@ namespace BlazorUI
                     //repo.RegisterControl(btn, (o) =>
                     //{
                     //    Log.Singleton.Error("Button clicked!");
-                    //    return new ModifyRepo.LambdaActionRedrawAllElements(null);
+                    //    return new AnyUiLambdaActionRedrawAllElements(null);
                     //});
                 }
             }

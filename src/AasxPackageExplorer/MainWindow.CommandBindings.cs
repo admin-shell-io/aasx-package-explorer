@@ -29,6 +29,7 @@ using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
 using AnyUi;
+using AnyUi.AAS;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -2336,7 +2337,7 @@ namespace AasxPackageExplorer
 
             // redisplay
             // add to "normal" event quoue
-            DispEditEntityPanel.AddWishForOutsideAction(new ModifyRepo.LambdaActionRedrawAllElements(bo));
+            DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(bo));
         }
 
         public void CommandBinding_ExportTable()
@@ -2531,7 +2532,7 @@ namespace AasxPackageExplorer
 
                     // redisplay
                     // add to "normal" event quoue
-                    DispEditEntityPanel.AddWishForOutsideAction(new ModifyRepo.LambdaActionRedrawAllElements(smref));
+                    DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(smref));
                 }
                 catch (Exception ex)
                 {

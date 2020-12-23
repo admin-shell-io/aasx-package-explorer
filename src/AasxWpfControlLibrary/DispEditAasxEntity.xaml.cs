@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
+using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -30,10 +31,9 @@ namespace AasxPackageExplorer
 
         private PackageCentral packages = null;
         private VisualElementGeneric theEntity = null;
-
-        private ModifyRepo theModifyRepo = new ModifyRepo();
-
         private DispEditHelperEntities helper = new DispEditHelperEntities();
+        private AnyUiUIElement lastRenderedRootElement = null;
+        private AnyUiDisplayContextWpf displayContext = null;
 
         #region Public events and properties
         //
@@ -57,32 +57,6 @@ namespace AasxPackageExplorer
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             // check for wishes from the modify repo
-            // TODO MIHO: remove
-            if (theModifyRepo != null && theModifyRepo.WishForOutsideAction != null)
-            {
-                while (theModifyRepo.WishForOutsideAction.Count > 0)
-                {
-                    var temp = theModifyRepo.WishForOutsideAction[0];
-                    theModifyRepo.WishForOutsideAction.RemoveAt(0);
-
-                    // trivial?
-                    if (temp is ModifyRepo.LambdaActionNone)
-                        continue;
-
-                    // what?
-                    if (temp is ModifyRepo.LambdaActionRedrawEntity)
-                    {
-                        // redraw ourselves?
-                        if (packages != null && theEntity != null)
-                            DisplayOrEditVisualAasxElement(
-                                packages, theEntity, helper.editMode, helper.hintMode,
-                                flyoutProvider: helper.flyoutProvider);
-                    }
-
-                    // all other elements refer to superior functionality
-                    this.WishForOutsideAction.Add(temp);
-                }
-            }
 
             if (helper?.context is AnyUiDisplayContextWpf dcwpf && dcwpf.WishForOutsideAction != null)
             {
@@ -92,11 +66,11 @@ namespace AasxPackageExplorer
                     dcwpf.WishForOutsideAction.RemoveAt(0);
 
                     // trivial?
-                    if (temp is ModifyRepo.LambdaActionNone)
+                    if (temp is AnyUiLambdaActionNone)
                         continue;
 
                     // what?
-                    if (temp is ModifyRepo.LambdaActionRedrawEntity)
+                    if (temp is AnyUiLambdaActionRedrawEntity)
                     {
                         // redraw ourselves?
                         if (packages != null && theEntity != null)
@@ -106,26 +80,33 @@ namespace AasxPackageExplorer
                     }
 
                     // all other elements refer to superior functionality
-                    this.WishForOutsideAction.Add(temp as ModifyRepo.LambdaAction);
+                    this.WishForOutsideAction.Add(temp as AnyUiLambdaActionBase);
                 }
             }
         }
 
         private void ContentUndo_Click(object sender, RoutedEventArgs e)
         {
-            if (theModifyRepo != null)
-                theModifyRepo.CallUndoChanges();
+            CallUndo();
         }
 
-        public List<ModifyRepo.LambdaAction> WishForOutsideAction = new List<ModifyRepo.LambdaAction>();
+        public List<AnyUiLambdaActionBase> WishForOutsideAction = new List<AnyUiLambdaActionBase>();
 
         public void CallUndo()
         {
-            if (theModifyRepo != null)
-                theModifyRepo.CallUndoChanges();
+            try
+            {
+                var changes = true == displayContext?.CallUndoChanges(lastRenderedRootElement);
+                if (changes)
+                    displayContext.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+
+            } catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "undoing last changes");
+            }
         }
 
-        public void AddWishForOutsideAction(ModifyRepo.LambdaAction action)
+        public void AddWishForOutsideAction(AnyUiLambdaActionBase action)
         {
             if (action != null && WishForOutsideAction != null)
                 WishForOutsideAction.Add(action);
@@ -151,6 +132,7 @@ namespace AasxPackageExplorer
             var spwpf = new Label(); // sp.GetOrCreateWpfElement();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
+            lastRenderedRootElement = null;
             return sp;
         }
 
@@ -177,6 +159,16 @@ namespace AasxPackageExplorer
             // Start
             //
 
+            // hint mode disable, when not edit
+            hintMode = hintMode && editMode;
+
+            // remember objects for UI thread / redrawing
+            this.packages = packages;
+            this.theEntity = entity;
+            helper.packages = packages;
+            helper.flyoutProvider = flyoutProvider;
+            helper.highlightField = hightlightField;
+
             var renderHints = new DisplayRenderHints();
 
             if (theMasterPanel == null || entity == null)
@@ -192,7 +184,7 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            var displayContext = new AnyUiDisplayContextWpf(helper.repo, helper.flyoutProvider, packages);
+            displayContext = new AnyUiDisplayContextWpf(helper.flyoutProvider, packages);
 
             // ReSharper disable CoVariantArrayConversion            
             var levelColors = new DispLevelColors()
@@ -221,23 +213,13 @@ namespace AasxPackageExplorer
             };
             // ReSharper enable CoVariantArrayConversion
 
-            // hint mode disable, when not edit
-            hintMode = hintMode && editMode;
-
-            // remember objects for UI thread / redrawing
-            this.packages = packages;
-            this.theEntity = entity;
-            helper.packages = packages;
-            helper.flyoutProvider = flyoutProvider;
             helper.levelColors = levelColors;
-            helper.highlightField = hightlightField;
 
             // modify repository
             ModifyRepo repo = null;
             if (editMode)
             {
-                repo = theModifyRepo;
-                repo.Clear();
+                repo = new ModifyRepo();
             }
             helper.editMode = editMode;
             helper.hintMode = hintMode;
@@ -264,7 +246,7 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(tb, (o) =>
                     {
                         Log.Singleton.Info($"Text changed to .. {""+o}");                        
-                        return new ModifyRepo.LambdaActionNone();
+                        return new AnyUiLambdaActionNone();
                     });
 
                     var btn = new AnyUiButton();
@@ -273,7 +255,7 @@ namespace AasxPackageExplorer
                     repo.RegisterControl(btn, (o) =>
                     {
                         Log.Singleton.Error("Button clicked!");
-                        return new ModifyRepo.LambdaActionRedrawAllElements(null);
+                        return new AnyUiLambdaActionRedrawAllElements(null);
                     });
                 }
             }
@@ -287,13 +269,13 @@ namespace AasxPackageExplorer
             {
                 var x = entity as VisualElementEnvironmentItem;
                 helper.DisplayOrEditAasEntityAasEnv(
-                    packages, x.theEnv, x.theItemType, editMode, repo, stack, hintMode: hintMode);
+                    packages, x.theEnv, x.theItemType, editMode, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAdminShell)
             {
                 var x = entity as VisualElementAdminShell;
                 helper.DisplayOrEditAasEntityAas(
-                    packages, x.theEnv, x.theAas, editMode, repo, stack, hintMode: hintMode);
+                    packages, x.theEnv, x.theAas, editMode, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAsset)
             {
@@ -308,14 +290,14 @@ namespace AasxPackageExplorer
                 if (x.Parent is VisualElementAdminShell xpaas)
                     aas = xpaas.theAas;
                 helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, repo, stack, 
+                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, stack, 
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodel)
             {
                 var x = entity as VisualElementSubmodel;
                 helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, null, null, x.theSubmodel, editMode, repo, stack, 
+                    packages, x.theEnv, null, null, x.theSubmodel, editMode, stack, 
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelElement)
@@ -329,7 +311,7 @@ namespace AasxPackageExplorer
             {
                 var x = entity as VisualElementOperationVariable;
                 helper.DisplayOrEditAasEntityOperationVariable(
-                    packages, x.theEnv, x.theContainer, x.theOpVar, editMode, repo,
+                    packages, x.theEnv, x.theContainer, x.theOpVar, editMode, 
                     stack, hintMode: hintMode);
             }
             else if (entity is VisualElementConceptDescription)
@@ -343,7 +325,7 @@ namespace AasxPackageExplorer
                 var x = entity as VisualElementView;
                 if (x.Parent != null && x.Parent is VisualElementAdminShell xpaas)
                     helper.DisplayOrEditAasEntityView(
-                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, repo, stack, 
+                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, stack, 
                         hintMode: hintMode);
                 else
                     helper.AddGroup(stack, "View is corrupted!", helper.levelColors.MainSection);
@@ -354,7 +336,7 @@ namespace AasxPackageExplorer
                 if (x.Parent != null && x.Parent is VisualElementView xpev)
                     helper.DisplayOrEditAasEntityViewReference(
                         packages, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
-                        editMode, repo, stack);
+                        editMode, stack);
                 else
                     helper.AddGroup(stack, "Reference is corrupted!", helper.levelColors.MainSection);
             }
@@ -362,7 +344,7 @@ namespace AasxPackageExplorer
             if (entity is VisualElementSupplementalFile)
             {
                 var x = entity as VisualElementSupplementalFile;
-                helper.DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, repo, stack);
+                helper.DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, stack);
             }
             else if (entity is VisualElementPluginExtension)
             {
@@ -446,6 +428,7 @@ namespace AasxPackageExplorer
             helper.ShowLastHighlights();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
+            lastRenderedRootElement = stack;
 #endif
 
             // return render hints

@@ -39,15 +39,12 @@ namespace AnyUi
 
     public class AnyUiDisplayContextWpf : AnyUiContextBase
     {
-        public ModifyRepo ModifyRepo;
         public IFlyoutProvider FlyoutProvider;
         public PackageCentral Packages;
 
         public AnyUiDisplayContextWpf(
-            ModifyRepo modifyRepo, 
             IFlyoutProvider flyoutProvider, PackageCentral packages)
         {
-            ModifyRepo = modifyRepo;
             FlyoutProvider = flyoutProvider;
             Packages = packages;
             InitRenderRecs();
@@ -128,7 +125,7 @@ namespace AnyUi
         /// to the superior logic of the application
         /// </summary>
         /// <param name="action"></param>
-        private void EmitOutsideAction(AnyUiLambdaActionBase action)
+        public override void EmitOutsideAction(AnyUiLambdaActionBase action)
         {
             if (action == null)
                 return;
@@ -700,15 +697,43 @@ namespace AnyUi
         }
 
         public void UIElementWasRendered(AnyUiUIElement AnyUi, UIElement el)
-        {
-            // ModifyRepo works on fwElems ..
-            if (ModifyRepo != null && AnyUi is AnyUiFrameworkElement AnyUiFe && el is FrameworkElement elFe)
-            {
-                if (AnyUi.DisplayData is AnyUiDisplayDataWpf dd)
-                    dd.actiCnt++;
+        {            
+        }
 
-                ModifyRepo.ActivateAnyUi(AnyUiFe, elFe);
+        /// <summary>
+        /// Tries to revert changes in some controls.
+        /// </summary>
+        /// <returns>True, if changes were applied</returns>
+        public override bool CallUndoChanges(AnyUiUIElement root)
+        {
+            var res = false;
+
+            // recurse?
+            if (root is AnyUiPanel panel)
+                if (panel.Children != null)
+                    foreach (var ch in panel.Children)
+                        res = res || CallUndoChanges(ch);
+
+            // can do something
+            if (root is AnyUiTextBox cntl && cntl.DisplayData is AnyUiDisplayDataWpf dd
+                && dd?.WpfElement is TextBox tb && cntl.originalValue != null)
+            {
+                tb.Text = cntl.originalValue as string;
+                res = true;
             }
+
+            // some changes
+            return res;
+        }
+
+        /// <summary>
+        /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
+        /// of the main application computer.
+        /// </summary>
+        /// <param name="txt"></param>
+        public override void ClipboardSetText(string txt)
+        {
+            Clipboard.SetText(txt);
         }
 
         /// <summary>

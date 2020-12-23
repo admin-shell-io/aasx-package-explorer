@@ -11,6 +11,34 @@ namespace AnyUi
     public class AnyUiContextBase
     {
         /// <summary>
+        /// This function is called from multiple places inside this class to emit an labda action
+        /// to the superior logic of the application
+        /// </summary>
+        /// <param name="action"></param>
+        public virtual void EmitOutsideAction(AnyUiLambdaActionBase action)
+        {
+
+        }
+
+        /// <summary>
+        /// Tries to revert changes in some controls.
+        /// </summary>
+        /// <returns>True, if changes were applied</returns>
+        public virtual bool CallUndoChanges(AnyUiUIElement root)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
+        /// of the main application computer.
+        /// </summary>
+        /// <param name="txt"></param>
+        public virtual void ClipboardSetText(string txt)
+        {
+        }
+
+        /// <summary>
         /// Graphically highlights/ marks an element to be "selected", e.g for seacg/ replace
         /// operations.
         /// </summary>

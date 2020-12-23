@@ -9,6 +9,44 @@ using AdminShellNS;
 
 namespace AnyUi.AAS
 {
+    //
+    // Lambda Actions for the editing of an AAS
+    //
+
+    public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
+    public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionBase
+    {
+        public object NextFocus = null;
+        public bool? IsExpanded = null;
+        public DispEditHighlight.HighlightFieldInfo HighlightField = null;
+        public bool OnlyReFocus = false;
+
+        public AnyUiLambdaActionRedrawAllElements(
+            object nextFocus, bool? isExpanded = true,
+            DispEditHighlight.HighlightFieldInfo highlightField = null,
+            bool onlyReFocus = false)
+        {
+            this.NextFocus = nextFocus;
+            this.IsExpanded = isExpanded;
+            this.HighlightField = highlightField;
+            this.OnlyReFocus = onlyReFocus;
+        }
+    }
+    
+    public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase
+    {
+        public AnyUiLambdaActionNavigateTo() { }
+        public AnyUiLambdaActionNavigateTo(AdminShell.Reference targetReference)
+        {
+            this.targetReference = targetReference;
+        }
+        public AdminShell.Reference targetReference;
+    }
+
+    //
+    // Dialogues (Flyovers) involving specific AAS entities
+    //
+
     public class AnyUiDialogueDataSelectAasEntity : AnyUiDialogueDataBase
     {
         // in

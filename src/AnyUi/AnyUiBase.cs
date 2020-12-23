@@ -211,6 +211,13 @@ namespace AnyUi
     }
 
     /// <summary>
+    /// An lambda action explicitely stating that nothing has to be done.
+    /// </summary>
+    public class AnyUiLambdaActionNone : AnyUiLambdaActionBase
+    {
+    }
+
+    /// <summary>
     /// Value of the AnyUI control were changed
     /// </summary>
     public class AnyUiLambdaActionContentsChanged : AnyUiLambdaActionBase
