@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
+using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
@@ -384,10 +385,36 @@ namespace AasxPackageExplorer
 
             // now render master stack
 
+            if (!editMode)
+            {
+                count = 0;
+                var jsonSerializerSettings = new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                };
+                var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
+                System.IO.File.WriteAllText(@"c:\development\file.json", json);
+            }
+            if (false && editMode)
+            {
+                if (count == 2)
+                {
+                    count = 0;
+                    var jsonSerializerSettings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All
+                    };
+                    var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
+                    System.IO.File.WriteAllText(@"c:\development\fileEdit.json", json);
+                }
+                count++;
+            }
+
 #if MONOUI
 #else
             theMasterPanel.Children.Clear();
             var spwpf = displayContext.GetOrCreateWpfElement(stack);
+
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
 #endif
@@ -395,6 +422,8 @@ namespace AasxPackageExplorer
             // return render hints
             return renderHints;
         }
+
+        static int count = 0;
 
 #endregion
     }

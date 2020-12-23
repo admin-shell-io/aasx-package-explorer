@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace BlazorUI
 {
@@ -53,6 +54,7 @@ namespace BlazorUI
         public static AdminShellPackageEnv env = null;
 
         public static AnyUiStackPanel stack = new AnyUiStackPanel();
+        public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
 
         public static string LogLine = "Started..";
 
@@ -75,6 +77,20 @@ namespace BlazorUI
             //
             // Test for Blazor
             //
+
+            // stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
+
+            // var d = new JavaScriptSerializer();
+            // stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
+            // var parent = (Dictionary<string, object>)results["Parent"];
+
+            string s = File.ReadAllText(@"c:\development\file.json");
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+            stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
+
             var editMode = true;
             stack.Orientation = AnyUiOrientation.Vertical;
 
