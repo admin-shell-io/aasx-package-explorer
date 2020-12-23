@@ -16,12 +16,12 @@ namespace BlazorUI
 {
     public class Program
     {
+        public static event EventHandler NewDataAvailable;
         public class AnyUiPanelEntry
         {
             public AnyUiPanel panel;
             public int iChild;
             public AnyUiPanelEntry() { }
-           
         }
 
         public class AnyUiPanelEntryStack
