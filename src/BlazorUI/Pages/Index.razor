@@ -1,75 +1,130 @@
 ﻿@page "/"
 @using AdminShellNS
-@using BlazorUI
+@*using BlazorUI*@
 @using AnyUi
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-@{
+<div class="col-12 row">
     <br />
-    foreach (var aas in Program.env.AasEnv.AdministrationShells)
-    {
-        <span style="color:white;background-color:blue;">@aas.idShort</span>
-        <br />
-        <span style="color:white;background-color:blue;">@aas.identification</span>
-        <br />
+    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky">
+        <h1>Hello AAS!</h1>
 
-    }
-
-    <br />
-    <span>Test</span>
-    <br />
-
-    <span>@Program.LogLine</span>
-    <br />
-
-
-    foreach (var ch in Program.stack.Children)
-    {
-        if (ch is AnyUiLabel chlb)
-        {
-            <span>@chlb.Content</span>
-            <br />
-        }
-
-        if (ch is AnyUiTextBox chtb)
-        {
-            <span>@chtb.Text</span>
-            <br />
-
-            <input @bind="CurrentValue" />
-            <span style="color:white;background-color:blue;">@CurrentValue</span>
-            <br />
-            @code { private string CurrentValue { get; set; } }
-            if (CurrentValue != null)
-            {
-                chtb.Text = CurrentValue; // for re-rendering the html directly
-                this.StateHasChanged();
-                CurrentValue = null;
-            }
-        }
-
-        if (ch is AnyUiButton chbt)
-        {
-            <span>@chbt.Content</span>
-            <br />
-
-            <button style="color:white;background-color:blue" @onclick="() => MyClick(chbt)">@chbt.Content</button>
-            @code {
-                private void MyClick(AnyUiButton chbt)
+        Welcome to the HTML renderer. The tree will be shown here.
+        <br /><br />
+    </div>
+    <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
+        <div class="sticky-top" style="word-wrap:break-word">
+            @{
+                /*
+                <br />
+                foreach (var aas in Program.env.AasEnv.AdministrationShells)
                 {
-                    // Program.LogLine = "Clicked " + DateTime.Now.ToString();
-                    var dd = chbt?.DisplayData as Program.BlazorDisplayData;
-                    dd?.MyLambda(chbt);
+                    <span style="color:white;background-color:blue;">@aas.idShort</span>
+                    <br />
+                    <span style="color:white;background-color:blue;">@aas.identification</span>
+                    <br />
+
                 }
+
+                <br />
+                <span>Test</span>
+                <br />
+
+                <span>@Program.LogLine</span>
+                <br />
+                */
+
+                int iChild = 1;
+                AnyUiPanel uiPanel = Program.stack2;
+                Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
+
+                do
+                {
+                    if (iChild == uiPanel.Children.Count)
+                    {
+                        uipStack.Pop(out uiPanel, out iChild);
+                        <br />
+                    }
+
+                    while (iChild < uiPanel.Children.Count)
+                    {
+                        var ch = uiPanel.Children[iChild];
+
+                        if (ch is AnyUiPanel chp)
+                        {
+                            // <bold>ChildPanel on Level @uipStack.getIndex()</bold>
+                            // <br />
+
+                            uipStack.Push(uiPanel, iChild);
+
+                            uiPanel = chp;
+                            iChild = 0;
+                            continue;
+                        }
+
+                        if (ch is AnyUiLabel chlb)
+                        {
+                            string backRGB = "";
+                            if (chlb.Background != null)
+                            {
+                                backRGB = "background-color:rgb(" +
+                                    chlb.Background.Color.R + ", " +
+                                    chlb.Background.Color.G + ", " +
+                                    chlb.Background.Color.B + ")";
+                            }
+                            string foreRGB = "";
+                            if (chlb.Foreground != null)
+                            {
+                                foreRGB = "color:rgb(" +
+                                    chlb.Foreground.Color.R + ", " +
+                                    chlb.Foreground.Color.G + ", " +
+                                    chlb.Foreground.Color.B + ")";
+                            }
+                            <span style="@foreRGB;@backRGB;">@chlb.Content</span>
+                        }
+
+                        if (ch is AnyUiTextBlock tb)
+                        {
+                            <span>@tb.Text</span>
+                        }
+
+                        if (ch is AnyUiTextBox chtb)
+                        {
+                            <span>@chtb.Text</span>
+                            <br />
+
+                            <input @bind="CurrentValue" />
+                            <span style="color:white;background-color:blue;">@CurrentValue</span>
+                            @code { private string CurrentValue { get; set; } }
+                            if (CurrentValue != null)
+                            {
+                                chtb.Text = CurrentValue; // for re-rendering the html directly
+                                this.StateHasChanged();
+                                CurrentValue = null;
+                            }
+                        }
+
+                        if (ch is AnyUiButton chbt)
+                        {
+                            <span>@chbt.Content</span>
+                            <button style="color:white;background-color:blue" @onclick="() => MyClick(chbt)">@chbt.Content</button>
+                            @code {
+                                private void MyClick(AnyUiButton chbt)
+                                {
+                                    // Program.LogLine = "Clicked " + DateTime.Now.ToString();
+                                    var dd = chbt?.DisplayData as Program.BlazorDisplayData;
+                                    dd?.MyLambda(chbt);
+                                }
+                            }
+                            <br />
+                        }
+
+                        iChild++;
+                    }
+                }
+                while (uipStack.getIndex() > 0);
+
             }
-            <br />
-        }
-    }
+        </div>
+    </div>
+</div>
 
-}
-
-
-<SurveyPrompt Title="How is Blazor working for you?" />

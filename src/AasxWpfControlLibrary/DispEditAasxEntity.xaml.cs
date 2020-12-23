@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
+using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
@@ -411,7 +412,33 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Entity is unknown!", helper.levelColors.MainSection);
 
             // now render master stack
+#if __export_BLAZOR
+            if (!editMode)
+            {
+                count = 0;
+                var jsonSerializerSettings = new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                };
+                var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
+                System.IO.File.WriteAllText(@"c:\development\file.json", json);
+            }
+            if (false && editMode)
+            {
+                if (count == 2)
+                {
+                    count = 0;
+                    var jsonSerializerSettings = new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All
+                    };
+                    var json = JsonConvert.SerializeObject(stack, jsonSerializerSettings);
+                    System.IO.File.WriteAllText(@"c:\development\fileEdit.json", json);
+                }
+                count++;
+            }
 
+#endif
 #if MONOUI
 #else
             theMasterPanel.Children.Clear();
@@ -424,6 +451,8 @@ namespace AasxPackageExplorer
             // return render hints
             return renderHints;
         }
+
+        static int count = 0;
 
 #endregion
     }
