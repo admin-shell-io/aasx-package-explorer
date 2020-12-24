@@ -14,8 +14,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AdminShellNS;
-using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer

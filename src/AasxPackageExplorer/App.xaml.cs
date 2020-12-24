@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxPackageLogic;
+using AnyUi;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -139,17 +141,21 @@ namespace AasxPackageExplorer
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);
-                    if (x != null &&
-                        x is System.Windows.Media.SolidColorBrush && Options.Curr.AccentColors.ContainsKey(i))
-                        this.Resources[resNames[i]] = new System.Windows.Media.SolidColorBrush(
-                            Options.Curr.AccentColors[i]);
+                    if (x != null
+                        && x is System.Windows.Media.SolidColorBrush 
+                        && Options.Curr.AccentColors.ContainsKey((OptionsInformation.ColorNames) i))
+                        this.Resources[resNames[i]] = AnyUiDisplayContextWpf.GetWpfBrush(
+                            Options.Curr.GetColor((OptionsInformation.ColorNames) i));
                 }
                 resNames = new[] { "FocusErrorColor" };
                 for (int i = 0; i < resNames.Length; i++)
                 {
                     var x = this.FindResource(resNames[i]);
-                    if (x != null && x is System.Windows.Media.Color && Options.Curr.AccentColors.ContainsKey(3 + i))
-                        this.Resources[resNames[i]] = Options.Curr.AccentColors[3 + i];
+                    if (x != null 
+                        && x is System.Windows.Media.Color 
+                        && Options.Curr.AccentColors.ContainsKey((OptionsInformation.ColorNames)(3 + i)))
+                        this.Resources[resNames[i]] = AnyUiDisplayContextWpf.GetWpfColor(
+                            Options.Curr.GetColor((OptionsInformation.ColorNames)(3 + i)));
                 }
             }
 

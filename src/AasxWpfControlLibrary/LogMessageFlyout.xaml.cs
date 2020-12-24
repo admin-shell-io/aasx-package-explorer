@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {

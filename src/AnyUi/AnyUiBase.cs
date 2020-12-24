@@ -167,6 +167,7 @@ namespace AnyUi
 
     public class AnyUiBrushes
     {
+        public static AnyUiBrush Default { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush Transparent { get { return new AnyUiBrush(0x00000000u); } }
         public static AnyUiBrush Black { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }

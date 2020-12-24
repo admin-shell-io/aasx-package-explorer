@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {

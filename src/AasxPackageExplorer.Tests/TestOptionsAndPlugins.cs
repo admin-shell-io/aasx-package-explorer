@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using AasxPackageLogic;
+using System.Linq;
 using Assert = NUnit.Framework.Assert;
 using File = System.IO.File;
 using InvalidOperationException = System.InvalidOperationException;

@@ -23,9 +23,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AnyUi;
 using Newtonsoft.Json;
-using static AasxPackageExplorer.Plugins;
+using static AasxPackageLogic.Plugins;
 
 namespace AasxPackageExplorer
 {

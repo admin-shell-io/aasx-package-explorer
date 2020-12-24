@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 #nullable enable
 
 using AasxPackageExplorer;
+using AasxPackageLogic;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

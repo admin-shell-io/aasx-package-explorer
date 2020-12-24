@@ -277,7 +277,14 @@ namespace AasxPackageLogic
         [SettableOption]
         public List<PluginDllInfo> PluginDll = new List<PluginDllInfo>();
 
-
+        public OptionsInformation()
+        {
+            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFCBD8EBu);
+            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFF88A6D2u);
+            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF4370B3u);
+            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFD42044u);
+            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFD42044u);
+        }
 
         /// <summary>
         /// Will save options to a file. Catches exceptions.

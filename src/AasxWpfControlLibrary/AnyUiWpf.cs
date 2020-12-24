@@ -20,9 +20,10 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
 using AasxWpfControlLibrary;
-using AnyUi.AAS;
 using System.Windows.Input;
 using Newtonsoft.Json;
+using AasxPackageLogic;
+using System.Windows.Data;
 
 namespace AnyUi
 {
@@ -55,7 +56,21 @@ namespace AnyUi
             InitRenderRecs();
         }
 
-        public Brush GetWpfBrush(AnyUiBrush br)
+        public static Color GetWpfColor(AnyUiColor c)
+        {
+            if (c == null)
+                return Colors.Transparent;
+            return Color.FromArgb(c.A, c.R, c.G, c.B);
+        }
+
+        public static SolidColorBrush GetWpfBrush(AnyUiColor c)
+        {
+            if (c == null)
+                return Brushes.Transparent;
+            return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
+        }
+
+        public static SolidColorBrush GetWpfBrush(AnyUiBrush br)
         {
             if (br == null)
                 return Brushes.Transparent;
@@ -63,14 +78,21 @@ namespace AnyUi
             return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
         }
 
-        public AnyUiColor GetAnyUiColor(Color c)
+        public static AnyUiColor GetAnyUiColor(Color c)
         {
             if (c == null)
                 return AnyUiColors.Transparent;
             return AnyUiColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
-        public AnyUiBrush GetAnyUiBrush(SolidColorBrush br)
+        public static AnyUiColor GetAnyUiColor(SolidColorBrush br)
+        {
+            if (br == null)
+                return AnyUiColors.Default;
+            return GetAnyUiColor(br.Color);
+        }
+
+        public static AnyUiBrush GetAnyUiBrush(SolidColorBrush br)
         {
             if (br == null)
                 return AnyUiBrushes.Transparent;
@@ -928,5 +950,47 @@ namespace AnyUi
         { 
             AasxPrintFunctions.PrintSingleAssetCodeSheet(assetId, description, title);
         }        
+    }
+
+    public class AnyUiColorToWpfBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, 
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is AnyUiColor col)
+                return AnyUiDisplayContextWpf.GetWpfBrush(col);
+            return Brushes.Transparent;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, 
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is SolidColorBrush br)
+            {
+                return AnyUiDisplayContextWpf.GetAnyUiColor(br);
+            }
+            return AnyUiColors.Default;
+        }
+    }
+
+    public class AnyUiBrushToWpfBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is AnyUiBrush br)
+                return AnyUiDisplayContextWpf.GetWpfBrush(br);
+            return Brushes.Transparent;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is SolidColorBrush br)
+            {
+                return AnyUiDisplayContextWpf.GetAnyUiBrush(br);
+            }
+            return AnyUiBrushes.Default;
+        }
     }
 }

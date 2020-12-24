@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Windows.Input;
 using AasxPackageExplorer;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxDictionaryImport
@@ -113,8 +114,8 @@ namespace AasxDictionaryImport
             {
                 identification = new AdminShellV20.Identification(
                         AdminShellV20.Identification.IRI,
-                        AasxPackageExplorer.Options.Curr.GenerateIdAccordingTemplate(
-                            AasxPackageExplorer.Options.Curr.TemplateIdAas)),
+                        Options.Curr.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdAas)),
             };
             env.AdministrationShells.Add(adminShell);
             return adminShell;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Documents;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {
