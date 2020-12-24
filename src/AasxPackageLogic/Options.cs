@@ -11,10 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Media;
+using AnyUi;
 using Newtonsoft.Json;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This attribute indicates, that it should e.g. serialized in JSON.
@@ -209,12 +209,24 @@ namespace AasxPackageExplorer
         /// </summary>
         public string WriteDefaultOptionsFN = null;
 
+        public enum ColorNames
+        {
+            LightAccentColor = 0, DarkAccentColor, DarkestAccentColor, FocusErrorBrush, FocusErrorColor
+        };
+
         /// <summary>
         /// Dictionary of override colors
         /// </summary>
         [SettableOption]
-        public Dictionary<int, System.Windows.Media.Color> AccentColors =
-            new Dictionary<int, System.Windows.Media.Color>();
+        public Dictionary<ColorNames, AnyUiColor> AccentColors =
+            new Dictionary<ColorNames, AnyUiColor>();
+
+        public AnyUiColor GetColor(ColorNames c)
+        {
+            if (AccentColors != null && AccentColors.ContainsKey(c))
+                return AccentColors[c];
+            return AnyUiColors.Black;
+        }
 
         /// <summary>
         /// Contains a list of remarks. Intended use: disabling lines of preferences.
@@ -542,8 +554,8 @@ namespace AasxPackageExplorer
                             // ReSharper disable PossibleNullReferenceException
                             try
                             {
-                                var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
-                                optionsInformation.AccentColors.Add(i, c);
+                                var c =AnyUiColor.FromString(args[index + 1].Trim());
+                                optionsInformation.AccentColors.Add((ColorNames)i, c);
                             }
                             catch (Exception ex)
                             {

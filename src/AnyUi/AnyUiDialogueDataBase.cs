@@ -51,6 +51,38 @@ namespace AnyUi
         }
     }
 
+    public class AnyUiDialogueDataEmpty : AnyUiDialogueDataBase
+    {
+        public string Message = "Waiting for user dialogue.";
+
+        public AnyUiDialogueDataEmpty(
+            string caption = "",
+            double? maxWidth = null,
+            string message = null)
+            : base(caption, maxWidth)
+        {
+            if (message != null)
+                this.Message = message;
+        }
+    }
+
+    public class AnyUiDialogueDataOpenFile : AnyUiDialogueDataEmpty
+    {
+        // out
+        public string FileName;
+
+        public AnyUiDialogueDataOpenFile(
+            string caption = "",
+            double? maxWidth = null,
+            string message = null)
+            : base(caption, maxWidth)
+        {
+            this.Message = "Please select a file via dedicated dialogue.";
+            if (message != null)
+                this.Message = message;
+        }
+    }
+
     public class AnyUiDialogueDataTextBox : AnyUiDialogueDataBase
     {
         public enum DialogueOptions { None, FilterAllControlKeys };

@@ -11,20 +11,19 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Media;
 using AdminShellNS;
 using AnyUi;
 
 // ReSharper disable VirtualMemberCallInConstructor
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     public class TreeViewLineCache
     {
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
     }
 
-    public class VisualElementGeneric : INotifyPropertyChanged, ITreeViewSelectable
+    public class VisualElementGeneric : INotifyPropertyChanged /* , ITreeViewSelectable */
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
@@ -42,10 +41,10 @@ namespace AasxPackageExplorer
         public string Info { get; set; }
         public string Value { get; set; }
         public string ValueInfo { get; set; }
-        public Brush Background { get; set; }
-        public Brush Border { get; set; }
-        public Brush TagFg { get; set; }
-        public Brush TagBg { get; set; }
+        public AnyUiColor Background { get; set; }
+        public AnyUiColor Border { get; set; }
+        public AnyUiColor TagFg { get; set; }
+        public AnyUiColor TagBg { get; set; }
         public bool IsTopLevel = false;
 
         public VisualElementGeneric()
@@ -267,10 +266,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theItemType = itemType;
 
-            this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
-            this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.Caption = $"\"{ItemTypeNames[(int)itemType]}\"";
             this.Info = "";
@@ -322,10 +321,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theAas = aas;
 
-            this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
-            this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "AAS";
             RefreshFromMainData();
@@ -366,10 +365,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theAsset = asset;
 
-            this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
-            this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "Asset";
             RefreshFromMainData();
@@ -409,10 +408,10 @@ namespace AasxPackageExplorer
             this.theSubmodelRef = smr;
             this.theSubmodel = sm;
 
-            this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["LightAccentColor"];
-            this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "SM";
             RefreshFromMainData();
@@ -461,10 +460,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theSubmodel = sm;
 
-            this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#D0D0D0"));
-            this.Border = (SolidColorBrush)(new BrushConverter().ConvertFrom("#606060"));
-            this.TagBg = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070")); ;
-            this.TagFg = Brushes.White;
+            this.Background = new AnyUiColor(0xffd0d0d0u);
+            this.Border = new AnyUiColor(0xff606060u);
+            this.TagBg = new AnyUiColor(0xff707070u);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "SM";
             RefreshFromMainData();
@@ -503,10 +502,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theView = vw;
 
-            this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
-            this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "View";
             RefreshFromMainData();
@@ -545,10 +544,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theReference = rf;
 
-            this.Background = Brushes.White;
-            this.Border = Brushes.White;
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = AnyUiColors.White;
+            this.Border = AnyUiColors.White;
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "\u2b95";
             RefreshFromMainData();
@@ -590,10 +589,10 @@ namespace AasxPackageExplorer
             this.theContainer = parentContainer;
             this.theWrapper = wrap;
 
-            this.Background = Brushes.White;
-            this.Border = Brushes.White;
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = AnyUiColors.White;
+            this.Border = AnyUiColors.White;
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = wrap.GetElementAbbreviation();
 
@@ -713,10 +712,10 @@ namespace AasxPackageExplorer
             this.theOpVar = opvar;
             this.theDir = dir;
 
-            this.Background = Brushes.White;
-            this.Border = Brushes.White;
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = AnyUiColors.White;
+            this.Border = AnyUiColors.White;
+            this.TagBg = new AnyUiColor(0xff707070u);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "In";
             if (this.theDir == AdminShell.OperationVariable.Direction.Out)
@@ -724,8 +723,6 @@ namespace AasxPackageExplorer
             if (this.theDir == AdminShell.OperationVariable.Direction.InOut)
                 this.TagString = "InOut";
 
-            this.TagBg = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070")); ;
-            this.TagFg = Brushes.White;
             RefreshFromMainData();
             RestoreFromCache();
         }
@@ -770,10 +767,10 @@ namespace AasxPackageExplorer
             this.theEnv = env;
             this.theCD = cd;
 
-            this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#D0D0D0"));
-            this.Border = (SolidColorBrush)(new BrushConverter().ConvertFrom("#606060"));
-            this.TagBg = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070")); ;
-            this.TagFg = Brushes.White;
+            this.Background = new AnyUiColor(0xffd0d0d0u);
+            this.Border = new AnyUiColor(0xff606060u);
+            this.TagBg = new AnyUiColor(0xff707070u);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "CD";
 
@@ -813,10 +810,10 @@ namespace AasxPackageExplorer
             this.thePackage = package;
             this.theFile = sf;
 
-            this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#D0D0D0"));
-            this.Border = (SolidColorBrush)(new BrushConverter().ConvertFrom("#606060"));
-            this.TagBg = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070")); ;
-            this.TagFg = Brushes.White;
+            this.Background = new AnyUiColor(0xffd0d0d0u);
+            this.Border = new AnyUiColor(0xff606060u);
+            this.TagBg = new AnyUiColor(0xff707070u);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "\u25a4";
 
@@ -874,10 +871,10 @@ namespace AasxPackageExplorer
             this.thePlugin = plugin;
             this.theExt = ext;
 
-            this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#A0A0A0"));
-            this.Border = (SolidColorBrush)(new BrushConverter().ConvertFrom("#707070"));
-            this.TagBg = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
-            this.TagFg = Brushes.White;
+            this.Background = new AnyUiColor(0xffa0a0a0u);
+            this.Border = new AnyUiColor(0xff707070u);
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
 
             this.TagString = "" + ext?.Tag;
 

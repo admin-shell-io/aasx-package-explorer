@@ -770,6 +770,13 @@ namespace AnyUi
 
             // dispatch
             // TODO (MIHO, 2020-12-21): can be realized without tedious central dispatch?
+            if (dialogueData is AnyUiDialogueDataEmpty ddem)
+            {
+                var uc = new EmptyFlyout();
+                uc.DiaData = ddem;
+                res = uc;
+            }
+
             if (dialogueData is AnyUiDialogueDataTextBox ddtb)
             {
                 var uc = new TextBoxFlyout();
@@ -823,6 +830,20 @@ namespace AnyUi
             return res;
         }
 
+        private void PerformSpecialOps(bool modal, AnyUiDialogueDataBase dialogueData)
+        {
+            if (modal && dialogueData is AnyUiDialogueDataOpenFile ddof)
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                var res = dlg.ShowDialog();
+                if (res == true)
+                {
+                    ddof.Result = true;
+                    ddof.FileName = dlg.FileName;
+                }
+            }
+        }
+
         /// <summary>
         /// Shows specified dialogue hardware-independent. The technology implementation will show the
         /// dialogue based on the type of provided <c>dialogueData</c>. 
@@ -845,6 +866,8 @@ namespace AnyUi
                 var uc = DispatchFlyout(dialogueData);
                 if (uc != null)
                     FlyoutProvider?.StartFlyoverModal(uc);
+
+                PerformSpecialOps(modal: true, dialogueData: dialogueData);
 
             } catch (Exception ex)
             {
@@ -892,5 +915,18 @@ namespace AnyUi
         {
             FlyoutProvider.CloseFlyover();
         }
+
+        //
+        // Special functions
+        //
+
+        /// <summary>
+        /// Print a page with QR codes
+        /// </summary>
+        public override void PrintSingleAssetCodeSheet(
+            string assetId, string description, string title = "Single asset code sheet")
+        { 
+            AasxPrintFunctions.PrintSingleAssetCodeSheet(assetId, description, title);
+        }        
     }
 }

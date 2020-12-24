@@ -54,7 +54,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"While loading qualifier preset file ({presetFn})");
+                Log.Singleton.Error(ex, $"While loading qualifier preset file ({presetFn})");
             }
         }
 

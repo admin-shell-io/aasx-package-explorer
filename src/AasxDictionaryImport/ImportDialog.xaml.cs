@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasxPackageExplorer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -200,7 +201,7 @@ namespace AasxDictionaryImport
                 }
                 catch (Model.ImportException ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, "Could not load the selected data source.");
+                    Log.Singleton.Error(ex, "Could not load the selected data source.");
                     MessageBox.Show(
                      "Could not load the selected data source.\n" +
                      "Details: " + ex.Message,

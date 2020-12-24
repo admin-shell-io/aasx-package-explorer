@@ -9,14 +9,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+//using System.Windows;
+//using System.Windows.Controls;
+//using System.Windows.Input;
 using AdminShellNS;
 using AnyUi;
 
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     //
     // Modify Repo

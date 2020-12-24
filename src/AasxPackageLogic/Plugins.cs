@@ -14,7 +14,7 @@ using System.Reflection;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This class holds all loaded plug-ins. It implements a singleton.

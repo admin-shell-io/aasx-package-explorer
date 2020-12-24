@@ -94,7 +94,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When loading Sercure Conncect Presets from Options");
+                Log.Singleton.Error(ex, "When loading Sercure Conncect Presets from Options");
             }
         }
 

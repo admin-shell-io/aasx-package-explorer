@@ -14,9 +14,8 @@ using System.Collections.Generic;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This class extends the basic helper functionalities of DispEditHelper by providing functionality
@@ -189,8 +188,7 @@ namespace AasxPackageExplorer
                         if (!cpb.valid || item?.sme == null || item?.wrapper == null ||
                             item?.parentContainer == null)
                         {
-                            if (this.flyoutProvider != null)
-                                this.context.MessageBoxFlyoutShow(
+                            this.context?.MessageBoxFlyoutShow(
                                     "No (valid) information for SubmodelElements in copy/paste buffer.",
                                     "Copy & Paste",
                                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -334,8 +332,7 @@ namespace AasxPackageExplorer
                             if (!cpb.valid || item?.sm == null
                                 || item?.parentContainer == null)
                             {
-                                if (this.flyoutProvider != null)
-                                    this.context.MessageBoxFlyoutShow(
+                                this.context?.MessageBoxFlyoutShow(
                                         "No (valid) information for Submodels in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -371,7 +368,7 @@ namespace AasxPackageExplorer
                         }
                         else
                         {
-                            this.flyoutProvider?.MessageBoxFlyoutShow(
+                            this.context?.MessageBoxFlyoutShow(
                                 "Entities for paste above/ below Submodels need to Submodels (/-References).",
                                 "Copy & Paste",
                                 AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -387,8 +384,7 @@ namespace AasxPackageExplorer
                             if (item?.sme == null || item?.wrapper == null ||
                                 item?.parentContainer == null)
                             {
-                                if (this.flyoutProvider != null)
-                                    this.context.MessageBoxFlyoutShow(
+                                this.context?.MessageBoxFlyoutShow(
                                         "No (valid) information for SubmodelElements in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -428,7 +424,7 @@ namespace AasxPackageExplorer
                         }
                         else
                         {
-                            this.flyoutProvider?.MessageBoxFlyoutShow(
+                            this.context?.MessageBoxFlyoutShow(
                                 "Entities for paste into Submodels need to SubmodelElements.",
                                 "Copy & Paste",
                                 AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -485,8 +481,7 @@ namespace AasxPackageExplorer
                             if (!cpb.valid || item?.entity == null
                                 || item?.parentContainer == null)
                             {
-                                if (this.flyoutProvider != null)
-                                    this.context.MessageBoxFlyoutShow(
+                                this.context?.MessageBoxFlyoutShow(
                                         "No (valid) information in copy/paste buffer.",
                                         "Copy & Paste",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
@@ -523,7 +518,7 @@ namespace AasxPackageExplorer
                         }
                         else
                         {
-                            this.flyoutProvider?.MessageBoxFlyoutShow(
+                            this.context?.MessageBoxFlyoutShow(
                                 "Entities for paste above/ below need to match list type.",
                                 "Copy & Paste",
                                 AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);

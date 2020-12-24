@@ -17,12 +17,10 @@ using System.Text.RegularExpressions;
 //using System.Windows.Controls;
 //using System.Windows.Media;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     //
     // Hinting (will be used below)
@@ -103,8 +101,6 @@ namespace AasxPackageExplorer
         private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
         public PackageCentral packages = null;
-
-        public IFlyoutProvider flyoutProvider = null;
 
         public DispLevelColors levelColors = null;
 
