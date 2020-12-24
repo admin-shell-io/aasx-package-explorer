@@ -263,6 +263,8 @@ namespace AasxPackageExplorer
             // Dispatch
             //
 
+            var inhibitRenderStackToPanel = false;
+
             if (entity is VisualElementEnvironmentItem)
             {
                 var x = entity as VisualElementEnvironmentItem;
@@ -381,6 +383,8 @@ namespace AasxPackageExplorer
                 }
                 else
                 {
+                    // this is natively done; do NOT render Any UI to WPF
+                    inhibitRenderStackToPanel = true;
                 }
 
                 // show no panel nor scroll
@@ -445,11 +449,17 @@ namespace AasxPackageExplorer
 #endif
 #if MONOUI
 #else
-            theMasterPanel.Children.Clear();
-            var spwpf = displayContext.GetOrCreateWpfElement(stack);
-            helper.ShowLastHighlights();
-            DockPanel.SetDock(spwpf, Dock.Top);
-            theMasterPanel.Children.Add(spwpf);
+            // render Any UI to WPF?
+            if (!inhibitRenderStackToPanel)
+            {
+                theMasterPanel.Children.Clear();
+                var spwpf = displayContext.GetOrCreateWpfElement(stack);
+                helper.ShowLastHighlights();
+                DockPanel.SetDock(spwpf, Dock.Top);
+                theMasterPanel.Children.Add(spwpf);
+            }
+
+            // keep the stack
             lastRenderedRootElement = stack;
 #endif
 
