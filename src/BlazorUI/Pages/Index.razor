@@ -3,10 +3,10 @@
 @using static AdminShellNS.AdminShellV20;
 @*using BlazorUI*@
 @using AnyUi
-@using BlazorUI.Data
+@using BlazorUI.Shared
 @using System
 @using System.Net;
-@inject AASService SubmodelService
+@inject BlazorUI.Data.AASService SubmodelService
 
 <div class="col-12 row">
     <br />
@@ -29,25 +29,6 @@
     <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
         <div class="sticky-top" style="word-wrap:break-word">
             @{
-                /*
-                <br />
-                foreach (var aas in Program.env.AasEnv.AdministrationShells)
-                {
-                    <span style="color:white;background-color:blue;">@aas.idShort</span>
-                    <br />
-                    <span style="color:white;background-color:blue;">@aas.identification</span>
-                    <br />
-
-                }
-
-                <br />
-                <span>Test</span>
-                <br />
-
-                <span>@Program.LogLine</span>
-                <br />
-                */
-
                 <br />
                 <span><b>@Program.LogLine</b></span>
                 <br /><br />
@@ -62,6 +43,29 @@
                     {
                         uipStack.Pop(out uiPanel, out iChild);
                         <br />
+                    }
+
+                    bool combo = false;
+                    if (uiPanel is AnyUiGrid gr)
+                    {
+                        if (gr.ColumnDefinitions.Count > 1)
+                        {
+                            int i = 0;
+                            while (i < uiPanel.Children.Count)
+                            {
+                                // if (uiPanel.Children[i] is AnyUiComboBox)
+                                //    combo = true;
+                                i++;
+                            }
+                            if (combo)
+                            {
+                                <br />
+                                <div style="float:left">
+                                    @{
+                                    }
+                                </div>
+                            }
+                        }
                     }
 
                     while (iChild < uiPanel.Children.Count)
@@ -80,29 +84,41 @@
                             continue;
                         }
 
-                        string backRGB = "";
-                        string foreRGB = "";
+                        string backColor = "";
+                        string foreColor = "";
                         if (ch is AnyUiControl ctrl)
                         {
                             if (ctrl.Background != null)
                             {
-                                backRGB = "background-color:rgb(" +
+                                backColor = "rgb(" +
                                     ctrl.Background.Color.R + ", " +
                                     ctrl.Background.Color.G + ", " +
                                     ctrl.Background.Color.B + ")";
                             }
                             if (ctrl.Foreground != null)
                             {
-                                foreRGB = "color:rgb(" +
+                                foreColor = "rgb(" +
                                     ctrl.Foreground.Color.R + ", " +
                                     ctrl.Foreground.Color.G + ", " +
                                     ctrl.Foreground.Color.B + ")";
                             }
                         }
+                        string style = "";
+                        if (foreColor != "")
+                            style += "color:" + foreColor + ";";
+                        if (backColor != "")
+                            style += "background-color:" + backColor + ";";
 
                         if (ch is AnyUiLabel chlb)
                         {
-                            <span style="@foreRGB;@backRGB;">@chlb.Content</span>
+                            if (style != "")
+                            {
+                                <span style="@style">@chlb.Content</span>
+                            }
+                            else
+                            {
+                                <span>@chlb.Content</span>
+                            }
                         }
 
                         if (ch is AnyUiTextBlock tb)
@@ -114,13 +130,34 @@
                         {
                             if (ch is AnyUiHintBubble hb)
                             {
-                                <span style="@foreRGB;@backRGB;">@hb.Text</span>
+                                if (style != "")
+                                {
+                                    <span style="@style">@hb.Text</span>
+                                }
+                                else
+                                {
+                                    <span>@hb.Text</span>
+                                }
                                 <br />
                             }
                             else
                             {
                                 int w = chtb.Text.Length;
-                                <span style="@foreRGB;@backRGB;"><input size="@w" @bind="@chtb.Text" /></span>
+                                if (style != "")
+                                {
+                                    <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
+                                }
+                                else
+                                {
+                                    <span><input size="@w" @bind="chtb.Text" /></span>
+                                }
+                                @code {
+                                    private void MyInput(AnyUiTextBox chtb)
+                                    {
+                                        var dd = chtb?.DisplayData as Program.BlazorDisplayData;
+                                        dd?.MyLambda(chtb);
+                                    }
+                                }
                             }
                         }
 
@@ -131,12 +168,18 @@
                                 Program.LogLine = "Lambda for button " + chbt.Content;
                             });
 
-                            <button style="@foreRGB;@backRGB;" @onclick="() => MyClick(chbt)">@chbt.Content</button>
+                            if (style != "")
+                            {
+                                <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
+                            }
+                            else
+                            {
+                                <button @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
+                            }
                             @code {
 
-                                private void MyClick(AnyUiButton chbt)
+                                private void MyClickButton(AnyUiButton chbt)
                                 {
-                                    // Program.LogLine = "Clicked " + DateTime.Now.ToString();
                                     var dd = chbt?.DisplayData as Program.BlazorDisplayData;
                                     dd?.MyLambda(chbt);
                                 }
@@ -151,7 +194,7 @@
                         if (ch is AnyUiComboBox comb)
                         {
                             string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-                            <select class="form-control selectpicker" @bind="@comb.Text" style ="width:@w">
+                            <select class="form-control selectpicker" @bind="@comb.Text" style="width:@w">
                                 @foreach (var item in comb.Items)
                                 {
                                     <option value="@item">@item</option>
