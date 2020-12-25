@@ -9,14 +9,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+//using System.Windows;
+//using System.Windows.Controls;
+//using System.Windows.Input;
 using AdminShellNS;
 using AnyUi;
 
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     //
     // Modify Repo
@@ -273,7 +273,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
         }
 
@@ -297,7 +297,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
 
         }
@@ -320,7 +320,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
         }
 
@@ -343,7 +343,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
         }
 
@@ -367,7 +367,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
         }
 
@@ -396,7 +396,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
+                Log.Singleton.Error(ex, "While in user callback (modify repo lambda)");
             }
         }
 #endif

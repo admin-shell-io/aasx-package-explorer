@@ -23,9 +23,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AasxWpfControlLibrary;
 using AdminShellNS;
-using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer

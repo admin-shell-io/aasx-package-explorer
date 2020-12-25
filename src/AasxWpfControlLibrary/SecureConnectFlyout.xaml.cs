@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {
@@ -94,7 +95,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When loading Sercure Conncect Presets from Options");
+                Log.Singleton.Error(ex, "When loading Sercure Conncect Presets from Options");
             }
         }
 

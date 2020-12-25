@@ -20,10 +20,10 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
@@ -99,13 +99,13 @@ namespace AasxPackageExplorer
             if (theContentBrowser.CanHandleFileNameExtension(url) || preferInternal)
             {
                 // try view in browser
-                AasxPackageExplorer.Log.Singleton.Info($"Displaying {url} locally in embedded browser ..");
+                Log.Singleton.Info($"Displaying {url} locally in embedded browser ..");
                 ShowContentBrowser(url);
             }
             else
             {
                 // open externally
-                AasxPackageExplorer.Log.Singleton.Info(
+                Log.Singleton.Info(
                     $"Displaying {this.showContentPackageUri} remotely in external viewer ..");
                 System.Diagnostics.Process.Start(url);
             }
@@ -186,7 +186,7 @@ namespace AasxPackageExplorer
             if (packContainer == null)
                 return;
 
-            AasxPackageExplorer.Log.Singleton.Info(
+            Log.Singleton.Info(
                 "Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
             // loading
             try
@@ -197,7 +197,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When loading {info}, an error occurred");
+                Log.Singleton.Error(ex, $"When loading {info}, an error occurred");
                 return;
             }
 
@@ -208,7 +208,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When displaying element tree of {info}, an error occurred");
                 return;
             }
@@ -222,32 +222,32 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When performing actions after load of {info}, an error occurred");
                 return;
             }
 
             // done
-            AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
+            Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
         public AasxFileRepository UiLoadFileRepository(string fn)
         {
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info(
+                Log.Singleton.Info(
                     $"Loading aasx file repository {Options.Curr.AasxRepositoryFn} ..");
                 var fr = AasxFileRepository.Load(fn);
 
                 if (fr != null)
                     return fr;
                 else
-                    AasxPackageExplorer.Log.Singleton.Info(
+                    Log.Singleton.Info(
                         $"File not found when auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
 
@@ -631,7 +631,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                    Log.Singleton.Error(ex, $"When auto-loading {fn}");
                 }
             };
             this.RepoControl.QueryClick += () =>
@@ -643,7 +643,7 @@ namespace AasxPackageExplorer
             MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
 
             // Last task here ..
-            AasxPackageExplorer.Log.Singleton.Info("Application started ..");
+            Log.Singleton.Info("Application started ..");
 
             // Try to load?
             if (Options.Curr.AasxToLoad != null)
@@ -657,7 +657,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                    Log.Singleton.Error(ex, $"When auto-loading {fn}");
                 }
             }
 
@@ -697,7 +697,7 @@ namespace AasxPackageExplorer
 
             // check for Stored Prints in Log
             StoredPrint sp;
-            while ((sp = AasxPackageExplorer.Log.Singleton.PopLastShortTermPrint()) != null)
+            while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
             {
                 // pop
                 Message.Content = "" + sp.msg;
@@ -732,7 +732,7 @@ namespace AasxPackageExplorer
             }
 
             // always tell the errors
-            var ne = AasxPackageExplorer.Log.Singleton.NumberErrors;
+            var ne = Log.Singleton.NumberErrors;
             if (ne > 0)
             {
                 LabelNumberErrors.Content = "Errors: " + ne;
@@ -796,7 +796,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While responding to a user interaction");
+                Log.Singleton.Error(ex, "While responding to a user interaction");
             }
         }
 
@@ -816,12 +816,12 @@ namespace AasxPackageExplorer
             AdminShellPackageEnv pkg = null;
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info($"Auto-load AASX file from repository {fn}");
+                Log.Singleton.Info($"Auto-load AASX file from repository {fn}");
                 pkg = LoadPackageFromFile(fn);
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                Log.Singleton.Error(ex, $"When auto-loading {fn}");
             }
 
             // if successfull ..
@@ -925,7 +925,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
+                Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
             }
 
             // if successful, try to display it
@@ -951,7 +951,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested for navigate to");
+                Log.Singleton.Error(ex, "While displaying element requested for navigate to");
             }
         }
 
@@ -985,7 +985,7 @@ namespace AasxPackageExplorer
                         }
                         catch (Exception ex)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                         }
 
@@ -1038,7 +1038,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(
+                    Log.Singleton.Error(
                         ex, $"While responding to a event from plug-in {"" + lpi?.name}");
                 }
             }
@@ -1060,7 +1060,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying home element");
+                Log.Singleton.Error(ex, "While displaying home element");
             }
         }
 
@@ -1096,7 +1096,7 @@ namespace AasxPackageExplorer
                     var fi = packages.FileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
                         return;
                     }
@@ -1112,7 +1112,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
                     }
 
@@ -1124,7 +1124,7 @@ namespace AasxPackageExplorer
                             alsoDereferenceObjects: true, sri: sri);
                         if (veFocus == null)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 $"Cannot lookup requested element within loaded file from repository.");
                             return;
                         }
@@ -1144,14 +1144,14 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, "While displaying element requested by back button.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested by plug-in");
+                Log.Singleton.Error(ex, "While displaying element requested by plug-in");
             }
         }
 
@@ -1159,7 +1159,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ButtonClear)
             {
-                AasxPackageExplorer.Log.Singleton.ClearNumberErrors();
+                Log.Singleton.ClearNumberErrors();
                 Message.Content = "";
                 Message.Background = Brushes.White;
                 Message.Foreground = Brushes.Black;
@@ -1213,7 +1213,7 @@ namespace AasxPackageExplorer
                 // Collect all the stored log prints
                 IEnumerable<StoredPrint> Prints()
                 {
-                    var prints = AasxPackageExplorer.Log.Singleton.GetStoredLongTermPrints();
+                    var prints = Log.Singleton.GetStoredLongTermPrints();
                     if (prints != null)
                     {
                         yield return new StoredPrint(head);
@@ -1305,7 +1305,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            AasxPackageExplorer.Log.Singleton.Info("Closing ..");
+            Log.Singleton.Info("Closing ..");
             try
             {
                 packages.Main.Close();
@@ -1334,7 +1334,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ShowContent && this.showContentPackageUri != null && packages.MainAvailable)
             {
-                AasxPackageExplorer.Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
+                Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
                 try
                 {
                     var contentUri = this.showContentPackageUri;
@@ -1351,11 +1351,11 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(
+                    Log.Singleton.Error(
                         ex, $"When displaying content {this.showContentPackageUri}, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
+                Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
             }
         }
 
@@ -1646,7 +1646,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(ex, $"while receiving file drop to window");
+                        Log.Singleton.Error(ex, $"while receiving file drop to window");
                     }
                 }
             }
@@ -1689,7 +1689,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"When dragging content {this.showContentPackageUri}, an error occurred");
                         return;
                     }

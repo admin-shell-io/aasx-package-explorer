@@ -14,7 +14,7 @@ using System.Reflection;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This class holds all loaded plug-ins. It implements a singleton.
@@ -156,7 +156,7 @@ namespace AasxPackageExplorer
             {
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
+                    Log.Singleton.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
 
                     // make full path
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
@@ -169,7 +169,7 @@ namespace AasxPackageExplorer
                     var tp = asm.GetType("AasxIntegrationBase.AasxPlugin");
                     if (tp == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             "Cannot find class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
                     }
@@ -178,7 +178,7 @@ namespace AasxPackageExplorer
                     IAasxPluginInterface ob = (IAasxPluginInterface)Activator.CreateInstance(tp);
                     if (ob == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             "Cannot create instance from class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
                     }
@@ -187,7 +187,7 @@ namespace AasxPackageExplorer
                     var pi = PluginInstance.CreateNew(index, asm, tp, ob, pluginDll[index].Args);
                     if (pi == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             "Cannot invoke methods within instance from " +
                                 "class AasxIntegrationBase.AasxPlugin within .dll.");
                         continue;
@@ -198,12 +198,12 @@ namespace AasxPackageExplorer
                     pi.BasicInvokeMethod("InitPlugin", singleArg);
 
                     // adding
-                    AasxPackageExplorer.Log.Singleton.Info(".. adding plugin {0}", pi.name);
+                    Log.Singleton.Info(".. adding plugin {0}", pi.name);
                     loadedPlugins.Add(pi.name, pi);
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"Trying to activate the plugin at index {index}");
+                    Log.Singleton.Error(ex, $"Trying to activate the plugin at index {index}");
                 }
             }
 
@@ -282,7 +282,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, exceptionWhere);
+                    Log.Singleton.Error(ex, exceptionWhere);
                 }
             }
         }
@@ -341,7 +341,7 @@ namespace AasxPackageExplorer
                         {
                             if (duplicateLog != null)
                                 duplicateLog(new StoredPrint(xs));
-                            AasxPackageExplorer.Log.Singleton.Info("[{0}] {1}", "" + pluginInstance.name, x);
+                            Log.Singleton.Info("[{0}] {1}", "" + pluginInstance.name, x);
                         }
 
                         var xsp = x as StoredPrint;
@@ -350,9 +350,9 @@ namespace AasxPackageExplorer
                             xsp.msg = $"[{"" + pluginInstance.name}] " + xsp.msg;
                             if (duplicateLog != null)
                                 duplicateLog(xsp);
-                            AasxPackageExplorer.Log.Singleton.Append(xsp);
+                            Log.Singleton.Append(xsp);
                             if (xsp.isError)
-                                AasxPackageExplorer.Log.Singleton.NumberErrors++;
+                                Log.Singleton.NumberErrors++;
                         }
                     }
                 }

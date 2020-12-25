@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using AdminShellNS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     public static class EclassUtils
     {

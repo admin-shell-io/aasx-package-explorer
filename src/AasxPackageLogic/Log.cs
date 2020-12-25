@@ -7,7 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// Static class, wrapping log instance, to have a logging via Singleton.

@@ -29,6 +29,9 @@
     <!- -->
 
     <!-- ZVEI Publication Colors -->
+    <!-- please notice: the source of truth is now stored in the 
+    AasxPackageLogic.OptionsInformation.AccentColos;
+    the hereby defined ressources will get overridden! -->
     <SolidColorBrush x:Key="LightAccentColor" Color="#FFCBD8EB"/>
     <SolidColorBrush x:Key="DarkAccentColor" Color="#FF88A6D2"/>
     <SolidColorBrush x:Key="DarkestAccentColor" Color="#FF4370B3"/>

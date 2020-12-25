@@ -91,5 +91,14 @@ namespace AnyUi
         public virtual void CloseFlyover()
         {
         }
+
+        //
+        // some special functions
+        // TODO (MIHO, 2020-12-24): check if to move/ refactor these functions
+        //
+
+        public virtual void PrintSingleAssetCodeSheet(
+            string assetId, string description, string title = "Single asset code sheet")
+        { }
     }
 }

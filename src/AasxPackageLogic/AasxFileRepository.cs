@@ -13,16 +13,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This simple file repository holds associations between AssetId and Filenames of AASX packages.
@@ -191,18 +189,18 @@ namespace AasxPackageExplorer
             }
 
             [JsonIgnore]
-            public Brush VisualLabelBackground
+            public AnyUiBrush VisualLabelBackground
             {
                 get
                 {
                     if (VisualState == VisualStateEnum.Idle)
-                        return Brushes.Transparent;
+                        return AnyUiBrushes.Transparent;
 
-                    var col = Colors.Green;
+                    var col = AnyUiColors.Green;
                     if (VisualState == VisualStateEnum.ReadFrom)
-                        col = Colors.Blue;
+                        col = AnyUiColors.Blue;
                     if (VisualState == VisualStateEnum.WriteTo)
-                        col = Colors.Orange;
+                        col = AnyUiColors.Orange;
 
                     if (visualTime > 2.0)
                         col.ScA = 1.0f;
@@ -211,11 +209,11 @@ namespace AasxPackageExplorer
                     else
                     {
                         visualTime = 0.0;
-                        col = Colors.Transparent;
+                        col = AnyUiColors.Transparent;
                         VisualState = VisualStateEnum.Idle;
                     }
 
-                    return new SolidColorBrush(col);
+                    return new AnyUiBrush(col);
                 }
             }
 

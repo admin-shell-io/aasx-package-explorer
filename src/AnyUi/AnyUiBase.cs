@@ -76,6 +76,11 @@ namespace AnyUi
         public byte G { get; set; }
         public byte B { get; set; }
 
+        public Single ScA { get { return A / 255.0f; } set { A = (byte)(255.0f * value); } }
+        public Single ScR { get { return R / 255.0f; } set { R = (byte)(255.0f * value); } }
+        public Single ScG { get { return G / 255.0f; } set { G = (byte)(255.0f * value); } }
+        public Single ScB { get { return B / 255.0f; } set { B = (byte)(255.0f * value); } }
+
         public AnyUiColor()
         {
             A = 0xff;
@@ -109,14 +114,30 @@ namespace AnyUi
             res.B = b;
             return res;
         }
+
+        public static AnyUiColor FromString(string st)
+        {
+            if (st == null || !st.StartsWith("#") || (st.Length != 7 && st.Length != 9))
+                return AnyUiColors.Default;
+            UInt32 ui = 0;
+            if (st.Length == 9)
+                ui = Convert.ToUInt32(st.Substring(1));
+            if (st.Length == 7)
+                ui = 0xff000000u | Convert.ToUInt32(st.Substring(1));
+            return new AnyUiColor(ui);
+        }
     }
 
     public class AnyUiColors
     {
+        public static AnyUiColor Default { get { return new AnyUiColor(0xff000000u); } }
         public static AnyUiColor Transparent { get { return new AnyUiColor(0x00000000u); } }
         public static AnyUiColor Black { get { return new AnyUiColor(0xff000000u); } }
         public static AnyUiColor DarkBlue { get { return new AnyUiColor(0xff00008bu); } }
         public static AnyUiColor LightBlue { get { return new AnyUiColor(0xffadd8e6u); } }
+        public static AnyUiColor Blue { get { return new AnyUiColor(0xff0000ffu); } }
+        public static AnyUiColor Green { get { return new AnyUiColor(0xff00ff00u); } }
+        public static AnyUiColor Orange { get { return new AnyUiColor(0xffffa500u); } }
         public static AnyUiColor White { get { return new AnyUiColor(0xffffffffu); } }
     }
 
@@ -146,6 +167,7 @@ namespace AnyUi
 
     public class AnyUiBrushes
     {
+        public static AnyUiBrush Default { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush Transparent { get { return new AnyUiBrush(0x00000000u); } }
         public static AnyUiBrush Black { get { return new AnyUiBrush(0xff000000u); } }
         public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }

@@ -12,10 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxPackageExplorer;
 using AdminShellNS;
 
-namespace AasxWpfControlLibrary
+namespace AasxPackageLogic
 {
     /// <summary>
     /// The container wraps an AdminShellPackageEnv with the availability to re-new the package env

@@ -21,12 +21,10 @@ using System.Threading.Tasks;
 //using System.Windows.Input;
 //using System.Windows.Media;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     public class DispEditHelperEntities : DispEditHelperModules
     {
@@ -78,21 +76,17 @@ namespace AasxPackageExplorer
             {
                 if (buttonNdx == 0)
                 {
-                    if (this.flyoutProvider != null) this.flyoutProvider.StartFlyover(new EmptyFlyout());
-
+                    var uc = new AnyUiDialogueDataEmpty();
+                    this.context?.StartFlyover(uc);
                     try
                     {
-                        if (asset != null && asset.identification != null)
-                        {
-                            AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
-                        }
+                        this.context?.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
+                        Log.Singleton.Error(ex, "When printing, an error occurred");
                     }
-
-                    if (this.flyoutProvider != null) this.flyoutProvider.CloseFlyover();
+                    this.context?.CloseFlyover();
                 }
                 return new AnyUiLambdaActionNone();
             });
@@ -403,7 +397,7 @@ namespace AasxPackageExplorer
                                         }
                                         catch (Exception ex)
                                         {
-                                            AasxPackageExplorer.Log.Singleton.Error(ex, $"copying AAS");
+                                            Log.Singleton.Error(ex, $"copying AAS");
                                         }
 
                                         //
@@ -432,7 +426,7 @@ namespace AasxPackageExplorer
                                                 }
                                                 catch (Exception ex)
                                                 {
-                                                    AasxPackageExplorer.Log.Singleton.Error(
+                                                    Log.Singleton.Error(
                                                         ex, $"copying supplementary file {fn}");
                                                 }
                                             }
@@ -564,12 +558,13 @@ namespace AasxPackageExplorer
                         content: "Select"),
                         (o) =>
                         {
-                            var dlg = new Microsoft.Win32.OpenFileDialog();
-                            var res = dlg.ShowDialog();
-                            if (res == true)
+                            var uc = new AnyUiDialogueDataOpenFile(
+                                message: "Select a supplementary file to add..");
+                            this.context?.StartFlyoverModal(uc);
+                            if (uc.Result && uc.FileName != null)
                             {
-                                PackageSourcePath = dlg.FileName;
-                                PackageTargetFn = System.IO.Path.GetFileName(dlg.FileName);
+                                PackageSourcePath = uc.FileName;
+                                PackageTargetFn = System.IO.Path.GetFileName(uc.FileName);
                                 PackageTargetFn = PackageTargetFn.Replace(" ", "_");
                             }
                             return new AnyUiLambdaActionRedrawEntity();
@@ -613,13 +608,13 @@ namespace AasxPackageExplorer
                                 ptd = "/";
                             packages.Main.AddSupplementaryFileToStore(
                                 PackageSourcePath, ptd, PackageTargetFn, PackageEmbedAsThumbnail);
-                            AasxPackageExplorer.Log.Singleton.Info(
+                            Log.Singleton.Info(
                                 "Added {0} to pending package items. A save-operation is required.",
                                 PackageSourcePath);
                         }
                         catch (Exception ex)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(ex, "Adding file to package");
+                            Log.Singleton.Error(ex, "Adding file to package");
                         }
                         PackageSourcePath = "";
                         PackageTargetFn = "";
@@ -692,21 +687,20 @@ namespace AasxPackageExplorer
                 this.AddAction(stack, "Action", new[] { "Delete" }, repo, (buttonNdx) =>
                 {
                     if (buttonNdx == 0)
-                        if (this.flyoutProvider != null &&
-                            AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entity? This operation can not be reverted!", "AASX",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             try
                             {
                                 packages.Main.DeleteSupplementaryFile(psf);
-                                AasxPackageExplorer.Log.Singleton.Info(
+                                Log.Singleton.Info(
                                 "Added {0} to pending package items to be deleted. " +
                                     "A save-operation might be required.", PackageSourcePath);
                             }
                             catch (Exception ex)
                             {
-                                AasxPackageExplorer.Log.Singleton.Error(ex, "Deleting file in package");
+                                Log.Singleton.Error(ex, "Deleting file in package");
                             }
                             return new AnyUiLambdaActionRedrawAllElements(
                             nextFocus: VisualElementEnvironmentItem.GiveDataObject(
@@ -770,8 +764,7 @@ namespace AasxPackageExplorer
                     {
                         if (buttonNdx == 0)
                         {
-                            if (this.flyoutProvider != null &&
-                                AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                            if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation creates a reference to an existing Submodel. " +
                                         "By this, two AAS will share exactly the same data records. " +
                                         "Changing one will cause the other AAS's information to change as well. " +
@@ -1045,8 +1038,7 @@ namespace AasxPackageExplorer
                 this.AddAction(stack, "Submodel:", new[] { "Delete" }, repo, (buttonNdx) =>
                 {
                     if (buttonNdx == 0)
-                        if (this.flyoutProvider != null &&
-                             AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                  "Delete selected Submodel? This operation can not be reverted!", "AASX",
                                  AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
@@ -1213,8 +1205,7 @@ namespace AasxPackageExplorer
                     repo,
                     (buttonNdx) =>
                     {
-                        if (this.flyoutProvider != null &&
-                            AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                 "This operation will affect all Kind attributes of " +
                                     "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                 "Setting Kind",
@@ -1595,8 +1586,7 @@ namespace AasxPackageExplorer
                         this.AddAction(stack, "value:", new[] { "Remove existing" }, repo, (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
-                                if (this.flyoutProvider != null &&
-                                     AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                          "Delete value, which is the dataset of a SubmodelElement? " +
                                              "This cannot be reverted!",
                                          "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
@@ -1968,8 +1958,7 @@ namespace AasxPackageExplorer
                             if (Options.Curr.EclassDir == null)
                             {
                                 // eclass dir?
-                                if (this.flyoutProvider != null)
-                                    this.context.MessageBoxFlyoutShow(
+                                this.context?.MessageBoxFlyoutShow(
                                         "The AASX Package Explore can take over eCl@ss definition. " +
                                         "In order to do so, the commandine parameter -eclass has" +
                                         "to refer to a folder withe eCl@ss XML files.", "Information",
@@ -2715,8 +2704,7 @@ namespace AasxPackageExplorer
                         {
                             if (buttonNdx == 0 && fl.value.HasContent())
                             {
-                                if (this.flyoutProvider != null &&
-                                    AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                     "Delete selected entity? This operation can not be reverted!", "AASX",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 {
@@ -2727,22 +2715,22 @@ namespace AasxPackageExplorer
                                         var psf = psfs?.FindByUri(fl.value);
                                         if (psf == null)
                                         {
-                                            AasxPackageExplorer.Log.Singleton.Error(
+                                            Log.Singleton.Error(
                                                 $"Not able to locate supplmentary file {fl.value} for removal! " +
                                                 $"Aborting!");
                                         }
                                         else
                                         {
-                                            AasxPackageExplorer.Log.Singleton.Info($"Removing file {fl.value} ..");
+                                            Log.Singleton.Info($"Removing file {fl.value} ..");
                                             packages.Main.DeleteSupplementaryFile(psf);
-                                            AasxPackageExplorer.Log.Singleton.Info(
+                                            Log.Singleton.Info(
                                                 $"Added {fl.value} to pending package items to be deleted. " +
                                                 "A save-operation might be required.");
                                         }
                                     }
                                     catch (Exception ex)
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Error(
+                                        Log.Singleton.Error(
                                             ex, $"Removing file {fl.value} in package");
                                     }
 
@@ -2777,7 +2765,7 @@ namespace AasxPackageExplorer
                                 var psf = psfs?.FindByUri(ptd + ptfn);
                                 if (psf != null)
                                 {
-                                    this.flyoutProvider?.MessageBoxFlyoutShow(
+                                    this.context?.MessageBoxFlyoutShow(
                                         $"The supplementary file {ptd + ptfn} is already existing in the " +
                                         "package. Please re-try with a different file name.", "Create text file",
                                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
@@ -2799,12 +2787,12 @@ namespace AasxPackageExplorer
 
                                     if (targetPath == null)
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Error(
+                                        Log.Singleton.Error(
                                             $"Error creating text-file {ptd + ptfn} within package");
                                     }
                                     else
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Info(
+                                        Log.Singleton.Info(
                                             $"Added empty text-file {ptd + ptfn} to pending package items. " +
                                             $"A save-operation is required.");
                                         fl.mimeType = mimeType;
@@ -2813,7 +2801,7 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    AasxPackageExplorer.Log.Singleton.Error(
+                                    Log.Singleton.Error(
                                         ex, $"Creating text-file {ptd + ptfn} within package");
                                 }
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
@@ -2828,14 +2816,14 @@ namespace AasxPackageExplorer
                                     var psf = psfs?.FindByUri(fl.value);
                                     if (psf == null)
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Error(
+                                        Log.Singleton.Error(
                                             $"Not able to locate supplmentary file {fl.value} for edit. " +
                                             $"Aborting!");
                                         return new AnyUiLambdaActionNone();
                                     }
 
                                     // try read ..
-                                    AasxPackageExplorer.Log.Singleton.Info($"Reading text-file {fl.value} ..");
+                                    Log.Singleton.Info($"Reading text-file {fl.value} ..");
                                     string contents;
                                     using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(fl.value))
                                     {
@@ -2849,7 +2837,7 @@ namespace AasxPackageExplorer
                                     // test
                                     if (contents == null)
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Error(
+                                        Log.Singleton.Error(
                                             $"Not able to read contents from  supplmentary file {fl.value} " +
                                             $"for edit. Aborting!");
                                         return new AnyUiLambdaActionNone();
@@ -2876,7 +2864,7 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    AasxPackageExplorer.Log.Singleton.Error(
+                                    Log.Singleton.Error(
                                         ex, $"Edit text-file {fl.value} in package.");
                                 }
 
@@ -2917,11 +2905,12 @@ namespace AasxPackageExplorer
                         {
                             if (buttonNdx == 0)
                             {
-                                var dlg = new Microsoft.Win32.OpenFileDialog();
-                                var res = dlg.ShowDialog();
-                                if (res == true)
+                                var uc = new AnyUiDialogueDataOpenFile(
+                                message: "Select a supplementary file to add..");
+                                this.context?.StartFlyoverModal(uc);
+                                if (uc.Result && uc.FileName != null)
                                 {
-                                    this.uploadAssistance.SourcePath = dlg.FileName;
+                                    this.uploadAssistance.SourcePath = uc.FileName;
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
@@ -2943,12 +2932,12 @@ namespace AasxPackageExplorer
 
                                     if (targetPath == null)
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Error(
+                                        Log.Singleton.Error(
                                             $"Error adding file {uploadAssistance.SourcePath} to package");
                                     }
                                     else
                                     {
-                                        AasxPackageExplorer.Log.Singleton.Info(
+                                        Log.Singleton.Info(
                                             $"Added {ptfn} to pending package items. A save-operation is required.");
                                         fl.mimeType = mimeType;
                                         fl.value = targetPath;
@@ -2956,7 +2945,7 @@ namespace AasxPackageExplorer
                                 }
                                 catch (Exception ex)
                                 {
-                                    AasxPackageExplorer.Log.Singleton.Error(
+                                    Log.Singleton.Error(
                                         ex, $"Adding file {uploadAssistance.SourcePath} to package");
                                 }
 

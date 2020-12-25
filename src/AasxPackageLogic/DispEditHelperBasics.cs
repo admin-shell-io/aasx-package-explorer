@@ -17,12 +17,10 @@ using System.Text.RegularExpressions;
 //using System.Windows.Controls;
 //using System.Windows.Media;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     //
     // Hinting (will be used below)
@@ -103,8 +101,6 @@ namespace AasxPackageExplorer
         private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
         public PackageCentral packages = null;
-
-        public IFlyoutProvider flyoutProvider = null;
 
         public DispLevelColors levelColors = null;
 
@@ -1163,7 +1159,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, "Executing refactoring");
+                    Log.Singleton.Error(ex, "Executing refactoring");
                 }
             }
 
@@ -1374,7 +1370,7 @@ namespace AasxPackageExplorer
                     {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
                         this.context?.ClipboardSetText(st);
-                        AasxPackageExplorer.Log.Singleton.Info("Keys written to clipboard.");
+                        Log.Singleton.Info("Keys written to clipboard.");
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -1692,7 +1688,7 @@ namespace AasxPackageExplorer
                             }
                             catch (Exception ex)
                             {
-                                AasxPackageExplorer.Log.Singleton.Error(
+                                Log.Singleton.Error(
                                     ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
                             }
                         }

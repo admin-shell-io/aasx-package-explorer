@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxPackageExplorer;
-using AasxWpfControlLibrary;
 using AdminShellNS;
+using AnyUi;
 
-namespace AnyUi.AAS
+namespace AasxPackageLogic
 {
     //
     // Lambda Actions for the editing of an AAS

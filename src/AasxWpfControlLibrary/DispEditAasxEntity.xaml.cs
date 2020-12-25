@@ -18,10 +18,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -75,8 +75,7 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (packages != null && theEntity != null)
                             DisplayOrEditVisualAasxElement(
-                                packages, theEntity, helper.editMode, helper.hintMode,
-                                flyoutProvider: helper.flyoutProvider);
+                                packages, theEntity, helper.editMode, helper.hintMode);
                     }
 
                     // all other elements refer to superior functionality
@@ -166,7 +165,6 @@ namespace AasxPackageExplorer
             this.packages = packages;
             this.theEntity = entity;
             helper.packages = packages;
-            helper.flyoutProvider = flyoutProvider;
             helper.highlightField = hightlightField;
 
             var renderHints = new DisplayRenderHints();
@@ -184,31 +182,31 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            displayContext = new AnyUiDisplayContextWpf(helper.flyoutProvider, packages);
+            displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
 
             // ReSharper disable CoVariantArrayConversion            
             var levelColors = new DispLevelColors()
             {
                 MainSection = new AnyUiBrushTuple(
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["DarkestAccentColor"]),
                     AnyUiBrushes.White),
                 SubSection = new AnyUiBrushTuple(
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["LightAccentColor"]),
                     AnyUiBrushes.Black),
                 SubSubSection = new AnyUiBrushTuple(
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["LightAccentColor"]),
                     AnyUiBrushes.Black),
                 HintSeverityHigh = new AnyUiBrushTuple(
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["FocusErrorBrush"]),
                     AnyUiBrushes.White),
                 HintSeverityNotice = new AnyUiBrushTuple(
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    displayContext.GetAnyUiBrush((SolidColorBrush)
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
                         System.Windows.Application.Current.Resources["DarkestAccentColor"]))
             };
             // ReSharper enable CoVariantArrayConversion

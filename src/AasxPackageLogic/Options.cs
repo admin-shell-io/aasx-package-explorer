@@ -11,10 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Media;
+using AnyUi;
 using Newtonsoft.Json;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This attribute indicates, that it should e.g. serialized in JSON.
@@ -209,12 +209,24 @@ namespace AasxPackageExplorer
         /// </summary>
         public string WriteDefaultOptionsFN = null;
 
+        public enum ColorNames
+        {
+            LightAccentColor = 0, DarkAccentColor, DarkestAccentColor, FocusErrorBrush, FocusErrorColor
+        };
+
         /// <summary>
         /// Dictionary of override colors
         /// </summary>
         [SettableOption]
-        public Dictionary<int, System.Windows.Media.Color> AccentColors =
-            new Dictionary<int, System.Windows.Media.Color>();
+        public Dictionary<ColorNames, AnyUiColor> AccentColors =
+            new Dictionary<ColorNames, AnyUiColor>();
+
+        public AnyUiColor GetColor(ColorNames c)
+        {
+            if (AccentColors != null && AccentColors.ContainsKey(c))
+                return AccentColors[c];
+            return AnyUiColors.Black;
+        }
 
         /// <summary>
         /// Contains a list of remarks. Intended use: disabling lines of preferences.
@@ -265,7 +277,14 @@ namespace AasxPackageExplorer
         [SettableOption]
         public List<PluginDllInfo> PluginDll = new List<PluginDllInfo>();
 
-
+        public OptionsInformation()
+        {
+            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFCBD8EBu);
+            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFF88A6D2u);
+            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF4370B3u);
+            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFD42044u);
+            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFD42044u);
+        }
 
         /// <summary>
         /// Will save options to a file. Catches exceptions.
@@ -280,7 +299,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When writing options to a JSON file: {filename}");
+                Log.Singleton.Error(ex, $"When writing options to a JSON file: {filename}");
             }
         }
 
@@ -296,7 +315,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When reading options JSON file");
+                Log.Singleton.Error(ex, "When reading options JSON file");
             }
         }
 
@@ -468,7 +487,7 @@ namespace AasxPackageExplorer
                 if (arg == "-options" && morearg > 0)
                 {
                     string pathToOptions = args[index + 1];
-                    AasxPackageExplorer.Log.Singleton.Info(
+                    Log.Singleton.Info(
                         $"Parsing options from a non-default options file: {pathToOptions}");
                     var fullFilename = System.IO.Path.GetFullPath(pathToOptions);
                     OptionsInformation.TryReadOptionsFile(fullFilename, optionsInformation);
@@ -542,8 +561,8 @@ namespace AasxPackageExplorer
                             // ReSharper disable PossibleNullReferenceException
                             try
                             {
-                                var c = (Color)ColorConverter.ConvertFromString(args[index + 1]);
-                                optionsInformation.AccentColors.Add(i, c);
+                                var c =AnyUiColor.FromString(args[index + 1].Trim());
+                                optionsInformation.AccentColors.Add((ColorNames)i, c);
                             }
                             catch (Exception ex)
                             {
@@ -579,7 +598,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "Reading options file: " + filename);
+                Log.Singleton.Error(ex, "Reading options file: " + filename);
             }
         }
 

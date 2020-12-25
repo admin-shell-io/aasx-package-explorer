@@ -22,9 +22,8 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
-using AnyUi.AAS;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     /// <summary>
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
@@ -351,7 +350,7 @@ namespace AasxPackageExplorer
                             this.AddKeyListKeys(
                                 stack, String.Format("reference[{0}]", i),
                                 hasDataSpecification[i].dataSpecification.Keys,
-                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                                repo, packages, PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists);
                 }
@@ -406,7 +405,7 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
                             stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
-                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                            packages, PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true);
                 }
@@ -539,7 +538,7 @@ namespace AasxPackageExplorer
                     }))
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
-                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                    packages, PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addEclassIrdi: true,
                     addPresetNames: bufferKeys.Item1,
@@ -678,7 +677,7 @@ namespace AasxPackageExplorer
             {
                 this.AddKeyListKeys(
                     stack, "unitId", dsiec.unitId.Keys, repo,
-                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
+                    packages, PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true);
             }
 
@@ -790,7 +789,7 @@ namespace AasxPackageExplorer
                     levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
-                    repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.Main, "Submodel");
+                    repo, packages, PackageCentral.Selector.Main, "Submodel");
             }
         }
     }
