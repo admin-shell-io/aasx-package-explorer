@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
 

@@ -85,6 +85,35 @@ namespace AasxPackageLogic
         public AnyUiBrushTuple
             MainSection, SubSection, SubSubSection,
             HintSeverityHigh, HintSeverityNotice;
+
+        public static DispLevelColors GetLevelColorsFromOptions(OptionsInformation opt)
+        {
+            // access
+            if (opt == null)
+                return null;
+
+            // ReSharper disable CoVariantArrayConversion            
+            var res = new DispLevelColors()
+            {
+                MainSection = new AnyUiBrushTuple(
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.DarkestAccentColor)),
+                    AnyUiBrushes.White),
+                SubSection = new AnyUiBrushTuple(
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.LightAccentColor)),
+                    AnyUiBrushes.Black),
+                SubSubSection = new AnyUiBrushTuple(
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.LightAccentColor)),
+                    AnyUiBrushes.Black),
+                HintSeverityHigh = new AnyUiBrushTuple(
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.FocusErrorBrush)),
+                    AnyUiBrushes.White),
+                HintSeverityNotice = new AnyUiBrushTuple(
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.LightAccentColor)),
+                    new AnyUiBrush(opt.GetColor(OptionsInformation.ColorNames.DarkestAccentColor)))
+            };
+            // ReSharper enable CoVariantArrayConversion
+            return res;
+        }
     }
 
     //

@@ -37,6 +37,9 @@ namespace AnyUi
 
     public class AnyUiDialogueDataBase
     {
+        // flags
+        public bool HasModalSpecialOperation = false;
+
         // In
         public string Caption;
         public double? MaxWidth;
@@ -77,6 +80,7 @@ namespace AnyUi
             string message = null)
             : base(caption, maxWidth)
         {
+            this.HasModalSpecialOperation = true;
             this.Message = "Please select a file via dedicated dialogue.";
             if (message != null)
                 this.Message = message;
