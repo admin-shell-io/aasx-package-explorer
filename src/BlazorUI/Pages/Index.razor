@@ -179,19 +179,24 @@
                                     else
                                     {
                                         int w = chtb.Text.Length;
+                                        if (w > 60)
+                                            w = 60;
                                         if (style != "")
                                         {
-                                            <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
+                                            // <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
+                                            <span style="@style"><input size="@w" value="@chtb.Text" @onchange="() => MyInput(chtb)"/></span>
                                         }
                                         else
                                         {
-                                            <span><input size="@w" @bind="chtb.Text" /></span>
+                                            // <span><input size="@w" @bind="chtb.Text" /></span>
+                                            <span><input size="@w" value="@chtb.Text" @onchange="() => MyInput(chtb)"/></span>
                                         }
                                         @code {
                                             private void MyInput(AnyUiTextBox chtb)
                                             {
-                                                var dd = chtb?.DisplayData as Program.BlazorDisplayData;
-                                                dd?.MyLambda(chtb);
+                                                chtb.setValueLambda?.Invoke(chtb.Text);
+                                                // var dd = chtb?.DisplayData as Program.BlazorDisplayData;
+                                                // dd?.MyLambda(chtb);
                                             }
                                         }
                                     }
@@ -216,8 +221,10 @@
 
                                         private void MyClickButton(AnyUiButton chbt)
                                         {
-                                            var dd = chbt?.DisplayData as Program.BlazorDisplayData;
-                                            dd?.MyLambda(chbt);
+                                            chbt.setValueLambda?.Invoke(chbt.Content);
+                                            // var dd = chbt?.DisplayData as Program.BlazorDisplayData;
+                                            // dd?.MyLambda(chbt);
+
                                         }
                                     }
                                 }
