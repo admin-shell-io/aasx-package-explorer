@@ -29,183 +29,221 @@
     <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
         <div class="sticky-top" style="word-wrap:break-word">
             @{
-                <br />
-                <span><b>@Program.LogLine</b></span>
-                <br /><br />
-
-                int iChild = 0;
-                AnyUiPanel uiPanel = Program.stack2;
-                Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
-
-                do
+                if (selectedNode != null && selectedNode.Tag != null)
                 {
-                    if (iChild == uiPanel.Children.Count)
+                    bool view = false;
+                    if (selectedNode.Tag is AdministrationShell)
                     {
-                        uipStack.Pop(out uiPanel, out iChild);
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntityAas(
+                                    Program.packages, Program.env.AasEnv, selectedNode.Tag as AdministrationShell, Program.editMode, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+                    if (selectedNode.Tag is Submodel)
+                    {
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntitySubmodelOrRef(
+                                    Program.packages, Program.env.AasEnv, Program.env.AasEnv.AdministrationShells[0],
+                                    null, selectedNode.Tag as Submodel, Program.editMode, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+                    if (selectedNode.Tag is SubmodelElement sme)
+                    {
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntitySubmodelElement(
+                                    Program.packages, Program.env.AasEnv, sme.parent,
+                                    new SubmodelElementWrapper(sme),
+                                    sme, Program.editMode, Program.repo, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+
+                    if (view)
+                    {
                         <br />
-                    }
+                        <span><b>@Program.LogLine</b></span>
+                        <br /><br />
 
-                    bool combo = false;
-                    if (uiPanel is AnyUiGrid gr)
-                    {
-                        if (gr.ColumnDefinitions.Count > 1)
+                        int iChild = 0;
+                        AnyUiPanel uiPanel = Program.stack17;
+                        Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
+
+                        do
                         {
-                            int i = 0;
-                            while (i < uiPanel.Children.Count)
+                            if (iChild == uiPanel.Children.Count)
                             {
-                                // if (uiPanel.Children[i] is AnyUiComboBox)
-                                //    combo = true;
-                                i++;
-                            }
-                            if (combo)
-                            {
-                                <br />
-                                <div style="float:left">
-                                    @{
-                                    }
-                                </div>
-                            }
-                        }
-                    }
-
-                    while (iChild < uiPanel.Children.Count)
-                    {
-                        var ch = uiPanel.Children[iChild];
-
-                        if (ch is AnyUiPanel chp)
-                        {
-                            // <bold>ChildPanel on Level @uipStack.getIndex()</bold>
-                            // <br />
-
-                            uipStack.Push(uiPanel, iChild);
-
-                            uiPanel = chp;
-                            iChild = 0;
-                            continue;
-                        }
-
-                        string backColor = "";
-                        string foreColor = "";
-                        if (ch is AnyUiControl ctrl)
-                        {
-                            if (ctrl.Background != null)
-                            {
-                                backColor = "rgb(" +
-                                    ctrl.Background.Color.R + ", " +
-                                    ctrl.Background.Color.G + ", " +
-                                    ctrl.Background.Color.B + ")";
-                            }
-                            if (ctrl.Foreground != null)
-                            {
-                                foreColor = "rgb(" +
-                                    ctrl.Foreground.Color.R + ", " +
-                                    ctrl.Foreground.Color.G + ", " +
-                                    ctrl.Foreground.Color.B + ")";
-                            }
-                        }
-                        string style = "";
-                        if (foreColor != "")
-                            style += "color:" + foreColor + ";";
-                        if (backColor != "")
-                            style += "background-color:" + backColor + ";";
-
-                        if (ch is AnyUiLabel chlb)
-                        {
-                            if (style != "")
-                            {
-                                <span style="@style">@chlb.Content</span>
-                            }
-                            else
-                            {
-                                <span>@chlb.Content</span>
-                            }
-                        }
-
-                        if (ch is AnyUiTextBlock tb)
-                        {
-                            <span>@tb.Text</span>
-                        }
-
-                        if (ch is AnyUiTextBox chtb)
-                        {
-                            if (ch is AnyUiHintBubble hb)
-                            {
-                                if (style != "")
-                                {
-                                    <span style="@style">@hb.Text</span>
-                                }
-                                else
-                                {
-                                    <span>@hb.Text</span>
-                                }
+                                uipStack.Pop(out uiPanel, out iChild);
                                 <br />
                             }
-                            else
+
+                            bool combo = false;
+                            if (uiPanel is AnyUiGrid gr)
                             {
-                                int w = chtb.Text.Length;
-                                if (style != "")
+                                if (gr.ColumnDefinitions.Count > 1)
                                 {
-                                    <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
-                                }
-                                else
-                                {
-                                    <span><input size="@w" @bind="chtb.Text" /></span>
-                                }
-                                @code {
-                                    private void MyInput(AnyUiTextBox chtb)
+                                    int i = 0;
+                                    while (i < uiPanel.Children.Count)
                                     {
-                                        var dd = chtb?.DisplayData as Program.BlazorDisplayData;
-                                        dd?.MyLambda(chtb);
+                                        // if (uiPanel.Children[i] is AnyUiComboBox)
+                                        //    combo = true;
+                                        i++;
+                                    }
+                                    if (combo)
+                                    {
+                                        <br />
+                                        <div style="float:left">
+                                            @{
+                                            }
+                                        </div>
                                     }
                                 }
                             }
-                        }
 
-                        if (ch is AnyUiButton chbt)
-                        {
-                            chbt.DisplayData = new BlazorUI.Program.BlazorDisplayData(lambda: (o) =>
+                            while (iChild < uiPanel.Children.Count)
                             {
-                                Program.LogLine = "Lambda for button " + chbt.Content;
-                            });
+                                var ch = uiPanel.Children[iChild];
 
-                            if (style != "")
-                            {
-                                <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
-                            }
-                            else
-                            {
-                                <button @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
-                            }
-                            @code {
-
-                                private void MyClickButton(AnyUiButton chbt)
+                                if (ch is AnyUiPanel chp)
                                 {
-                                    var dd = chbt?.DisplayData as Program.BlazorDisplayData;
-                                    dd?.MyLambda(chbt);
+                                    // <bold>ChildPanel on Level @uipStack.getIndex()</bold>
+                                    // <br />
+
+                                    uipStack.Push(uiPanel, iChild);
+
+                                    uiPanel = chp;
+                                    iChild = 0;
+                                    continue;
                                 }
+
+                                string backColor = "";
+                                string foreColor = "";
+                                if (ch is AnyUiControl ctrl)
+                                {
+                                    if (ctrl.Background != null)
+                                    {
+                                        backColor = "rgb(" +
+                                            ctrl.Background.Color.R + ", " +
+                                            ctrl.Background.Color.G + ", " +
+                                            ctrl.Background.Color.B + ")";
+                                    }
+                                    if (ctrl.Foreground != null)
+                                    {
+                                        foreColor = "rgb(" +
+                                            ctrl.Foreground.Color.R + ", " +
+                                            ctrl.Foreground.Color.G + ", " +
+                                            ctrl.Foreground.Color.B + ")";
+                                    }
+                                }
+                                string style = "";
+                                if (foreColor != "")
+                                    style += "color:" + foreColor + ";";
+                                if (backColor != "")
+                                    style += "background-color:" + backColor + ";";
+
+                                if (ch is AnyUiLabel chlb)
+                                {
+                                    if (style != "")
+                                    {
+                                        <span style="@style">@chlb.Content</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@chlb.Content</span>
+                                    }
+                                }
+
+                                if (ch is AnyUiTextBlock tb)
+                                {
+                                    <span>@tb.Text</span>
+                                }
+
+                                if (ch is AnyUiTextBox chtb)
+                                {
+                                    if (ch is AnyUiHintBubble hb)
+                                    {
+                                        if (style != "")
+                                        {
+                                            <span style="@style">@hb.Text</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@hb.Text</span>
+                                        }
+                                        <br />
+                                    }
+                                    else
+                                    {
+                                        int w = chtb.Text.Length;
+                                        if (style != "")
+                                        {
+                                            <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
+                                        }
+                                        else
+                                        {
+                                            <span><input size="@w" @bind="chtb.Text" /></span>
+                                        }
+                                        @code {
+                                            private void MyInput(AnyUiTextBox chtb)
+                                            {
+                                                var dd = chtb?.DisplayData as Program.BlazorDisplayData;
+                                                dd?.MyLambda(chtb);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (ch is AnyUiButton chbt)
+                                {
+                                    chbt.DisplayData = new BlazorUI.Program.BlazorDisplayData(lambda: (o) =>
+                                    {
+                                        Program.LogLine = "Lambda for button " + chbt.Content;
+                                    });
+
+                                    if (style != "")
+                                    {
+                                        <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
+                                    }
+                                    @code {
+
+                                        private void MyClickButton(AnyUiButton chbt)
+                                        {
+                                            var dd = chbt?.DisplayData as Program.BlazorDisplayData;
+                                            dd?.MyLambda(chbt);
+                                        }
+                                    }
+                                }
+
+                                if (ch is AnyUiCheckBox cb)
+                                {
+                                    <input type="checkbox" @bind="@cb.IsChecked" />@cb.Content
+                                }
+
+                                if (ch is AnyUiComboBox comb)
+                                {
+                                    string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                                    <select class="form-control selectpicker" @bind="@comb.Text" style="width:@w">
+                                        @foreach (var item in comb.Items)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                }
+
+                                iChild++;
                             }
                         }
-
-                        if (ch is AnyUiCheckBox cb)
-                        {
-                            <input type="checkbox" @bind="@cb.IsChecked" />@cb.Content
-                        }
-
-                        if (ch is AnyUiComboBox comb)
-                        {
-                            string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-                            <select class="form-control selectpicker" @bind="@comb.Text" style="width:@w">
-                                @foreach (var item in comb.Items)
-                                {
-                                    <option value="@item">@item</option>
-                                }
-                            </select>
-                        }
-
-                        iChild++;
+                        while (uipStack.getIndex() > 0);
                     }
                 }
-                while (uipStack.getIndex() > 0);
             }
         </div>
     </div>

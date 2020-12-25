@@ -53,6 +53,11 @@ namespace BlazorUI
         }
 
         public static AdminShellPackageEnv env = null;
+        public static bool editMode = true;
+        public static bool hintMode = true;
+        public static PackageCentral packages = null;
+        public static DispEditHelperEntities helper = null;
+        public static ModifyRepo repo = null;
 
         public static AnyUiStackPanel stack = new AnyUiStackPanel();
         public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
@@ -75,18 +80,15 @@ namespace BlazorUI
         public static void Main(string[] args)
         {
             env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
-            var editMode = true;
-            var hintMode = true;
 
 #if __test__PackageLogic
 #else
 
-            var packages = new PackageCentral();
+            packages = new PackageCentral();
             packages.Main = env;
 
-            var helper = new DispEditHelperEntities();
+            helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            ModifyRepo repo = null;
             if (editMode)
             {
                 // some functionality still uses repo != null to detect editMode!!
