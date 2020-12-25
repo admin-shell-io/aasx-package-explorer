@@ -147,6 +147,38 @@ namespace AasxPackageExplorer
             public bool showDataPanel = true;
         }
 
+        // TODO (MIHO, 2020-12-24): check if required
+        private DispLevelColors GetLevelColorsFromResources()
+        {
+            // ReSharper disable CoVariantArrayConversion            
+            var res = new DispLevelColors()
+            {
+                MainSection = new AnyUiBrushTuple(
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["DarkestAccentColor"]),
+                    AnyUiBrushes.White),
+                SubSection = new AnyUiBrushTuple(
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black),
+                SubSubSection = new AnyUiBrushTuple(
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiBrushes.Black),
+                HintSeverityHigh = new AnyUiBrushTuple(
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["FocusErrorBrush"]),
+                    AnyUiBrushes.White),
+                HintSeverityNotice = new AnyUiBrushTuple(
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["LightAccentColor"]),
+                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
+                        System.Windows.Application.Current.Resources["DarkestAccentColor"]))
+            };
+            // ReSharper enable CoVariantArrayConversion
+            return res;
+        }
+
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             VisualElementGeneric entity,
@@ -184,39 +216,13 @@ namespace AasxPackageExplorer
             // create display context for WPF
             displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
 
-            // ReSharper disable CoVariantArrayConversion            
-            var levelColors = new DispLevelColors()
-            {
-                MainSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]),
-                    AnyUiBrushes.White),
-                SubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                SubSubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                HintSeverityHigh = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["FocusErrorBrush"]),
-                    AnyUiBrushes.White),
-                HintSeverityNotice = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]))
-            };
-            // ReSharper enable CoVariantArrayConversion
-
-            helper.levelColors = levelColors;
+            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
 
             // modify repository
             ModifyRepo repo = null;
             if (editMode)
             {
+                // some functionality still uses repo != null to detect editMode!!
                 repo = new ModifyRepo();
             }
             helper.editMode = editMode;
@@ -262,6 +268,8 @@ namespace AasxPackageExplorer
             //
             // Dispatch
             //
+
+            var inhibitRenderStackToPanel = false;
 
             if (entity is VisualElementEnvironmentItem)
             {
@@ -381,6 +389,8 @@ namespace AasxPackageExplorer
                 }
                 else
                 {
+                    // this is natively done; do NOT render Any UI to WPF
+                    inhibitRenderStackToPanel = true;
                 }
 
                 // show no panel nor scroll
@@ -445,11 +455,17 @@ namespace AasxPackageExplorer
 #endif
 #if MONOUI
 #else
-            theMasterPanel.Children.Clear();
-            var spwpf = displayContext.GetOrCreateWpfElement(stack);
-            helper.ShowLastHighlights();
-            DockPanel.SetDock(spwpf, Dock.Top);
-            theMasterPanel.Children.Add(spwpf);
+            // render Any UI to WPF?
+            if (!inhibitRenderStackToPanel)
+            {
+                theMasterPanel.Children.Clear();
+                var spwpf = displayContext.GetOrCreateWpfElement(stack);
+                helper.ShowLastHighlights();
+                DockPanel.SetDock(spwpf, Dock.Top);
+                theMasterPanel.Children.Add(spwpf);
+            }
+
+            // keep the stack
             lastRenderedRootElement = stack;
 #endif
 

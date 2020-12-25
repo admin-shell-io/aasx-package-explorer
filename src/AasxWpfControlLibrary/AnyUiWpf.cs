@@ -887,10 +887,21 @@ namespace AnyUi
             {
                 var uc = DispatchFlyout(dialogueData);
                 if (uc != null)
-                    FlyoutProvider?.StartFlyoverModal(uc);
+                {
+                    if (dialogueData.HasModalSpecialOperation)
+                        // start WITHOUT modal
+                        FlyoutProvider?.StartFlyover(uc);
+                    else
+                        FlyoutProvider?.StartFlyoverModal(uc);
+                }
 
+                // now, in case
                 PerformSpecialOps(modal: true, dialogueData: dialogueData);
 
+                // may be close?
+                if (dialogueData.HasModalSpecialOperation)
+                    // start WITHOUT modal
+                    FlyoutProvider?.CloseFlyover();
             } catch (Exception ex)
             {
                 Log.Singleton.Error(ex, $"while showing modal AnyUI dialogue {dialogueData.GetType().ToString()}");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AasxPackageLogic;
 using AdminShellNS;
 using AnyUi;
 using Microsoft.AspNetCore;
@@ -55,6 +56,7 @@ namespace BlazorUI
 
         public static AnyUiStackPanel stack = new AnyUiStackPanel();
         public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
+        public static AnyUiStackPanel stack17 = new AnyUiStackPanel();
 
         public static string LogLine = "The text of the clicked object will be shown here..";
 
@@ -73,6 +75,35 @@ namespace BlazorUI
         public static void Main(string[] args)
         {
             env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
+            var editMode = true;
+            var hintMode = true;
+
+#if __test__PackageLogic
+#else
+
+            var packages = new PackageCentral();
+            packages.Main = env;
+
+            var helper = new DispEditHelperEntities();
+            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
+            ModifyRepo repo = null;
+            if (editMode)
+            {
+                // some functionality still uses repo != null to detect editMode!!
+                repo = new ModifyRepo();
+            }
+            helper.editMode = editMode;
+            helper.hintMode = hintMode;
+            helper.repo = repo;
+            helper.context = null;
+            helper.packages = packages;
+
+            stack17 = new AnyUiStackPanel();
+            stack17.Orientation = AnyUiOrientation.Vertical;
+
+            helper.DisplayOrEditAasEntityAas(
+                    packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+#endif
 
             //
             // Test for Blazor
@@ -84,18 +115,20 @@ namespace BlazorUI
             // stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
             // var parent = (Dictionary<string, object>)results["Parent"];
 
-            string s = File.ReadAllText(@"fileEdit.json");
-            var jsonSerializerSettings = new JsonSerializerSettings()
+            if (false)
             {
-                TypeNameHandling = TypeNameHandling.All
-            };
-            stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
-
-            var editMode = true;
-            stack.Orientation = AnyUiOrientation.Vertical;
+                string s = File.ReadAllText(@"c:\development\file.json");
+                var jsonSerializerSettings = new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                };
+                stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
+            }
 
             if (true)
             {
+                stack.Orientation = AnyUiOrientation.Vertical;
+
                 var lab1 = new AnyUiLabel();
                 lab1.Content = "Hallo1";
                 lab1.Foreground = AnyUiBrushes.DarkBlue;
