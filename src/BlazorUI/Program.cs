@@ -58,7 +58,7 @@ namespace BlazorUI
         public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
         public static AnyUiStackPanel stack17 = new AnyUiStackPanel();
 
-        public static string LogLine = "Started..";
+        public static string LogLine = "The text of the clicked button will be shown here..";
 
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {

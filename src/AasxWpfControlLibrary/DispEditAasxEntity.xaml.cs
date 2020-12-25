@@ -403,7 +403,7 @@ namespace AasxPackageExplorer
 
             // now render master stack
 #if __export_BLAZOR
-            var fn = @"file.json";
+            var fn = @"fileEdit.json";
             if (!editMode)
             {
                 count = 0;
