@@ -56,7 +56,7 @@ namespace BlazorUI
         public static AnyUiStackPanel stack = new AnyUiStackPanel();
         public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
 
-        public static string LogLine = "Started..";
+        public static string LogLine = "The text of the clicked button will be shown here..";
 
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
@@ -84,7 +84,7 @@ namespace BlazorUI
             // stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
             // var parent = (Dictionary<string, object>)results["Parent"];
 
-            string s = File.ReadAllText(@"c:\development\file.json");
+            string s = File.ReadAllText(@"fileEdit.json");
             var jsonSerializerSettings = new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.All

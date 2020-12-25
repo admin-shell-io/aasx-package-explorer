@@ -342,6 +342,8 @@ namespace AnyUi
 
     public class AnyUiControl : AnyUiFrameworkElement
     {
+        public AnyUiBrush Background = null;
+        public AnyUiBrush Foreground = null;
         public AnyUiVerticalAlignment? VerticalContentAlignment;
         public AnyUiHorizontalAlignment? HorizontalContentAlignment;        
     }
@@ -394,8 +396,8 @@ namespace AnyUi
 
     public class AnyUiLabel : AnyUiContentControl
     {
-        public AnyUiBrush Background;
-        public AnyUiBrush Foreground;
+        // public AnyUiBrush Background;
+        // public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiFontWeight? FontWeight;
         public string Content = null;
@@ -418,8 +420,8 @@ namespace AnyUi
 
     public class AnyUiTextBox : AnyUiControl
     {
-        public AnyUiBrush Background = null;
-        public AnyUiBrush Foreground = null;
+        // public AnyUiBrush Background = null;
+        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
@@ -432,8 +434,8 @@ namespace AnyUi
 
     public class AnyUiComboBox : AnyUiControl
     {
-        public AnyUiBrush Background = null;
-        public AnyUiBrush Foreground = null;
+        // public AnyUiBrush Background = null;
+        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public bool? IsEditable;
@@ -446,8 +448,8 @@ namespace AnyUi
 
     public class AnyUiCheckBox : AnyUiContentControl
     {
-        public AnyUiBrush Background = null;
-        public AnyUiBrush Foreground = null;
+        // public AnyUiBrush Background = null;
+        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;
@@ -457,8 +459,8 @@ namespace AnyUi
 
     public class AnyUiButton : AnyUiContentControl
     {
-        public AnyUiBrush Background = null;
-        public AnyUiBrush Foreground = null;
+        // public AnyUiBrush Background = null;
+        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;

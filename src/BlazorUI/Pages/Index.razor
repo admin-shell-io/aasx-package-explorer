@@ -48,7 +48,11 @@
                 <br />
                 */
 
-                int iChild = 1;
+                <br />
+                <span><b>@Program.LogLine</b></span>
+                <br /><br />
+
+                int iChild = 0;
                 AnyUiPanel uiPanel = Program.stack2;
                 Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
 
@@ -76,24 +80,28 @@
                             continue;
                         }
 
-                        if (ch is AnyUiLabel chlb)
+                        string backRGB = "";
+                        string foreRGB = "";
+                        if (ch is AnyUiControl ctrl)
                         {
-                            string backRGB = "";
-                            if (chlb.Background != null)
+                            if (ctrl.Background != null)
                             {
                                 backRGB = "background-color:rgb(" +
-                                    chlb.Background.Color.R + ", " +
-                                    chlb.Background.Color.G + ", " +
-                                    chlb.Background.Color.B + ")";
+                                    ctrl.Background.Color.R + ", " +
+                                    ctrl.Background.Color.G + ", " +
+                                    ctrl.Background.Color.B + ")";
                             }
-                            string foreRGB = "";
-                            if (chlb.Foreground != null)
+                            if (ctrl.Foreground != null)
                             {
                                 foreRGB = "color:rgb(" +
-                                    chlb.Foreground.Color.R + ", " +
-                                    chlb.Foreground.Color.G + ", " +
-                                    chlb.Foreground.Color.B + ")";
+                                    ctrl.Foreground.Color.R + ", " +
+                                    ctrl.Foreground.Color.G + ", " +
+                                    ctrl.Foreground.Color.B + ")";
                             }
+                        }
+
+                        if (ch is AnyUiLabel chlb)
+                        {
                             <span style="@foreRGB;@backRGB;">@chlb.Content</span>
                         }
 
@@ -104,25 +112,28 @@
 
                         if (ch is AnyUiTextBox chtb)
                         {
-                            <span>@chtb.Text</span>
-                            <br />
-
-                            <input @bind="CurrentValue" />
-                            <span style="color:white;background-color:blue;">@CurrentValue</span>
-                            @code { private string CurrentValue { get; set; } }
-                            if (CurrentValue != null)
+                            if (ch is AnyUiHintBubble hb)
                             {
-                                chtb.Text = CurrentValue; // for re-rendering the html directly
-                                this.StateHasChanged();
-                                CurrentValue = null;
+                                <span style="@foreRGB;@backRGB;">@hb.Text</span>
+                                <br />
+                            }
+                            else
+                            {
+                                int w = chtb.Text.Length;
+                                <span style="@foreRGB;@backRGB;"><input size="@w" @bind="@chtb.Text" /></span>
                             }
                         }
 
                         if (ch is AnyUiButton chbt)
                         {
-                            <span>@chbt.Content</span>
-                            <button style="color:white;background-color:blue" @onclick="() => MyClick(chbt)">@chbt.Content</button>
+                            chbt.DisplayData = new BlazorUI.Program.BlazorDisplayData(lambda: (o) =>
+                            {
+                                Program.LogLine = "Lambda for button " + chbt.Content;
+                            });
+
+                            <button style="@foreRGB;@backRGB;" @onclick="() => MyClick(chbt)">@chbt.Content</button>
                             @code {
+
                                 private void MyClick(AnyUiButton chbt)
                                 {
                                     // Program.LogLine = "Clicked " + DateTime.Now.ToString();
@@ -130,14 +141,28 @@
                                     dd?.MyLambda(chbt);
                                 }
                             }
-                            <br />
+                        }
+
+                        if (ch is AnyUiCheckBox cb)
+                        {
+                            <input type="checkbox" @bind="@cb.IsChecked" />@cb.Content
+                        }
+
+                        if (ch is AnyUiComboBox comb)
+                        {
+                            string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                            <select class="form-control selectpicker" @bind="@comb.Text" style ="width:@w">
+                                @foreach (var item in comb.Items)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
                         }
 
                         iChild++;
                     }
                 }
                 while (uipStack.getIndex() > 0);
-
             }
         </div>
     </div>
