@@ -191,14 +191,14 @@
                                                                         {
                                                                             <span style="@style2">
                                                                                 <input size="@w" value="@chtb2.Text"
-                                                                                        @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
+                                                                                       @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
                                                                             </span>
                                                                         }
                                                                         else
                                                                         {
                                                                             <span>
                                                                                 <input size="@w" value="@chtb2.Text"
-                                                                                        @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
+                                                                                       @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
                                                                             </span>
                                                                         }
                                                                         @code {
@@ -231,8 +231,15 @@
 
                                                                 if (ch is AnyUiCheckBox cb2)
                                                                 {
-                                                                    <input type="checkbox" @bind="@cb2.IsChecked" />
+                                                                    <input type="checkbox" value="@cb2.IsChecked"
+                                                                           @onchange="@((ChangeEventArgs __e) => MyCheck2(cb2, __e.Value.ToString()))" />
                                                                     @cb2.Content
+                                                                    @code {
+                                                                        private void MyCheck2(AnyUiCheckBox cb2, string value)
+                                                                        {
+                                                                            cb2.setValueLambda?.Invoke(value);
+                                                                        }
+                                                                    }
                                                                 }
                                                                 iChild++;
                                                             }
@@ -350,7 +357,15 @@
 
                                 if (ch is AnyUiCheckBox cb)
                                 {
-                                    <input type="checkbox" @bind="@cb.IsChecked" />@cb.Content
+                                    <input type="checkbox" value="@cb.IsChecked"
+                                           @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                    @cb.Content
+                                    @code {
+                                        private void MyCheck(AnyUiCheckBox cb, string value)
+                                        {
+                                            cb.setValueLambda?.Invoke(value);
+                                        }
+                                    }
                                 }
 
                                 if (ch is AnyUiComboBox comb)
