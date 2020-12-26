@@ -101,7 +101,7 @@ namespace AasxPackageExplorer
                         // clear
                         ClearAllViews();
                         // create new AASX package
-                        packages.Main = new AdminShellPackageEnv();
+                        packages.MainContainer.New();
                         // redraw
                         CommandExecution_RedrawAll();
                     }
@@ -144,11 +144,11 @@ namespace AasxPackageExplorer
                         {
                             case "open":
                                 UiLoadPackageWithNew(
-                                    packages.MainContainer, packnew, dlg.FileName, onlyAuxiliary: false);
+                                    packages.MainContainer, null, dlg.FileName, onlyAuxiliary: false);
                                 break;
                             case "openaux":
                                 UiLoadPackageWithNew(
-                                    packages.AuxContainer, packnew, dlg.FileName, onlyAuxiliary: true);
+                                    packages.AuxContainer, null, dlg.FileName, onlyAuxiliary: true);
                                 break;
                             default:
                                 throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
@@ -803,7 +803,7 @@ namespace AasxPackageExplorer
                                 // load
                                 AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
                                 UiLoadPackageWithNew(
-                                    packages.MainContainer, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
+                                    packages.MainContainer, null, fn, onlyAuxiliary: false);
                             }
                             catch (Exception ex)
                             {
@@ -998,7 +998,7 @@ namespace AasxPackageExplorer
                     {
                         AasxPackageExplorer.Log.Singleton.Info("Switching to {0} ..", fn);
                         UiLoadPackageWithNew(
-                            packages.MainContainer, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
+                            packages.MainContainer, null, fn, onlyAuxiliary: false);
                     }
 
                 };
@@ -1260,7 +1260,7 @@ namespace AasxPackageExplorer
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
                                 packages.MainContainer,
-                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                                null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                         return;
                     }
@@ -1298,7 +1298,7 @@ namespace AasxPackageExplorer
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
                                 packages.MainContainer,
-                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                                null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     }
                 }
@@ -1313,7 +1313,7 @@ namespace AasxPackageExplorer
                         theOnlineConnection = client;
                         var pe = client.OpenPackageByAasEnv();
                         if (pe != null)
-                            UiLoadPackageWithNew(packages.MainContainer, pe, uc.Text, onlyAuxiliary: false);
+                            UiLoadPackageWithNew(packages.MainContainer, pe, info: uc.Text, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -2591,7 +2591,7 @@ namespace AasxPackageExplorer
             {
                 RememberForInitialDirectory(dlg.FileName);
                 UANodeSet InformationModel = UANodeSetExport.getInformationModel(dlg.FileName);
-                packages.Main = UANodeSetImport.Import(InformationModel);
+                packages.MainContainer.TakeOver(UANodeSetImport.Import(InformationModel));
                 RestartUIafterNewPackage();
             }
 

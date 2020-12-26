@@ -18,12 +18,135 @@ using AdminShellNS;
 namespace AasxWpfControlLibrary
 {
     /// <summary>
-    /// The container wraps an AdminShellPackageEnv with the availability to re-new the package env
-    /// and to transport further information (future use)
+    /// Excpetions thrown when handling PackageContainer or PackageCentral
     /// </summary>
-    public class PackageContainer
+    public class PackageCentralException : Exception
     {
-        public AdminShellPackageEnv Env;
+        public PackageCentralException() { }
+        public PackageCentralException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// This class is an item maintained by the PackageCentral.
+    /// Note: this class works on application level; it means to be resilient, reports errors to the Log
+    /// instead of throwing exceptions, works in small portions and such ..
+    /// </summary>
+    public class PackageCentralItem
+    {
+        public PackageContainerBase Container;
+
+        public void New()
+        {
+            try
+            {
+                if (Container != null)
+                {
+                    if (Container.IsOpen)
+                        Container.Close();
+                    Container = null;
+                }
+            } catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                    $"PackageCentral: while performing new " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
+        public bool Load(string location, bool loadResident)
+        {
+            try
+            {
+                // close old one
+                if (Container != null)
+                {
+                    if (Container.IsOpen)
+                        Container.Close();
+                    Container = null;
+                }
+
+                // figure out, what to load
+                Container = new PackageContainerLocalFile(location, loadResident: true);
+
+                // success!
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                    $"PackageCentral: while performing load from {location} " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
+        public bool TakeOver(AdminShellPackageEnv env)
+        {
+            try
+            {
+                // close old one
+                if (Container != null)
+                {
+                    if (Container.IsOpen)
+                        Container.Close();
+                    Container = null;
+                }
+
+                // figure out, what to load
+                Container = new PackageContainerTakenOver();
+                Container.Env = env;
+
+                // success!
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                    $"PackageCentral: while performing takeover " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
+        public bool SaveAs(string saveAsNewFileName = null)
+        {
+            try
+            {
+                if (Container is IPackageContainerLoadSave cls)
+                {
+                    cls.SaveToSource(saveAsNewFileName);
+                    return true;
+                }
+
+                // no success
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                    $"PackageCentral: while saving {"" + Container?.ToString()} " +
+                    $"with new filename {""  + saveAsNewFileName}" +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
+        public void Close()
+        {
+            try
+            {
+                // close old one
+                if (Container != null)
+                {
+                    if (Container.IsOpen)
+                        Container.Close();
+                    Container = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                     $"PackageCentral: while performing close " +
+                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
     }
 
     /// <summary>
@@ -31,34 +154,37 @@ namespace AasxWpfControlLibrary
     /// Pakcage Explorer. It hold Main and Aux packages, but also the open file repositories. In future,
     /// it might store multiple open packages for the same time, as AASX Server might require, and Main
     /// might only an index into these.
+    /// Note: this class works on application level; it means to be resilient, reports errors to the Log
+    /// instead of throwing exceptions, works in small portions and such ..
     /// </summary>
     public class PackageCentral
     {
         public enum Selector { Main, MainAux, MainAuxFileRepo }
 
-        private PackageContainer main = new PackageContainer();
-        private PackageContainer aux = new PackageContainer();
+        private PackageCentralItem main = new PackageCentralItem();
+        private PackageCentralItem aux = new PackageCentralItem();
 
-        public PackageContainer MainContainer
+        public PackageCentralItem MainContainer
         {
             get { return main; }
+            set { main = value; }
         }
 
-        public PackageContainer AuxContainer
+        public PackageCentralItem AuxContainer
         {
             get { return aux; }
         }
 
         public AdminShellPackageEnv Main
         {
-            get { return main?.Env; }
-            set { main.Env = value; }
+            get { return main?.Container?.Env; }
+            // set { main.Env = value; }
         }
 
         public AdminShellPackageEnv Aux
         {
-            get { return aux?.Env; }
-            set { aux.Env = value; }
+            get { return aux?.Container?.Env; }
+            // set { aux.Env = value; }
         }
 
         private AasxFileRepository fileRepository;

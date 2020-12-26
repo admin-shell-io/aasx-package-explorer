@@ -177,26 +177,33 @@ namespace AasxPackageExplorer
         }
 
         public void UiLoadPackageWithNew(
-            PackageContainer packContainer, AdminShellPackageEnv packnew, string info = "",
+            PackageCentralItem packItem,
+            AdminShellPackageEnv takeOverEnv = null,
+            string loadLocalFilename = null, 
+            string info = null,
             bool onlyAuxiliary = false,
             bool doNotNavigateAfterLoaded = false)
         {
             // access
-            if (packContainer == null)
+            if (packItem == null)
                 return;
 
-            AasxPackageExplorer.Log.Singleton.Info(
-                "Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-            // loading
-            try
+            if (loadLocalFilename != null)
             {
-                if (packContainer.Env != null)
-                    packContainer.Env.Close();
-                packContainer.Env = packnew;
+                if (info == null)
+                    info = loadLocalFilename;
+                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
+                packItem.Load(loadLocalFilename, loadResident: true);
             }
-            catch (Exception ex)
+            else
+            if (takeOverEnv != null)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When loading {info}, an error occurred");
+                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
+                packItem.TakeOver(takeOverEnv);
+            }
+            else
+            {
+                Log.Singleton.Error("UiLoadPackageWithNew(): no information what to load!");
                 return;
             }
 
@@ -623,9 +630,8 @@ namespace AasxPackageExplorer
 
                 // try load ..
                 try
-                {
-                    var pkg = LoadPackageFromFile(fn);
-                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
+                {                    
+                    UiLoadPackageWithNew(packages.MainContainer, null, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -650,8 +656,7 @@ namespace AasxPackageExplorer
                 var fn = System.IO.Path.GetFullPath(Options.Curr.AasxToLoad);
                 try
                 {
-                    var pkg = LoadPackageFromFile(fn);
-                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainContainer, null, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {

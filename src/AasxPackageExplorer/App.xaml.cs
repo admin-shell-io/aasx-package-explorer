@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxWpfControlLibrary;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -153,6 +154,8 @@ namespace AasxPackageExplorer
                 }
             }
 
+            Test();
+
             Pref pref = Pref.Read();
 
             // show splash (required for licenses of open source)
@@ -165,6 +168,17 @@ namespace AasxPackageExplorer
             // show main window
             MainWindow wnd = new MainWindow(pref);
             wnd.Show();
+        }
+
+        public void Test()
+        {
+            var pc = new PackageCentral();
+            pc.MainContainer.Close();
+            pc.MainContainer.Load("A01.aasx", loadResident: true); ;
+            pc.MainContainer.Close();
+            pc.MainContainer.Load("A01.aasx", loadResident: true); ;
+            pc.MainContainer.SaveAs("A02.aasx");
+            pc.MainContainer.Close();
         }
     }
 }

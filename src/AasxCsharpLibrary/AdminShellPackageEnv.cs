@@ -851,6 +851,36 @@ namespace AdminShellNS
             throw new Exception($"Does not know how to handle the file: {fn}");
         }
 
+        /// <summary>
+        /// Temporariyl closes package and executes lambda. Afterwards, the package is re-opened
+        /// under the same file name
+        /// </summary>
+        /// <param name="lambda"></param>
+        public void TemporarilyCloseAndReOpenPackage(Action lambda)
+        {
+            // access 
+            if (!this.IsOpen)
+                throw (new Exception(
+                    string.Format("Could not temporarily close and re-open AASX {0}, because package" +
+                    "not open as expected!", Filename)));
+
+            try {
+                // close
+                _openPackage.Close();
+
+                // execute lambda
+                lambda?.Invoke();
+
+                _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
+            }
+            catch (Exception ex)
+            {
+                throw (new Exception(
+                    string.Format("While temporarily close and re-open AASX {0} at {1} gave: {2}",
+                    Filename, AdminShellUtil.ShortLocation(ex), ex.Message)));
+            }
+        }
+
         private int BackupIndex = 0;
 
         public void BackupInDir(string backupDir, int maxFiles)
