@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -173,12 +174,17 @@ namespace AasxPackageExplorer
         public void Test()
         {
             var pc = new PackageCentral();
-            pc.MainContainer.Close();
-            pc.MainContainer.Load("A01.aasx", loadResident: true); ;
-            pc.MainContainer.Close();
-            pc.MainContainer.Load("A01.aasx", loadResident: true); ;
-            pc.MainContainer.SaveAs("A02.aasx");
-            pc.MainContainer.Close();
+            
+            //pc.MainContainer.Close();
+            
+            //pc.MainContainer.Load("A01.aasx", loadResident: true);
+            //pc.MainContainer.Close();
+            //pc.MainContainer.Load("A01.aasx", loadResident: true);
+            //pc.MainContainer.SaveAs("A02.aasx");
+            //pc.MainContainer.Close();
+
+            pc.MainContainer.Load("http://admin-shell-io.com:51310/server/getaasx/0", loadResident: true);
+            pc.MainContainer.SaveAs("A03.aasx");
         }
     }
 }

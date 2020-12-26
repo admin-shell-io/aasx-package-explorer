@@ -24,6 +24,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 

@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 
 namespace AasxPackageExplorer

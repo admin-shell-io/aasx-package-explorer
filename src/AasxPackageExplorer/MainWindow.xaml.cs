@@ -21,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;

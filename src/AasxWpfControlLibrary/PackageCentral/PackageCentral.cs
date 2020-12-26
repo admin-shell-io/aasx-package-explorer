@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using AasxPackageExplorer;
 using AdminShellNS;
 
-namespace AasxWpfControlLibrary
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// Excpetions thrown when handling PackageContainer or PackageCentral
@@ -66,9 +66,12 @@ namespace AasxWpfControlLibrary
                 }
 
                 // figure out, what to load
-                Container = new PackageContainerLocalFile(location, loadResident: true);
-
+                var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true);
+                if (guess == null)
+                    return false;
+                
                 // success!
+                Container = guess;                
                 return true;
             }
             catch (Exception ex)
@@ -110,9 +113,9 @@ namespace AasxWpfControlLibrary
         {
             try
             {
-                if (Container is IPackageContainerLoadSave cls)
+                if (Container.SaveAsToSource != null)
                 {
-                    cls.SaveToSource(saveAsNewFileName);
+                    Container.SaveAsToSource(saveAsNewFileName);
                     return true;
                 }
 

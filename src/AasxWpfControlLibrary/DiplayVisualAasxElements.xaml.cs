@@ -24,6 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using JetBrains.Annotations;
 
