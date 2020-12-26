@@ -69,9 +69,25 @@
                         <span><b>@Program.LogLine</b></span>
                         <br /><br />
 
+                        /*
+                        <table>
+                            <tr>
+                                <td>pre</td>
+                                <td>
+                                    <select class="form-control selectpicker" value="item1">
+                                        <option value="item1">"item1"</option>
+                                        <option value="item2">"item2"</option>
+                                    </select>
+                                </td>
+                                <td>post</td>
+                            </tr>
+                        </table>
+                        */
+
                         int iChild = 0;
                         AnyUiPanel uiPanel = Program.stack17;
                         Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
+                        bool combo = false;
 
                         do
                         {
@@ -79,29 +95,7 @@
                             {
                                 uipStack.Pop(out uiPanel, out iChild);
                                 <br />
-                            }
-
-                            bool combo = false;
-                            if (uiPanel is AnyUiGrid gr)
-                            {
-                                if (gr.ColumnDefinitions.Count > 1)
-                                {
-                                    int i = 0;
-                                    while (i < uiPanel.Children.Count)
-                                    {
-                                        // if (uiPanel.Children[i] is AnyUiComboBox)
-                                        //    combo = true;
-                                        i++;
-                                    }
-                                    if (combo)
-                                    {
-                                        <br />
-                                        <div style="float:left">
-                                            @{
-                                            }
-                                        </div>
-                                    }
-                                }
+                                combo = false;
                             }
 
                             while (iChild < uiPanel.Children.Count)
@@ -118,6 +112,137 @@
                                     uiPanel = chp;
                                     iChild = 0;
                                     continue;
+                                }
+
+                                if (!combo && uiPanel is AnyUiGrid gr && (iChild == 0 || iChild == 2))
+                                {
+                                    if (gr.ColumnDefinitions.Count > 1)
+                                    {
+                                        int i = iChild;
+                                        while (i < uiPanel.Children.Count)
+                                        {
+                                            if (uiPanel.Children[i] is AnyUiComboBox)
+                                            {
+                                                combo = true;
+                                                break;
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                }
+
+                                if (combo)
+                                {
+                                    if (uiPanel.Children.Count == 2 || (uiPanel.Children.Count == 7 && iChild == 2))
+                                    {
+                                        <table>
+                                            <tr>
+                                                @{
+                                                    while (iChild < uiPanel.Children.Count)
+                                                    {
+                                                        <td>
+                                                            @{
+                                                                ch = uiPanel.Children[iChild];
+
+                                                                if (ch is AnyUiTextBlock tb1)
+                                                                {
+                                                                    <span>@tb1.Text</span>
+                                                                }
+
+                                                                if (ch is AnyUiComboBox comb1)
+                                                                {
+                                                                    string w = (comb1.Text.Length * 11 + 60).ToString() + "px";
+                                                                    <select class="form-control selectpicker" value="@comb1.Text" style="width:@w"
+                                                                            @onchange="@((ChangeEventArgs __e) => MyComboSelect2(comb1, __e.Value.ToString()))">
+                                                                        @foreach (var item in comb1.Items)
+                                                                        {
+                                                                            <option value="@item">@item</option>
+                                                                        }
+                                                                    </select>
+                                                                    @code {
+                                                                        private void MyComboSelect2(AnyUiComboBox comb, string value)
+                                                                        {
+                                                                            comb.setValueLambda?.Invoke(value);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                string style2 = "";
+                                                                if (ch is AnyUiTextBox chtb2)
+                                                                {
+                                                                    if (ch is AnyUiHintBubble hb2)
+                                                                    {
+                                                                        if (style2 != "")
+                                                                        {
+                                                                            <span style="@style2">@hb2.Text</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span>@hb2.Text</span>
+                                                                        }
+                                                                        <br />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        int w = chtb2.Text.Length;
+                                                                        if (w > 60)
+                                                                            w = 60;
+                                                                        if (style2 != "")
+                                                                        {
+                                                                            <span style="@style2">
+                                                                                <input size="@w" value="@chtb2.Text"
+                                                                                        @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
+                                                                            </span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span>
+                                                                                <input size="@w" value="@chtb2.Text"
+                                                                                        @onchange="@((ChangeEventArgs __e) => MyTextInput2(chtb2, __e.Value.ToString()))" />
+                                                                            </span>
+                                                                        }
+                                                                        @code {
+                                                                            private void MyTextInput2(AnyUiTextBox chtb, string value)
+                                                                            {
+                                                                                chtb.setValueLambda?.Invoke(value);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (ch is AnyUiButton chbt2)
+                                                                {
+                                                                    if (style2 != "")
+                                                                    {
+                                                                        <button style="@style2" @onclick="() => MyClickButton2(chbt2)">@chbt2.Content</button>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <button @onclick="() => MyClickButton2(chbt2)">@chbt2.Content</button>
+                                                                    }
+                                                                    @code {
+
+                                                                        private void MyClickButton2(AnyUiButton chbt)
+                                                                        {
+                                                                            chbt.setValueLambda?.Invoke(chbt.Content);
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (ch is AnyUiCheckBox cb2)
+                                                                {
+                                                                    <input type="checkbox" @bind="@cb2.IsChecked" />
+                                                                    @cb2.Content
+                                                                }
+                                                                iChild++;
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+                                        </table>
+                                        continue;
+                                    }
                                 }
 
                                 string backColor = "";
@@ -183,20 +308,22 @@
                                             w = 60;
                                         if (style != "")
                                         {
-                                            // <span style="@style"><input size="@w" @bind="chtb.Text" /></span>
-                                            <span style="@style"><input size="@w" value="@chtb.Text" @onchange="() => MyInput(chtb)"/></span>
+                                            <span style="@style">
+                                                <input size="@w" value="@chtb.Text"
+                                                       @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                            </span>
                                         }
                                         else
                                         {
-                                            // <span><input size="@w" @bind="chtb.Text" /></span>
-                                            <span><input size="@w" value="@chtb.Text" @onchange="() => MyInput(chtb)"/></span>
+                                            <span>
+                                                <input size="@w" value="@chtb.Text"
+                                                       @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                            </span>
                                         }
                                         @code {
-                                            private void MyInput(AnyUiTextBox chtb)
+                                            private void MyTextInput(AnyUiTextBox chtb, string value)
                                             {
-                                                chtb.setValueLambda?.Invoke(chtb.Text);
-                                                // var dd = chtb?.DisplayData as Program.BlazorDisplayData;
-                                                // dd?.MyLambda(chtb);
+                                                chtb.setValueLambda?.Invoke(value);
                                             }
                                         }
                                     }
@@ -204,11 +331,6 @@
 
                                 if (ch is AnyUiButton chbt)
                                 {
-                                    chbt.DisplayData = new BlazorUI.Program.BlazorDisplayData(lambda: (o) =>
-                                    {
-                                        Program.LogLine = "Lambda for button " + chbt.Content;
-                                    });
-
                                     if (style != "")
                                     {
                                         <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
@@ -222,9 +344,6 @@
                                         private void MyClickButton(AnyUiButton chbt)
                                         {
                                             chbt.setValueLambda?.Invoke(chbt.Content);
-                                            // var dd = chbt?.DisplayData as Program.BlazorDisplayData;
-                                            // dd?.MyLambda(chbt);
-
                                         }
                                     }
                                 }
@@ -237,12 +356,19 @@
                                 if (ch is AnyUiComboBox comb)
                                 {
                                     string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-                                    <select class="form-control selectpicker" @bind="@comb.Text" style="width:@w">
+                                    <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
+                                            @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
                                         @foreach (var item in comb.Items)
                                         {
                                             <option value="@item">@item</option>
                                         }
                                     </select>
+                                    @code {
+                                        private void MyComboSelect(AnyUiComboBox comb, string value)
+                                        {
+                                            comb.setValueLambda?.Invoke(value);
+                                        }
+                                    }
                                 }
 
                                 iChild++;

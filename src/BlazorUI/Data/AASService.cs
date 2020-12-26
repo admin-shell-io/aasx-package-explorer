@@ -80,6 +80,7 @@ namespace BlazorUI.Data
                                 smItem.Tag = sm;
                                 childs.Add(smItem);
                                 List<Item> smChilds = new List<Item>();
+                                if (sm.submodelElements != null)
                                 foreach (var sme in sm.submodelElements)
                                 {
                                     var smeItem = new Item();
