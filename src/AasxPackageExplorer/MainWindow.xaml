@@ -36,6 +36,7 @@
         <RoutedUICommand x:Key="OpenAux" Text="OpenAux" />
         <RoutedUICommand x:Key="CloseAux" Text="CloseAux" />
         <RoutedUICommand x:Key="ConnectSecure" Text="ConnectSecure" />
+        <RoutedUICommand x:Key="ConnectIntegrated" Text="ConnectIntegrated" />
         <RoutedUICommand x:Key="ConnectOpcUa" Text="ConnectOpcUa" />
         <RoutedUICommand x:Key="ConnectRest" Text="ConnectRest" />
         <RoutedUICommand x:Key="QueryRepo" Text="QueryRepo" />
@@ -155,7 +156,7 @@
         <KeyBinding Key="C" Modifiers="Ctrl" Command="{StaticResource Close}"/>
         <KeyBinding Key="X" Modifiers="Ctrl" Command="{StaticResource OpenAux}"/>
         <KeyBinding Key="L" Modifiers="Ctrl" Command="{StaticResource CloseAux}"/>
-        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="{StaticResource ConnectSecure}"/>
+        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="{StaticResource ConnectIntegrated}"/>
         <KeyBinding Key="F6" Command="{StaticResource ConnectRest}"/>
         <KeyBinding Key="F6" Modifiers="Shift" Command="{StaticResource ServerRest}"/>
         <KeyBinding Key="F4" Modifiers="Alt" Command="{StaticResource Exit}"/>
@@ -186,6 +187,7 @@
         <CommandBinding Command="{StaticResource OpenAux}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CloseAux}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectSecure}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ConnectIntegrated}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectOpcUa}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectRest}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource QueryRepo}" Executed="CommandBinding_Executed"/>
@@ -277,6 +279,7 @@
                     <MenuItem Header="_File" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem Header="_New .." Command="{StaticResource New}"/>
                         <MenuItem Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
+                        <MenuItem Header="Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectIntegrated}"/>
                         <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{StaticResource Save}"/>
                         <MenuItem Header="_Save as .." Command="{StaticResource SaveAs}"/>
                         <MenuItem Header="_Close .." Command="{StaticResource Close}"/>
@@ -291,7 +294,7 @@
                         <MenuItem Header="Open Au_xiliary AAS .." InputGestureText="Ctrl+X" Command="{StaticResource OpenAux}"/>
                         <MenuItem Header="Close Auxiliary AAS" Command="{StaticResource CloseAux}"/>
                         <Separator/>
-                        <MenuItem Header="Connect ..">
+                        <MenuItem Header="Further connect options ..">
                             <MenuItem Header="Secure Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectSecure}"/>
                             <MenuItem Header="Connect via OPC-UA .." Command="{StaticResource ConnectOpcUa}"/>
                             <MenuItem Header="Connect via REST .." InputGestureText="F6" Command="{StaticResource ConnectRest}"/>

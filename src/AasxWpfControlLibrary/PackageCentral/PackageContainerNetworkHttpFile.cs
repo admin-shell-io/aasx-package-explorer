@@ -17,6 +17,7 @@ using AasxPackageExplorer;
 using System.Net.Http;
 using System.Net;
 using System.IO;
+using System.Threading;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -40,13 +41,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             Init();
         }
 
-        public PackageContainerNetworkHttpFile(string sourceFn, bool loadResident = false)
+        public PackageContainerNetworkHttpFile(string sourceFn, bool loadResident = false,
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             Init();
             SetNewSourceFn(sourceFn);
             LoadResident = loadResident;
             if (LoadResident)
-                LoadFromSource();
+                LoadFromSource(runtimeOptions);
         }
 
         private void Init()
@@ -67,26 +69,35 @@ namespace AasxWpfControlLibrary.PackageCentral
             return "HTTP file: " + SourceUri;
         }
 
-        protected void InternalLoadFromSource()
+        private async Task DownloadFromSource(Uri sourceUri,
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
-            // buffer to temp file
-            try
-            {                
-                // read via HttpClient (uses standard proxies)
-                var handler = new HttpClientHandler();
-                handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            // read via HttpClient (uses standard proxies)
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
 
-                var client = new HttpClient(handler);
-                client.DefaultRequestHeaders.Add("Accept", "application/aas");
-                client.BaseAddress = new Uri(SourceUri.GetLeftPart(UriPartial.Authority));
-                var requestPath = SourceUri.PathAndQuery;
+            var client = new HttpClient(handler);
+            client.DefaultRequestHeaders.Add("Accept", "application/aas");
+            client.BaseAddress = new Uri(sourceUri.GetLeftPart(UriPartial.Authority));
+            var requestPath = sourceUri.PathAndQuery;
 
-                // get response?
-                // later, see: https://stackoverflow.com/questions/20661652/progress-bar-with-httpclient
-                var response2 = client.GetAsync(requestPath).GetAwaiter().GetResult();
-                var contentFn = response2?.Content?.Headers?.ContentDisposition?.FileName;
-                var contentData = response2?.Content?.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-                if (contentData == null)
+            // Log
+            runtimeOptions?.Log?.Info($"HttpClient() with base-address {client.BaseAddress} " +
+                $"and request {requestPath} .. ");
+
+            // get response?
+            using (var response = await client.GetAsync(requestPath,
+                HttpCompletionOption.ResponseHeadersRead))
+            {
+                var contentLength = response.Content.Headers.ContentLength;
+                var contentFn = response.Content.Headers.ContentDisposition?.FileName;
+
+                // log
+                runtimeOptions?.Log?.Info($".. response with header-content-len {contentLength} " +
+                    $"and file-name {contentFn} ..");
+
+                var contentStream = await response?.Content?.ReadAsStreamAsync();
+                if (contentStream == null)
                     throw new PackageContainerException(
                     $"While getting data bytes from {SourceUri.ToString()} via HttpClient " +
                     $"no data-content was responded!");
@@ -96,7 +107,85 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (contentFn != null)
                     givenFn = contentFn;
                 TempFn = CreateNewTempFn(givenFn, IsFormat);
-                File.WriteAllBytes(TempFn, contentData);
+                runtimeOptions?.Log?.Info($".. downloading to temp-file {TempFn}");
+
+                using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+
+                    // copy with progress
+                    var bufferSize = 8192;
+                    var buffer = new byte[bufferSize];
+                    long totalBytesRead = 0;
+                    int bytesRead;
+                    while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length,
+                        default(CancellationToken)).ConfigureAwait(false)) != 0)
+                    {
+                        await file.WriteAsync(buffer, 0, bytesRead,
+                            default(CancellationToken)).ConfigureAwait(false);
+                                                                      
+                        totalBytesRead += bytesRead;
+                        runtimeOptions?.ProgressChanged?.Invoke(contentLength, totalBytesRead);
+                    }
+
+                    // assume bytes read to be total bytes
+                    runtimeOptions?.ProgressChanged?.Invoke(totalBytesRead, totalBytesRead);
+
+                    // log                
+                    runtimeOptions?.Log?.Info($".. download done with {totalBytesRead} bytes read!");
+                }
+
+            }
+        }
+
+        protected void InternalLoadFromSource(
+            PackageContainerRuntimeOptions runtimeOptions = null)
+        {
+            // buffer to temp file
+            try
+            {
+                //// read via HttpClient (uses standard proxies)
+                //var handler = new HttpClientHandler();
+                //handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+
+                //var client = new HttpClient(handler);
+                //client.DefaultRequestHeaders.Add("Accept", "application/aas");
+                //client.BaseAddress = new Uri(SourceUri.GetLeftPart(UriPartial.Authority));
+                //var requestPath = SourceUri.PathAndQuery;
+
+                //// get response?
+                //var response2 = client.GetAsync(requestPath).GetAwaiter().GetResult();
+                //var contentFn = response2?.Content?.Headers?.ContentDisposition?.FileName;
+                //var contentData = response2?.Content?.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                //if (contentData == null)
+                //    throw new PackageContainerException(
+                //    $"While getting data bytes from {SourceUri.ToString()} via HttpClient " +
+                //    $"no data-content was responded!");
+
+                //// create temp file and write to it
+                //var givenFn = SourceUri.ToString();
+                //if (contentFn != null)
+                //    givenFn = contentFn;
+                //TempFn = CreateNewTempFn(givenFn, IsFormat);
+                //File.WriteAllBytes(TempFn, contentData);
+
+                //// create temp file
+                //TempFn = CreateNewTempFn(SourceUri.ToString(), IsFormat);
+
+                //// start download
+                //using (var client = new HttpClientDownloadWithProgress(SourceUri.ToString(), TempFn))
+                //{
+                //    client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) => {
+                //        Console.WriteLine($"{progressPercentage}% ({totalBytesDownloaded}/{totalFileSize})");
+                //    };
+
+                //    client.StartDownload().GetAwaiter().GetResult();
+                //}
+
+                // DownloadFromSource(SourceUri).Wait();
+
+                var task = Task.Run(() => DownloadFromSource(SourceUri, runtimeOptions));
+                task.Wait();
+
             }
             catch (Exception ex)
             {
@@ -109,6 +198,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             try
             {
                 Env = new AdminShellPackageEnv(TempFn, indirectLoadSave: false);
+                runtimeOptions?.Log?.Info($".. successfully opened as AASX environment: {Env?.AasEnv?.ToString()}");
             }
             catch (Exception ex)
             {

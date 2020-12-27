@@ -692,8 +692,6 @@ namespace AasxPackageExplorer
                     onlyReFocus: true));
         }
 
-
-
         private void MainTimer_HandleLogMessages()
         {
             // pop log messages from the plug-ins into the Stored Prints in Log

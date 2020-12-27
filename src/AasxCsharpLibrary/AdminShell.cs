@@ -3687,6 +3687,22 @@ namespace AdminShellNS
             }
 #endif
 
+            // to String
+
+            public override string ToString()
+            {
+                var res = "AAS-ENV";
+                if (AdministrationShells != null)
+                    res += $" {AdministrationShells.Count} AAS";
+                if (Assets != null)
+                    res += $" {Assets.Count} Assets";
+                if (Submodels != null)
+                    res += $" {Submodels.Count} Submodels";
+                if (ConceptDescriptions != null)
+                    res += $" {ConceptDescriptions.Count} CDs";
+                return res;
+            }
+
             // finders
 
             public AdministrationShell FindAAS(Identification id)

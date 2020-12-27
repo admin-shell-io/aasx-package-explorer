@@ -24,7 +24,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public PackageCentralException() { }
         public PackageCentralException(string message) : base(message) { }
-    }
+    }    
 
     /// <summary>
     /// This class is an item maintained by the PackageCentral.
@@ -53,7 +53,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public bool Load(string location, bool loadResident)
+        public bool Load(string location, bool loadResident, PackageContainerRuntimeOptions runtimeOptions = null)
         {
             try
             {
@@ -66,7 +66,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
                 // figure out, what to load
-                var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true);
+                var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true,
+                                runtimeOptions);
                 if (guess == null)
                     return false;
                 

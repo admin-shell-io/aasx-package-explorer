@@ -63,7 +63,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             return s;
         }
 
-        protected void InternalLoadFromSource()
+        protected void InternalLoadFromSource(
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // check extension
             if (IsFormat == Format.Unknown)

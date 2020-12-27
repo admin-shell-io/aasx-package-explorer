@@ -13,18 +13,31 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
-    /// Excpetions thrown when handling PackageContainer or PackageCentral
+    /// Exceptions thrown when handling PackageContainer or PackageCentral
     /// </summary>
     public class PackageContainerException : Exception
     {
         public PackageContainerException() { }
         public PackageContainerException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// Extendable run-time options 
+    /// </summary>
+    public class PackageContainerRuntimeOptions
+    {
+        public delegate void ProgressChangedHandler(
+            long? totalFileSize, long totalBytesDownloaded);
+
+        public LogInstance Log;
+        public ProgressChangedHandler ProgressChanged;
     }
 
     /// <summary>
@@ -53,7 +66,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <summary>
         /// Can load an AASX from (already) given data source
         /// </summary>
-        public delegate void CapabilityLoadFromSource();
+        public delegate void CapabilityLoadFromSource(
+            PackageContainerRuntimeOptions runtimeOptions = null);
 
         /// <summary>
         /// Can save the (edited) AASX to an already given or new dta source name
@@ -118,19 +132,29 @@ namespace AasxWpfControlLibrary.PackageCentral
 
     public static class PackageContainerFactory
     {
-        public static PackageContainerBase GuessAndCreateFor(string location, bool loadResident)
+        public static PackageContainerBase GuessAndCreateFor(string location, bool loadResident,
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // access
             if (location == null)
                 return null;
             var ll = location.ToLower();
 
+            // Log?
+            runtimeOptions?.Log?.Info($"Trying to guess package container for {location} ..");
+            runtimeOptions?.Log?.Info($".. with loadResident = {loadResident}");
+
             // starts with http ?
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
             {
                 // direct evidence of /getaasx/
                 if (ll.Contains("/server/getaasx/"))
-                    return new PackageContainerNetworkHttpFile(location, loadResident);
+                {
+                    runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
+                    return new PackageContainerNetworkHttpFile(location, loadResident, runtimeOptions);
+                }
+
+                runtimeOptions?.Log?.Info($".. no adequate HTTP option found!");
             }
 
             // check FileInfo for (possible?) local file
@@ -142,6 +166,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     return new PackageContainerLocalFile(location, loadResident);
             } catch { }
 
+            runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
             return null;
         }        
     }

@@ -173,7 +173,7 @@ namespace AasxPackageExplorer
 
         public void Test()
         {
-            var pc = new PackageCentral();
+            //var pc = new PackageCentral();
             
             //pc.MainContainer.Close();
             
@@ -183,8 +183,8 @@ namespace AasxPackageExplorer
             //pc.MainContainer.SaveAs("A02.aasx");
             //pc.MainContainer.Close();
 
-            pc.MainContainer.Load("http://admin-shell-io.com:51310/server/getaasx/0", loadResident: true);
-            pc.MainContainer.SaveAs("A03.aasx");
+            //pc.MainContainer.Load("http://admin-shell-io.com:51310/server/getaasx/0", loadResident: true);
+            //pc.MainContainer.SaveAs("A03.aasx");
         }
     }
 }
