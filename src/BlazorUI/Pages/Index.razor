@@ -25,6 +25,32 @@
             </TitleTemplate>
         </Tree>
         @*<br /><br />*@
+        @{
+            if (selectedNode == null || selectedNode.Tag != null)
+            {
+                {
+                    if (Program.thumbNail == null)
+                    {
+                        var s = Program.env.GetLocalThumbnailStream();
+                        if (s != null)
+                        {
+                            using (var m = new System.IO.MemoryStream())
+                            {
+                                s.CopyTo(m);
+                                Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                            }
+                        }
+                    }
+                    if (Program.thumbNail != null)
+                    {
+                        <br />
+                        <div>
+                            <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
+                        </div>
+                    }
+                }
+            }
+        }
     </div>
     <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
         <div class="sticky-top" style="word-wrap:break-word">
@@ -32,6 +58,15 @@
                 if (selectedNode != null && selectedNode.Tag != null)
                 {
                     bool view = false;
+                    Program.helper.editMode = Program.editMode;
+                    if (Program.editMode)
+                    {
+                        Program.helper.repo = Program.repo;
+                    }
+                    else
+                    {
+                        Program.helper.repo = null;
+                    }
                     if (selectedNode.Tag is AdministrationShell)
                     {
                         Program.stack17 = new AnyUiStackPanel();
@@ -184,15 +219,18 @@
                                                                 {
                                                                     if (ch is AnyUiHintBubble hb2)
                                                                     {
-                                                                        if (style2 != "")
+                                                                        if (Program.editMode)
                                                                         {
-                                                                            <span style="@style2">@hb2.Text</span>
+                                                                            if (style2 != "")
+                                                                            {
+                                                                                <span style="@style2">@hb2.Text</span>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <span>@hb2.Text</span>
+                                                                            }
+                                                                            <br />
                                                                         }
-                                                                        else
-                                                                        {
-                                                                            <span>@hb2.Text</span>
-                                                                        }
-                                                                        <br />
                                                                     }
                                                                     else
                                                                     {
@@ -311,15 +349,18 @@
                                 {
                                     if (ch is AnyUiHintBubble hb)
                                     {
-                                        if (style != "")
+                                        if (Program.editMode)
                                         {
-                                            <span style="@style">@hb.Text</span>
+                                            if (style != "")
+                                            {
+                                                <span style="@style">@hb.Text</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@hb.Text</span>
+                                            }
+                                            <br />
                                         }
-                                        else
-                                        {
-                                            <span>@hb.Text</span>
-                                        }
-                                        <br />
                                     }
                                     else
                                     {

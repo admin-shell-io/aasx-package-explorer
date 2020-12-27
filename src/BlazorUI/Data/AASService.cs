@@ -23,7 +23,7 @@ namespace BlazorUI.Data
 
             Program.NewDataAvailable += (s, a) =>
             {
-                // buildTree();
+                buildTree();
                 NewDataAvailable?.Invoke(this, EventArgs.Empty);
             };
         }

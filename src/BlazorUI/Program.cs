@@ -53,7 +53,9 @@ namespace BlazorUI
         }
 
         public static AdminShellPackageEnv env = null;
-        public static bool editMode = true;
+        public static string[] aasxFiles = null;
+        public static string aasxFileSelected = "";
+        public static bool editMode = false;
         public static bool hintMode = true;
         public static PackageCentral packages = null;
         public static DispEditHelperEntities helper = null;
@@ -64,6 +66,8 @@ namespace BlazorUI
         public static AnyUiStackPanel stack17 = new AnyUiStackPanel();
 
         public static string LogLine = "The text of the clicked object will be shown here..";
+
+        public static string thumbNail = null;
 
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
@@ -77,9 +81,23 @@ namespace BlazorUI
             }
         }
 
+        public static void loadAasx(string value)
+        {
+            aasxFileSelected = value;
+            env.Dispose();
+            env = new AdminShellPackageEnv(Program.aasxFileSelected);
+            editMode = false;
+            thumbNail = null;
+            NewDataAvailable?.Invoke(null, EventArgs.Empty);
+        }
         public static void Main(string[] args)
         {
-            env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
+            // env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
+
+            aasxFiles = Directory.GetFiles(".", "*.aasx");
+            Array.Sort(aasxFiles);
+            aasxFileSelected = aasxFiles[0];
+            env = new AdminShellPackageEnv(aasxFileSelected);
 
 #if __test__PackageLogic
 #else
@@ -89,11 +107,8 @@ namespace BlazorUI
 
             helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            if (editMode)
-            {
-                // some functionality still uses repo != null to detect editMode!!
-                repo = new ModifyRepo();
-            }
+            // some functionality still uses repo != null to detect editMode!!
+            repo = new ModifyRepo();
             helper.editMode = editMode;
             helper.hintMode = hintMode;
             helper.repo = repo;
