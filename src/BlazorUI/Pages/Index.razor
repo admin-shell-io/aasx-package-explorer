@@ -233,13 +233,14 @@
 
                                                                 if (ch is AnyUiCheckBox cb2)
                                                                 {
+                                                                    // cb2.IsChecked = true;
                                                                     <input type="checkbox" value="@cb2.IsChecked"
                                                                            @onchange="@((ChangeEventArgs __e) => MyCheck2(cb2, __e.Value.ToString()))" />
                                                                     @cb2.Content
                                                                     @code {
                                                                         private void MyCheck2(AnyUiCheckBox cb2, string value)
                                                                         {
-                                                                            cb2.setValueLambda?.Invoke(value);
+                                                                            cb2.setValueLambda?.Invoke(value.ToLower() == "true");
                                                                         }
                                                                     }
                                                                 }
@@ -365,7 +366,7 @@
                                     @code {
                                         private void MyCheck(AnyUiCheckBox cb, string value)
                                         {
-                                            cb.setValueLambda?.Invoke(value);
+                                            cb.setValueLambda?.Invoke(value.ToLower() == "true");
                                         }
                                     }
                                 }
