@@ -10,9 +10,9 @@
 
 <div class="col-12 row">
     <br />
-    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky">
+    <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky">
         @* @if (Program.isLoading)
-            {<span style="color:white;background-color:blue;">Loading...</span>} *@
+        {<span style="color:white;background-color:blue;">Loading...</span>} *@
         <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
               @bind-SelectedNode="SelectedNode"
               @bind-ExpandedNodes="ExpandedNodes"
@@ -24,9 +24,9 @@
                 <strong><span style="color:blue">@getSymbols(context)</span></strong>
             </TitleTemplate>
         </Tree>
-        <br /><br />
+        @*<br /><br />*@
     </div>
-    <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
+    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
         <div class="sticky-top" style="word-wrap:break-word">
             @{
                 if (selectedNode != null && selectedNode.Tag != null)
@@ -90,18 +90,27 @@
                         AnyUiPanel uiPanel = Program.stack17;
                         Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
                         bool combo = false;
+                        bool br = false;
+                        bool tab = false;
 
                         do
                         {
                             if (iChild == uiPanel.Children.Count)
                             {
                                 uipStack.Pop(out uiPanel, out iChild);
-                                <br />
                                 combo = false;
+                                br = true;
                             }
 
                             while (iChild < uiPanel.Children.Count)
                             {
+                                if (br && !tab)
+                                {
+                                    <br />
+                                }
+                                br = false;
+                                tab = false;
+
                                 var ch = uiPanel.Children[iChild];
 
                                 if (ch is AnyUiPanel chp)
@@ -137,6 +146,7 @@
                                 {
                                     if (uiPanel.Children.Count == 2 || (uiPanel.Children.Count == 7 && iChild == 2))
                                     {
+                                        tab = true;
                                         <table>
                                             <tr>
                                                 @{
