@@ -10,49 +10,62 @@
 
 <div class="col-12 row">
     <br />
-    <div class="col-4" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky">
-        @* @if (Program.isLoading)
-        {<span style="color:white;background-color:blue;">Loading...</span>} *@
-        <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
-              @bind-SelectedNode="SelectedNode"
-              @bind-ExpandedNodes="ExpandedNodes"
-              HasChildNodes="@(item => item.Childs?.Any() == true)">
-            <TitleTemplate>
-                @{ //// SubmodelService.syncSubTree(context);
+    <div class="col-4">
+        <div class="row-12">
+            <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                @{
+                    string text = "Messages and selected items will be shown here";
+                    <br />
+                    <b>@text</b>
+                    <br />
                 }
-                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
-                <strong><span style="color:blue">@getSymbols(context)</span></strong>
-            </TitleTemplate>
-        </Tree>
-        @*<br /><br />*@
-        @{
-            if (selectedNode == null || selectedNode.Tag != null)
-            {
-                {
-                    if (Program.thumbNail == null)
+            </div>
+            <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                @* @if (Program.isLoading)
+                    {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
+                      @bind-SelectedNode="SelectedNode"
+                      @bind-ExpandedNodes="ExpandedNodes"
+                      HasChildNodes="@(item => item.Childs?.Any() == true)">
+                    <TitleTemplate>
+                        @{ //// SubmodelService.syncSubTree(context);
+                        }
+                        <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                        <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                    </TitleTemplate>
+                </Tree>
+                @*<br /><br />*@
+                <br />
+            </div>
+            <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                @{
+                    if (selectedNode == null || selectedNode.Tag != null)
                     {
-                        var s = Program.env.GetLocalThumbnailStream();
-                        if (s != null)
                         {
-                            using (var m = new System.IO.MemoryStream())
+                            if (Program.thumbNail == null)
                             {
-                                s.CopyTo(m);
-                                Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                var s = Program.env.GetLocalThumbnailStream();
+                                if (s != null)
+                                {
+                                    using (var m = new System.IO.MemoryStream())
+                                    {
+                                        s.CopyTo(m);
+                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                    }
+                                }
+                            }
+                            if (Program.thumbNail != null)
+                            {
+                                <br />
+                                <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
                             }
                         }
                     }
-                    if (Program.thumbNail != null)
-                    {
-                        <br />
-                        <div>
-                            <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
-                        </div>
-                    }
                 }
-            }
-        }
+            </div>
+        </div>
     </div>
-    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky">
+    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky;padding:10px">
         <div class="sticky-top" style="word-wrap:break-word">
             @{
                 if (selectedNode != null && selectedNode.Tag != null)
