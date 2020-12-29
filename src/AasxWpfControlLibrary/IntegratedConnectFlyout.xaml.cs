@@ -37,18 +37,45 @@ namespace AasxPackageExplorer
         private double? _maxWidth;
         private string _location;
         private string _initialDirectory;
-        // private Func<StoredPrint> _checkForStoredPrint;
         private LogInstance _logger;
+
+        private List<SelectFromListFlyoutItem> _selectFromListItems;
+        private Action<SelectFromListFlyoutItem> _selectFromListAction;
+
+        private Action<PackageContainerCredentials> _askedUserCredentials;
 
         public bool Result;
         public PackageContainerBase ResultContainer;
+
+        //
+        // Preset
+        //
+
+        protected class PresetItem
+        {
+            public string Name = "";
+            public string Location = "";
+            public string Username = "";
+            public string Password;
+            public bool AutoClose = true;
+            public bool StayConnected = false;
+        }
+
+        protected class PresetList : List<PresetItem>
+        {
+        }
+
+        protected PresetList _presets = new PresetList();
+
+        //
+        // Constructor
+        //
 
         public IntegratedConnectFlyout(
             string caption = null, 
             double? maxWidth = null,
             string initialLocation = null,
             string initialDirectory = null,
-            // Func<StoredPrint> checkForStoredPrint = null
             LogInstance logger = null)
         {
             InitializeComponent();
@@ -57,7 +84,6 @@ namespace AasxPackageExplorer
             _maxWidth = maxWidth;
             _location = initialLocation;
             _initialDirectory = initialDirectory;
-            // _checkForStoredPrint = checkForStoredPrint;
             _logger = logger;
         }
 
@@ -74,6 +100,12 @@ namespace AasxPackageExplorer
             // start page
             if (_location != null)
                 TextBoxStartLocation.Text = _location;
+            if (_presets != null)
+            {
+                ComboBoxPresets.Items.Clear();
+                foreach (var pi in _presets)
+                    ComboBoxPresets.Items.Add("" + pi?.Name);
+            }
 
             // focus
             this.TextBoxStartLocation.Focus();
@@ -110,6 +142,24 @@ namespace AasxPackageExplorer
         {
         }
 
+        public void LoadPresets(Newtonsoft.Json.Linq.JToken jtoken)
+        {
+            // access
+            if (jtoken == null)
+                return;
+
+            try
+            {
+                var pl = jtoken.ToObject<PresetList>();
+                if (pl != null)
+                    _presets = pl;
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "When loading integrated connect presets from options");
+            }
+        }
+
         public void LogMessage(StoredPrint sp)
         {
             // access
@@ -134,16 +184,11 @@ namespace AasxPackageExplorer
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             this.Result = false;
+            this.ResultContainer = null;
             ControlClosed?.Invoke();
         }
 
-        private void ButtonOk_Click(object sender, RoutedEventArgs e)
-        {
-            this.Result = true;
-            ControlClosed?.Invoke();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == ButtonMsgSmaller && TextBoxMessages.FontSize >= 6.0)
                 TextBoxMessages.FontSize -= 2.0;
@@ -171,80 +216,54 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonStartProceed)
             {
-                // make runtime options to link to this dialogue
-                var ro = new PackageContainerRuntimeOptions()
-                {
-                    Log = _logger,
-                    ProgressChanged = (tfs, tbd) =>
-                    {
-                        // determine
-                        if (tfs == null)
-                            tfs = 5 * 1024 * 1024;
-                        var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
+                ProceedOnPageStart();
+            }
 
-                        // thread safe
-                        TheProgressBar.Dispatcher.BeginInvoke(
-                            System.Windows.Threading.DispatcherPriority.Background,
-                            new Action(() => TheProgressBar.Value = frac));
+            if (sender == ButtonPageSelectFromListProceed)
+            {
+                ProceedOnPageSelectFromList();
+            }
 
-                        LabelProgressText.Dispatcher.BeginInvoke(
-                            System.Windows.Threading.DispatcherPriority.Background,
-                            new Action(() => LabelProgressText.Content = $"{tbd} bytes transferred"));
-                    }
-                };
+            if (sender == ButtonPageCredentialsProceed)
+            {
+                ProceedOnPageCredentials();
+            }
 
-                // Log
-                var location = TextBoxStartLocation.Text;
-                _logger?.Info($"Connect (integrated): Trying to connect to {location} ..");
-
-                // try do the magic
-                try
-                {
-                    var x = PackageContainerFactory.GuessAndCreateFor(
-                        location,
-                        loadResident: true,
-                        runtimeOptions: ro);
-                } catch (Exception ex)
-                {
-                    _logger?.Error(ex, "when guessing for packager container!");
-                }
+            if (sender == ButtonPageSummaryDone)
+            {
+                DoneOnPageSummary();
             }
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {
-            /*
-            if (this.Options == DialogueOptions.FilterAllControlKeys)
-            {
-                if (e.Key >= Key.F1 && e.Key <= Key.F24 || e.Key == Key.Escape || e.Key == Key.Enter ||
-                        e.Key == Key.Delete || e.Key == Key.Insert)
-                {
-                    e.Handled = true;
-                    return;
-                }
-            }
-            */
-
-            // Close dialogue?
-            if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)
-                return;
-
-            if (e.Key == Key.Return)
-            {
-                this.Result = true;
-                ControlClosed?.Invoke();
-            }
-            if (e.Key == Key.Escape)
+            if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Escape)
             {
                 this.Result = false;
                 ControlClosed?.Invoke();
             }
-        }
 
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Return)
+            {
+                if (TabControlMain.SelectedItem == TabItemStart)
+                    ProceedOnPageStart();
 
-        private void ListBoxSelectAAS_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
+                if (TabControlMain.SelectedItem == TabItemSelectFromList)
+                    ProceedOnPageSelectFromList();
 
+                if (TabControlMain.SelectedItem == TabItemCredentials)
+                    ProceedOnPageCredentials();
+
+                if (TabControlMain.SelectedItem == TabItemSummary)
+                    DoneOnPageSummary();
+            }
+
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key >= Key.D1 && e.Key <= Key.D9)
+            {
+                var i = (int)(e.Key - Key.D1);
+                if (_presets != null && i >= 0 && i < _presets.Count)
+                    ApplyPreset(_presets[i]);
+            }
         }
 
         private void TextBoxMessages_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -262,8 +281,222 @@ namespace AasxPackageExplorer
             else
             {
                 if (TextBoxMessages.FontSize >= 6.0)
-                --TextBoxMessages.FontSize;
+                    --TextBoxMessages.FontSize;
             }
+        }
+
+        //
+        // Start page
+        //
+
+        private async void ProceedOnPageStart()
+        {
+            // make runtime options to link to this dialogue
+            var ro = new PackageContainerRuntimeOptions()
+            {
+                Log = _logger,
+                ProgressChanged = (tfs, tbd) =>
+                {
+                    // determine
+                    if (tfs == null)
+                        tfs = 5 * 1024 * 1024;
+                    var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
+
+                    // thread safe
+                    TheProgressBar.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => TheProgressBar.Value = frac));
+
+                    LabelProgressText.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => LabelProgressText.Content = $"{tbd} bytes transferred"));
+                },
+                AskForSelectFromList = (caption, items, propRes) =>
+                {
+                    TabItemSelectFromList.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => {
+                            StartPageSelectFromList(caption, items, (li) =>
+                            {
+                                // never again
+                                _selectFromListAction = null;
+                                // call
+                                propRes?.TrySetResult(li);
+                            });
+                        }));
+                },
+                AskForCredentials = (caption, propRes) =>
+                {
+                    TabItemCredentials.Dispatcher.BeginInvoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        new Action(() => {
+                            StartPageAskCredentials(caption, (pcc) =>
+                            {
+                                // never again
+                                _askedUserCredentials = null;
+                                // call
+                                propRes?.TrySetResult(pcc);
+                            });
+                        }));
+                }
+            };
+
+            // Log
+            var location = TextBoxStartLocation.Text;
+            _logger?.Info($"Connect (integrated): Trying to connect to {location} ..");
+
+            // try do the magic
+            try
+            {
+                var x = await PackageContainerFactory.GuessAndCreateForAsync(
+                    location,
+                    loadResident: true,
+                    runtimeOptions: ro);
+
+                // returning "x" is the only way to end the dialogue successfuly
+                if (x != null)
+                {
+                    // prepare result
+                    _logger?.Info($"Connect (integrated): guessing and creating container package " +
+                        $"succeeded with {x.ToString()} !");
+                    this.Result = true;
+                    this.ResultContainer = x;
+
+                    // close now?
+                    if (true == CheckBoxStayAutoClose.IsChecked)
+                    {
+                        // trigger close
+                        ControlClosed?.Invoke();
+                    }
+                    else
+                    {
+                        // proceed to summary page
+                        StartPageSummary();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.Error(ex, "when guessing for packager container!");
+            }
+        }
+
+        private void ComboBoxPresets_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var i = ComboBoxPresets.SelectedIndex;
+            if (_presets != null && i >= 0 && i < _presets.Count)
+                ApplyPreset(_presets[i]);                
+        }
+
+        private void ApplyPreset(PresetItem pi)
+        {
+            // access
+            if (pi == null)
+                return;
+
+            // apply
+            if (pi.Location != null)
+                TextBoxStartLocation.Text = pi.Location;
+            if (pi.Username != null)
+                TextBoxUsername.Text = pi.Username;
+            if (pi.Password != null)
+                TextBoxPassword.Text = pi.Password;
+            CheckBoxStayAutoClose.IsChecked = pi.AutoClose;
+            CheckBoxStayConnected.IsChecked = pi.StayConnected;
+        }
+
+        //
+        // Select from List
+        //
+
+        private void StartPageSelectFromList(string caption,
+            List<SelectFromListFlyoutItem> selectFromListItems,
+            Action<SelectFromListFlyoutItem> selectFromListAction)
+        {
+            // show tab page
+            TabControlMain.SelectedItem = TabItemSelectFromList;
+
+            // set
+            LabelSelectFromListCaption.Content = "" + caption;
+            ListBoxSelectFromList.Items.Clear();
+            if (selectFromListItems != null)
+                foreach (var loi in selectFromListItems)
+                    ListBoxSelectFromList.Items.Add("" + loi.Text);
+
+            // remember
+            _selectFromListItems = selectFromListItems;
+            _selectFromListAction = selectFromListAction;
+        }
+
+        private SelectFromListFlyoutItem GetSelectedItemFromList()
+        {
+            var i = ListBoxSelectFromList.SelectedIndex;
+            if (_selectFromListItems != null && i >= 0 && i < _selectFromListItems.Count)
+                return _selectFromListItems[i];
+            return null;
+        }
+
+        private void ListBoxSelectFromList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ProceedOnPageSelectFromList();
+        }
+
+        private void ProceedOnPageSelectFromList()
+        {
+            // read back selected item
+            var li = GetSelectedItemFromList();
+
+            // call back
+            if (li != null)
+                _selectFromListAction?.Invoke(li);
+        }
+
+        //
+        // User credentials
+        //
+
+        private void StartPageAskCredentials(string caption,
+            Action<PackageContainerCredentials> askedUserCredentials)
+        {
+            // show tab page
+            TabControlMain.SelectedItem = TabItemCredentials;
+
+            // set
+            LabelCredentialsCaption.Content = "" + caption;
+
+            // have a callback
+            _askedUserCredentials = askedUserCredentials;
+        }
+
+        private void ProceedOnPageCredentials()
+        {
+            // read back
+            var pcc = new PackageContainerCredentials();
+            pcc.Username = TextBoxUsername.Text;
+            pcc.Password = TextBoxPassword.Text;
+
+            // call back
+            _askedUserCredentials?.Invoke(pcc);
+        }
+
+        //
+        // Summary
+        //
+
+        private void StartPageSummary(string message = null)
+        {
+            // show tab page
+            TabControlMain.SelectedItem = TabItemSummary;
+
+            // set
+            if (message != null)
+                TextBlockSummaryMessage.Text = "" + message;
+        }
+
+        private void DoneOnPageSummary()
+        {
+            if (Result && ResultContainer != null)
+                ControlClosed?.Invoke();
         }
     }
 }

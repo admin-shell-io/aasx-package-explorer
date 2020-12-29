@@ -28,16 +28,32 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageContainerException(string message) : base(message) { }
     }
 
+    public class PackageContainerCredentials
+    {
+        public string Username;
+        public string Password;
+    }
+
     /// <summary>
     /// Extendable run-time options 
     /// </summary>
     public class PackageContainerRuntimeOptions
     {
-        public delegate void ProgressChangedHandler(
-            long? totalFileSize, long totalBytesDownloaded);
+        public delegate void ProgressChangedHandler(long? totalFileSize, long totalBytesDownloaded);
+
+        public delegate void AskForSelectFromListHandler(
+            string caption, List<SelectFromListFlyoutItem> list,
+            TaskCompletionSource<SelectFromListFlyoutItem> propagateResult);
+
+        public delegate void AskForCredentialsHandler(
+            string caption, TaskCompletionSource<PackageContainerCredentials> propagateResult);
 
         public LogInstance Log;
         public ProgressChangedHandler ProgressChanged;
+        
+        public AskForSelectFromListHandler AskForSelectFromList;
+
+        public AskForCredentialsHandler AskForCredentials;
     }
 
     /// <summary>
@@ -130,44 +146,4 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
     }
 
-    public static class PackageContainerFactory
-    {
-        public static PackageContainerBase GuessAndCreateFor(string location, bool loadResident,
-            PackageContainerRuntimeOptions runtimeOptions = null)
-        {
-            // access
-            if (location == null)
-                return null;
-            var ll = location.ToLower();
-
-            // Log?
-            runtimeOptions?.Log?.Info($"Trying to guess package container for {location} ..");
-            runtimeOptions?.Log?.Info($".. with loadResident = {loadResident}");
-
-            // starts with http ?
-            if (ll.StartsWith("http://") || ll.StartsWith("https://"))
-            {
-                // direct evidence of /getaasx/
-                if (ll.Contains("/server/getaasx/"))
-                {
-                    runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
-                    return new PackageContainerNetworkHttpFile(location, loadResident, runtimeOptions);
-                }
-
-                runtimeOptions?.Log?.Info($".. no adequate HTTP option found!");
-            }
-
-            // check FileInfo for (possible?) local file
-            try
-            {
-                var fi = new FileInfo(location);
-                if (fi != null)
-                    // seems to be a valid (possible) file
-                    return new PackageContainerLocalFile(location, loadResident);
-            } catch { }
-
-            runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
-            return null;
-        }        
-    }
 }

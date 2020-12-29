@@ -53,7 +53,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         private void Init()
         {
-            this.LoadFromSource = this.InternalLoadFromSource;
+            // this.LoadFromSource = this.InternalLoadFromSource;
             // this.SaveAsToSource = this.InternalSaveToSource;
         }
 
@@ -111,7 +111,6 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-
                     // copy with progress
                     var bufferSize = 8192;
                     var buffer = new byte[bufferSize];
@@ -137,7 +136,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        protected void InternalLoadFromSource(
+        public async Task InternalLoadFromSourceAsync(
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // buffer to temp file
@@ -183,8 +182,10 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 // DownloadFromSource(SourceUri).Wait();
 
-                var task = Task.Run(() => DownloadFromSource(SourceUri, runtimeOptions));
-                task.Wait();
+                //var task = Task.Run(() => DownloadFromSource(SourceUri, runtimeOptions));
+                //task.Wait();
+
+                await DownloadFromSource(SourceUri, runtimeOptions);
 
             }
             catch (Exception ex)

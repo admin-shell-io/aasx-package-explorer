@@ -169,7 +169,7 @@ namespace AasxIntegrationBase
 
         public class StoredPrintColors
         {
-            public SolidColorBrush BrushError, BrushRed, BrushBlue, BrushLink, BrushBlack;
+            public SolidColorBrush BrushError, BrushRed, BrushBlue, BrushYellow, BrushLink, BrushBlack;
         }
 
         public static StoredPrintColors BrightPrintColors = new StoredPrintColors()
@@ -177,6 +177,7 @@ namespace AasxIntegrationBase
             BrushError = new SolidColorBrush(Color.FromRgb(255, 0, 0)),
             BrushRed = new SolidColorBrush(Color.FromRgb(251, 144, 55)),
             BrushBlue = new SolidColorBrush(Color.FromRgb(143, 170, 220)),
+            BrushYellow = new SolidColorBrush(Color.FromRgb(248, 242, 0)),
             BrushLink = new SolidColorBrush(Color.FromRgb(46, 117, 182)),
             BrushBlack = new SolidColorBrush(Color.FromRgb(255, 255, 255))
         };
@@ -186,6 +187,7 @@ namespace AasxIntegrationBase
             BrushError = new SolidColorBrush(Color.FromRgb(255, 0, 0)),
             BrushRed = new SolidColorBrush(Color.FromRgb(192, 0, 0)),
             BrushBlue = new SolidColorBrush(Color.FromRgb(0, 109, 165)),
+            BrushYellow = new SolidColorBrush(Color.FromRgb(255, 153, 0)),
             BrushLink = new SolidColorBrush(Color.FromRgb(5, 14, 187)),
             BrushBlack = new SolidColorBrush(Color.FromRgb(0, 0, 0))
         };
@@ -219,6 +221,9 @@ namespace AasxIntegrationBase
                         break;
                     case StoredPrint.Color.Blue:
                         tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                        break;
+                    case StoredPrint.Color.Yellow:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushYellow);
                         break;
                     case StoredPrint.Color.Black:
                         tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlack);

@@ -179,11 +179,12 @@ namespace AasxPackageExplorer
 
         public void UiLoadPackageWithNew(
             PackageCentralItem packItem,
-            AdminShellPackageEnv takeOverEnv = null,
+            AdminShellPackageEnv takeOverEnv = null,            
             string loadLocalFilename = null, 
             string info = null,
             bool onlyAuxiliary = false,
-            bool doNotNavigateAfterLoaded = false)
+            bool doNotNavigateAfterLoaded = false,
+            PackageContainerBase takeOverContainer = null)
         {
             // access
             if (packItem == null)
@@ -201,6 +202,13 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
                 packItem.TakeOver(takeOverEnv);
+            }
+            else
+            if (takeOverContainer != null)
+            {
+                Log.Singleton.Info("Loading new AASX from container: {0} as auxiliary {1} ..", 
+                    "" +  takeOverContainer.ToString(), onlyAuxiliary);
+                packItem.TakeOver(takeOverContainer);
             }
             else
             {
@@ -723,6 +731,13 @@ namespace AasxPackageExplorer
                             Message.FontWeight = FontWeights.Normal;
                             break;
                         }
+                    case StoredPrint.Color.Yellow:
+                        {
+                            Message.Background = Brushes.Yellow;
+                            Message.Foreground = Brushes.Black;
+                            Message.FontWeight = FontWeights.Bold;
+                            break;
+                        }
                     case StoredPrint.Color.Red:
                         {
                             Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
@@ -810,33 +825,58 @@ namespace AasxPackageExplorer
                 return null;
 
             // which file?
-            var fn = packages.FileRepository?.GetFullFilename(fi);
-            if (fn == null)
+            var location = packages.FileRepository?.GetFullFilename(fi);
+            if (location == null)
                 return null;
 
             // try load (in the background/ RAM first..
-            AdminShellPackageEnv pkg = null;
+            PackageContainerBase container = null;
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info($"Auto-load AASX file from repository {fn}");
-                pkg = LoadPackageFromFile(fn);
+                AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
+                var ro = new PackageContainerRuntimeOptions()
+                {
+                    Log = Log.Singleton,
+                    ProgressChanged = (tfs, tbd) =>
+                    {
+                        // determine
+                        if (tfs == null)
+                            tfs = 5 * 1024 * 1024;
+                        var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
+
+                        // thread safe
+                        /*
+                        TheProgressBar.Dispatcher.BeginInvoke(
+                            System.Windows.Threading.DispatcherPriority.Background,
+                            new Action(() => TheProgressBar.Value = frac));
+
+                        LabelProgressText.Dispatcher.BeginInvoke(
+                            System.Windows.Threading.DispatcherPriority.Background,
+                            new Action(() => LabelProgressText.Content = $"{tbd} bytes transferred"));
+                        */
+                    }
+                };
+                container = PackageContainerFactory.GuessAndCreateFor(
+                    location,
+                    loadResident: true,
+                    runtimeOptions: ro);
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
             }
 
             // if successfull ..
-            if (pkg != null)
+            if (container != null)
             {
                 // .. try find business object!
                 AdminShell.Referable bo = null;
                 if (requireReferable != null)
-                    bo = pkg.AasEnv.FindReferableByReference(requireReferable);
+                    bo = container.Env?.AasEnv.FindReferableByReference(requireReferable);
 
                 // only proceed, if business object was found .. else: close directly
                 if (requireReferable != null && bo == null)
-                    pkg.Close();
+                    container.Close();
                 else
                 {
                     // make sure the user wants to change
@@ -854,7 +894,7 @@ namespace AasxPackageExplorer
                     packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                     // activate
-                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainContainer, takeOverContainer: container, onlyAuxiliary: false);
                 }
 
                 // return bo to focus

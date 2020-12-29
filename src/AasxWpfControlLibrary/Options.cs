@@ -238,6 +238,12 @@ namespace AasxPackageExplorer
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
 
+        /// <summary>
+        /// Point to a list of SecureConnectPresets for the respective dialogue
+        /// </summary>
+        [JetBrains.Annotations.UsedImplicitly]
+        public Newtonsoft.Json.Linq.JToken IntegratedConnectPresets;
+
         public class PluginDllInfo
         {
             public string Path;

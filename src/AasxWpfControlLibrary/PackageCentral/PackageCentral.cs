@@ -66,8 +66,14 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
                 // figure out, what to load
-                var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true,
-                                runtimeOptions);
+                //var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true,
+                //                runtimeOptions);
+
+                var task = Task.Run(() => PackageContainerFactory.GuessAndCreateForAsync(
+                    location, loadResident: true,
+                    runtimeOptions));
+                var guess = task.Result;
+
                 if (guess == null)
                     return false;
                 
@@ -98,6 +104,32 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // figure out, what to load
                 Container = new PackageContainerTakenOver();
                 Container.Env = env;
+
+                // success!
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new PackageCentralException(
+                    $"PackageCentral: while performing takeover " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+        }
+
+        public bool TakeOver(PackageContainerBase container)
+        {
+            try
+            {
+                // close old one
+                if (Container != null)
+                {
+                    if (Container.IsOpen)
+                        Container.Close();
+                    Container = null;
+                }
+
+                // figure out, what to load
+                Container = container;
 
                 // success!
                 return true;

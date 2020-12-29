@@ -991,82 +991,32 @@ namespace AasxPackageExplorer
         {
             // make dialogue flyout
             var uc = new IntegratedConnectFlyout(
-                initialLocation: "http://admin-shell-io.com:51310/server/getaasx/0",
+                initialLocation: "" /* "http://admin-shell-io.com:51310/server/getaasx/0" */,
                 logger: new LogInstance());
+            uc.LoadPresets(Options.Curr.IntegratedConnectPresets);
 
             // modal dialogue
             this.StartFlyoverModal(uc, closingAction: () =>
             {
             });
 
-            // succss?
-            //if (uc.Result == null)
-            //    return;
-            //var preset = uc.Result;
-
-            //// make listing flyout
-            //var logger = new LogInstance();
-            //var uc2 = new LogMessageFlyout("Secure connecting ..", "Start secure connect ..", () =>
-            //{
-            //    return logger.PopLastShortTermPrint();
-            //});
-            //uc2.EnableLargeScreen();
-
-            //// do some statistics
-            //AasxPackageExplorer.Log.Singleton.Info("Start secure connect ..");
-            //AasxPackageExplorer.Log.Singleton.Info("Protocol: {0}", preset.Protocol.Value);
-            //AasxPackageExplorer.Log.Singleton.Info("AuthorizationServer: {0}", preset.AuthorizationServer.Value);
-            //AasxPackageExplorer.Log.Singleton.Info("AasServer: {0}", preset.AasServer.Value);
-            //AasxPackageExplorer.Log.Singleton.Info("CertificateFile: {0}", preset.CertificateFile.Value);
-            //AasxPackageExplorer.Log.Singleton.Info("Password: {0}", preset.Password.Value);
-
-            //logger.Info("Protocol: {0}", preset.Protocol.Value);
-            //logger.Info("AuthorizationServer: {0}", preset.AuthorizationServer.Value);
-            //logger.Info("AasServer: {0}", preset.AasServer.Value);
-            //logger.Info("CertificateFile: {0}", preset.CertificateFile.Value);
-            //logger.Info("Password: {0}", preset.Password.Value);
-
-            //// start CONNECT as a worker (will start in the background)
-            //var worker = new BackgroundWorker();
-            //AdminShellPackageEnv envToload = null;
-            //worker.DoWork += (s1, e1) =>
-            //{
-            //    for (int i = 0; i < 15; i++)
-            //    {
-            //        var sb = new StringBuilder();
-            //        for (double j = 0; j < 1; j += 0.0025)
-            //            sb.Append($"{j}");
-            //        logger.Info("The output is: {0} gives {1} was {0}", i, sb.ToString());
-            //        logger.Info(StoredPrint.Color.Blue, "This is blue");
-            //        logger.Info(StoredPrint.Color.Red, "This is red");
-            //        logger.Error("This is an error!");
-            //        logger.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
-            //        logger.Info("----");
-            //        Thread.Sleep(2134);
-            //    }
-
-            //    envToload = null;
-            //};
-            //worker.RunWorkerCompleted += (s1, e1) =>
-            //{
-            //};
-            //worker.RunWorkerAsync();
-
-            //// modal dialogue
-            //this.StartFlyoverModal(uc2, closingAction: () =>
-            //{
-            //    // clean up
-            //});
-
-            //// commit Package
-            //if (envToload != null)
-            //{
-            //}
-
-            //// done
-            //AasxPackageExplorer.Log.Singleton.Info("Secure connect done.");
+            // execute
+            if (uc.Result && uc.ResultContainer != null)
+            {
+                Log.Singleton.Info($"For integrated connection, trying to take over " +
+                    $"{uc.ResultContainer.ToString()} ..");
+                try
+                {
+                    UiLoadPackageWithNew(
+                        packages.MainContainer, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
+                }
+                catch (Exception ex)
+                {
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When opening {uc.ResultContainer.ToString()}");
+                }
+            }
         }
-
+        
         public void CommandBinding_QueryRepo()
         {
             var uc = new SelectFromRepositoryFlyout();

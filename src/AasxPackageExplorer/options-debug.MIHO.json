@@ -216,5 +216,34 @@
         ]
       }
     }
+  ],
+  "IntegratedConnectPresets": [
+    {
+      "Name": "Empty",
+      "Location": "",
+      "Username": "",
+      "Password": ""
+    },
+    {
+      "Name": "First of admin-shell-io.com",
+      "Location": "http://admin-shell-io.com:51310/server/getaasx/0",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true
+    },
+    {
+      "Name": "DEMO",
+      "Location": "http://demo/",
+      "Username": "Foo",
+      "Password": "Bar",
+      "AutoClose": false
+    },
+    {
+      "Name": "Long loading of admin-shell-io.com",
+      "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true
+    }
   ]
 }

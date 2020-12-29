@@ -26,6 +26,7 @@ namespace AasxIntegrationBase
             Black = 0,
             Blue = 1,
             Red = 2,
+            Yellow = 3
         }
 
         public Color color = Color.Black;
