@@ -87,6 +87,8 @@ namespace BlazorUI.Data
                                     smeItem.envIndex = i;
                                     smeItem.Text = sme.submodelElement.idShort;
                                     smeItem.Tag = sme.submodelElement;
+                                    smeItem.ParentContainer = sm;
+                                    smeItem.Wrapper = sme;
                                     smChilds.Add(smeItem);
                                     if (sme.submodelElement is SubmodelElementCollection)
                                     {
@@ -130,6 +132,8 @@ namespace BlazorUI.Data
                     smeItem.envIndex = i;
                     smeItem.Text = sme.submodelElement.idShort;
                     smeItem.Tag = sme.submodelElement;
+                    smeItem.ParentContainer = smec;
+                    smeItem.Wrapper = sme;
                     smChilds.Add(smeItem);
                     if (sme.submodelElement is SubmodelElementCollection)
                     {

@@ -104,8 +104,8 @@
                         Program.stack17 = new AnyUiStackPanel();
                         Program.stack17.Orientation = AnyUiOrientation.Vertical;
                         Program.helper.DisplayOrEditAasEntitySubmodelElement(
-                                    Program.packages, Program.env.AasEnv, sme.parent,
-                                    null,
+                                    Program.packages, Program.env.AasEnv, selectedNode.ParentContainer,
+                                    selectedNode.Wrapper,
                                     sme, Program.editMode, Program.repo, Program.stack17, hintMode: Program.hintMode);
                         if (Program.stack17.Children.Count != 0)
                             view = true;
@@ -475,6 +475,8 @@
         public object parent { get; set; }
         public string Type { get; set; }
         public object Tag { get; set; }
+        public Referable ParentContainer { get; set; }
+        public SubmodelElementWrapper Wrapper { get; set; }
         public int envIndex { get; set; }
     }
 
