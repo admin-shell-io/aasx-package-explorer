@@ -122,154 +122,168 @@
                             if (topCh is AnyUiPanel)
                                 uiPanel = topCh as AnyUiPanel;
                             int iChild = 0;
+                            bool newTab = true;
+                            AnyUiUIElement prevCh = null;
 
-                            <table>
-                            <tr>
-                            @{ 
-                                do
-                                {
-                                    if (uiPanel != null && iChild == uiPanel.Children.Count)
+                            while (newTab)
+                            {
+                                newTab = false;
+                                <table>
+                                <tr>
+                                @{ 
+                                    do
                                     {
-                                        uipStack.Pop(out uiPanel, out iChild);
-                                    }
+                                        if (uiPanel != null && iChild == uiPanel.Children.Count)
+                                        {
+                                            uipStack.Pop(out uiPanel, out iChild);
+                                        }
 
-                                    int iChildCount = 1;
-                                    if (uiPanel != null)
-                                        iChildCount = uiPanel.Children.Count;
-
-                                    while (iChild < iChildCount)
-                                    {
-                                        AnyUiUIElement ch;
+                                        int iChildCount = 1;
                                         if (uiPanel != null)
-                                            ch = uiPanel.Children[iChild];
-                                        else
-                                            ch = topCh;
-
-                                        if (ch is AnyUiPanel chp)
-                                        {
-                                            uipStack.Push(uiPanel, iChild);
-
-                                            uiPanel = chp;
-                                            iChild = 0;
                                             iChildCount = uiPanel.Children.Count;
-                                            continue;
-                                        }
 
-                                        string backColor = "";
-                                        string foreColor = "";
-                                        if (ch is AnyUiControl ctrl)
+                                        while (!newTab && iChild < iChildCount)
                                         {
-                                            if (ctrl.Background != null)
-                                            {
-                                                backColor = "rgb(" +
-                                                    ctrl.Background.Color.R + ", " +
-                                                    ctrl.Background.Color.G + ", " +
-                                                    ctrl.Background.Color.B + ")";
-                                            }
-                                            if (ctrl.Foreground != null)
-                                            {
-                                                foreColor = "rgb(" +
-                                                    ctrl.Foreground.Color.R + ", " +
-                                                    ctrl.Foreground.Color.G + ", " +
-                                                    ctrl.Foreground.Color.B + ")";
-                                            }
-                                        }
-                                        string style = "";
-                                        if (foreColor != "")
-                                            style += "color:" + foreColor + ";";
-                                        if (backColor != "")
-                                            style += "background-color:" + backColor + ";";
-
-                                        if (ch is AnyUiLabel chlb)
-                                        {
-                                        <td><span style="@style">@chlb.Content</span></td>
-                                        }
-
-                                        if (ch is AnyUiTextBlock tb)
-                                        {
-                                            <td><span>@tb.Text</span></td>
-                                        }
-
-                                        if (ch is AnyUiTextBox chtb)
-                                        {
-                                            if (ch is AnyUiHintBubble hb)
-                                            {
-                                                if (Program.editMode)
-                                                {
-                                                    <td><span style="@style">@hb.Text</span></td>
-                                                }
-                                            }
+                                            AnyUiUIElement ch;
+                                            if (uiPanel != null)
+                                                ch = uiPanel.Children[iChild];
                                             else
+                                                ch = topCh;
+
+                                            if (ch is AnyUiPanel chp)
                                             {
-                                                int w = chtb.Text.Length;
-                                                if (w > 60)
-                                                    w = 60;
-                                                <td><span style="@style">
-                                                    <input size="@w" value="@chtb.Text"
-                                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
-                                                </span></td>
+                                                uipStack.Push(uiPanel, iChild);
+
+                                                uiPanel = chp;
+                                                iChild = 0;
+                                                iChildCount = uiPanel.Children.Count;
+                                                continue;
+                                            }
+
+                                            string backColor = "";
+                                            string foreColor = "";
+                                            if (ch is AnyUiControl ctrl)
+                                            {
+                                                if (ctrl.Background != null)
+                                                {
+                                                    backColor = "rgb(" +
+                                                        ctrl.Background.Color.R + ", " +
+                                                        ctrl.Background.Color.G + ", " +
+                                                        ctrl.Background.Color.B + ")";
+                                                }
+                                                if (ctrl.Foreground != null)
+                                                {
+                                                    foreColor = "rgb(" +
+                                                        ctrl.Foreground.Color.R + ", " +
+                                                        ctrl.Foreground.Color.G + ", " +
+                                                        ctrl.Foreground.Color.B + ")";
+                                                }
+                                            }
+                                            string style = "";
+                                            if (foreColor != "")
+                                                style += "color:" + foreColor + ";";
+                                            if (backColor != "")
+                                                style += "background-color:" + backColor + ";";
+
+                                            if (ch is AnyUiLabel chlb)
+                                            {
+                                            <td><span style="@style">@chlb.Content</span></td>
+                                            }
+
+                                            if (ch is AnyUiTextBlock tb)
+                                            {
+                                                <td><span>@tb.Text</span></td>
+                                            }
+
+                                            if (ch is AnyUiTextBox chtb)
+                                            {
+                                                if (ch is AnyUiHintBubble hb)
+                                                {
+                                                    if (Program.editMode)
+                                                    {
+                                                        <td><span style="@style">@hb.Text</span></td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    int w = chtb.Text.Length;
+                                                    if (w > 60)
+                                                        w = 60;
+                                                    <td><span style="@style">
+                                                        <input size="@w" value="@chtb.Text"
+                                                                @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                                    </span></td>
+                                                    @code {
+                                                        private void MyTextInput(AnyUiTextBox chtb, string value)
+                                                        {
+                                                            chtb.setValueLambda?.Invoke(value);
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            if (ch is AnyUiButton chbt)
+                                            {
+                                                <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
                                                 @code {
-                                                    private void MyTextInput(AnyUiTextBox chtb, string value)
+                                                    private void MyClickButton(AnyUiButton chbt)
                                                     {
-                                                        chtb.setValueLambda?.Invoke(value);
+                                                        chbt.setValueLambda?.Invoke(chbt.Content);
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        if (ch is AnyUiButton chbt)
-                                        {
-                                            <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
-                                            @code {
-                                                private void MyClickButton(AnyUiButton chbt)
-                                                {
-                                                    chbt.setValueLambda?.Invoke(chbt.Content);
-                                                }
-                                            }
-                                        }
-
-                                        if (ch is AnyUiCheckBox cb)
-                                        {
-                                            <td>
-                                                <input type="checkbox" value="@cb.IsChecked"
-                                                        @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
-                                                @cb.Content
-                                            </td>
-                                            @code {
-                                                private void MyCheck(AnyUiCheckBox cb, string value)
-                                                {
-                                                    cb.setValueLambda?.Invoke(value.ToLower() == "true");
-                                                }
-                                            }
-                                        }
-
-                                        if (ch is AnyUiComboBox comb)
-                                        {
-                                            string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-                                            <td>
-                                                <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
-                                                        @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
-                                                    @foreach (var item in comb.Items)
+                                            if (ch is AnyUiCheckBox cb)
+                                            {
+                                                <td>
+                                                    <input type="checkbox" value="@cb.IsChecked"
+                                                            @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                                    @cb.Content
+                                                </td>
+                                                @code {
+                                                    private void MyCheck(AnyUiCheckBox cb, string value)
                                                     {
-                                                        <option value="@item">@item</option>
+                                                        cb.setValueLambda?.Invoke(value.ToLower() == "true");
                                                     }
-                                                </select>
-                                            </td>
-                                            @code {
-                                                private void MyComboSelect(AnyUiComboBox comb, string value)
-                                                {
-                                                    comb.setValueLambda?.Invoke(value);
                                                 }
                                             }
-                                        }
 
-                                        iChild++;
+                                            if (ch is AnyUiComboBox comb)
+                                            {
+                                                if (prevCh is AnyUiButton)
+                                                {
+                                                    newTab = true;
+                                                    prevCh = null;
+                                                    continue;
+                                                }
+
+                                                string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                                                <td>
+                                                    <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
+                                                            @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+                                                        @foreach (var item in comb.Items)
+                                                        {
+                                                            <option value="@item">@item</option>
+                                                        }
+                                                    </select>
+                                                </td>
+                                                @code {
+                                                    private void MyComboSelect(AnyUiComboBox comb, string value)
+                                                    {
+                                                        comb.setValueLambda?.Invoke(value);
+                                                    }
+                                                }
+                                            }
+
+                                            prevCh = ch;
+                                            iChild++;
+                                        }
                                     }
+                                    while (!newTab && uipStack.getIndex() > 0);
                                 }
-                                while (uipStack.getIndex() > 0);
+                                </tr>
+                                </table>
                             }
-                            </tr>
-                            </table>
                         }
                     }
                 }
