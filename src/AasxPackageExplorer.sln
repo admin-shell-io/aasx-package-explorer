@@ -107,9 +107,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPackageExplorer.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorUI", "BlazorUI\BlazorUI.csproj", "{A9292AF5-D320-41FA-A299-A4A370370F0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyUi", "AnyUi\AnyUi.csproj", "{63D77928-CF20-4DB9-A0FC-C67B9C235D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnyUi", "AnyUi\AnyUi.csproj", "{63D77928-CF20-4DB9-A0FC-C67B9C235D98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPackageLogic", "AasxPackageLogic\AasxPackageLogic.csproj", "{6E8DB19E-79AB-4B55-9FF9-A069050D1FA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPackageLogic", "AasxPackageLogic\AasxPackageLogic.csproj", "{6E8DB19E-79AB-4B55-9FF9-A069050D1FA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

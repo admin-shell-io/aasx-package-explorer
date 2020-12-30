@@ -90,6 +90,11 @@ namespace BlazorUI
             thumbNail = null;
             NewDataAvailable?.Invoke(null, EventArgs.Empty);
         }
+
+        public static void signalNewData()
+        {
+            NewDataAvailable?.Invoke(null, EventArgs.Empty);
+        }
         public static void Main(string[] args)
         {
             // env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
@@ -120,6 +125,8 @@ namespace BlazorUI
 
             helper.DisplayOrEditAasEntityAas(
                     packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+
+            AnyUi.AnyUiDisplayContextHtml.setValueLambdaThread.Start();
 #endif
 
             //
