@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -129,9 +130,9 @@ namespace AasxPackageExplorer
         {
             var t = "AASX Package Explorer";
             if (packages.MainAvailable)
-                t += " - " + System.IO.Path.GetFileName(packages.Main.Filename);
+                t += " - " + System.IO.Path.GetFileName(packages.MainItem.Filename);
             if (packages.AuxAvailable)
-                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(packages.Aux.Filename) + ")";
+                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(packages.AuxItem.Filename) + ")";
             this.Title = t;
 
             // clear the right section, first (might be rebuild by callback from below)
@@ -592,7 +593,10 @@ namespace AasxPackageExplorer
 
             // Timer for below
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
-            MainTimer.Tick += MainTimer_Tick;
+            MainTimer.Tick += new EventHandler(async (object s, EventArgs a) =>
+            {
+                await MainTimer_Tick(s,a);
+            });
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
 
@@ -616,11 +620,11 @@ namespace AasxPackageExplorer
             UiSetFileRepository(fr);
 
             // query repo
-            this.RepoControl.FileDoubleClick += (fi) =>
+            this.RepoControl.FileDoubleClick += async (fi) =>
             {
                 // which file?
-                var fn = packages.FileRepository?.GetFullFilename(fi);
-                if (fn == null)
+                var location = packages.FileRepository?.GetFullFilename(fi);
+                if (location == null)
                     return;
 
                 // safety?
@@ -639,12 +643,36 @@ namespace AasxPackageExplorer
 
                 // try load ..
                 try
-                {                    
-                    UiLoadPackageWithNew(packages.MainContainer, null, fn, onlyAuxiliary: false);
+                {
+                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
+                    var ro = new PackageContainerRuntimeOptions()
+                    {
+                        Log = Log.Singleton,
+                        ProgressChanged = (tfs, tbd) =>
+                        {
+                            SetProgressBar(
+                                Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
+                                AdminShellUtil.ByteSizeHumanReadable(tbd));
+                        }
+                    };
+                    
+                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        location,
+                        loadResident: true,
+                        runtimeOptions: ro);
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to load AASX from {location}");
+                    else
+                        UiLoadPackageWithNew(packages.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                    SetProgressBar();
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             };
             this.RepoControl.QueryClick += () =>
@@ -665,7 +693,7 @@ namespace AasxPackageExplorer
                 var fn = System.IO.Path.GetFullPath(Options.Curr.AasxToLoad);
                 try
                 {
-                    UiLoadPackageWithNew(packages.MainContainer, null, fn, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainItem, null, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -762,7 +790,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void MainTimer_HandleEntityPanel()
+        private async Task MainTimer_HandleEntityPanel()
         {
             // check if Display/ Edit Control has some work to do ..
             try
@@ -806,7 +834,7 @@ namespace AasxPackageExplorer
                         if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
                         {
                             // handle it by UI
-                            UiHandleNavigateTo(tempNavTo.targetReference);
+                            await UiHandleNavigateTo(tempNavTo.targetReference);
                         }
                     }
                 }
@@ -817,7 +845,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private AdminShell.Referable LoadFromFilerepository(AasxFileRepository.FileItem fi,
+        private async Task<AdminShell.Referable> LoadFromFilerepository(AasxFileRepository.FileItem fi,
             AdminShell.Reference requireReferable = null)
         {
             // access
@@ -839,24 +867,13 @@ namespace AasxPackageExplorer
                     Log = Log.Singleton,
                     ProgressChanged = (tfs, tbd) =>
                     {
-                        // determine
-                        if (tfs == null)
-                            tfs = 5 * 1024 * 1024;
-                        var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
-
-                        // thread safe
-                        /*
-                        TheProgressBar.Dispatcher.BeginInvoke(
-                            System.Windows.Threading.DispatcherPriority.Background,
-                            new Action(() => TheProgressBar.Value = frac));
-
-                        LabelProgressText.Dispatcher.BeginInvoke(
-                            System.Windows.Threading.DispatcherPriority.Background,
-                            new Action(() => LabelProgressText.Content = $"{tbd} bytes transferred"));
-                        */
+                        SetProgressBar(
+                            Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
+                            AdminShellUtil.ByteSizeHumanReadable(tbd));
                     }
                 };
-                container = PackageContainerFactory.GuessAndCreateFor(
+
+                container = await PackageContainerFactory.GuessAndCreateForAsync(
                     location,
                     loadResident: true,
                     runtimeOptions: ro);
@@ -894,7 +911,11 @@ namespace AasxPackageExplorer
                     packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                     // activate
-                    UiLoadPackageWithNew(packages.MainContainer, takeOverContainer: container, onlyAuxiliary: false);
+                    UiLoadPackageWithNew(packages.MainItem,
+                        takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                    SetProgressBar();
                 }
 
                 // return bo to focus
@@ -904,7 +925,7 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        private void UiHandleNavigateTo(AdminShell.Reference targetReference)
+        private async Task UiHandleNavigateTo(AdminShell.Reference targetReference)
         {
             // access
             if (targetReference == null || targetReference.Count < 1)
@@ -942,7 +963,7 @@ namespace AasxPackageExplorer
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
                             fi = packages.FileRepository.FindByAasId(work[0].value.Trim());
 
-                        bo = LoadFromFilerepository(fi, work);
+                        bo = await LoadFromFilerepository(fi, work);
                     }
 
                     // still yes?
@@ -997,7 +1018,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void MainTimer_HandlePlugins()
+        private async Task MainTimer_HandlePlugins()
         {
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
@@ -1012,7 +1033,7 @@ namespace AasxPackageExplorer
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
                     if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
                     {
-                        UiHandleNavigateTo(evtNavTo.targetReference);
+                        await UiHandleNavigateTo(evtNavTo.targetReference);
                     }
                     #endregion
 
@@ -1086,11 +1107,29 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void MainTimer_Tick(object sender, EventArgs e)
+        private void SetProgressBar()
+        {
+            SetProgressBar(0.0, "");
+        }
+
+        private void SetProgressBar(double? percent, string message = null)
+        {
+            if (percent.HasValue)
+                ProgressBarInfo.Dispatcher.BeginInvoke(
+                            System.Windows.Threading.DispatcherPriority.Background,
+                            new Action(() => ProgressBarInfo.Value = percent.Value));
+
+            if (message != null)
+                LabelProgressBarInfo.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    new Action(() => LabelProgressBarInfo.Content = message));
+        }
+
+        private async Task MainTimer_Tick(object sender, EventArgs e)
         {
             MainTimer_HandleLogMessages();
-            MainTimer_HandleEntityPanel();
-            MainTimer_HandlePlugins();
+            await MainTimer_HandleEntityPanel();
+            await MainTimer_HandlePlugins();
         }
 
         private void ButtonHistory_HomeRequested(object sender, EventArgs e)
@@ -1106,7 +1145,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
+        private async void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
         {
             // be careful
             try
@@ -1150,7 +1189,7 @@ namespace AasxPackageExplorer
                     AdminShell.Referable bo = null;
                     try
                     {
-                        bo = LoadFromFilerepository(fi, sri.CleanReference);
+                        bo = await LoadFromFilerepository(fi, sri.CleanReference);
                     }
                     catch (Exception ex)
                     {
@@ -1206,6 +1245,7 @@ namespace AasxPackageExplorer
                 Message.Background = Brushes.White;
                 Message.Foreground = Brushes.Black;
                 Message.FontWeight = FontWeights.Normal;
+                SetProgressBar();
             }
             if (sender == ButtonReport)
             {
@@ -1681,7 +1721,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         UiLoadPackageWithNew(
-                            packages.MainContainer, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
+                            packages.MainItem, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {

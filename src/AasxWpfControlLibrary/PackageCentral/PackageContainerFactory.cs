@@ -47,8 +47,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (ll.Contains("/server/getaasx/"))
                 {
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
-                    var x = new PackageContainerNetworkHttpFile(location, loadResident: false, runtimeOptions : null);
-                    await x.InternalLoadFromSource(runtimeOptions);
+                    var x = await PackageContainerNetworkHttpFile.CreateAsync(location, loadResident, runtimeOptions);
                     return x;
                 }
 
@@ -117,8 +116,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // done
             ro?.Log?.Info($".. demo loading from internet ..");
-            return new PackageContainerNetworkHttpFile("http://admin-shell-io.com:51310/server/getaasx/0", 
-            // return new PackageContainerNetworkHttpFile("http://localhost:51310/server/getaasx/0",
+            return await PackageContainerNetworkHttpFile.CreateAsync(
+                "http://admin-shell-io.com:51310/server/getaasx/0", 
+                // "http://localhost:51310/server/getaasx/0",
                 loadResident, ro);
         }
     }

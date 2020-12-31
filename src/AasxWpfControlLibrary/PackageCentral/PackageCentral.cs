@@ -35,6 +35,8 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public PackageContainerBase Container;
 
+        public string Filename { get { return Container?.Filename; } }
+
         public void New()
         {
             try
@@ -142,13 +144,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public bool SaveAs(string saveAsNewFileName = null)
+        public bool SaveAs(string saveAsNewFileName = null, 
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
         {
             try
             {
                 if (Container.SaveAsToSource != null)
                 {
-                    Container.SaveAsToSource(saveAsNewFileName);
+                    Container.SaveAsToSource(saveAsNewFileName, prefFmt);
                     return true;
                 }
 
@@ -200,13 +203,13 @@ namespace AasxWpfControlLibrary.PackageCentral
         private PackageCentralItem main = new PackageCentralItem();
         private PackageCentralItem aux = new PackageCentralItem();
 
-        public PackageCentralItem MainContainer
+        public PackageCentralItem MainItem
         {
             get { return main; }
             set { main = value; }
         }
 
-        public PackageCentralItem AuxContainer
+        public PackageCentralItem AuxItem
         {
             get { return aux; }
         }

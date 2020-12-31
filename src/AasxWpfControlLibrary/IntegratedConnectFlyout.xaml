@@ -279,7 +279,7 @@
                          Background="#40404040" Foreground="{DynamicResource DarkAccentColor}" 
                          Margin="4,2,4,2" Grid.RowSpan="1"/>
             <Label Grid.Row="0" Grid.Column="0" x:Name="LabelProgressText"
-                   Content="0 bytes" Foreground="#ff808080"
+                   Content="0 bytes" Foreground="LightGray"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </Grid>
 

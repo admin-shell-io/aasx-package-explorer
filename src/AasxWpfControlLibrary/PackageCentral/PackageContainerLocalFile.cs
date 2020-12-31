@@ -42,6 +42,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 LoadFromSource();
         }
 
+        public override string Filename { get { return SourceFn; } }
+
         private void Init()
         {
             this.LoadFromSource = this.InternalLoadFromSource;
@@ -107,7 +109,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        protected void InternalSaveToSource(string saveAsNewFileName = null)
+        protected void InternalSaveToSource(string saveAsNewFileName = null,
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
         {
             // check extension
             if (IsFormat == Format.Unknown)
@@ -151,7 +154,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // save as
                     try
                     {
-                        Env.SaveAs(saveAsNewFileName);
+                        Env.SaveAs(saveAsNewFileName, prefFmt: prefFmt);
                         SetNewSourceFn(saveAsNewFileName);
                     }
                     catch (Exception ex)

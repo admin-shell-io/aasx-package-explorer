@@ -65,6 +65,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         public enum Format { Unknown = 0, AASX, XML, JSON }
         public static string[] FormatExt = { ".bin", ".aasx", ".xml", ".json" };
 
+        public enum BackupType { XML = 0, FullCopy }
+
         public AdminShellPackageEnv Env;
         public Format IsFormat = Format.Unknown;
 
@@ -89,7 +91,9 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Can save the (edited) AASX to an already given or new dta source name
         /// </summary>
         /// <param name="saveAsNewFilename"></param>
-        public delegate void CapabilitySaveAsToSource(string saveAsNewFilename = null);
+        public delegate void CapabilitySaveAsToSource(
+            string saveAsNewFilename = null,
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None);
 
         // the derived classes will selctively set the capabilities
         public CapabilityLoadFromSource LoadFromSource = null;
@@ -109,6 +113,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
+        public virtual string Filename { get { return null; } }
+
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }
 
         public void Close()
@@ -117,6 +123,10 @@ namespace AasxWpfControlLibrary.PackageCentral
                 return;
             Env.Close();
             Env = null;
+        }
+
+        public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML) 
+        {
         }
     }
 
@@ -127,23 +137,4 @@ namespace AasxWpfControlLibrary.PackageCentral
     public class PackageContainerTakenOver : PackageContainerBase
     {
     }
-
-    /// <summary>
-    /// This container add functionalities for "indirect load/ save" and backing up file contents
-    /// </summary>
-    public class PackageContainerBuffered : PackageContainerBase
-    {
-        public bool IndirectLoadSave = false;
-
-        public string TempFn;
-
-        public string CreateNewTempFn(string sourceFn, Format fmt)
-        {
-            // TODO (MIHO, 2020-12-25): think of creating a temp file which resemebles the source file
-            // name (for ease of handling)
-            var res = System.IO.Path.GetTempFileName().Replace(".tmp", FormatExt[(int)fmt]);
-            return res;
-        }
-    }
-
 }

@@ -243,7 +243,8 @@
       "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
       "Username": "",
       "Password": "",
-      "StayConnected": true
+      "StayConnected": true,
+      "AutoClose": false
     }
   ]
 }

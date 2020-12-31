@@ -41,19 +41,34 @@ namespace AasxWpfControlLibrary.PackageCentral
             Init();
         }
 
-        public PackageContainerNetworkHttpFile(string sourceFn, bool loadResident = false,
-            PackageContainerRuntimeOptions runtimeOptions = null)
+        public PackageContainerNetworkHttpFile(string sourceFn)
         {
             Init();
             SetNewSourceFn(sourceFn);
-            LoadResident = loadResident;
-            if (LoadResident)
-                LoadFromSource(runtimeOptions);
         }
+
+        // nice discussion on how to name factory-like methods
+
+        public static async Task<PackageContainerNetworkHttpFile> CreateAsync(
+            string sourceFn, bool loadResident = false,
+            PackageContainerRuntimeOptions runtimeOptions = null)
+        {
+            var res = new PackageContainerNetworkHttpFile(sourceFn);
+            res.LoadResident = loadResident;
+            if (res.LoadResident)
+                await res.InternalLoadFromSourceAsync(runtimeOptions);
+            return res;
+        }
+
+        //
+        // Mechanics
+        //
+
+        public override string Filename { get { return SourceUri.ToString(); } }
 
         private void Init()
         {
-            // this.LoadFromSource = this.InternalLoadFromSource;
+            this.LoadFromSource = this.InternalLoadFromSourceSync;
             // this.SaveAsToSource = this.InternalSaveToSource;
         }
 
@@ -112,7 +127,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     // copy with progress
-                    var bufferSize = 8192;
+                    var bufferSize = 512*1024;
                     var buffer = new byte[bufferSize];
                     long totalBytesRead = 0;
                     int bytesRead;
@@ -136,57 +151,19 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public async Task InternalLoadFromSourceAsync(
+        private void InternalLoadFromSourceSync(PackageContainerRuntimeOptions runtimeOptions = null)
+        {
+            var task = Task.Run(() => InternalLoadFromSourceAsync(runtimeOptions));
+            task.Wait();
+        }
+
+        private async Task InternalLoadFromSourceAsync(
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // buffer to temp file
             try
             {
-                //// read via HttpClient (uses standard proxies)
-                //var handler = new HttpClientHandler();
-                //handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
-
-                //var client = new HttpClient(handler);
-                //client.DefaultRequestHeaders.Add("Accept", "application/aas");
-                //client.BaseAddress = new Uri(SourceUri.GetLeftPart(UriPartial.Authority));
-                //var requestPath = SourceUri.PathAndQuery;
-
-                //// get response?
-                //var response2 = client.GetAsync(requestPath).GetAwaiter().GetResult();
-                //var contentFn = response2?.Content?.Headers?.ContentDisposition?.FileName;
-                //var contentData = response2?.Content?.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-                //if (contentData == null)
-                //    throw new PackageContainerException(
-                //    $"While getting data bytes from {SourceUri.ToString()} via HttpClient " +
-                //    $"no data-content was responded!");
-
-                //// create temp file and write to it
-                //var givenFn = SourceUri.ToString();
-                //if (contentFn != null)
-                //    givenFn = contentFn;
-                //TempFn = CreateNewTempFn(givenFn, IsFormat);
-                //File.WriteAllBytes(TempFn, contentData);
-
-                //// create temp file
-                //TempFn = CreateNewTempFn(SourceUri.ToString(), IsFormat);
-
-                //// start download
-                //using (var client = new HttpClientDownloadWithProgress(SourceUri.ToString(), TempFn))
-                //{
-                //    client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) => {
-                //        Console.WriteLine($"{progressPercentage}% ({totalBytesDownloaded}/{totalFileSize})");
-                //    };
-
-                //    client.StartDownload().GetAwaiter().GetResult();
-                //}
-
-                // DownloadFromSource(SourceUri).Wait();
-
-                //var task = Task.Run(() => DownloadFromSource(SourceUri, runtimeOptions));
-                //task.Wait();
-
                 await DownloadFromSource(SourceUri, runtimeOptions);
-
             }
             catch (Exception ex)
             {

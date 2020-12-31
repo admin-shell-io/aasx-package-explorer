@@ -25,6 +25,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary.PackageCentral;
+using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -188,7 +189,7 @@ namespace AasxPackageExplorer
             ControlClosed?.Invoke();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == ButtonMsgSmaller && TextBoxMessages.FontSize >= 6.0)
                 TextBoxMessages.FontSize -= 2.0;
@@ -301,6 +302,7 @@ namespace AasxPackageExplorer
                     if (tfs == null)
                         tfs = 5 * 1024 * 1024;
                     var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
+                    var bshr = AdminShellUtil.ByteSizeHumanReadable(tbd);
 
                     // thread safe
                     TheProgressBar.Dispatcher.BeginInvoke(
@@ -309,7 +311,7 @@ namespace AasxPackageExplorer
 
                     LabelProgressText.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(() => LabelProgressText.Content = $"{tbd} bytes transferred"));
+                        new Action(() => LabelProgressText.Content = $"{bshr} transferred"));
                 },
                 AskForSelectFromList = (caption, items, propRes) =>
                 {

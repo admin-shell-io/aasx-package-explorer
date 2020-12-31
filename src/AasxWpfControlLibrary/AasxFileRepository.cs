@@ -334,7 +334,15 @@ namespace AasxPackageExplorer
             var fn = fi.Filename;
             try
             {
-                if (!Path.IsPathRooted(fn) && this.Filename != null)
+                bool doFull = true;
+
+                if (Path.IsPathRooted(fn))
+                    doFull = false;
+
+                if (fn.Contains("://")) // contains scheme
+                    doFull = false;
+
+                if (doFull && this.Filename != null)
                     fn = Path.Combine(Path.GetDirectoryName(this.Filename), fn);
             }
             catch (Exception ex)

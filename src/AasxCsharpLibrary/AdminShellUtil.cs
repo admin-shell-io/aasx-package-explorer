@@ -80,6 +80,23 @@ namespace AdminShellNS
             return res;
         }
 
+        public static string ByteSizeHumanReadable(long len)
+        {
+            // see: https://stackoverflow.com/questions/281640/
+            // how-do-i-get-a-human-readable-file-size-in-bytes-abbreviation-using-net
+            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+            int order = 0;
+            while (len >= 1024 && order < sizes.Length - 1)
+            {
+                order++;
+                len = len / 1024;
+            }
+            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
+            // show a single decimal place, and no space.
+            string res = String.Format("{0:0.##} {1}", len, sizes[order]);
+            return res;
+        }
+
         public static string ExtractPascalCasingLetters(string src)
         {
             // access

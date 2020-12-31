@@ -27,6 +27,7 @@ using System.Xml.Serialization;
 using AasxIntegrationBase;
 using AasxSignature;
 using AasxUANodesetImExport;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Jose;
 using Newtonsoft.Json;
@@ -101,7 +102,7 @@ namespace AasxPackageExplorer
                         // clear
                         ClearAllViews();
                         // create new AASX package
-                        packages.MainContainer.New();
+                        packages.MainItem.New();
                         // redraw
                         CommandExecution_RedrawAll();
                     }
@@ -144,11 +145,11 @@ namespace AasxPackageExplorer
                         {
                             case "open":
                                 UiLoadPackageWithNew(
-                                    packages.MainContainer, null, dlg.FileName, onlyAuxiliary: false);
+                                    packages.MainItem, null, dlg.FileName, onlyAuxiliary: false);
                                 break;
                             case "openaux":
                                 UiLoadPackageWithNew(
-                                    packages.AuxContainer, null, dlg.FileName, onlyAuxiliary: true);
+                                    packages.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
                                 break;
                             default:
                                 throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
@@ -168,22 +169,16 @@ namespace AasxPackageExplorer
                     return;
                 }
 
-                if (packages.Main == null)
-                {
-                    throw new NullReferenceException(
-                        $"packages.Main unexpectedly null when executing the command: {cmd}");
-                }
-
                 try
                 {
                     // save
-                    packages.Main.SaveAs(packages.Main.Filename);
+                    packages.MainItem.SaveAs();
                     // backup
                     if (Options.Curr.BackupDir != null)
-                    {
-                        var fullfn = System.IO.Path.GetFullPath(Options.Curr.BackupDir);
-                        packages.Main.BackupInDir(fullfn, Options.Curr.BackupFiles);
-                    }
+                        packages.MainItem.Container.BackupInDir(
+                            System.IO.Path.GetFullPath(Options.Curr.BackupDir), 
+                            Options.Curr.BackupFiles, 
+                            PackageContainerBase.BackupType.FullCopy);
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }
@@ -192,20 +187,24 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Error(ex, "When saving AASX, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", packages.Main.Filename);
+                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", packages.MainItem.Filename);
             }
 
             if (cmd == "saveas")
             {
-                if (packages.Main == null)
+                // open?
+                if (!packages.MainStorable)
                 {
-                    throw new NullReferenceException(
-                        $"packages.Main unexpectedly null when executing the command: {cmd}");
+                    MessageBoxFlyoutShow(
+                        "No open AASX file to be saved.",
+                        "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
                 }
 
+                // where
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
-                dlg.FileName = packages.Main.Filename;
+                dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+                dlg.FileName = packages.MainItem.Filename;
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
@@ -223,13 +222,13 @@ namespace AasxPackageExplorer
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
                         // save
                         RememberForInitialDirectory(dlg.FileName);
-                        packages.Main.SaveAs(dlg.FileName, prefFmt: prefFmt);
+                        packages.MainItem.SaveAs(dlg.FileName, prefFmt: prefFmt);
                         // backup
                         if (Options.Curr.BackupDir != null)
-                        {
-                            var fullfn = System.IO.Path.GetFullPath(Options.Curr.BackupDir);
-                            packages.Main.BackupInDir(fullfn, Options.Curr.BackupFiles);
-                        }
+                            packages.MainItem.Container.BackupInDir(
+                                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+                                Options.Curr.BackupFiles,
+                                PackageContainerBase.BackupType.FullCopy);
                         // as saving changes the structure of pending supplementary files, re-display
                         RedrawAllAasxElements();
                     }
@@ -249,7 +248,7 @@ namespace AasxPackageExplorer
                     "Close Package?", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     try
                     {
-                        packages.Main.Close();
+                        packages.MainItem.Close();
                         RedrawAllAasxElements();
                     }
                     catch (Exception ex)
@@ -382,7 +381,7 @@ namespace AasxPackageExplorer
             if (cmd == "closeaux" && packages.AuxAvailable)
                 try
                 {
-                    packages.Aux.Close();
+                    packages.AuxItem.Close();
                 }
                 catch (Exception ex)
                 {
@@ -806,7 +805,7 @@ namespace AasxPackageExplorer
                                 // load
                                 AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
                                 UiLoadPackageWithNew(
-                                    packages.MainContainer, null, fn, onlyAuxiliary: false);
+                                    packages.MainItem, null, fn, onlyAuxiliary: false);
                             }
                             catch (Exception ex)
                             {
@@ -1008,7 +1007,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     UiLoadPackageWithNew(
-                        packages.MainContainer, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
+                        packages.MainItem, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -1031,7 +1030,7 @@ namespace AasxPackageExplorer
                     {
                         AasxPackageExplorer.Log.Singleton.Info("Switching to {0} ..", fn);
                         UiLoadPackageWithNew(
-                            packages.MainContainer, null, fn, onlyAuxiliary: false);
+                            packages.MainItem, null, fn, onlyAuxiliary: false);
                     }
 
                 };
@@ -1242,10 +1241,8 @@ namespace AasxPackageExplorer
                         prefix2 = input.Substring(0, tag2.Length);
                     if (prefix == tag || prefix2 == tag2) // get by AssetID
                     {
-                        if (packages.Main != null && packages.Main.IsOpen)
-                        {
-                            packages.Main.Close();
-                        }
+                        if (packages.MainAvailable)
+                            packages.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
 
                         var handler = new HttpClientHandler();
@@ -1292,7 +1289,7 @@ namespace AasxPackageExplorer
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainContainer,
+                                packages.MainItem,
                                 null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                         return;
@@ -1321,16 +1318,14 @@ namespace AasxPackageExplorer
 
                     if (connect)
                     {
-                        if (packages.Main != null && packages.Main.IsOpen)
-                        {
-                            packages.Main.Close();
-                        }
+                        if (packages.MainAvailable)
+                            packages.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                         await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainContainer,
+                                packages.MainItem,
                                 null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     }
@@ -1346,7 +1341,7 @@ namespace AasxPackageExplorer
                         theOnlineConnection = client;
                         var pe = client.OpenPackageByAasEnv();
                         if (pe != null)
-                            UiLoadPackageWithNew(packages.MainContainer, pe, info: uc.Text, onlyAuxiliary: false);
+                            UiLoadPackageWithNew(packages.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -1374,7 +1369,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
             dlg.Filter = "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1413,7 +1408,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
             dlg.Filter = "CSV files (*.CSV)|*.csv|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1452,7 +1447,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
             dlg.Filter = "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1582,7 +1577,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
@@ -2624,7 +2619,7 @@ namespace AasxPackageExplorer
             {
                 RememberForInitialDirectory(dlg.FileName);
                 UANodeSet InformationModel = UANodeSetExport.getInformationModel(dlg.FileName);
-                packages.MainContainer.TakeOver(UANodeSetImport.Import(InformationModel));
+                packages.MainItem.TakeOver(UANodeSetImport.Import(InformationModel));
                 RestartUIafterNewPackage();
             }
 

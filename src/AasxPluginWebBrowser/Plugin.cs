@@ -156,7 +156,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // args
                 var url = args[0] as string;
-                Log.Info("AasxPluginWebBrowser go to {0}", url);
 
                 // check, if possible
                 if (this.browserGrid != null && this.theBrowser != null)
