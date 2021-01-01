@@ -5902,6 +5902,16 @@ namespace AdminShellNS
                 submodelElements.Add(sew);
             }
 
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (submodelElements == null)
+                    submodelElements = new SubmodelElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                sew.submodelElement = sme;
+                submodelElements.Insert(index, sew);
+            }
+
             public void Remove(SubmodelElement sme)
             {
                 if (submodelElements != null)
@@ -6521,17 +6531,17 @@ namespace AdminShellNS
             {
                 return
                     new[] {
-                System.Net.Mime.MediaTypeNames.Text.Plain,
-                System.Net.Mime.MediaTypeNames.Text.Xml,
-                System.Net.Mime.MediaTypeNames.Text.Html,
-                "application/json",
-                "application/rdf+xml",
-                System.Net.Mime.MediaTypeNames.Application.Pdf,
-                System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                "image/png",
-                System.Net.Mime.MediaTypeNames.Image.Gif,
-                "application/iges",
-                "application/step"
+                    System.Net.Mime.MediaTypeNames.Text.Plain,
+                    System.Net.Mime.MediaTypeNames.Text.Xml,
+                    System.Net.Mime.MediaTypeNames.Text.Html,
+                    "application/json",
+                    "application/rdf+xml",
+                    System.Net.Mime.MediaTypeNames.Application.Pdf,
+                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                    "image/png",
+                    System.Net.Mime.MediaTypeNames.Image.Gif,
+                    "application/iges",
+                    "application/step"
                     };
             }
 
@@ -6923,6 +6933,16 @@ namespace AdminShellNS
                 value.Add(sew);
             }
 
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (value == null)
+                    value = new SubmodelElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                sew.submodelElement = sme;
+                value.Insert(index, sew);
+            }
+
             public void Remove(SubmodelElement sme)
             {
                 if (value != null)
@@ -7149,11 +7169,11 @@ namespace AdminShellNS
                     return;
 
                 for (int i = 0; i < 2; i++)
-                    if (op[i] != null)
+                    if (src[i] != null)
                     {
                         if (this[i] == null)
                             this[i] = new List<OperationVariable>();
-                        foreach (var ov in op[i])
+                        foreach (var ov in src[i])
                             this[i].Add(new OperationVariable(ov));
                     }
             }
