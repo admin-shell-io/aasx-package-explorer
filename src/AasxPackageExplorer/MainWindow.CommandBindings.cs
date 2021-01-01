@@ -21,6 +21,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Serialization;
@@ -904,6 +905,50 @@ namespace AasxPackageExplorer
                 // loop
                 foreach (var fn in inputDlg.FileNames)
                     packages.FileRepository.AddByAasxFn(fn);
+            }
+
+            if (cmd == "filerepoaddfromserver")
+            {
+                // access
+                if (packages.FileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please create new or open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // read server address
+                var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", MessageBoxImage.Question);
+                uc.Text = "http://localhost:51310";
+                this.StartFlyoverModal(uc);
+                if (!uc.Result)
+                    return;
+
+                // execute
+                try
+                {
+                    var conn = new PackageConnectorHttpRest(null, new Uri(uc.Text));
+
+                    var task = Task.Run(() => conn.GenerateRepositoryFromEndpointAsync());
+                    var items = task.Result;
+                    if (items == null || items.Count < 1)
+                    {
+                        Log.Singleton.Error($"When adding file repo items from REST server {uc.Text}," +
+                            $"the function returned NO items!");
+                    }
+
+                    // loop
+                    foreach (var fi in items)
+                        packages.FileRepository.Add(fi);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"When adding file repo items from REST server {uc.Text}, " +
+                        $"an error occurred");
+                }
             }
         }
 

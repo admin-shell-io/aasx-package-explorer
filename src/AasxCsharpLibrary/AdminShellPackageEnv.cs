@@ -15,6 +15,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using AdminShellNS;
+using Newtonsoft.Json.Linq;
 
 namespace AdminShellNS
 {
@@ -154,6 +156,31 @@ namespace AdminShellNS
 
             // nope!
             return null;
+        }
+
+        public static JsonSerializer BuildDefaultAasxJsonSerializer()
+        {
+            var serializer = new JsonSerializer();
+            serializer.Converters.Add(
+                new AdminShellConverters.JsonAasxConverter(
+                    "modelType", "name"));
+            return serializer;
+        }
+
+        public static T DeserializeFromJSON<T>(TextReader textReader) where T : AdminShell.Referable
+        {
+            var serializer = BuildDefaultAasxJsonSerializer();
+            var rf = (T)serializer.Deserialize(textReader, typeof(T));
+            return rf;
+        }
+
+        public static T DeserializeFromJSON<T>(JToken obj) where T : AdminShell.Referable
+        {
+            if (obj == null)
+                return null;
+            var serializer = BuildDefaultAasxJsonSerializer();        
+            var rf = (T)obj.ToObject<T>(serializer); ;
+            return rf;
         }
 
     }
@@ -1290,5 +1317,6 @@ namespace AdminShellNS
                 }
             }
         }
+
     }
 }
