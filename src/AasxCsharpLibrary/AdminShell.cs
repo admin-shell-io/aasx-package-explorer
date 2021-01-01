@@ -7169,11 +7169,11 @@ namespace AdminShellNS
                     return;
 
                 for (int i = 0; i < 2; i++)
-                    if (src[i] != null)
+                    if (op[i] != null)
                     {
                         if (this[i] == null)
                             this[i] = new List<OperationVariable>();
-                        foreach (var ov in src[i])
+                        foreach (var ov in op[i])
                             this[i].Add(new OperationVariable(ov));
                     }
             }
