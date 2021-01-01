@@ -13,25 +13,99 @@
     <div class="col-4">
         <div class="row-12">
             <div class="row">
-                @{
-                    <Modal @bind-Open="AnyUi.AnyUiDisplayContextHtml.htmlEvent" Close="OnClose">
-                    <form method="dialog">
-                        <p>
-                            @AnyUi.AnyUiDisplayContextHtml.htmlMessage
-                        </p>
-                        <menu>
-                            <button value="Yes">Yes</button>
-                            <button value="Cancel">Cancel</button>
-                        </menu>
-                    </form>
+                @if (AnyUiDisplayContextHtml.htmlEventIn)
+                {
+                    <Modal @bind-Open="AnyUiDisplayContextHtml.htmlEventIn" Close="OnClose">
+                        <form method="dialog">
+                            @switch (AnyUiDisplayContextHtml.htmlEventType)
+                            {
+                                case "MessageBoxFlyoutShow":
+                                    string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                    AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
+                                    AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                    <p><span style="font-weight:bold">@caption</span></p>
+                                    <br />
+                                    <p>@message</p>
+                                    <br />
+                                    @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
+                                    {
+                                        <button value="OK">OK</button>
+                                    }
+                                    @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                    {
+                                        <button value="Yes">Yes</button>
+                                        <button value="No">No</button>
+                                    }
+                                    @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                    {
+                                        <button value="Cancel">Cancel</button>
+                                    }
+                                    break;
+                                case "contextMenu":
+                                    AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    AnyUiSpecialActionContextMenu cntlcm =
+                                        (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                    var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                                    int i = 0;
+                                    string icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                    string header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                    string v = i + ": " + icon + " " + header;
+                                    <select class="form-control selectpicker" size="@nmi"
+                                            @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                        @for (i = 0; i < nmi; i++)
+                                        {
+                                            // menu item itself
+                                            icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                            header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                            <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                        }
+                                    </select>
+                                    break;
+                            }
+                        </form>
                     </Modal>
+                }
 
-                    @code{
-                        void OnClose(string value)
+                @code{
+                    void OnClose(string value)
+                    {
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Clear();
+                        switch (AnyUiDisplayContextHtml.htmlEventType)
                         {
-                            AnyUi.AnyUiDisplayContextHtml.htmlEvent = false;
-                            AnyUi.AnyUiDisplayContextHtml.htmlResponse = value;
+                            case "MessageBoxFlyoutShow":
+                                AnyUiDisplayContextHtml.htmlEventIn = false;
+                                AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
+                                switch (value)
+                                {
+                                    case "OK":
+                                        r = AnyUiMessageBoxResult.OK;
+                                        break;
+                                    case "Cancel":
+                                        r = AnyUiMessageBoxResult.Cancel;
+                                        break;
+                                    case "Yes":
+                                        r = AnyUiMessageBoxResult.Yes;
+                                        break;
+                                    case "No":
+                                        r = AnyUiMessageBoxResult.No;
+                                        break;
+                                }
+                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(r);
+                                break;
+                            case "contextMenu":
+                                break;
                         }
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                    }
+
+                    void MyContextMenuSelect(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
+                        AnyUiDisplayContextHtml.htmlEventIn = false;
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
                     }
                 }
             </div>
@@ -44,7 +118,7 @@
                       HasChildNodes="@(item => item.Childs?.Any() == true)">
                     <TitleTemplate>
                         @{ //// SubmodelService.syncSubTree(context);
-                        }
+                                }
                         <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
                         <strong><span style="color:blue">@getSymbols(context)</span></strong>
                     </TitleTemplate>
@@ -54,27 +128,27 @@
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
-                    if (selectedNode == null || selectedNode.Tag != null)
-                    {
-                        {
-                            if (Program.thumbNail == null)
-                            {
-                                var s = Program.env.GetLocalThumbnailStream();
-                                if (s != null)
-                                {
-                                    using (var m = new System.IO.MemoryStream())
+                                    if (selectedNode == null || selectedNode.Tag != null)
                                     {
-                                        s.CopyTo(m);
-                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
-                                    }
-                                }
-                            }
-                            if (Program.thumbNail != null)
-                            {
+                                        {
+                                            if (Program.thumbNail == null)
+                                            {
+                                                var s = Program.env.GetLocalThumbnailStream();
+                                                if (s != null)
+                                                {
+                                                    using (var m = new System.IO.MemoryStream())
+                                                    {
+                                                        s.CopyTo(m);
+                                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                                    }
+                                                }
+                                            }
+                                            if (Program.thumbNail != null)
+                                            {
                                 <br />
                                 <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
-                            }
-                        }
+                                            }
+                                        }
                     }
                 }
             </div>
@@ -251,12 +325,13 @@
                                                         @code {
                                                             private void MyClickButton(AnyUiButton chbt)
                                                             {
-                                                                if (chbt.Content == "Delete")
+                                                                if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
                                                                 {
-                                                                    int i = 0;
+                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                                                                    return;
                                                                 }
                                                                 // chbt.setValueLambda?.Invoke(chbt.Content);
-                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaAsync(chbt, chbt.Content);
+                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
                                                             }
                                                         }
                                                     }

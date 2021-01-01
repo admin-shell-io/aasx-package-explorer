@@ -25,41 +25,99 @@ namespace AnyUi
         {
         }
 
-        public static bool htmlEvent = false;
-        public static string htmlMessage = "";
-        public static string htmlResponse = "";
+        public static Thread htmlDotnetThread = new Thread(htmlDotnetLoop);
+        static object htmlDotnetLock = new object();
+        public static bool htmlDotnetEventIn = false;
+        public static bool htmlDotnetEventOut = false;
+        public static string htmlDotnetEventType = "";
+        public static List<object> htmlDotnetEventInputs = new List<object>();
+        public static List<object> htmlDotnetEventOutputs = new List<object>();
 
-        public static Thread setValueLambdaThread = new Thread(setValueLambdaLoop);
-        public static AnyUiUIElement setValueLambdaElement = null;
-        public static object setValueLambdaObject = null;
-        static object setValueLambdaLock = new object();
-        private static void setValueLambdaLoop()
+        public static bool htmlEventIn = false;
+        public static bool htmlEventOut = false;
+        public static string htmlEventType = "";
+        public static List<object> htmlEventInputs = new List<object>();
+        public static List<object> htmlEventOutputs = new List<object>();
+
+        private static void htmlDotnetLoop()
         {
+            AnyUiUIElement el;
+
+            bool newData = false;
             while (true)
             {
-                lock(setValueLambdaLock)
+                lock(htmlDotnetLock)
                 {
-                    if (setValueLambdaElement != null && setValueLambdaObject != null)
+                    if (htmlDotnetEventIn)
                     {
-                        AnyUiUIElement el = setValueLambdaElement;
-                        object o = setValueLambdaObject;
-                        setValueLambdaElement = null;
-                        setValueLambdaObject = null;
-                        el.setValueLambda?.Invoke(o);
-                        Program.signalNewData();
+                        switch (htmlDotnetEventType)
+                        {
+                            case "setValueLambda":
+                                el = (AnyUiUIElement)htmlDotnetEventInputs[0];
+                                object o = htmlDotnetEventInputs[1];
+                                htmlDotnetEventInputs.Clear();
+                                AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                break;
+                            case "contextMenu":
+                                el = (AnyUiUIElement)htmlDotnetEventInputs[0];
+                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)htmlDotnetEventInputs[1];
+                                htmlEventType = "contextMenu";
+                                htmlEventInputs.Add(el);
+                                htmlEventInputs.Add(cntlcm);
+                                htmlEventIn = true;
+                                Program.signalNewData();
+
+                                while (!htmlEventOut);
+                                int bufferedI = 0;
+                                if (htmlEventOutputs.Count == 1)
+                                {
+                                    bufferedI = (int)htmlEventOutputs[0];
+                                    var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                }
+                                htmlEventOutputs.Clear();
+                                htmlEventType = "";
+                                htmlEventOut = false;
+                                htmlDotnetEventIn = false;
+
+                                htmlDotnetEventInputs.Clear();
+                                // AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                break;
+                        }
+                        while (htmlDotnetEventOut);
+                        htmlDotnetEventIn = false;
+                        newData = true;
                     }
+                }
+                if (newData)
+                {
+                    newData = false;
+                    Program.signalNewData();
                 }
                 Thread.Sleep(100);
             }
         }
 
-        public static void setValueLambdaAsync(AnyUiUIElement el, object o)
+        public static void setValueLambdaHtml(AnyUiUIElement el, object o)
         {
-            lock (setValueLambdaLock)
+            lock (htmlDotnetLock)
             {
-                while ((setValueLambdaElement != null || setValueLambdaObject != null)) ;
-                setValueLambdaElement = el;
-                setValueLambdaObject = o;
+                while (htmlDotnetEventIn);
+                htmlDotnetEventType = "setValueLambda";
+                htmlDotnetEventInputs.Add(el);
+                htmlDotnetEventInputs.Add(o);
+                htmlDotnetEventIn = true;
+            }
+        }
+
+        public static void specialActionContextMenuHtml(AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
+        {
+            lock (htmlDotnetLock)
+            {
+                while (htmlDotnetEventIn);
+                htmlDotnetEventType = "contextMenu";
+                htmlDotnetEventInputs.Add(el);
+                htmlDotnetEventInputs.Add(cntlcm);
+                htmlDotnetEventIn = true;
             }
         }
 
@@ -72,17 +130,24 @@ namespace AnyUi
         /// <param name="image">Image according to WPF standard messagebox</param>
         /// <returns></returns>
         public override AnyUiMessageBoxResult MessageBoxFlyoutShow(
-        string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
-            htmlMessage = message;
-            htmlEvent = true;
+            htmlEventType = "MessageBoxFlyoutShow";
+            htmlEventInputs.Add(message);
+            htmlEventInputs.Add(caption);
+            htmlEventInputs.Add(buttons);
+            htmlEventIn = true;
             Program.signalNewData();
-            while (htmlResponse == "");
-            string response = htmlResponse;
-            htmlResponse = "";
-            if (response.ToLower() != "yes")
-                return AnyUiMessageBoxResult.Cancel;
-            return AnyUiMessageBoxResult.Yes;
+
+            while (!htmlEventOut);
+            AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
+            if (htmlEventOutputs.Count == 1)
+                r = (AnyUiMessageBoxResult)htmlEventOutputs[0];
+            htmlEventOutputs.Clear();
+            htmlEventType = "";
+            htmlEventOut = false;
+            htmlDotnetEventIn = false;
+            return r;
         }
     }
 }

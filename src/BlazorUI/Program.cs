@@ -126,7 +126,7 @@ namespace BlazorUI
             helper.DisplayOrEditAasEntityAas(
                     packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
 
-            AnyUi.AnyUiDisplayContextHtml.setValueLambdaThread.Start();
+            AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
 #endif
 
             //
