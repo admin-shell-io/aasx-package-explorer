@@ -110,21 +110,22 @@
                 }
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                @updateVisibleTree(Items, selectedNode)
                 @* @if (Program.isLoading)
-                    {<span style="color:white;background-color:blue;">Loading...</span>} *@
-                <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
-                      @bind-SelectedNode="SelectedNode"
-                      @bind-ExpandedNodes="ExpandedNodes"
-                      HasChildNodes="@(item => item.Childs?.Any() == true)">
-                    <TitleTemplate>
-                        @{ //// SubmodelService.syncSubTree(context);
+                {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                        <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
+                              @bind-SelectedNode="SelectedNode"
+                              @bind-ExpandedNodes="ExpandedNodes"
+                              HasChildNodes="@(item => item.Childs?.Any() == true)">
+                            <TitleTemplate>
+                                @{ //// SubmodelService.syncSubTree(context);
                                 }
-                        <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
-                        <strong><span style="color:blue">@getSymbols(context)</span></strong>
-                    </TitleTemplate>
-                </Tree>
-                @*<br /><br />*@
-                <br />
+                                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                                <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                            </TitleTemplate>
+                        </Tree>
+                        @*<br /><br />*@
+                        <br />
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
@@ -310,6 +311,7 @@
                                                                 private void MyTextInput(AnyUiTextBox chtb, string value)
                                                                 {
                                                                     chtb.setValueLambda?.Invoke(value);
+                                                                    Program.signalNewData();
                                                                 }
                                                             }
                                                         }
@@ -374,6 +376,7 @@
                                                             private void MyComboSelect(AnyUiComboBox comb, string value)
                                                             {
                                                                 comb.setValueLambda?.Invoke(value);
+                                                                Program.signalNewData();
                                                             }
                                                         }
                                                     }
@@ -398,6 +401,7 @@
 
 @code {
 
+    /*
     public class Item
     {
         public string Text { get; set; }
@@ -411,6 +415,7 @@
         public SubmodelElementWrapper Wrapper { get; set; }
         public int envIndex { get; set; }
     }
+    */
 
     List<Item> Items = null;
 
@@ -433,8 +438,8 @@
         ////    return;
 
         SubmodelService.buildTree();
-        Items = SubmodelService.GetTree();
-        StateHasChanged();
+        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+        // StateHasChanged();
 
         //ExpandedNodes.Add(Items.Skip(1).First());
         //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
@@ -447,10 +452,89 @@
     }
     void NewData(object source, EventArgs args)
     {
-        Items = SubmodelService.GetTree();
+        update = true;
+        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+
         InvokeAsync(() => this.StateHasChanged());
     }
 
+    bool update = false;
+
+    string updateVisibleTree(List<Item> viewItems, Item selectedNode)
+    {
+        if (update && !AnyUiDisplayContextHtml.htmlEventIn && !AnyUiDisplayContextHtml.htmlEventOut)
+        {
+            update = false;
+            updateNode(viewItems[0]);
+        }
+        return "";
+    }
+
+    void updateNode(Item i)
+    {
+        var clist = i.Childs as List<Item>;
+        List<string> listIdshort = new List<string>();
+        bool done = false;
+        if (!done && i.Tag is Submodel sm)
+        {
+            foreach (var smew1 in sm.submodelElements)
+            {
+                listIdshort.Add(smew1.submodelElement.idShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is SubmodelElementCollection smec)
+        {
+            foreach (var smew2 in smec.value)
+            {
+                listIdshort.Add(smew2.submodelElement.idShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is SubmodelElement sme)
+        {
+            listIdshort.Add(sme.idShort);
+            done = true;
+        }
+        // check if child name exists in data children idshorts, if not delete
+        if (done)
+        {
+            List<Item> toDelete = new List<Item>();
+            if (clist != null)
+            {
+                foreach (var c in clist)
+                {
+                    if (!listIdshort.Contains(c.Text))
+                    {
+                        toDelete.Add(c);
+                    }
+                }
+            }
+            else
+            {
+                if (!listIdshort.Contains(i.Text))
+                {
+                    toDelete.Add(i);
+                }
+            }
+            foreach (var c in toDelete)
+            {
+                var parent = c.parent as Item;
+                if (parent != null)
+                {
+                    (parent.Childs as List<Item>).Remove(c);
+                }
+            }
+        }
+        // check if data children idshorts exist in child names, if not insert
+        if (clist != null)
+        {
+            foreach (var c in clist)
+            {
+                updateNode(c);
+            }
+        }
+    }
 
     string getSymbols(Item item)
     {

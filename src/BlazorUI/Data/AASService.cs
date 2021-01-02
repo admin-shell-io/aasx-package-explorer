@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using static BlazorUI.Pages.Index;
 using static AdminShellNS.AdminShellV20;
+using BlazorUI;
 
 namespace BlazorUI.Data
 {
@@ -23,7 +24,7 @@ namespace BlazorUI.Data
 
             Program.NewDataAvailable += (s, a) =>
             {
-                buildTree();
+                // buildTree();
                 NewDataAvailable?.Invoke(this, EventArgs.Empty);
             };
         }
@@ -32,16 +33,11 @@ namespace BlazorUI.Data
         public static List<Item> items = null;
         public static List<Item> viewItems = null;
 
-        public List<Item> GetTree()
+        public List<Item> GetTree(Item selectedNode, IList<Item> ExpandedNodes)
         {
             // buildTree();
-            updateVisibleTree();
+            Item.updateVisibleTree(viewItems, selectedNode, ExpandedNodes);
             return viewItems;
-        }
-
-        public void updateVisibleTree()
-        {
-
         }
 
         public void syncSubTree(Item item)
