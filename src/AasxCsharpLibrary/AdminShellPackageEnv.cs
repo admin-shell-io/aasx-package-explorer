@@ -582,7 +582,14 @@ namespace AdminShellNS
                                 if (_tempFn != null)
                                     System.IO.File.Copy(_tempFn, fn);
                                 else
-                                    System.IO.File.Copy(_fn, fn);
+                                {
+                                    /* TODO (MIHO, 2021-01-02): check again.
+                                     * Revisiting this code after a while, and after
+                                     * the code has undergo some changes by MR, the following copy command needed
+                                     * to be amended with a if to protect against self-copy. */
+                                    if (_fn != fn)
+                                        System.IO.File.Copy(_fn, fn);
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -879,11 +886,11 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// Temporariyl closes package and executes lambda. Afterwards, the package is re-opened
+        /// Temporariyl saves & closes package and executes lambda. Afterwards, the package is re-opened
         /// under the same file name
         /// </summary>
         /// <param name="lambda"></param>
-        public void TemporarilyCloseAndReOpenPackage(Action lambda)
+        public void TemporarilySaveCloseAndReOpenPackage(Action lambda)
         {
             // access 
             if (!this.IsOpen)
@@ -892,6 +899,9 @@ namespace AdminShellNS
                     "not open as expected!", Filename)));
 
             try {
+                // save (it will be open, still)
+                SaveAs(this.Filename);
+
                 // close
                 _openPackage.Flush();
                 _openPackage.Close();

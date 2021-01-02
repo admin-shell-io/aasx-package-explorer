@@ -70,7 +70,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (!bext.HasContent())
                         bext = ".aasx";
                     var bdfn = Path.Combine(backupDir, $"backup{ndx:000}{bext}");
-                    Env.TemporarilyCloseAndReOpenPackage(() => {
+                    Env.TemporarilySaveCloseAndReOpenPackage(() => {
                         File.Copy(Env.Filename, bdfn);
                     });
                 }

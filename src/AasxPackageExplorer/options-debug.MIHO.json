@@ -8,7 +8,7 @@
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
   "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
-  "AasxToLoad": "http://localhost:51310/server/getaasx/0",
+  /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,

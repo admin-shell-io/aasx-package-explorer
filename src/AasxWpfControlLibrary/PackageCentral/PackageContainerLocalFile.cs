@@ -135,7 +135,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // do a close, execute and re-open cycle
                 try
                 {
-                    Env.TemporarilyCloseAndReOpenPackage(() => {
+                    Env.TemporarilySaveCloseAndReOpenPackage(() => {
                         System.IO.File.Copy(Env.Filename, SourceFn, overwrite: true);
                     });
                 }
