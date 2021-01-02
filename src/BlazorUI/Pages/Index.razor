@@ -496,7 +496,10 @@
                     ExpandedNodes.Clear();
                     selectedNode = null;
                     if (isSelected)
+                    {
                         selectedNode = findPath(selectedNodePath);
+                        SelectedNode = selectedNode;                  
+                    }
                     if (isExpanded)
                     {
                         foreach (var path in expandedNodesPath)
