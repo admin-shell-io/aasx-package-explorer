@@ -23,7 +23,8 @@ namespace AasxWpfControlLibrary.PackageCentral
     public class PackageCentralException : Exception
     {
         public PackageCentralException() { }
-        public PackageCentralException(string message) : base(message) { }
+        public PackageCentralException(string message, Exception innerException = null)
+            : base(message, innerException) { }
     }    
 
     /// <summary>
@@ -87,7 +88,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 throw new PackageCentralException(
                     $"PackageCentral: while performing load from {location} " +
-                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}", ex);
             }
         }
 

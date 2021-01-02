@@ -448,7 +448,8 @@ namespace AasxPackageExplorer
 
                 // generate lines, add
                 var x = Generators.GenerateVisualElementsFromShellEnv(
-                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, editMode, expandMode: 1);
+                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, 
+                    packages.MainItem?.Filename, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
 
@@ -458,7 +459,8 @@ namespace AasxPackageExplorer
                      || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux, editMode, expandMode: 1);
+                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
+                        packages.AuxItem?.Filename, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
                 }
@@ -469,7 +471,7 @@ namespace AasxPackageExplorer
                     var pkg = packages.FileRepository.MakeUpFakePackage();
 
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                        treeViewLineCache, pkg?.AasEnv, pkg, editMode, expandMode: 1);
+                        treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
                 }

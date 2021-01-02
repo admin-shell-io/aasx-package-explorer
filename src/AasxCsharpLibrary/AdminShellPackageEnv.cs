@@ -893,6 +893,7 @@ namespace AdminShellNS
 
             try {
                 // close
+                _openPackage.Flush();
                 _openPackage.Close();
 
                 // execute lambda

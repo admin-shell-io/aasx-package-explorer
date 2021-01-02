@@ -61,7 +61,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             var s = "local file: " + SourceFn;
             if (IndirectLoadSave)
-                s += "buffered to: " + TempFn;
+                s += " buffered to: " + TempFn;
             return s;
         }
 

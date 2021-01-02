@@ -251,13 +251,15 @@ namespace AasxPackageExplorer
             "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty" };
 
+        public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
         public AdminShell.AdministrationShellEnv theEnv = null;
         public ItemType theItemType = ItemType.Env;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
-            AdminShell.AdministrationShellEnv env, ItemType itemType)
+            AdminShell.AdministrationShellEnv env, ItemType itemType,
+            string packageSourceFn = null)
         : base()
         {
             this.Parent = parent;
@@ -265,6 +267,7 @@ namespace AasxPackageExplorer
             this.thePackage = package;
             this.theEnv = env;
             this.theItemType = itemType;
+            this.thePackageSourceFn = packageSourceFn;
 
             this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
             this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
@@ -283,7 +286,10 @@ namespace AasxPackageExplorer
             if (theItemType == ItemType.Package && thePackage != null)
             {
                 this.TagString = "\u25a2";
-                this.Info += "" + thePackage.Filename;
+                if (thePackageSourceFn != null)
+                    this.Info += "" + thePackageSourceFn;
+                else
+                    this.Info += "" + thePackage.Filename;
             }
             RestoreFromCache();
         }
@@ -916,7 +922,7 @@ namespace AasxPackageExplorer
 
     public static class Generators
     {
-        public static void GenerateVisualElementsFromShellEnvAddElements(
+        private static void GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
@@ -964,6 +970,7 @@ namespace AasxPackageExplorer
 
         public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
+            string packageSourceFn = null,
             bool editMode = false, int expandMode = 0)
         {
             // clear tree
@@ -1005,7 +1012,8 @@ namespace AasxPackageExplorer
                 {
                     // package
                     tiPackage = new VisualElementEnvironmentItem(
-                        null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package);
+                        null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package,
+                        packageSourceFn);
                     tiPackage.SetIsExpandedIfNotTouched(true);
                     res.Add(tiPackage);
 

@@ -60,15 +60,19 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // check FileInfo for (possible?) local file
+            FileInfo fi = null;
             try
             {
-                var fi = new FileInfo(location);
-                if (fi != null)
-                    // seems to be a valid (possible) file
-                    return new PackageContainerLocalFile(location, loadResident);
+                fi = new FileInfo(location);
             }
             catch { }
 
+            // if file, try to open (might throw exceptions!)
+            if (fi != null)
+                // seems to be a valid (possible) file
+                return new PackageContainerLocalFile(location, loadResident);
+
+            // no??
             runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
             return null;
         }

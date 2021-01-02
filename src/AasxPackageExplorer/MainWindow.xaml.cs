@@ -178,6 +178,21 @@ namespace AasxPackageExplorer
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
 
+        private PackageContainerRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
+        {
+            var ro = new PackageContainerRuntimeOptions()
+            {
+                Log = Log.Singleton,
+                ProgressChanged = (tfs, tbd) =>
+                {
+                    SetProgressBar(
+                        Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
+                        AdminShellUtil.ByteSizeHumanReadable(tbd));
+                }
+            };
+            return ro;
+        }
+
         public void UiLoadPackageWithNew(
             PackageCentralItem packItem,
             AdminShellPackageEnv takeOverEnv = null,            
@@ -196,7 +211,12 @@ namespace AasxPackageExplorer
                 if (info == null)
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                packItem.Load(loadLocalFilename, loadResident: true);
+                if (!packItem.Load(loadLocalFilename, loadResident: true))
+                {
+                    Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
+                        $"return any result!");
+                    return;
+                }
             }
             else
             if (takeOverEnv != null)
@@ -556,7 +576,7 @@ namespace AasxPackageExplorer
         #region Callbacks
         //===============
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
@@ -645,21 +665,11 @@ namespace AasxPackageExplorer
                 try
                 {
                     AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
-                    var ro = new PackageContainerRuntimeOptions()
-                    {
-                        Log = Log.Singleton,
-                        ProgressChanged = (tfs, tbd) =>
-                        {
-                            SetProgressBar(
-                                Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
-                                AdminShellUtil.ByteSizeHumanReadable(tbd));
-                        }
-                    };
                     
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         location,
                         loadResident: true,
-                        runtimeOptions: ro);
+                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
                         Log.Singleton.Error($"Failed to load AASX from {location}");
@@ -686,18 +696,34 @@ namespace AasxPackageExplorer
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
 
-            // Try to load?
+            // Try to load?            
             if (Options.Curr.AasxToLoad != null)
             {
-                // make a fully qualified filename from that one provided as input argument
-                var fn = System.IO.Path.GetFullPath(Options.Curr.AasxToLoad);
+                var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    UiLoadPackageWithNew(packages.MainItem, null, fn, onlyAuxiliary: false);
+                    // UiLoadPackageWithNew(packages.MainItem, null, fn, onlyAuxiliary: false);
+
+                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file at application start " +
+                        $"from {location} into container");
+
+                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        location,
+                        loadResident: true,
+                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to auto-load AASX from {location}");
+                    else
+                        UiLoadPackageWithNew(packages.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
+                    SetProgressBar();
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             }
 
@@ -861,26 +887,15 @@ namespace AasxPackageExplorer
             PackageContainerBase container = null;
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
-                var ro = new PackageContainerRuntimeOptions()
-                {
-                    Log = Log.Singleton,
-                    ProgressChanged = (tfs, tbd) =>
-                    {
-                        SetProgressBar(
-                            Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
-                            AdminShellUtil.ByteSizeHumanReadable(tbd));
-                    }
-                };
-
+                Log.Singleton.Info($"Auto-load file from repository {location} into container");
                 container = await PackageContainerFactory.GuessAndCreateForAsync(
                     location,
                     loadResident: true,
-                    runtimeOptions: ro);
+                    runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                Log.Singleton.Error(ex, $"When auto-loading {location}");
             }
 
             // if successfull ..
@@ -1390,7 +1405,7 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("Closing ..");
             try
             {
-                packages.Main.Close();
+                packages.MainItem?.Close();
             }
             catch (Exception ex)
             {
@@ -1721,7 +1736,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         UiLoadPackageWithNew(
-                            packages.MainItem, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
+                            packages.MainItem, null, loadLocalFilename: fn, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {

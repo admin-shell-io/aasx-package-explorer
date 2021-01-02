@@ -1834,132 +1834,6 @@ namespace AasxPackageExplorer
             {
                 helper.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
                     label: "Buffer:");
-#if _in_refactoring
-                helper.AddAction(
-                    stack, "Buffer:",
-                    new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                    (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0 || buttonNdx == 1)
-                        {
-                            // store info
-                            var cpb = new CopyPasteBuffer();
-                            cpb.duplicate = buttonNdx == 1;
-                            cpb.parentContainer = parentContainer;
-                            cpb.wrapper = wrapper;
-                            cpb.sme = sme;
-                            this.theCopyPaste = cpb;
-
-                            // user feedback
-                            Log.Info(
-                                0, StoredPrint.ColorBlue,
-                                "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme?.idShort,
-                                "" + sme?.GetElementName(),
-                                cpb.duplicate
-                                    ? " Paste will duplicate."
-                                    : " Paste will cut at original position.");
-                        }
-
-                        if (buttonNdx == 2 || buttonNdx == 3 || buttonNdx == 4)
-                        {
-                            // access copy/paste
-                            var cpb = this.theCopyPaste;
-
-                            // present
-                            if (cpb == null || cpb.sme == null || cpb.wrapper == null ||
-                                cpb.parentContainer == null)
-                            {
-                                if (helper.flyoutProvider != null)
-                                    helper.flyoutProvider.MessageBoxFlyoutShow(
-                                        "No (valid) information in copy/paste buffer.", "Copy & Paste",
-                                        MessageBoxButton.OK, MessageBoxImage.Information);
-                                return new ModifyRepo.LambdaActionNone();
-                            }
-
-                            // user feedback
-                            Log.Info(
-                                "Pasting buffer with SubmodelElement '{0}'({1}) to internal buffer.",
-                                "" + cpb.sme?.idShort, "" + cpb.sme?.GetElementName());
-
-                            // apply info
-                            var smw2 = new AdminShell.SubmodelElementWrapper(cpb.sme, shallowCopy: false);
-
-                            // insertation depends on parent container
-                            if (buttonNdx == 2)
-                            {
-                                if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
-                                        wrapper != null)
-                                    helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.Entity pcent &&
-                                        wrapper != null)
-                                    helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
-                                        wrapper != null)
-                                    helper.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
-
-                                // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
-                            }
-                            if (buttonNdx == 3)
-                            {
-                                if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
-                                        wrapper != null)
-                                    helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.Entity pcent && wrapper != null)
-                                    helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
-
-                                if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
-                                        wrapper != null)
-                                    helper.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
-
-                                // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
-                            }
-                            if (buttonNdx == 4)
-                            {
-                                if (sme is AdminShell.IEnumerateChildren smeec)
-                                    smeec.AddChild(smw2);
-                            }
-
-                            // may delete original
-                            if (!cpb.duplicate)
-                            {
-                                if (cpb.parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, cpb.wrapper, null);
-
-                                if (cpb.parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
-                                        wrapper != null)
-                                    helper.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, cpb.wrapper, null);
-
-                                // the buffer is tainted
-                                this.theCopyPaste = null;
-                            }
-
-                            // try to focus
-                            return new ModifyRepo.LambdaActionRedrawAllElements(
-                                nextFocus: smw2.submodelElement, isExpanded: true);
-                        }
-
-                        return new ModifyRepo.LambdaActionNone();
-                    });
-#endif
             }
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -3127,8 +3001,7 @@ namespace AasxPackageExplorer
                         });
                 }
             }
-            else
-            if (sme is AdminShell.RelationshipElement rele)
+            else if (sme is AdminShell.RelationshipElement rele)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
@@ -3207,8 +3080,7 @@ namespace AasxPackageExplorer
                 helper.AddGroup(stack, "Capability", levelColors[0][0], levelColors[0][1]);
                 helper.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
-            else
-            if (sme is AdminShell.SubmodelElementCollection smc)
+            else if (sme is AdminShell.SubmodelElementCollection smc)
             {
                 helper.AddGroup(stack, "SubmodelElementCollection", levelColors[0][0], levelColors[0][1]);
                 if (smc.value != null)
@@ -3287,6 +3159,44 @@ namespace AasxPackageExplorer
                         AdminShell.Key.AllElements);
                 }
 
+            }
+            else if (sme is AdminShell.BasicEvent bev)
+            {
+                // buffer Key for later
+                var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // group
+                helper.AddGroup(stack, "BasicEvent", levelColors[0][0], levelColors[0][1]);
+
+                // attributed
+                helper.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => { return bev.observed == null || bev.observed.IsEmpty; },
+                                "Please choose the Referabe, e.g. Submodel, SubmodelElementCollection or " +
+                                "DataElement which is being observed. " + Environment.NewLine +
+                                "You could refer to any Referable, however it recommended restrict the scope " +
+                                "to the local AAS or even within a Submodel.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+                if (helper.SafeguardAccess(
+                        stack, repo, bev.observed, "observed:", "Create data element!",
+                        v =>
+                        {
+                            bev.observed = new AdminShell.Reference();
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                        }))
+                {
+                    helper.AddKeyListKeys(stack, "observed", bev.observed.Keys, repo,
+                        packages, PackageCentral.Selector.Main, AdminShell.Key.AllElements,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeyLists: bufferKeys.Item2,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        });
+                }
             }
             else
                 helper.AddGroup(stack, "Submodel Element is unknown!", levelColors[0][0], levelColors[0][1]);

@@ -130,31 +130,18 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
 
-                    AdminShellPackageEnv packnew = null;
-                    try
+                    switch (cmd)
                     {
-                        packnew = new AdminShellPackageEnv(dlg.FileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        AasxPackageExplorer.Log.Singleton.Error(ex, $"When opening {dlg.FileName}");
-                    }
-
-                    if (packnew != null)
-                    {
-                        switch (cmd)
-                        {
-                            case "open":
-                                UiLoadPackageWithNew(
-                                    packages.MainItem, null, dlg.FileName, onlyAuxiliary: false);
-                                break;
-                            case "openaux":
-                                UiLoadPackageWithNew(
-                                    packages.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
-                                break;
-                            default:
-                                throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
-                        }
+                        case "open":
+                            UiLoadPackageWithNew(
+                                packages.MainItem, null, dlg.FileName, onlyAuxiliary: false);
+                            break;
+                        case "openaux":
+                            UiLoadPackageWithNew(
+                                packages.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
+                            break;
+                        default:
+                            throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
                     }
                 }
             }
