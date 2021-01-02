@@ -311,7 +311,7 @@
                                                                 private void MyTextInput(AnyUiTextBox chtb, string value)
                                                                 {
                                                                     chtb.setValueLambda?.Invoke(value);
-                                                                    Program.signalNewData();
+                                                                    Program.signalNewData(0); // same tree, only values changed
                                                                 }
                                                             }
                                                         }
@@ -376,7 +376,7 @@
                                                             private void MyComboSelect(AnyUiComboBox comb, string value)
                                                             {
                                                                 comb.setValueLambda?.Invoke(value);
-                                                                Program.signalNewData();
+                                                                Program.signalNewData(0); // same tree, only values changed
                                                             }
                                                         }
                                                     }
@@ -446,28 +446,135 @@
 
         SubmodelService.NewDataAvailable += NewData;
     }
+
     public void Dispose()
     {
         SubmodelService.NewDataAvailable -= NewData;
     }
+
+    static int newDataMode = 0;
+
     void NewData(object source, EventArgs args)
     {
-        update = true;
+        // update = true;
+        if (newDataMode == 0)
+            newDataMode = Program.getSignalNewDataMode();
         Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
 
         InvokeAsync(() => this.StateHasChanged());
+        // this.StateHasChanged();
     }
 
-    bool update = false;
+    bool update = true;
 
     string updateVisibleTree(List<Item> viewItems, Item selectedNode)
     {
         if (update && !AnyUiDisplayContextHtml.htmlEventIn && !AnyUiDisplayContextHtml.htmlEventOut)
         {
-            update = false;
-            updateNode(viewItems[0]);
+            switch (newDataMode)
+            {
+                // 0 == same tree, only values changed
+                case 0:
+                    break;
+                // 1 == same tree, structure may change
+                // 2 == build new tree, keep open nodes
+                case 1:
+                case 2:
+                    bool isSelected = selectedNode != null;
+                    bool isExpanded = ExpandedNodes.Count != 0;
+                    List<string>[] expandedNodesPath = new List<string>[ExpandedNodes.Count+1];
+                    List<string> selectedNodePath = getPath(selectedNode);
+                    if (isExpanded)
+                    {
+                        for (int j = 0; j < ExpandedNodes.Count; j++)
+                        {
+                            expandedNodesPath[j] = getPath(ExpandedNodes[j]);
+                        }
+                    }
+                    SubmodelService.buildTree();
+                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    ExpandedNodes.Clear();
+                    selectedNode = null;
+                    if (isSelected)
+                        selectedNode = findPath(selectedNodePath);
+                    if (isExpanded)
+                    {
+                        foreach (var path in expandedNodesPath)
+                        {
+                            Item p = findPath(path);
+                            if (p != null)
+                                ExpandedNodes.Add(p);                 }
+                    }
+                    newDataMode = 0;
+                    break;
+                // 3 == build new tree, all nodes closed
+                case 3:
+                    SubmodelService.buildTree();
+                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    ExpandedNodes.Clear();
+                    selectedNode = null;
+                    newDataMode = 0;
+                    break;
+            }
+            // update = false;
+            // updateNode(viewItems[0]);
         }
         return "";
+    }
+
+    List<string> getPath(Item i)
+    {
+        if (i == null)
+            return null;
+
+        List<string> upPath = new List<string>();
+        upPath.Add(i.Text);
+        while (i.parent != null)
+        {
+            i = (Item)i.parent;
+            upPath.Add(i.Text);
+        }
+        List<string> downPath = new List<string>();
+        int j = upPath.Count - 1;
+        while (j >= 0)
+        {
+            downPath.Add(upPath[j--]);
+        }
+        return downPath;
+    }
+
+    Item findPath(List<string> path)
+    {
+        if (path != null && path.Count > 0)
+        {
+            Item i = Items[0];
+            if (i.Text != path[0])
+                return null;
+            int j = 0;
+            Item found = i;
+            while (++j < path.Count)
+            {
+                if (i.Childs != null)
+                {
+                    found = null;
+                    foreach (var c in i.Childs)
+                    {
+                        if (c.Text == path[j])
+                        {
+                            found = c;
+                            break;
+                        }
+                    }
+                }
+                if (found == null)
+                {
+                    return null;
+                }
+                i = found;
+            }
+            return found;
+        }
+        return null;
     }
 
     void updateNode(Item i)

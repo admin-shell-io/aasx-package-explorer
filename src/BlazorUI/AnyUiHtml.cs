@@ -65,7 +65,7 @@ namespace AnyUi
                                 htmlEventInputs.Add(el);
                                 htmlEventInputs.Add(cntlcm);
                                 htmlEventIn = true;
-                                Program.signalNewData();
+                                Program.signalNewData(1); // same tree, but structure may change
 
                                 while (!htmlEventOut);
                                 int bufferedI = 0;
@@ -91,7 +91,7 @@ namespace AnyUi
                 if (newData)
                 {
                     newData = false;
-                    Program.signalNewData();
+                    Program.signalNewData(2); // build new tree
                 }
                 Thread.Sleep(100);
             }
@@ -137,7 +137,7 @@ namespace AnyUi
             htmlEventInputs.Add(caption);
             htmlEventInputs.Add(buttons);
             htmlEventIn = true;
-            Program.signalNewData();
+            Program.signalNewData(2); // build new tree
 
             while (!htmlEventOut);
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
