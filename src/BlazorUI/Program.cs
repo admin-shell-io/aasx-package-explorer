@@ -102,7 +102,8 @@ namespace BlazorUI
         public static void loadAasx(string value)
         {
             aasxFileSelected = value;
-            env.Dispose();
+            if (env != null)
+                env.Dispose();
             env = new AdminShellPackageEnv(Program.aasxFileSelected);
             editMode = false;
             thumbNail = null;
@@ -125,15 +126,18 @@ namespace BlazorUI
             signalNewDataMode = 0;
             return (mode);
         }
+
+        public static void loadAasxFiles()
+        {
+            aasxFiles = Directory.GetFiles(".", "*.aasx");
+            Array.Sort(aasxFiles);
+            loadAasx(aasxFiles[0]);
+        }
         public static void Main(string[] args)
         {
             // env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
 
-            aasxFiles = Directory.GetFiles(".", "*.aasx");
-            Array.Sort(aasxFiles);
-            aasxFileSelected = aasxFiles[0];
-            env = new AdminShellPackageEnv(aasxFileSelected);
-
+            loadAasxFiles();
 #if __test__PackageLogic
 #else
 

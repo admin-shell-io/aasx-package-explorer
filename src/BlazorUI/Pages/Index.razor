@@ -129,27 +129,27 @@
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
-                                    if (selectedNode == null || selectedNode.Tag != null)
+                    if (selectedNode == null || selectedNode.Tag != null)
+                    {
+                        {
+                            if (Program.thumbNail == null)
+                            {
+                                var s = Program.env.GetLocalThumbnailStream();
+                                if (s != null)
+                                {
+                                    using (var m = new System.IO.MemoryStream())
                                     {
-                                        {
-                                            if (Program.thumbNail == null)
-                                            {
-                                                var s = Program.env.GetLocalThumbnailStream();
-                                                if (s != null)
-                                                {
-                                                    using (var m = new System.IO.MemoryStream())
-                                                    {
-                                                        s.CopyTo(m);
-                                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
-                                                    }
-                                                }
-                                            }
-                                            if (Program.thumbNail != null)
-                                            {
+                                        s.CopyTo(m);
+                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                    }
+                                }
+                            }
+                            if (Program.thumbNail != null)
+                            {
                                 <br />
                                 <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
-                                            }
-                                        }
+                            }
+                        }
                     }
                 }
             </div>

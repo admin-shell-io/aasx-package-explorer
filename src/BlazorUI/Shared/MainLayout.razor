@@ -1,56 +1,74 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
 
+    
     @*@<div class="sidebar">
-            <NavMenu />
-        </div>*@
+        <NavMenu />
+    </div>*@
+<div class="main">
+    <div class="top-row px-4">
+        @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        *@
+        <span lang="en"><InputFile OnChange="HandleFileSelected" /></span>
 
-    <div class="main">
-        <div class="top-row px-4">
-            @*
-        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-            *@
-            @{
-                string empty = " ";
-                string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-                <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
-                        @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                    @foreach (var item in Program.aasxFiles)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </select>
-                @code {
-                    private void MyAasxSelect(string value)
-                    {
-                        InvokeAsync(() => Program.loadAasx(value));
-                    }
-                }
-            }
-            <span>@empty</span>
-            <button @onclick="toggleEditMode">
-                @{
-                    if (Program.editMode)
-                    {
-                        <span>EditMode is ON</span>
-                    }
-                    else
-                    {
-                        <span>EditMode is OFF</span>
-                    }
-                }
-            </button>
-            @code {
-                private void toggleEditMode()
+        @code {
+            IFileListEntry file;
+
+            async Task HandleFileSelected(IFileListEntry[] files)
+            {
+                var file = files.FirstOrDefault();
+                if (file != null)
                 {
-                    Program.editMode = !Program.editMode;
-                    this.StateHasChanged();
+                    var fileStream = System.IO.File.Create(file.Name);
+                    await file.Data.CopyToAsync(fileStream);
+                    fileStream.Close();
+                }
+                Program.loadAasxFiles();
+                StateHasChanged();
+            }
+        }
+
+        @{
+            <span>&nbsp&nbsp&nbsp</span>
+            string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+            <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
+                    @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
+                @foreach (var item in Program.aasxFiles)
+                {
+                    <option value="@item">@item</option>
+                }
+            </select>
+            @code {
+                private void MyAasxSelect(string value)
+                {
+                    InvokeAsync(() => Program.loadAasx(value));
                 }
             }
-            <span>@empty</span>
-        </div>
-
-        <div class="content px-4">
-            @Body
-        </div>
+        }
+        <span>&nbsp&nbsp&nbsp</span>
+        <button @onclick="toggleEditMode">
+            @{
+                if (Program.editMode)
+                {
+                    <span>EditMode is ON</span>
+                }
+                else
+                {
+                    <span>EditMode is OFF</span>
+                }
+            }
+        </button>
+        @code {
+            private void toggleEditMode()
+            {
+                Program.editMode = !Program.editMode;
+                this.StateHasChanged();
+            }
+        }
+        <span>&nbsp&nbsp&nbsp</span>
     </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>
