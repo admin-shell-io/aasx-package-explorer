@@ -26,7 +26,8 @@
         </Grid.ColumnDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" Background="LightBlue">
-            <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">Technical Data</Label>
+            <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">
+                Plotting of Properties</Label>
             <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
                 <Label Content="Lang:"/>
                 <ComboBox x:Name="ComboBoxLang" MinWidth="70" Margin="2" IsEditable="True" />
@@ -36,7 +37,7 @@
         </DockPanel>
 
         <ScrollViewer Grid.Row="2" Grid.Column="0" x:Name="ScrollViewerContent" 
-                      HorizontalScrollBarVisibility="Disabled">
+                      HorizontalScrollBarVisibility="Disabled" Margin="4,4,4,2" PreviewMouseWheel="ScrollViewerContent_PreviewMouseWheel">
             <Grid x:Name="GridContent" MinWidth="300">
 
                 <Grid.RowDefinitions>

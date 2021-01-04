@@ -28,21 +28,50 @@ using AasxIntegrationBase;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
+using ScottPlot;
 
 namespace AasxPluginPlotting
 {
     public partial class PlottingViewControl : UserControl
     {
+        public class PlotBuffer
+        {
+            public const int BufferSize = 512;
+
+            public PlottableSignal Plottable;
+            public double[] BufferData = new double[BufferSize];
+            public int BufferLevel = 0;
+
+            public void Push(double data)
+            {
+                if (BufferLevel < BufferSize)
+                {
+                    // simply add
+                    BufferData[BufferLevel] = data;
+                    if (Plottable != null)
+                        Plottable.maxRenderIndex = BufferLevel;
+                    BufferLevel++;
+                }
+                else
+                {
+                    // brute shift
+                    Array.Copy(BufferData, 1, BufferData, 0, BufferSize - 1);
+                    BufferData[BufferSize - 1] = data;
+                    if (Plottable != null)
+                        Plottable.maxRenderIndex = BufferSize - 1;
+                }
+            }
+        }
 
         public class PlotArguments
         {
-            public string idx;
+            public string grp;
             public string fmt;
             public double? xmin, ymin, xmax, ymax;
         }
 
         // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-        public class PlotItem : /* IEquatable<DetailItem>, */ INotifyPropertyChanged
+        public class PlotItem : /* IEquatable<DetailItem>, */ INotifyPropertyChanged, IComparable<PlotItem>
         {
             public event PropertyChangedEventHandler PropertyChanged;
 
@@ -56,6 +85,21 @@ namespace AasxPluginPlotting
             public AdminShell.SubmodelElement SME = null;
             public string ArgsStr = "";
             public PlotArguments Args = null;
+
+            public PlotBuffer Buffer;
+
+            public int Group
+            {
+                get
+                {
+                    // have default group to be the last
+                    if (Args?.grp == null)
+                        return 9999;
+                    if (int.TryParse(Args.grp, out int i))
+                        return i;
+                    return 9999;
+                }
+            }
 
             private string _path = "";
             public string DisplayPath
@@ -113,6 +157,18 @@ namespace AasxPluginPlotting
                     LogInternally.That.SilentlyIgnoredError(ex);
                 }
             }
+
+            public int CompareTo(PlotItem other)
+            {
+                if (other == null)
+                    return -1;
+                if (this.Group > other.Group)
+                    return +1;
+                if (this.Group < other.Group)
+                    return -1;
+                return (this._path.CompareTo(other._path));
+            }
+
         }
 
         public class ListOfPlotItem : ObservableCollection<PlotItem>
@@ -154,6 +210,7 @@ namespace AasxPluginPlotting
                     return;
 
                 // find all SME with appropriate Qualifer
+                var temp = new List<PlotItem>();
                 sm.RecurseOnSubmodelElements(this, (state, parents, sme) =>
                 {
                     // qualifier
@@ -173,8 +230,171 @@ namespace AasxPluginPlotting
                             path = "" + par.idShort + " / " + path;
 
                     // add
-                    this.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description));
+                    temp.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description));
                 });
+
+                // sort them for continous grouping
+                temp.Sort();
+                foreach (var t in temp)
+                    this.Add(t);
+            }
+
+            public class PlotItemGroup : List<PlotItem>
+            {
+                public ScottPlot.WpfPlot WpfPlot;
+            }
+
+            public IEnumerable<PlotItemGroup> GetItemsGrouped()
+            {
+                // corner case
+                if (this.Count < 1)
+                    yield break;
+
+                // start 1st chunk
+                var temp = new PlotItemGroup();
+                temp.Add(this[0]);
+                var startI = 0;
+                for (int i=1; i<this.Count; i++)
+                {
+                    if (this[startI].Group == this[i].Group)
+                    {
+                        temp.Add(this[i]);
+                    }
+                    else
+                    {
+                        yield return temp;
+                        temp = new PlotItemGroup();
+                        startI = i;
+                        temp.Add(this[i]);
+                    }
+                }
+
+                // last one
+                if (temp.Count > 0)
+                    yield return temp;
+            }
+
+            private bool _autoScale;
+
+            public List<PlotItemGroup> RenderedGroups;
+
+            public List<PlotItemGroup> RenderAllGroups(StackPanel panel, double plotHeight)
+            {
+                // first access
+                var res = new List<PlotItemGroup>();
+                if (panel == null)
+                    return null;
+                panel.Children.Clear();
+
+                // go over all groups                
+                foreach (var groupPI in GetItemsGrouped())
+                {
+                    // start new group
+                    var wpfPlot = new ScottPlot.WpfPlot();
+                    wpfPlot.plt.AntiAlias(false, false, false);
+                    wpfPlot.AxisChanged += (s,e) => WpfPlot_AxisChanged(wpfPlot,e);
+                    groupPI.WpfPlot = wpfPlot;
+                    res.Add(groupPI);
+
+                    // for all wpf / all signals
+                    wpfPlot.Height = plotHeight;
+                    wpfPlot.plt.XLabel("Samples");
+                    wpfPlot.plt.YLabel("");
+
+                    // for each signal
+                    foreach (var pi in groupPI)
+                    {
+                        // value
+                        var val = pi.SME?.ValueAsDouble();
+                        
+                        // prepare data
+                        var pb = new PlotBuffer();
+                        pi.Buffer = pb;
+
+                        // factory new Plottable
+                        pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
+                        pb.Push(val.HasValue ? val.Value : 0.0);
+                    }
+
+                    // render the plot into panel
+                    wpfPlot.plt.Legend();
+                    panel.Children.Add(wpfPlot);
+                    wpfPlot.Render(skipIfCurrentlyRendering: true);
+                }
+
+                // return groups for notice
+                _autoScale = true;
+                return res;
+            }
+
+            public void ForAllGroupsAndPlot(
+                List<PlotItemGroup> groups, 
+                Action<PlotItemGroup, PlotItem> lambda = null)
+            {
+                if (groups == null)
+                    return;
+                foreach (var grp in groups)
+                {
+                    if (grp == null)
+                        continue;
+                    foreach (var pi in grp)
+                        lambda?.Invoke(grp, pi);                            
+                }
+            }
+
+            private void WpfPlot_AxisChanged(object sender, EventArgs e)
+            {
+                if (sender is ScottPlot.WpfPlot wpfPlot)
+                {
+                    if (_autoScale)
+                    {
+                        _autoScale = false;
+                        ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
+                        {
+                            // disable
+                            var oldLimits = grp.WpfPlot.plt.Axis();
+                            grp.WpfPlot.plt.Axis(x2: oldLimits[1] + 10);
+                        });
+                    }
+
+                    ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
+                    {
+                        var one = wpfPlot.plt.Axis();
+                        if (grp.WpfPlot != wpfPlot && grp.WpfPlot != null)
+                        {
+                            // move
+                            grp.WpfPlot.plt.Axis(x1: one[0], x2: one[1]);
+                            grp.WpfPlot.Render(skipIfCurrentlyRendering: true);
+                        }
+                    });
+                }
+            }
+
+            public void UpdateAllRenderedPlotItems(List<PlotItemGroup> groups)
+            {
+                // access
+                if (groups == null)
+                    return;
+
+                // foreach
+                foreach (var grp in groups)
+                {
+                    // access
+                    if (grp == null)
+                        continue;
+
+                    // push for each item
+                    foreach (var pi in grp)
+                    {
+                        var val = pi.SME?.ValueAsDouble();
+                        pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
+                    }
+
+                    // scale?
+                    if (_autoScale)
+                        grp.WpfPlot?.plt.AxisAuto();
+                    grp.WpfPlot?.Render(skipIfCurrentlyRendering: true);
+                }
             }
         }
 
@@ -238,6 +458,9 @@ namespace AasxPluginPlotting
             PlotItems.RebuildFromSubmodel(theSubmodel);
             DataGridPlotItems.DataContext = PlotItems;
 
+            // make charts, as well
+            PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, plotHeight: 200);
+
             // start a timer
             // Timer for status
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
@@ -247,10 +470,62 @@ namespace AasxPluginPlotting
                 if (PlotItems != null)
                 {
                     PlotItems.UpdateValues();
+                    PlotItems.UpdateAllRenderedPlotItems(PlotItems.RenderedGroups);
                 }
             };
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
+
+            // test
+            //FillDemoPlots();
+            //var x = PlotItems.GetItemsGrouped();
+        }
+        private void FillDemoPlots()
+        {
+            Random rand = new Random();
+
+            /*
+            var plt = new ScottPlot.Plot(600, 400);
+
+            int pointCount = 51;
+            double[] xs = DataGen.Consecutive(pointCount);
+            double[] sin = DataGen.Sin(pointCount);
+            double[] cos = DataGen.Cos(pointCount);
+
+            plt.PlotScatter(xs, sin, label: "sin");
+            plt.PlotScatter(xs, cos, label: "cos");
+            plt.Legend();
+
+            plt.Title("Scatter Plot Quickstart");
+            plt.YLabel("Vertical Units");
+            plt.XLabel("Horizontal Units");
+            */
+
+            var pv1 = new ScottPlot.WpfPlot();
+            pv1.Height = 200;
+            // pv1.plt.PlotSignal(DataGen.RandomWalk(rand, 100));
+
+            var plt = pv1.plt;
+            int pointCount = 51;
+            double[] xs = DataGen.Consecutive(pointCount);
+            double[] sin = DataGen.Sin(pointCount);
+            double[] cos = DataGen.Cos(pointCount);
+
+            plt.PlotScatter(xs, sin, label: "sin");
+            plt.PlotScatter(xs, cos, label: "cos");
+            plt.Legend();
+
+            plt.Title("Scatter Plot Quickstart");
+            plt.YLabel("Vertical Units");
+            plt.XLabel("Horizontal Units");
+
+            StackPanelCharts.Children.Add(pv1);
+        }
+
+        private void ScrollViewerContent_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // simply disable mouse scroll for ScrollViewer, as it conflicts with the plots
+            e.Handled = true;
         }
     }
 }
