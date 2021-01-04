@@ -259,7 +259,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // in order to serve goal (2), a wrapper-root is required from the observableReference,
             // that is: requestedElement!
-            var wrappers = ((requestedElement as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
+            var wrappers = ((requestedElement as AdminShell.IEnumerateChildren)?.EnumerateChildren())?.ToList();
 
             // parse dynamic response object
             // Note: currently only updating Properties
@@ -290,6 +290,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 if (tuple.value != null)
                                     prop.value = tuple.value;
                             }
+                            ev.IsAlreadyUpdatedToAAS = true;
                         }
                     }
             }
@@ -301,12 +302,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // goal (1)
                 ev.Values.Add(
                     new AasEventMsgUpdateValueItem(path: null, value: "" + val)) ;
-                
+
                 // goal (2)
                 if (reqSme is AdminShell.Property prop)
                 {
                     if (val != null)
                         prop.value = val;
+                    ev.IsAlreadyUpdatedToAAS = true;
                 }
             }
             else

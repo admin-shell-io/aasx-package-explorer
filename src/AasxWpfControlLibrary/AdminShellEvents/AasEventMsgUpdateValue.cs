@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 using AasxPackageExplorer;
+using Newtonsoft.Json;
+using System.Xml.Serialization;
 
 namespace AdminShellEvents
 {
@@ -77,6 +79,14 @@ namespace AdminShellEvents
         /// Holds a list of update value items, each of them relative to the Event's Observable.
         /// </summary>
         public List<AasEventMsgUpdateValueItem> Values = new List<AasEventMsgUpdateValueItem>();
+
+        /// <summary>
+        /// Flags, if the update value changes reported in the event message are already indorporated
+        /// in the AAS, e.g. by the event producing/ transmitting entity or not.
+        /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
+        public bool IsAlreadyUpdatedToAAS;
 
         //
         // Constructor
