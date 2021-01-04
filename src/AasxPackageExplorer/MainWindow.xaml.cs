@@ -1150,6 +1150,17 @@ namespace AasxPackageExplorer
 
                 try
                 {
+                    // for update values, do not concern about plugins, but use superior Submodel,
+                    // as they will relate to this
+                    var veSubject = veSelected;
+                    if (veSelected is VisualElementPluginExtension)
+                        veSubject = veSelected.Parent;
+                    
+                    // now, filter for know applications
+                    if (!(veSubject is VisualElementSubmodelRef || veSubject is VisualElementSubmodelElement))
+                        return;
+
+                    // will always require a root Submodel
                     var smrSel = veSelected.FindFirstParent((ve) => (ve is VisualElementSubmodelRef), includeThis: true)
                         as VisualElementSubmodelRef;
                     if (smrSel != null && smrSel.theSubmodel != null)
@@ -1166,7 +1177,7 @@ namespace AasxPackageExplorer
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
                             var klObserved = ev.observed?.Keys;
-                            var klSelected = veSelected.BuildKeyListToTop(includeAas: false);
+                            var klSelected = veSubject.BuildKeyListToTop(includeAas: false);
                             // no, klSelected shall lie in klObserved
                             if (klObserved != null && klSelected != null &&
                                 klSelected.StartsWith(klObserved,
@@ -1183,7 +1194,7 @@ namespace AasxPackageExplorer
                                                 connRest.SimulateUpdateValuesEventByGetAsync(
                                                     smrSel.theSubmodel,
                                                     ev,
-                                                    veSelected.GetDereferencedMainDataObject() as AdminShell.Referable,
+                                                    veSubject.GetDereferencedMainDataObject() as AdminShell.Referable,
                                                     timestamp: DateTime.Now,
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
@@ -1274,9 +1285,14 @@ namespace AasxPackageExplorer
                 if (changedSomething)
                 {
                     // just for test
-                    RedrawElementView();
                     DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
                     DisplayElements.Refresh();
+
+                    // apply white list for automatic redisplay
+                    // Note: do not re-display plugins!!
+                    var ves = DisplayElements.SelectedItem;
+                    if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
+                        RedrawElementView();
                 }
             }
         }

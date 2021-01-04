@@ -5029,6 +5029,11 @@ namespace AdminShellNS
                 return "";
             }
 
+            public virtual double? ValueAsDouble()
+            {
+                return null;
+            }
+
             // validation
 
             public override void Validate(AasValidationRecordList results)
@@ -6190,6 +6195,12 @@ namespace AdminShellNS
                     "double", "duration",
                     "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
+            public static string[] ValueTypes_Number = new[] {
+                    "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                    "positiveInteger",
+                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
+                    "double", "float" };
+
             public DataElement() { }
 
             public DataElement(SubmodelElement src) : base(src) { }
@@ -6325,6 +6336,26 @@ namespace AdminShellNS
                 }
                 return false;
             }
+
+            public override double? ValueAsDouble()
+            {
+                // pointless
+                if (this.value == null || this.value.Trim() == "" || this.valueType == null)
+                    return null;
+
+                // type?
+                var vt = this.valueType.Trim().ToLower();
+                if (!DataElement.ValueTypes_Number.Contains(vt))
+                    return null;
+
+                // try convert
+                if (double.TryParse(this.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
+                    return dbl;
+                
+                // no
+                return null;
+            }
+
         }
 
         public class MultiLanguageProperty : DataElement

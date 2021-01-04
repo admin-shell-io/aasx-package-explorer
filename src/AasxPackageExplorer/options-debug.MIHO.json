@@ -40,12 +40,7 @@
   ],
   "PluginDll": [
     {
-      "Path": "..\\..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\net461\\AasxIntegrationEmptySample.dll",
-      "Args": [],
-      "Options": null
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net461\\AasxPluginUaNetServer.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\netstandard2.0\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
         "-single-keys",
@@ -57,44 +52,48 @@
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net461\\AasxPluginUaNetClient.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net461\\AasxPluginBomStructure.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net461\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net461\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net461\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net461\\AasxPluginMtpViewer.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net461\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net461\\AasxPluginGenericForms.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net461\\AasxPluginImageMap.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net461\\AasxPluginAdvancedTextEditor.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
     },
     /* Festo specific from here on */

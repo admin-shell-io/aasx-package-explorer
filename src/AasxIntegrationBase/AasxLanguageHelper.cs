@@ -56,5 +56,11 @@ namespace AasxIntegrationBase
                     return ev;
             return LangEnum.Any;
         }
+
+        public static IEnumerable<string> GetLangCodes()
+        {
+            for (int i = 1; i < LangEnumToISO639String.Length; i++)
+                yield return LangEnumToISO639String[i];
+        }
     }
 }
