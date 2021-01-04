@@ -1738,8 +1738,11 @@ namespace AasxPackageLogic
             // cut/ copy / paste
             if (parentContainer != null)
             {
-                this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
-                    label: "Buffer:");
+                if (editMode && editSmeAttr)
+                {
+                    this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
+                        label: "Buffer:");
+                }
 #if _in_refactoring
                 this.AddAction(
                     stack, "Buffer:",
@@ -2465,7 +2468,7 @@ namespace AasxPackageLogic
                 this.AddKeyValueRef(
                     stack, "valueType", p, ref p.valueType, null, repo,
                     v => { p.valueType = v as string; return new AnyUiLambdaActionNone(); },
-                    comboBoxIsEditable: true,
+                    comboBoxIsEditable: editMode,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
                 this.AddHintBubble(
