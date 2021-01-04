@@ -110,22 +110,24 @@
                 }
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
-                @updateVisibleTree(Items, selectedNode)
-                @* @if (Program.isLoading)
-                {<span style="color:white;background-color:blue;">Loading...</span>} *@
-                        <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
-                              @bind-SelectedNode="SelectedNode"
-                              @bind-ExpandedNodes="ExpandedNodes"
-                              HasChildNodes="@(item => item.Childs?.Any() == true)">
-                            <TitleTemplate>
-                                @{ //// SubmodelService.syncSubTree(context);
-                                }
-                                <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
-                                <strong><span style="color:blue">@getSymbols(context)</span></strong>
-                            </TitleTemplate>
-                        </Tree>
-                        @*<br /><br />*@
-                        <br />
+                <div class="col" style="word-wrap:break-word">
+                    @updateVisibleTree(Items, selectedNode)
+                    @* @if (Program.isLoading)
+                        {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                    <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
+                          @bind-SelectedNode="SelectedNode"
+                          @bind-ExpandedNodes="ExpandedNodes"
+                          HasChildNodes="@(item => item.Childs?.Any() == true)">
+                        <TitleTemplate>
+                            @{ //// SubmodelService.syncSubTree(context);
+                            }
+                            <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                            <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                        </TitleTemplate>
+                    </Tree>
+                    @*<br /><br />*@
+                    <br />
+                </div>
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{

@@ -7,68 +7,76 @@
     </div>*@
 <div class="main">
     <div class="top-row px-4">
-        @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        *@
-        <span lang="en"><InputFile OnChange="HandleFileSelected" /></span>
+        <div class="col-12 row">
+            <div class="col-6" style="text-align:left">
+                @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                *@
+                <span style="font-weight:bold">Upload:</span>
+                <InputFile OnChange="HandleFileSelected" />
 
-        @code {
-            IFileListEntry file;
+                @code {
+                    IFileListEntry file;
 
-            async Task HandleFileSelected(IFileListEntry[] files)
-            {
-                var file = files.FirstOrDefault();
-                if (file != null)
-                {
-                    var fileStream = System.IO.File.Create(file.Name);
-                    await file.Data.CopyToAsync(fileStream);
-                    fileStream.Close();
+                    async Task HandleFileSelected(IFileListEntry[] files)
+                    {
+                        var file = files.FirstOrDefault();
+                        if (file != null)
+                        {
+                            var fileStream = System.IO.File.Create(file.Name);
+                            await file.Data.CopyToAsync(fileStream);
+                            fileStream.Close();
+                        }
+                        Program.loadAasxFiles();
+                        StateHasChanged();
+                    }
                 }
-                Program.loadAasxFiles();
-                StateHasChanged();
-            }
-        }
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    @{
+                        <span>&nbsp&nbsp&nbsp</span>
+                        string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                        <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
+                                @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
+                            @foreach (var item in Program.aasxFiles)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                        @code {
+                            private void MyAasxSelect(string value)
+                            {
+                                InvokeAsync(() => Program.loadAasx(value));
+                            }
+                        }
+                    }
+                    <span>&nbsp&nbsp&nbsp</span>
+                    <button @onclick="toggleEditMode">
+                        @{
+                            if (Program.editMode)
+                            {
+                                <span>EditMode is ON</span>
+                            }
+                            else
+                            {
+                                <span>EditMode is OFF</span>
+                            }
+                        }
+                    </button>
+                    @code {
+                        private void toggleEditMode()
+                        {
+                            Program.editMode = !Program.editMode;
+                            this.StateHasChanged();
+                        }
+                    }
+                    <span>&nbsp&nbsp&nbsp</span>
+                </div>
+            </div>
+        </div>
+        </div>
 
-        @{
-            <span>&nbsp&nbsp&nbsp</span>
-            string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-            <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
-                    @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                @foreach (var item in Program.aasxFiles)
-                {
-                    <option value="@item">@item</option>
-                }
-            </select>
-            @code {
-                private void MyAasxSelect(string value)
-                {
-                    InvokeAsync(() => Program.loadAasx(value));
-                }
-            }
-        }
-        <span>&nbsp&nbsp&nbsp</span>
-        <button @onclick="toggleEditMode">
-            @{
-                if (Program.editMode)
-                {
-                    <span>EditMode is ON</span>
-                }
-                else
-                {
-                    <span>EditMode is OFF</span>
-                }
-            }
-        </button>
-        @code {
-            private void toggleEditMode()
-            {
-                Program.editMode = !Program.editMode;
-                this.StateHasChanged();
-            }
-        }
-        <span>&nbsp&nbsp&nbsp</span>
+        <div class="content px-4">
+            @Body
+        </div>
     </div>
-
-    <div class="content px-4">
-        @Body
-    </div>
-</div>
