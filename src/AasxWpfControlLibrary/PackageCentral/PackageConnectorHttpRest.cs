@@ -254,9 +254,17 @@ namespace AasxWpfControlLibrary.PackageCentral
                 observableSemanticId: (requestedElement as AdminShell.IGetSemanticId).GetSemanticId(),
                 topic: topic, subject: subject);
 
-            // TODO (MIHO, 2021-01-04): ValueIds still missing ..
+            // goals (1) form the event content from response
+            //       (2) directyl update the associated AAS
+
+            // in order to serve goal (2), a wrapper-root is required from the observableReference,
+            // that is: requestedElement!
+            var wrappers = ((requestedElement as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
 
             // parse dynamic response object
+            // Note: currently only updating Properties
+            // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
+            // TODO (MIHO, 2021-01-04): ValueIds still missing ..
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
             if (frame.ContainsKey("values"))
             {                
@@ -264,19 +272,42 @@ namespace AasxWpfControlLibrary.PackageCentral
                 dynamic vallist = JsonConvert.DeserializeObject(frame["values"].ToString());
                 foreach (var tuple in vallist)
                     if (tuple.path != null)
-                    {                    
+                    {
+                        // KeyList from path
+                        var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
+                                    AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
+                        // goal (1)
                         ev.Values.Add(
-                            new AasEventMsgUpdateValueItem(
-                                AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false, 
-                                    AdminShell.Key.IdShort, tuple.path.ToObject<string[]>()), 
-                                "" + tuple.value));
+                            new AasEventMsgUpdateValueItem(kl, "" + tuple.value));
+
+                        // goal (2)
+                        if (wrappers != null)
+                        {
+                            var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+                                wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
+                            if (x is AdminShell.Property prop)
+                            {
+                                if (tuple.value != null)
+                                    prop.value = tuple.value;
+                            }
+                        }
                     }
             }
             else if (frame.ContainsKey("value"))
             {
-                // populate
+                // access response
+                var val = frame["value"]?.ToString();
+
+                // goal (1)
                 ev.Values.Add(
-                    new AasEventMsgUpdateValueItem(path: null, value: "" + frame["value"].ToString())) ;
+                    new AasEventMsgUpdateValueItem(path: null, value: "" + val)) ;
+                
+                // goal (2)
+                if (reqSme is AdminShell.Property prop)
+                {
+                    if (val != null)
+                        prop.value = val;
+                }
             }
             else
                 throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +

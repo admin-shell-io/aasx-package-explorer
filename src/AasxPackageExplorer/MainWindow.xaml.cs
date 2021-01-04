@@ -1220,9 +1220,12 @@ namespace AasxPackageExplorer
             //
             // Update value?
             //
-            if (ev is AasEventMsgUpdateValue evuv 
+            if (ev is AasEventMsgUpdateValue evuv && evuv.Values != null
                 && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
             {
+                var changedSomething = false;
+
+#if __update_AAS_in_editor
                 // eval potential wrappers for observable
                 AdminShell.SubmodelElementWrapperCollection wrappers = null;
                 if (foundObservable is AdminShell.Submodel fosm)
@@ -1231,7 +1234,6 @@ namespace AasxPackageExplorer
                     wrappers = fosmec.value;
 
                 // go thru all value updates
-                var changedSomething = false;
                 if (evuv.Values != null)
                     foreach (var vl in evuv.Values)
                     {
@@ -1264,6 +1266,9 @@ namespace AasxPackageExplorer
                             changedSomething = true;
                         }
                     }
+#else
+                changedSomething = evuv.Values.Count > 0;
+#endif
 
                 // stupid
                 if (changedSomething)
@@ -1683,8 +1688,8 @@ namespace AasxPackageExplorer
             }
         }
 
-        #endregion
-        #region Modal Flyovers
+#endregion
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -1864,8 +1869,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -1955,7 +1960,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
