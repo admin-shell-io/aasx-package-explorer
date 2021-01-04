@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
+using AdminShellEvents;
 using AdminShellNS;
 
 
@@ -29,6 +30,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageConnectorException(string message) : base(message) { }
     }
 
+    public interface IPackageConnectorManageEvents
+    {
+        bool PushEvent(AasEventMsgBase ev);
+    }
+
     /// <summary>
     /// A package connector create a "live" link to a package residing on another server.
     /// The "live" link coulbe be e.g. events based, but also be a OPC UA connection, a 
@@ -38,7 +44,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// Therefore, the PackageConnector is seen as an extension, ALWAYS maintaining the link
     /// to an underlying <c>PackageContainerBase.</c>
     /// </summary>
-    public class PackageConnectorBase
+    public class PackageConnectorBase : IPackageConnectorManageEvents
     {
         /// <summary>
         /// Link to container; as a (test-wise) design constraint only set by constrction ..
@@ -66,5 +72,18 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             _container = container;
         }
+
+        //
+        // Event handling
+        //
+
+        /// <summary>
+        /// PackageCentral pushes an AAS event message down to the connector.
+        /// Return true, if the event shall be consumed and PackageCentral shall not
+        /// push anything further.
+        /// </summary>
+        /// <param name="ev">The event message</param>
+        /// <returns>True, if consume event</returns>
+        public virtual bool PushEvent(AasEventMsgBase ev) { return false; }
     }
 }

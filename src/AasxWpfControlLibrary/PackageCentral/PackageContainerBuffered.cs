@@ -29,6 +29,18 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public string TempFn;
 
+        //
+        // Constructors
+        //
+
+        public PackageContainerBuffered() { }
+
+        public PackageContainerBuffered(PackageCentral packageCentral) : base (packageCentral) { }
+
+        //
+        // Further
+        //
+
         public string CreateNewTempFn(string sourceFn, Format fmt)
         {
             // TODO (MIHO, 2020-12-25): think of creating a temp file which resemebles the source file

@@ -1022,6 +1022,7 @@ namespace AasxPackageExplorer
         {
             // make dialogue flyout
             var uc = new IntegratedConnectFlyout(
+                packages,
                 initialLocation: "" /* "http://admin-shell-io.com:51310/server/getaasx/0" */,
                 logger: new LogInstance());
             uc.LoadPresets(Options.Curr.IntegratedConnectPresets);

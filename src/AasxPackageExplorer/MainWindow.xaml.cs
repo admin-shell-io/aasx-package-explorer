@@ -23,6 +23,7 @@ using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
+using AdminShellEvents;
 using AdminShellNS;
 
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
@@ -130,9 +131,9 @@ namespace AasxPackageExplorer
         {
             var t = "AASX Package Explorer";
             if (packages.MainAvailable)
-                t += " - " + System.IO.Path.GetFileName(packages.MainItem.Filename);
+                t += " - " + packages.MainItem.ToString();
             if (packages.AuxAvailable)
-                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(packages.AuxItem.Filename) + ")";
+                t += " (auxiliary AASX: " + packages.AuxItem.ToString() + ")";
             this.Title = t;
 
             // clear the right section, first (might be rebuild by callback from below)
@@ -211,7 +212,7 @@ namespace AasxPackageExplorer
                 if (info == null)
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(loadLocalFilename, loadResident: true))
+                if (!packItem.Load(packages, loadLocalFilename, loadResident: true))
                 {
                     Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
                         $"return any result!");
@@ -667,8 +668,10 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
                     
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        packages,
                         location,
                         loadResident: true,
+                        stayConnected: true,
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -708,8 +711,10 @@ namespace AasxPackageExplorer
                         $"from {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        packages,
                         location,
                         loadResident: true,
+                        stayConnected: true,
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -889,8 +894,10 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Info($"Auto-load file from repository {location} into container");
                 container = await PackageContainerFactory.GuessAndCreateForAsync(
+                    packages,
                     location,
                     loadResident: true,
+                    stayConnected: true,
                     runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
             }
             catch (Exception ex)
@@ -1122,6 +1129,162 @@ namespace AasxPackageExplorer
             }
         }
 
+        private DateTime _lastQueuedEvent = DateTime.Now;
+
+        private void MainTimer_PeriodicalTaskForSelectedEntity()
+        {
+            // first check, if the selected page points to something
+            var veSelected = DisplayElements.SelectedItem;
+            if (veSelected == null)
+                return;
+
+            if ((DateTime.Now - _lastQueuedEvent).TotalMilliseconds > 3000)
+            {
+                _lastQueuedEvent = DateTime.Now;
+
+                //
+                // Investigate on Events
+                // Note: for the time being, Events will be only valid, if Event and observed entity are 
+                // within the SAME Submodel
+                //
+
+                try
+                {
+                    var smrSel = veSelected.FindFirstParent((ve) => (ve is VisualElementSubmodelRef), includeThis: true)
+                        as VisualElementSubmodelRef;
+                    if (smrSel != null && smrSel.theSubmodel != null)
+                    {
+                        // parents need to be set
+                        var rootSm = smrSel.theSubmodel;
+                        rootSm.SetAllParents();
+
+                        // check, if the Submodel has interesting events
+                        foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
+                            (true == x?.semanticId?.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
+                             AdminShellV20.Key.MatchMode.Relaxed))))
+                        {
+                            // Submodel defines an events for outgoing value updates -> does the observed scope
+                            // lie in the selection?
+                            var klObserved = ev.observed?.Keys;
+                            var klSelected = veSelected.BuildKeyListToTop(includeAas: false);
+                            // no, klSelected shall lie in klObserved
+                            if (klObserved != null && klSelected != null &&
+                                klSelected.StartsWith(klObserved,
+                                emptyIsTrue: false, matchMode: AdminShellV20.Key.MatchMode.Relaxed))
+                            {
+                                // take a shortcut
+                                if (packages?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
+                                    && cntHttp.ConnectorPrimary is PackageConnectorHttpRest connRest)
+                                {
+                                        Task.Run(async () => {
+                                        try
+                                        {
+                                            await
+                                                connRest.SimulateUpdateValuesEventByGetAsync(
+                                                    smrSel.theSubmodel,
+                                                    ev,
+                                                    veSelected.GetDereferencedMainDataObject() as AdminShell.Referable,
+                                                    timestamp: DateTime.Now,
+                                                    topic: "MY-TOPIC",
+                                                    subject: "ANY-SUBJECT");
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Log.Singleton.Error(ex, "periodically triggering event for simulated update");
+                                            }
+                                        });
+                                }
+                            }
+                        }
+                    }
+                } 
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "periodically checking for triggering events");
+                }
+            }
+        }
+
+        public void MainTaimer_HandleIncomingAasEvents()
+        {
+            // access
+            var ev = packages?.EventBufferEditor?.PopEvent();
+            if (ev == null)
+                return;
+
+            // to be applicable, the event message Observable has to relate into Main's environment
+            var foundObservable = packages?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
+            if (foundObservable == null)
+                return;
+
+            //
+            // Update value?
+            //
+            if (ev is AasEventMsgUpdateValue evuv 
+                && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
+            {
+                // eval potential wrappers for observable
+                AdminShell.SubmodelElementWrapperCollection wrappers = null;
+                if (foundObservable is AdminShell.Submodel fosm)
+                    wrappers = fosm.submodelElements;
+                if (foundObservable is AdminShell.SubmodelElementCollection fosmec)
+                    wrappers = fosmec.value;
+
+                // go thru all value updates
+                var changedSomething = false;
+                if (evuv.Values != null)
+                    foreach (var vl in evuv.Values)
+                    {
+                        if (vl == null)
+                            continue;
+
+                        // Note: currently only updating Properties
+                        // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
+
+                        AdminShell.SubmodelElement smeToModify = null;
+                        if (vl.Path == null && foundObservable is AdminShell.Property fop)
+                            smeToModify = fop;
+                        else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
+                        {
+                            var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+                                wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
+                            if (x is AdminShell.Property fpp)
+                                smeToModify = fpp;
+                        }
+
+                        // something to modify?
+                        if (smeToModify is AdminShell.Property prop)
+                        {
+                            if (vl.Value.StartsWith("14"))
+                                ;
+                            if (vl.Value != null)
+                                prop.value = vl.Value;
+                            if (vl.ValueId != null)
+                                prop.valueId = vl.ValueId;
+                            changedSomething = true;
+                        }
+                    }
+
+                // stupid
+                if (changedSomething)
+                {
+                    // just for test
+                    RedrawElementView();
+                    DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
+                    DisplayElements.Refresh();
+                }
+            }
+        }
+
+        private async Task MainTimer_Tick(object sender, EventArgs e)
+        {
+            MainTimer_HandleLogMessages();
+            await MainTimer_HandleEntityPanel();
+            await MainTimer_HandlePlugins();
+            MainTimer_PeriodicalTaskForSelectedEntity();
+            MainTaimer_HandleIncomingAasEvents();
+        }
+        
         private void SetProgressBar()
         {
             SetProgressBar(0.0, "");
@@ -1138,14 +1301,7 @@ namespace AasxPackageExplorer
                 LabelProgressBarInfo.Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Background,
                     new Action(() => LabelProgressBarInfo.Content = message));
-        }
-
-        private async Task MainTimer_Tick(object sender, EventArgs e)
-        {
-            MainTimer_HandleLogMessages();
-            await MainTimer_HandleEntityPanel();
-            await MainTimer_HandlePlugins();
-        }
+        }        
 
         private void ButtonHistory_HomeRequested(object sender, EventArgs e)
         {

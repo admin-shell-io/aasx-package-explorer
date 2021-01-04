@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPackageExplorer;
+using AdminShellEvents;
 using AdminShellNS;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -38,6 +39,8 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public string Filename { get { return Container?.Filename; } }
 
+        public override string ToString() { return (Container == null) ? "No container!" : Container?.ToString(); }
+
         public void New()
         {
             try
@@ -56,7 +59,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public bool Load(string location, bool loadResident, PackageContainerRuntimeOptions runtimeOptions = null)
+        public bool Load(
+            PackageCentral packageCentral, 
+            string location, bool loadResident, 
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             try
             {
@@ -73,7 +79,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 //                runtimeOptions);
 
                 var task = Task.Run(() => PackageContainerFactory.GuessAndCreateForAsync(
-                    location, loadResident: true,
+                    packageCentral,
+                    location, loadResident: true, stayConnected: true,
                     runtimeOptions));
                 var guess = task.Result;
 
@@ -201,29 +208,29 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public enum Selector { Main, MainAux, MainAuxFileRepo }
 
-        private PackageCentralItem main = new PackageCentralItem();
-        private PackageCentralItem aux = new PackageCentralItem();
+        private PackageCentralItem _main = new PackageCentralItem();
+        private PackageCentralItem _aux = new PackageCentralItem();
 
         public PackageCentralItem MainItem
         {
-            get { return main; }
-            set { main = value; }
+            get { return _main; }
+            set { _main = value; }
         }
 
         public PackageCentralItem AuxItem
         {
-            get { return aux; }
+            get { return _aux; }
         }
 
         public AdminShellPackageEnv Main
         {
-            get { return main?.Container?.Env; }
+            get { return _main?.Container?.Env; }
             // set { main.Env = value; }
         }
 
         public AdminShellPackageEnv Aux
         {
-            get { return aux?.Container?.Env; }
+            get { return _aux?.Container?.Env; }
             // set { aux.Env = value; }
         }
 
@@ -249,6 +256,63 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             get { return Aux?.AasEnv != null; }
         }
+
+        //
+        // Container management
+        //
+
+        public IEnumerable<PackageContainerBase> GetAllContainer()
+        {
+            if (_main?.Container != null)
+                yield return _main?.Container;
+            if (_aux?.Container != null)
+                yield return _aux?.Container;
+        }
+
+        //
+        // Event management
+        //
+
+        private PackageConnectorEventStore _eventStore = new PackageConnectorEventStore(null);
+        public PackageConnectorEventStore EventStore { get { return _eventStore; } }
+
+        private PackageConnectorEventStore _eventBufferEditor = new PackageConnectorEventStore(null);
+        public PackageConnectorEventStore EventBufferEditor { get { return _eventBufferEditor; } }
+
+        public IEnumerable<IPackageConnectorManageEvents> GetAllInstanceManageEvents()
+        {
+            if (_eventStore != null)
+                yield return _eventStore;
+
+            if (_eventBufferEditor != null)
+                yield return _eventBufferEditor;
+
+            foreach (var cnt in GetAllContainer())
+                yield return cnt;
+        }
+
+        public bool PushEvent(AasEventMsgBase ev)
+        {
+            // access
+            if (ev == null)
+                return false;
+            var consume = false;
+
+            // use enumerator
+            foreach (var con in GetAllInstanceManageEvents())
+            {
+                var br = con.PushEvent(ev);
+                if (br)
+                {
+                    consume = true;
+                    break;
+                }
+            }
+
+            // done
+            return consume;
+        }
+
 
     }
 }

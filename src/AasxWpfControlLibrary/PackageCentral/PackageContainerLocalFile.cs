@@ -33,7 +33,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             Init();
         }
 
-        public PackageContainerLocalFile(string sourceFn, bool loadResident = false)
+        public PackageContainerLocalFile(
+            PackageCentral packageCentral,
+            string sourceFn, bool loadResident = false)
+            : base(packageCentral)
         {
             Init();
             SetNewSourceFn(sourceFn);

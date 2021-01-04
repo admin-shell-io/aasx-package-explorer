@@ -424,6 +424,28 @@ namespace AasxPackageExplorer
             return false;
         }
 
+        public int RefreshAllChildsFromMainData (VisualElementGeneric root)
+        {
+            /* TODO (MIHO, 2021-01-04): check to replace all occurences of RefreshFromMainData() by
+             * making the tree-items ObservableCollection and INotifyPropertyChanged */
+
+            // access
+            if (root == null)
+                return 0;
+
+            // self
+            var sum = 1;
+            root.RefreshFromMainData();
+
+            // children?
+            if (root.Members != null)
+                foreach (var child in root.Members)
+                    sum += RefreshAllChildsFromMainData(child);
+
+            // ok
+            return sum;
+        }
+
         //
         // Element View Drawing
         //

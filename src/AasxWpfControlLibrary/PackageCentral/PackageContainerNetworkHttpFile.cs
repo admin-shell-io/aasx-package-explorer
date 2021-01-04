@@ -41,7 +41,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             Init();
         }
 
-        public PackageContainerNetworkHttpFile(string sourceFn)
+        public PackageContainerNetworkHttpFile(
+            PackageCentral packageCentral,
+            string sourceFn)
+            : base (packageCentral)
         {
             Init();
             SetNewSourceFn(sourceFn);
@@ -50,10 +53,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         // nice discussion on how to name factory-like methods
 
         public static async Task<PackageContainerNetworkHttpFile> CreateAsync(
+            PackageCentral packageCentral,
             string sourceFn, bool loadResident = false,
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
-            var res = new PackageContainerNetworkHttpFile(sourceFn);
+            var res = new PackageContainerNetworkHttpFile(packageCentral, sourceFn);
             res.LoadResident = loadResident;
             if (res.LoadResident)
                 await res.InternalLoadFromSourceAsync(runtimeOptions);

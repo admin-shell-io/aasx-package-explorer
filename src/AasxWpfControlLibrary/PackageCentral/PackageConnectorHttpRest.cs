@@ -20,6 +20,8 @@ using System.IO;
 using System.Threading;
 using AasxIntegrationBase;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using AdminShellEvents;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -171,30 +173,118 @@ namespace AasxWpfControlLibrary.PackageCentral
             return new Tuple<AdminShell.AdministrationShell, AdminShell.Asset>(aas, asset);
         }
 
-        public async Task<bool> UpdateValuesFromCompleteAsync(AdminShell.Submodel sm)
+        public async Task<bool> SimulateUpdateValuesEventByGetAsync(
+            AdminShell.Submodel rootSubmodel,
+            AdminShell.BasicEvent sourceEvent,
+            AdminShell.Referable requestedElement,
+            DateTime timestamp,
+            string topic = null,
+            string subject = null)
         {
             // access
             if (!IsValid())
-                throw new PackageConnectorException("PackageConnector::GetSubmodel() connection not valid!");
+                throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    "connection not valid!");
 
-            /* TODO (AO/MIHO, 2020-12-31): right now for the connector, the AAS is addressed by _endpointSegments 
-               and an idShort is required. That is the worst possible implementation and needs to be improved. */
-            if (!sm.idShort.HasContent())
-                throw new PackageConnectorException("PackageConnector::GetSubmodel() requires to have submodel " +
-                    "idShort!");
+            // first check (only allow two types of elements!)
+            var reqSm = requestedElement as AdminShell.Submodel;
+            var reqSme = requestedElement as AdminShell.SubmodelElement;
+            if (rootSubmodel == null || sourceEvent == null
+                || requestedElement == null || timestamp == null
+                || (reqSm == null && reqSme == null) )
+                throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    "input arguments not valid!");
+
+            // need the parent info (even, if the calling app might have used this)
+            rootSubmodel.SetAllParents();
+
+            // get the reference of the sourceEvent and requestedElement
+            var sourceReference = sourceEvent.GetReference();
+            var requestedReference = (reqSm != null) ? reqSm.GetReference() : reqSme.GetReference();
+
+            // 2nd check
+            if (sourceReference == null || requestedReference == null)
+                throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    "element references cannot be determined!");
+
+            // try identify the original Observable
+            //var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+            //    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
+
+            // basically, can query updates of Submodel or SubmodelElements
+            string qst = null;
+            if (reqSm != null && reqSm.idShort.HasContent())
+            {
+                // easy query
+                qst = StartQuery("submodels", reqSm.idShort, "property");
+            }
+            else if (reqSme != null && reqSme.idShort.HasContent()
+                && rootSubmodel.idShort.HasContent())
+            {
+                // build path
+                var path = "" + reqSme.idShort;
+                reqSme.FindAllParents((x) =>
+                {
+                    path = x.idShort + "/" + path;
+                    return true;
+                }, includeThis: false, includeSubmodel: false);
+
+                // full query
+                qst = StartQuery("submodels", rootSubmodel.idShort, "elements", path, "property");
+            }
+
+            // valid
+            if (qst == null)
+                throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    "not enough data to build query path!");
 
             // do the actual query
-            string query = StartQuery("submodels", sm.idShort, "complete");
-            var response = await _client.GetAsync(query);
-            response.EnsureSuccessStatusCode();
-            var stream = await response.Content.ReadAsStreamAsync();
+            string query = StartQuery(qst);
+            var response = await _client.GetAsync(qst);
+            if (!response.IsSuccessStatusCode)
+                throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    $"server did not respond correctly on query {qst} !");
 
-            // convert to updated Referable
-            using (var newSM = AdminShellSerializationHelper
-                .DeserializeFromJSON<AdminShell.Submodel>(new StreamReader(stream)))
-            {
-                ;
+            // prepare basic event message (without sending it)
+            var ev = new AasEventMsgUpdateValue(
+                timestamp,
+                source: sourceReference,
+                sourceSemanticId: sourceEvent.semanticId,
+                observableReference: requestedReference,
+                observableSemanticId: (requestedElement as AdminShell.IGetSemanticId).GetSemanticId(),
+                topic: topic, subject: subject);
+
+            // TODO (MIHO, 2021-01-04): ValueIds still missing ..
+
+            // parse dynamic response object
+            var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
+            if (frame.ContainsKey("values"))
+            {                
+                // populate
+                dynamic vallist = JsonConvert.DeserializeObject(frame["values"].ToString());
+                foreach (var tuple in vallist)
+                    if (tuple.path != null)
+                    {                    
+                        ev.Values.Add(
+                            new AasEventMsgUpdateValueItem(
+                                AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false, 
+                                    AdminShell.Key.IdShort, tuple.path.ToObject<string[]>()), 
+                                "" + tuple.value));
+                    }
             }
+            else if (frame.ContainsKey("value"))
+            {
+                // populate
+                ev.Values.Add(
+                    new AasEventMsgUpdateValueItem(path: null, value: "" + frame["value"].ToString())) ;
+            }
+            else
+                throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
+                    $"cannot parse response!");
+
+            // try send (only, if there were updates)
+            if (ev.Values.Count >= 1)
+                Container?.PackageCentral?.PushEvent(ev);
 
             // ok
             return true;

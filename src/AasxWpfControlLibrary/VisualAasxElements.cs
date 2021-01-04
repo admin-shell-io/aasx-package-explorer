@@ -238,6 +238,77 @@ namespace AasxPackageExplorer
                 if (p(e))
                     yield return e;
         }
+
+        public VisualElementGeneric FindFirstParent(
+            Predicate<VisualElementGeneric> p, bool includeThis = false)
+        {
+            foreach (var x in FindAllParents(p, includeThis))
+                return x;
+            return null;
+        }
+
+        public AdminShell.KeyList BuildKeyListToTop(            
+            bool includeAas = false)
+        {
+            // prepare result
+            var res = new AdminShell.KeyList();
+            var ve = this;
+            while (ve != null)
+            {
+                if (ve is VisualElementSubmodelRef smr)
+                {
+                    // import special case, as Submodel ref is important part of the chain!
+                    if (smr.theSubmodel != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                smr.theSubmodel.GetElementName(), true,
+                                smr.theSubmodel.identification.idType,
+                                smr.theSubmodel.identification.id));
+
+                    // include aas
+                    if (includeAas && ve.Parent is VisualElementAdminShell veAas
+                        && veAas.theAas?.identification != null)
+                    {
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                AdminShell.Key.AAS, true,
+                                veAas.theAas.identification.idType,
+                                veAas.theAas.identification.id));
+                    }
+
+                    break;
+                }
+                else
+                if (ve.GetMainDataObject() is AdminShell.Identifiable iddata)
+                {
+                    // a Identifiable will terminate the list of keys
+                    if (iddata != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(
+                                iddata.GetElementName(), true, iddata.identification.idType, iddata.identification.id));
+                    break;
+                }
+                else
+                if (ve.GetMainDataObject() is AdminShell.Referable rf)
+                {
+                    // add a key and go up ..
+                    if (rf != null)
+                        res.Insert(
+                            0,
+                            AdminShell.Key.CreateNew(rf.GetElementName(), true, "IdShort", rf.idShort));
+                }
+                else
+                // uups!
+                { }
+                // need to go up
+                ve = ve.Parent;
+            }
+
+            return res;
+        }
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric

@@ -386,6 +386,7 @@ namespace AdminShellNS
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
+            public static string SubmodelElement = "SubmodelElement";
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
@@ -543,6 +544,19 @@ namespace AdminShellNS
                 return kl;
             }
 
+            public static KeyList CreateNew(string type, bool local, string idType, string[] valueItems)
+            {
+                // access
+                if (valueItems == null)
+                    return null;
+
+                // prepare
+                var kl = new AdminShell.KeyList();
+                foreach (var x in valueItems)
+                    kl.Add(new AdminShell.Key(type, local, idType, "" + x));
+                return kl;
+            }
+
             // other
 
             public void NumberIndices()
@@ -580,6 +594,30 @@ namespace AdminShellNS
                     }
                     idx++;
                 }
+            }
+
+            public bool StartsWith(KeyList head, bool emptyIsTrue = false, 
+                Key.MatchMode matchMode = Key.MatchMode.Strict)
+            {
+                // access
+                if (head == null)
+                    return false;
+                if (head.Count == 0)
+                    return emptyIsTrue;
+                
+                // simply test element-wise
+                for (int i = 0; i < head.Count; i++)
+                {
+                    // does head have more elements than this list?
+                    if (i >= this.Count)
+                        return false;
+
+                    if (!head[i].Matches(this[i], matchMode))
+                        return false;
+                }
+
+                // ok!
+                return true;
             }
         }
 
@@ -814,9 +852,14 @@ namespace AdminShellNS
                 return same;
             }
 
-            public bool Matches(SemanticId other)
+            public bool Matches(SemanticId other, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
-                return Matches(new Reference(other));
+                return Matches(new Reference(other), matchMode);
+            }
+
+            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            {
+                return Matches(cd?.GetReference(), matchMode);
             }
 
             public string ToString(int format = 0, string delimiter = ",")
@@ -2099,6 +2142,11 @@ namespace AdminShellNS
         public interface IFindAllReferences
         {
             IEnumerable<Reference> FindAllReferences();
+        }
+
+        public interface IGetSemanticId
+        {
+            SemanticId GetSemanticId();
         }
 
         public class AdministrationShell : Identifiable, IFindAllReferences, IGetReference
@@ -3906,6 +3954,9 @@ namespace AdminShellNS
                             yield return cd;
             }
 
+            //
+            // Reference handling
+            //
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
@@ -3999,6 +4050,10 @@ namespace AdminShellNS
                 // nothing in this Environment
                 return null;
             }
+
+            //
+            // Handling of CDs
+            //
 
             public ConceptDescription FindConceptDescription(ConceptDescriptionRef cdr)
             {
@@ -4728,7 +4783,7 @@ namespace AdminShellNS
             // ReSharper enable RedundantArgumentDefaultValue
         }
 
-        public class SubmodelElement : Referable, System.IDisposable, IGetReference
+        public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
@@ -4770,6 +4825,7 @@ namespace AdminShellNS
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();
+            public SemanticId GetSemanticId() { return semanticId; }
 
             // from Qualifiable:
             [XmlArray("qualifier")]
@@ -4922,6 +4978,35 @@ namespace AdminShellNS
                     current = current.parent;
                 }
                 return r;
+            }
+
+            public IEnumerable<Referable> FindAllParents(
+                Predicate<Referable> p, 
+                bool includeThis = false, bool includeSubmodel = false)
+            {
+                // call for this?
+                if (includeThis)
+                {
+                    if (p == null || p.Invoke(this))
+                        yield return this;
+                    else
+                        yield break;
+                }
+
+                // daisy chain all parents ..
+                if (this.parent != null)
+                {
+                    if (this.parent is SubmodelElement psme)
+                    {
+                        foreach (var q in psme.FindAllParents(p, includeThis: true))
+                            yield return q;
+                    }
+                    else if (includeSubmodel && this.parent is Submodel psm)
+                    {
+                        if (p == null || p.Invoke(psm))
+                            yield return this;
+                    }
+                }
             }
 
             public Tuple<string, string> ToCaptionInfo()
@@ -5190,7 +5275,7 @@ namespace AdminShellNS
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
 
-                // as SubmodelElements are not Identifiables, the actual key shall be IdSHort
+                // as SubmodelElements are not Identifiables, the actual key shall be IdShort
                 if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(
                                                                 Key.IdentifierType.IdShort).Trim().ToLower())
                     return null;
@@ -5722,7 +5807,8 @@ namespace AdminShellNS
         }
 
         public class Submodel : Identifiable, IManageSubmodelElements,
-                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences
+                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences,
+                                    IGetSemanticId
         {
             // for JSON only
             [XmlIgnore]
@@ -5760,6 +5846,7 @@ namespace AdminShellNS
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();
+            public SemanticId GetSemanticId() { return semanticId; }
 
             // from Qualifiable:
             [XmlArray("qualifier")]

@@ -34,6 +34,7 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
+        private PackageCentral _packageCentral;
         private string _caption;
         private double? _maxWidth;
         private string _location;
@@ -73,6 +74,7 @@ namespace AasxPackageExplorer
         //
 
         public IntegratedConnectFlyout(
+            PackageCentral packageCentral,
             string caption = null, 
             double? maxWidth = null,
             string initialLocation = null,
@@ -351,6 +353,7 @@ namespace AasxPackageExplorer
             try
             {
                 var x = await PackageContainerFactory.GuessAndCreateForAsync(
+                    _packageCentral,
                     location,
                     loadResident: true,
                     runtimeOptions: ro);

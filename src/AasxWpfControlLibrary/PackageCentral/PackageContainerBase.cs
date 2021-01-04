@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
+using AdminShellEvents;
 using AdminShellNS;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -60,7 +61,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// The container wraps an AdminShellPackageEnv with the availability to upload, download, re-new the package env
     /// and to transport further information (future use).
     /// </summary>
-    public class PackageContainerBase
+    public class PackageContainerBase : IPackageConnectorManageEvents
     {
         public enum Format { Unknown = 0, AASX, XML, JSON }
         public static string[] FormatExt = { ".bin", ".aasx", ".xml", ".json" };
@@ -70,11 +71,27 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AdminShellPackageEnv Env;
         public Format IsFormat = Format.Unknown;
 
+        private PackageCentral _packageCentral;
+        public PackageCentral PackageCentral { get { return _packageCentral; } }
+
         /// <summary>
         /// If true, then PackageContainer will try to automatically load the contents of the package
         /// on application level.
         /// </summary>
         public bool LoadResident;
+
+        /// <summary>
+        /// If the connection shall stay alive, a appropriate connector needs to be created.
+        /// Note, that the connector is an indeppendent object, but will have a link to this
+        /// container!
+        /// </summary>
+        public PackageConnectorBase ConnectorPrimary;
+
+        /// <summary>
+        /// Holds secondary connectors, which might also want to register to the SAME AAS!
+        /// Examples could be plugins for different interface standards.
+        /// </summary>
+        public List<PackageConnectorBase> ConnectorSecondary = new List<PackageConnectorBase>();
 
         //
         // Different capabilities are modelled as delegates, which can be present or not (null), depening
@@ -98,6 +115,17 @@ namespace AasxWpfControlLibrary.PackageCentral
         // the derived classes will selctively set the capabilities
         public CapabilityLoadFromSource LoadFromSource = null;
         public CapabilitySaveAsToSource SaveAsToSource = null;
+
+        //
+        // Constructors
+        //
+
+        public PackageContainerBase() { }
+
+        public PackageContainerBase(PackageCentral packageCentral)
+        {
+            _packageCentral = packageCentral;
+        }
 
         //
         // Base functions
@@ -127,6 +155,45 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML) 
         {
+        }
+
+        //
+        // Connector management
+        //
+
+        public IEnumerable<PackageConnectorBase> GetAllConnectors()
+        {
+            if (ConnectorPrimary != null)
+                yield return ConnectorPrimary;
+            if (ConnectorSecondary != null)
+                foreach (var conn in ConnectorSecondary)
+                    yield return conn;
+        }
+
+        //
+        // Event management
+        //
+
+        public bool PushEvent(AasEventMsgBase ev)
+        {
+            // access
+            if (ev == null)
+                return false;
+            var consume = false;
+
+            // use enumerator
+            foreach (var con in GetAllConnectors())
+            {
+                var br = con.PushEvent(ev);
+                if (br)
+                {
+                    consume = true;
+                    break;
+                }
+            }
+
+            // done
+            return consume;
         }
     }
 

@@ -109,6 +109,8 @@ namespace AasxPredefinedConcepts
                 new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
+
+            thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
         }
 
         //

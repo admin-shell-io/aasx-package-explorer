@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
@@ -21,14 +22,21 @@ namespace AasxWpfControlLibrary.PackageCentral
 {
     public static class PackageContainerFactory
     {
-        public static PackageContainerBase GuessAndCreateFor(string location, bool loadResident,
+        public static PackageContainerBase GuessAndCreateFor(
+            PackageCentral packageCentral,
+            string location, bool loadResident,
+            bool stayConnected = false,
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
-            var task = Task.Run(() => GuessAndCreateForAsync(location, loadResident, runtimeOptions));
+            var task = Task.Run(() => GuessAndCreateForAsync(
+                packageCentral, location, loadResident, stayConnected, runtimeOptions));
             return task.Result;
         }
 
-        public async static Task<PackageContainerBase> GuessAndCreateForAsync(string location, bool loadResident,
+        public async static Task<PackageContainerBase> GuessAndCreateForAsync(
+            PackageCentral packageCentral,
+            string location, bool loadResident,
+            bool stayConnected = false,
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // access
@@ -44,16 +52,29 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
             {
                 // direct evidence of /getaasx/
-                if (ll.Contains("/server/getaasx/"))
+                var match = Regex.Match(ll, @"^(.*)/server/getaasx/([^/])(/|$)");
+                if (match.Success && match.Groups.Count >= 3)
                 {
+                    // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
-                    var x = await PackageContainerNetworkHttpFile.CreateAsync(location, loadResident, runtimeOptions);
-                    return x;
+                    var cnt = await PackageContainerNetworkHttpFile.CreateAsync(
+                                            packageCentral, location, loadResident, runtimeOptions);
+
+                    // create an online connection?
+                    var aasId = match.Groups[2].ToString().Trim();
+                    var aasEndpoint = match.Groups[1].ToString().Trim() + "/aas/" + aasId;
+                    if (stayConnected && aasId.HasContent())
+                    {
+                        cnt.ConnectorPrimary = new PackageConnectorHttpRest(cnt, new Uri(aasEndpoint));
+                    }
+
+                    // done
+                    return cnt;
                 }
 
                 if (ll.Contains("/demo"))
                 {
-                    return await Demo(location, loadResident, runtimeOptions);
+                    return await Demo(packageCentral, location, loadResident, runtimeOptions);
                 }
 
                 runtimeOptions?.Log?.Info($".. no adequate HTTP option found!");
@@ -70,14 +91,16 @@ namespace AasxWpfControlLibrary.PackageCentral
             // if file, try to open (might throw exceptions!)
             if (fi != null)
                 // seems to be a valid (possible) file
-                return new PackageContainerLocalFile(location, loadResident);
+                return new PackageContainerLocalFile(packageCentral, location, loadResident);
 
             // no??
             runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
             return null;
         }
 
-        public async static Task<PackageContainerBase> Demo(string location, bool loadResident,
+        public async static Task<PackageContainerBase> Demo(
+            PackageCentral packageCentral,
+            string location, bool loadResident,
             PackageContainerRuntimeOptions ro = null)
         {
             // Log location
@@ -121,6 +144,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // done
             ro?.Log?.Info($".. demo loading from internet ..");
             return await PackageContainerNetworkHttpFile.CreateAsync(
+                packageCentral,
                 "http://admin-shell-io.com:51310/server/getaasx/0", 
                 // "http://localhost:51310/server/getaasx/0",
                 loadResident, ro);
