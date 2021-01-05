@@ -1,0 +1,45 @@
+﻿<Window x:Class="AasxWpfControlLibrary.WindowtextRichTextBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AasxWpfControlLibrary"
+        mc:Ignorable="d"
+        Title="WindowtextRichTextBox" Height="450" Width="800">
+    <Grid>
+        <RichTextBox>
+            <FlowDocument>
+                <Section>
+                    <Paragraph>
+                        <Run FontFamily="Calibri" FontWeight="Bold" FontSize="24">Hallo, world!</Run></Paragraph>
+                <Paragraph>
+                    <Bold>Test</Bold></Paragraph>
+                <Table>
+                    <Table.Columns>
+                        <TableColumn Width="1*"/>
+                        <TableColumn Width="3*"/>
+                    </Table.Columns>
+                    <TableRowGroup>
+                        <TableRow>
+                            <TableCell BorderBrush="Black" BorderThickness="1">
+                                <Paragraph>Cell1</Paragraph>
+                            </TableCell>
+                            <TableCell BorderBrush="Black" BorderThickness="1">
+                                <Paragraph>Cell2</Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell BorderBrush="Black" BorderThickness="1">
+                                <Paragraph>Cell1</Paragraph>
+                            </TableCell>
+                            <TableCell BorderBrush="Black" BorderThickness="1">
+                                <Paragraph>Cell2</Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+                </Table>
+                </Section>
+            </FlowDocument>
+        </RichTextBox>
+    </Grid>
+</Window>

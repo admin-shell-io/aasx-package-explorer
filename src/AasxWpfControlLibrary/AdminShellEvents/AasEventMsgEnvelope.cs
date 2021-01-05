@@ -70,6 +70,35 @@ namespace AdminShellEvents
         public List<AasPayloadBase> Payloads = new List<AasPayloadBase>();
 
         //
+        // Display
+        //
+
+        // see: https://stackoverflow.com/questions/1820915/how-can-i-format-datetime-to-web-utc-format
+        public string DisplayTimestamp { get { return Timestamp.ToUniversalTime()
+                        .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"); } }
+
+        public string DisplaySource { get { return "" + Source?.Keys?.MostSignificantInfo(); } }
+
+        public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.value; } }
+
+        public string DisplayObservable { get { return "" + ObservableReference?.Keys?.MostSignificantInfo(); } }
+
+        public string DisplayInfo
+        {
+            get
+            {
+                var res = "";
+                if (Payloads != null)
+                {
+                    res += $"({Payloads.Count})";
+                    if (Payloads.Count > 0)
+                        res += " " + Payloads[0].GetType();
+                }
+                return res;
+            }
+        }
+
+        //
         // Constructor
         //
 
@@ -113,6 +142,64 @@ namespace AdminShellEvents
                 $"ObservableSemanticId={"" + ObservableSemanticId?.ToString()}, " +
                 $"Topic=\"{"" + Topic}\", " +
                 $"Subject=\"{"" + Subject}\", ";
+
+            if (Payloads != null)
+                foreach (var pl in Payloads)
+                    res += pl.ToString();
+
+            return res;
+        }
+
+        public static string MarkH1(string text)
+        {
+            return $"<Paragraph><Run FontFamily=\"Calibri\" FontWeight=\"Bold\" FontSize=\"24\">" +
+                $"{"" + text}</Run></Paragraph>";
+        }
+
+        public static string MarkTableRow(params string[] cells)
+        {
+            var res = "<TableRow>";
+
+            if (cells != null)
+                foreach (var c in cells)
+                    res += $"<TableCell><Paragraph>{"" + c}</Paragraph></TableCell>";
+
+            res += "</TableRow>";
+
+            return res;
+        }
+
+        public static string MarkTable(params string[] rows)
+        {
+            var res = "<Table><TableRowGroup>";
+
+            if (rows != null)
+                foreach (var r in rows)
+                    res += r;
+
+            res += "</TableRowGroup></Table>";
+
+            return res;
+        }
+
+        public virtual string ToMarkup()
+        {
+            var res = 
+                MarkH1($"{this.GetType()} @ {"" + Timestamp.ToString()}")
+                + MarkTable(
+                    MarkTableRow("Source", Source?.ToString()),
+                    MarkTableRow("SourceSemantic", SourceSemanticId?.ToString()),
+                    MarkTableRow("SourceSemantic", SourceSemanticId?.ToString()),
+                    MarkTableRow("ObservableReference", ObservableReference?.ToString()),
+                    MarkTableRow("ObservableSemanticId", ObservableSemanticId?.ToString()),
+                    MarkTableRow("Topic", Topic),
+                    MarkTableRow("Subject", Subject)
+                );
+
+            //if (Payloads != null)
+            //    foreach (var pl in Payloads)
+            //        res += pl.ToMarkup();
+
             return res;
         }
      

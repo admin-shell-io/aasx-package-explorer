@@ -173,6 +173,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             return new Tuple<AdminShell.AdministrationShell, AdminShell.Asset>(aas, asset);
         }
 
+        /// <summary>
+        /// Tries to get an HTTP REST update value event and transforms this into an AAS event.
+        /// </summary>
+        /// <returns>True, if an event was emitted</returns>
         public async Task<bool> SimulateUpdateValuesEventByGetAsync(
             AdminShell.Submodel rootSubmodel,
             AdminShell.BasicEvent sourceEvent,
@@ -318,11 +322,15 @@ namespace AasxWpfControlLibrary.PackageCentral
                     $"cannot parse response!");
 
             // try send (only, if there were updates)
+            var res = false;
             if (pluv.Values.Count >= 1)
+            {
                 Container?.PackageCentral?.PushEvent(ev);
+                res = true;
+            }
 
             // ok
-            return true;
+            return res;
         }
 
         private class ListAasItem

@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 using AasxPackageExplorer;
+using System.Windows.Documents;
 
 namespace AdminShellEvents
 {
@@ -22,6 +23,12 @@ namespace AdminShellEvents
     /// Payloads are wrapped in AAS event envelopes or transactions.
     /// </summary>
     public class AasPayloadBase
-    {        
+    {
+
+        public virtual string ToMarkup()
+        {
+            return "";
+        }
+
     }
 }

@@ -273,7 +273,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Event management
         //
 
-        private PackageConnectorEventStore _eventStore = new PackageConnectorEventStore(null);
+        private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
+        // reason: update to ObservableCollection needs to be done in DispatcherThread :-(
         public PackageConnectorEventStore EventStore { get { return _eventStore; } }
 
         private PackageConnectorEventStore _eventBufferEditor = new PackageConnectorEventStore(null);

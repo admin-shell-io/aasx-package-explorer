@@ -417,6 +417,20 @@ namespace AdminShellNS
                 return res;
             }
 
+            public bool IsIdType(string[] value)
+            {
+                if (value == null || idType == null || idType.Trim() == "")
+                    return false;
+                return value.Contains(idType.Trim());
+            }
+
+            public bool IsIdType(string value)
+            {
+                if (value == null || idType == null || idType.Trim() == "")
+                    return false;
+                return value.Trim().Equals(idType.Trim());
+            }
+
             public bool Matches(
                 string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {
@@ -571,6 +585,17 @@ namespace AdminShellNS
                 foreach (var k in this)
                     res += k.ToString(format) + delimiter;
                 return res.TrimEnd(',');
+            }
+
+            public string MostSignificantInfo()
+            {
+                if (this.Count < 1)
+                    return "-";
+                var i = this.Count - 1;
+                var res = this[i].value;
+                if (this[i].IsIdType(new[] { Key.FragmentId }) && i > 0)
+                    res += this[i - 1].value;
+                return res;
             }
 
             // validation

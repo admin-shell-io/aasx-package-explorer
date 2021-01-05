@@ -68,6 +68,19 @@ namespace AdminShellEvents
             return res;
         }
 
+        public virtual string ToMarkup()
+        {
+            var res = "MsgUpdateValueItem: {Observable}";
+            if (Path != null)
+                foreach (var k in Path)
+                    res += "/" + k.value;
+            if (Value != null)
+                res += " = " + Value;
+            if (ValueId != null)
+                res += " = " + ValueId.ToString();
+            return res;
+        }
+
     }
 
     /// <summary>
@@ -118,5 +131,7 @@ namespace AdminShellEvents
                     res += Environment.NewLine + val.ToString();
             return res;
         }
+
+
     }
 }

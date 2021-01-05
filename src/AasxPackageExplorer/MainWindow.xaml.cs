@@ -1131,6 +1131,8 @@ namespace AasxPackageExplorer
 
         private DateTime _lastQueuedEvent = DateTime.Now;
 
+        private bool _eventsUpdateValuePending = false;
+
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
             // first check, if the selected page points to something
@@ -1138,7 +1140,7 @@ namespace AasxPackageExplorer
             if (veSelected == null)
                 return;
 
-            if ((DateTime.Now - _lastQueuedEvent).TotalMilliseconds > 3000)
+            if (!_eventsUpdateValuePending && (DateTime.Now - _lastQueuedEvent).TotalMilliseconds > 3000)
             {
                 _lastQueuedEvent = DateTime.Now;
 
@@ -1187,10 +1189,11 @@ namespace AasxPackageExplorer
                                 if (packages?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
                                     && cntHttp.ConnectorPrimary is PackageConnectorHttpRest connRest)
                                 {
-                                        Task.Run(async () => {
+                                    Task.Run(async () =>
+                                    {
                                         try
                                         {
-                                            await
+                                            var evSnd = await
                                                 connRest.SimulateUpdateValuesEventByGetAsync(
                                                     smrSel.theSubmodel,
                                                     ev,
@@ -1198,12 +1201,14 @@ namespace AasxPackageExplorer
                                                     timestamp: DateTime.Now,
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Log.Singleton.Error(ex, "periodically triggering event for simulated update");
-                                            }
-                                        });
+                                            if (evSnd)
+                                                _eventsUpdateValuePending = true;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Log.Singleton.Error(ex, "periodically triggering event for simulated update");
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -1223,6 +1228,9 @@ namespace AasxPackageExplorer
             if (ev == null)
                 return;
 
+            // log viewer
+            UserContrlEventCollection.PushEvent(ev);
+
             // to be applicable, the event message Observable has to relate into Main's environment
             var foundObservable = packages?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
             if (foundObservable == null)
@@ -1236,6 +1244,9 @@ namespace AasxPackageExplorer
                 foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                 {
                     changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
+                    
+                    // update value received
+                    _eventsUpdateValuePending = false;
                 }
 
             // stupid

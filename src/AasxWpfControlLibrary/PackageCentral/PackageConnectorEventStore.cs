@@ -70,7 +70,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (_eventStore != null)
             {
                 lock (_eventStore)
-                    _eventStore.Add(ev);
+                    _eventStore.Insert(0, ev);
             }
             
             // do not consume, just want to listen!

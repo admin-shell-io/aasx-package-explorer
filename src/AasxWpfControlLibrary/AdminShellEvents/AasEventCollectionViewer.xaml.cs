@@ -1,0 +1,87 @@
+﻿using AasxWpfControlLibrary.PackageCentral;
+using AdminShellEvents;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace AasxWpfControlLibrary.AdminShellEvents
+{
+    /// <summary>
+    /// Interaktionslogik für AasEventCollectionViewer.xaml
+    /// </summary>
+    public partial class AasEventCollectionViewer : UserControl, IPackageConnectorManageEvents
+    {
+        //
+        // Members
+        //
+
+        private ObservableCollection<AasEventMsgEnvelope> _eventStore = new ObservableCollection<AasEventMsgEnvelope>();
+
+        public ObservableCollection<AasEventMsgEnvelope> Store { get { return _eventStore; } }
+
+        //
+        // Constructor
+        //
+
+        public AasEventCollectionViewer()
+        {
+            InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataGridMessages.DataContext = _eventStore;
+
+            TextBlockDetails.SetXaml("<Paragraph><Run>Hallo, world!</Run></Paragraph>");
+        }
+
+        //
+        // Interface
+        //
+
+        /// <summary>
+        /// PackageCentral pushes an AAS event message down to the connector.
+        /// Return true, if the event shall be consumed and PackageCentral shall not
+        /// push anything further.
+        /// </summary>
+        /// <param name="ev">The event message</param>
+        /// <returns>True, if consume event</returns>
+        public bool PushEvent(AasEventMsgEnvelope ev)
+        {
+            // add
+            if (_eventStore != null)
+            {
+                lock (_eventStore)
+                    _eventStore.Insert(0, ev);
+            }
+
+            // do not consume, just want to listen!
+            return false;
+        }
+
+        //
+        // Info
+        //
+
+        private void DataGridMessages_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (DataGridMessages.SelectedItem is AasEventMsgEnvelope msg)
+            {
+                var info = msg.ToMarkup();
+                TextBlockDetails.SetXaml("" + info);
+            }
+        }
+    }
+}

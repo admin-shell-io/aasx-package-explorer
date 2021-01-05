@@ -533,6 +533,31 @@ namespace AasxPackageExplorer
 
             if (cmd == "checkandfix")
                 CommandBinding_CheckAndFix();
+
+            if (cmd == "eventsresetlocks")
+            {
+                Log.Singleton.Info($"Event interlocking reset. Status was: " +
+                    $"update-value-pending={_eventsUpdateValuePending}");
+
+                _eventsUpdateValuePending = false;
+            }
+
+            if (cmd == "eventsshowlogkey")
+                MenuItemWorkspaceEventsShowLog.IsChecked = !MenuItemWorkspaceEventsShowLog.IsChecked;
+
+            if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
+            {
+                var targetState = true == MenuItemWorkspaceEventsShowLog.IsChecked;
+
+                if (!targetState)
+                {
+                    RowDefinitionConcurrent.Height = new GridLength(0);
+                }
+                else
+                {
+                    RowDefinitionConcurrent.Height = new GridLength(140);
+                }
+            }
         }
 
         public void CommandBinding_CheckAndFix()

@@ -58,7 +58,7 @@
 
                 <DataGrid  x:Name="DataGridPlotItems" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding}" 
                            CanUserAddRows="False" BorderThickness="0" Background="Transparent"
-                           HeadersVisibility="Column" Margin="4, 0, 4, 0"
+                           HeadersVisibility="Column" Margin="4, 0, 4, 0" IsReadOnly="True"
                            AutoGenerateColumns="False">
                     <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
                     <DataGrid.Columns>
