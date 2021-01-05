@@ -287,10 +287,12 @@ namespace AasxPluginPlotting
                 panel.Children.Clear();
 
                 // go over all groups                
+                ScottPlot.WpfPlot lastPlot = null;
                 foreach (var groupPI in GetItemsGrouped())
                 {
                     // start new group
                     var wpfPlot = new ScottPlot.WpfPlot();
+                    lastPlot = wpfPlot;
                     wpfPlot.plt.AntiAlias(false, false, false);
                     wpfPlot.AxisChanged += (s,e) => WpfPlot_AxisChanged(wpfPlot,e);
                     groupPI.WpfPlot = wpfPlot;
@@ -298,8 +300,7 @@ namespace AasxPluginPlotting
 
                     // for all wpf / all signals
                     wpfPlot.Height = plotHeight;
-                    wpfPlot.plt.XLabel("Samples");
-                    wpfPlot.plt.YLabel("");
+                    // wpfPlot.plt.YLabel("Value");
 
                     // for each signal
                     foreach (var pi in groupPI)
@@ -317,9 +318,15 @@ namespace AasxPluginPlotting
                     }
 
                     // render the plot into panel
-                    wpfPlot.plt.Legend();
+                    wpfPlot.plt.Legend(fontSize: 9.0f);
                     panel.Children.Add(wpfPlot);
                     wpfPlot.Render(skipIfCurrentlyRendering: true);
+                }
+
+                // for the last plot ..
+                if (lastPlot != null)
+                {
+                    lastPlot.plt.XLabel("Samples");
                 }
 
                 // return groups for notice
@@ -526,6 +533,19 @@ namespace AasxPluginPlotting
         {
             // simply disable mouse scroll for ScrollViewer, as it conflicts with the plots
             e.Handled = true;
+
+#if __TEST_DOES_NOT_WORK
+            if (StackPanelCharts.Children != null)
+                foreach (var uc in StackPanelCharts.Children)
+                    if (uc is ScottPlot.WpfPlot wpfPlot)
+                    {
+                        // wpfPlot.RaiseEvent(new RoutedEventArgs(UIElement.PreviewMouseWheelEvent, sender));
+                        var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                        eventArg.RoutedEvent = UIElement.PreviewMouseWheelEvent;
+                        eventArg.Source = sender;
+                        wpfPlot.RaiseEvent(eventArg);
+                    }
+#endif
         }
     }
 }

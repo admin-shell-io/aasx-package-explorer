@@ -51,14 +51,14 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-
-                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                           Margin="0,10,0,0" FontWeight="Bold">
                     The following Properties have been qualified by "Plotting.Args":
                 </TextBlock>
 
                 <DataGrid  x:Name="DataGridPlotItems" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding}" 
                            CanUserAddRows="False" BorderThickness="0" Background="Transparent"
-                           HeadersVisibility="Column"
+                           HeadersVisibility="Column" Margin="4, 0, 4, 0"
                            AutoGenerateColumns="False">
                     <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
                     <DataGrid.Columns>
@@ -75,7 +75,8 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,10,0,0">
+                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                           Margin="0,10,0,0" FontWeight="Bold">
                     Charts, sorted by groups:
                 </TextBlock>
 
