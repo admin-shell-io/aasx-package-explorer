@@ -246,13 +246,15 @@ namespace AasxWpfControlLibrary.PackageCentral
                     $"server did not respond correctly on query {qst} !");
 
             // prepare basic event message (without sending it)
-            var ev = new AasEventMsgUpdateValue(
+            var pluv = new AasPayloadUpdateValue();
+            var ev = new AasEventMsgEnvelope(
                 timestamp,
                 source: sourceReference,
                 sourceSemanticId: sourceEvent.semanticId,
                 observableReference: requestedReference,
                 observableSemanticId: (requestedElement as AdminShell.IGetSemanticId).GetSemanticId(),
-                topic: topic, subject: subject);
+                topic: topic, subject: subject,
+                payload: pluv);
 
             // goals (1) form the event content from response
             //       (2) directyl update the associated AAS
@@ -277,8 +279,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                         var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
                                     AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
                         // goal (1)
-                        ev.Values.Add(
-                            new AasEventMsgUpdateValueItem(kl, "" + tuple.value));
+                        pluv.Values.Add(
+                            new AasPayloadUpdateValueItem(kl, "" + tuple.value));
 
                         // goal (2)
                         if (wrappers != null)
@@ -290,7 +292,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 if (tuple.value != null)
                                     prop.value = tuple.value;
                             }
-                            ev.IsAlreadyUpdatedToAAS = true;
+                            pluv.IsAlreadyUpdatedToAAS = true;
                         }
                     }
             }
@@ -300,15 +302,15 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var val = frame["value"]?.ToString();
 
                 // goal (1)
-                ev.Values.Add(
-                    new AasEventMsgUpdateValueItem(path: null, value: "" + val)) ;
+                pluv.Values.Add(
+                    new AasPayloadUpdateValueItem(path: null, value: "" + val)) ;
 
                 // goal (2)
                 if (reqSme is AdminShell.Property prop)
                 {
                     if (val != null)
                         prop.value = val;
-                    ev.IsAlreadyUpdatedToAAS = true;
+                    pluv.IsAlreadyUpdatedToAAS = true;
                 }
             }
             else
@@ -316,7 +318,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     $"cannot parse response!");
 
             // try send (only, if there were updates)
-            if (ev.Values.Count >= 1)
+            if (pluv.Values.Count >= 1)
                 Container?.PackageCentral?.PushEvent(ev);
 
             // ok

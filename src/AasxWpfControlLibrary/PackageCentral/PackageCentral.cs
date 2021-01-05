@@ -291,7 +291,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 yield return cnt;
         }
 
-        public bool PushEvent(AasEventMsgBase ev)
+        public bool PushEvent(AasEventMsgEnvelope ev)
         {
             // access
             if (ev == null)

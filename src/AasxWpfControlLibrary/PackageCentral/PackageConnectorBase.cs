@@ -32,7 +32,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
     public interface IPackageConnectorManageEvents
     {
-        bool PushEvent(AasEventMsgBase ev);
+        bool PushEvent(AasEventMsgEnvelope ev);
     }
 
     /// <summary>
@@ -84,6 +84,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// </summary>
         /// <param name="ev">The event message</param>
         /// <returns>True, if consume event</returns>
-        public virtual bool PushEvent(AasEventMsgBase ev) { return false; }
+        public virtual bool PushEvent(AasEventMsgEnvelope ev) { return false; }
     }
 }

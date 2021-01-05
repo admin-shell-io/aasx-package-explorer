@@ -18,12 +18,12 @@ using AasxPackageExplorer;
 namespace AdminShellEvents
 {
     /// <summary>
-    /// Base class fro any AAS event. AAS events shall interoperably exchage asynchronous information between
+    /// Outer class for any AAS event. AAS events shall interoperably exchage asynchronous information between
     /// different execution environments "operating" AASes. This basic event class is described in AASiD Part 1.
     /// 
-    /// Note: The Payload of the Event is realized by overloading this base class.
+    /// Note: This envelope is able to carry one or multiple even payloads.
     /// </summary>
-    public class AasEventMsgBase
+    public class AasEventMsgEnvelope
     {
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
@@ -64,20 +64,27 @@ namespace AdminShellEvents
         /// </summary>
         public DateTime Timestamp { get; set; }
 
+        /// <summary>
+        /// Carries one or more events payloads.
+        /// </summary>
+        public List<AasPayloadBase> Payloads = new List<AasPayloadBase>();
+
         //
         // Constructor
         //
 
-        public AasEventMsgBase() { }
+        public AasEventMsgEnvelope() { }
 
-        public AasEventMsgBase(
+        public AasEventMsgEnvelope(
             DateTime timestamp,
             AdminShell.Reference source = null,
             AdminShell.SemanticId sourceSemanticId = null,
             AdminShell.Reference observableReference = null,
             AdminShell.SemanticId observableSemanticId = null,
-            string topic = null, 
-            string subject = null)
+            string topic = null,
+            string subject = null,
+            AasPayloadBase payload = null,
+            List<AasPayloadBase> payloads = null)
         {
             Timestamp = timestamp;
             Source = source;
@@ -86,6 +93,10 @@ namespace AdminShellEvents
             ObservableSemanticId = observableSemanticId;
             Topic = topic;
             Subject = subject;
+            if (payload != null)
+                Payloads.Add(payload);
+            if (payloads != null)
+                Payloads.AddRange(payloads);
         }
 
         //
@@ -104,6 +115,21 @@ namespace AdminShellEvents
                 $"Subject=\"{"" + Subject}\", ";
             return res;
         }
-        
+     
+        //
+        // Payloads
+        //
+
+        /// <summary>
+        /// Get Payloads of a specific type.
+        /// </summary>
+        public IEnumerable<T> GetPayloads<T>() where T : AasPayloadBase
+        {
+            if (Payloads == null)
+                yield break;
+            foreach (var pl in Payloads)
+                if (pl is T)
+                    yield return pl as T;
+        }
     }
 }

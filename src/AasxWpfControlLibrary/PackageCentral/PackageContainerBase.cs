@@ -174,7 +174,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Event management
         //
 
-        private bool CheckPushedEventInternal(AasEventMsgBase ev)
+        private bool CheckPushedEventInternal(AasEventMsgEnvelope ev)
         {
             // access
             if (ev == null)
@@ -191,58 +191,60 @@ namespace AasxWpfControlLibrary.PackageCentral
             // Note: an update will only be executed, if NOT ALREADY marked as being updated in the
             //       event message. MOST LIKELY, the AAS update will be done in the connector, already!
             //
-            if (ev is AasEventMsgUpdateValue evuv 
-                && evuv.Values != null
-                && !evuv.IsAlreadyUpdatedToAAS
-                && foundObservable is AdminShell.IEnumerateChildren
-                && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
+            foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
             {
-                // will later access children ..
-                var wrappers = ((foundObservable as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
-                var changedSomething = false;
+                if (pluv.Values != null
+                    && !pluv.IsAlreadyUpdatedToAAS
+                    && foundObservable is AdminShell.IEnumerateChildren
+                    && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
+                {
+                    // will later access children ..
+                    var wrappers = ((foundObservable as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
+                    var changedSomething = false;
 
-                // go thru all value updates
-                if (evuv.Values != null)
-                    foreach (var vl in evuv.Values)
-                    {
-                        if (vl == null)
-                            continue;
-
-                        // Note: currently only updating Properties
-                        // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
-
-                        AdminShell.SubmodelElement smeToModify = null;
-                        if (vl.Path == null && foundObservable is AdminShell.Property fop)
-                            smeToModify = fop;
-                        else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
+                    // go thru all value updates
+                    if (pluv.Values != null)
+                        foreach (var vl in pluv.Values)
                         {
-                            var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
-                            if (x is AdminShell.Property fpp)
-                                smeToModify = fpp;
+                            if (vl == null)
+                                continue;
+
+                            // Note: currently only updating Properties
+                            // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
+
+                            AdminShell.SubmodelElement smeToModify = null;
+                            if (vl.Path == null && foundObservable is AdminShell.Property fop)
+                                smeToModify = fop;
+                            else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
+                            {
+                                var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+                                    wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
+                                if (x is AdminShell.Property fpp)
+                                    smeToModify = fpp;
+                            }
+
+                            // something to modify?
+                            if (smeToModify is AdminShell.Property prop)
+                            {
+                                if (vl.Value != null)
+                                    prop.value = vl.Value;
+                                if (vl.ValueId != null)
+                                    prop.valueId = vl.ValueId;
+                                changedSomething = true;
+                            }
                         }
 
-                        // something to modify?
-                        if (smeToModify is AdminShell.Property prop)
-                        {
-                            if (vl.Value != null)
-                                prop.value = vl.Value;
-                            if (vl.ValueId != null)
-                                prop.valueId = vl.ValueId;
-                            changedSomething = true;
-                        }
-                    }
-
-                // if something was changed, the event messages is to be consumed
-                if (changedSomething)
-                    return true;
+                    // if something was changed, the event messages is to be consumed
+                    if (changedSomething)
+                        return true;
+                }
             }
 
             // no
             return false;
         }
 
-        public bool PushEvent(AasEventMsgBase ev)
+        public bool PushEvent(AasEventMsgEnvelope ev)
         {
             // access
             if (ev == null)

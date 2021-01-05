@@ -19,7 +19,7 @@ using System.Xml.Serialization;
 
 namespace AdminShellEvents
 {
-    public class AasEventMsgUpdateValueItem
+    public class AasPayloadUpdateValueItem
     {
         /// <summary>
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
@@ -41,7 +41,7 @@ namespace AdminShellEvents
         // Constructor
         //
 
-        public AasEventMsgUpdateValueItem(
+        public AasPayloadUpdateValueItem(
             AdminShell.KeyList path = null,
             string value = null,
             AdminShell.Reference valueId = null)
@@ -73,12 +73,12 @@ namespace AdminShellEvents
     /// <summary>
     /// This event-message transports updated information of values of designated SubmodelElements
     /// </summary>
-    public class AasEventMsgUpdateValue : AasEventMsgBase
+    public class AasPayloadUpdateValue : AasPayloadBase
     {
         /// <summary>
         /// Holds a list of update value items, each of them relative to the Event's Observable.
         /// </summary>
-        public List<AasEventMsgUpdateValueItem> Values = new List<AasEventMsgUpdateValueItem>();
+        public List<AasPayloadUpdateValueItem> Values = new List<AasPayloadUpdateValueItem>();
 
         /// <summary>
         /// Flags, if the update value changes reported in the event message are already indorporated
@@ -92,44 +92,15 @@ namespace AdminShellEvents
         // Constructor
         //
 
-        public AasEventMsgUpdateValue(
-            DateTime timestamp,
-            AdminShell.Reference source = null,
-            AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
-            AdminShell.SemanticId observableSemanticId = null,
-            string topic = null,
-            string subject = null)
-            : base(timestamp, source, sourceSemanticId, observableReference, observableSemanticId, topic, subject) 
-        {
-        }
+        public AasPayloadUpdateValue() { }
 
-        public AasEventMsgUpdateValue(
-            DateTime timestamp,
-            AasEventMsgUpdateValueItem[] values,
-            AdminShell.Reference source = null,
-            AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
-            AdminShell.SemanticId observableSemanticId = null,
-            string topic = null,
-            string subject = null)
-            : base(timestamp, source, sourceSemanticId, observableReference, observableSemanticId, topic, subject)
+        public AasPayloadUpdateValue(AasPayloadUpdateValueItem[] values)
         {
             if (values != null)
                 Values.AddRange(values);
         }
 
-        public AasEventMsgUpdateValue(
-            DateTime timestamp,
-            AasEventMsgUpdateValueItem value,
-            AasEventMsgUpdateValueItem[] values,
-            AdminShell.Reference source = null,
-            AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
-            AdminShell.SemanticId observableSemanticId = null,
-            string topic = null,
-            string subject = null)
-            : base(timestamp, source, sourceSemanticId, observableReference, observableSemanticId, topic, subject)
+        public AasPayloadUpdateValue(AasPayloadUpdateValueItem value)
         {
             if (value != null)
                 Values.Add(value);

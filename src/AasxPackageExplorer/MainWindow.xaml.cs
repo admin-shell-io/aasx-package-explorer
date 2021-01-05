@@ -1229,71 +1229,27 @@ namespace AasxPackageExplorer
                 return;
 
             //
-            // Update value?
+            // Update values?
             //
-            if (ev is AasEventMsgUpdateValue evuv && evuv.Values != null
-                && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
-            {
-                var changedSomething = false;
-
-#if __update_AAS_in_editor
-                // eval potential wrappers for observable
-                AdminShell.SubmodelElementWrapperCollection wrappers = null;
-                if (foundObservable is AdminShell.Submodel fosm)
-                    wrappers = fosm.submodelElements;
-                if (foundObservable is AdminShell.SubmodelElementCollection fosmec)
-                    wrappers = fosmec.value;
-
-                // go thru all value updates
-                if (evuv.Values != null)
-                    foreach (var vl in evuv.Values)
-                    {
-                        if (vl == null)
-                            continue;
-
-                        // Note: currently only updating Properties
-                        // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
-
-                        AdminShell.SubmodelElement smeToModify = null;
-                        if (vl.Path == null && foundObservable is AdminShell.Property fop)
-                            smeToModify = fop;
-                        else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
-                        {
-                            var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
-                            if (x is AdminShell.Property fpp)
-                                smeToModify = fpp;
-                        }
-
-                        // something to modify?
-                        if (smeToModify is AdminShell.Property prop)
-                        {
-                            if (vl.Value.StartsWith("14"))
-                                ;
-                            if (vl.Value != null)
-                                prop.value = vl.Value;
-                            if (vl.ValueId != null)
-                                prop.valueId = vl.ValueId;
-                            changedSomething = true;
-                        }
-                    }
-#else
-                changedSomething = evuv.Values.Count > 0;
-#endif
-
-                // stupid
-                if (changedSomething)
+            var changedSomething = false;
+            if (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement)
+                foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                 {
-                    // just for test
-                    DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
-                    DisplayElements.Refresh();
-
-                    // apply white list for automatic redisplay
-                    // Note: do not re-display plugins!!
-                    var ves = DisplayElements.SelectedItem;
-                    if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
-                        RedrawElementView();
+                    changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
                 }
+
+            // stupid
+            if (changedSomething)
+            {
+                // just for test
+                DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
+                DisplayElements.Refresh();
+
+                // apply white list for automatic redisplay
+                // Note: do not re-display plugins!!
+                var ves = DisplayElements.SelectedItem;
+                if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
+                    RedrawElementView();
             }
         }
 

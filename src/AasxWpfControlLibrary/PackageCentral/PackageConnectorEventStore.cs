@@ -31,9 +31,9 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// </summary>
     public class PackageConnectorEventStore : PackageConnectorBase
     {
-        private ObservableCollection<AasEventMsgBase> _eventStore = new ObservableCollection<AasEventMsgBase>();
+        private ObservableCollection<AasEventMsgEnvelope> _eventStore = new ObservableCollection<AasEventMsgEnvelope>();
 
-        public ObservableCollection<AasEventMsgBase> Store { get { return _eventStore; } }
+        public ObservableCollection<AasEventMsgEnvelope> Store { get { return _eventStore; } }
 
         //
         // Constructors
@@ -64,7 +64,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// </summary>
         /// <param name="ev">The event message</param>
         /// <returns>True, if consume event</returns>
-        public override bool PushEvent(AasEventMsgBase ev) 
+        public override bool PushEvent(AasEventMsgEnvelope ev) 
         {
             // add
             if (_eventStore != null)
@@ -80,7 +80,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <summary>
         /// Pops the oldest event ..
         /// </summary>
-        public AasEventMsgBase PopEvent()
+        public AasEventMsgEnvelope PopEvent()
         {
             if (_eventStore == null)
                 return null;
