@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 using AasxPackageExplorer;
+using AasxWpfControlLibrary.MiniMarkup;
 
 namespace AdminShellEvents
 {
@@ -149,56 +150,40 @@ namespace AdminShellEvents
 
             return res;
         }
-
-        public static string MarkH1(string text)
+        
+        public virtual MiniMarkupBase ToMarkup()
         {
-            return $"<Paragraph><Run FontFamily=\"Calibri\" FontWeight=\"Bold\" FontSize=\"24\">" +
-                $"{"" + text}</Run></Paragraph>";
-        }
+            int w1 = 30;
+            var ts = Timestamp.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+            var res =
+                new MiniMarkupSequence(
+                    new MiniMarkupLine(new MiniMarkupRun(
+                        $"AAS event message @ {ts}", fontSize: 16.0f)),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("Source:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(Source?.ToString())),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("SourceSemantic:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(SourceSemanticId?.ToString())),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("ObservableReference:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(ObservableReference?.ToString())),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("ObservableSemanticId:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(ObservableSemanticId?.ToString())),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("Topic:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(Topic)),
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("Subject:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun(Subject))
+                    );
 
-        public static string MarkTableRow(params string[] cells)
-        {
-            var res = "<TableRow>";
-
-            if (cells != null)
-                foreach (var c in cells)
-                    res += $"<TableCell><Paragraph>{"" + c}</Paragraph></TableCell>";
-
-            res += "</TableRow>";
-
-            return res;
-        }
-
-        public static string MarkTable(params string[] rows)
-        {
-            var res = "<Table><TableRowGroup>";
-
-            if (rows != null)
-                foreach (var r in rows)
-                    res += r;
-
-            res += "</TableRowGroup></Table>";
-
-            return res;
-        }
-
-        public virtual string ToMarkup()
-        {
-            var res = 
-                MarkH1($"{this.GetType()} @ {"" + Timestamp.ToString()}")
-                + MarkTable(
-                    MarkTableRow("Source", Source?.ToString()),
-                    MarkTableRow("SourceSemantic", SourceSemanticId?.ToString()),
-                    MarkTableRow("SourceSemantic", SourceSemanticId?.ToString()),
-                    MarkTableRow("ObservableReference", ObservableReference?.ToString()),
-                    MarkTableRow("ObservableSemanticId", ObservableSemanticId?.ToString()),
-                    MarkTableRow("Topic", Topic),
-                    MarkTableRow("Subject", Subject)
-                );
-
-            //if (Payloads != null)
-            //    foreach (var pl in Payloads)
-            //        res += pl.ToMarkup();
+            var sum = new List<MiniMarkupBase>();
+            if (Payloads != null)
+                foreach (var pl in Payloads)
+                    sum.Add(pl.ToMarkup());
+            res.Children.AddRange(sum);
 
             return res;
         }

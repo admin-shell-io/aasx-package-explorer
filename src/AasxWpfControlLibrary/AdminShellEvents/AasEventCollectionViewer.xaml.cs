@@ -80,7 +80,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
             if (DataGridMessages.SelectedItem is AasEventMsgEnvelope msg)
             {
                 var info = msg.ToMarkup();
-                TextBlockDetails.SetXaml("" + info);
+                TextBlockDetails.SetMarkup(info);
             }
         }
     }

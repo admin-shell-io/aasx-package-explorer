@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using AasxPackageExplorer;
 using System.Windows.Documents;
+using AasxWpfControlLibrary.MiniMarkup;
 
 namespace AdminShellEvents
 {
@@ -24,11 +25,9 @@ namespace AdminShellEvents
     /// </summary>
     public class AasPayloadBase
     {
-
-        public virtual string ToMarkup()
+        public virtual MiniMarkupBase ToMarkup() 
         {
-            return "";
+            return null;
         }
-
     }
 }

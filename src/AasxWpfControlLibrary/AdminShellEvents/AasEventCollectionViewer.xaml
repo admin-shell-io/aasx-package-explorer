@@ -53,6 +53,6 @@
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
                           ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
 
-        <wpfc:MiniMarkupRichTextBox x:Name="TextBlockDetails" Grid.Row="3"/>
+        <wpfc:MiniMarkupRichTextBox x:Name="TextBlockDetails" Grid.Row="3" VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </UserControl>

@@ -16,6 +16,7 @@ using AdminShellNS;
 using AasxPackageExplorer;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
+using AasxWpfControlLibrary.MiniMarkup;
 
 namespace AdminShellEvents
 {
@@ -55,7 +56,7 @@ namespace AdminShellEvents
         // Serialisation
         //
 
-        public override string ToString()
+        public string ToString()
         {
             var res = "MsgUpdateValueItem: {Observable}";
             if (Path != null)
@@ -68,17 +69,22 @@ namespace AdminShellEvents
             return res;
         }
 
-        public virtual string ToMarkup()
+        public MiniMarkupBase ToMarkup()
         {
-            var res = "MsgUpdateValueItem: {Observable}";
+            var left = "  MsgUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    res += "/" + k.value;
+                    left += "/" + k.value;
+
+            var right = "";
             if (Value != null)
-                res += " = " + Value;
+                right += " = " + Value;
             if (ValueId != null)
-                res += " = " + ValueId.ToString();
-            return res;
+                right += " = " + ValueId.ToString();
+
+            return new MiniMarkupLine(
+                new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
+                new MiniMarkupRun(right));
         }
 
     }
@@ -132,6 +138,13 @@ namespace AdminShellEvents
             return res;
         }
 
-
+        public override MiniMarkupBase ToMarkup()
+        {
+            var res = new MiniMarkupSequence();
+            if (Values != null)
+                foreach (var val in Values)
+                    res.Children.Add(val.ToMarkup());            
+            return res;
+        }
     }
 }
