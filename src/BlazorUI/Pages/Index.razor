@@ -200,7 +200,7 @@
                         Program.helper.DisplayOrEditAasEntitySubmodelElement(
                                     Program.packages, Program.env.AasEnv, selectedNode.ParentContainer,
                                     selectedNode.Wrapper,
-                                    sme, Program.editMode, Program.repo, Program.stack17, hintMode: Program.hintMode);
+                                    sme, Program.editMode, Program.helper.repo, Program.stack17, hintMode: Program.hintMode);
                         if (Program.stack17.Children.Count != 0)
                             view = true;
                     }
@@ -395,6 +395,10 @@
                         }
                     }
                 }
+                else
+                {
+                    <br />
+                }
             }
         </div>
     </div>
@@ -500,7 +504,6 @@
                     if (isSelected)
                     {
                         selectedNode = findPath(selectedNodePath);
-                        SelectedNode = selectedNode;                  
                     }
                     if (isExpanded)
                     {
@@ -521,6 +524,7 @@
                     newDataMode = 0;
                     break;
             }
+            SelectedNode = selectedNode;
             // update = false;
             // updateNode(viewItems[0]);
         }
