@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -120,7 +121,18 @@ namespace AasxPackageExplorer
                 set { filename = value; OnPropertyChanged("InfoFilename"); }
             }
 
+            //
+            // Container options
+            //
+
+            /// <summary>
+            /// Options for the package. Could be <c>null</c>!
+            /// </summary>
+            public PackageContainerOptionsBase Options;
+
+            //
             // dynamic members, to be not persisted            
+            //
 
             /// <summary>
             /// Visual animation, currently displayed

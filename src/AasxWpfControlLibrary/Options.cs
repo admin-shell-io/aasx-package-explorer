@@ -233,6 +233,22 @@ namespace AasxPackageExplorer
         public bool LoadWithoutPrompt = false;
 
         /// <summary>
+        /// Default value for the StayConnected options of PackageContainer.
+        /// That is, a loaded container will automatically try receive events, e.g. for value update.
+        /// </summary>
+        public bool DefaultStayConnected = false;
+
+        /// <summary>
+        /// CONSTANT for the DefaultUpdatePeriod option.
+        /// </summary>
+        public const int MinimumUpdatePeriod = 200;
+
+        /// <summary>
+        /// Default value for the update period in [ms] for StayConnect containers.
+        /// </summary>
+        public int DefaultUpdatePeriod = 0;
+
+        /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]
@@ -345,6 +361,11 @@ namespace AasxPackageExplorer
                 if (arg == "-load-without-prompt")
                 {
                     optionsInformation.LoadWithoutPrompt = true;
+                    continue;
+                }
+                if (arg == "-stay-connected")
+                {
+                    optionsInformation.DefaultStayConnected = true;
                     continue;
                 }
 
@@ -535,6 +556,13 @@ namespace AasxPackageExplorer
                     optionsInformation.PluginDll.Add(
                         new PluginDllInfo(args[index + 1], pluginArgs.ToArray()));
                     pluginArgs.Clear();
+                    index++;
+                    continue;
+                }
+                if (arg == "-update-period" && morearg > 0)
+                {
+                    if (Int32.TryParse(args[index + 1], out int i))
+                        optionsInformation.DefaultUpdatePeriod = i;
                     index++;
                     continue;
                 }

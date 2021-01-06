@@ -352,10 +352,17 @@ namespace AasxPackageExplorer
             // try do the magic
             try
             {
+                // quickly parse out container options
+                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
+                copts.StayConnected = true == CheckBoxStayConnected.IsChecked;
+                if (Int32.TryParse("" + TextBoxUpdatePeriod.Text, out int i))
+                    copts.UpdatePeriod = Math.Max(OptionsInformation.MinimumUpdatePeriod, i);
+
+                // create container
                 var x = await PackageContainerFactory.GuessAndCreateForAsync(
                     _packageCentral,
                     location,
-                    loadResident: true,
+                    copts,
                     runtimeOptions: ro);
 
                 // returning "x" is the only way to end the dialogue successfuly

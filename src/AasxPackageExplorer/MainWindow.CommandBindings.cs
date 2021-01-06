@@ -160,7 +160,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // save
-                    packages.MainItem.SaveAs();
+                    packages.MainItem.SaveAs(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
                     // backup
                     if (Options.Curr.BackupDir != null)
                         packages.MainItem.Container.BackupInDir(

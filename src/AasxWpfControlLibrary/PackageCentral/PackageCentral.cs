@@ -61,7 +61,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public bool Load(
             PackageCentral packageCentral, 
-            string location, bool loadResident, 
+            string location, PackageContainerOptionsBase containerOptions = null, 
             PackageContainerRuntimeOptions runtimeOptions = null)
         {
             try
@@ -80,7 +80,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 var task = Task.Run(() => PackageContainerFactory.GuessAndCreateForAsync(
                     packageCentral,
-                    location, loadResident: true, stayConnected: true,
+                    location, containerOptions, 
                     runtimeOptions));
                 var guess = task.Result;
 
@@ -153,13 +153,14 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         public bool SaveAs(string saveAsNewFileName = null, 
-            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             try
             {
                 if (Container.SaveAsToSource != null)
                 {
-                    Container.SaveAsToSource(saveAsNewFileName, prefFmt);
+                    Container.SaveAsToSource(saveAsNewFileName, prefFmt, runtimeOptions);
                     return true;
                 }
 

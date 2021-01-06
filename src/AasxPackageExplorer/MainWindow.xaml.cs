@@ -212,7 +212,8 @@ namespace AasxPackageExplorer
                 if (info == null)
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(packages, loadLocalFilename, loadResident: true))
+                if (!packItem.Load(packages, loadLocalFilename, 
+                    PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true)))
                 {
                     Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
                         $"return any result!");
@@ -662,6 +663,11 @@ namespace AasxPackageExplorer
                 // start animation
                 packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
+                // container options
+                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
+                if (fi.Options != null)
+                    copts = fi.Options;
+
                 // try load ..
                 try
                 {
@@ -670,8 +676,7 @@ namespace AasxPackageExplorer
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         packages,
                         location,
-                        loadResident: true,
-                        stayConnected: true,
+                        copts,
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -713,8 +718,7 @@ namespace AasxPackageExplorer
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         packages,
                         location,
-                        loadResident: true,
-                        stayConnected: true,
+                        PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true),
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -896,8 +900,7 @@ namespace AasxPackageExplorer
                 container = await PackageContainerFactory.GuessAndCreateForAsync(
                     packages,
                     location,
-                    loadResident: true,
-                    stayConnected: true,
+                    PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true),
                     runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
             }
             catch (Exception ex)
@@ -1129,7 +1132,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private DateTime _lastQueuedEvent = DateTime.Now;
+        private DateTime _lastQueuedUpdateValueEvent = DateTime.Now;
 
         private bool _eventsUpdateValuePending = false;
 
@@ -1140,15 +1143,20 @@ namespace AasxPackageExplorer
             if (veSelected == null)
                 return;
 
-            if (!_eventsUpdateValuePending && (DateTime.Now - _lastQueuedEvent).TotalMilliseconds > 3000)
-            {
-                _lastQueuedEvent = DateTime.Now;
+            // some container options are required
+            var copts = packages?.MainItem?.Container?.ContainerOptions;
 
-                //
-                // Investigate on Events
-                // Note: for the time being, Events will be only valid, if Event and observed entity are 
-                // within the SAME Submodel
-                //
+            //
+            // Investigate on Update Value Events
+            // Note: for the time being, Events will be only valid, if Event and observed entity are 
+            // within the SAME Submodel
+            //
+
+            if (true == copts?.StayConnected 
+                && !_eventsUpdateValuePending 
+                && (DateTime.Now - _lastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
+            {
+                _lastQueuedUpdateValueEvent = DateTime.Now;
 
                 try
                 {

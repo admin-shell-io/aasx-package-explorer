@@ -29,7 +29,8 @@
                            CanUserAddRows="False" BorderThickness="0" Background="Transparent"
                            HeadersVisibility="Column" Margin="4, 0, 4, 0" IsReadOnly="True"
                            SelectionChanged="DataGridMessages_SelectionChanged"
-                           AutoGenerateColumns="False">
+                           MouseDoubleClick="DataGridMessages_MouseDoubleClick"
+                           AutoGenerateColumns="False" SelectionUnit="FullRow">
             <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Timestamp" MinWidth="150" MaxWidth="180" Binding="{Binding DisplayTimestamp}"/>
@@ -48,6 +49,13 @@
                 </DataGridTextColumn>
                 -->
             </DataGrid.Columns>
+            <!-- see: https://stackoverflow.com/questions/4547370/disable-datagrid-current-cell-border-in-fullrow-selection-mode -->
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                </Style>
+            </DataGrid.CellStyle>
         </DataGrid>
 
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" 

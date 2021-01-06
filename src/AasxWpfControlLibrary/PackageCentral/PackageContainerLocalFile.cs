@@ -35,13 +35,14 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public PackageContainerLocalFile(
             PackageCentral packageCentral,
-            string sourceFn, bool loadResident = false)
+            string sourceFn, PackageContainerOptionsBase containerOptions = null)
             : base(packageCentral)
         {
             Init();
             SetNewSourceFn(sourceFn);
-            LoadResident = loadResident;
-            if (LoadResident)
+            if (containerOptions != null)
+                ContainerOptions = containerOptions;
+            if (true == ContainerOptions?.LoadResident)
                 LoadFromSource();
         }
 
@@ -113,7 +114,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         protected void InternalSaveToSource(string saveAsNewFileName = null,
-            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
+            PackageContainerRuntimeOptions runtimeOptions = null)
         {
             // check extension
             if (IsFormat == Format.Unknown)

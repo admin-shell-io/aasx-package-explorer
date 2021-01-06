@@ -31,6 +31,8 @@ namespace AasxWpfControlLibrary.AdminShellEvents
 
         public ObservableCollection<AasEventMsgEnvelope> Store { get { return _eventStore; } }
 
+        private bool _autoTop = false;
+
         //
         // Constructor
         //
@@ -67,12 +69,18 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                     _eventStore.Insert(0, ev);
             }
 
+            // _autoTop?
+            if (_autoTop)
+            {
+                DataGridMessages.SelectedIndex = 0;
+            }
+
             // do not consume, just want to listen!
             return false;
         }
 
         //
-        // Info
+        // Mechanics
         //
 
         private void DataGridMessages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -82,6 +90,12 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                 var info = msg.ToMarkup();
                 TextBlockDetails.SetMarkup(info);
             }
+        }
+
+        private void DataGridMessages_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // double click on top row will activate, other row: disable
+            _autoTop = DataGridMessages.SelectedIndex == 0;
         }
     }
 }

@@ -75,10 +75,9 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageCentral PackageCentral { get { return _packageCentral; } }
 
         /// <summary>
-        /// If true, then PackageContainer will try to automatically load the contents of the package
-        /// on application level.
+        /// Holds the container (user) options in a base oder derived class.
         /// </summary>
-        public bool LoadResident;
+        public PackageContainerOptionsBase ContainerOptions = new PackageContainerOptionsBase();
 
         /// <summary>
         /// If the connection shall stay alive, a appropriate connector needs to be created.
@@ -110,7 +109,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <param name="saveAsNewFilename"></param>
         public delegate void CapabilitySaveAsToSource(
             string saveAsNewFilename = null,
-            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None);
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
+            PackageContainerRuntimeOptions runtimeOptions = null);
 
         // the derived classes will selctively set the capabilities
         public CapabilityLoadFromSource LoadFromSource = null;

@@ -22,6 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary.PackageCentral;
 
 namespace AasxPackageExplorer
 {
@@ -117,6 +118,18 @@ namespace AasxPackageExplorer
                 if (x != null && fi != null)
                     x.Text = "" + fi.CodeType2D;
 
+                var cb = AasxWpfBaseUtils.FindChildLogicalTree<CheckBox>(cm, "CheckBoxLoadResident");
+                if (cb != null && fi?.Options != null)
+                    cb.IsChecked = fi.Options.LoadResident;
+
+                cb = AasxWpfBaseUtils.FindChildLogicalTree<CheckBox>(cm, "CheckBoxStayConnected");
+                if (cb != null && fi?.Options != null)
+                    cb.IsChecked = fi.Options.StayConnected;
+
+                x = AasxWpfBaseUtils.FindChildLogicalTree<TextBox>(cm, "TextBoxUpdatePeriod");
+                if (x != null && fi?.Options != null)
+                    x.Text = "" + fi.Options.UpdatePeriod;
+
                 // show context menu
                 cm.PlacementTarget = sender as Button;
                 cm.IsOpen = true;
@@ -157,6 +170,34 @@ namespace AasxPackageExplorer
 
             if (tb?.Name == "TextBoxCode" && fi != null)
                 fi.CodeType2D = tb.Text;
+
+            if (tb?.Name == "TextBoxUpdatePeriod" && fi != null)
+            {
+                if (fi.Options == null)
+                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                if (Int32.TryParse("" + tb.Text, out int i))
+                    fi.Options.UpdatePeriod = Math.Max(OptionsInformation.MinimumUpdatePeriod, i);
+            }
+        }
+
+        private void CheckBoxContextMenu_Checked(object sender, RoutedEventArgs e)
+        {
+            var cb = sender as CheckBox;
+            var fi = this.rightClickSelectedItem;
+
+            if (cb?.Name == "CheckBoxLoadResident" && fi != null)
+            {
+                if (fi.Options == null)
+                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                fi.Options.LoadResident = true == cb?.IsChecked;
+            }
+
+            if (cb?.Name == "CheckBoxStayConnected" && fi != null)
+            {
+                if (fi.Options == null)
+                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                fi.Options.StayConnected = true == cb?.IsChecked;
+            }
         }
     }
 }

@@ -86,6 +86,52 @@
                         <TextBlock Text="&#x270e;" HorizontalAlignment="Center"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <Separator/>
+                <MenuItem Name="MenuItemLoadResident">
+                    <MenuItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Load resident:" VerticalAlignment="Center" Width="90"/>
+                            <CheckBox Name="CheckBoxLoadResident" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x270e;" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemStayConnected">
+                    <MenuItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Stay connected:" VerticalAlignment="Center" Width="90"/>
+                            <CheckBox Name="CheckBoxStayConnected" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x270e;" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemUpdatePeriod">
+                    <MenuItem.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Update period [ms]:" VerticalAlignment="Center" Width="90"/>
+                            <TextBox Name="TextBoxUpdatePeriod" Margin="5 0 0 0" Width="150" Grid.Column="1" TextChanged="TextBoxContextMenu_TextChanged"/>
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x270e;" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </ContextMenu>
         </ResourceDictionary>
     </UserControl.Resources>

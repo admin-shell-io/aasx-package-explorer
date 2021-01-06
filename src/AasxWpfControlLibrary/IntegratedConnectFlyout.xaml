@@ -141,7 +141,7 @@
                         <CheckBox x:Name="CheckBoxStayConnected" Content="Stay connected (when possible)   " Foreground="White" 
                                   FontSize="16" VerticalContentAlignment="Center" Margin="4,1,0,0"/>
                         <Label FontSize="16" Foreground="White">Period (ms):</Label>
-                        <TextBox x:Name="TextBoxNumRows" Width="50" Foreground="White" Background="#ff202e4c" 
+                        <TextBox x:Name="TextBoxUpdatePeriod" Width="50" Foreground="White" Background="#ff202e4c" 
                                  HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" FontSize="16" Text="2000"/>
                     </WrapPanel>
 
