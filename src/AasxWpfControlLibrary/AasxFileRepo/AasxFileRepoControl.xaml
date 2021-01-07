@@ -1,12 +1,13 @@
-﻿<UserControl x:Class="AasxPackageExplorer.AasxFileRepoControl"
+﻿<UserControl x:Class="AasxWpfControlLibrary.AasxFileRepo.AasxFileRepoControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AasxPackageExplorer"
+             xmlns:local="clr-namespace:AasxWpfControlLibrary"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300"
-             Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave">
+             Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave"
+             AllowDrop="True" Drop="RepoControl_Drop">
     <!--
     Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -22,7 +23,7 @@
     <UserControl.Resources>
 
         <ResourceDictionary>
-            <BitmapImage x:Key="Icon_AASX" UriSource="Resources/Icon_AASX_40x40_W.bmp" />
+            <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp" />
 
             <ContextMenu x:Key="ContextMenuFileItem">
                 <MenuItem Name="MenuItemDelete" Header="Delete" Click="MenuItem_Click">
@@ -136,8 +137,8 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT -->
-    <ScrollViewer>
+    <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT 
+    <ScrollViewer> -->
     
     <Grid>
         <Grid.RowDefinitions>
@@ -147,10 +148,14 @@
                 
         <DockPanel Grid.Row="0" Grid.Column="0" Height="20" Background="White" Margin="2,2,2,2">
 
-            <Button x:Name="ButtonQuery" DockPanel.Dock="Right" Content="Query .." Padding="1,-2,1,0" VerticalContentAlignment="Center" Margin="2"
-                    Click="ButtonQuery_Click"/>
+            <Button x:Name="ButtonContext" DockPanel.Dock="Right" Content=" &#8942; " FontWeight="Bold" 
+                    Padding="1,-2,1,0" Margin="2,2,6,2" Click="Button_Click"/>
+            
+            <Button x:Name="ButtonQuery" DockPanel.Dock="Right" Content="Query .." Padding="1,-2,1,0" VerticalContentAlignment="Center" 
+                    Margin="2" Click="Button_Click"/>
 
-            <TextBox Text="File repository" BorderThickness="0" Background="Transparent" Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold"/>
+            <TextBox x:Name="TextBoxRepoHeader" Text="&#x1F4BE; File repository" BorderThickness="0" Background="Transparent" 
+                     Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold"/>
         </DockPanel>
         
         <ListView x:Name="RepoList" Grid.Row="1" Grid.Column="0" Margin="2,0,2,2" BorderThickness="0" 
@@ -224,6 +229,6 @@
         </ListView>
     </Grid>
 
-    </ScrollViewer>
+    <!-- </ScrollViewer> -->
 
 </UserControl>

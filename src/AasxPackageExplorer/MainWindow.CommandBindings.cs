@@ -29,6 +29,7 @@ using AasxIntegrationBase;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AasxWpfControlLibrary.PackageCentral;
+using AasxWpfControlLibrary.AasxFileRepo;
 using AdminShellNS;
 using Jose;
 using Newtonsoft.Json;
@@ -659,6 +660,7 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_FileRepoAll(string cmd)
         {
+#if __SINGLE_REPO
             if (cmd == "filereponew")
             {
                 if (MessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -962,6 +964,7 @@ namespace AasxPackageExplorer
                         $"an error occurred");
                 }
             }
+#endif
         }
 
         public void CommandBinding_ConnectSecure()

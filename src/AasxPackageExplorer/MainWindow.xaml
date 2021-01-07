@@ -6,6 +6,7 @@
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AasxWpfControlLibrary"
         xmlns:events="clr-namespace:AasxWpfControlLibrary.AdminShellEvents;assembly=AasxWpfControlLibrary"
+        xmlns:repo="clr-namespace:AasxWpfControlLibrary.AasxFileRepo;assembly=AasxWpfControlLibrary"
         mc:Ignorable="d"
         x:Name="mainWindow"
         Title="AASX Package Explorer" Height="350" Width="700" Loaded="Window_Loaded" AllowDrop="True"
@@ -506,9 +507,9 @@
                         </Canvas>
                     </Viewbox>
 
-                    <local:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0" AllowDrop="True" Drop="RepoControl_Drop">
+                    <repo:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0">
 
-                    </local:AasxFileRepoControl>
+                    </repo:AasxFileRepoControl>
 
                 </Grid>
 

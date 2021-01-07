@@ -22,6 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.AasxFileRepo;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellEvents;
 using AdminShellNS;
@@ -273,6 +274,7 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
+#if __SINGLE_REPO
         public AasxFileRepository UiLoadFileRepository(string fn)
         {
             try
@@ -295,6 +297,7 @@ namespace AasxPackageExplorer
 
             return null;
         }
+#endif
 
         /// <summary>
         /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
@@ -347,6 +350,7 @@ namespace AasxPackageExplorer
             return false;
         }
 
+#if __SINGLE_REPO
         public void UiSetFileRepository(AasxFileRepository repo)
         {
             if (repo == null)
@@ -409,6 +413,7 @@ namespace AasxPackageExplorer
                     }
             }
         }
+#endif
 
         public void PrepareDispEditEntity(
             AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode,
@@ -579,8 +584,8 @@ namespace AasxPackageExplorer
 
         }
 
-        #endregion
-        #region Callbacks
+#endregion
+#region Callbacks
         //===============
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -638,6 +643,8 @@ namespace AasxPackageExplorer
                 fr = AasxFileRepository.CreateDemoData();
             }
 #endif
+
+#if __SINGLE_REPO
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
                 var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
@@ -701,8 +708,9 @@ namespace AasxPackageExplorer
             {
                 this.CommandBinding_GeneralDispatch("filerepoquery");
             };
+#endif
 
-            // initialze menu
+            // initialize menu
             MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
 
             // Last task here ..
@@ -883,15 +891,16 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFilerepository(AasxFileRepository.FileItem fi,
+        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepository.FileItem fi,
             AdminShell.Reference requireReferable = null)
         {
-            // access
-            if (packages.FileRepository == null)
+            // access single file repo
+            var fileRepo = packages.FileRepository.FindRepository(fi);
+            if (fileRepo == null)
                 return null;
 
             // which file?
-            var location = packages.FileRepository?.GetFullFilename(fi);
+            var location = fileRepo.GetFullFilename(fi);
             if (location == null)
                 return null;
 
@@ -936,7 +945,7 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                    fileRepo.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                     // activate
                     UiLoadPackageWithNew(packages.MainItem,
@@ -990,7 +999,7 @@ namespace AasxPackageExplorer
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
                             fi = packages.FileRepository.FindByAasId(work[0].value.Trim());
 
-                        bo = await LoadFromFilerepository(fi, work);
+                        bo = await LoadFromFileRepository(fi, work);
                     }
 
                     // still yes?
@@ -1054,7 +1063,7 @@ namespace AasxPackageExplorer
                 {
                     var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
 
-                    #region Navigate To
+#region Navigate To
                     //=================
 
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
@@ -1062,9 +1071,9 @@ namespace AasxPackageExplorer
                     {
                         await UiHandleNavigateTo(evtNavTo.targetReference);
                     }
-                    #endregion
+#endregion
 
-                    #region Display content file
+#region Display content file
                     //==========================
 
                     var evtDispCont = evt as AasxIntegrationBase.AasxPluginResultEventDisplayContentFile;
@@ -1079,8 +1088,8 @@ namespace AasxPackageExplorer
                                 ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                         }
 
-                    #endregion
-                    #region Redisplay explorer contents
+#endregion
+#region Redisplay explorer contents
                     //=================================
 
                     var evtRedrawAll = evt as AasxIntegrationBase.AasxPluginResultEventRedrawAllElements;
@@ -1100,8 +1109,8 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    #endregion
-                    #region Select AAS entity
+#endregion
+#region Select AAS entity
                     //=======================
 
                     var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
@@ -1124,7 +1133,7 @@ namespace AasxPackageExplorer
                     }
 
 
-                    #endregion
+#endregion
                 }
                 catch (Exception ex)
                 {
@@ -1358,7 +1367,7 @@ namespace AasxPackageExplorer
                     AdminShell.Referable bo = null;
                     try
                     {
-                        bo = await LoadFromFilerepository(fi, sri.CleanReference);
+                        bo = await LoadFromFileRepository(fi, sri.CleanReference);
                     }
                     catch (Exception ex)
                     {

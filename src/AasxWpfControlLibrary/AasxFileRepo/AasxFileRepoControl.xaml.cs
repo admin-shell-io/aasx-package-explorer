@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageExplorer;
 using AasxWpfControlLibrary.PackageCentral;
 
-namespace AasxPackageExplorer
+namespace AasxWpfControlLibrary.AasxFileRepo
 {
     public partial class AasxFileRepoControl : UserControl
     {
@@ -79,7 +80,7 @@ namespace AasxPackageExplorer
                 this.FileDoubleClick?.Invoke(this.RepoList.SelectedItem as AasxFileRepository.FileItem);
         }
 
-        private void ButtonQuery_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == this.ButtonQuery)
                 this.QueryClick?.Invoke();
@@ -87,7 +88,6 @@ namespace AasxPackageExplorer
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-
         }
 
         private AasxFileRepository.FileItem rightClickSelectedItem = null;
@@ -199,5 +199,48 @@ namespace AasxPackageExplorer
                 fi.Options.StayConnected = true == cb?.IsChecked;
             }
         }
+
+        private void RepoControl_Drop(object sender, DragEventArgs e)
+        {
+            // Appearantly you need to figure out if OriginalSource would have handled the Drop?
+            if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                if (files != null && files.Length > 0)
+                    foreach (var fn in files)
+                    {
+#if __SINGLE_REPO
+                        // repo?
+                        var ext = Path.GetExtension(fn).ToLower();
+                        if (ext == ".json")
+                        {
+                            // try handle as repository
+                            var fr = UiLoadFileRepository(fn);
+                            if (fr != null)
+                                UiSetFileRepository(fr);
+                            // handled
+                            e.Handled = true;
+                            // no more!
+                            return;
+                        }
+
+                        // aasx?
+                        if (ext == ".aasx")
+                        {
+                            // add?
+                            packages.FileRepository?.AddByAasxFn(fn);
+
+                            // handled, but may be more to come ..
+                            e.Handled = true;
+                        }
+#endif
+                    }
+            }
+        }
+
     }
 }

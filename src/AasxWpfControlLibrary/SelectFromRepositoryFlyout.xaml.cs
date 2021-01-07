@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxWpfControlLibrary.AasxFileRepo;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer

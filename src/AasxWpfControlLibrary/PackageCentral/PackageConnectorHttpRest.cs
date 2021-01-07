@@ -22,6 +22,7 @@ using AasxIntegrationBase;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using AdminShellEvents;
+using AasxWpfControlLibrary.AasxFileRepo;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {

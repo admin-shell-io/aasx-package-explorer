@@ -23,13 +23,25 @@ using Newtonsoft.Json;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
-namespace AasxPackageExplorer
+namespace AasxWpfControlLibrary.AasxFileRepo
 {
+    /// <summary>
+    /// This interface allows to find some <c>AasxFileRepository.FileItem</c> by asking for AAS or AssetId.
+    /// It does not intend to be a full fledged query interface, but allow to retrieve what is usful for
+    /// automatic Reference link following etc.
+    /// </summary>
+    public interface IRepoFind
+    {
+        AasxFileRepository.FileItem FindByAssetId(string aid);
+        AasxFileRepository.FileItem FindByAasId(string aid);
+        bool Contains(AasxFileRepository.FileItem fi);
+    }
+
     /// <summary>
     /// This simple file repository holds associations between AssetId and Filenames of AASX packages.
     /// Additionally, it has some view model capabilities in order to animate some visual indications
     /// </summary>
-    public class AasxFileRepository
+    public class AasxFileRepository : IRepoFind
     {
         public class FileItem : INotifyPropertyChanged
         {
@@ -275,6 +287,10 @@ namespace AasxPackageExplorer
             this.MoveElementInListUpwards<FileItem>(this.FileMap, fi);
         }
 
+        //
+        // IFindRepo interface
+        //
+
         public void MoveDown(FileItem fi)
         {
             this.MoveElementInListDownwards<FileItem>(this.FileMap, fi);
@@ -295,6 +311,15 @@ namespace AasxPackageExplorer
                 return fi.AasId.Trim() == aid.Trim();
             });
         }
+
+        public bool Contains(AasxFileRepository.FileItem fi)
+        {
+            return true == this.FileMap?.Contains(fi);
+        }
+
+        //
+        // more
+        //
 
         public void DecreaseVisualTimeBy(double amount)
         {
