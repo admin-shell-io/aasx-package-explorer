@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AasxWpfControlLibrary"
+             xmlns:repo="clr-namespace:AasxWpfControlLibrary.AasxFileRepo"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300"
-             Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave">
+             Loaded="UserControl_Loaded">
     <!--
     Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -16,21 +17,28 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <!-- ReSharper disable Xaml.RedundantResource -->
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 
+
     <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT -->
-    <ScrollViewer>
+    <ScrollViewer x:Name="ScrollViewerRepoList" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
     
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- This stack panel shall accomodate the different repo (controls) -->
-            <StackPanel Grid.Row="0" x:Name="StackPanelRepos" Orientation="Vertical">
-            </StackPanel>
-    
+            <!-- This panel shall accomodate the different repo (controls) -->
+            <ItemsControl Grid.Row="0" x:Name="StackPanelRepos">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <repo:AasxFileRepoControl FileDoubleClick="AasxFileRepoControl_FileDoubleClick"
+                                                  ButtonClick="AasxFileRepoControl_ButtonClick"
+                                                  FileDrop="AasxFileRepoControl_FileDrop"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
         </Grid>
 
     </ScrollViewer>

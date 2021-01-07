@@ -34,7 +34,7 @@ namespace AasxPackageExplorer
 
         public AasxFileRepository.FileItem ResultItem = null;
 
-        private AasxFileRepository TheAasxRepo = null;
+        private List<AasxFileRepository.FileItem> _listFileItems;
 
         public SelectFromRepositoryFlyout()
         {
@@ -53,31 +53,24 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile(string fn = null, AasxFileRepository repo = null)
+        public bool LoadAasxRepoFile(IEnumerable<AasxFileRepository.FileItem> items = null)
         {
             try
             {
-                this.TheAasxRepo = null;
+                this._listFileItems = new List<AasxFileRepository.FileItem>();
 
-                if (fn != null)
-                {
-                    // from file
-                    this.TheAasxRepo = AasxFileRepository.Load(fn);
-
-                }
-
-                if (repo != null)
+                if (items != null)
                 {
                     // from RAM
-                    this.TheAasxRepo = repo;
+                    this._listFileItems.AddRange(items);
                 }
 
-                if (this.TheAasxRepo == null)
+                if (_listFileItems == null || _listFileItems.Count < 1)
                     return false;
 
                 // rework buttons
                 this.StackPanelTags.Children.Clear();
-                foreach (var fm in this.TheAasxRepo.FileMap)
+                foreach (var fm in this._listFileItems)
                 {
                     var tag = fm.Tag.Trim();
                     if (tag != "")
@@ -99,7 +92,7 @@ namespace AasxPackageExplorer
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                this.TheAasxRepo = null;
+                this._listFileItems = null;
                 return false;
             }
 
@@ -109,7 +102,7 @@ namespace AasxPackageExplorer
         private void TagButton_Click(object sender, RoutedEventArgs e)
         {
             var b = sender as Button;
-            if (b?.Tag != null && this.TheAasxRepo?.FileMap != null && this.TheAasxRepo.FileMap.Contains(b.Tag))
+            if (b?.Tag != null && this._listFileItems != null && this._listFileItems.Contains(b.Tag))
             {
                 this.ResultItem = b.Tag as AasxFileRepository.FileItem;
                 ControlClosed?.Invoke();
@@ -140,8 +133,8 @@ namespace AasxPackageExplorer
             var aid = TextBoxAssetId.Text.Trim().ToLower();
 
             // first compare against tags
-            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
-                foreach (var fm in this.TheAasxRepo.FileMap)
+            if (this._listFileItems != null && this._listFileItems != null)
+                foreach (var fm in this._listFileItems)
                     if (aid == fm.Tag.Trim().ToLower())
                     {
                         this.ResultItem = fm;
@@ -150,8 +143,8 @@ namespace AasxPackageExplorer
                     }
 
             // if not, compare asset ids
-            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
-                foreach (var fm in this.TheAasxRepo.FileMap)
+            if (this._listFileItems != null && this._listFileItems != null)
+                foreach (var fm in this._listFileItems)
                     if (aid == fm.AssetId.Trim().ToLower())
                     {
                         this.ResultItem = fm;

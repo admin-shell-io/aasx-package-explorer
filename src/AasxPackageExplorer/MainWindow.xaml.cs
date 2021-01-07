@@ -274,7 +274,6 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
-#if __SINGLE_REPO
         public AasxFileRepository UiLoadFileRepository(string fn)
         {
             try
@@ -287,17 +286,16 @@ namespace AasxPackageExplorer
                     return fr;
                 else
                     AasxPackageExplorer.Log.Singleton.Info(
-                        $"File not found when auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+                        $"File not found when loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
             catch (Exception ex)
             {
                 AasxPackageExplorer.Log.Singleton.Error(
-                    ex, $"When auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
 
             return null;
         }
-#endif
 
         /// <summary>
         /// Using the currently loaded AASX, will check if a CD_AasxLoadedNavigateTo elements can be
@@ -411,6 +409,28 @@ namespace AasxPackageExplorer
                             e.Handled = true;
                         }
                     }
+            }
+        }
+#else
+        public void UiAssertFileRepository(bool visible)
+        {
+            // ALWAYS assert an accessible repo (even if invisble)
+            if (packages.FileRepository == null)
+            {
+                packages.FileRepository = new AasxRepoList();
+                RepoListControl.RepoList = packages.FileRepository;
+            }
+
+            if (!visible)
+            {
+                // disable completely
+                RowDefinitonForRepoList.Height = new GridLength(0.0);
+            }
+            else
+            {
+                // enable, what has been stored
+                RowDefinitonForRepoList.Height =
+                        new GridLength(this.ColumnAasRepoGrid.ActualHeight / 2);
             }
         }
 #endif
@@ -636,7 +656,110 @@ namespace AasxPackageExplorer
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
 
             // start with empty repository and load, if given by options
-            AasxFileRepository fr = null;
+            RepoListControl.FlyoutProvider = this;
+            RepoListControl.ManageVisuElems = DisplayElements;
+            this.UiAssertFileRepository(visible: false);
+
+            // packages.FileRepository.Add(new AasxFileRepository());
+            if (Options.Curr.AasxRepositoryFn.HasContent())
+            {
+                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
+                if (fr2 != null)
+                {
+                    this.UiAssertFileRepository(visible: true);
+                    packages.FileRepository.AddAtTop(fr2);
+                }
+            }
+
+            // what happens on a repo file click
+            RepoListControl.FileDoubleClick += async (repo, fi) =>
+            {
+                // access
+                if (repo == null || fi == null)
+                    return;
+
+                var location = repo.GetFullFilename(fi);
+                if (location == null)
+                    return;
+
+                // safety?
+                if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
+                {
+                    // ask double question
+                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                            "Load file from AASX file repository?",
+                            "AASX File Repository",
+                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                        return;
+                }
+
+                // start animation
+                repo.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                // container options
+                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
+                if (fi.Options != null)
+                    copts = fi.Options;
+
+                // try load ..
+                try
+                {
+                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
+
+                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                        packages,
+                        location,
+                        copts,
+                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+
+                    if (container == null)
+                        Log.Singleton.Error($"Failed to load AASX from {location}");
+                    else
+                        UiLoadPackageWithNew(packages.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false);
+
+                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                }
+                catch (Exception ex)
+                {
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                }
+            };
+
+            // what happens on a file drop -> dispatch
+            RepoListControl.FileDrop += (fr, files) =>
+            {
+                // access
+                if (fr == null || files == null || files.Length < 1)
+                    return;
+
+                // more than one?
+                if (files != null && files.Length > 0)
+                    foreach (var fn in files)
+                    {
+                        // repo?
+                        var ext = Path.GetExtension(fn).ToLower();
+                        if (ext == ".json")
+                        {
+                            // try handle as repository
+                            var newRepo = UiLoadFileRepository(fn);
+                            if (newRepo != null)
+                            {
+                                packages.FileRepository.AddAtTop(newRepo);
+                            }
+                            // no more files ..
+                            return;
+                        }
+
+                        // aasx?
+                        if (ext == ".aasx")
+                        {
+                            // add?
+                            fr.AddByAasxFn(fn);
+                        }
+                    }
+            };
+
 #if __Create_Demo_Daten
             if (true)
             {

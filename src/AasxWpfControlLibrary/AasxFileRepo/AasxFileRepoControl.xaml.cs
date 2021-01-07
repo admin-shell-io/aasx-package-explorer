@@ -33,8 +33,11 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // External properties
         //
 
-        public event Action QueryClick;
-        public event Action<AasxFileRepository.FileItem> FileDoubleClick;
+        public enum CustomButton { Query, Context }
+
+        public event Action<AasxFileRepository, CustomButton, Button> ButtonClick;
+        public event Action<AasxFileRepository, AasxFileRepository.FileItem> FileDoubleClick;
+        public event Action<AasxFileRepository, string[]> FileDrop;
 
         private AasxFileRepository theFileRepository = null;
         public AasxFileRepository FileRepository
@@ -55,6 +58,28 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            // might attach to data context
+            if (DataContext is AasxFileRepository fr)
+            {
+                this.theFileRepository = fr;
+                this.RepoList.ItemsSource = this.theFileRepository?.FileMap;
+                this.RepoList.UpdateLayout();
+            }
+
+            // set icon
+            var icon = "\U0001F4BE";
+            if (FileRepository is AasxFileRepository)
+                icon = "\U0001f4d6";
+            if (FileRepository is AasxFileRepository)
+                icon = "\u2601";
+            TextBoxRepoIcon.Text = icon;
+
+            // set header
+            var header = FileRepository?.Header;
+            if (!header.HasContent())
+                header = "Unnamed repository";
+            TextBoxRepoHeader.Text = "" + header;
+
             // Timer for animations
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
             MainTimer.Tick += MainTimer_Tick;
@@ -77,13 +102,15 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(this.RepoList.SelectedItem as AasxFileRepository.FileItem);
+                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepository.FileItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == this.ButtonQuery)
-                this.QueryClick?.Invoke();
+                this.ButtonClick?.Invoke(theFileRepository, CustomButton.Query, this.ButtonQuery);
+            if (sender == this.ButtonContext)
+                this.ButtonClick?.Invoke(theFileRepository, CustomButton.Context, this.ButtonContext);
         }
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -208,6 +235,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 // Note that you can have more than one file.
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
+                // simply pass over to upper layer to decide, how to finally handle
+                e.Handled = true;
+                FileDrop?.Invoke(FileRepository, files);
+
                 // Assuming you have one file that you care about, pass it off to whatever
                 // handling code you have defined.
                 if (files != null && files.Length > 0)
@@ -242,5 +273,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender == TextBoxRepoHeader && FileRepository != null)
+                FileRepository.Header = TextBoxRepoHeader.Text;
+        }
     }
 }

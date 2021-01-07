@@ -478,8 +478,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
-                        <!-- Row height set to zero to have invisibility at very program start -->
-                        <RowDefinition Height="0" />
+                        <!-- Row height set to zero to have invisibility ov repo list control at very program start -->
+                        <RowDefinition x:Name="RowDefinitonForRepoList" Height="50" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -507,9 +507,13 @@
                         </Canvas>
                     </Viewbox>
 
+                    <!--
                     <repo:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0">
-
                     </repo:AasxFileRepoControl>
+                    -->
+
+                    <repo:AasxRepoListControl x:Name="RepoListControl" Grid.Row="2" Grid.Column="0">
+                    </repo:AasxRepoListControl>
 
                 </Grid>
 

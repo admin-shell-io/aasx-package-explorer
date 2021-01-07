@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    public partial class DiplayVisualAasxElements : UserControl
+    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
     {
         private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();
         private TreeViewLineCache treeViewLineCache = null;
@@ -59,6 +59,11 @@ namespace AasxPackageExplorer
             {
                 return treeViewInner.SelectedItem as VisualElementGeneric;
             }
+        }
+
+        public VisualElementGeneric GetSelectedItem()
+        {
+            return treeViewInner.SelectedItem as VisualElementGeneric;
         }
 
         // Enumerate all the descendants of the visual object.
@@ -490,12 +495,13 @@ namespace AasxPackageExplorer
                 // more?
                 if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
                 {
+#if __SINGLE_REPO
                     var pkg = packages.FileRepository.MakeUpFakePackage();
-
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
+#endif
                 }
 
                 // may be filter
@@ -525,7 +531,7 @@ namespace AasxPackageExplorer
                 displayedTreeViewLines[0].IsSelected = true;
         }
 
-        #endregion
+#endregion
 
         // MIHO1
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)

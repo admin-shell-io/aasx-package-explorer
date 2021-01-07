@@ -423,16 +423,7 @@ namespace AasxPackageExplorer
             {
                 DisplayElements.Test();
             }
-
-            if (cmd == "queryrepo")
-                CommandBinding_QueryRepo();
-
-            if (cmd == "genrepo")
-                CommandBinding_GenerateRepo();
-
-            if (cmd == "printrepo")
-                CommandBinding_PrintRepo();
-
+            
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
@@ -660,6 +651,90 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_FileRepoAll(string cmd)
         {
+            if (cmd == "filereponew")
+            {
+                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        "Create new (empty) file repository? It will be added to list of repos on the lower/ " +
+                        "left of the screen.",
+                        "AASX File Repository",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                    return;
+
+                this.UiAssertFileRepository(visible: true);
+                packages.FileRepository.AddAtTop(new AasxFileRepository());
+            }
+
+            if (cmd == "filerepoopen")
+            {
+                // ask for the file
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res == true)
+                {
+                    var fr = this.UiLoadFileRepository(dlg.FileName);
+                    this.UiAssertFileRepository(visible: true);
+                    packages.FileRepository.AddAtTop(fr);
+                }
+            }
+
+            if (cmd == "filerepoquery")
+            {
+                // access
+                if (packages.FileRepository == null || packages.FileRepository.Count < 1)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // dialogue
+                var uc = new SelectFromRepositoryFlyout();
+                uc.Margin = new Thickness(10);
+                if (uc.LoadAasxRepoFile(items: packages.FileRepository.EnumerateItems()))
+                {
+                    uc.ControlClosed += () =>
+                    {
+                        var fi = uc.ResultItem;
+                        var fr = packages.FileRepository?.FindRepository(fi);
+
+                        if (fr != null && fi?.Filename != null)
+                        {
+                            // which file?
+                            var fn = fr?.GetFullFilename(fi);
+                            if (fn == null)
+                                return;
+
+                            // start animation
+                            fr.StartAnimation(fi,
+                                AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+
+                            try
+                            {
+                                // load
+                                AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
+                                UiLoadPackageWithNew(
+                                    packages.MainItem, null, fn, onlyAuxiliary: false);
+                            }
+                            catch (Exception ex)
+                            {
+                                AasxPackageExplorer.Log.Singleton.Error(
+                                    ex, $"When switching to AASX repository file {fn}.");
+                            }
+                        }
+
+                    };
+                    this.StartFlyover(uc);
+                }
+            }
+
 #if __SINGLE_REPO
             if (cmd == "filereponew")
             {
@@ -1077,104 +1152,6 @@ namespace AasxPackageExplorer
             }
         }
         
-        public void CommandBinding_QueryRepo()
-        {
-            var uc = new SelectFromRepositoryFlyout();
-            uc.Margin = new Thickness(10);
-            var fullfn = System.IO.Path.GetFullPath(Options.Curr.AasxRepositoryFn);
-            if (uc.LoadAasxRepoFile(fullfn))
-            {
-                uc.ControlClosed += () =>
-                {
-                    var fn = uc.ResultItem?.Filename;
-                    if (fn != null && fn != "")
-                    {
-                        AasxPackageExplorer.Log.Singleton.Info("Switching to {0} ..", fn);
-                        UiLoadPackageWithNew(
-                            packages.MainItem, null, fn, onlyAuxiliary: false);
-                    }
-
-                };
-                this.StartFlyover(uc);
-            }
-        }
-
-        public void CommandBinding_GenerateRepo()
-        {
-            // get the input files
-            var inputDlg = new Microsoft.Win32.OpenFileDialog();
-            inputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            inputDlg.Title = "Multi-select AASX package files to be in repository";
-            inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
-            inputDlg.Multiselect = true;
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = inputDlg.ShowDialog();
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-
-            if (res != true || inputDlg.FileNames.Length < 1)
-                return;
-
-            RememberForInitialDirectory(inputDlg.FileName);
-
-            // get the output file
-            var exFn = System.AppDomain.CurrentDomain.BaseDirectory;
-            if (inputDlg.FileNames.Length > 0)
-                exFn = inputDlg.FileNames[0];
-
-            var outputDlg = new Microsoft.Win32.SaveFileDialog();
-            outputDlg.InitialDirectory = DetermineInitialDirectory(exFn);
-            outputDlg.Title = "Select AASX repository to be generated";
-            outputDlg.FileName = "new-aasx-repo.json";
-            outputDlg.DefaultExt = "*.json";
-            outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            res = outputDlg.ShowDialog();
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-
-            if (res != true)
-                return;
-
-            RememberForInitialDirectory(outputDlg.FileName);
-
-            // ok
-            try
-            {
-                AasxFileRepository.GenerateRepositoryFromFileNames(inputDlg.FileNames, outputDlg.FileName);
-            }
-            catch (Exception ex)
-            {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
-            }
-        }
-
-        public void CommandBinding_PrintRepo()
-        {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select AASX repository to be printed";
-            dlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
-            {
-                if (res == true)
-                {
-                    RememberForInitialDirectory(dlg.FileName);
-                    AasxPrintFunctions.PrintRepositoryCodeSheet(dlg.FileName);
-                }
-            }
-            catch (Exception ex)
-            {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
-            }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-        }
-
         public void CommandBinding_PrintAsset()
         {
             AdminShell.Asset asset = null;

@@ -18,6 +18,15 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
+    /// <summary>
+    /// This interface is implemented by the visual tree, which shows the different element of
+    /// one or more AASX packages, environments, AAS and so forth.
+    /// </summary>
+    public interface IManageVisualAasxElements
+    {
+        VisualElementGeneric GetSelectedItem();
+    }
+
     public class TreeViewLineCache
     {
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
@@ -1075,7 +1084,7 @@ namespace AasxPackageExplorer
                     }
                 }
 
-            // many operytions -> make it bulletproof
+            // many operations -> make it bulletproof
             try
             {
 

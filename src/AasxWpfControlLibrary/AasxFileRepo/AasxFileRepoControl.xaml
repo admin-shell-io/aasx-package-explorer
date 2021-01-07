@@ -154,8 +154,11 @@
             <Button x:Name="ButtonQuery" DockPanel.Dock="Right" Content="Query .." Padding="1,-2,1,0" VerticalContentAlignment="Center" 
                     Margin="2" Click="Button_Click"/>
 
-            <TextBox x:Name="TextBoxRepoHeader" Text="&#x1F4BE; File repository" BorderThickness="0" Background="Transparent" 
-                     Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold"/>
+            <TextBlock x:Name="TextBoxRepoIcon" Text="&#x1F4BE;" Background="Transparent" 
+                     Foreground="Black" VerticalAlignment="Center" Margin="0" FontSize="14" FontWeight="Bold"/>
+
+            <TextBox x:Name="TextBoxRepoHeader" Text="File repository" BorderThickness="0" Background="Transparent" 
+                     Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold" TextChanged="TextBox_TextChanged"/>
         </DockPanel>
         
         <ListView x:Name="RepoList" Grid.Row="1" Grid.Column="0" Margin="2,0,2,2" BorderThickness="0" 

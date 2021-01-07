@@ -32,6 +32,17 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     {
 
         //
+        // Adding element at the top
+        //
+
+        public AasxFileRepository AddAtTop(AasxFileRepository el)
+        {
+            if (el != null)
+                this.Insert(0, el);
+            return el;
+        }
+
+        //
         // IRepoFind interface
         //
 
@@ -55,6 +66,13 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     return fi;
             }
             return null;
+        }
+
+        public IEnumerable<AasxFileRepository.FileItem> EnumerateItems()
+        {
+            foreach (var fr in this)
+                foreach (var fi in fr.EnumerateItems())
+                    yield return fi;
         }
 
         public bool Contains(AasxFileRepository.FileItem fi)

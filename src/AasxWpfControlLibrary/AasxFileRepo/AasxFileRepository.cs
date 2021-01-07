@@ -34,6 +34,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     {
         AasxFileRepository.FileItem FindByAssetId(string aid);
         AasxFileRepository.FileItem FindByAasId(string aid);
+        IEnumerable<AasxFileRepository.FileItem> EnumerateItems();
         bool Contains(AasxFileRepository.FileItem fi);
     }
 
@@ -259,6 +260,8 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
+        public string Header;
+
         [JsonProperty(PropertyName = "filemaps")]
         public ObservableCollection<FileItem> FileMap = new ObservableCollection<FileItem>();
 
@@ -287,14 +290,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.MoveElementInListUpwards<FileItem>(this.FileMap, fi);
         }
 
-        //
-        // IFindRepo interface
-        //
-
         public void MoveDown(FileItem fi)
         {
             this.MoveElementInListDownwards<FileItem>(this.FileMap, fi);
         }
+
+        //
+        // IFindRepo interface
+        //
 
         public FileItem FindByAssetId(string aid)
         {
@@ -310,6 +313,13 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             {
                 return fi.AasId.Trim() == aid.Trim();
             });
+        }
+
+        public IEnumerable<FileItem> EnumerateItems()
+        {
+            if (this.FileMap != null)
+                foreach (var fi in this.FileMap)
+                    yield return fi;
         }
 
         public bool Contains(AasxFileRepository.FileItem fi)
