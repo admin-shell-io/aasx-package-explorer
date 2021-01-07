@@ -220,7 +220,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (reqSm != null && reqSm.idShort.HasContent())
             {
                 // easy query
-                qst = StartQuery("submodels", reqSm.idShort, "property");
+                qst = StartQuery("submodels", reqSm.idShort, "values");
             }
             else if (reqSme != null && reqSme.idShort.HasContent()
                 && rootSubmodel.idShort.HasContent())
@@ -234,7 +234,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }, includeThis: false, includeSubmodel: false);
 
                 // full query
-                qst = StartQuery("submodels", rootSubmodel.idShort, "elements", path, "property");
+                qst = StartQuery("submodels", rootSubmodel.idShort, "elements", path, "values");
             }
 
             // valid

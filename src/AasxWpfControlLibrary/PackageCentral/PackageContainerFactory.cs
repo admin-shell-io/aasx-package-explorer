@@ -25,7 +25,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public static PackageContainerBase GuessAndCreateFor(
             PackageCentral packageCentral,
             string location, PackageContainerOptionsBase containerOptions = null,
-            PackageContainerRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             var task = Task.Run(() => GuessAndCreateForAsync(
                 packageCentral, location, containerOptions, runtimeOptions));
@@ -35,7 +35,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public async static Task<PackageContainerBase> GuessAndCreateForAsync(
             PackageCentral packageCentral,
             string location, PackageContainerOptionsBase containerOptions = null,
-            PackageContainerRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             // access
             if (location == null)
@@ -55,7 +55,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
-                    var cnt = await PackageContainerNetworkHttpFile.CreateAsync(
+                    var cnt = await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
                                             packageCentral, location, containerOptions, runtimeOptions);
 
                     // create an online connection?
@@ -99,7 +99,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public async static Task<PackageContainerBase> Demo(
             PackageCentral packageCentral,
             string location, PackageContainerOptionsBase containerOptions = null,
-            PackageContainerRuntimeOptions ro = null)
+            PackCntRuntimeOptions ro = null)
         {
             // Log location
             ro?.Log?.Info($"Perform Demo() for location {location}");
@@ -141,7 +141,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // done
             ro?.Log?.Info($".. demo loading from internet ..");
-            return await PackageContainerNetworkHttpFile.CreateAsync(
+            return await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
                 packageCentral,
                 "http://admin-shell-io.com:51310/server/getaasx/0", 
                 // "http://localhost:51310/server/getaasx/0",

@@ -38,9 +38,11 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// <summary>
     /// Extendable run-time options 
     /// </summary>
-    public class PackageContainerRuntimeOptions
+    public class PackCntRuntimeOptions
     {
-        public delegate void ProgressChangedHandler(long? totalFileSize, long totalBytesDownloaded);
+        public enum Progress { Idle, Starting, Ongoing, Final}
+
+        public delegate void ProgressChangedHandler(Progress state, long? totalFileSize, long totalBytesDownloaded);
 
         public delegate void AskForSelectFromListHandler(
             string caption, List<SelectFromListFlyoutItem> list,
@@ -93,30 +95,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         public List<PackageConnectorBase> ConnectorSecondary = new List<PackageConnectorBase>();
 
         //
-        // Different capabilities are modelled as delegates, which can be present or not (null), depening
-        // on dynamic protocoll capabilities
-        //
-
-        /// <summary>
-        /// Can load an AASX from (already) given data source
-        /// </summary>
-        public delegate void CapabilityLoadFromSource(
-            PackageContainerRuntimeOptions runtimeOptions = null);
-
-        /// <summary>
-        /// Can save the (edited) AASX to an already given or new dta source name
-        /// </summary>
-        /// <param name="saveAsNewFilename"></param>
-        public delegate void CapabilitySaveAsToSource(
-            string saveAsNewFilename = null,
-            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackageContainerRuntimeOptions runtimeOptions = null);
-
-        // the derived classes will selctively set the capabilities
-        public CapabilityLoadFromSource LoadFromSource = null;
-        public CapabilitySaveAsToSource SaveAsToSource = null;
-
-        //
         // Constructors
         //
 
@@ -155,6 +133,19 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML) 
         {
+        }
+
+        public virtual async Task LoadFromSourceAsync(
+            PackCntRuntimeOptions runtimeOptions = null)
+        {
+            await Task.Yield();
+        }
+
+        public virtual async Task SaveToSourceAsync(string saveAsNewFileName = null,
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
+            PackCntRuntimeOptions runtimeOptions = null)
+        {
+            await Task.Yield();
         }
 
         //

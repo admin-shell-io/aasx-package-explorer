@@ -85,7 +85,7 @@ namespace AasxPackageExplorer
             RedrawElementView();
         }
 
-        private void CommandBinding_GeneralDispatch(string cmd)
+        private async void CommandBinding_GeneralDispatch(string cmd)
         {
             if (cmd == null)
             {
@@ -160,9 +160,9 @@ namespace AasxPackageExplorer
                 try
                 {
                     // save
-                    packages.MainItem.SaveAs(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+                    await packages.MainItem.SaveAsAsync(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
                     // backup
-                    if (Options.Curr.BackupDir != null)
+                    if (true && Options.Curr.BackupDir != null)
                         packages.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir), 
                             Options.Curr.BackupFiles, 
@@ -210,7 +210,7 @@ namespace AasxPackageExplorer
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
                         // save
                         RememberForInitialDirectory(dlg.FileName);
-                        packages.MainItem.SaveAs(dlg.FileName, prefFmt: prefFmt);
+                        await packages.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
                         // backup
                         if (Options.Curr.BackupDir != null)
                             packages.MainItem.Container.BackupInDir(

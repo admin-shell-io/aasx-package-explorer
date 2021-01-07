@@ -179,16 +179,21 @@ namespace AasxPackageExplorer
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
 
-        private PackageContainerRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
+        private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
         {
-            var ro = new PackageContainerRuntimeOptions()
+            var ro = new PackCntRuntimeOptions()
             {
                 Log = Log.Singleton,
-                ProgressChanged = (tfs, tbd) =>
+                ProgressChanged = (state, tfs, tbd) =>
                 {
-                    SetProgressBar(
-                        Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
-                        AdminShellUtil.ByteSizeHumanReadable(tbd));
+                    if (state == PackCntRuntimeOptions.Progress.Starting
+                        || state == PackCntRuntimeOptions.Progress.Ongoing)
+                        SetProgressBar(
+                            Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
+                            AdminShellUtil.ByteSizeHumanReadable(tbd));
+                    
+                    if (state == PackCntRuntimeOptions.Progress.Final)
+                        SetProgressBar();
                 }
             };
             return ro;
@@ -686,7 +691,6 @@ namespace AasxPackageExplorer
                             takeOverContainer: container, onlyAuxiliary: false);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
-                    SetProgressBar();
                 }
                 catch (Exception ex)
                 {
@@ -728,7 +732,6 @@ namespace AasxPackageExplorer
                             takeOverContainer: container, onlyAuxiliary: false);
 
                     Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
-                    SetProgressBar();
                 }
                 catch (Exception ex)
                 {
@@ -940,7 +943,6 @@ namespace AasxPackageExplorer
                         takeOverContainer: container, onlyAuxiliary: false);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
-                    SetProgressBar();
                 }
 
                 // return bo to focus

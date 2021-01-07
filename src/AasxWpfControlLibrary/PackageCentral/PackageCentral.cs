@@ -62,7 +62,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public bool Load(
             PackageCentral packageCentral, 
             string location, PackageContainerOptionsBase containerOptions = null, 
-            PackageContainerRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             try
             {
@@ -152,20 +152,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public bool SaveAs(string saveAsNewFileName = null, 
+        public async Task<bool> SaveAsAsync(string saveAsNewFileName = null, 
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackageContainerRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             try
             {
-                if (Container.SaveAsToSource != null)
-                {
-                    Container.SaveAsToSource(saveAsNewFileName, prefFmt, runtimeOptions);
-                    return true;
-                }
-
-                // no success
-                return false;
+                await Container.SaveToSourceAsync(saveAsNewFileName, prefFmt, runtimeOptions);
+                return true;
             }
             catch (Exception ex)
             {

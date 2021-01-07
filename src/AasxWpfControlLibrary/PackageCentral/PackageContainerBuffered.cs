@@ -83,13 +83,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                         bext = ".aasx";
                     var bdfn = Path.Combine(backupDir, $"backup{ndx:000}{bext}");
                     Env.TemporarilySaveCloseAndReOpenPackage(() => {
-                        File.Copy(Env.Filename, bdfn);
+                        File.Copy(Env.Filename, bdfn, overwrite: true);
                     });
                 }
             }
             catch (Exception ex)
             {
-                LogInternally.That.SilentlyIgnoredError(ex);
+                Log.Singleton.Error(ex, $"while backing up AASX {this.ToString()}");
             }
         }
     }

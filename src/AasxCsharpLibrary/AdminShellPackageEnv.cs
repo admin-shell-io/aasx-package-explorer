@@ -908,14 +908,17 @@ namespace AdminShellNS
 
                 // execute lambda
                 lambda?.Invoke();
-
-                _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
             }
             catch (Exception ex)
             {
                 throw (new Exception(
                     string.Format("While temporarily close and re-open AASX {0} at {1} gave: {2}",
                     Filename, AdminShellUtil.ShortLocation(ex), ex.Message)));
+            }
+            finally
+            {
+                // even after failing of the lambda, the package shall be re-opened
+                _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
             }
         }
 

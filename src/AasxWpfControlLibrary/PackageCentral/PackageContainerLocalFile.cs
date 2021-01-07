@@ -42,16 +42,27 @@ namespace AasxWpfControlLibrary.PackageCentral
             SetNewSourceFn(sourceFn);
             if (containerOptions != null)
                 ContainerOptions = containerOptions;
-            if (true == ContainerOptions?.LoadResident)
-                LoadFromSource();
         }
+
+        public static async Task<PackageContainerLocalFile> CreateAndLoadAsync(
+            PackageCentral packageCentral,
+            string sourceFn, 
+            PackageContainerOptionsBase containerOptions = null,
+            PackCntRuntimeOptions runtimeOptions = null)
+        {
+            var res = new PackageContainerLocalFile(packageCentral, sourceFn, containerOptions);
+            
+            if (true == res.ContainerOptions?.LoadResident)
+                await res.LoadFromSourceAsync(runtimeOptions);
+            
+            return res;
+        }
+
 
         public override string Filename { get { return SourceFn; } }
 
         private void Init()
         {
-            this.LoadFromSource = this.InternalLoadFromSource;
-            this.SaveAsToSource = this.InternalSaveToSource;
         }
 
         private void SetNewSourceFn(string sourceFn)
@@ -69,8 +80,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             return s;
         }
 
-        protected void InternalLoadFromSource(
-            PackageContainerRuntimeOptions runtimeOptions = null)
+        public override async Task LoadFromSourceAsync(
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             // check extension
             if (IsFormat == Format.Unknown)
@@ -111,11 +122,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                     $"While opening aasx {fn} from source {this.ToString()} " +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
+
+            await Task.Yield();
         }
 
         protected void InternalSaveToSource(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
-            PackageContainerRuntimeOptions runtimeOptions = null)
+            PackCntRuntimeOptions runtimeOptions = null)
         {
             // check extension
             if (IsFormat == Format.Unknown)

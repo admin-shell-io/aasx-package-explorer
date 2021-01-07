@@ -56,7 +56,7 @@ namespace AdminShellEvents
         // Serialisation
         //
 
-        public string ToString()
+        public override string ToString()
         {
             var res = "MsgUpdateValueItem: {Observable}";
             if (Path != null)

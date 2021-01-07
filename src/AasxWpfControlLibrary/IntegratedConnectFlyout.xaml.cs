@@ -83,6 +83,7 @@ namespace AasxPackageExplorer
         {
             InitializeComponent();
 
+            _packageCentral = packageCentral;
             _caption = caption;
             _maxWidth = maxWidth;
             _location = initialLocation;
@@ -288,6 +289,20 @@ namespace AasxPackageExplorer
             }
         }
 
+        private void SetProgressBar(double? percent, string message = null)
+        {
+            // thread safe
+            if (percent.HasValue)
+                TheProgressBar.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    new Action(() => TheProgressBar.Value = percent.Value));
+
+            if (message != null)
+                LabelProgressText.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    new Action(() => LabelProgressText.Content = message));
+        }
+
         //
         // Start page
         //
@@ -295,25 +310,24 @@ namespace AasxPackageExplorer
         private async void ProceedOnPageStart()
         {
             // make runtime options to link to this dialogue
-            var ro = new PackageContainerRuntimeOptions()
+            var ro = new PackCntRuntimeOptions()
             {
                 Log = _logger,
-                ProgressChanged = (tfs, tbd) =>
+                ProgressChanged = (state, tfs, tbd) =>
                 {
-                    // determine
-                    if (tfs == null)
-                        tfs = 5 * 1024 * 1024;
-                    var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
-                    var bshr = AdminShellUtil.ByteSizeHumanReadable(tbd);
+                    if (state == PackCntRuntimeOptions.Progress.Ongoing)
+                    {
+                        // determine
+                        if (tfs == null)
+                            tfs = 5 * 1024 * 1024;
+                        var frac = Math.Min(100.0, 100.0 * tbd / tfs.Value);
+                        var bshr = AdminShellUtil.ByteSizeHumanReadable(tbd);
 
-                    // thread safe
-                    TheProgressBar.Dispatcher.BeginInvoke(
-                        System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(() => TheProgressBar.Value = frac));
+                        SetProgressBar(frac, $"{bshr} transferred");
+                    }
 
-                    LabelProgressText.Dispatcher.BeginInvoke(
-                        System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(() => LabelProgressText.Content = $"{bshr} transferred"));
+                    if (state == PackCntRuntimeOptions.Progress.Final)
+                        SetProgressBar(0.0, "");
                 },
                 AskForSelectFromList = (caption, items, propRes) =>
                 {
