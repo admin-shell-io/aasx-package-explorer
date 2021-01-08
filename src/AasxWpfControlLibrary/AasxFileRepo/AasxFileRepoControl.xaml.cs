@@ -35,12 +35,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         public enum CustomButton { Query, Context }
 
-        public event Action<AasxFileRepository, CustomButton, Button> ButtonClick;
-        public event Action<AasxFileRepository, AasxFileRepositoryItem> FileDoubleClick;
-        public event Action<AasxFileRepository, string[]> FileDrop;
+        public event Action<AasxFileRepoBase, CustomButton, Button> ButtonClick;
+        public event Action<AasxFileRepoBase, AasxFileRepoItem> FileDoubleClick;
+        public event Action<AasxFileRepoBase, string[]> FileDrop;
 
-        private AasxFileRepository theFileRepository = null;
-        public AasxFileRepository FileRepository
+        private AasxFileRepoBase theFileRepository = null;
+        public AasxFileRepoBase FileRepository
         {
             get { return theFileRepository; }
             set
@@ -59,7 +59,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // might attach to data context
-            if (DataContext is AasxFileRepository fr)
+            if (DataContext is AasxFileRepoBase fr)
             {
                 this.theFileRepository = fr;
                 this.RepoList.ItemsSource = this.theFileRepository?.FileMap;
@@ -68,9 +68,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             // set icon
             var icon = "\U0001F4BE";
-            if (FileRepository is AasxFileRepository)
+            if (FileRepository is AasxFileRepoHttpRestRegistry)
                 icon = "\U0001f4d6";
-            if (FileRepository is AasxFileRepository)
+            if (FileRepository is AasxFileRepoHttpRestRepository)
                 icon = "\u2601";
             TextBoxRepoIcon.Text = icon;
 
@@ -102,7 +102,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepositoryItem);
+                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepoItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -117,14 +117,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
         }
 
-        private AasxFileRepositoryItem rightClickSelectedItem = null;
+        private AasxFileRepoItem rightClickSelectedItem = null;
 
         private void RepoList_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (sender == this.RepoList && e.ChangedButton == MouseButton.Right)
             {
                 // store selected item for later (when context menu selection is done)
-                var fi = this.RepoList.SelectedItem as AasxFileRepositoryItem;
+                var fi = this.RepoList.SelectedItem as AasxFileRepoItem;
                 this.rightClickSelectedItem = fi;
 
                 // find context menu

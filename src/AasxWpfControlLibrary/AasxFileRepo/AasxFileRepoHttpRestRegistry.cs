@@ -1,0 +1,32 @@
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using AasxIntegrationBase;
+using AasxWpfControlLibrary.PackageCentral;
+using AdminShellNS;
+using Newtonsoft.Json;
+
+namespace AasxWpfControlLibrary.AasxFileRepo
+{
+    /// <summary>
+    /// AasxFileRepository, which is build temporarily from a AAS registry query. 
+    /// </summary>
+    public class AasxFileRepoHttpRestRegistry : AasxFileRepoBase
+    {
+    }
+}

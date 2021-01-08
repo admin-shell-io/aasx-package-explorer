@@ -211,7 +211,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Path=InfoFilename}" Width="999"/>
+                    <GridViewColumn Header="Location" DisplayMemberBinding="{Binding Path=InfoLocation}" Width="999"/>
                 
                 </GridView>
             </ListView.View>

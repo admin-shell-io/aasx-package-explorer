@@ -35,8 +35,8 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // External properties
         //
 
-        public event Action<AasxFileRepository, AasxFileRepositoryItem> FileDoubleClick;
-        public event Action<AasxFileRepository, string[]> FileDrop;
+        public event Action<AasxFileRepoBase, AasxFileRepoItem> FileDoubleClick;
+        public event Action<AasxFileRepoBase, string[]> FileDrop;
 
         private IFlyoutProvider _flyout;
         private IManageVisualAasxElements _manageVisuElems;
@@ -88,7 +88,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(AasxFileRepository fr, string cmd)
+        public void CommandBinding_FileRepoAll(AasxFileRepoBase fr, string cmd)
         {
             // access
             if (cmd == null)
@@ -136,10 +136,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     outputDlg.Title = "Select AASX file repository to be saved";
                     outputDlg.FileName = "new-aasx-repo.json";
 
-                    if (fr.Filename.HasContent())
+                    if (fr is AasxFileRepoLocal frl && frl.Filename.HasContent())
                     {
-                        outputDlg.InitialDirectory = Path.GetDirectoryName(fr.Filename);
-                        outputDlg.FileName = Path.GetFileName(fr.Filename);
+                        outputDlg.InitialDirectory = Path.GetDirectoryName(frl.Filename);
+                        outputDlg.FileName = Path.GetFileName(frl.Filename);
                     }
 
                     outputDlg.DefaultExt = "*.json";
@@ -157,7 +157,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     try
                     {
                         Log.Singleton.Info($"Saving AASX file repository to {fn} ..");
-                        fr.SaveAs(fn);
+                        fr.SaveAsLocalFile(fn);
                     }
                     catch (Exception ex)
                     {
@@ -175,12 +175,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                         uc.ControlClosed += () =>
                         {
                             var fi = uc.ResultItem;
-                            var fn = fi?.Filename;
+                            var fn = fi?.Location;
                             if (fn != null)
                             {
                                 // start animation
                                 fr.StartAnimation(fi,
-                                    AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
+                                    AasxFileRepoItem.VisualStateEnum.ReadFrom);
 
                                 try
                                 {
@@ -200,29 +200,30 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 }
 
                 if (cmd == "filerepomakerelative")
-                {
-                    // make sure
-                    if (MessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
-                            "Make filename relative to the locaton of the file repository? " +
-                            "This enables re-locating the repository.",
-                            "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
-                        return;
+                    if (fr is AasxFileRepoLocal frl)
+                    {
+                        // make sure
+                        if (MessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
+                                "Make filename relative to the locaton of the file repository? " +
+                                "This enables re-locating the repository.",
+                                "AASX File Repository",
+                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            return;
 
 
-                    // execute (is data binded)
-                    try
-                    {
-                        AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}", Path.GetFullPath(
-                            Path.GetDirectoryName("" + fr.Filename)));
-                        fr.MakeFilenamesRelative();
+                        // execute (is data binded)
+                        try
+                        {
+                            AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}", Path.GetFullPath(
+                                Path.GetDirectoryName("" + frl.Filename)));
+                            frl.MakeFilenamesRelative();
+                        }
+                        catch (Exception ex)
+                        {
+                            AasxPackageExplorer.Log.Singleton.Error(
+                                ex, $"When making AASX file names in repository relative.");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        AasxPackageExplorer.Log.Singleton.Error(
-                            ex, $"When making AASX file names in repository relative.");
-                    }
-                }
 
                 if (cmd == "filerepoprint")
                 {
@@ -329,31 +330,33 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             ScrollViewerRepoList.ScrollToVerticalOffset(ScrollViewerRepoList.VerticalOffset - e.Delta);
         }
 
-        private void AasxFileRepoControl_FileDoubleClick(AasxFileRepository fr, AasxFileRepositoryItem fi)
+        private void AasxFileRepoControl_FileDoubleClick(AasxFileRepoBase fr, AasxFileRepoItem fi)
         {
             FileDoubleClick?.Invoke(fr, fi);
         }
 
         private void AasxFileRepoControl_ButtonClick(
-            AasxFileRepository fr, AasxFileRepoControl.CustomButton btn,
+            AasxFileRepoBase fr, AasxFileRepoControl.CustomButton btn,
             Button sender)
         {
             if (btn == AasxFileRepoControl.CustomButton.Context)
             {
-                var cm = DynamicContextMenu.CreateNew(
-                    new DynamicContextItem("FileRepoClose", "\u274c", "Close"),
-                    new DynamicContextItem("item-up", "\u25b2", "Move Up"),
-                    new DynamicContextItem("item-down", "\u25bc", "Move Down"),
-                    new DynamicContextItem("", new Separator()),
-                    new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."),
-                    // new DynamicContextItem("FileRepoQuery", "\u2753", "Query .."),
-                    new DynamicContextItem("", new Separator()),
-                    new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."),
-                    new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"),
-                    new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."),
-                    new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."),
-                    new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet ..")
-                    );
+                var cm = DynamicContextMenu.CreateNew();
+
+                cm.Add(new DynamicContextItem("FileRepoClose", "\u274c", "Close"));
+                cm.Add(new DynamicContextItem("item-up", "\u25b2", "Move Up"));
+                cm.Add(new DynamicContextItem("item-down", "\u25bc", "Move Down"));
+                cm.Add(new DynamicContextItem("", new Separator()));
+                cm.Add(new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."));
+                cm.Add(new DynamicContextItem("", new Separator()));
+
+                if (fr is AasxFileRepoLocal)
+                    cm.Add(new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
+                
+                cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
+                cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));
+                cm.Add(new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."));
+                cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
 
                 cm.Start(sender, (tag) =>
                 {
@@ -367,7 +370,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
-        private void AasxFileRepoControl_FileDrop(AasxFileRepository fr, string[] files)
+        private void AasxFileRepoControl_FileDrop(AasxFileRepoBase fr, string[] files)
         {
             FileDrop?.Invoke(fr, files);
         }

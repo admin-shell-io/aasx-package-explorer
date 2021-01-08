@@ -34,25 +34,22 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     /// to ensure full AAS KeyList compatibility.
     /// Additionally, it has some view model capabilities in order to animate some visual indications
     /// </summary>
-    public class AasxFileRepository : IRepoFind
+    public class AasxFileRepoBase : IRepoFind
     {
         public string Header;
 
         [JsonProperty(PropertyName = "filemaps")]
-        public ObservableCollection<AasxFileRepositoryItem> FileMap = new ObservableCollection<AasxFileRepositoryItem>();
-
-        [JsonIgnore]
-        public string Filename = null;
+        public ObservableCollection<AasxFileRepoItem> FileMap = new ObservableCollection<AasxFileRepoItem>();
 
         [JsonIgnore]
         public double DefaultAnimationTime = 2.0d;
 
-        public void Add(AasxFileRepositoryItem fi)
+        public void Add(AasxFileRepoItem fi)
         {
             this.FileMap?.Add(fi);
         }
 
-        public void Remove(AasxFileRepositoryItem fi)
+        public void Remove(AasxFileRepoItem fi)
         {
             if (fi == null || this.FileMap == null)
                 return;
@@ -61,21 +58,21 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.FileMap.Remove(fi);
         }
 
-        public void MoveUp(AasxFileRepositoryItem fi)
+        public void MoveUp(AasxFileRepoItem fi)
         {
-            this.MoveElementInListUpwards<AasxFileRepositoryItem>(this.FileMap, fi);
+            this.MoveElementInListUpwards<AasxFileRepoItem>(this.FileMap, fi);
         }
 
-        public void MoveDown(AasxFileRepositoryItem fi)
+        public void MoveDown(AasxFileRepoItem fi)
         {
-            this.MoveElementInListDownwards<AasxFileRepositoryItem>(this.FileMap, fi);
+            this.MoveElementInListDownwards<AasxFileRepoItem>(this.FileMap, fi);
         }
 
         //
         // IFindRepo interface
         //
 
-        public AasxFileRepositoryItem FindByAssetId(string aid)
+        public AasxFileRepoItem FindByAssetId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {                
@@ -86,7 +83,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public AasxFileRepositoryItem FindByAasId(string aid)
+        public AasxFileRepoItem FindByAasId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {
@@ -97,14 +94,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public IEnumerable<AasxFileRepositoryItem> EnumerateItems()
+        public IEnumerable<AasxFileRepoItem> EnumerateItems()
         {
             if (this.FileMap != null)
                 foreach (var fi in this.FileMap)
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepositoryItem fi)
+        public bool Contains(AasxFileRepoItem fi)
         {
             return true == this.FileMap?.Contains(fi);
         }
@@ -120,16 +117,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     fm.VisualTime = Math.Max(0.0, fm.VisualTime - amount);
         }
 
-        public void StartAnimation(AasxFileRepositoryItem fi, AasxFileRepositoryItem.VisualStateEnum state)
+        public void StartAnimation(AasxFileRepoItem fi, AasxFileRepoItem.VisualStateEnum state)
         {
             // access
             if (fi == null || this.FileMap == null || !this.FileMap.Contains(fi))
                 return;
 
             // stop?
-            if (state == AasxFileRepositoryItem.VisualStateEnum.Idle)
+            if (state == AasxFileRepoItem.VisualStateEnum.Idle)
             {
-                fi.VisualState = AasxFileRepositoryItem.VisualStateEnum.Idle;
+                fi.VisualState = AasxFileRepoItem.VisualStateEnum.Idle;
                 fi.VisualTime = 0.0d;
                 return;
             }
@@ -141,79 +138,23 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         // file oerations
 
-        public void SaveAs(string fn)
+        /// <summary>
+        /// Retrieve the full location specification of the item w.r.t. to persistency container 
+        /// (filesystem, HTTP, ..)
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetFullItemLocation(AasxFileRepoItem fi)
+        {
+            return null;
+        }
+
+        public void SaveAsLocalFile(string fn)
         {
             using (var s = new StreamWriter(fn))
             {
                 var json = JsonConvert.SerializeObject(this, Formatting.Indented);
                 s.WriteLine(json);
             }
-
-            // record
-            this.Filename = fn;
-        }
-
-        public string GetFullFilename(AasxFileRepositoryItem fi)
-        {
-            // access
-            if (fi?.Filename == null)
-                return null;
-
-            // relative to this?
-            var fn = fi.Filename;
-            try
-            {
-                bool doFull = true;
-
-                if (Path.IsPathRooted(fn))
-                    doFull = false;
-
-                if (fn.Contains("://")) // contains scheme
-                    doFull = false;
-
-                if (doFull && this.Filename != null)
-                    fn = Path.Combine(Path.GetDirectoryName(this.Filename), fn);
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                return null;
-            }
-
-            // result 
-            return fn;
-        }
-
-        public void MakeFilenamesRelative()
-        {
-            // access
-            if (this.FileMap == null || this.Filename == null)
-                return;
-
-            // base path
-            var basePath = Path.GetDirectoryName(Path.GetFullPath(this.Filename));
-            if (basePath == null)
-                return;
-            if (!basePath.EndsWith("\\"))
-                basePath += "\\";
-
-            // each file
-            foreach (var fi in this.FileMap)
-                try
-                {
-                    // make 2 kinds of URIs
-                    var baseUri = new Uri(basePath);
-                    var fileUri = new Uri(Path.GetFullPath(fi.Filename));
-
-                    var relUri = baseUri.MakeRelativeUri(fileUri);
-                    var relPath = relUri.ToString().Replace("/", "\\");
-
-                    fi.Filename = relPath;
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
         }
 
         public void AddByAas(AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas, string fn)
@@ -261,9 +202,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
 
             // ok, add
-            var fi = new AasxFileRepositoryItem(
+            var fi = new AasxFileRepoItem(
                 assetId: assetId, aasId: aasId, fn: fn, tag: "" + tag, description: desc);
-            fi.VisualState = AasxFileRepositoryItem.VisualStateEnum.ReadFrom;
+            fi.VisualState = AasxFileRepoItem.VisualStateEnum.ReadFrom;
             fi.VisualTime = 2.0;
             this.Add(fi);
         }
@@ -334,42 +275,40 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         // Generators
 
-        public static AasxFileRepository CreateDemoData()
+        public static AasxFileRepoBase CreateDemoData()
         {
-            var tr = new AasxFileRepository();
+            var tr = new AasxFileRepoBase();
 
-            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/111111111111", "1.aasx"));
-            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/222222222222", "2.aasx"));
-            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/333333333333", "3.aasx"));
+            tr.Add(new AasxFileRepoItem("http://pk.festo.com/111111111111", "1.aasx"));
+            tr.Add(new AasxFileRepoItem("http://pk.festo.com/222222222222", "2.aasx"));
+            tr.Add(new AasxFileRepoItem("http://pk.festo.com/333333333333", "3.aasx"));
 
             tr.FileMap[0].Description = "Additional info";
             tr.FileMap[0].AasIds.Add("http://smart.festo.com/cdscsdbdsbchjdsbjhcbhjdsbchjsdbhjcsdbhjcdsbhjcsbdhj");
-            tr.FileMap[0].VisualState = AasxFileRepositoryItem.VisualStateEnum.Activated;
+            tr.FileMap[0].VisualState = AasxFileRepoItem.VisualStateEnum.Activated;
             tr.FileMap[0].VisualTime = 6.0;
 
             tr.FileMap[1].Description = "Additional info";
-            tr.FileMap[1].VisualState = AasxFileRepositoryItem.VisualStateEnum.ReadFrom;
+            tr.FileMap[1].VisualState = AasxFileRepoItem.VisualStateEnum.ReadFrom;
             tr.FileMap[1].VisualTime = 3.0;
 
-            tr.FileMap[2].VisualState = AasxFileRepositoryItem.VisualStateEnum.WriteTo;
+            tr.FileMap[2].VisualState = AasxFileRepoItem.VisualStateEnum.WriteTo;
             tr.FileMap[2].VisualTime = 4.5;
 
             return tr;
         }
 
-        public static AasxFileRepository Load(string fn)
+        public bool LoadFromLocalFile(string fn)
         {
             // from file
             if (!File.Exists(fn))
-                return null;
+                return false;
+            
             var init = File.ReadAllText(fn);
-            var repo = JsonConvert.DeserializeObject<AasxFileRepository>(init);
-
-            // record
-            repo.Filename = fn;
+            JsonConvert.PopulateObject(init, this);
 
             // return
-            return repo;
+            return true;
         }
 
         //

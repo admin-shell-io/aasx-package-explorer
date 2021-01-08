@@ -89,6 +89,8 @@
 
         <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
         <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
+        <RoutedUICommand x:Key="FileRepoConnectRepository" Text="FileRepoConnectRepository" />
+        <RoutedUICommand x:Key="FileRepoConnectRegistry" Text="FileRepoConnectRegistry" />
         <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
         <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
 
@@ -236,6 +238,8 @@
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoConnectRepository}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoConnectRegistry}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
@@ -303,11 +307,13 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="AASX File Repository ..">
-                            <MenuItem Header="_New .." Command="{StaticResource FileRepoNew}"/>
-                            <MenuItem Header="_Open .." Command="{StaticResource FileRepoOpen}"/>
+                            <MenuItem Header="New (local) repository.." Command="{StaticResource FileRepoNew}"/>
+                            <MenuItem Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
+                            <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
+                            <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
                             <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
                             <Separator/>
-                            <MenuItem Header="_Query .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
+                            <MenuItem Header="Query open repositories .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Import ..">

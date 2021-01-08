@@ -192,18 +192,18 @@ namespace AasxPackageExplorer
         }
 
         public static bool PrintRepositoryCodeSheet(
-            string repoFn = null, AasxFileRepository repoDirect = null, string title = "Asset repository")
+            string repoFn = null, AasxFileRepoBase repoDirect = null, string title = "Asset repository")
         {
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try
             {
-                AasxFileRepository repo = null;
+                AasxFileRepoBase repo = null;
 
                 // load the data
                 if (repoFn != null)
                 {
                     // from file
-                    repo = AasxFileRepository.Load(repoFn);
+                    repo = AasxFileRepoLocal.Load(repoFn);
                 }
 
                 if (repoDirect != null)

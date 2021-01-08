@@ -32,9 +32,9 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public AasxFileRepositoryItem ResultItem = null;
+        public AasxFileRepoItem ResultItem = null;
 
-        private List<AasxFileRepositoryItem> _listFileItems;
+        private List<AasxFileRepoItem> _listFileItems;
 
         public SelectFromRepositoryFlyout()
         {
@@ -53,11 +53,11 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile(IEnumerable<AasxFileRepositoryItem> items = null)
+        public bool LoadAasxRepoFile(IEnumerable<AasxFileRepoItem> items = null)
         {
             try
             {
-                this._listFileItems = new List<AasxFileRepositoryItem>();
+                this._listFileItems = new List<AasxFileRepoItem>();
 
                 if (items != null)
                 {
@@ -104,7 +104,7 @@ namespace AasxPackageExplorer
             var b = sender as Button;
             if (b?.Tag != null && this._listFileItems != null && this._listFileItems.Contains(b.Tag))
             {
-                this.ResultItem = b.Tag as AasxFileRepositoryItem;
+                this.ResultItem = b.Tag as AasxFileRepoItem;
                 ControlClosed?.Invoke();
             }
         }

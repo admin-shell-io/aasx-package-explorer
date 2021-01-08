@@ -274,13 +274,14 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
-        public AasxFileRepository UiLoadFileRepository(string fn)
+        public AasxFileRepoBase UiLoadFileRepository(string fn)
         {
             try
             {
                 AasxPackageExplorer.Log.Singleton.Info(
                     $"Loading aasx file repository {Options.Curr.AasxRepositoryFn} ..");
-                var fr = AasxFileRepository.Load(fn);
+
+                var fr = AasxFileRepoFactory.GuessAndCreateNew(Options.Curr.AasxRepositoryFn);
 
                 if (fr != null)
                     return fr;
@@ -614,7 +615,7 @@ namespace AasxPackageExplorer
                 if (repo == null || fi == null)
                     return;
 
-                var location = repo.GetFullFilename(fi);
+                var location = repo.GetFullItemLocation(fi);
                 if (location == null)
                     return;
 
@@ -630,7 +631,7 @@ namespace AasxPackageExplorer
                 }
 
                 // start animation
-                repo.StartAnimation(fi, AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
+                repo.StartAnimation(fi, AasxFileRepoItem.VisualStateEnum.ReadFrom);
 
                 // container options
                 var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
@@ -884,7 +885,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepositoryItem fi,
+        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepoItem fi,
             AdminShell.Reference requireReferable = null)
         {
             // access single file repo
@@ -893,7 +894,7 @@ namespace AasxPackageExplorer
                 return null;
 
             // which file?
-            var location = fileRepo.GetFullFilename(fi);
+            var location = fileRepo.GetFullItemLocation(fi);
             if (location == null)
                 return null;
 
@@ -938,7 +939,7 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    fileRepo.StartAnimation(fi, AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
+                    fileRepo.StartAnimation(fi, AasxFileRepoItem.VisualStateEnum.ReadFrom);
 
                     // activate
                     UiLoadPackageWithNew(packages.MainItem,
@@ -986,7 +987,7 @@ namespace AasxPackageExplorer
                     if (bo == null && packages.FileRepository != null)
                     {
                         // find?
-                        AasxFileRepositoryItem fi = null;
+                        AasxFileRepoItem fi = null;
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
                             fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())

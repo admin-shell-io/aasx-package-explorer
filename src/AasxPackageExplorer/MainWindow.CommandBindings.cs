@@ -661,7 +661,7 @@ namespace AasxPackageExplorer
                     return;
 
                 this.UiAssertFileRepository(visible: true);
-                packages.FileRepository.AddAtTop(new AasxFileRepository());
+                packages.FileRepository.AddAtTop(new AasxFileRepoBase());
             }
 
             if (cmd == "filerepoopen")
@@ -705,28 +705,28 @@ namespace AasxPackageExplorer
                         var fi = uc.ResultItem;
                         var fr = packages.FileRepository?.FindRepository(fi);
 
-                        if (fr != null && fi?.Filename != null)
+                        if (fr != null && fi?.Location != null)
                         {
                             // which file?
-                            var fn = fr?.GetFullFilename(fi);
-                            if (fn == null)
+                            var loc = fr?.GetFullItemLocation(fi);
+                            if (loc == null)
                                 return;
 
                             // start animation
                             fr.StartAnimation(fi,
-                                AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
+                                AasxFileRepoItem.VisualStateEnum.ReadFrom);
 
                             try
                             {
                                 // load
-                                AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
+                                Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
                                 UiLoadPackageWithNew(
-                                    packages.MainItem, null, fn, onlyAuxiliary: false);
+                                    packages.MainItem, null, loc, onlyAuxiliary: false);
                             }
                             catch (Exception ex)
                             {
-                                AasxPackageExplorer.Log.Singleton.Error(
-                                    ex, $"When switching to AASX repository file {fn}.");
+                                Log.Singleton.Error(
+                                    ex, $"When switching to AASX repository location {loc}.");
                             }
                         }
 

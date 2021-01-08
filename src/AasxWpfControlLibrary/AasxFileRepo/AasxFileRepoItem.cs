@@ -32,13 +32,13 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     /// </summary>
     public interface IRepoFind
     {
-        AasxFileRepositoryItem FindByAssetId(string aid);
-        AasxFileRepositoryItem FindByAasId(string aid);
-        IEnumerable<AasxFileRepositoryItem> EnumerateItems();
-        bool Contains(AasxFileRepositoryItem fi);
+        AasxFileRepoItem FindByAssetId(string aid);
+        AasxFileRepoItem FindByAasId(string aid);
+        IEnumerable<AasxFileRepoItem> EnumerateItems();
+        bool Contains(AasxFileRepoItem fi);
     }
 
-    public class AasxFileRepositoryItem : INotifyPropertyChanged
+    public class AasxFileRepoItem : INotifyPropertyChanged
     {
         // duty from INotifyPropertyChanged
 
@@ -141,13 +141,13 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         /// AASX file name to load
         /// </summary>
         [JsonProperty(PropertyName = "fn")]
-        private string filename = "";
+        private string location = "";
 
         [JsonIgnore]
-        public string Filename
+        public string Location
         {
-            get { return filename; }
-            set { filename = value; OnPropertyChanged("InfoFilename"); }
+            get { return location; }
+            set { location = value; OnPropertyChanged("InfoFilename"); }
         }
 
         //
@@ -218,9 +218,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         }
 
         [JsonIgnore]
-        public string InfoFilename
+        public string InfoLocation
         {
-            get { return "" + this.Filename; }
+            get { return "" + this.Location; }
         }
 
         [JsonIgnore]
@@ -273,12 +273,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         // Constructor
 
-        public AasxFileRepositoryItem() { }
+        public AasxFileRepoItem() { }
 
-        public AasxFileRepositoryItem(string assetId, string fn, string aasId = null, string description = "",
+        public AasxFileRepoItem(string assetId, string fn, string aasId = null, string description = "",
             string tag = "", string code = "")
         {
-            this.Filename = fn;
+            this.Location = fn;
             if (assetId != null)
                 this.AssetIds.Add(assetId);
             if (aasId != null)

@@ -28,14 +28,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     /// repos load from a JSON file (AasxFileRepo) or repos given by AAS(X) repositories and registries.
     /// This business logic object is intended to be paired with a view / view model.
     /// </summary>
-    public class AasxRepoList : ObservableCollection<AasxFileRepository>, IRepoFind
+    public class AasxRepoList : ObservableCollection<AasxFileRepoBase>, IRepoFind
     {
 
         //
         // Adding element at the top
         //
 
-        public AasxFileRepository AddAtTop(AasxFileRepository el)
+        public AasxFileRepoBase AddAtTop(AasxFileRepoBase el)
         {
             if (el != null)
                 this.Insert(0, el);
@@ -46,7 +46,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // IRepoFind interface
         //
 
-        public AasxFileRepositoryItem FindByAssetId(string aid)
+        public AasxFileRepoItem FindByAssetId(string aid)
         {
             foreach (var fr in this)
             {
@@ -57,7 +57,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public AasxFileRepositoryItem FindByAasId(string aid)
+        public AasxFileRepoItem FindByAasId(string aid)
         {
             foreach (var fr in this)
             {
@@ -68,14 +68,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public IEnumerable<AasxFileRepositoryItem> EnumerateItems()
+        public IEnumerable<AasxFileRepoItem> EnumerateItems()
         {
             foreach (var fr in this)
                 foreach (var fi in fr.EnumerateItems())
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepositoryItem fi)
+        public bool Contains(AasxFileRepoItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))
@@ -87,7 +87,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // Further finds
         //
 
-        public AasxFileRepository FindRepository (AasxFileRepositoryItem fi)
+        public AasxFileRepoBase FindRepository (AasxFileRepoItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))
