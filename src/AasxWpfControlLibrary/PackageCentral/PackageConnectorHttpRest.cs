@@ -23,6 +23,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using AdminShellEvents;
 using AasxWpfControlLibrary.AasxFileRepo;
+using AasxWpfControlLibrary.Toolkit;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -33,31 +34,11 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// </summary>
     public class PackageConnectorHttpRest : PackageConnectorBase
     {
-        /// <summary>
-        /// Is the left part of an URL, which forms an Endpoint; routes will generated to the right of
-        /// it
-        /// </summary>
-        public Uri Endpoint { get { return _endpoint; } }
-        private Uri _endpoint;
+        //
+        // Members
+        //
 
-        /// <summary>
-        /// Contains the base address of the HTTP client. Is host, port (authority).
-        /// </summary>
-        private Uri _baseAddress;
-
-        /// <summary>
-        /// Contains that portion of the Endpoint, which is not base address and is not query.
-        /// All (constrcuted) routes shall add to base address + endPointSegments.
-        /// </summary>
-        private string _endPointSegments;
-
-        /// <summary>
-        /// HttpClient right instantiated in the constructor. Rest of the REST calls shall call against
-        /// it.
-        /// Note: this is the difference to the code in aasx-server. By demand of AO, we will base
-        ///       this on HttpClient and might port back it to aasx-server/AasxRestClient.
-        /// </summary>
-        private HttpClient _client;
+        private ClientToolkitHttpRest _client;
 
         //
         // Constructors
@@ -71,68 +52,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageConnectorHttpRest(PackageContainerBase container, Uri endpoint)
             : base(container)
         {
-            _endpoint = endpoint;
-
-            // split into base address and end part
-            _baseAddress = new Uri(endpoint.GetLeftPart(UriPartial.Authority));
-            _endPointSegments = endpoint.GetComponents(UriComponents.Path, UriFormat.SafeUnescaped);
-
-            // make HTTP Client
-            var handler = new HttpClientHandler();
-            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
-
-            _client = new HttpClient(handler);
-            _client.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
-            _client.BaseAddress = _baseAddress;
-        }
-
-        //
-        // Helper
-        //
-
-        public override string ToString()
-        {
-            return $"HTTP/REST connector {"" + _baseAddress?.ToString()} / {"" + _endPointSegments}";
-        }
-
-        /// <summary>
-        /// Combines some routes, maintaining a '/' between them.
-        /// Note: empty segments will be skipped
-        /// Note: design choice to make '/' not a constant or so ..
-        /// Note: it makes the logic explicit. Using <c>new Uri(Uri baseUri, string relativeUri)</c> was considered
-        ///       as a pattern, but not adopted.
-        /// </summary>
-        /// <param name="segments">Segements of the route.</param>
-        /// <returns>A route without trailing slash.</returns>
-        public string CombineQuery(string first, params string[] segments)
-        {
-            // sum
-            string res = ("" + first).Trim().TrimEnd('/');
-
-            // rights
-            if (segments != null)
-                foreach (var r in segments)
-                {
-                    if (!r.HasContent())
-                        continue;
-                    var rr = r.Trim().Trim('/');
-                    res += "/" + rr;
-                }
-
-            // trailing slash
-            res.TrimEnd('/');
-            return res;
-        }
-
-        /// <summary>
-        /// This will execute <c>CombineQuery</c> headed by the appropriate endpoint segements.
-        /// </summary>
-        /// <param name="segments">Segements of the route.</param>
-        /// <returns>A route without trailing slash.</returns>
-        public string StartQuery(params string[] segments)
-        {
-            return CombineQuery(_endPointSegments, segments);
+            _client = ClientToolkitHttpRest.CreateNew(endpoint);
         }
 
         //
@@ -141,7 +61,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public bool IsValid() { return this._client != null; } // assume validity
         public bool IsConnected() { return true; } // always, as there is no open connection by principle
-        public string GetInfo() { return _baseAddress.ToString() + "/" + _endPointSegments; }
+        public string GetInfo() { return "" + _client?.ToString(); }
 
         //
         // Functions required by the connector
@@ -157,7 +77,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "valid index data!");
 
             // do the actual query
-            var response = await _client.GetAsync(StartQuery("aas", index, "core"));
+            var response = await _client.GetAsync(_client.PrepareQuery("aas", index, "core"));
             response.EnsureSuccessStatusCode();
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -221,7 +141,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (reqSm != null && reqSm.idShort.HasContent())
             {
                 // easy query
-                qst = StartQuery("submodels", reqSm.idShort, "values");
+                qst = _client.PrepareQuery("submodels", reqSm.idShort, "values");
             }
             else if (reqSme != null && reqSme.idShort.HasContent()
                 && rootSubmodel.idShort.HasContent())
@@ -235,7 +155,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }, includeThis: false, includeSubmodel: false);
 
                 // full query
-                qst = StartQuery("submodels", rootSubmodel.idShort, "elements", path, "values");
+                qst = _client.PrepareQuery("submodels", rootSubmodel.idShort, "elements", path, "values");
             }
 
             // valid
@@ -244,7 +164,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "not enough data to build query path!");
 
             // do the actual query
-            string query = StartQuery(qst);
+            string query = _client.PrepareQuery(qst);
             var response = await _client.GetAsync(qst);
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
@@ -358,7 +278,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 // query
                 var listAasResponse = await _client.GetAsync(
-                    StartQuery("server", "listaas"));
+                    _client.PrepareQuery("server", "listaas"));
                 listAasResponse.EnsureSuccessStatusCode();
                 var listAasString = await listAasResponse.Content.ReadAsStringAsync();
 
@@ -392,7 +312,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // file item
                     var fi = new AasxFileRepositoryItem()
                     {
-                        Filename = CombineQuery(_baseAddress.ToString(), _endPointSegments, 
+                        Filename = _client.CombineQuery(_client.BaseAddress.ToString(), _client.EndPointSegments, 
                                     "server", "getaasx", aasi.Index),
                         Description = $"\"{"" + x.Item1.idShort}\",\"{"" + x.Item2.idShort}\"",
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1.idShort).SubstringMax(0, 3)
