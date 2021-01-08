@@ -89,15 +89,8 @@
 
         <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
         <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
-        <RoutedUICommand x:Key="FileRepoSaveAs" Text="FileRepoSaveAs" />
-        <RoutedUICommand x:Key="FileRepoClose" Text="FileRepoClose" />
-        <RoutedUICommand x:Key="FileRepoMakeRelative" Text="FileRepoMakeRelative" />
         <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
         <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
-        <RoutedUICommand x:Key="FileRepoMultiAdd" Text="FileRepoMultiAdd" />
-        <RoutedUICommand x:Key="FileRepoAddCurrent" Text="FileRepoAddCurrent" />
-        <RoutedUICommand x:Key="FileRepoAddFromServer" Text="FileRepoAddFromServer" />
-        <RoutedUICommand x:Key="FileRepoPrint" Text="FileRepoPrint" />
 
         <!-- TODO: move this to separate xaml file -->
         <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
@@ -176,7 +169,6 @@
         <KeyBinding Key="F3" Command="{StaticResource ToolsFindForward}"/>
         <KeyBinding Key="F3" Modifiers="Shift" Command="{StaticResource ToolsFindBackward}"/>
         <KeyBinding Key="M" Modifiers="Ctrl+Shift" Command="{StaticResource NewSubmodelFromPlugin}"/>
-        <KeyBinding Key="R" Modifiers="Ctrl+Shift" Command="{StaticResource FileRepoAddFromServer}"/>
     </Window.InputBindings>
 
     <Window.CommandBindings>
@@ -244,15 +236,8 @@
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoSaveAs}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoClose}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoMakeRelative}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoMultiAdd}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoAddCurrent}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoAddFromServer}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoPrint}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
 
     <Grid x:Name="OuterGrid">
@@ -320,19 +305,9 @@
                         <MenuItem Header="AASX File Repository ..">
                             <MenuItem Header="_New .." Command="{StaticResource FileRepoNew}"/>
                             <MenuItem Header="_Open .." Command="{StaticResource FileRepoOpen}"/>
-                            <MenuItem Header="_Save as .." Command="{StaticResource FileRepoSaveAs}"/>
-                            <MenuItem Header="_Close .." Command="{StaticResource FileRepoClose}"/>
                             <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
                             <Separator/>
-                            <MenuItem Header="Make AASX filenames relative" Command="{StaticResource FileRepoMakeRelative}"/>
-                            <Separator/>
                             <MenuItem Header="_Query .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
-                            <Separator/>
-                            <MenuItem Header="Add current AAS" Command="{StaticResource FileRepoAddCurrent}"/>
-                            <MenuItem Header="Add multiple AASX files .." Command="{StaticResource FileRepoMultiAdd}"/>
-                            <MenuItem Header="Add from REST server .." Command="{StaticResource FileRepoAddFromServer}"/>
-                            <MenuItem Header="Print 2D code sheet .." Command="{StaticResource FileRepoPrint}"/>
-                            <Separator/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Import ..">

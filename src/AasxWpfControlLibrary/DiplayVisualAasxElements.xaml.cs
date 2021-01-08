@@ -495,13 +495,14 @@ namespace AasxPackageExplorer
                 // more?
                 if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
                 {
-#if __SINGLE_REPO
-                    var pkg = packages.FileRepository.MakeUpFakePackage();
+                    var pkg = new AdminShellPackageEnv();
+                    foreach (var fr in packages.FileRepository)                        
+                        fr.PopulateFakePackage(pkg);
+
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
-#endif
                 }
 
                 // may be filter

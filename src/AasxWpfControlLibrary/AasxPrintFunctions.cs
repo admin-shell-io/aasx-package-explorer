@@ -138,16 +138,13 @@ namespace AasxPackageExplorer
                     // write text and generate a 2-D barcode as a bitmap
                     bmp = barcodeWriter.Write(csi.id);
                 }
-                else
-                if (csi.code.Trim().ToLower() == "qr")
+                else 
                 {
                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(csi.id, QRCodeGenerator.ECCLevel.Q);
                     QRCode qrCode = new QRCode(qrCodeData);
                     bmp = qrCode.GetGraphic(20);
                 }
-                else
-                    continue;
 
                 var imgsrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                         bmp.GetHbitmap(),

@@ -348,70 +348,7 @@ namespace AasxPackageExplorer
             return false;
         }
 
-#if __SINGLE_REPO
-        public void UiSetFileRepository(AasxFileRepository repo)
-        {
-            if (repo == null)
-            {
-                // disable completely
-                packages.FileRepository = null;
-                this.RepoControl.FileRepository = packages.FileRepository;
-                this.RepoControl.Visibility = Visibility.Visible;
-                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
-                    this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(0.0);
-            }
-            else
-            {
-                // enable, what has been stored
-                packages.FileRepository = repo;
-                this.RepoControl.FileRepository = packages.FileRepository;
-                this.RepoControl.Visibility = Visibility.Visible;
-                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
-                    this.ColumnAasRepoGrid.RowDefinitions[2].Height =
-                        new GridLength(this.ColumnAasRepoGrid.ActualHeight / 2);
-            }
-        }
 
-        private void RepoControl_Drop(object sender, DragEventArgs e)
-        {
-            // Appearantly you need to figure out if OriginalSource would have handled the Drop?
-            if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
-            {
-                // Note that you can have more than one file.
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-                // Assuming you have one file that you care about, pass it off to whatever
-                // handling code you have defined.
-                if (files != null && files.Length > 0)
-                    foreach (var fn in files)
-                    {
-                        // repo?
-                        var ext = Path.GetExtension(fn).ToLower();
-                        if (ext == ".json")
-                        {
-                            // try handle as repository
-                            var fr = UiLoadFileRepository(fn);
-                            if (fr != null)
-                                UiSetFileRepository(fr);
-                            // handled
-                            e.Handled = true;
-                            // no more!
-                            return;
-                        }
-
-                        // aasx?
-                        if (ext == ".aasx")
-                        {
-                            // add?
-                            packages.FileRepository?.AddByAasxFn(fn);
-
-                            // handled, but may be more to come ..
-                            e.Handled = true;
-                        }
-                    }
-            }
-        }
-#else
         public void UiAssertFileRepository(bool visible)
         {
             // ALWAYS assert an accessible repo (even if invisble)
@@ -433,7 +370,6 @@ namespace AasxPackageExplorer
                         new GridLength(this.ColumnAasRepoGrid.ActualHeight / 2);
             }
         }
-#endif
 
         public void PrepareDispEditEntity(
             AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode,
@@ -765,72 +701,6 @@ namespace AasxPackageExplorer
             {
                 fr = AasxFileRepository.CreateDemoData();
             }
-#endif
-
-#if __SINGLE_REPO
-            if (Options.Curr.AasxRepositoryFn.HasContent())
-            {
-                var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
-                if (fr2 != null)
-                    fr = fr2;
-            }
-            UiSetFileRepository(fr);
-
-            // query repo
-            this.RepoControl.FileDoubleClick += async (fi) =>
-            {
-                // which file?
-                var location = packages.FileRepository?.GetFullFilename(fi);
-                if (location == null)
-                    return;
-
-                // safety?
-                if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
-                {
-                    // ask double question
-                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
-                            "Load file from AASX file repository?",
-                            "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
-                        return;
-                }
-
-                // start animation
-                packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
-
-                // container options
-                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
-                if (fi.Options != null)
-                    copts = fi.Options;
-
-                // try load ..
-                try
-                {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
-                    
-                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        packages,
-                        location,
-                        copts,
-                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
-
-                    if (container == null)
-                        Log.Singleton.Error($"Failed to load AASX from {location}");
-                    else
-                        UiLoadPackageWithNew(packages.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false);
-
-                    Log.Singleton.Info($"Successfully loaded AASX {location}");
-                }
-                catch (Exception ex)
-                {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
-                }
-            };
-            this.RepoControl.QueryClick += () =>
-            {
-                this.CommandBinding_GeneralDispatch("filerepoquery");
-            };
 #endif
 
             // initialize menu

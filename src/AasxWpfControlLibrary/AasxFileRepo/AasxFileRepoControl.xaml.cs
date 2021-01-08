@@ -238,38 +238,6 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 // simply pass over to upper layer to decide, how to finally handle
                 e.Handled = true;
                 FileDrop?.Invoke(FileRepository, files);
-
-                // Assuming you have one file that you care about, pass it off to whatever
-                // handling code you have defined.
-                if (files != null && files.Length > 0)
-                    foreach (var fn in files)
-                    {
-#if __SINGLE_REPO
-                        // repo?
-                        var ext = Path.GetExtension(fn).ToLower();
-                        if (ext == ".json")
-                        {
-                            // try handle as repository
-                            var fr = UiLoadFileRepository(fn);
-                            if (fr != null)
-                                UiSetFileRepository(fr);
-                            // handled
-                            e.Handled = true;
-                            // no more!
-                            return;
-                        }
-
-                        // aasx?
-                        if (ext == ".aasx")
-                        {
-                            // add?
-                            packages.FileRepository?.AddByAasxFn(fn);
-
-                            // handled, but may be more to come ..
-                            e.Handled = true;
-                        }
-#endif
-                    }
             }
         }
 

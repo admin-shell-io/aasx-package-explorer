@@ -511,10 +511,11 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         // Converter
 
-        public AdminShellPackageEnv MakeUpFakePackage()
+        public void PopulateFakePackage(AdminShellPackageEnv pkg)
         {
-            // create fake
-            var pkg = new AdminShellPackageEnv();
+            // access
+            if (pkg == null)
+                return;
 
             // all files
             int i = 0;
@@ -542,9 +543,6 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 pkg.AasEnv?.AdministrationShells.Add(aas);
                 pkg.AasEnv?.Assets.Add(asset);
             }
-
-            //ok
-            return pkg;
         }
 
         // Generators

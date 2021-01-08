@@ -50,7 +50,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
             {
                 // direct evidence of /getaasx/
-                var match = Regex.Match(ll, @"^(.*)/server/getaasx/([^/])(/|$)");
+                var match = Regex.Match(ll, @"^(.*)/server/getaasx/([^/])+(/|$)");
                 if (match.Success && match.Groups.Count >= 3)
                 {
                     // care for the aasx file
