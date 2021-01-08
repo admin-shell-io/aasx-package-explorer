@@ -39,7 +39,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     }
 
     /// <summary>
-    /// This simple file repository holds associations between AssetId and Filenames of AASX packages.
+    /// This simple file repository holds associations between locations of AASX packages and their
+    /// respective assetIds, aasIds and submodelIds.
+    /// Starting with JAN 2021, Lists of these Ids will be maintained. Goal is to describe, WHAT is in
+    /// an package (from outside perspective) and if it is worth to be inspected closer.
+    /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
+    /// to ensure full AAS KeyList compatibility.
     /// Additionally, it has some view model capabilities in order to animate some visual indications
     /// </summary>
     public class AasxFileRepository : IRepoFind
@@ -62,32 +67,54 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             // static members, to be persisted
 
+            //
+            // Note 1: this is the new version of the Repository from 8 JAN 2021.
+            //         Target is to switch to maintaining LISTS of assetId, aasId, submodelId
+            //
+            // Note 2: the single id properties are supported for READing old JSONs.
+            //
+
             /// <summary>
-            /// Asset Id of the respective Adminstration Shell
+            /// Asset Ids of the respective AASX Package.
+            /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
+            /// to ensure full AAS KeyList compatibility.
             /// </summary>
             /// 
-            [JsonProperty(PropertyName = "assetId")]
-            private string assetId = "";
+            [JsonProperty(PropertyName = "AssetIds")]
+            private List<string> _assetIds = new List<string>();
 
             [JsonIgnore]
-            public string AssetId
+            public List<string> AssetIds
             {
-                get { return assetId; }
-                set { assetId = value; OnPropertyChanged("InfoIds"); }
+                get { return _assetIds; }
+                set { _assetIds = value; OnPropertyChanged("InfoIds"); }
             }
+
+            // for compatibility before JAN 2021
+            [JsonProperty(PropertyName = "assetId")]
+            private string _legacyAssetId { set { _assetIds.Add(value); OnPropertyChanged("InfoIds"); } }
+
 
             /// <summary>
-            /// AAS Id, which is associated to th asset id.
+            /// AAS Ids of the respective AASX Package.
+            /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
+            /// to ensure full AAS KeyList compatibility.
             /// </summary>
-            [JsonProperty(PropertyName = "aasId")]
-            private string aasId = "";
+            [JsonProperty(PropertyName = "AasIds")]
+            private List<string> _aasIds = new List<string>();
 
             [JsonIgnore]
-            public string AasId
+            public List<string> AasIds
             {
-                get { return aasId; }
-                set { aasId = value; OnPropertyChanged("InfoIds"); }
+                get { return _aasIds; }
+                set { _aasIds = value; OnPropertyChanged("InfoIds"); }
             }
+
+            // for compatibility before JAN 2021
+            [JsonProperty(PropertyName = "aasId")]
+            private string _legacyAaasId { set { _aasIds.Add(value); OnPropertyChanged("InfoIds"); } }
+
+            // TODO (MIHO, 2021-01-08): add SubmodelIds
 
             /// <summary>
             /// Description; help for the human user.
@@ -178,13 +205,24 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 get
                 {
                     var info = "";
+                    Action<string, List<string>> lambdaAddIdList = (head, ids) =>
+                    {
+                        if (ids != null && ids.Count > 0)
+                        {
+                            if (info != "")
+                                info += Environment.NewLine;
+                            info += head;
+                            foreach (var id in ids)
+                                info += "" + id + ",";
+                            info = info.TrimEnd(',');
+                        }
+                    };
 
-                    if (this.Description.HasContent())
-                        info = info.AddWithDelimiter("" + this.Description + "", delimter: Environment.NewLine);
-                    if (this.AssetId.HasContent())
-                        info = info.AddWithDelimiter("" + this.AssetId + " (Asset)", delimter: Environment.NewLine);
-                    if (this.AasId.HasContent())
-                        info = info.AddWithDelimiter("" + this.AasId + " (AAS)", delimter: Environment.NewLine);
+                    if (Description.HasContent())
+                        info += Description;
+
+                    lambdaAddIdList("Assets: ", _assetIds);
+                    lambdaAddIdList("AAS: ", _aasIds);
 
                     return info;
                 }
@@ -251,12 +289,40 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             public FileItem(string assetId, string fn, string aasId = null, string description = "",
                 string tag = "", string code = "")
             {
-                this.AssetId = assetId;
                 this.Filename = fn;
-                this.AasId = aasId;
+                if (assetId != null)
+                    this.AssetIds.Add(assetId);
+                if (aasId != null)
+                    this.AasIds.Add(aasId);
                 this.Description = description;
                 this.Tag = tag;
                 this.CodeType2D = code;
+            }
+
+            //
+            // more enumerations
+            //
+
+            public IEnumerable<string> EnumerateAssetIds()
+            {
+                if (_assetIds != null)
+                    foreach (var id in _assetIds)
+                        yield return id;
+            }
+
+            public IEnumerable<string> EnumerateAasIds()
+            {
+                if (_aasIds != null)
+                    foreach (var id in _aasIds)
+                        yield return id;
+            }
+
+            public IEnumerable<string> EnumerateAllIds()
+            {
+                foreach (var id in EnumerateAssetIds())
+                    yield return id;
+                foreach (var id in EnumerateAasIds())
+                    yield return id;
             }
         }
 
@@ -302,8 +368,11 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         public FileItem FindByAssetId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
-            {
-                return fi.AssetId.Trim() == aid.Trim();
+            {                
+                foreach (var id in fi.EnumerateAssetIds())
+                    if (id?.Trim() == aid.Trim())
+                        return true;
+                return false;
             });
         }
 
@@ -311,7 +380,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {
-                return fi.AasId.Trim() == aid.Trim();
+                foreach (var id in fi.EnumerateAasIds())
+                    if (id?.Trim() == aid.Trim())
+                        return true;
+                return false;
             });
         }
 
@@ -527,21 +599,26 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 i++;
 
                 // aas
-                var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                aas.AddDescription("en?", "" + fi.Description);
-                aas.identification = new AdminShell.Identification(
-                    AdminShell.Identification.IRI, "" + fi.AasId);
+                if (fi.AasIds != null)
+                    foreach (var id in fi.AasIds)
+                    {
+                        var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
+                        aas.AddDescription("en?", "" + fi.Description);
+                        aas.identification = new AdminShell.Identification(
+                            AdminShell.Identification.IRI, "" + id);
+                        pkg.AasEnv?.AdministrationShells.Add(aas);
+                    }
 
                 // asset
-                var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
-                asset.AddDescription("en?", "" + fi.Description);
-                asset.identification = new AdminShell.Identification(
-                    AdminShell.Identification.IRI, "" + fi.AssetId);
-                aas.assetRef = asset.GetAssetReference();
-
-                // add
-                pkg.AasEnv?.AdministrationShells.Add(aas);
-                pkg.AasEnv?.Assets.Add(asset);
+                if (fi.AssetIds != null)
+                    foreach (var id in fi.AssetIds)
+                    {
+                        var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
+                        asset.AddDescription("en?", "" + fi.Description);
+                        asset.identification = new AdminShell.Identification(
+                            AdminShell.Identification.IRI, "" + id);
+                        pkg.AasEnv?.Assets.Add(asset);
+                    }
             }
         }
 
@@ -556,7 +633,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             tr.Add(new AasxFileRepository.FileItem("http://pk.festo.com/333333333333", "3.aasx"));
 
             tr.FileMap[0].Description = "Additional info";
-            tr.FileMap[0].AasId = "http://smart.festo.com/cdscsdbdsbchjdsbjhcbdshjcbhjdsbchjsdbhjcsdbhjcdsbhjcsbdhj";
+            tr.FileMap[0].AasIds.Add("http://smart.festo.com/cdscsdbdsbchjdsbjhcbhjdsbchjsdbhjcsdbhjcdsbhjcsbdhj");
             tr.FileMap[0].VisualState = AasxFileRepository.FileItem.VisualStateEnum.Activated;
             tr.FileMap[0].VisualTime = 6.0;
 
@@ -583,58 +660,6 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             // return
             return repo;
-        }
-
-        public static bool GenerateRepositoryFromFileNames(string[] inputFns, string outputFn)
-        {
-            var res = true;
-
-            // new repo
-            var repo = new AasxFileRepository();
-
-            // make records
-            foreach (var ifn in inputFns)
-            {
-                // get one or multiple asset ids
-                var assetIds = new List<string>();
-                try
-                {
-                    var pkg = new AdminShellPackageEnv();
-                    pkg.Load(ifn);
-                    if (pkg.AasEnv != null && pkg.AasEnv.Assets != null)
-                        foreach (var asset in pkg.AasEnv.Assets)
-                            if (asset.identification != null)
-                                assetIds.Add(asset.identification.id);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    res = false;
-                }
-
-                // make the record(s)
-                foreach (var assetid in assetIds)
-                {
-                    var fmi = new AasxFileRepository.FileItem();
-                    fmi.Filename = ifn;
-                    fmi.CodeType2D = "DMC";
-                    fmi.AssetId = assetid;
-                    fmi.Description = "TODO";
-                    fmi.Tag = "TODO";
-
-                    // add it
-                    repo.FileMap.Add(fmi);
-                }
-            }
-
-            // save
-            using (var s = new StreamWriter(outputFn))
-            {
-                var json = JsonConvert.SerializeObject(repo, Formatting.Indented);
-                s.WriteLine(json);
-            }
-
-            return res;
         }
 
         //

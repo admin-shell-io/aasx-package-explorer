@@ -145,7 +145,8 @@ namespace AasxPackageExplorer
             // if not, compare asset ids
             if (this._listFileItems != null && this._listFileItems != null)
                 foreach (var fm in this._listFileItems)
-                    if (aid == fm.AssetId.Trim().ToLower())
+                    foreach (var id in fm.EnumerateAssetIds())
+                    if (aid == id.Trim().ToLower())
                     {
                         this.ResultItem = fm;
                         ControlClosed?.Invoke();

@@ -218,14 +218,16 @@ namespace AasxPackageExplorer
 
                 // all assets
                 foreach (var fmi in repo.FileMap)
-                {
-                    var csi = new CodeSheetItem();
-                    csi.id = fmi.AssetId;
-                    csi.code = fmi.CodeType2D;
-                    csi.description = fmi.Description;
-                    csi.normSize = 1.0; // do not vary
-                    codeSheetItems.Add(csi);
-                }
+                    if (fmi.AssetIds != null)
+                        foreach (var id in fmi.AssetIds)
+                        {
+                            var csi = new CodeSheetItem();
+                            csi.id = id;
+                            csi.code = fmi.CodeType2D;
+                            csi.description = fmi.Description;
+                            csi.normSize = 1.0; // do not vary
+                            codeSheetItems.Add(csi);
+                        }
 
                 // print
                 PrintCodeSheet(codeSheetItems.ToArray(), title);
