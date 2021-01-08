@@ -49,7 +49,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Tag:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="Tag:" VerticalAlignment="Center" Width="110"/>
                             <TextBox Name="TextBoxTag" Margin="5 0 0 0" Width="150" Grid.Column="1" TextChanged="TextBoxContextMenu_TextChanged"/>
                         </Grid>
                     </MenuItem.Header>
@@ -64,7 +64,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Description:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="Description:" VerticalAlignment="Center" Width="110"/>
                             <TextBox Name="TextBoxDescription" Margin="5 0 0 0" Width="150" Grid.Column="1" TextChanged="TextBoxContextMenu_TextChanged"/>
                         </Grid>
                     </MenuItem.Header>
@@ -79,7 +79,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="2D code type:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="2D code type:" VerticalAlignment="Center" Width="110"/>
                             <TextBox Name="TextBoxCode" Margin="5 0 0 0" Width="150" Grid.Column="1" TextChanged="TextBoxContextMenu_TextChanged"/>
                         </Grid>
                     </MenuItem.Header>
@@ -95,7 +95,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Load resident:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="Load resident:" VerticalAlignment="Center" Width="110"/>
                             <CheckBox Name="CheckBoxLoadResident" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
                         </Grid>
                     </MenuItem.Header>
@@ -110,7 +110,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Stay connected:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="Stay connected:" VerticalAlignment="Center" Width="110"/>
                             <CheckBox Name="CheckBoxStayConnected" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
                         </Grid>
                     </MenuItem.Header>
@@ -125,7 +125,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Update period [ms]:" VerticalAlignment="Center" Width="90"/>
+                            <TextBlock Text="Update period [ms]:" VerticalAlignment="Center" Width="110"/>
                             <TextBox Name="TextBoxUpdatePeriod" Margin="5 0 0 0" Width="150" Grid.Column="1" TextChanged="TextBoxContextMenu_TextChanged"/>
                         </Grid>
                     </MenuItem.Header>

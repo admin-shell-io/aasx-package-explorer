@@ -7,7 +7,7 @@
              xmlns:repo="clr-namespace:AasxWpfControlLibrary.AasxFileRepo"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300"
-             Loaded="UserControl_Loaded">
+             Loaded="UserControl_Loaded" Drop="UserControl_Drop">
     <!--
     Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister

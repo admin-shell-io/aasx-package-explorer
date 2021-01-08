@@ -279,15 +279,15 @@ namespace AasxPackageExplorer
             try
             {
                 AasxPackageExplorer.Log.Singleton.Info(
-                    $"Loading aasx file repository {Options.Curr.AasxRepositoryFn} ..");
+                    $"Loading aasx file repository {fn} ..");
 
-                var fr = AasxFileRepoFactory.GuessAndCreateNew(Options.Curr.AasxRepositoryFn);
+                var fr = AasxFileRepoFactory.GuessAndCreateNew(fn);
 
                 if (fr != null)
                     return fr;
                 else
                     AasxPackageExplorer.Log.Singleton.Info(
-                        $"File not found when loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+                        $"File not found when loading aasx file repository {fn}");
             }
             catch (Exception ex)
             {
@@ -667,7 +667,7 @@ namespace AasxPackageExplorer
             RepoListControl.FileDrop += (fr, files) =>
             {
                 // access
-                if (fr == null || files == null || files.Length < 1)
+                if (files == null || files.Length < 1)
                     return;
 
                 // more than one?
@@ -689,7 +689,7 @@ namespace AasxPackageExplorer
                         }
 
                         // aasx?
-                        if (ext == ".aasx")
+                        if (fr != null && ext == ".aasx")
                         {
                             // add?
                             fr.AddByAasxFn(fn);

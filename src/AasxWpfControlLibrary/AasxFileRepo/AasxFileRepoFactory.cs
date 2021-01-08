@@ -39,7 +39,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             var ll = location.Trim().ToLower();
             if (ll.StartsWith("http://") || ll.StartsWith("https"))
             {
-                var repo = new AasxFileRepoHttpRestRepository();
+                var repo = new AasxFileRepoHttpRestRepository(location);
                 return repo;
             }
 

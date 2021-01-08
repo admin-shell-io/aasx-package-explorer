@@ -287,7 +287,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 {
                     // read server address
                     var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", MessageBoxImage.Question);
-                    uc.Text = "http://localhost:51310";
+                    uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
                     _flyout.StartFlyoverModal(uc);
                     if (!uc.Result)
                         return;
@@ -373,6 +373,20 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         private void AasxFileRepoControl_FileDrop(AasxFileRepoBase fr, string[] files)
         {
             FileDrop?.Invoke(fr, files);
+        }
+
+        private void UserControl_Drop(object sender, DragEventArgs e)
+        {
+            if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // simply pass over to upper layer to decide, how to finally handle
+                e.Handled = true;
+                FileDrop?.Invoke(null, files);
+            }
+
         }
     }
 }

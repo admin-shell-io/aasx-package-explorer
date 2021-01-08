@@ -249,6 +249,11 @@ namespace AasxPackageExplorer
         public int DefaultUpdatePeriod = 0;
 
         /// <summary>
+        /// Preset shown in the file repo connect to AAS repository dialogue
+        /// </summary>
+        public string DefaultConnectRepositoryLocation = "";
+
+        /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]

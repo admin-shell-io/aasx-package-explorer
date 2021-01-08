@@ -35,6 +35,9 @@
   "IndirectLoadSave": true,
   "AccentColors": {},
   "LoadWithoutPrompt": true,
+  "DefaultStayConnected": true,
+  "DefaultUpdatePeriod": 1000,
+  "DefaultConnectRepositoryLocation": "http://localhost:51310",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],

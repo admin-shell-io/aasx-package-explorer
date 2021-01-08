@@ -102,7 +102,7 @@ namespace AasxIntegrationBase
                 b.Style = (Style)FindResource("TranspRoundCorner");
                 b.Content = "" + bd;
                 b.Height = 40;
-                b.Width = 40;
+                b.Width = Math.Max(40, 10 * bd.Length);
                 b.Margin = new Thickness(5, 0, 5, 0);
                 b.Foreground = Brushes.White;
                 b.Click += StackPanelButton_Click;

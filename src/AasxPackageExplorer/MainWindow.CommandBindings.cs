@@ -428,7 +428,7 @@ namespace AasxPackageExplorer
                 CommandBinding_PrintAsset();
 
             if (cmd.StartsWith("filerepo"))
-                CommandBinding_FileRepoAll(cmd);
+                await CommandBinding_FileRepoAll(cmd);
 
             if (cmd == "opcread")
                 CommandBinding_OpcUaClientRead();
@@ -649,7 +649,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_FileRepoAll(string cmd)
+        public async Task CommandBinding_FileRepoAll(string cmd)
         {
             if (cmd == "filereponew")
             {
@@ -680,6 +680,20 @@ namespace AasxPackageExplorer
                     this.UiAssertFileRepository(visible: true);
                     packages.FileRepository.AddAtTop(fr);
                 }
+            }
+
+            if (cmd == "filerepoconnectrepository")
+            {
+                // read server address
+                var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", MessageBoxImage.Question);
+                uc.Text = "" + Options.Curr.DefaultConnectRepositoryLocation;
+                this.StartFlyoverModal(uc);
+                if (!uc.Result)
+                    return;
+
+                var fr = new AasxFileRepoHttpRestRepository(uc.Text);
+                await fr.SyncronizeFromServerAsync();
+                packages.FileRepository.AddAtTop(fr);
             }
 
             if (cmd == "filerepoquery")
