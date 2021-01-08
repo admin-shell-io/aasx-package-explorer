@@ -36,7 +36,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         public enum CustomButton { Query, Context }
 
         public event Action<AasxFileRepository, CustomButton, Button> ButtonClick;
-        public event Action<AasxFileRepository, AasxFileRepository.FileItem> FileDoubleClick;
+        public event Action<AasxFileRepository, AasxFileRepositoryItem> FileDoubleClick;
         public event Action<AasxFileRepository, string[]> FileDrop;
 
         private AasxFileRepository theFileRepository = null;
@@ -102,7 +102,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepository.FileItem);
+                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepositoryItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -117,14 +117,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
         }
 
-        private AasxFileRepository.FileItem rightClickSelectedItem = null;
+        private AasxFileRepositoryItem rightClickSelectedItem = null;
 
         private void RepoList_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (sender == this.RepoList && e.ChangedButton == MouseButton.Right)
             {
                 // store selected item for later (when context menu selection is done)
-                var fi = this.RepoList.SelectedItem as AasxFileRepository.FileItem;
+                var fi = this.RepoList.SelectedItem as AasxFileRepositoryItem;
                 this.rightClickSelectedItem = fi;
 
                 // find context menu

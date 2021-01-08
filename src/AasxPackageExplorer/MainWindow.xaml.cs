@@ -630,7 +630,7 @@ namespace AasxPackageExplorer
                 }
 
                 // start animation
-                repo.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                repo.StartAnimation(fi, AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
 
                 // container options
                 var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
@@ -884,7 +884,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepository.FileItem fi,
+        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepositoryItem fi,
             AdminShell.Reference requireReferable = null)
         {
             // access single file repo
@@ -938,7 +938,7 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    fileRepo.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                    fileRepo.StartAnimation(fi, AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
 
                     // activate
                     UiLoadPackageWithNew(packages.MainItem,
@@ -986,7 +986,7 @@ namespace AasxPackageExplorer
                     if (bo == null && packages.FileRepository != null)
                     {
                         // find?
-                        AasxFileRepository.FileItem fi = null;
+                        AasxFileRepositoryItem fi = null;
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
                             fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())

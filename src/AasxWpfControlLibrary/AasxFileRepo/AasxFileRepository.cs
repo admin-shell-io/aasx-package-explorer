@@ -26,19 +26,6 @@ using Newtonsoft.Json;
 namespace AasxWpfControlLibrary.AasxFileRepo
 {
     /// <summary>
-    /// This interface allows to find some <c>AasxFileRepository.FileItem</c> by asking for AAS or AssetId.
-    /// It does not intend to be a full fledged query interface, but allow to retrieve what is usful for
-    /// automatic Reference link following etc.
-    /// </summary>
-    public interface IRepoFind
-    {
-        AasxFileRepository.FileItem FindByAssetId(string aid);
-        AasxFileRepository.FileItem FindByAasId(string aid);
-        IEnumerable<AasxFileRepository.FileItem> EnumerateItems();
-        bool Contains(AasxFileRepository.FileItem fi);
-    }
-
-    /// <summary>
     /// This simple file repository holds associations between locations of AASX packages and their
     /// respective assetIds, aasIds and submodelIds.
     /// Starting with JAN 2021, Lists of these Ids will be maintained. Goal is to describe, WHAT is in
@@ -49,287 +36,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
     /// </summary>
     public class AasxFileRepository : IRepoFind
     {
-        public class FileItem : INotifyPropertyChanged
-        {
-            // duty from INotifyPropertyChanged
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            protected virtual void OnPropertyChanged(string propertyName)
-            {
-                var handler = PropertyChanged;
-                if (handler != null)
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-
-            // Visual state
-            public enum VisualStateEnum { Idle, Activated, ReadFrom, WriteTo }
-
-            // static members, to be persisted
-
-            //
-            // Note 1: this is the new version of the Repository from 8 JAN 2021.
-            //         Target is to switch to maintaining LISTS of assetId, aasId, submodelId
-            //
-            // Note 2: the single id properties are supported for READing old JSONs.
-            //
-
-            /// <summary>
-            /// Asset Ids of the respective AASX Package.
-            /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-            /// to ensure full AAS KeyList compatibility.
-            /// </summary>
-            /// 
-            [JsonProperty(PropertyName = "AssetIds")]
-            private List<string> _assetIds = new List<string>();
-
-            [JsonIgnore]
-            public List<string> AssetIds
-            {
-                get { return _assetIds; }
-                set { _assetIds = value; OnPropertyChanged("InfoIds"); }
-            }
-
-            // for compatibility before JAN 2021
-            [JsonProperty(PropertyName = "assetId")]
-            private string _legacyAssetId { set { _assetIds.Add(value); OnPropertyChanged("InfoIds"); } }
-
-
-            /// <summary>
-            /// AAS Ids of the respective AASX Package.
-            /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-            /// to ensure full AAS KeyList compatibility.
-            /// </summary>
-            [JsonProperty(PropertyName = "AasIds")]
-            private List<string> _aasIds = new List<string>();
-
-            [JsonIgnore]
-            public List<string> AasIds
-            {
-                get { return _aasIds; }
-                set { _aasIds = value; OnPropertyChanged("InfoIds"); }
-            }
-
-            // for compatibility before JAN 2021
-            [JsonProperty(PropertyName = "aasId")]
-            private string _legacyAaasId { set { _aasIds.Add(value); OnPropertyChanged("InfoIds"); } }
-
-            // TODO (MIHO, 2021-01-08): add SubmodelIds
-
-            /// <summary>
-            /// Description; help for the human user.
-            /// </summary>
-            [JsonProperty(PropertyName = "description")]
-            private string description = "";
-
-            [JsonIgnore]
-            public string Description
-            {
-                get { return description; }
-                set { description = value; OnPropertyChanged("InfoIds"); }
-            }
-
-            /// <summary>
-            /// 3-5 letters of Tag to be displayed in user interface
-            /// </summary>
-            [JsonProperty(PropertyName = "tag")]
-            private string tag = "";
-
-            [JsonIgnore]
-            public string Tag
-            {
-                get { return tag; }
-                set { tag = value; OnPropertyChanged("InfoIds"); }
-            }
-
-            /// <summary>
-            /// QR or DMC format of the assit id
-            /// </summary>
-            [JsonProperty(PropertyName = "code")]
-            public string CodeType2D = "";
-
-            /// <summary>
-            /// AASX file name to load
-            /// </summary>
-            [JsonProperty(PropertyName = "fn")]
-            private string filename = "";
-
-            [JsonIgnore]
-            public string Filename
-            {
-                get { return filename; }
-                set { filename = value; OnPropertyChanged("InfoFilename"); }
-            }
-
-            //
-            // Container options
-            //
-
-            /// <summary>
-            /// Options for the package. Could be <c>null</c>!
-            /// </summary>
-            public PackageContainerOptionsBase Options;
-
-            //
-            // dynamic members, to be not persisted            
-            //
-
-            /// <summary>
-            /// Visual animation, currently displayed
-            /// </summary>
-            [JsonIgnore]
-            public VisualStateEnum VisualState = VisualStateEnum.Idle;
-
-            /// <summary>
-            /// Tine in seconds, how long an animation shall be displayed.
-            /// </summary>
-            [JsonIgnore]
-            private double visualTime = 0.0;
-
-            [JsonIgnore]
-            public double VisualTime
-            {
-                get { return visualTime; }
-                set
-                {
-                    this.visualTime = value;
-                    OnPropertyChanged("VisualLabelText");
-                    OnPropertyChanged("VisualLabelBackground");
-                }
-            }
-
-            // Getters used by the binding
-            [JsonIgnore]
-            public string InfoIds
-            {
-                get
-                {
-                    var info = "";
-                    Action<string, List<string>> lambdaAddIdList = (head, ids) =>
-                    {
-                        if (ids != null && ids.Count > 0)
-                        {
-                            if (info != "")
-                                info += Environment.NewLine;
-                            info += head;
-                            foreach (var id in ids)
-                                info += "" + id + ",";
-                            info = info.TrimEnd(',');
-                        }
-                    };
-
-                    if (Description.HasContent())
-                        info += Description;
-
-                    lambdaAddIdList("Assets: ", _assetIds);
-                    lambdaAddIdList("AAS: ", _aasIds);
-
-                    return info;
-                }
-            }
-
-            [JsonIgnore]
-            public string InfoFilename
-            {
-                get { return "" + this.Filename; }
-            }
-
-            [JsonIgnore]
-            public string VisualLabelText
-            {
-                get
-                {
-                    switch (VisualState)
-                    {
-                        case VisualStateEnum.Activated:
-                            return "A";
-                        case VisualStateEnum.ReadFrom:
-                            return "R";
-                        case VisualStateEnum.WriteTo:
-                            return "W";
-                        default:
-                            return "";
-                    }
-                }
-            }
-
-            [JsonIgnore]
-            public Brush VisualLabelBackground
-            {
-                get
-                {
-                    if (VisualState == VisualStateEnum.Idle)
-                        return Brushes.Transparent;
-
-                    var col = Colors.Green;
-                    if (VisualState == VisualStateEnum.ReadFrom)
-                        col = Colors.Blue;
-                    if (VisualState == VisualStateEnum.WriteTo)
-                        col = Colors.Orange;
-
-                    if (visualTime > 2.0)
-                        col.ScA = 1.0f;
-                    else if (visualTime > 0.001)
-                        col.ScA = (float)(visualTime / 2.0);
-                    else
-                    {
-                        visualTime = 0.0;
-                        col = Colors.Transparent;
-                        VisualState = VisualStateEnum.Idle;
-                    }
-
-                    return new SolidColorBrush(col);
-                }
-            }
-
-            // Constructor
-
-            public FileItem() { }
-
-            public FileItem(string assetId, string fn, string aasId = null, string description = "",
-                string tag = "", string code = "")
-            {
-                this.Filename = fn;
-                if (assetId != null)
-                    this.AssetIds.Add(assetId);
-                if (aasId != null)
-                    this.AasIds.Add(aasId);
-                this.Description = description;
-                this.Tag = tag;
-                this.CodeType2D = code;
-            }
-
-            //
-            // more enumerations
-            //
-
-            public IEnumerable<string> EnumerateAssetIds()
-            {
-                if (_assetIds != null)
-                    foreach (var id in _assetIds)
-                        yield return id;
-            }
-
-            public IEnumerable<string> EnumerateAasIds()
-            {
-                if (_aasIds != null)
-                    foreach (var id in _aasIds)
-                        yield return id;
-            }
-
-            public IEnumerable<string> EnumerateAllIds()
-            {
-                foreach (var id in EnumerateAssetIds())
-                    yield return id;
-                foreach (var id in EnumerateAasIds())
-                    yield return id;
-            }
-        }
-
         public string Header;
 
         [JsonProperty(PropertyName = "filemaps")]
-        public ObservableCollection<FileItem> FileMap = new ObservableCollection<FileItem>();
+        public ObservableCollection<AasxFileRepositoryItem> FileMap = new ObservableCollection<AasxFileRepositoryItem>();
 
         [JsonIgnore]
         public string Filename = null;
@@ -337,12 +47,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         [JsonIgnore]
         public double DefaultAnimationTime = 2.0d;
 
-        public void Add(FileItem fi)
+        public void Add(AasxFileRepositoryItem fi)
         {
             this.FileMap?.Add(fi);
         }
 
-        public void Remove(FileItem fi)
+        public void Remove(AasxFileRepositoryItem fi)
         {
             if (fi == null || this.FileMap == null)
                 return;
@@ -351,21 +61,21 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.FileMap.Remove(fi);
         }
 
-        public void MoveUp(FileItem fi)
+        public void MoveUp(AasxFileRepositoryItem fi)
         {
-            this.MoveElementInListUpwards<FileItem>(this.FileMap, fi);
+            this.MoveElementInListUpwards<AasxFileRepositoryItem>(this.FileMap, fi);
         }
 
-        public void MoveDown(FileItem fi)
+        public void MoveDown(AasxFileRepositoryItem fi)
         {
-            this.MoveElementInListDownwards<FileItem>(this.FileMap, fi);
+            this.MoveElementInListDownwards<AasxFileRepositoryItem>(this.FileMap, fi);
         }
 
         //
         // IFindRepo interface
         //
 
-        public FileItem FindByAssetId(string aid)
+        public AasxFileRepositoryItem FindByAssetId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {                
@@ -376,7 +86,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public FileItem FindByAasId(string aid)
+        public AasxFileRepositoryItem FindByAasId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {
@@ -387,14 +97,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public IEnumerable<FileItem> EnumerateItems()
+        public IEnumerable<AasxFileRepositoryItem> EnumerateItems()
         {
             if (this.FileMap != null)
                 foreach (var fi in this.FileMap)
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepository.FileItem fi)
+        public bool Contains(AasxFileRepositoryItem fi)
         {
             return true == this.FileMap?.Contains(fi);
         }
@@ -410,16 +120,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     fm.VisualTime = Math.Max(0.0, fm.VisualTime - amount);
         }
 
-        public void StartAnimation(FileItem fi, FileItem.VisualStateEnum state)
+        public void StartAnimation(AasxFileRepositoryItem fi, AasxFileRepositoryItem.VisualStateEnum state)
         {
             // access
             if (fi == null || this.FileMap == null || !this.FileMap.Contains(fi))
                 return;
 
             // stop?
-            if (state == FileItem.VisualStateEnum.Idle)
+            if (state == AasxFileRepositoryItem.VisualStateEnum.Idle)
             {
-                fi.VisualState = FileItem.VisualStateEnum.Idle;
+                fi.VisualState = AasxFileRepositoryItem.VisualStateEnum.Idle;
                 fi.VisualTime = 0.0d;
                 return;
             }
@@ -443,7 +153,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.Filename = fn;
         }
 
-        public string GetFullFilename(FileItem fi)
+        public string GetFullFilename(AasxFileRepositoryItem fi)
         {
             // access
             if (fi?.Filename == null)
@@ -551,9 +261,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
 
             // ok, add
-            var fi = new FileItem(
+            var fi = new AasxFileRepositoryItem(
                 assetId: assetId, aasId: aasId, fn: fn, tag: "" + tag, description: desc);
-            fi.VisualState = FileItem.VisualStateEnum.ReadFrom;
+            fi.VisualState = AasxFileRepositoryItem.VisualStateEnum.ReadFrom;
             fi.VisualTime = 2.0;
             this.Add(fi);
         }
@@ -628,20 +338,20 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             var tr = new AasxFileRepository();
 
-            tr.Add(new AasxFileRepository.FileItem("http://pk.festo.com/111111111111", "1.aasx"));
-            tr.Add(new AasxFileRepository.FileItem("http://pk.festo.com/222222222222", "2.aasx"));
-            tr.Add(new AasxFileRepository.FileItem("http://pk.festo.com/333333333333", "3.aasx"));
+            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/111111111111", "1.aasx"));
+            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/222222222222", "2.aasx"));
+            tr.Add(new AasxFileRepositoryItem("http://pk.festo.com/333333333333", "3.aasx"));
 
             tr.FileMap[0].Description = "Additional info";
             tr.FileMap[0].AasIds.Add("http://smart.festo.com/cdscsdbdsbchjdsbjhcbhjdsbchjsdbhjcsdbhjcdsbhjcsbdhj");
-            tr.FileMap[0].VisualState = AasxFileRepository.FileItem.VisualStateEnum.Activated;
+            tr.FileMap[0].VisualState = AasxFileRepositoryItem.VisualStateEnum.Activated;
             tr.FileMap[0].VisualTime = 6.0;
 
             tr.FileMap[1].Description = "Additional info";
-            tr.FileMap[1].VisualState = AasxFileRepository.FileItem.VisualStateEnum.ReadFrom;
+            tr.FileMap[1].VisualState = AasxFileRepositoryItem.VisualStateEnum.ReadFrom;
             tr.FileMap[1].VisualTime = 3.0;
 
-            tr.FileMap[2].VisualState = AasxFileRepository.FileItem.VisualStateEnum.WriteTo;
+            tr.FileMap[2].VisualState = AasxFileRepositoryItem.VisualStateEnum.WriteTo;
             tr.FileMap[2].VisualTime = 4.5;
 
             return tr;

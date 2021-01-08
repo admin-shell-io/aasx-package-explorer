@@ -46,7 +46,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // IRepoFind interface
         //
 
-        public AasxFileRepository.FileItem FindByAssetId(string aid)
+        public AasxFileRepositoryItem FindByAssetId(string aid)
         {
             foreach (var fr in this)
             {
@@ -57,7 +57,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public AasxFileRepository.FileItem FindByAasId(string aid)
+        public AasxFileRepositoryItem FindByAasId(string aid)
         {
             foreach (var fr in this)
             {
@@ -68,14 +68,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public IEnumerable<AasxFileRepository.FileItem> EnumerateItems()
+        public IEnumerable<AasxFileRepositoryItem> EnumerateItems()
         {
             foreach (var fr in this)
                 foreach (var fi in fr.EnumerateItems())
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepository.FileItem fi)
+        public bool Contains(AasxFileRepositoryItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))
@@ -87,7 +87,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // Further finds
         //
 
-        public AasxFileRepository FindRepository (AasxFileRepository.FileItem fi)
+        public AasxFileRepository FindRepository (AasxFileRepositoryItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))

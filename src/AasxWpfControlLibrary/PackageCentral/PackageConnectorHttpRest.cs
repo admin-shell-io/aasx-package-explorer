@@ -339,7 +339,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             public string Index, AasIdShort, AasId, Fn;
         }
 
-        public async Task<List<AasxFileRepository.FileItem>> GenerateRepositoryFromEndpointAsync()
+        public async Task<List<AasxFileRepositoryItem>> GenerateRepositoryFromEndpointAsync()
         {
             // access
             if (!IsValid())
@@ -347,7 +347,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "connection not valid!");
 
             // results
-            var res = new List<AasxFileRepository.FileItem>();
+            var res = new List<AasxFileRepositoryItem>();
 
             // Log
             Log.Singleton.Info($"Building repository items for aas-list from {this.ToString()} ..");
@@ -390,7 +390,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                     // file item
-                    var fi = new AasxFileRepository.FileItem()
+                    var fi = new AasxFileRepositoryItem()
                     {
                         Filename = CombineQuery(_baseAddress.ToString(), _endPointSegments, 
                                     "server", "getaasx", aasi.Index),

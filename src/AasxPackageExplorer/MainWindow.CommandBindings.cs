@@ -714,7 +714,7 @@ namespace AasxPackageExplorer
 
                             // start animation
                             fr.StartAnimation(fi,
-                                AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                                AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
 
                             try
                             {

@@ -35,7 +35,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // External properties
         //
 
-        public event Action<AasxFileRepository, AasxFileRepository.FileItem> FileDoubleClick;
+        public event Action<AasxFileRepository, AasxFileRepositoryItem> FileDoubleClick;
         public event Action<AasxFileRepository, string[]> FileDrop;
 
         private IFlyoutProvider _flyout;
@@ -180,7 +180,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                             {
                                 // start animation
                                 fr.StartAnimation(fi,
-                                    AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
+                                    AasxFileRepositoryItem.VisualStateEnum.ReadFrom);
 
                                 try
                                 {
@@ -329,7 +329,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             ScrollViewerRepoList.ScrollToVerticalOffset(ScrollViewerRepoList.VerticalOffset - e.Delta);
         }
 
-        private void AasxFileRepoControl_FileDoubleClick(AasxFileRepository fr, AasxFileRepository.FileItem fi)
+        private void AasxFileRepoControl_FileDoubleClick(AasxFileRepository fr, AasxFileRepositoryItem fi)
         {
             FileDoubleClick?.Invoke(fr, fi);
         }
