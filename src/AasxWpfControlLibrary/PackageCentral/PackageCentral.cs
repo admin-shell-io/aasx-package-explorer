@@ -79,7 +79,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 //var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true,
                 //                runtimeOptions);
 
-                var task = Task.Run(() => PackageContainerFactory.GuessAndCreateForAsync(
+                var task = Task.Run(async () => await PackageContainerFactory.GuessAndCreateForAsync(
                     packageCentral,
                     location, containerOptions, 
                     runtimeOptions));

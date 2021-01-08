@@ -89,7 +89,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // if file, try to open (might throw exceptions!)
             if (fi != null)
                 // seems to be a valid (possible) file
-                return new PackageContainerLocalFile(packageCentral, location, containerOptions);
+                return await PackageContainerLocalFile.CreateAndLoadAsync(packageCentral, location, containerOptions);
 
             // no??
             runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
