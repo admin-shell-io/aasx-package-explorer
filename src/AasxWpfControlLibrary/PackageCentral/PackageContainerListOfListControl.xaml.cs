@@ -27,20 +27,20 @@ using AasxIntegrationBaseWpf;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.PackageCentral;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
-    public partial class AasxRepoListControl : UserControl
+    public partial class PackageContainerListOfListControl : UserControl
     {
         //
         // External properties
         //
 
-        public event Action<AasxFileRepoBase, AasxFileRepoItem> FileDoubleClick;
-        public event Action<AasxFileRepoBase, string[]> FileDrop;
+        public event Action<PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
+        public event Action<PackageContainerListBase, string[]> FileDrop;
 
         private IFlyoutProvider _flyout;
         private IManageVisualAasxElements _manageVisuElems;
-        private AasxRepoList _repoList;
+        private PackageContainerListOfList _repoList;
 
         /// <summary>
         /// Window (handler) which provides flyout control for this control. Is expected to sit in the MainWindow.
@@ -57,7 +57,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         /// AasxRepoList which is being managed by this control. Is expected to sit in the PackageCentral.
         /// Note: only setter, as direct access from outside shall be redirected to the original source.
         /// </summary>
-        public AasxRepoList RepoList {
+        public PackageContainerListOfList RepoList {
             get
             {
                 return _repoList;
@@ -74,7 +74,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // Constructor
         //
 
-        public AasxRepoListControl()
+        public PackageContainerListOfListControl()
         {
             InitializeComponent();
         }
@@ -88,7 +88,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(AasxFileRepoBase fr, string cmd)
+        public void CommandBinding_FileRepoAll(PackageContainerListBase fr, string cmd)
         {
             // access
             if (cmd == null)
@@ -111,6 +111,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
                 if (cmd == "item-up")
                 {
+                    // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
                     int i = RepoList.IndexOf(fr);
                     if (i > 0)
                     {
@@ -121,6 +122,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
                 if (cmd == "item-down")
                 {
+                    // TODO (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase
                     int i = RepoList.IndexOf(fr);
                     if (i < RepoList.Count - 1)
                     {
@@ -136,7 +138,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     outputDlg.Title = "Select AASX file repository to be saved";
                     outputDlg.FileName = "new-aasx-repo.json";
 
-                    if (fr is AasxFileRepoLocal frl && frl.Filename.HasContent())
+                    if (fr is PackageContainerListLocal frl && frl.Filename.HasContent())
                     {
                         outputDlg.InitialDirectory = Path.GetDirectoryName(frl.Filename);
                         outputDlg.FileName = Path.GetFileName(frl.Filename);
@@ -180,7 +182,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                             {
                                 // start animation
                                 fr.StartAnimation(fi,
-                                    AasxFileRepoItem.VisualStateEnum.ReadFrom);
+                                    PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                                 try
                                 {
@@ -200,7 +202,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 }
 
                 if (cmd == "filerepomakerelative")
-                    if (fr is AasxFileRepoLocal frl)
+                    if (fr is PackageContainerListLocal frl)
                     {
                         // make sure
                         if (MessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
@@ -330,16 +332,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             ScrollViewerRepoList.ScrollToVerticalOffset(ScrollViewerRepoList.VerticalOffset - e.Delta);
         }
 
-        private void AasxFileRepoControl_FileDoubleClick(AasxFileRepoBase fr, AasxFileRepoItem fi)
+        private void PackageContainerListControl_FileDoubleClick(PackageContainerListBase fr, PackageContainerRepoItem fi)
         {
             FileDoubleClick?.Invoke(fr, fi);
         }
 
-        private void AasxFileRepoControl_ButtonClick(
-            AasxFileRepoBase fr, AasxFileRepoControl.CustomButton btn,
+        private void PackageContainerListControl_ButtonClick(
+            PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
         {
-            if (btn == AasxFileRepoControl.CustomButton.Context)
+            if (btn == PackageContainerListControl.CustomButton.Context)
             {
                 var cm = DynamicContextMenu.CreateNew();
 
@@ -350,7 +352,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 cm.Add(new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."));
                 cm.Add(new DynamicContextItem("", new Separator()));
 
-                if (fr is AasxFileRepoLocal)
+                if (fr is PackageContainerListLocal)
                     cm.Add(new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
                 
                 cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
@@ -364,13 +366,13 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                 });
             }
 
-            if (btn == AasxFileRepoControl.CustomButton.Query)
+            if (btn == PackageContainerListControl.CustomButton.Query)
             {
                 CommandBinding_FileRepoAll(fr, "FileRepoQuery");
             }
         }
 
-        private void AasxFileRepoControl_FileDrop(AasxFileRepoBase fr, string[] files)
+        private void PackageContainerListControl_FileDrop(PackageContainerListBase fr, string[] files)
         {
             FileDrop?.Invoke(fr, files);
         }
@@ -388,5 +390,6 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
 
         }
+
     }
 }

@@ -21,12 +21,13 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// AasxFileRepository, which is build temporarily from a AAS registry query. 
+    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
     /// </summary>
-    public class AasxFileRepoHttpRestRegistry : AasxFileRepoBase
+    public class PackageContainerListHttpRestRegistry : PackageContainerListBase
     {
     }
 }

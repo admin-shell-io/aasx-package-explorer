@@ -70,5 +70,13 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             return $"LoadResident={LoadResident} StayConnected={StayConnected} UpdatePeriod={UpdatePeriod}";
         }
+
+        /// <summary>
+        /// Make sure, that all flags for direct loading óf the container are set
+        /// </summary>
+        public void EnsureLoadResident()
+        {
+            LoadResident = true;
+        }
     }
 }

@@ -25,9 +25,9 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.PackageCentral;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
-    public partial class AasxFileRepoControl : UserControl
+    public partial class PackageContainerListControl : UserControl
     {
         //
         // External properties
@@ -35,12 +35,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
         public enum CustomButton { Query, Context }
 
-        public event Action<AasxFileRepoBase, CustomButton, Button> ButtonClick;
-        public event Action<AasxFileRepoBase, AasxFileRepoItem> FileDoubleClick;
-        public event Action<AasxFileRepoBase, string[]> FileDrop;
+        public event Action<PackageContainerListBase, CustomButton, Button> ButtonClick;
+        public event Action<PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
+        public event Action<PackageContainerListBase, string[]> FileDrop;
 
-        private AasxFileRepoBase theFileRepository = null;
-        public AasxFileRepoBase FileRepository
+        private PackageContainerListBase theFileRepository = null;
+        public PackageContainerListBase FileRepository
         {
             get { return theFileRepository; }
             set
@@ -51,7 +51,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
-        public AasxFileRepoControl()
+        public PackageContainerListControl()
         {
             InitializeComponent();
         }
@@ -59,7 +59,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // might attach to data context
-            if (DataContext is AasxFileRepoBase fr)
+            if (DataContext is PackageContainerListBase fr)
             {
                 this.theFileRepository = fr;
                 this.RepoList.ItemsSource = this.theFileRepository?.FileMap;
@@ -68,9 +68,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             // set icon
             var icon = "\U0001F4BE";
-            if (FileRepository is AasxFileRepoHttpRestRegistry)
+            if (FileRepository is PackageContainerListHttpRestRegistry)
                 icon = "\U0001f4d6";
-            if (FileRepository is AasxFileRepoHttpRestRepository)
+            if (FileRepository is PackageContainerListHttpRestRepository)
                 icon = "\u2601";
             TextBoxRepoIcon.Text = icon;
 
@@ -102,7 +102,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as AasxFileRepoItem);
+                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as PackageContainerRepoItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -117,14 +117,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         {
         }
 
-        private AasxFileRepoItem rightClickSelectedItem = null;
+        private PackageContainerRepoItem rightClickSelectedItem = null;
 
         private void RepoList_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (sender == this.RepoList && e.ChangedButton == MouseButton.Right)
             {
                 // store selected item for later (when context menu selection is done)
-                var fi = this.RepoList.SelectedItem as AasxFileRepoItem;
+                var fi = this.RepoList.SelectedItem as PackageContainerRepoItem;
                 this.rightClickSelectedItem = fi;
 
                 // find context menu
@@ -146,16 +146,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     x.Text = "" + fi.CodeType2D;
 
                 var cb = AasxWpfBaseUtils.FindChildLogicalTree<CheckBox>(cm, "CheckBoxLoadResident");
-                if (cb != null && fi?.Options != null)
-                    cb.IsChecked = fi.Options.LoadResident;
+                if (cb != null && fi?.ContainerOptions != null)
+                    cb.IsChecked = fi.ContainerOptions.LoadResident;
 
                 cb = AasxWpfBaseUtils.FindChildLogicalTree<CheckBox>(cm, "CheckBoxStayConnected");
-                if (cb != null && fi?.Options != null)
-                    cb.IsChecked = fi.Options.StayConnected;
+                if (cb != null && fi?.ContainerOptions != null)
+                    cb.IsChecked = fi.ContainerOptions.StayConnected;
 
                 x = AasxWpfBaseUtils.FindChildLogicalTree<TextBox>(cm, "TextBoxUpdatePeriod");
-                if (x != null && fi?.Options != null)
-                    x.Text = "" + fi.Options.UpdatePeriod;
+                if (x != null && fi?.ContainerOptions != null)
+                    x.Text = "" + fi.ContainerOptions.UpdatePeriod;
 
                 // show context menu
                 cm.PlacementTarget = sender as Button;
@@ -200,10 +200,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             if (tb?.Name == "TextBoxUpdatePeriod" && fi != null)
             {
-                if (fi.Options == null)
-                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                if (fi.ContainerOptions == null)
+                    fi.ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr);
                 if (Int32.TryParse("" + tb.Text, out int i))
-                    fi.Options.UpdatePeriod = Math.Max(OptionsInformation.MinimumUpdatePeriod, i);
+                    fi.ContainerOptions.UpdatePeriod = Math.Max(OptionsInformation.MinimumUpdatePeriod, i);
             }
         }
 
@@ -214,16 +214,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
 
             if (cb?.Name == "CheckBoxLoadResident" && fi != null)
             {
-                if (fi.Options == null)
-                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
-                fi.Options.LoadResident = true == cb?.IsChecked;
+                if (fi.ContainerOptions == null)
+                    fi.ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                fi.ContainerOptions.LoadResident = true == cb?.IsChecked;
             }
 
             if (cb?.Name == "CheckBoxStayConnected" && fi != null)
             {
-                if (fi.Options == null)
-                    fi.Options = PackageContainerOptionsBase.CreateDefault(Options.Curr);
-                fi.Options.StayConnected = true == cb?.IsChecked;
+                if (fi.ContainerOptions == null)
+                    fi.ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                fi.ContainerOptions.StayConnected = true == cb?.IsChecked;
             }
         }
 

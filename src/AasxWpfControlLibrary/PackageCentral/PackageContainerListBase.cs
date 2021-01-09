@@ -21,35 +21,55 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
-
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
-    /// This simple file repository holds associations between locations of AASX packages and their
-    /// respective assetIds, aasIds and submodelIds.
-    /// Starting with JAN 2021, Lists of these Ids will be maintained. Goal is to describe, WHAT is in
-    /// an package (from outside perspective) and if it is worth to be inspected closer.
-    /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-    /// to ensure full AAS KeyList compatibility.
-    /// Additionally, it has some view model capabilities in order to animate some visual indications
+    /// This class takes over source code from the legacy <c>AasxFileRepoBase</c>.
+    /// It therefore realizes a list of items, which associated some ids (AasId, AssetId, SubmodelIds) with
+    /// AASX Package files.
+    /// In DEC 2020, the PackageComtainers were introduced to leverage the hosting of AASX Package files and
+    /// to enhance and abstract them by providing online connections and event management.
+    /// In JAN 2021, the idea is now to join these capabilities. 
+    /// This class implements a list of <c>PackageContainerRepoItem</c>, so it can provide information, which
+    /// AASX Package file is to be loaded and hosted and functinality, HOW this can be done.
+    /// This class is intended to be a base class, so classes for local repos, AAS repos, AAS registries are
+    /// deriving from it.
     /// </summary>
-    public class AasxFileRepoBase : IRepoFind
+    public class PackageContainerListBase : IPackageContainerFind
     {
+        //
+        // Members
+        //
+
+        /// <summary>
+        /// Header, which is shown to the user and SERIALIZED to the JSON file repo
+        /// </summary>
         public string Header;
 
+        /// <summary>
+        /// List of <c>PackageContainerRepoItem</c>, which holds the actual information on the individual
+        /// AASX package files.
+        /// </summary>
         [JsonProperty(PropertyName = "filemaps")]
-        public ObservableCollection<AasxFileRepoItem> FileMap = new ObservableCollection<AasxFileRepoItem>();
+        public ObservableCollection<PackageContainerRepoItem> FileMap = 
+            new ObservableCollection<PackageContainerRepoItem>();
 
+        /// <summary>
+        /// Length of the fading effect of animations in [sec]
+        /// </summary>
         [JsonIgnore]
         public double DefaultAnimationTime = 2.0d;
 
-        public void Add(AasxFileRepoItem fi)
+        //
+        // Basic memeber management
+        //
+
+        public void Add(PackageContainerRepoItem fi)
         {
             this.FileMap?.Add(fi);
         }
 
-        public void Remove(AasxFileRepoItem fi)
+        public void Remove(PackageContainerRepoItem fi)
         {
             if (fi == null || this.FileMap == null)
                 return;
@@ -58,24 +78,24 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.FileMap.Remove(fi);
         }
 
-        public void MoveUp(AasxFileRepoItem fi)
+        public void MoveUp(PackageContainerRepoItem fi)
         {
-            this.MoveElementInListUpwards<AasxFileRepoItem>(this.FileMap, fi);
+            this.MoveElementInListUpwards<PackageContainerRepoItem>(this.FileMap, fi);
         }
 
-        public void MoveDown(AasxFileRepoItem fi)
+        public void MoveDown(PackageContainerRepoItem fi)
         {
-            this.MoveElementInListDownwards<AasxFileRepoItem>(this.FileMap, fi);
+            this.MoveElementInListDownwards<PackageContainerRepoItem>(this.FileMap, fi);
         }
 
         //
         // IFindRepo interface
         //
 
-        public AasxFileRepoItem FindByAssetId(string aid)
+        public PackageContainerRepoItem FindByAssetId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
-            {                
+            {
                 foreach (var id in fi.EnumerateAssetIds())
                     if (id?.Trim() == aid.Trim())
                         return true;
@@ -83,7 +103,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public AasxFileRepoItem FindByAasId(string aid)
+        public PackageContainerRepoItem FindByAasId(string aid)
         {
             return this.FileMap?.FirstOrDefault((fi) =>
             {
@@ -94,20 +114,20 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             });
         }
 
-        public IEnumerable<AasxFileRepoItem> EnumerateItems()
+        public IEnumerable<PackageContainerRepoItem> EnumerateItems()
         {
             if (this.FileMap != null)
                 foreach (var fi in this.FileMap)
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepoItem fi)
+        public bool Contains(PackageContainerRepoItem fi)
         {
             return true == this.FileMap?.Contains(fi);
         }
 
         //
-        // more
+        // Visual effects
         //
 
         public void DecreaseVisualTimeBy(double amount)
@@ -117,16 +137,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
                     fm.VisualTime = Math.Max(0.0, fm.VisualTime - amount);
         }
 
-        public void StartAnimation(AasxFileRepoItem fi, AasxFileRepoItem.VisualStateEnum state)
+        public void StartAnimation(PackageContainerRepoItem fi, PackageContainerRepoItem.VisualStateEnum state)
         {
             // access
             if (fi == null || this.FileMap == null || !this.FileMap.Contains(fi))
                 return;
 
             // stop?
-            if (state == AasxFileRepoItem.VisualStateEnum.Idle)
+            if (state == PackageContainerRepoItem.VisualStateEnum.Idle)
             {
-                fi.VisualState = AasxFileRepoItem.VisualStateEnum.Idle;
+                fi.VisualState = PackageContainerRepoItem.VisualStateEnum.Idle;
                 fi.VisualTime = 0.0d;
                 return;
             }
@@ -136,14 +156,16 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             fi.VisualTime = this.DefaultAnimationTime;
         }
 
-        // file oerations
+        //
+        // Find & file operations
+        //
 
         /// <summary>
         /// Retrieve the full location specification of the item w.r.t. to persistency container 
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public virtual string GetFullItemLocation(AasxFileRepoItem fi)
+        public virtual string GetFullItemLocation(PackageContainerRepoItem fi)
         {
             return null;
         }
@@ -202,9 +224,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
 
             // ok, add
-            var fi = new AasxFileRepoItem(
+            var fi = new PackageContainerRepoItem(
                 assetId: assetId, aasId: aasId, fn: fn, tag: "" + tag, description: desc);
-            fi.VisualState = AasxFileRepoItem.VisualStateEnum.ReadFrom;
+            fi.VisualState = PackageContainerRepoItem.VisualStateEnum.ReadFrom;
             fi.VisualTime = 2.0;
             this.Add(fi);
         }
@@ -232,7 +254,9 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
-        // Converter
+        //
+        // Converters & generators
+        //
 
         public void PopulateFakePackage(AdminShellPackageEnv pkg)
         {
@@ -273,26 +297,24 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
-        // Generators
-
-        public static AasxFileRepoBase CreateDemoData()
+        public static PackageContainerListBase CreateDemoData()
         {
-            var tr = new AasxFileRepoBase();
+            var tr = new PackageContainerListBase();
 
-            tr.Add(new AasxFileRepoItem("http://pk.festo.com/111111111111", "1.aasx"));
-            tr.Add(new AasxFileRepoItem("http://pk.festo.com/222222222222", "2.aasx"));
-            tr.Add(new AasxFileRepoItem("http://pk.festo.com/333333333333", "3.aasx"));
+            tr.Add(new PackageContainerRepoItem("http://pk.festo.com/111111111111", "1.aasx"));
+            tr.Add(new PackageContainerRepoItem("http://pk.festo.com/222222222222", "2.aasx"));
+            tr.Add(new PackageContainerRepoItem("http://pk.festo.com/333333333333", "3.aasx"));
 
             tr.FileMap[0].Description = "Additional info";
             tr.FileMap[0].AasIds.Add("http://smart.festo.com/cdscsdbdsbchjdsbjhcbhjdsbchjsdbhjcsdbhjcdsbhjcsbdhj");
-            tr.FileMap[0].VisualState = AasxFileRepoItem.VisualStateEnum.Activated;
+            tr.FileMap[0].VisualState = PackageContainerRepoItem.VisualStateEnum.Activated;
             tr.FileMap[0].VisualTime = 6.0;
 
             tr.FileMap[1].Description = "Additional info";
-            tr.FileMap[1].VisualState = AasxFileRepoItem.VisualStateEnum.ReadFrom;
+            tr.FileMap[1].VisualState = PackageContainerRepoItem.VisualStateEnum.ReadFrom;
             tr.FileMap[1].VisualTime = 3.0;
 
-            tr.FileMap[2].VisualState = AasxFileRepoItem.VisualStateEnum.WriteTo;
+            tr.FileMap[2].VisualState = PackageContainerRepoItem.VisualStateEnum.WriteTo;
             tr.FileMap[2].VisualTime = 4.5;
 
             return tr;
@@ -303,7 +325,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             // from file
             if (!File.Exists(fn))
                 return false;
-            
+
             var init = File.ReadAllText(fn);
             JsonConvert.PopulateObject(init, this);
 

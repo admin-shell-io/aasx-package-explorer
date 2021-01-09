@@ -23,7 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.AasxFileRepo;
+using AasxWpfControlLibrary.PackageCentral;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -32,9 +32,9 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public AasxFileRepoItem ResultItem = null;
+        public PackageContainerRepoItem ResultItem = null;
 
-        private List<AasxFileRepoItem> _listFileItems;
+        private List<PackageContainerRepoItem> _listFileItems;
 
         public SelectFromRepositoryFlyout()
         {
@@ -53,11 +53,11 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile(IEnumerable<AasxFileRepoItem> items = null)
+        public bool LoadAasxRepoFile(IEnumerable<PackageContainerRepoItem> items = null)
         {
             try
             {
-                this._listFileItems = new List<AasxFileRepoItem>();
+                this._listFileItems = new List<PackageContainerRepoItem>();
 
                 if (items != null)
                 {
@@ -104,7 +104,7 @@ namespace AasxPackageExplorer
             var b = sender as Button;
             if (b?.Tag != null && this._listFileItems != null && this._listFileItems.Contains(b.Tag))
             {
-                this.ResultItem = b.Tag as AasxFileRepoItem;
+                this.ResultItem = b.Tag as PackageContainerRepoItem;
                 ControlClosed?.Invoke();
             }
         }

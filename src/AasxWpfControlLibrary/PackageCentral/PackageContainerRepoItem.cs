@@ -21,25 +21,26 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
-
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
-    /// This interface allows to find some <c>AasxFileRepositoryItem</c> by asking for AAS or AssetId.
-    /// It does not intend to be a full fledged query interface, but allow to retrieve what is usful for
-    /// automatic Reference link following etc.
+    /// This (rather base) container class integrates the former <c>AasxFileRepoItem</c> class, which implemented
+    /// back in JAN 2021 the (updated) AASX file repository (a serialized list of file informations, which was 
+    /// extended to a set of repo lists clickable by the user).
+    /// In this version, this class takes over (on source code level) the members of <c>AasxFileRepoItem</c>
+    /// and associated code and makes the legacy code therefore OBSOLETE (and to be removed).
+    /// The idea is, to inject the visual properties and the ability of serialization of information to 
+    /// JSON files directly into the single container class and therefore unify the capabilities of these
+    /// two class systems.
+    /// Note: As the would mean, that deriatives from this class will be serialized by JSON, for all
+    ///       runtime properties a [JsonIgnore] attribute is required in ALL DERIVED CLASSES.
     /// </summary>
-    public interface IRepoFind
+    public class PackageContainerRepoItem : PackageContainerBase, INotifyPropertyChanged
     {
-        AasxFileRepoItem FindByAssetId(string aid);
-        AasxFileRepoItem FindByAasId(string aid);
-        IEnumerable<AasxFileRepoItem> EnumerateItems();
-        bool Contains(AasxFileRepoItem fi);
-    }
+        //
+        // Members
+        //
 
-    public class AasxFileRepoItem : INotifyPropertyChanged
-    {
         // duty from INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -149,15 +150,6 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             get { return location; }
             set { location = value; OnPropertyChanged("InfoFilename"); }
         }
-
-        //
-        // Container options
-        //
-
-        /// <summary>
-        /// Options for the package. Could be <c>null</c>!
-        /// </summary>
-        public PackageContainerOptionsBase Options;
 
         //
         // dynamic members, to be not persisted            
@@ -271,12 +263,17 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             }
         }
 
-        // Constructor
+        //
+        // Constructors
+        //
 
-        public AasxFileRepoItem() { }
+        public PackageContainerRepoItem() { }
 
-        public AasxFileRepoItem(string assetId, string fn, string aasId = null, string description = "",
-            string tag = "", string code = "")
+        public PackageContainerRepoItem(PackageCentral packageCentral) : base (packageCentral) { }
+
+        public PackageContainerRepoItem(string assetId, string fn, string aasId = null, string description = "",
+            string tag = "", string code = "", PackageCentral packageCentral = null)
+            : base(packageCentral)
         {
             this.Location = fn;
             if (assetId != null)
@@ -289,7 +286,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         }
 
         //
-        // more enumerations
+        // enumerations as important interface to the outside
         //
 
         public IEnumerable<string> EnumerateAssetIds()
@@ -313,5 +310,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             foreach (var id in EnumerateAasIds())
                 yield return id;
         }
+
+        //
+        // Implementation
+        //
+
     }
 }

@@ -17,6 +17,7 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellEvents;
 using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -79,6 +80,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <summary>
         /// Holds the container (user) options in a base oder derived class.
         /// </summary>
+        [JsonProperty(PropertyName = "Options")]
         public PackageContainerOptionsBase ContainerOptions = new PackageContainerOptionsBase();
 
         /// <summary>

@@ -22,7 +22,6 @@ using AasxIntegrationBase;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using AdminShellEvents;
-using AasxWpfControlLibrary.AasxFileRepo;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -340,7 +339,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             public string Index, AasIdShort, AasId, Fn;
         }
 
-        public async Task<List<AasxFileRepoItem>> GenerateRepositoryFromEndpointAsync()
+        public async Task<List<PackageContainerRepoItem>> GenerateRepositoryFromEndpointAsync()
         {
             // access
             if (!IsValid())
@@ -348,7 +347,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "connection not valid!");
 
             // results
-            var res = new List<AasxFileRepoItem>();
+            var res = new List<PackageContainerRepoItem>();
 
             // Log
             Log.Singleton.Info($"Building repository items for aas-list from {this.ToString()} ..");
@@ -391,7 +390,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                     // file item
-                    var fi = new AasxFileRepoItem()
+                    var fi = new PackageContainerRepoItem()
                     {
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments, 
                                     "server", "getaasx", aasi.Index),

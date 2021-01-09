@@ -21,13 +21,13 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
-    /// AasxFileRepository, which lies on a local file system. Basicall a <c>AasxFileRepositoryBase</c> with
-    /// nearly no additions.
+    /// A container list ("repository" of local files) which lies on local storage.
+    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
     /// </summary>
-    public class AasxFileRepoLocal : AasxFileRepoBase
+    public class PackageContainerListLocal : PackageContainerListBase
     {
         //
         // Members
@@ -48,10 +48,10 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             this.Filename = fn;
         }
 
-        public static AasxFileRepoLocal Load(string fn)
+        public static PackageContainerListLocal Load(string fn)
         {
             // make sub type, but populate base type
-            var repo = new AasxFileRepoLocal();
+            var repo = new PackageContainerListLocal();
             if (!repo.LoadFromLocalFile(fn))
                 return null;
 
@@ -67,7 +67,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public override string GetFullItemLocation(AasxFileRepoItem fi)
+        public override string GetFullItemLocation(PackageContainerRepoItem fi)
         {
             // access
             if (fi?.Location == null)

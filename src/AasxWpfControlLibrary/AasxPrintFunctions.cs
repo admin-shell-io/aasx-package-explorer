@@ -19,7 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
-using AasxWpfControlLibrary.AasxFileRepo;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 using QRCoder;
@@ -192,18 +192,18 @@ namespace AasxPackageExplorer
         }
 
         public static bool PrintRepositoryCodeSheet(
-            string repoFn = null, AasxFileRepoBase repoDirect = null, string title = "Asset repository")
+            string repoFn = null, PackageContainerListBase repoDirect = null, string title = "Asset repository")
         {
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try
             {
-                AasxFileRepoBase repo = null;
+                PackageContainerListBase repo = null;
 
                 // load the data
                 if (repoFn != null)
                 {
                     // from file
-                    repo = AasxFileRepoLocal.Load(repoFn);
+                    repo = PackageContainerListLocal.Load(repoFn);
                 }
 
                 if (repoDirect != null)

@@ -21,21 +21,21 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// This class is a business logic for maintaining a list of repositories. This could be "informal"
     /// repos load from a JSON file (AasxFileRepo) or repos given by AAS(X) repositories and registries.
     /// This business logic object is intended to be paired with a view / view model.
     /// </summary>
-    public class AasxRepoList : ObservableCollection<AasxFileRepoBase>, IRepoFind
+    public class PackageContainerListOfList : ObservableCollection<PackageContainerListBase>, IPackageContainerFind
     {
 
         //
         // Adding element at the top
         //
 
-        public AasxFileRepoBase AddAtTop(AasxFileRepoBase el)
+        public PackageContainerListBase AddAtTop(PackageContainerListBase el)
         {
             if (el != null)
                 this.Insert(0, el);
@@ -46,7 +46,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // IRepoFind interface
         //
 
-        public AasxFileRepoItem FindByAssetId(string aid)
+        public PackageContainerRepoItem FindByAssetId(string aid)
         {
             foreach (var fr in this)
             {
@@ -57,7 +57,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public AasxFileRepoItem FindByAasId(string aid)
+        public PackageContainerRepoItem FindByAasId(string aid)
         {
             foreach (var fr in this)
             {
@@ -68,14 +68,14 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             return null;
         }
 
-        public IEnumerable<AasxFileRepoItem> EnumerateItems()
+        public IEnumerable<PackageContainerRepoItem> EnumerateItems()
         {
             foreach (var fr in this)
                 foreach (var fi in fr.EnumerateItems())
                     yield return fi;
         }
 
-        public bool Contains(AasxFileRepoItem fi)
+        public bool Contains(PackageContainerRepoItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))
@@ -87,7 +87,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // Further finds
         //
 
-        public AasxFileRepoBase FindRepository (AasxFileRepoItem fi)
+        public PackageContainerListBase FindRepository (PackageContainerRepoItem fi)
         {
             foreach (var fr in this)
                 if (true == fr?.Contains(fi))

@@ -13,7 +13,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.AasxFileRepo;
 using AdminShellEvents;
 using AdminShellNS;
 
@@ -231,9 +230,9 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         // TODO (MIHO, 2021-01-07): rename to plural
-        private AasxRepoList fileRepository;
+        private PackageContainerListOfList fileRepository;
 
-        public AasxRepoList FileRepository
+        public PackageContainerListOfList FileRepository
         {
             get { return fileRepository; }
             set { fileRepository = value; }

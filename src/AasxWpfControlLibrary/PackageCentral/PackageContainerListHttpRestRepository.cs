@@ -21,12 +21,13 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// AasxFileRepository, which is held synchronized with a AAS REST repository interface. 
+    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
     /// </summary>
-    public class AasxFileRepoHttpRestRepository : AasxFileRepoBase
+    public class PackageContainerListHttpRestRepository : PackageContainerListBase
     {
         //
         // Member
@@ -44,7 +45,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         // Constructor
         //
 
-        public AasxFileRepoHttpRestRepository(string location)
+        public PackageContainerListHttpRestRepository(string location)
         {
             // always have a location
             Endpoint = new Uri(location);
@@ -93,7 +94,7 @@ namespace AasxWpfControlLibrary.AasxFileRepo
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public override string GetFullItemLocation(AasxFileRepoItem fi)
+        public override string GetFullItemLocation(PackageContainerRepoItem fi)
         {
             // access
             if (fi?.Location == null)

@@ -21,15 +21,14 @@ using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxWpfControlLibrary.AasxFileRepo
+namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// A little factory class to help creating the correct instances from <c>AasxFileRepoBase</c>.
     /// </summary>
-    public static class AasxFileRepoFactory 
+    public class PackageContainerListFactory
     {
-
-        public static AasxFileRepoBase GuessAndCreateNew(string location)
+        public static PackageContainerListBase GuessAndCreateNew(string location)
         {
             // access
             if (!location.HasContent())
@@ -39,13 +38,12 @@ namespace AasxWpfControlLibrary.AasxFileRepo
             var ll = location.Trim().ToLower();
             if (ll.StartsWith("http://") || ll.StartsWith("https"))
             {
-                var repo = new AasxFileRepoHttpRestRepository(location);
+                var repo = new PackageContainerListHttpRestRepository(location);
                 return repo;
             }
 
             // default
-            return AasxFileRepoLocal.Load(location);
+            return PackageContainerListLocal.Load(location);
         }
-
     }
 }

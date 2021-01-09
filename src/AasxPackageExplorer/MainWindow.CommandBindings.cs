@@ -29,7 +29,6 @@ using AasxIntegrationBase;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AasxWpfControlLibrary.PackageCentral;
-using AasxWpfControlLibrary.AasxFileRepo;
 using AdminShellNS;
 using Jose;
 using Newtonsoft.Json;
@@ -661,7 +660,7 @@ namespace AasxPackageExplorer
                     return;
 
                 this.UiAssertFileRepository(visible: true);
-                packages.FileRepository.AddAtTop(new AasxFileRepoBase());
+                packages.FileRepository.AddAtTop(new PackageContainerListLocal());
             }
 
             if (cmd == "filerepoopen")
@@ -691,7 +690,7 @@ namespace AasxPackageExplorer
                 if (!uc.Result)
                     return;
 
-                var fr = new AasxFileRepoHttpRestRepository(uc.Text);
+                var fr = new PackageContainerListHttpRestRepository(uc.Text);
                 await fr.SyncronizeFromServerAsync();
                 packages.FileRepository.AddAtTop(fr);
             }
@@ -728,7 +727,7 @@ namespace AasxPackageExplorer
 
                             // start animation
                             fr.StartAnimation(fi,
-                                AasxFileRepoItem.VisualStateEnum.ReadFrom);
+                                PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                             try
                             {

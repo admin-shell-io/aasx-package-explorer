@@ -22,7 +22,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.AasxFileRepo;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellEvents;
 using AdminShellNS;
@@ -274,14 +273,14 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
-        public AasxFileRepoBase UiLoadFileRepository(string fn)
+        public PackageContainerListBase UiLoadFileRepository(string fn)
         {
             try
             {
                 AasxPackageExplorer.Log.Singleton.Info(
                     $"Loading aasx file repository {fn} ..");
 
-                var fr = AasxFileRepoFactory.GuessAndCreateNew(fn);
+                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
 
                 if (fr != null)
                     return fr;
@@ -355,7 +354,7 @@ namespace AasxPackageExplorer
             // ALWAYS assert an accessible repo (even if invisble)
             if (packages.FileRepository == null)
             {
-                packages.FileRepository = new AasxRepoList();
+                packages.FileRepository = new PackageContainerListOfList();
                 RepoListControl.RepoList = packages.FileRepository;
             }
 
@@ -631,12 +630,13 @@ namespace AasxPackageExplorer
                 }
 
                 // start animation
-                repo.StartAnimation(fi, AasxFileRepoItem.VisualStateEnum.ReadFrom);
+                repo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                 // container options
                 var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
-                if (fi.Options != null)
-                    copts = fi.Options;
+                if (fi.ContainerOptions != null)
+                    copts = fi.ContainerOptions;
+                copts.EnsureLoadResident();
 
                 // try load ..
                 try
@@ -885,7 +885,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFileRepository(AasxFileRepoItem fi,
+        private async Task<AdminShell.Referable> LoadFromFileRepository(PackageContainerRepoItem fi,
             AdminShell.Reference requireReferable = null)
         {
             // access single file repo
@@ -939,7 +939,7 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    fileRepo.StartAnimation(fi, AasxFileRepoItem.VisualStateEnum.ReadFrom);
+                    fileRepo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                     // activate
                     UiLoadPackageWithNew(packages.MainItem,
@@ -987,7 +987,7 @@ namespace AasxPackageExplorer
                     if (bo == null && packages.FileRepository != null)
                     {
                         // find?
-                        AasxFileRepoItem fi = null;
+                        PackageContainerRepoItem fi = null;
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
                             fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())

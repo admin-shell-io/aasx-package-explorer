@@ -17,16 +17,23 @@ using System.Xml.Serialization;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
     /// This container add functionalities for "indirect load/ save" and backing up file contents
     /// </summary>
-    public class PackageContainerBuffered : PackageContainerBase
+    public class PackageContainerBuffered : PackageContainerRepoItem
     {       
+        [JsonIgnore]
         public bool IndirectLoadSave = false;
 
+        /// <summary>
+        /// The temporary file name, which is used to host the AdminShellPackageEnv instead of touching
+        /// the original file/ location resource.
+        /// </summary>
+        [JsonIgnore]
         public string TempFn;
 
         //
