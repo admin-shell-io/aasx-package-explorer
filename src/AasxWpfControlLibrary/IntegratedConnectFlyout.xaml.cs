@@ -376,7 +376,8 @@ namespace AasxPackageExplorer
                 var x = await PackageContainerFactory.GuessAndCreateForAsync(
                     _packageCentral,
                     location,
-                    copts,
+                    overrideLoadResident: true,
+                    containerOptions: copts,
                     runtimeOptions: ro);
 
                 // returning "x" is the only way to end the dialogue successfuly

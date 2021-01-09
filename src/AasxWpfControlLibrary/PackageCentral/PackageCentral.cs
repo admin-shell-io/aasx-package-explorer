@@ -61,7 +61,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public bool Load(
             PackageCentral packageCentral, 
-            string location, PackageContainerOptionsBase containerOptions = null, 
+            string location, 
+            bool overrideLoadResident,
+            PackageContainerOptionsBase containerOptions = null, 
             PackCntRuntimeOptions runtimeOptions = null)
         {
             try
@@ -80,7 +82,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 var task = Task.Run(async () => await PackageContainerFactory.GuessAndCreateForAsync(
                     packageCentral,
-                    location, containerOptions, 
+                    location, 
+                    overrideLoadResident,
+                    containerOptions, 
                     runtimeOptions));
                 var guess = task.Result;
 

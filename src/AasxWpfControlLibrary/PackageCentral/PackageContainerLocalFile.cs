@@ -47,12 +47,13 @@ namespace AasxWpfControlLibrary.PackageCentral
         public static async Task<PackageContainerLocalFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
             string sourceFn, 
+            bool overrideLoadResident,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var res = new PackageContainerLocalFile(packageCentral, sourceFn, containerOptions);
             
-            if (true == res.ContainerOptions?.LoadResident)
+            if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(runtimeOptions);
             
             return res;

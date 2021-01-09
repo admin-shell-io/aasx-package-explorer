@@ -218,7 +218,8 @@ namespace AasxPackageExplorer
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
                 if (!packItem.Load(packages, loadLocalFilename, 
-                    PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true)))
+                    overrideLoadResident: true,
+                    PackageContainerOptionsBase.CreateDefault(Options.Curr)))
                 {
                     Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
                         $"return any result!");
@@ -633,10 +634,9 @@ namespace AasxPackageExplorer
                 repo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
 
                 // container options
-                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true);
+                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr);
                 if (fi.ContainerOptions != null)
                     copts = fi.ContainerOptions;
-                copts.EnsureLoadResident();
 
                 // try load ..
                 try
@@ -646,7 +646,8 @@ namespace AasxPackageExplorer
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         packages,
                         location,
-                        copts,
+                        overrideLoadResident: true,
+                        containerOptions: copts,
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -724,7 +725,8 @@ namespace AasxPackageExplorer
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         packages,
                         location,
-                        PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true),
+                        overrideLoadResident: true,
+                        containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr),
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
                     if (container == null)
@@ -906,7 +908,8 @@ namespace AasxPackageExplorer
                 container = await PackageContainerFactory.GuessAndCreateForAsync(
                     packages,
                     location,
-                    PackageContainerOptionsBase.CreateDefault(Options.Curr, loadResident: true),
+                    overrideLoadResident: true,
+                    PackageContainerOptionsBase.CreateDefault(Options.Curr),
                     runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
             }
             catch (Exception ex)

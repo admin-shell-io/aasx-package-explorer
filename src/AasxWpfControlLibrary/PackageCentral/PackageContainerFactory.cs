@@ -24,17 +24,21 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public static PackageContainerBase GuessAndCreateFor(
             PackageCentral packageCentral,
-            string location, PackageContainerOptionsBase containerOptions = null,
+            string location,
+            bool overrideLoadResident,
+            PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var task = Task.Run(() => GuessAndCreateForAsync(
-                packageCentral, location, containerOptions, runtimeOptions));
+                packageCentral, location, overrideLoadResident, containerOptions, runtimeOptions));
             return task.Result;
         }
 
         public async static Task<PackageContainerBase> GuessAndCreateForAsync(
             PackageCentral packageCentral,
-            string location, PackageContainerOptionsBase containerOptions = null,
+            string location, 
+            bool overrideLoadResident,
+            PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             // access
@@ -56,7 +60,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
                     var cnt = await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
-                                            packageCentral, location, containerOptions, runtimeOptions);
+                                            packageCentral, location, 
+                                            overrideLoadResident, containerOptions, runtimeOptions);
 
                     // create an online connection?
                     var aasId = match.Groups[2].ToString().Trim();
@@ -72,7 +77,8 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 if (ll.Contains("/demo"))
                 {
-                    return await Demo(packageCentral, location, containerOptions, runtimeOptions);
+                    return await Demo(packageCentral, location, 
+                        overrideLoadResident, containerOptions, runtimeOptions);
                 }
 
                 runtimeOptions?.Log?.Info($".. no adequate HTTP option found!");
@@ -89,7 +95,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             // if file, try to open (might throw exceptions!)
             if (fi != null)
                 // seems to be a valid (possible) file
-                return await PackageContainerLocalFile.CreateAndLoadAsync(packageCentral, location, containerOptions);
+                return await PackageContainerLocalFile.CreateAndLoadAsync(
+                    packageCentral, location, overrideLoadResident, containerOptions);
 
             // no??
             runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
@@ -98,7 +105,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public async static Task<PackageContainerBase> Demo(
             PackageCentral packageCentral,
-            string location, PackageContainerOptionsBase containerOptions = null,
+            string location,
+            bool overrideLoadResident,
+            PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions ro = null)
         {
             // Log location
@@ -145,7 +154,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 packageCentral,
                 "http://admin-shell-io.com:51310/server/getaasx/0", 
                 // "http://localhost:51310/server/getaasx/0",
-                containerOptions, ro);
+                overrideLoadResident, containerOptions, ro);
         }
     }
 }
