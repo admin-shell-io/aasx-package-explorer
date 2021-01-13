@@ -247,6 +247,14 @@
       "Password": "",
       "StayConnected": true,
       "AutoClose": false
+    },
+    {
+      "Name": "Latest testing",
+      "Location": "http://admin-shell-io.com:52001/server/getaasx/0",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true,
+      "AutoClose": false
     }
   ]
 }

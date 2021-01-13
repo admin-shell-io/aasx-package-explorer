@@ -72,6 +72,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                 icon = "\U0001f4d6";
             if (FileRepository is PackageContainerListHttpRestRepository)
                 icon = "\u2601";
+            if (FileRepository is PackageContainerListLastRecentlyUsed)
+            {
+                icon = "\u2749";
+                TextBoxRepoHeader.IsReadOnly = true;
+                TextBoxRepoHeader.IsReadOnlyCaretVisible = false;
+                TextBoxRepoHeader.IsHitTestVisible = false; // work around for above
+            }
             TextBoxRepoIcon.Text = icon;
 
             // set header
@@ -215,14 +222,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (cb?.Name == "CheckBoxLoadResident" && fi != null)
             {
                 if (fi.ContainerOptions == null)
-                    fi.ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                    fi.ContainerOptions = new PackageContainerOptionsBase();
                 fi.ContainerOptions.LoadResident = true == cb?.IsChecked;
             }
 
             if (cb?.Name == "CheckBoxStayConnected" && fi != null)
             {
                 if (fi.ContainerOptions == null)
-                    fi.ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr);
+                    fi.ContainerOptions = new PackageContainerOptionsBase();
                 fi.ContainerOptions.StayConnected = true == cb?.IsChecked;
             }
         }

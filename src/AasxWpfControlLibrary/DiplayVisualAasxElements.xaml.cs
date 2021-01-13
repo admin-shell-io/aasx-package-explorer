@@ -493,10 +493,10 @@ namespace AasxPackageExplorer
                 }
 
                 // more?
-                if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
+                if (packages.Repositories != null && selector == PackageCentral.Selector.MainAuxFileRepo)
                 {
                     var pkg = new AdminShellPackageEnv();
-                    foreach (var fr in packages.FileRepository)                        
+                    foreach (var fr in packages.Repositories)                        
                         fr.PopulateFakePackage(pkg);
 
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(

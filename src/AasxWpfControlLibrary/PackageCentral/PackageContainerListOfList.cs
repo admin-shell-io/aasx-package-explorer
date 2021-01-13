@@ -94,5 +94,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                     return fr;
             return null;
         }
+
+        public PackageContainerListLastRecentlyUsed FindLRU()
+        {
+            foreach (var fr in this)
+                if (fr is PackageContainerListLastRecentlyUsed lru)
+                    return lru;
+            return null;
+        }
     }
 }

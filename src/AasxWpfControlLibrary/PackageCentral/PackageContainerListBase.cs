@@ -174,7 +174,10 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             using (var s = new StreamWriter(fn))
             {
-                var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
                 s.WriteLine(json);
             }
         }
@@ -326,8 +329,13 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (!File.Exists(fn))
                 return false;
 
+            // need special settings (to handle different typs of child classes of PackageContainer)
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                new[] { typeof(PackageContainerListBase), typeof(PackageContainerLocalFile), 
+                    typeof(PackageContainerNetworkHttpFile) });
+
             var init = File.ReadAllText(fn);
-            JsonConvert.PopulateObject(init, this);
+            JsonConvert.PopulateObject(init, this, settings);
 
             // return
             return true;

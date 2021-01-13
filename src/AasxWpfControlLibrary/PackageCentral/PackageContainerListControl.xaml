@@ -96,7 +96,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Load resident:" VerticalAlignment="Center" Width="110"/>
-                            <CheckBox Name="CheckBoxLoadResident" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
+                            <CheckBox Name="CheckBoxLoadResident" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked" Unchecked="CheckBoxContextMenu_Checked"/>
                         </Grid>
                     </MenuItem.Header>
                     <MenuItem.Icon>
@@ -111,7 +111,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Stay connected:" VerticalAlignment="Center" Width="110"/>
-                            <CheckBox Name="CheckBoxStayConnected" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"/>
+                            <CheckBox Name="CheckBoxStayConnected" Margin="5 0 0 0" Grid.Column="1" Checked="CheckBoxContextMenu_Checked"  Unchecked="CheckBoxContextMenu_Checked"/>
                         </Grid>
                     </MenuItem.Header>
                     <MenuItem.Icon>

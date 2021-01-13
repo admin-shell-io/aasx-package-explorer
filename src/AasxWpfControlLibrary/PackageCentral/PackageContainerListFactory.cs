@@ -43,7 +43,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // default
-            return PackageContainerListLocal.Load(location);
+            return PackageContainerListLocal.Load<PackageContainerListLocal>(location);
         }
     }
 }

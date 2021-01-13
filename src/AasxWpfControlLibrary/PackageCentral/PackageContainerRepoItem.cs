@@ -100,6 +100,21 @@ namespace AasxWpfControlLibrary.PackageCentral
             set { _aasIds = value; OnPropertyChanged("InfoIds"); }
         }
 
+        /// <summary>
+        /// Submodel Ids of the respective AASX Package.
+        /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
+        /// to ensure full AAS KeyList compatibility.
+        /// </summary>
+        [JsonProperty(PropertyName = "SubmodelIds")]
+        private List<string> _submodelIds = new List<string>();
+
+        [JsonIgnore]
+        public List<string> SubmodelIds
+        {
+            get { return _submodelIds; }
+            set { _submodelIds = value; OnPropertyChanged("InfoIds"); }
+        }
+
         // for compatibility before JAN 2021
         [JsonProperty(PropertyName = "aasId")]
         private string _legacyAaasId { set { _aasIds.Add(value); OnPropertyChanged("InfoIds"); } }
@@ -138,17 +153,17 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonProperty(PropertyName = "code")]
         public string CodeType2D = "";
 
-        /// <summary>
-        /// AASX file name to load
-        /// </summary>
         [JsonProperty(PropertyName = "fn")]
         private string location = "";
 
+        /// <summary>
+        /// Location of the Container in a certain storage container.
+        /// </summary>
         [JsonIgnore]
         public string Location
         {
             get { return location; }
-            set { location = value; OnPropertyChanged("InfoFilename"); }
+            set { location = value; OnPropertyChanged("InfoLocation"); }
         }
 
         //
@@ -285,6 +300,21 @@ namespace AasxWpfControlLibrary.PackageCentral
             this.CodeType2D = code;
         }
 
+        public PackageContainerRepoItem(CopyMode mode, PackageContainerBase other, 
+            PackageCentral packageCentral = null)
+            : base (mode, other, packageCentral)
+        {
+            if ((mode & CopyMode.Serialized) > 0 && other is PackageContainerRepoItem o)
+            {
+                _assetIds = new List<string>(o.AssetIds);
+                _aasIds = new List<string>(o.AasIds);
+                this.Location = "" + o.Location;
+                this.Description = "" + o.Description;
+                this.Tag = "" + o.Tag;
+                this.CodeType2D = "" + o.CodeType2D;
+            }
+        }
+
         //
         // enumerations as important interface to the outside
         //
@@ -312,8 +342,93 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         //
-        // Implementation
+        // Repopoulate
         //
+
+        /// <summary>
+        /// Just clear all AssetIds, AasIds, SubmodelIds
+        /// </summary>
+        public void CleanIds()
+        {
+            _aasIds = new List<string>();
+            _assetIds = new List<string>();
+            _submodelIds = new List<string>();
+        }
+
+        /// <summary>
+        /// This function accesses the AAS, Asset and Submodel information of the environment and
+        /// re-calculates the particulare lists of ids. If the tag and/ or description is empty, 
+        /// it will also build a generated tag or descriptions
+        /// </summary>
+        public void CalculateIdsTagAndDesc()
+        {
+            // Ids
+
+            CleanIds();
+
+            Env?.AasEnv?.Assets?.ForEach((x) =>
+            {
+                if (true == x?.identification?.id.HasContent())
+                    _assetIds.Add(x?.identification.id);
+            });
+
+            Env?.AasEnv?.AdministrationShells?.ForEach((x) =>
+            {
+                if (true == x?.identification?.id.HasContent())
+                    _aasIds.Add(x?.identification.id);
+            });
+
+            Env?.AasEnv?.Submodels?.ForEach((x) =>
+            {
+                if (true == x?.identification?.id.HasContent())
+                    _submodelIds.Add(x?.identification.id);
+            });
+
+            // get some descriptiive data
+            var threeFn = Path.GetFileNameWithoutExtension(Filename);
+            var asset0 = Env?.AasEnv?.Assets?.FirstOrDefault();
+            var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
+
+            // Tag
+            if (!Tag.HasContent())
+            {
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                var tag = "";
+                try
+                {
+                    tag = "";
+                    if (asset0 != null)
+                        tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
+                    if (tag == null || tag.Length < 2)
+                        tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
+                    if ((tag == null || tag.Length < 2) && aas0 != null)
+                        tag = ("" + aas0.idShort).SubstringMax(0, 3).ToUpper();
+                    if (tag == null || tag.Length < 3)
+                        tag = ("" + threeFn).SubstringMax(0, 3).ToUpper();
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+                Tag = tag;
+                // ReSharper enable ConditionIsAlwaysTrueOrFalse
+            }
+
+            // Description
+            if (!Description.HasContent())
+            {
+                var desc = "";
+                if (aas0?.idShort.HasContent() == true)
+                    desc += $"\"{aas0.idShort}\"";
+                if (asset0?.idShort.HasContent() == true)
+                {
+                    if (desc.HasContent())
+                        desc += ",";
+                    desc += $"\"{asset0.idShort}\"";
+                }
+                Description = desc;
+            }
+        }
 
     }
 }

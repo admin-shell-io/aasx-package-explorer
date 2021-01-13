@@ -18,6 +18,7 @@ using System.Net.Http;
 using System.Net;
 using System.IO;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -52,14 +53,35 @@ namespace AasxWpfControlLibrary.PackageCentral
                 ContainerOptions = containerOptions;
         }
 
+        public PackageContainerNetworkHttpFile(CopyMode mode, PackageContainerBase other,
+            PackageCentral packageCentral = null,
+            string sourceUri = null, PackageContainerOptionsBase containerOptions = null)
+            : base(mode, other, packageCentral)
+        {
+            if ((mode & CopyMode.Serialized) > 0 && other != null)
+            {
+            }
+            if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerNetworkHttpFile o)
+            {
+                SourceUri = o.SourceUri;
+            }
+            if (sourceUri != null)
+                SetNewSourceFn(sourceUri);
+            if (containerOptions != null)
+                ContainerOptions = containerOptions;
+        }
+
+
         public static async Task<PackageContainerNetworkHttpFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
             string sourceFn,
             bool overrideLoadResident,
+            PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
-            var res = new PackageContainerNetworkHttpFile(packageCentral, sourceFn, containerOptions);
+            var res = new PackageContainerNetworkHttpFile(CopyMode.Serialized, takeOver, 
+                packageCentral, sourceFn, containerOptions);
 
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(runtimeOptions);
@@ -71,6 +93,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Mechanics
         //
 
+        [JsonIgnore]
         public override string Filename { get { return SourceUri.ToString(); } }
 
         private void Init()

@@ -45,12 +45,16 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             try
             {
+                // close old
                 if (Container != null)
                 {
                     if (Container.IsOpen)
                         Container.Close();
                     Container = null;
                 }
+
+                // new container
+                Container = new PackageContainerLocalFile();
             } catch (Exception ex)
             {
                 throw new PackageCentralException(
@@ -84,6 +88,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     packageCentral,
                     location, 
                     overrideLoadResident,
+                    null,
                     containerOptions, 
                     runtimeOptions));
                 var guess = task.Result;
@@ -234,12 +239,12 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         // TODO (MIHO, 2021-01-07): rename to plural
-        private PackageContainerListOfList fileRepository;
+        private PackageContainerListOfList _repositories;
 
-        public PackageContainerListOfList FileRepository
+        public PackageContainerListOfList Repositories
         {
-            get { return fileRepository; }
-            set { fileRepository = value; }
+            get { return _repositories; }
+            set { _repositories = value; }
         }
 
         public bool MainAvailable

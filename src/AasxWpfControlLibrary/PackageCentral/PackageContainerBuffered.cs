@@ -44,6 +44,19 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public PackageContainerBuffered(PackageCentral packageCentral) : base (packageCentral) { }
 
+        public PackageContainerBuffered(CopyMode mode, PackageContainerBase other,
+            PackageCentral packageCentral = null)
+            : base(mode, other, packageCentral)
+        {
+            if ((mode & CopyMode.Serialized) > 0 && other != null)
+            {                
+            }
+            if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerBuffered o)
+            {
+                IndirectLoadSave = o.IndirectLoadSave;
+            }
+        }
+
         //
         // Further
         //

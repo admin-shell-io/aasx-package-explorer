@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 using AasxPackageExplorer;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -44,14 +45,36 @@ namespace AasxWpfControlLibrary.PackageCentral
                 ContainerOptions = containerOptions;
         }
 
+        public PackageContainerLocalFile(CopyMode mode, PackageContainerBase other,
+            PackageCentral packageCentral = null,
+            string sourceFn = null, PackageContainerOptionsBase containerOptions = null)
+            : base(mode, other, packageCentral)
+        {
+            if ((mode & CopyMode.Serialized) > 0 && other != null)
+            {
+            }
+            if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerLocalFile o)
+            {
+                sourceFn = o.SourceFn;
+            }
+            if (sourceFn != null)
+                SetNewSourceFn(sourceFn);
+            if (containerOptions != null)
+                ContainerOptions = containerOptions;
+        }
+
+
         public static async Task<PackageContainerLocalFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
             string sourceFn, 
             bool overrideLoadResident,
+            PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
-            var res = new PackageContainerLocalFile(packageCentral, sourceFn, containerOptions);
+            var res = new PackageContainerLocalFile(
+                CopyMode.Serialized, takeOver,
+                packageCentral, sourceFn, containerOptions);
             
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(runtimeOptions);
@@ -59,7 +82,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
-
+        [JsonIgnore]
         public override string Filename { get { return SourceFn; } }
 
         private void Init()
@@ -127,29 +150,36 @@ namespace AasxWpfControlLibrary.PackageCentral
             await Task.Yield();
         }
 
-        protected void InternalSaveToSource(string saveAsNewFileName = null,
+        public override async Task SaveToSourceAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
             PackCntRuntimeOptions runtimeOptions = null)
         {
+            // apply possible new source name directly
+            if (saveAsNewFileName != null)
+                SetNewSourceFn(saveAsNewFileName);
+
             // check extension
             if (IsFormat == Format.Unknown)
                 throw new PackageContainerException(
                     "While saving aasx, unknown file format/ extension was encountered!");
 
             // check open package
-            if (Env == null || !Env.IsOpen)
+            if (Env == null)
             {
                 Env = null;
                 throw new PackageContainerException(
-                    "While saving aasx, package was indeed not existng or not open!");
+                    "While saving aasx, package was indeed not existng!");
             }
 
             // divert on indirect load/ save, to have dedicated try&catch
             if (IndirectLoadSave)
             {
-                // apply possible new source name directly
-                if (saveAsNewFileName != null)
-                    SetNewSourceFn(saveAsNewFileName);
+                // the container or package might be new
+                if (!Env.IsOpen || TempFn == null)
+                {
+                    TempFn = CreateNewTempFn(SourceFn, IsFormat);
+                    Env.SaveAs(TempFn);
+                }
 
                 // do a close, execute and re-open cycle
                 try
@@ -174,7 +204,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     try
                     {
                         Env.SaveAs(saveAsNewFileName, prefFmt: prefFmt);
-                        SetNewSourceFn(saveAsNewFileName);
                     }
                     catch (Exception ex)
                     {
@@ -198,6 +227,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
                 }
             }
+
+            // fake async
+            await Task.Yield();
         }
     }
 }

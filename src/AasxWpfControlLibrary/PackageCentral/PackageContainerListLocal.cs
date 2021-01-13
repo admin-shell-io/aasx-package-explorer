@@ -26,8 +26,9 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// <summary>
     /// A container list ("repository" of local files) which lies on local storage.
     /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
+    /// Note: this is a base class for the PackageContainerListLocal, PackageContainerListLastRecentlyUsed
     /// </summary>
-    public class PackageContainerListLocal : PackageContainerListBase
+    public class PackageContainerListLocalBase : PackageContainerListBase
     {
         //
         // Members
@@ -48,10 +49,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             this.Filename = fn;
         }
 
-        public static PackageContainerListLocal Load(string fn)
+        public static T Load<T>(string fn) where T : PackageContainerListLocalBase, new()
         {
             // make sub type, but populate base type
-            var repo = new PackageContainerListLocal();
+            var repo = new T();
             if (!repo.LoadFromLocalFile(fn))
                 return null;
 
@@ -134,5 +135,76 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
         }
 
+    }
+
+    /// <summary>
+    /// A container list ("repository" of local files) which lies on local storage.
+    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
+    /// </summary>
+    public class PackageContainerListLocal : PackageContainerListLocalBase
+    {
+    }
+
+    /// <summary>
+    /// A container list ("repository" of local files) which lies on local storage.
+    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
+    /// </summary>
+    public class PackageContainerListLastRecentlyUsed : PackageContainerListLocalBase
+    {
+        /// <summary>
+        /// Maximum number of items. Oldest will be deleted. 
+        /// New items are added to the top.
+        /// </summary>
+        public const int MaxItems = 30;
+
+        /// <summary>
+        /// Use this to get the supposed default name of LRU in the binary folder of the application
+        /// </summary>
+        /// <returns>Full path</returns>
+        public static string BuildDefaultFilename()
+        {
+            var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+            var fn = Path.Combine(Path.GetDirectoryName(exePath),
+                        "last-recently-used.json");
+            return fn;
+        }
+
+        public void Push(PackageContainerRepoItem item, string fullPath)
+        {
+            // access
+            if (item == null || !fullPath.HasContent())
+                return;
+
+            // make a COPY (flexible in types)
+            var jsonCopy = JsonConvert.SerializeObject(item);
+            if (jsonCopy == null)
+                return;
+            var itemCopy = JsonConvert.DeserializeObject<PackageContainerRepoItem>(jsonCopy);
+            if (itemCopy == null)
+                return;
+
+            // record new location
+            itemCopy.Location = fullPath;
+
+            // check, if already in
+            PackageContainerRepoItem foundItem = null;
+            foreach (var it in EnumerateItems())
+                if (it?.Location?.Trim().ToLower() == fullPath.Trim().ToLower())
+                {
+                    foundItem = it;
+                    break;
+                }
+
+            // if so, delete it
+            if (foundItem != null)
+                this.Remove(foundItem);
+
+            // add at top
+            FileMap.Insert(0, itemCopy);
+
+            // if to large, crop
+            if (FileMap.Count > MaxItems)
+                FileMap.Remove(FileMap.Last());
+        }
     }
 }

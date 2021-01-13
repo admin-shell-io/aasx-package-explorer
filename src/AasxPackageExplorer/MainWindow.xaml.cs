@@ -201,12 +201,13 @@ namespace AasxPackageExplorer
 
         public void UiLoadPackageWithNew(
             PackageCentralItem packItem,
-            AdminShellPackageEnv takeOverEnv = null,            
-            string loadLocalFilename = null, 
+            AdminShellPackageEnv takeOverEnv = null,
+            string loadLocalFilename = null,
             string info = null,
             bool onlyAuxiliary = false,
             bool doNotNavigateAfterLoaded = false,
-            PackageContainerBase takeOverContainer = null)
+            PackageContainerBase takeOverContainer = null,
+            string storeFnToLRU = null)
         {
             // access
             if (packItem == null)
@@ -267,6 +268,20 @@ namespace AasxPackageExplorer
             {
                 AasxPackageExplorer.Log.Singleton.Error(
                     ex, $"When performing actions after load of {info}, an error occurred");
+                return;
+            }
+
+            // record in LRU?
+            try
+            {
+                var lru = packages?.Repositories?.FindLRU();
+                if (lru != null && storeFnToLRU.HasContent())
+                    lru.Push(packItem?.Container as PackageContainerRepoItem, storeFnToLRU);
+            }
+            catch (Exception ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(
+                    ex, $"When managing LRU files");
                 return;
             }
 
@@ -353,10 +368,10 @@ namespace AasxPackageExplorer
         public void UiAssertFileRepository(bool visible)
         {
             // ALWAYS assert an accessible repo (even if invisble)
-            if (packages.FileRepository == null)
+            if (packages.Repositories == null)
             {
-                packages.FileRepository = new PackageContainerListOfList();
-                RepoListControl.RepoList = packages.FileRepository;
+                packages.Repositories = new PackageContainerListOfList();
+                RepoListControl.RepoList = packages.Repositories;
             }
 
             if (!visible)
@@ -597,14 +612,29 @@ namespace AasxPackageExplorer
             RepoListControl.ManageVisuElems = DisplayElements;
             this.UiAssertFileRepository(visible: false);
 
-            // packages.FileRepository.Add(new AasxFileRepository());
+            // LRU repository?
+            var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+            try
+            {
+                if (File.Exists(lruFn))
+                {
+                    var lru = PackageContainerListLastRecentlyUsed.Load<PackageContainerListLastRecentlyUsed>(lruFn);
+                    packages?.Repositories.Add(lru);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, $"while loading last recently used file {lruFn}");
+            }
+
+            // Repository pointed by the Options
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
                 var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
                 if (fr2 != null)
                 {
                     this.UiAssertFileRepository(visible: true);
-                    packages.FileRepository.AddAtTop(fr2);
+                    packages.Repositories.AddAtTop(fr2);
                 }
             }
 
@@ -647,6 +677,7 @@ namespace AasxPackageExplorer
                         packages,
                         location,
                         overrideLoadResident: true,
+                        takeOver: fi,
                         containerOptions: copts,
                         runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
 
@@ -654,7 +685,8 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error($"Failed to load AASX from {location}");
                     else
                         UiLoadPackageWithNew(packages.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false);
+                            takeOverContainer: container, onlyAuxiliary: false,
+                            storeFnToLRU: location);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
                 }
@@ -683,7 +715,7 @@ namespace AasxPackageExplorer
                             var newRepo = UiLoadFileRepository(fn);
                             if (newRepo != null)
                             {
-                                packages.FileRepository.AddAtTop(newRepo);
+                                packages.Repositories.AddAtTop(newRepo);
                             }
                             // no more files ..
                             return;
@@ -710,6 +742,10 @@ namespace AasxPackageExplorer
 
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
+
+            // start with a new file
+            packages.MainItem.New();
+            RedrawAllAasxElements();
 
             // Try to load?            
             if (Options.Curr.AasxToLoad != null)
@@ -891,7 +927,7 @@ namespace AasxPackageExplorer
             AdminShell.Reference requireReferable = null)
         {
             // access single file repo
-            var fileRepo = packages.FileRepository.FindRepository(fi);
+            var fileRepo = packages.Repositories.FindRepository(fi);
             if (fileRepo == null)
                 return null;
 
@@ -909,6 +945,7 @@ namespace AasxPackageExplorer
                     packages,
                     location,
                     overrideLoadResident: true,
+                    null,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr),
                     runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
             }
@@ -987,14 +1024,14 @@ namespace AasxPackageExplorer
                         bo = packages.Aux.AasEnv.FindReferableByReference(work);
 
                     // if not, may look into the AASX file repo
-                    if (bo == null && packages.FileRepository != null)
+                    if (bo == null && packages.Repositories != null)
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
-                            fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
+                            fi = packages.Repositories.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
-                            fi = packages.FileRepository.FindByAasId(work[0].value.Trim());
+                            fi = packages.Repositories.FindByAasId(work[0].value.Trim());
 
                         bo = await LoadFromFileRepository(fi, work);
                     }
@@ -1344,12 +1381,12 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (packages.FileRepository != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
+                if (packages.Repositories != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = packages.FileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = packages.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
                         AasxPackageExplorer.Log.Singleton.Error(
@@ -1562,10 +1599,25 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            AasxPackageExplorer.Log.Singleton.Info("Closing ..");
+            AasxPackageExplorer.Log.Singleton.Info("Closing main package ..");
             try
             {
-                packages.MainItem?.Close();
+                packages?.MainItem?.Close();
+            }
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
+
+            try
+            {
+                var lru = packages?.Repositories?.FindLRU();
+                if (lru != null)
+                {
+                    AasxPackageExplorer.Log.Singleton.Info("Saving LRU ..");
+                    var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+                    lru.SaveAsLocalFile(lruFn);
+                }
             }
             catch (Exception ex)
             {

@@ -92,6 +92,7 @@
         <RoutedUICommand x:Key="FileRepoConnectRepository" Text="FileRepoConnectRepository" />
         <RoutedUICommand x:Key="FileRepoConnectRegistry" Text="FileRepoConnectRegistry" />
         <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
+        <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
         <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
 
         <!-- TODO: move this to separate xaml file -->
@@ -241,6 +242,7 @@
         <CommandBinding Command="{StaticResource FileRepoConnectRepository}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoConnectRegistry}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
 
@@ -312,6 +314,8 @@
                             <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
                             <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
                             <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                            <Separator/>
+                            <MenuItem Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
                             <Separator/>
                             <MenuItem Header="Query open repositories .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
                         </MenuItem>

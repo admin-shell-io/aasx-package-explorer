@@ -203,7 +203,7 @@ namespace AasxPackageExplorer
                 if (repoFn != null)
                 {
                     // from file
-                    repo = PackageContainerListLocal.Load(repoFn);
+                    repo = PackageContainerListLocal.Load<PackageContainerListLocal>(repoFn);
                 }
 
                 if (repoDirect != null)

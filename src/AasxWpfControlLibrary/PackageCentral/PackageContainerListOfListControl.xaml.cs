@@ -261,8 +261,17 @@ namespace AasxWpfControlLibrary.PackageCentral
                         return;
                     }
 
-                    // add
-                    fr.AddByAas(veAas.theEnv, veAas.theAas, "" + veEnv.thePackageSourceFn);
+                    // generate appropriate container
+                    var cnt = PackageContainerFactory.GuessAndCreateFor(
+                        null, veEnv.thePackageSourceFn,
+                        overrideLoadResident: false,
+                        containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
+                    if (cnt is PackageContainerRepoItem ri)
+                    {
+                        ri.Env = veAas.thePackage;
+                        ri.CalculateIdsTagAndDesc();
+                        fr.Add(ri);
+                    }
                 }
 
                 if (cmd == "filerepomultiadd")
@@ -346,19 +355,27 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var cm = DynamicContextMenu.CreateNew();
 
                 cm.Add(new DynamicContextItem("FileRepoClose", "\u274c", "Close"));
-                cm.Add(new DynamicContextItem("item-up", "\u25b2", "Move Up"));
-                cm.Add(new DynamicContextItem("item-down", "\u25bc", "Move Down"));
+
+                if (!(fr is PackageContainerListLastRecentlyUsed))
+                {
+                    cm.Add(new DynamicContextItem("item-up", "\u25b2", "Move Up"));
+                    cm.Add(new DynamicContextItem("item-down", "\u25bc", "Move Down"));
+                }
+                
                 cm.Add(new DynamicContextItem("", new Separator()));
                 cm.Add(new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."));
                 cm.Add(new DynamicContextItem("", new Separator()));
 
-                if (fr is PackageContainerListLocal)
-                    cm.Add(new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
-                
-                cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
-                cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));
-                cm.Add(new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."));
-                cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
+                if (!(fr is PackageContainerListLastRecentlyUsed))
+                {
+                    if (fr is PackageContainerListLocal)
+                        cm.Add(new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
+
+                    cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
+                    cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));
+                    cm.Add(new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."));
+                    cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
+                }
 
                 cm.Start(sender, (tag) =>
                 {

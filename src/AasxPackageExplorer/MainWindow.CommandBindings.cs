@@ -134,7 +134,8 @@ namespace AasxPackageExplorer
                     {
                         case "open":
                             UiLoadPackageWithNew(
-                                packages.MainItem, null, dlg.FileName, onlyAuxiliary: false);
+                                packages.MainItem, null, dlg.FileName, onlyAuxiliary: false,
+                                storeFnToLRU: dlg.FileName);
                             break;
                         case "openaux":
                             UiLoadPackageWithNew(
@@ -181,7 +182,7 @@ namespace AasxPackageExplorer
             if (cmd == "saveas")
             {
                 // open?
-                if (!packages.MainStorable)
+                if (!packages.MainAvailable)
                 {
                     MessageBoxFlyoutShow(
                         "No open AASX file to be saved.",
@@ -202,6 +203,7 @@ namespace AasxPackageExplorer
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
                 if (res == true)
                 {
+                    // save
                     try
                     {
                         // preferred format
@@ -226,6 +228,21 @@ namespace AasxPackageExplorer
                         return;
                     }
                     AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully as: {0}", dlg.FileName);
+
+                    // LRU?
+                    // record in LRU?
+                    try
+                    {
+                        var lru = packages?.Repositories?.FindLRU();
+                        if (lru != null)
+                            lru.Push(packages?.MainItem?.Container as PackageContainerRepoItem, dlg.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        AasxPackageExplorer.Log.Singleton.Error(
+                            ex, $"When managing LRU files");
+                        return;
+                    }
                 }
             }
 
@@ -660,7 +677,7 @@ namespace AasxPackageExplorer
                     return;
 
                 this.UiAssertFileRepository(visible: true);
-                packages.FileRepository.AddAtTop(new PackageContainerListLocal());
+                packages.Repositories.AddAtTop(new PackageContainerListLocal());
             }
 
             if (cmd == "filerepoopen")
@@ -677,7 +694,7 @@ namespace AasxPackageExplorer
                 {
                     var fr = this.UiLoadFileRepository(dlg.FileName);
                     this.UiAssertFileRepository(visible: true);
-                    packages.FileRepository.AddAtTop(fr);
+                    packages.Repositories.AddAtTop(fr);
                 }
             }
 
@@ -692,13 +709,13 @@ namespace AasxPackageExplorer
 
                 var fr = new PackageContainerListHttpRestRepository(uc.Text);
                 await fr.SyncronizeFromServerAsync();
-                packages.FileRepository.AddAtTop(fr);
+                packages.Repositories.AddAtTop(fr);
             }
 
             if (cmd == "filerepoquery")
             {
                 // access
-                if (packages.FileRepository == null || packages.FileRepository.Count < 1)
+                if (packages.Repositories == null || packages.Repositories.Count < 1)
                 {
                     MessageBoxFlyoutShow(
                         "No repository currently available! Please open.",
@@ -711,12 +728,12 @@ namespace AasxPackageExplorer
                 // dialogue
                 var uc = new SelectFromRepositoryFlyout();
                 uc.Margin = new Thickness(10);
-                if (uc.LoadAasxRepoFile(items: packages.FileRepository.EnumerateItems()))
+                if (uc.LoadAasxRepoFile(items: packages.Repositories.EnumerateItems()))
                 {
                     uc.ControlClosed += () =>
                     {
                         var fi = uc.ResultItem;
-                        var fr = packages.FileRepository?.FindRepository(fi);
+                        var fr = packages.Repositories?.FindRepository(fi);
 
                         if (fr != null && fi?.Location != null)
                         {
@@ -745,6 +762,35 @@ namespace AasxPackageExplorer
 
                     };
                     this.StartFlyover(uc);
+                }
+            }
+
+            if (cmd == "filerepocreatelru")
+            {
+                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        "Create new (empty) \"Last Recently Used (LRU)\" list? " +
+                        "It will be added to list of repos on the lower/ left of the screen. " +
+                        "It will be saved under \"last-recently-used.json\" in the binaries folder. " +
+                        "It will replace an existing LRU list w/o prompt!",
+                        "Last Recently Used AASX Packages",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                    return;
+                
+                var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+                try
+                {
+                    this.UiAssertFileRepository(visible: true);
+                    var lruExist = packages?.Repositories?.FindLRU();
+                    if (lruExist != null)
+                        packages.Repositories.Remove(lruExist);
+                    var lruNew = new PackageContainerListLastRecentlyUsed();
+                    lruNew.Header = "Last Recently Used";
+                    lruNew.SaveAs(lruFn);
+                    packages?.Repositories?.AddAtTop(lruNew);
+                } 
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"while initializing last recently used file in {lruFn}.");
                 }
             }
 

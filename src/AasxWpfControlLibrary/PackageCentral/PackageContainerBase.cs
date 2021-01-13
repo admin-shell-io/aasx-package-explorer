@@ -71,13 +71,20 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public enum BackupType { XML = 0, FullCopy }
 
-        public AdminShellPackageEnv Env;
+        [Flags]
+        public enum CopyMode : int { None = 0, Serialized  = 1, BusinessData = 2}
+
+        [JsonIgnore]
+        public AdminShellPackageEnv Env = new AdminShellPackageEnv();
+        [JsonIgnore]
         public Format IsFormat = Format.Unknown;
 
         private PackageCentral _packageCentral;
+
+        [JsonIgnore]
         public PackageCentral PackageCentral { get { return _packageCentral; } }
 
-        /// <summary>
+        /// <summary
         /// Holds the container (user) options in a base oder derived class.
         /// </summary>
         [JsonProperty(PropertyName = "Options")]
@@ -88,12 +95,14 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Note, that the connector is an indeppendent object, but will have a link to this
         /// container!
         /// </summary>
+        [JsonIgnore]
         public PackageConnectorBase ConnectorPrimary;
 
         /// <summary>
         /// Holds secondary connectors, which might also want to register to the SAME AAS!
         /// Examples could be plugins for different interface standards.
         /// </summary>
+        [JsonIgnore]
         public List<PackageConnectorBase> ConnectorSecondary = new List<PackageConnectorBase>();
 
         //
@@ -105,6 +114,16 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageContainerBase(PackageCentral packageCentral)
         {
             _packageCentral = packageCentral;
+        }
+
+        public PackageContainerBase(CopyMode mode, PackageContainerBase other, PackageCentral packageCentral = null)
+        {
+            if ((mode & CopyMode.Serialized) > 0 && other != null)
+            {
+                // nothing here
+            }
+            if (packageCentral != null)
+                _packageCentral = packageCentral;
         }
 
         //
@@ -121,8 +140,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
+        [JsonIgnore]
         public virtual string Filename { get { return null; } }
 
+        [JsonIgnore]
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }
 
         public void Close()
