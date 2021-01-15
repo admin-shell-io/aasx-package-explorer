@@ -293,21 +293,19 @@ namespace AasxPackageExplorer
                 if (ve.GetMainDataObject() is AdminShell.Identifiable iddata)
                 {
                     // a Identifiable will terminate the list of keys
-                    if (iddata != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                iddata.GetElementName(), true, iddata.identification.idType, iddata.identification.id));
+                    res.Insert(
+                        0,
+                        AdminShell.Key.CreateNew(
+                            iddata.GetElementName(), true, iddata.identification.idType, iddata.identification.id));
                     break;
                 }
                 else
                 if (ve.GetMainDataObject() is AdminShell.Referable rf)
                 {
                     // add a key and go up ..
-                    if (rf != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(rf.GetElementName(), true, "IdShort", rf.idShort));
+                    res.Insert(
+                        0,
+                        AdminShell.Key.CreateNew(rf.GetElementName(), true, "IdShort", rf.idShort));
                 }
                 else
                 // uups!

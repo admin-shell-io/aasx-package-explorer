@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,7 +143,7 @@ namespace AdminShellEvents
         public override string ToString()
         {
             var res = $"{this.GetType()}: " +
-                $"{"" + Timestamp.ToString()} @ " +
+                $"{"" + Timestamp.ToString(CultureInfo.InvariantCulture)} @ " +
                 $"Source={"" + Source?.ToString()}, " +
                 $"SourceSemanticId={"" + SourceSemanticId?.ToString()}, " +
                 $"ObservableReference={"" + ObservableReference?.ToString()}, " +
@@ -157,7 +158,7 @@ namespace AdminShellEvents
             return res;
         }
 
-        public virtual MiniMarkupBase ToMarkup()
+        public MiniMarkupBase ToMarkup()
         {
             int w1 = 30;
             var ts = Timestamp.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");

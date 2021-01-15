@@ -125,26 +125,26 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Description; help for the human user.
         /// </summary>
         [JsonProperty(PropertyName = "description")]
-        private string description = "";
+        private string _description = "";
 
         [JsonIgnore]
         public string Description
         {
-            get { return description; }
-            set { description = value; OnPropertyChanged("InfoIds"); }
+            get { return _description; }
+            set { _description = value; OnPropertyChanged("InfoIds"); }
         }
 
         /// <summary>
         /// 3-5 letters of Tag to be displayed in user interface
         /// </summary>
         [JsonProperty(PropertyName = "tag")]
-        private string tag = "";
+        private string _tag = "";
 
         [JsonIgnore]
         public string Tag
         {
-            get { return tag; }
-            set { tag = value; OnPropertyChanged("InfoIds"); }
+            get { return _tag; }
+            set { _tag = value; OnPropertyChanged("InfoIds"); }
         }
 
         /// <summary>
@@ -202,6 +202,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             get
             {
+                // Resharper disable AccessToModifiedClosure
                 var info = "";
                 Action<string, List<string>> lambdaAddIdList = (head, ids) =>
                 {
@@ -223,6 +224,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 lambdaAddIdList("AAS: ", _aasIds);
 
                 return info;
+                // Resharper enable AccessToModifiedClosure
             }
         }
 
@@ -292,13 +294,13 @@ namespace AasxWpfControlLibrary.PackageCentral
             string tag = "", string code = "", PackageCentral packageCentral = null)
             : base(packageCentral)
         {
-            this.Location = fn;
+            _location = fn;
             if (assetId != null)
                 this.AssetIds.Add(assetId);
             if (aasId != null)
                 this.AasIds.Add(aasId);
-            this.Description = description;
-            this.Tag = tag;
+            _description = description;
+            _tag = tag;
             this.CodeType2D = code;
         }
 
@@ -310,9 +312,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 _assetIds = new List<string>(o.AssetIds);
                 _aasIds = new List<string>(o.AasIds);
-                this.Location = "" + o.Location;
-                this.Description = "" + o.Description;
-                this.Tag = "" + o.Tag;
+                _location = "" + o.Location;
+                _description = "" + o.Description;
+                _tag = "" + o.Tag;
                 this.CodeType2D = "" + o.CodeType2D;
             }
         }

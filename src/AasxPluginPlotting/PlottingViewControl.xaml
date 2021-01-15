@@ -30,13 +30,13 @@
                 Plotting of Properties</Label>
             <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
                 <Label Content="Lang:"/>
-                <ComboBox x:Name="ComboBoxLang" MinWidth="70" Margin="2" IsEditable="True" />
+                <ComboBox x:Name="ComboBoxLang" MinWidth="70" Margin="2" IsEditable="True" TextBoxBase.TextChanged="ComboBoxLang_TextChanged"/>
                 <Label />
             </WrapPanel>
             <Label/>
         </DockPanel>
 
-        <ScrollViewer Grid.Row="2" Grid.Column="0" x:Name="ScrollViewerContent" 
+        <ScrollViewer Grid.Row="1" Grid.Column="0" x:Name="ScrollViewerContent" 
                       HorizontalScrollBarVisibility="Disabled" Margin="4,4,4,2" PreviewMouseWheel="ScrollViewerContent_PreviewMouseWheel">
             <Grid x:Name="GridContent" MinWidth="300">
 

@@ -26,6 +26,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// <summary>
     /// A little factory class to help creating the correct instances from <c>AasxFileRepoBase</c>.
     /// </summary>
+    // Resharper disable once ClassNeverInstantiated.Global
     public class PackageContainerListFactory
     {
         public static PackageContainerListBase GuessAndCreateNew(string location)

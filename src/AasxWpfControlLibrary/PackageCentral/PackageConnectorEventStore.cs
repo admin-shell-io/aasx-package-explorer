@@ -33,8 +33,6 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         private ObservableCollection<AasEventMsgEnvelope> _eventStore = new ObservableCollection<AasEventMsgEnvelope>();
 
-        public ObservableCollection<AasEventMsgEnvelope> Store { get { return _eventStore; } }
-
         //
         // Constructors
         //
@@ -50,7 +48,8 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public override string ToString()
         {
-            return $"EVENT-STORE connector with {"" + _eventStore?.Count} events";
+            lock (_eventStore)
+                return $"EVENT-STORE connector with {"" + _eventStore?.Count} events";
         }
 
         //

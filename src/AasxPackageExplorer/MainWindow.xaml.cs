@@ -597,10 +597,10 @@ namespace AasxPackageExplorer
 
             // Timer for below
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
-            MainTimer.Tick += new EventHandler(async (object s, EventArgs a) =>
+            MainTimer.Tick += async (s, a) =>
             {
                 await MainTimer_Tick(s, a);
-            });
+            };
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
 
@@ -704,30 +704,29 @@ namespace AasxPackageExplorer
                     return;
 
                 // more than one?
-                if (files != null && files.Length > 0)
-                    foreach (var fn in files)
+                foreach (var fn in files)
+                {
+                    // repo?
+                    var ext = Path.GetExtension(fn).ToLower();
+                    if (ext == ".json")
                     {
-                        // repo?
-                        var ext = Path.GetExtension(fn).ToLower();
-                        if (ext == ".json")
+                        // try handle as repository
+                        var newRepo = UiLoadFileRepository(fn);
+                        if (newRepo != null)
                         {
-                            // try handle as repository
-                            var newRepo = UiLoadFileRepository(fn);
-                            if (newRepo != null)
-                            {
-                                packages.Repositories.AddAtTop(newRepo);
-                            }
-                            // no more files ..
-                            return;
+                            packages.Repositories.AddAtTop(newRepo);
                         }
-
-                        // aasx?
-                        if (fr != null && ext == ".aasx")
-                        {
-                            // add?
-                            fr.AddByAasxFn(fn);
-                        }
+                        // no more files ..
+                        return;
                     }
+
+                    // aasx?
+                    if (fr != null && ext == ".aasx")
+                    {
+                        // add?
+                        fr.AddByAasxFn(fn);
+                    }
+                }
             };
 
 #if __Create_Demo_Daten

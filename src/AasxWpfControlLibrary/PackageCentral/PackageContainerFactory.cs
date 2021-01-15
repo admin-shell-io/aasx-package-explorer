@@ -35,7 +35,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             return task.Result;
         }
 
-        public async static Task<PackageContainerBase> GuessAndCreateForAsync(
+        public static async Task<PackageContainerBase> GuessAndCreateForAsync(
             PackageCentral packageCentral,
             string location,
             bool overrideLoadResident,
@@ -50,7 +50,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // Log?
             runtimeOptions?.Log?.Info($"Trying to guess package container for {location} ..");
-            runtimeOptions?.Log?.Info($".. with containerOptions = {containerOptions.ToString()}");
+            runtimeOptions?.Log?.Info($".. with containerOptions = {containerOptions?.ToString()}");
 
             // starts with http ?
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
@@ -93,7 +93,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 fi = new FileInfo(location);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
 
             // if file, try to open (might throw exceptions!)
             if (fi != null)
@@ -106,7 +109,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             return null;
         }
 
-        public async static Task<PackageContainerBase> Demo(
+        public static async Task<PackageContainerBase> Demo(
             PackageCentral packageCentral,
             string location,
             bool overrideLoadResident,

@@ -72,7 +72,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public enum BackupType { XML = 0, FullCopy }
 
         [Flags]
-        public enum CopyMode : int { None = 0, Serialized = 1, BusinessData = 2 }
+        public enum CopyMode { None = 0, Serialized = 1, BusinessData = 2 }
 
         [JsonIgnore]
         public AdminShellPackageEnv Env = new AdminShellPackageEnv();
@@ -84,7 +84,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonIgnore]
         public PackageCentral PackageCentral { get { return _packageCentral; } }
 
-        /// <summary
+        /// <summary>
         /// Holds the container (user) options in a base oder derived class.
         /// </summary>
         [JsonProperty(PropertyName = "Options")]

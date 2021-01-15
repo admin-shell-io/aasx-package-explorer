@@ -53,6 +53,8 @@ namespace AasxPackageExplorer
         // Preset
         //
 
+        // Resharper disable once ClassNeverInstantiated.Global
+        // Resharper disable once UnassignedField.Global
         protected class PresetItem
         {
             public string Name = "";
@@ -258,7 +260,7 @@ namespace AasxPackageExplorer
 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key >= Key.D1 && e.Key <= Key.D9)
             {
-                var i = (int)(e.Key - Key.D1);
+                var i = e.Key - Key.D1;
                 if (_presets != null && i >= 0 && i < _presets.Count)
                     ApplyPreset(_presets[i]);
             }

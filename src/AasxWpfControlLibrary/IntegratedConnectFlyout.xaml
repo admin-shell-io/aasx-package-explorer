@@ -100,10 +100,6 @@
                     <Setter Property="HorizontalAlignment" Value="Right" />
                     <Setter Property="UseLayoutRounding" Value="False" />
                 </Style>
-                <Style x:Key="tabGrids">
-                    <Setter Property="Grid.Background" Value="#FFE5E5E5" />
-                    <Setter Property="Grid.Margin" Value="6,10,10,10" />
-                </Style>
             </TabControl.Resources>
 
             <TabItem x:Name="TabItemStart" Header="Start" Margin="0,5,0,-5" Visibility="Collapsed">
@@ -125,7 +121,7 @@
                     <Label Grid.Row="0" x:Name="LabelCaption2" VerticalAlignment="Bottom" Foreground="White" 
                            FontSize="22">Enter location:</Label>
 
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" 
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" 
                                 HorizontalAlignment="Right">
                         <Label Foreground="White" FontSize="22" Content="Preset (in options): "/>
                         <ComboBox x:Name="ComboBoxPresets" MinWidth="150" Margin="4" 
@@ -135,7 +131,7 @@
                     <TextBox Grid.Row="1" Grid.Column="0" x:Name="TextBoxStartLocation" Margin="4" FontSize="24" VerticalContentAlignment="Center"></TextBox>
                     <Button Grid.Row="1" Grid.Column="1" x:Name="ButtonStartSelect" Style="{DynamicResource TranspRoundCorner}" Margin="4" Foreground="White" FontSize="16" Click="Button_Click">...</Button>
 
-                    <WrapPanel Grid.Row="3" Grid.ColumnSpan="2">
+                    <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                         <CheckBox x:Name="CheckBoxStayAutoClose" Content="auto close dialogue   " Foreground="White" 
                                   FontSize="16" VerticalContentAlignment="Center" Margin="4,1,0,0" IsChecked="True"/>
                         <CheckBox x:Name="CheckBoxStayConnected" Content="Stay connected (when possible)   " Foreground="White" 
@@ -206,7 +202,7 @@
                     <Label Grid.Row="2" Grid.Column="0" FontSize="22" Foreground="White">Password:</Label>
                     <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxPassword" Margin="4" FontSize="24" VerticalContentAlignment="Center"></TextBox>
 
-                    <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonPageCredentialsProceed" 
+                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonPageCredentialsProceed" 
                             Style="{DynamicResource TranspRoundCorner}" 
                             Margin="4" Foreground="White" FontSize="18" 
                             Click="Button_Click">Proceed</Button>
@@ -274,10 +270,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ProgressBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" x:Name="TheProgressBar" 
+            <ProgressBar Grid.Row="0" Grid.Column="0" x:Name="TheProgressBar" 
                          BorderBrush="#ff202020"
                          Background="#40404040" Foreground="{DynamicResource DarkAccentColor}" 
-                         Margin="4,2,4,2" Grid.RowSpan="1"/>
+                         Margin="4,2,4,2"/>
             <Label Grid.Row="0" Grid.Column="0" x:Name="LabelProgressText"
                    Content="0 bytes" Foreground="LightGray"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>

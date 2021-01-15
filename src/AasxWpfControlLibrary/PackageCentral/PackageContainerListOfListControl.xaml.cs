@@ -247,7 +247,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // check
                     var veAas = _manageVisuElems?.GetSelectedItem() as VisualElementAdminShell;
 
-                    var veEnv = veAas.FindFirstParent((ve) =>
+                    var veEnv = veAas?.FindFirstParent((ve) =>
                     (ve is VisualElementEnvironmentItem vev
                     && vev.theItemType == VisualElementEnvironmentItem.ItemType.Package), includeThis: false)
                         as VisualElementEnvironmentItem;
@@ -317,6 +317,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                         {
                             Log.Singleton.Error($"When adding file repo items from REST server {uc.Text}," +
                                 $"the function returned NO items!");
+                            return;
                         }
 
                         // loop

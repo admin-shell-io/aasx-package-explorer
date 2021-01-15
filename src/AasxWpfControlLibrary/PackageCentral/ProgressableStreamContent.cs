@@ -40,17 +40,12 @@ namespace AasxWpfControlLibrary.PackageCentral
         public ProgressableStreamContent(Stream content, int bufferSize,
             PackCntRuntimeOptions runtimeOptions = null)
         {
-            if (content == null)
-            {
-                throw new ArgumentNullException("content");
-
-            }
             if (bufferSize <= 0)
             {
-                throw new ArgumentOutOfRangeException("bufferSize");
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
             }
 
-            this._content = content;
+            this._content = content ?? throw new ArgumentNullException(nameof(content));
             this._bufferSize = bufferSize;
             this._runtimeOptions = runtimeOptions;
         }
@@ -62,17 +57,18 @@ namespace AasxWpfControlLibrary.PackageCentral
             return Task.Run(() =>
             {
                 var buffer = new Byte[this._bufferSize];
-                var size = _content.Length;
                 var uploaded = 0;
                 var lastUploaded = 0;
 
                 _runtimeOptions?.ProgressChanged(
                     PackCntRuntimeOptions.Progress.Starting, null, uploaded);
 
-                using (_content) while (true)
+                using (_content)
+                    while (true)
                     {
                         var length = _content.Read(buffer, 0, buffer.Length);
-                        if (length <= 0) break;
+                        if (length <= 0)
+                            break;
 
                         uploaded += length;
 

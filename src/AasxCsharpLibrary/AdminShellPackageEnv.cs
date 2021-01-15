@@ -179,7 +179,7 @@ namespace AdminShellNS
             if (obj == null)
                 return null;
             var serializer = BuildDefaultAasxJsonSerializer();
-            var rf = (T)obj.ToObject<T>(serializer); ;
+            var rf = obj.ToObject<T>(serializer);
             return rf;
         }
 

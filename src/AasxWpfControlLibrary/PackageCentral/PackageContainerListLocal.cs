@@ -78,13 +78,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             var fn = fi.Location;
             try
             {
-                bool doFull = true;
-
-                if (Path.IsPathRooted(fn))
-                    doFull = false;
-
-                if (fn.Contains("://")) // contains scheme
-                    doFull = false;
+                bool doFull =
+                    !(Path.IsPathRooted(fn))
+                      && !fn.Contains("://"); // contains scheme
 
                 if (doFull && this.Filename != null)
                     fn = Path.Combine(Path.GetDirectoryName(this.Filename), fn);
@@ -177,8 +173,6 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // make a COPY (flexible in types)
             var jsonCopy = JsonConvert.SerializeObject(item);
-            if (jsonCopy == null)
-                return;
             var itemCopy = JsonConvert.DeserializeObject<PackageContainerRepoItem>(jsonCopy);
             if (itemCopy == null)
                 return;

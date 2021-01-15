@@ -58,11 +58,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Outer funcs
         //
 
-        private class ListAasItem
-        {
-            public string Index, AasIdShort, AasId, Fn;
-        }
-
         /// <summary>
         /// This functions asks the AAS REST repository on given location, which AasIds would be availble.
         /// Using the AasIds, details are retrieved for each inidivudal AAS and synchronized with the 

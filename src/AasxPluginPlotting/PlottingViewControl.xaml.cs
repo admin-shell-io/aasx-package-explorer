@@ -65,9 +65,11 @@ namespace AasxPluginPlotting
 
         public class PlotArguments
         {
+            // ReSharper disable UnassignedField.Global
             public string grp;
             public string fmt;
             public double? xmin, ymin, xmax, ymax;
+            // ReSharper enable UnassignedField.Global
         }
 
         // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
@@ -132,14 +134,14 @@ namespace AasxPluginPlotting
             public PlotItem() { }
 
             public PlotItem(AdminShell.SubmodelElement sme, string args,
-                string path, string value, AdminShell.Description description)
+                string path, string value, AdminShell.Description description, string lang)
             {
                 SME = sme;
                 ArgsStr = args;
                 _path = path;
                 _value = value;
                 _description = description;
-                _displayDescription = description?.GetDefaultStr();
+                _displayDescription = description?.GetDefaultStr(lang);
                 TryParseArgs();
             }
 
@@ -166,6 +168,7 @@ namespace AasxPluginPlotting
                     return +1;
                 if (this.Group < other.Group)
                     return -1;
+                // Resharper disable once StringCompareToIsCultureSpecific
                 return (this._path.CompareTo(other._path));
             }
 
@@ -202,7 +205,7 @@ namespace AasxPluginPlotting
                     }
             }
 
-            public void RebuildFromSubmodel(AdminShell.Submodel sm)
+            public void RebuildFromSubmodel(AdminShell.Submodel sm, string lang)
             {
                 // clear & access
                 this.Clear();
@@ -230,7 +233,7 @@ namespace AasxPluginPlotting
                             path = "" + par.idShort + " / " + path;
 
                     // add
-                    temp.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description));
+                    temp.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description, lang));
                 });
 
                 // sort them for continous grouping
@@ -461,7 +464,7 @@ namespace AasxPluginPlotting
             ComboBoxLang.Text = "en";
 
             // try display plot items
-            PlotItems.RebuildFromSubmodel(theSubmodel);
+            PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
             DataGridPlotItems.DataContext = PlotItems;
 
             // make charts, as well
@@ -555,6 +558,14 @@ namespace AasxPluginPlotting
                         wpfPlot.RaiseEvent(eventArg);
                     }
 #endif
+        }
+
+        private void ComboBoxLang_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            theDefaultLang = ComboBoxLang.Text;
+            DataGridPlotItems.DataContext = null;
+            PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
+            DataGridPlotItems.DataContext = PlotItems;
         }
     }
 }

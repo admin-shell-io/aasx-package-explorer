@@ -163,7 +163,7 @@ namespace AasxPackageExplorer
                     // save
                     await packages.MainItem.SaveAsAsync(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
                     // backup
-                    if (true && Options.Curr.BackupDir != null)
+                    if (Options.Curr.BackupDir != null)
                         packages.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
@@ -246,7 +246,7 @@ namespace AasxPackageExplorer
                 }
             }
 
-            if (cmd == "close" && packages.Main != null)
+            if (cmd == "close" && packages?.Main != null)
             {
                 if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to close the open package? Please make sure that you have saved before.",
@@ -262,7 +262,7 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && packages.Main != null)
+            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && packages?.Main != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
@@ -555,7 +555,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
-                var targetState = true == MenuItemWorkspaceEventsShowLog.IsChecked;
+                var targetState = MenuItemWorkspaceEventsShowLog.IsChecked;
 
                 if (!targetState)
                 {

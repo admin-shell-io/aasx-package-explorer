@@ -103,6 +103,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Note: it makes the logic explicit. Using <c>new Uri(Uri baseUri, string relativeUri)</c> was considered
         ///       as a pattern, but not adopted.
         /// </summary>
+        /// <param name="first">First segment</param>
         /// <param name="segments">Segements of the route.</param>
         /// <returns>A route without trailing slash.</returns>
         public string CombineQuery(string first, params string[] segments)
@@ -121,7 +122,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
             // trailing slash
-            res.TrimEnd('/');
+            res = res.TrimEnd('/');
             return res;
         }
 
@@ -212,9 +213,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     "element references cannot be determined!");
 
-            /// try identify the original Observable
-            /// var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-            ///    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
+            //// try identify the original Observable
+            //// var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+            ////    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
 
             // basically, can query updates of Submodel or SubmodelElements
             string qst = null;
@@ -228,6 +229,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 // build path
                 var path = "" + reqSme.idShort;
+                // Resharper disable once IteratorMethodResultIsIgnored
                 reqSme.FindAllParents((x) =>
                 {
                     path = x.idShort + "/" + path;
@@ -244,7 +246,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "not enough data to build query path!");
 
             // do the actual query
-            string query = StartQuery(qst);
             var response = await _client.GetAsync(qst);
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
@@ -276,30 +277,32 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (frame.ContainsKey("values"))
             {
                 // populate
+                // Resharper disable once PossibleNullReferenceException
                 dynamic vallist = JsonConvert.DeserializeObject(frame["values"].ToString());
-                foreach (var tuple in vallist)
-                    if (tuple.path != null)
-                    {
-                        // KeyList from path
-                        var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
-                                    AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
-                        // goal (1)
-                        pluv.Values.Add(
-                            new AasPayloadUpdateValueItem(kl, "" + tuple.value));
-
-                        // goal (2)
-                        if (wrappers != null)
+                if (vallist != null)
+                    foreach (var tuple in vallist)
+                        if (tuple.path != null)
                         {
-                            var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
-                            if (x is AdminShell.Property prop)
+                            // KeyList from path
+                            var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
+                                        AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
+                            // goal (1)
+                            pluv.Values.Add(
+                                new AasPayloadUpdateValueItem(kl, "" + tuple.value));
+
+                            // goal (2)
+                            if (wrappers != null)
                             {
-                                if (tuple.value != null)
-                                    prop.value = tuple.value;
+                                var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+                                    wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
+                                if (x is AdminShell.Property prop)
+                                {
+                                    if (tuple.value != null)
+                                        prop.value = tuple.value;
+                                }
+                                pluv.IsAlreadyUpdatedToAAS = true;
                             }
-                            pluv.IsAlreadyUpdatedToAAS = true;
                         }
-                    }
             }
             else if (frame.ContainsKey("value"))
             {
@@ -368,7 +371,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     string line = "" + li;
                     var arr = line.Trim().Split(new[] { " : " }, StringSplitOptions.RemoveEmptyEntries);
-                    if (arr != null && arr.Length == 4)
+                    if (arr.Length == 4)
                         aasItems.Add(new ListAasItem()
                         {
                             Index = arr[0].Trim(),
@@ -400,11 +403,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                     {
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
-                        Description = $"\"{"" + x.Item1.idShort}\",\"{"" + x.Item2.idShort}\"",
-                        Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1.idShort).SubstringMax(0, 3)
+                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
+                        Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.idShort).SubstringMax(0, 3)
                     };
-                    fi.AasIds.Add("" + x.Item1.identification?.id);
-                    fi.AssetIds.Add("" + x.Item2.identification?.id);
+                    fi.AasIds.Add("" + x.Item1?.identification?.id);
+                    fi.AssetIds.Add("" + x.Item2?.identification?.id);
                     res.Add(fi);
                 }
                 catch (Exception ex)
