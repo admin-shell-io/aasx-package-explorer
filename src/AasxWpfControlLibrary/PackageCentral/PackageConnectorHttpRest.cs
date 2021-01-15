@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -9,19 +9,19 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using AasxPackageExplorer;
-using System.Net.Http;
-using System.Net;
 using System.IO;
-using System.Threading;
-using AasxIntegrationBase;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
-using Newtonsoft.Json;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AasxIntegrationBase;
+using AasxPackageExplorer;
 using AdminShellEvents;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -196,7 +196,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             var reqSme = requestedElement as AdminShell.SubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
                 || requestedElement == null || timestamp == null
-                || (reqSm == null && reqSme == null) )
+                || (reqSm == null && reqSme == null))
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     "input arguments not valid!");
 
@@ -212,9 +212,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     "element references cannot be determined!");
 
-            // try identify the original Observable
-            //var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-            //    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
+            /// try identify the original Observable
+            /// var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+            ///    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
 
             // basically, can query updates of Submodel or SubmodelElements
             string qst = null;
@@ -270,11 +270,11 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // parse dynamic response object
             // Note: currently only updating Properties
-            // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
+            // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
             // TODO (MIHO, 2021-01-04): ValueIds still missing ..
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
             if (frame.ContainsKey("values"))
-            {                
+            {
                 // populate
                 dynamic vallist = JsonConvert.DeserializeObject(frame["values"].ToString());
                 foreach (var tuple in vallist)
@@ -308,7 +308,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 // goal (1)
                 pluv.Values.Add(
-                    new AasPayloadUpdateValueItem(path: null, value: "" + val)) ;
+                    new AasPayloadUpdateValueItem(path: null, value: "" + val));
 
                 // goal (2)
                 if (reqSme is AdminShell.Property prop)
@@ -369,10 +369,16 @@ namespace AasxWpfControlLibrary.PackageCentral
                     string line = "" + li;
                     var arr = line.Trim().Split(new[] { " : " }, StringSplitOptions.RemoveEmptyEntries);
                     if (arr != null && arr.Length == 4)
-                    aasItems.Add(new ListAasItem() { Index = arr[0].Trim(), AasIdShort = arr[1].Trim(), 
-                        AasId = arr[2].Trim(), Fn = arr[3].Trim() });
+                        aasItems.Add(new ListAasItem()
+                        {
+                            Index = arr[0].Trim(),
+                            AasIdShort = arr[1].Trim(),
+                            AasId = arr[2].Trim(),
+                            Fn = arr[3].Trim()
+                        });
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Singleton.Error(ex, $"when parsing /server/listaas/ for {this.ToString()}");
             }
@@ -392,7 +398,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // file item
                     var fi = new PackageContainerRepoItem()
                     {
-                        Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments, 
+                        Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
                         Description = $"\"{"" + x.Item1.idShort}\",\"{"" + x.Item2.idShort}\"",
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1.idShort).SubstringMax(0, 3)

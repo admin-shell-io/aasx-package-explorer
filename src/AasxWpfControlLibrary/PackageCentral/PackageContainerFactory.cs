@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -37,7 +37,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public async static Task<PackageContainerBase> GuessAndCreateForAsync(
             PackageCentral packageCentral,
-            string location, 
+            string location,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
@@ -62,7 +62,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
                     var cnt = await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
-                                            packageCentral, location, 
+                                            packageCentral, location,
                                             overrideLoadResident, takeOver,
                                             containerOptions, runtimeOptions);
 
@@ -80,7 +80,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 if (ll.Contains("/demo"))
                 {
-                    return await Demo(packageCentral, location, 
+                    return await Demo(packageCentral, location,
                         overrideLoadResident, containerOptions, runtimeOptions);
                 }
 
@@ -155,7 +155,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             ro?.Log?.Info($".. demo loading from internet ..");
             return await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
                 packageCentral,
-                "http://admin-shell-io.com:51310/server/getaasx/0", 
+                "http://admin-shell-io.com:51310/server/getaasx/0",
                 // "http://localhost:51310/server/getaasx/0",
                 overrideLoadResident, null, containerOptions, ro);
         }

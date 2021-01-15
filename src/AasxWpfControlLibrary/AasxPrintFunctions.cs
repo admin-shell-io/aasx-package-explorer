@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -138,7 +138,7 @@ namespace AasxPackageExplorer
                     // write text and generate a 2-D barcode as a bitmap
                     bmp = barcodeWriter.Write(csi.id);
                 }
-                else 
+                else
                 {
                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(csi.id, QRCodeGenerator.ECCLevel.Q);

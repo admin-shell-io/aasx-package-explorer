@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AdminShellNS;
 using AasxPackageExplorer;
+using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -70,7 +70,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public static async Task<PackageContainerLocalFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
-            string sourceFn, 
+            string sourceFn,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
@@ -79,10 +79,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             var res = new PackageContainerLocalFile(
                 CopyMode.Serialized, takeOver,
                 packageCentral, sourceFn, containerOptions);
-            
+
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(runtimeOptions);
-            
+
             return res;
         }
 
@@ -185,7 +185,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // do a close, execute and re-open cycle
                 try
                 {
-                    Env.TemporarilySaveCloseAndReOpenPackage(() => {
+                    Env.TemporarilySaveCloseAndReOpenPackage(() =>
+                    {
                         System.IO.File.Copy(Env.Filename, Location, overwrite: true);
                     });
                 }

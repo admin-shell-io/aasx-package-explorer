@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -9,21 +9,21 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using AasxPackageExplorer;
-using System.Net.Http;
-using System.Net;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using AasxPackageExplorer;
+using AdminShellNS;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
     // see: https://stackoverflow.com/questions/35320238/
     // how-to-display-upload-progress-using-c-sharp-httpclient-postasync
-    
+
     public class ProgressableStreamContent : HttpContent
     {
         private const int _defaultBufferSize = 4024;
@@ -37,7 +37,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public ProgressableStreamContent(Stream content, PackCntRuntimeOptions runtimeOptions = null)
             : this(content, _defaultBufferSize, runtimeOptions) { }
 
-        public ProgressableStreamContent(Stream content, int bufferSize, 
+        public ProgressableStreamContent(Stream content, int bufferSize,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             if (content == null)

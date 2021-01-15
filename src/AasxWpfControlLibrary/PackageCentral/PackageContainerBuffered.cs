@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -25,7 +25,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// This container add functionalities for "indirect load/ save" and backing up file contents
     /// </summary>
     public class PackageContainerBuffered : PackageContainerRepoItem
-    {       
+    {
         [JsonIgnore]
         public bool IndirectLoadSave = false;
 
@@ -42,14 +42,14 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public PackageContainerBuffered() { }
 
-        public PackageContainerBuffered(PackageCentral packageCentral) : base (packageCentral) { }
+        public PackageContainerBuffered(PackageCentral packageCentral) : base(packageCentral) { }
 
         public PackageContainerBuffered(CopyMode mode, PackageContainerBase other,
             PackageCentral packageCentral = null)
             : base(mode, other, packageCentral)
         {
             if ((mode & CopyMode.Serialized) > 0 && other != null)
-            {                
+            {
             }
             if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerBuffered o)
             {
@@ -102,7 +102,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (!bext.HasContent())
                         bext = ".aasx";
                     var bdfn = Path.Combine(backupDir, $"backup{ndx:000}{bext}");
-                    Env.TemporarilySaveCloseAndReOpenPackage(() => {
+                    Env.TemporarilySaveCloseAndReOpenPackage(() =>
+                    {
                         File.Copy(Env.Filename, bdfn, overwrite: true);
                     });
                 }

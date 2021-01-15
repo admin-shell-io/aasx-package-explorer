@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -429,7 +429,7 @@ namespace AasxPackageExplorer
             return false;
         }
 
-        public int RefreshAllChildsFromMainData (VisualElementGeneric root)
+        public int RefreshAllChildsFromMainData(VisualElementGeneric root)
         {
             /* TODO (MIHO, 2021-01-04): check to replace all occurences of RefreshFromMainData() by
              * making the tree-items ObservableCollection and INotifyPropertyChanged */
@@ -475,7 +475,7 @@ namespace AasxPackageExplorer
 
                 // generate lines, add
                 var x = Generators.GenerateVisualElementsFromShellEnv(
-                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, 
+                    treeViewLineCache, packages.Main?.AasEnv, packages.Main,
                     packages.MainItem?.Filename, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
@@ -496,7 +496,7 @@ namespace AasxPackageExplorer
                 if (packages.Repositories != null && selector == PackageCentral.Selector.MainAuxFileRepo)
                 {
                     var pkg = new AdminShellPackageEnv();
-                    foreach (var fr in packages.Repositories)                        
+                    foreach (var fr in packages.Repositories)
                         fr.PopulateFakePackage(pkg);
 
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
@@ -532,7 +532,7 @@ namespace AasxPackageExplorer
                 displayedTreeViewLines[0].IsSelected = true;
         }
 
-#endregion
+        #endregion
 
         // MIHO1
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -41,7 +41,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// </summary>
     public class PackCntRuntimeOptions
     {
-        public enum Progress { Idle, Starting, Ongoing, Final}
+        public enum Progress { Idle, Starting, Ongoing, Final }
 
         public delegate void ProgressChangedHandler(Progress state, long? totalFileSize, long totalBytesDownloaded);
 
@@ -54,7 +54,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public LogInstance Log;
         public ProgressChangedHandler ProgressChanged;
-        
+
         public AskForSelectFromListHandler AskForSelectFromList;
 
         public AskForCredentialsHandler AskForCredentials;
@@ -72,7 +72,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public enum BackupType { XML = 0, FullCopy }
 
         [Flags]
-        public enum CopyMode : int { None = 0, Serialized  = 1, BusinessData = 2}
+        public enum CopyMode : int { None = 0, Serialized = 1, BusinessData = 2 }
 
         [JsonIgnore]
         public AdminShellPackageEnv Env = new AdminShellPackageEnv();
@@ -165,7 +165,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             Env = null;
         }
 
-        public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML) 
+        public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML)
         {
         }
 
@@ -235,7 +235,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 continue;
 
                             // Note: currently only updating Properties
-                            // TODO (MIHO, 20201-01-03): check to handle more SMEs for AasEventMsgUpdateValue
+                            // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
 
                             AdminShell.SubmodelElement smeToModify = null;
                             if (vl.Path == null && foundObservable is AdminShell.Property fop)

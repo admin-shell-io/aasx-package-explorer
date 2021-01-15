@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -7,11 +7,11 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 
 
 namespace AasxPackageExplorer
@@ -155,8 +155,6 @@ namespace AasxPackageExplorer
                 }
             }
 
-            Test();
-
             Pref pref = Pref.Read();
 
             // show splash (required for licenses of open source)
@@ -169,22 +167,6 @@ namespace AasxPackageExplorer
             // show main window
             MainWindow wnd = new MainWindow(pref);
             wnd.Show();
-        }
-
-        public void Test()
-        {
-            //var pc = new PackageCentral();
-            
-            //pc.MainContainer.Close();
-            
-            //pc.MainContainer.Load("A01.aasx", loadResident: true);
-            //pc.MainContainer.Close();
-            //pc.MainContainer.Load("A01.aasx", loadResident: true);
-            //pc.MainContainer.SaveAs("A02.aasx");
-            //pc.MainContainer.Close();
-
-            //pc.MainContainer.Load("http://admin-shell-io.com:51310/server/getaasx/0", loadResident: true);
-            //pc.MainContainer.SaveAs("A03.aasx");
         }
     }
 }

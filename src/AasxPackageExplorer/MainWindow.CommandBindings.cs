@@ -165,8 +165,8 @@ namespace AasxPackageExplorer
                     // backup
                     if (true && Options.Curr.BackupDir != null)
                         packages.MainItem.Container.BackupInDir(
-                            System.IO.Path.GetFullPath(Options.Curr.BackupDir), 
-                            Options.Curr.BackupFiles, 
+                            System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+                            Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
@@ -439,7 +439,7 @@ namespace AasxPackageExplorer
             {
                 DisplayElements.Test();
             }
-            
+
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
@@ -775,7 +775,7 @@ namespace AasxPackageExplorer
                         "Last Recently Used AASX Packages",
                         MessageBoxButton.OKCancel, MessageBoxImage.Hand))
                     return;
-                
+
                 var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
                 try
                 {
@@ -787,7 +787,7 @@ namespace AasxPackageExplorer
                     lruNew.Header = "Last Recently Used";
                     lruNew.SaveAs(lruFn);
                     packages?.Repositories?.AddAtTop(lruNew);
-                } 
+                }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, $"while initializing last recently used file in {lruFn}.");
@@ -906,7 +906,7 @@ namespace AasxPackageExplorer
                 }
             }
         }
-        
+
         public void CommandBinding_PrintAsset()
         {
             AdminShell.Asset asset = null;

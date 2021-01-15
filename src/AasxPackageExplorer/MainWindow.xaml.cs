@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -191,7 +191,7 @@ namespace AasxPackageExplorer
                         SetProgressBar(
                             Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
                             AdminShellUtil.ByteSizeHumanReadable(tbd));
-                    
+
                     if (state == PackCntRuntimeOptions.Progress.Final)
                         SetProgressBar();
                 }
@@ -218,7 +218,7 @@ namespace AasxPackageExplorer
                 if (info == null)
                     info = loadLocalFilename;
                 Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(packages, loadLocalFilename, 
+                if (!packItem.Load(packages, loadLocalFilename,
                     overrideLoadResident: true,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr)))
                 {
@@ -236,8 +236,8 @@ namespace AasxPackageExplorer
             else
             if (takeOverContainer != null)
             {
-                Log.Singleton.Info("Loading new AASX from container: {0} as auxiliary {1} ..", 
-                    "" +  takeOverContainer.ToString(), onlyAuxiliary);
+                Log.Singleton.Info("Loading new AASX from container: {0} as auxiliary {1} ..",
+                    "" + takeOverContainer.ToString(), onlyAuxiliary);
                 packItem.TakeOver(takeOverContainer);
             }
             else
@@ -556,8 +556,8 @@ namespace AasxPackageExplorer
 
         }
 
-#endregion
-#region Callbacks
+        #endregion
+        #region Callbacks
         //===============
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -599,7 +599,7 @@ namespace AasxPackageExplorer
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
             MainTimer.Tick += new EventHandler(async (object s, EventArgs a) =>
             {
-                await MainTimer_Tick(s,a);
+                await MainTimer_Tick(s, a);
             });
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
@@ -753,8 +753,6 @@ namespace AasxPackageExplorer
                 var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    // UiLoadPackageWithNew(packages.MainItem, null, fn, onlyAuxiliary: false);
-
                     AasxPackageExplorer.Log.Singleton.Info($"Auto-load file at application start " +
                         $"from {location} into container");
 
@@ -1097,7 +1095,7 @@ namespace AasxPackageExplorer
                 {
                     var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
 
-#region Navigate To
+                    #region Navigate To
                     //=================
 
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
@@ -1105,9 +1103,9 @@ namespace AasxPackageExplorer
                     {
                         await UiHandleNavigateTo(evtNavTo.targetReference);
                     }
-#endregion
+                    #endregion
 
-#region Display content file
+                    #region Display content file
                     //==========================
 
                     var evtDispCont = evt as AasxIntegrationBase.AasxPluginResultEventDisplayContentFile;
@@ -1122,8 +1120,8 @@ namespace AasxPackageExplorer
                                 ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                         }
 
-#endregion
-#region Redisplay explorer contents
+                    #endregion
+                    #region Redisplay explorer contents
                     //=================================
 
                     var evtRedrawAll = evt as AasxIntegrationBase.AasxPluginResultEventRedrawAllElements;
@@ -1143,8 +1141,8 @@ namespace AasxPackageExplorer
                         }
                     }
 
-#endregion
-#region Select AAS entity
+                    #endregion
+                    #region Select AAS entity
                     //=======================
 
                     var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
@@ -1167,7 +1165,7 @@ namespace AasxPackageExplorer
                     }
 
 
-#endregion
+                    #endregion
                 }
                 catch (Exception ex)
                 {
@@ -1197,8 +1195,8 @@ namespace AasxPackageExplorer
             // within the SAME Submodel
             //
 
-            if (true == copts?.StayConnected 
-                && !_eventsUpdateValuePending 
+            if (true == copts?.StayConnected
+                && !_eventsUpdateValuePending
                 && (DateTime.Now - _lastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
             {
                 _lastQueuedUpdateValueEvent = DateTime.Now;
@@ -1210,7 +1208,7 @@ namespace AasxPackageExplorer
                     var veSubject = veSelected;
                     if (veSelected is VisualElementPluginExtension)
                         veSubject = veSelected.Parent;
-                    
+
                     // now, filter for know applications
                     if (!(veSubject is VisualElementSubmodelRef || veSubject is VisualElementSubmodelElement))
                         return;
@@ -1226,8 +1224,9 @@ namespace AasxPackageExplorer
 
                         // check, if the Submodel has interesting events
                         foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
-                            (true == x?.semanticId?.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                             AdminShellV20.Key.MatchMode.Relaxed))))
+                            (true == x?.semanticId?.Matches(
+                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
+                                AdminShellV20.Key.MatchMode.Relaxed))))
                         {
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
@@ -1259,14 +1258,15 @@ namespace AasxPackageExplorer
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Singleton.Error(ex, "periodically triggering event for simulated update");
+                                            Log.Singleton.Error(ex,
+                                                "periodically triggering event for simulated update");
                                         }
                                     });
                                 }
                             }
                         }
                     }
-                } 
+                }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "periodically checking for triggering events");
@@ -1297,7 +1297,7 @@ namespace AasxPackageExplorer
                 foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                 {
                     changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
-                    
+
                     // update value received
                     _eventsUpdateValuePending = false;
                 }
@@ -1325,7 +1325,7 @@ namespace AasxPackageExplorer
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
         }
-        
+
         private void SetProgressBar()
         {
             SetProgressBar(0.0, "");
@@ -1342,7 +1342,7 @@ namespace AasxPackageExplorer
                 LabelProgressBarInfo.Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Background,
                     new Action(() => LabelProgressBarInfo.Content = message));
-        }        
+        }
 
         private void ButtonHistory_HomeRequested(object sender, EventArgs e)
         {
@@ -1739,8 +1739,8 @@ namespace AasxPackageExplorer
             }
         }
 
-#endregion
-#region Modal Flyovers
+        #endregion
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -1920,8 +1920,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2011,7 +2011,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

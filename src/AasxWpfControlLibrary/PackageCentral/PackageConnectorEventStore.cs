@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -9,20 +9,20 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using AasxPackageExplorer;
-using System.Net.Http;
-using System.Net;
-using System.IO;
-using System.Threading;
-using AasxIntegrationBase;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
-using AdminShellEvents;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AasxIntegrationBase;
+using AasxPackageExplorer;
+using AdminShellEvents;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -64,7 +64,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// </summary>
         /// <param name="ev">The event message</param>
         /// <returns>True, if consume event</returns>
-        public override bool PushEvent(AasEventMsgEnvelope ev) 
+        public override bool PushEvent(AasEventMsgEnvelope ev)
         {
             // add
             if (_eventStore != null)
@@ -72,9 +72,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 lock (_eventStore)
                     _eventStore.Insert(0, ev);
             }
-            
+
             // do not consume, just want to listen!
-            return false; 
+            return false;
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,11 +12,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AdminShellNS;
-using AasxPackageExplorer;
-using Newtonsoft.Json;
 using System.Xml.Serialization;
+using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AdminShellEvents
 {
@@ -143,7 +143,7 @@ namespace AdminShellEvents
             var res = new MiniMarkupSequence();
             if (Values != null)
                 foreach (var val in Values)
-                    res.Children.Add(val.ToMarkup());            
+                    res.Children.Add(val.ToMarkup());
             return res;
         }
     }

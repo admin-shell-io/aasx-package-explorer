@@ -1,5 +1,12 @@
-﻿using AasxPackageExplorer;
-using AasxWpfControlLibrary.MiniMarkup;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +19,8 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xml;
+using AasxPackageExplorer;
+using AasxWpfControlLibrary.MiniMarkup;
 
 namespace AasxWpfControlLibrary.WpfControls
 {
@@ -43,7 +52,8 @@ namespace AasxWpfControlLibrary.WpfControls
 
                 this.Document.Blocks.Clear();
                 this.Document.Blocks.Add(blocks);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.Singleton.Error(ex, "Rendering Markup for event message details");
             }
@@ -70,7 +80,7 @@ namespace AasxWpfControlLibrary.WpfControls
                 var txt = run.Text;
                 if (run.Padsize.HasValue)
                     txt = txt.PadRight(run.Padsize.Value);
-                
+
                 var r = new Run(txt);
                 if (run.FontSize.HasValue)
                     r.FontSize = run.FontSize.Value;

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,8 +14,8 @@ using System.IO.Packaging;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 using AdminShellNS;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AdminShellNS
@@ -178,7 +178,7 @@ namespace AdminShellNS
         {
             if (obj == null)
                 return null;
-            var serializer = BuildDefaultAasxJsonSerializer();        
+            var serializer = BuildDefaultAasxJsonSerializer();
             var rf = (T)obj.ToObject<T>(serializer); ;
             return rf;
         }
@@ -898,7 +898,8 @@ namespace AdminShellNS
                     string.Format("Could not temporarily close and re-open AASX {0}, because package" +
                     "not open as expected!", Filename)));
 
-            try {
+            try
+            {
                 // save (it will be open, still)
                 SaveAs(this.Filename);
 

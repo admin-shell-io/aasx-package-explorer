@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -9,15 +9,15 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using AasxPackageExplorer;
-using System.Net.Http;
-using System.Net;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using AasxPackageExplorer;
+using AdminShellNS;
 using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -50,7 +50,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageContainerNetworkHttpFile(
             PackageCentral packageCentral,
             string sourceFn, PackageContainerOptionsBase containerOptions = null)
-            : base (packageCentral)
+            : base(packageCentral)
         {
             Init();
             SetNewLocation(sourceFn);
@@ -85,12 +85,12 @@ namespace AasxWpfControlLibrary.PackageCentral
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
-            var res = new PackageContainerNetworkHttpFile(CopyMode.Serialized, takeOver, 
+            var res = new PackageContainerNetworkHttpFile(CopyMode.Serialized, takeOver,
                 packageCentral, sourceFn, containerOptions);
 
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(runtimeOptions);
-            
+
             return res;
         }
 
@@ -172,7 +172,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     {
                         await file.WriteAsync(buffer, 0, bytesRead,
                             default(CancellationToken)).ConfigureAwait(false);
-                                                                      
+
                         totalBytesRead += bytesRead;
 
                         if (totalBytesRead > lastBytesRead + deltaSize)
@@ -243,7 +243,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             var base64 = Convert.ToBase64String(ba);
             var msBase64 = new MemoryStream(Encoding.UTF8.GetBytes(base64 ?? ""));
 
-            // var data = new StringContent(base64, Encoding.UTF8, "application/base64");
+            // customised HttpContent to track progress
             var data = new ProgressableStreamContent(msBase64, runtimeOptions);
 
             // get response?
@@ -275,11 +275,12 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // divert on indirect load/ save, to have dedicated try&catch
             if (IndirectLoadSave)
-            {               
+            {
                 // do a close, execute and re-open cycle
                 try
                 {
-                    Env.TemporarilySaveCloseAndReOpenPackage(() => {
+                    Env.TemporarilySaveCloseAndReOpenPackage(() =>
+                    {
                         System.IO.File.Copy(Env.Filename, copyFn, overwrite: true);
                     });
                 }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -146,12 +146,12 @@ namespace AasxPackageExplorer
             if (this._listFileItems != null && this._listFileItems != null)
                 foreach (var fm in this._listFileItems)
                     foreach (var id in fm.EnumerateAssetIds())
-                    if (aid == id.Trim().ToLower())
-                    {
-                        this.ResultItem = fm;
-                        ControlClosed?.Invoke();
-                        return;
-                    }
+                        if (aid == id.Trim().ToLower())
+                        {
+                            this.ResultItem = fm;
+                            ControlClosed?.Invoke();
+                            return;
+                        }
         }
 
         private void TextBoxAssetId_KeyDown(object sender, KeyEventArgs e)

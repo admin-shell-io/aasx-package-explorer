@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -51,7 +51,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// AASX package files.
         /// </summary>
         [JsonProperty(PropertyName = "filemaps")]
-        public ObservableCollection<PackageContainerRepoItem> FileMap = 
+        public ObservableCollection<PackageContainerRepoItem> FileMap =
             new ObservableCollection<PackageContainerRepoItem>();
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // need special settings (to handle different typs of child classes of PackageContainer)
             var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                new[] { typeof(PackageContainerListBase), typeof(PackageContainerLocalFile), 
+                new[] { typeof(PackageContainerListBase), typeof(PackageContainerLocalFile),
                     typeof(PackageContainerNetworkHttpFile) });
 
             var init = File.ReadAllText(fn);

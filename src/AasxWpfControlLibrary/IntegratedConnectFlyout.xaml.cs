@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -75,7 +75,7 @@ namespace AasxPackageExplorer
 
         public IntegratedConnectFlyout(
             PackageCentral packageCentral,
-            string caption = null, 
+            string caption = null,
             double? maxWidth = null,
             string initialLocation = null,
             string initialDirectory = null,
@@ -122,12 +122,6 @@ namespace AasxPackageExplorer
             timer.Start();
             timer.Tick += (object sender2, EventArgs e2) =>
             {
-                //var msg = _checkForStoredPrint?.Invoke();
-                //while (msg != null)
-                //{
-                //    this.LogMessage(msg);
-                //    msg = _checkForStoredPrint?.Invoke();
-                //}                
                 var msg = _logger?.PopLastShortTermPrint();
                 while (msg != null)
                 {
@@ -333,7 +327,8 @@ namespace AasxPackageExplorer
                 {
                     TabItemSelectFromList.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(() => {
+                        new Action(() =>
+                        {
                             StartPageSelectFromList(caption, items, (li) =>
                             {
                                 // never again
@@ -347,7 +342,8 @@ namespace AasxPackageExplorer
                 {
                     TabItemCredentials.Dispatcher.BeginInvoke(
                         System.Windows.Threading.DispatcherPriority.Background,
-                        new Action(() => {
+                        new Action(() =>
+                        {
                             StartPageAskCredentials(caption, (pcc) =>
                             {
                                 // never again
@@ -412,7 +408,7 @@ namespace AasxPackageExplorer
         {
             var i = ComboBoxPresets.SelectedIndex;
             if (_presets != null && i >= 0 && i < _presets.Count)
-                ApplyPreset(_presets[i]);                
+                ApplyPreset(_presets[i]);
         }
 
         private void ApplyPreset(PresetItem pi)

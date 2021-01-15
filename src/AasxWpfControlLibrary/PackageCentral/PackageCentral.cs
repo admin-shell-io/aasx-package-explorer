@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -26,7 +26,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public PackageCentralException() { }
         public PackageCentralException(string message, Exception innerException = null)
             : base(message, innerException) { }
-    }    
+    }
 
     /// <summary>
     /// This class is an item maintained by the PackageCentral.
@@ -55,7 +55,8 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 // new container
                 Container = new PackageContainerLocalFile();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new PackageCentralException(
                     $"PackageCentral: while performing new " +
@@ -64,10 +65,10 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         public bool Load(
-            PackageCentral packageCentral, 
-            string location, 
+            PackageCentral packageCentral,
+            string location,
             bool overrideLoadResident,
-            PackageContainerOptionsBase containerOptions = null, 
+            PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             try
@@ -81,23 +82,20 @@ namespace AasxWpfControlLibrary.PackageCentral
                 }
 
                 // figure out, what to load
-                //var guess = PackageContainerFactory.GuessAndCreateFor(location, loadResident: true,
-                //                runtimeOptions);
-
                 var task = Task.Run(async () => await PackageContainerFactory.GuessAndCreateForAsync(
                     packageCentral,
-                    location, 
+                    location,
                     overrideLoadResident,
                     null,
-                    containerOptions, 
+                    containerOptions,
                     runtimeOptions));
                 var guess = task.Result;
 
                 if (guess == null)
                     return false;
-                
+
                 // success!
-                Container = guess;                
+                Container = guess;
                 return true;
             }
             catch (Exception ex)
@@ -161,7 +159,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public async Task<bool> SaveAsAsync(string saveAsNewFileName = null, 
+        public async Task<bool> SaveAsAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
             PackCntRuntimeOptions runtimeOptions = null)
         {
@@ -174,7 +172,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 throw new PackageCentralException(
                     $"PackageCentral: while saving {"" + Container?.ToString()} " +
-                    $"with new filename {""  + saveAsNewFileName}" +
+                    $"with new filename {"" + saveAsNewFileName}" +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
         }
@@ -229,13 +227,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AdminShellPackageEnv Main
         {
             get { return _main?.Container?.Env; }
-            // set { main.Env = value; }
         }
 
         public AdminShellPackageEnv Aux
         {
             get { return _aux?.Container?.Env; }
-            // set { aux.Env = value; }
         }
 
         // TODO (MIHO, 2021-01-07): rename to plural
@@ -279,7 +275,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         //
 
         private PackageConnectorEventStore _eventStore = null; // replaced by store within AasEventCollectionViewer
-        // reason: update to ObservableCollection needs to be done in DispatcherThread :-(
+        // reason: update to ObservableCollection needs to be done in DispatcherThread
         public PackageConnectorEventStore EventStore { get { return _eventStore; } }
 
         private PackageConnectorEventStore _eventBufferEditor = new PackageConnectorEventStore(null);

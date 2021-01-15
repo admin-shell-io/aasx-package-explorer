@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AdminShellNS;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
+using AdminShellNS;
 
 namespace AdminShellEvents
 {
@@ -75,8 +75,14 @@ namespace AdminShellEvents
         //
 
         // see: https://stackoverflow.com/questions/1820915/how-can-i-format-datetime-to-web-utc-format
-        public string DisplayTimestamp { get { return Timestamp.ToUniversalTime()
-                        .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"); } }
+        public string DisplayTimestamp
+        {
+            get
+            {
+                return Timestamp.ToUniversalTime()
+.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+            }
+        }
 
         public string DisplaySource { get { return "" + Source?.Keys?.MostSignificantInfo(); } }
 
@@ -136,7 +142,7 @@ namespace AdminShellEvents
         public override string ToString()
         {
             var res = $"{this.GetType()}: " +
-                $"{"" + Timestamp.ToString()} @ "+
+                $"{"" + Timestamp.ToString()} @ " +
                 $"Source={"" + Source?.ToString()}, " +
                 $"SourceSemanticId={"" + SourceSemanticId?.ToString()}, " +
                 $"ObservableReference={"" + ObservableReference?.ToString()}, " +
@@ -150,7 +156,7 @@ namespace AdminShellEvents
 
             return res;
         }
-        
+
         public virtual MiniMarkupBase ToMarkup()
         {
             int w1 = 30;
@@ -187,7 +193,7 @@ namespace AdminShellEvents
 
             return res;
         }
-     
+
         //
         // Payloads
         //

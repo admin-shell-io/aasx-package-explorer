@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -57,13 +57,14 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// AasxRepoList which is being managed by this control. Is expected to sit in the PackageCentral.
         /// Note: only setter, as direct access from outside shall be redirected to the original source.
         /// </summary>
-        public PackageContainerListOfList RepoList {
+        public PackageContainerListOfList RepoList
+        {
             get
             {
                 return _repoList;
             }
-            set 
-            { 
+            set
+            {
                 _repoList = value;
                 StackPanelRepos.ItemsSource = RepoList;
                 this.UpdateLayout();
@@ -187,12 +188,12 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 try
                                 {
                                     // load
-                                    AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
+                                    Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
                                     FileDoubleClick?.Invoke(fr, fi);
                                 }
                                 catch (Exception ex)
                                 {
-                                    AasxPackageExplorer.Log.Singleton.Error(
+                                    Log.Singleton.Error(
                                         ex, $"When switching to AASX repository file {fn}.");
                                 }
                             }
@@ -216,8 +217,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                         // execute (is data binded)
                         try
                         {
-                            AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}", Path.GetFullPath(
-                                Path.GetDirectoryName("" + frl.Filename)));
+                            AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}",
+                                Path.GetFullPath(Path.GetDirectoryName("" + frl.Filename)));
                             frl.MakeFilenamesRelative();
                         }
                         catch (Exception ex)
@@ -246,8 +247,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // check
                     var veAas = _manageVisuElems?.GetSelectedItem() as VisualElementAdminShell;
 
-                    var veEnv = veAas.FindFirstParent((ve) => 
-                    (ve is VisualElementEnvironmentItem vev 
+                    var veEnv = veAas.FindFirstParent((ve) =>
+                    (ve is VisualElementEnvironmentItem vev
                     && vev.theItemType == VisualElementEnvironmentItem.ItemType.Package), includeThis: false)
                         as VisualElementEnvironmentItem;
 
@@ -279,7 +280,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // get the input files
                     var inputDlg = new Microsoft.Win32.OpenFileDialog();
                     inputDlg.Title = "Multi-select AASX package files to be in repository";
-                    inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                    inputDlg.Filter = "AASX package files (*.aasx)|*.aasx" +
+                        "|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
                     inputDlg.Multiselect = true;
 
                     _flyout.StartFlyover(new EmptyFlyout());
@@ -297,7 +299,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (cmd == "filerepoaddfromserver")
                 {
                     // read server address
-                    var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", MessageBoxImage.Question);
+                    var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
+                        MessageBoxImage.Question);
                     uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
                     _flyout.StartFlyoverModal(uc);
                     if (!uc.Result)
@@ -341,7 +344,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             ScrollViewerRepoList.ScrollToVerticalOffset(ScrollViewerRepoList.VerticalOffset - e.Delta);
         }
 
-        private void PackageContainerListControl_FileDoubleClick(PackageContainerListBase fr, PackageContainerRepoItem fi)
+        private void PackageContainerListControl_FileDoubleClick(
+            PackageContainerListBase fr, PackageContainerRepoItem fi)
         {
             FileDoubleClick?.Invoke(fr, fi);
         }
@@ -361,7 +365,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     cm.Add(new DynamicContextItem("item-up", "\u25b2", "Move Up"));
                     cm.Add(new DynamicContextItem("item-down", "\u25bc", "Move Down"));
                 }
-                
+
                 cm.Add(new DynamicContextItem("", new Separator()));
                 cm.Add(new DynamicContextItem("FileRepoSaveAs", "\U0001f4be", "Save as .."));
                 cm.Add(new DynamicContextItem("", new Separator()));
@@ -369,7 +373,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (!(fr is PackageContainerListLastRecentlyUsed))
                 {
                     if (fr is PackageContainerListLocal)
-                        cm.Add(new DynamicContextItem("FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
+                        cm.Add(new DynamicContextItem(
+                            "FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
 
                     cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
                     cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -621,7 +621,7 @@ namespace AdminShellNS
                 }
             }
 
-            public bool StartsWith(KeyList head, bool emptyIsTrue = false, 
+            public bool StartsWith(KeyList head, bool emptyIsTrue = false,
                 Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 // access
@@ -629,7 +629,7 @@ namespace AdminShellNS
                     return false;
                 if (head.Count == 0)
                     return emptyIsTrue;
-                
+
                 // simply test element-wise
                 for (int i = 0; i < head.Count; i++)
                 {
@@ -5006,7 +5006,7 @@ namespace AdminShellNS
             }
 
             public IEnumerable<Referable> FindAllParents(
-                Predicate<Referable> p, 
+                Predicate<Referable> p,
                 bool includeThis = false, bool includeSubmodel = false)
             {
                 // call for this?
@@ -6376,7 +6376,7 @@ namespace AdminShellNS
                 // try convert
                 if (double.TryParse(this.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
                     return dbl;
-                
+
                 // no
                 return null;
             }

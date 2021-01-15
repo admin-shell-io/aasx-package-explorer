@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -131,7 +131,7 @@ namespace AasxPluginPlotting
 
             public PlotItem() { }
 
-            public PlotItem(AdminShell.SubmodelElement sme, string args, 
+            public PlotItem(AdminShell.SubmodelElement sme, string args,
                 string path, string value, AdminShell.Description description)
             {
                 SME = sme;
@@ -254,7 +254,7 @@ namespace AasxPluginPlotting
                 var temp = new PlotItemGroup();
                 temp.Add(this[0]);
                 var startI = 0;
-                for (int i=1; i<this.Count; i++)
+                for (int i = 1; i < this.Count; i++)
                 {
                     if (this[startI].Group == this[i].Group)
                     {
@@ -294,20 +294,19 @@ namespace AasxPluginPlotting
                     var wpfPlot = new ScottPlot.WpfPlot();
                     lastPlot = wpfPlot;
                     wpfPlot.plt.AntiAlias(false, false, false);
-                    wpfPlot.AxisChanged += (s,e) => WpfPlot_AxisChanged(wpfPlot,e);
+                    wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
                     groupPI.WpfPlot = wpfPlot;
                     res.Add(groupPI);
 
                     // for all wpf / all signals
                     wpfPlot.Height = plotHeight;
-                    // wpfPlot.plt.YLabel("Value");
 
                     // for each signal
                     foreach (var pi in groupPI)
                     {
                         // value
                         var val = pi.SME?.ValueAsDouble();
-                        
+
                         // prepare data
                         var pb = new PlotBuffer();
                         pi.Buffer = pb;
@@ -335,7 +334,7 @@ namespace AasxPluginPlotting
             }
 
             public void ForAllGroupsAndPlot(
-                List<PlotItemGroup> groups, 
+                List<PlotItemGroup> groups,
                 Action<PlotItemGroup, PlotItem> lambda = null)
             {
                 if (groups == null)
@@ -345,7 +344,7 @@ namespace AasxPluginPlotting
                     if (grp == null)
                         continue;
                     foreach (var pi in grp)
-                        lambda?.Invoke(grp, pi);                            
+                        lambda?.Invoke(grp, pi);
                 }
             }
 
@@ -482,51 +481,61 @@ namespace AasxPluginPlotting
             };
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
-
-            // test
-            //FillDemoPlots();
-            //var x = PlotItems.GetItemsGrouped();
         }
+
         private void FillDemoPlots()
         {
             Random rand = new Random();
 
-            /*
-            var plt = new ScottPlot.Plot(600, 400);
+            if (true)
+            {
+                var plt = new ScottPlot.Plot(600, 400);
 
-            int pointCount = 51;
-            double[] xs = DataGen.Consecutive(pointCount);
-            double[] sin = DataGen.Sin(pointCount);
-            double[] cos = DataGen.Cos(pointCount);
+                int pointCount = 51;
+                double[] xs = DataGen.Consecutive(pointCount);
+                double[] sin = DataGen.Sin(pointCount);
+                double[] cos = DataGen.Cos(pointCount);
 
-            plt.PlotScatter(xs, sin, label: "sin");
-            plt.PlotScatter(xs, cos, label: "cos");
-            plt.Legend();
+                plt.PlotScatter(xs, sin, label: "sin");
+                plt.PlotScatter(xs, cos, label: "cos");
+                plt.Legend();
 
-            plt.Title("Scatter Plot Quickstart");
-            plt.YLabel("Vertical Units");
-            plt.XLabel("Horizontal Units");
-            */
+                plt.Title("Scatter Plot Quickstart");
+                plt.YLabel("Vertical Units");
+                plt.XLabel("Horizontal Units");
 
-            var pv1 = new ScottPlot.WpfPlot();
-            pv1.Height = 200;
-            // pv1.plt.PlotSignal(DataGen.RandomWalk(rand, 100));
+                var pv1 = new ScottPlot.WpfPlot();
+                pv1.Height = 200;
 
-            var plt = pv1.plt;
-            int pointCount = 51;
-            double[] xs = DataGen.Consecutive(pointCount);
-            double[] sin = DataGen.Sin(pointCount);
-            double[] cos = DataGen.Cos(pointCount);
+                plt.Title("Scatter Plot Quickstart");
+                plt.YLabel("Vertical Units");
+                plt.XLabel("Horizontal Units");
 
-            plt.PlotScatter(xs, sin, label: "sin");
-            plt.PlotScatter(xs, cos, label: "cos");
-            plt.Legend();
+                StackPanelCharts.Children.Add(pv1);
+            }
 
-            plt.Title("Scatter Plot Quickstart");
-            plt.YLabel("Vertical Units");
-            plt.XLabel("Horizontal Units");
+            if (true)
+            {
+                var pv1 = new ScottPlot.WpfPlot();
+                pv1.Height = 200;
+                pv1.plt.PlotSignal(DataGen.RandomWalk(rand, 100));
 
-            StackPanelCharts.Children.Add(pv1);
+                var plt = pv1.plt;
+                int pointCount = 51;
+                double[] xs = DataGen.Consecutive(pointCount);
+                double[] sin = DataGen.Sin(pointCount);
+                double[] cos = DataGen.Cos(pointCount);
+
+                plt.PlotScatter(xs, sin, label: "sin");
+                plt.PlotScatter(xs, cos, label: "cos");
+                plt.Legend();
+
+                plt.Title("Scatter Plot Quickstart");
+                plt.YLabel("Vertical Units");
+                plt.XLabel("Horizontal Units");
+
+                StackPanelCharts.Children.Add(pv1);
+            }
         }
 
         private void ScrollViewerContent_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
