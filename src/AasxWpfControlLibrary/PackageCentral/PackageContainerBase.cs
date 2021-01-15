@@ -105,6 +105,19 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonIgnore]
         public List<PackageConnectorBase> ConnectorSecondary = new List<PackageConnectorBase>();
 
+        protected string _location = "";
+
+        /// <summary>
+        /// Location of the Container in a certain storage container, e.g. a local or network based
+        /// repository. In this base implementation, it maps to a empty string.
+        /// </summary>
+        [JsonIgnore]
+        public virtual string Location
+        {
+            get { return _location; }
+            set { _location = value; }
+        }
+
         //
         // Constructors
         //
@@ -140,8 +153,6 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
-        [JsonIgnore]
-        public virtual string Filename { get { return null; } }
 
         [JsonIgnore]
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }

@@ -153,18 +153,20 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonProperty(PropertyName = "code")]
         public string CodeType2D = "";
 
-        [JsonProperty(PropertyName = "fn")]
-        private string location = "";
-
         /// <summary>
-        /// Location of the Container in a certain storage container.
+        /// Location of the Container in a certain storage container, e.g. a local or network based
+        /// repository. In this base implementation, it maps to a empty string.
         /// </summary>
         [JsonIgnore]
-        public string Location
+        public override string Location
         {
-            get { return location; }
-            set { location = value; OnPropertyChanged("InfoLocation"); }
+            get { return _location; }
+            set { _location = value; OnPropertyChanged("InfoLocation"); }
         }
+
+        // for compatibility before JAN 2021
+        [JsonProperty(PropertyName = "fn")]
+        private string _legacyFilename { set { Location = value; OnPropertyChanged("InfoLocation"); } }
 
         //
         // dynamic members, to be not persisted            
@@ -385,7 +387,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             });
 
             // get some descriptiive data
-            var threeFn = Path.GetFileNameWithoutExtension(Filename);
+            var threeFn = Path.GetFileNameWithoutExtension(Location);
             var asset0 = Env?.AasEnv?.Assets?.FirstOrDefault();
             var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
 

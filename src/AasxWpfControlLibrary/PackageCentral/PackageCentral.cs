@@ -37,7 +37,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public PackageContainerBase Container;
 
-        public string Filename { get { return Container?.Filename; } }
+        public string Filename { get { return Container?.Location; } }
 
         public override string ToString() { return (Container == null) ? "No container!" : Container?.ToString(); }
 

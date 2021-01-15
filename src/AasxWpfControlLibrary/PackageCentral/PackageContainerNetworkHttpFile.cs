@@ -29,10 +29,15 @@ namespace AasxWpfControlLibrary.PackageCentral
     public class PackageContainerNetworkHttpFile : PackageContainerBuffered
     {
         /// <summary>
-        /// Uri of an AASX retrieved by HTTP
+        /// Location of the Container in a certain storage container, e.g. a local or network based
+        /// repository. In this implementation, the Location refers to a HTTP network ressource.
         /// </summary>
-        public Uri SourceUri;
-
+        [JsonIgnore]
+        public override string Location
+        {
+            get { return _location; }
+            set { SetNewLocation(value); OnPropertyChanged("InfoLocation"); }
+        }
         //
         // Constructors
         //
@@ -48,7 +53,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             : base (packageCentral)
         {
             Init();
-            SetNewSourceFn(sourceFn);
+            SetNewLocation(sourceFn);
             if (containerOptions != null)
                 ContainerOptions = containerOptions;
         }
@@ -63,10 +68,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
             if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerNetworkHttpFile o)
             {
-                SourceUri = o.SourceUri;
+                sourceUri = o.Location;
             }
             if (sourceUri != null)
-                SetNewSourceFn(sourceUri);
+                SetNewLocation(sourceUri);
             if (containerOptions != null)
                 ContainerOptions = containerOptions;
         }
@@ -93,23 +98,20 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Mechanics
         //
 
-        [JsonIgnore]
-        public override string Filename { get { return SourceUri.ToString(); } }
-
         private void Init()
         {
         }
 
-        private void SetNewSourceFn(string sourceUri)
+        private void SetNewLocation(string sourceUri)
         {
-            SourceUri = new Uri(sourceUri);
+            _location = sourceUri;
             IsFormat = Format.AASX;
             IndirectLoadSave = true;
         }
 
         public override string ToString()
         {
-            return "HTTP file: " + SourceUri;
+            return "HTTP file: " + Location;
         }
 
         private async Task DownloadFromSource(Uri sourceUri,
@@ -142,11 +144,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var contentStream = await response?.Content?.ReadAsStreamAsync();
                 if (contentStream == null)
                     throw new PackageContainerException(
-                    $"While getting data bytes from {SourceUri.ToString()} via HttpClient " +
+                    $"While getting data bytes from {Location} via HttpClient " +
                     $"no data-content was responded!");
 
                 // create temp file and write to it
-                var givenFn = SourceUri.ToString();
+                var givenFn = Location;
                 if (contentFn != null)
                     givenFn = contentFn;
                 TempFn = CreateNewTempFn(givenFn, IsFormat);
@@ -198,12 +200,12 @@ namespace AasxWpfControlLibrary.PackageCentral
             // buffer to temp file
             try
             {
-                await DownloadFromSource(SourceUri, runtimeOptions);
+                await DownloadFromSource(new Uri(Location), runtimeOptions);
             }
             catch (Exception ex)
             {
                 throw new PackageContainerException(
-                    $"While buffering aasx from {SourceUri.ToString()} via HttpClient " +
+                    $"While buffering aasx from {Location} via HttpClient " +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
 
@@ -306,12 +308,12 @@ namespace AasxWpfControlLibrary.PackageCentral
             // now, try to upload this
             try
             {
-                await UploadToServerAsync(copyFn, SourceUri, runtimeOptions);
+                await UploadToServerAsync(copyFn, new Uri(Location), runtimeOptions);
             }
             catch (Exception ex)
             {
                 throw new PackageContainerException(
-                    $"While uploading to {SourceUri.ToString()} from temp-file {copyFn} " +
+                    $"While uploading to {Location} from temp-file {copyFn} " +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
         }

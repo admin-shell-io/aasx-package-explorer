@@ -24,10 +24,15 @@ namespace AasxWpfControlLibrary.PackageCentral
     public class PackageContainerLocalFile : PackageContainerBuffered
     {
         /// <summary>
-        /// The file on the computer's file system, which is perceived by the user as the opened
-        /// AASX file.
+        /// Location of the Container in a certain storage container, e.g. a local or network based
+        /// repository. In this implementation, the Location refers to a local file.
         /// </summary>
-        public string SourceFn;
+        [JsonIgnore]
+        public override string Location
+        {
+            get { return _location; }
+            set { SetNewLocation(value); OnPropertyChanged("InfoLocation"); }
+        }
 
         public PackageContainerLocalFile()
         {
@@ -40,7 +45,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             : base(packageCentral)
         {
             Init();
-            SetNewSourceFn(sourceFn);
+            SetNewLocation(sourceFn);
             if (containerOptions != null)
                 ContainerOptions = containerOptions;
         }
@@ -55,14 +60,13 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
             if ((mode & CopyMode.BusinessData) > 0 && other is PackageContainerLocalFile o)
             {
-                sourceFn = o.SourceFn;
+                sourceFn = o.Location;
             }
             if (sourceFn != null)
-                SetNewSourceFn(sourceFn);
+                SetNewLocation(sourceFn);
             if (containerOptions != null)
                 ContainerOptions = containerOptions;
         }
-
 
         public static async Task<PackageContainerLocalFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
@@ -82,23 +86,20 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
-        [JsonIgnore]
-        public override string Filename { get { return SourceFn; } }
-
         private void Init()
         {
         }
 
-        private void SetNewSourceFn(string sourceFn)
+        private void SetNewLocation(string sourceFn)
         {
-            SourceFn = sourceFn;
-            IsFormat = EvalFormat(SourceFn);
+            _location = sourceFn;
+            IsFormat = EvalFormat(_location);
             IndirectLoadSave = Options.Curr.IndirectLoadSave && IsFormat == Format.AASX;
         }
 
         public override string ToString()
         {
-            var s = "local file: " + SourceFn;
+            var s = "local file: " + Location;
             if (IndirectLoadSave)
                 s += " buffered to: " + TempFn;
             return s;
@@ -113,14 +114,14 @@ namespace AasxWpfControlLibrary.PackageCentral
                     "While loading aasx, unknown file format/ extension was encountered!");
 
             // buffer
-            var fn = SourceFn;
+            var fn = Location;
             try
             {
                 if (IndirectLoadSave)
                 {
-                    TempFn = CreateNewTempFn(SourceFn, IsFormat);
+                    TempFn = CreateNewTempFn(Location, IsFormat);
                     fn = TempFn;
-                    System.IO.File.Copy(SourceFn, fn);
+                    System.IO.File.Copy(Location, fn);
                 }
                 else
                 {
@@ -156,7 +157,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             // apply possible new source name directly
             if (saveAsNewFileName != null)
-                SetNewSourceFn(saveAsNewFileName);
+                SetNewLocation(saveAsNewFileName);
 
             // check extension
             if (IsFormat == Format.Unknown)
@@ -177,7 +178,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // the container or package might be new
                 if (!Env.IsOpen || TempFn == null)
                 {
-                    TempFn = CreateNewTempFn(SourceFn, IsFormat);
+                    TempFn = CreateNewTempFn(Location, IsFormat);
                     Env.SaveAs(TempFn);
                 }
 
@@ -185,7 +186,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 try
                 {
                     Env.TemporarilySaveCloseAndReOpenPackage(() => {
-                        System.IO.File.Copy(Env.Filename, SourceFn, overwrite: true);
+                        System.IO.File.Copy(Env.Filename, Location, overwrite: true);
                     });
                 }
                 catch (Exception ex)
@@ -217,7 +218,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // just save
                     try
                     {
-                        Env.SaveAs(SourceFn);
+                        Env.SaveAs(Location);
                     }
                     catch (Exception ex)
                     {
