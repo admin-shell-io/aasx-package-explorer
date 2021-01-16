@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -24,6 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -34,7 +35,7 @@ namespace AasxPackageExplorer
         bool IsSelected { get; set; }
     }
 
-    public partial class DiplayVisualAasxElements : UserControl
+    public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
     {
         private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();
         private TreeViewLineCache treeViewLineCache = null;
@@ -58,6 +59,11 @@ namespace AasxPackageExplorer
             {
                 return treeViewInner.SelectedItem as VisualElementGeneric;
             }
+        }
+
+        public VisualElementGeneric GetSelectedItem()
+        {
+            return treeViewInner.SelectedItem as VisualElementGeneric;
         }
 
         // Enumerate all the descendants of the visual object.
@@ -423,6 +429,28 @@ namespace AasxPackageExplorer
             return false;
         }
 
+        public int RefreshAllChildsFromMainData(VisualElementGeneric root)
+        {
+            /* TODO (MIHO, 2021-01-04): check to replace all occurences of RefreshFromMainData() by
+             * making the tree-items ObservableCollection and INotifyPropertyChanged */
+
+            // access
+            if (root == null)
+                return 0;
+
+            // self
+            var sum = 1;
+            root.RefreshFromMainData();
+
+            // children?
+            if (root.Members != null)
+                foreach (var child in root.Members)
+                    sum += RefreshAllChildsFromMainData(child);
+
+            // ok
+            return sum;
+        }
+
         //
         // Element View Drawing
         //
@@ -447,7 +475,8 @@ namespace AasxPackageExplorer
 
                 // generate lines, add
                 var x = Generators.GenerateVisualElementsFromShellEnv(
-                    treeViewLineCache, packages.Main?.AasEnv, packages.Main, editMode, expandMode: 1);
+                    treeViewLineCache, packages.Main?.AasEnv, packages.Main,
+                    packages.MainItem?.Filename, editMode, expandMode: 1);
                 foreach (var xx in x)
                     displayedTreeViewLines.Add(xx);
 
@@ -457,18 +486,21 @@ namespace AasxPackageExplorer
                      || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux, editMode, expandMode: 1);
+                        treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
+                        packages.AuxItem?.Filename, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
                 }
 
                 // more?
-                if (packages.FileRepository != null && selector == PackageCentral.Selector.MainAuxFileRepo)
+                if (packages.Repositories != null && selector == PackageCentral.Selector.MainAuxFileRepo)
                 {
-                    var pkg = packages.FileRepository.MakeUpFakePackage();
+                    var pkg = new AdminShellPackageEnv();
+                    foreach (var fr in packages.Repositories)
+                        fr.PopulateFakePackage(pkg);
 
                     var x2 = Generators.GenerateVisualElementsFromShellEnv(
-                        treeViewLineCache, pkg?.AasEnv, pkg, editMode, expandMode: 1);
+                        treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);
                 }

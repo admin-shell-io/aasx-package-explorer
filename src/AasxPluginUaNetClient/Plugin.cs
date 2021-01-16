@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>,
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>,
 Author: Michael Hoffmeister.
 
 Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
@@ -84,7 +84,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // OPC Copyright
                 MessageBox.Show(
-                    "Copyright (c) 2018-2019 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, " +
+                    "Copyright (c) 2018-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>, " +
                     "author: Andreas Orzelski\n\n" +
                     "Portions copyright (c) by OPC Foundation, Inc. and licensed under the Reciprocal Community " +
                     "License (RCL)\n" + "see https://opcfoundation.org/license/rcl.html",

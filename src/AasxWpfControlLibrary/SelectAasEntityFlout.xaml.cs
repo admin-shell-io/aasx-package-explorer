@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -24,6 +24,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -101,77 +102,6 @@ namespace AasxPackageExplorer
             }
         }
 
-        private AdminShell.KeyList BuildKeyListToTop(
-            VisualElementGeneric visElem,
-            bool includeAas = false)
-        {
-            // access
-            if (visElem == null)
-                return null;
-
-            // prepare result
-            var res = new AdminShell.KeyList();
-            var ve = visElem;
-            while (ve != null)
-            {
-                if (ve is VisualElementSubmodelRef)
-                {
-                    // import special case, as Submodel ref is important part of the chain!
-                    var elem = ve as VisualElementSubmodelRef;
-                    if (elem.theSubmodel != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                elem.theSubmodel.GetElementName(), true,
-                                elem.theSubmodel.identification.idType,
-                                elem.theSubmodel.identification.id));
-
-                    // include aas
-                    if (includeAas && ve.Parent is VisualElementAdminShell veAas
-                        && veAas.theAas?.identification != null)
-                    {
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                AdminShell.Key.AAS, true,
-                                veAas.theAas.identification.idType,
-                                veAas.theAas.identification.id));
-                    }
-
-                    break;
-                }
-                else
-                if (ve.GetMainDataObject() is AdminShell.Identifiable)
-                {
-                    // a Identifiable will terminate the list of keys
-                    var data = ve.GetMainDataObject() as AdminShell.Identifiable;
-                    if (data != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                data.GetElementName(), true, data.identification.idType, data.identification.id));
-                    break;
-                }
-                else
-                if (ve.GetMainDataObject() is AdminShell.Referable)
-                {
-                    // add a key and go up ..
-                    var data = ve.GetMainDataObject() as AdminShell.Referable;
-                    if (data != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(data.GetElementName(), true, "IdShort", data.idShort));
-                }
-                else
-                // uups!
-                { }
-                // need to go up
-                ve = ve.Parent;
-            }
-
-            return res;
-        }
-
         private bool PrepareResult()
         {
             // access
@@ -195,7 +125,7 @@ namespace AasxPackageExplorer
                     return false;
 
                 // ok, prepare list of keys
-                this.ResultKeys = BuildKeyListToTop(si);
+                this.ResultKeys = si.BuildKeyListToTop();
                 return true;
             }
 
@@ -220,7 +150,7 @@ namespace AasxPackageExplorer
                 {
                     // safe to return a list for the parent ..
                     // (include AAS, as this is important to plug-ins)
-                    this.ResultKeys = BuildKeyListToTop(si, includeAas: true);
+                    this.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
                     this.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
