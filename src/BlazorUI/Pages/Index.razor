@@ -136,7 +136,15 @@
                         {
                             if (Program.thumbNail == null)
                             {
-                                var s = Program.env.GetLocalThumbnailStream();
+                                System.IO.Stream s = null;
+                                try
+                                {
+                                    s = Program.env.GetLocalThumbnailStream();
+                                }
+                                catch
+                                {
+                                    s = null;
+                                }
                                 if (s != null)
                                 {
                                     using (var m = new System.IO.MemoryStream())
