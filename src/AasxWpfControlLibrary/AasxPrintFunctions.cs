@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -19,7 +19,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 using QRCoder;
@@ -139,12 +138,15 @@ namespace AasxPackageExplorer
                     bmp = barcodeWriter.Write(csi.id);
                 }
                 else
+                if (csi.code.Trim().ToLower() == "qr")
                 {
                     QRCodeGenerator qrGenerator = new QRCodeGenerator();
                     QRCodeData qrCodeData = qrGenerator.CreateQrCode(csi.id, QRCodeGenerator.ECCLevel.Q);
                     QRCode qrCode = new QRCode(qrCodeData);
                     bmp = qrCode.GetGraphic(20);
                 }
+                else
+                    continue;
 
                 var imgsrc = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
                         bmp.GetHbitmap(),
@@ -192,18 +194,18 @@ namespace AasxPackageExplorer
         }
 
         public static bool PrintRepositoryCodeSheet(
-            string repoFn = null, PackageContainerListBase repoDirect = null, string title = "Asset repository")
+            string repoFn = null, AasxFileRepository repoDirect = null, string title = "Asset repository")
         {
             List<CodeSheetItem> codeSheetItems = new List<CodeSheetItem>();
             try
             {
-                PackageContainerListBase repo = null;
+                AasxFileRepository repo = null;
 
                 // load the data
                 if (repoFn != null)
                 {
                     // from file
-                    repo = PackageContainerListLocal.Load<PackageContainerListLocal>(repoFn);
+                    repo = AasxFileRepository.Load(repoFn);
                 }
 
                 if (repoDirect != null)
@@ -218,16 +220,14 @@ namespace AasxPackageExplorer
 
                 // all assets
                 foreach (var fmi in repo.FileMap)
-                    if (fmi.AssetIds != null)
-                        foreach (var id in fmi.AssetIds)
-                        {
-                            var csi = new CodeSheetItem();
-                            csi.id = id;
-                            csi.code = fmi.CodeType2D;
-                            csi.description = fmi.Description;
-                            csi.normSize = 1.0; // do not vary
-                            codeSheetItems.Add(csi);
-                        }
+                {
+                    var csi = new CodeSheetItem();
+                    csi.id = fmi.AssetId;
+                    csi.code = fmi.CodeType2D;
+                    csi.description = fmi.Description;
+                    csi.normSize = 1.0; // do not vary
+                    codeSheetItems.Add(csi);
+                }
 
                 // print
                 PrintCodeSheet(codeSheetItems.ToArray(), title);

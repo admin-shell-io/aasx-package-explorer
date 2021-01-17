@@ -21,14 +21,12 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using AasxIntegrationBase;
 using AasxSignature;
 using AasxUANodesetImExport;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Jose;
 using Newtonsoft.Json;
@@ -85,7 +83,7 @@ namespace AasxPackageExplorer
             RedrawElementView();
         }
 
-        private async void CommandBinding_GeneralDispatch(string cmd)
+        private void CommandBinding_GeneralDispatch(string cmd)
         {
             if (cmd == null)
             {
@@ -103,7 +101,7 @@ namespace AasxPackageExplorer
                         // clear
                         ClearAllViews();
                         // create new AASX package
-                        packages.MainItem.New();
+                        packages.Main = new AdminShellPackageEnv();
                         // redraw
                         CommandExecution_RedrawAll();
                     }
@@ -130,19 +128,31 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
 
-                    switch (cmd)
+                    AdminShellPackageEnv packnew = null;
+                    try
                     {
-                        case "open":
-                            UiLoadPackageWithNew(
-                                packages.MainItem, null, dlg.FileName, onlyAuxiliary: false,
-                                storeFnToLRU: dlg.FileName);
-                            break;
-                        case "openaux":
-                            UiLoadPackageWithNew(
-                                packages.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
-                            break;
-                        default:
-                            throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
+                        packnew = new AdminShellPackageEnv(dlg.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        AasxPackageExplorer.Log.Singleton.Error(ex, $"When opening {dlg.FileName}");
+                    }
+
+                    if (packnew != null)
+                    {
+                        switch (cmd)
+                        {
+                            case "open":
+                                UiLoadPackageWithNew(
+                                    packages.MainContainer, packnew, dlg.FileName, onlyAuxiliary: false);
+                                break;
+                            case "openaux":
+                                UiLoadPackageWithNew(
+                                    packages.AuxContainer, packnew, dlg.FileName, onlyAuxiliary: true);
+                                break;
+                            default:
+                                throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
+                        }
                     }
                 }
             }
@@ -158,16 +168,22 @@ namespace AasxPackageExplorer
                     return;
                 }
 
+                if (packages.Main == null)
+                {
+                    throw new NullReferenceException(
+                        $"packages.Main unexpectedly null when executing the command: {cmd}");
+                }
+
                 try
                 {
                     // save
-                    await packages.MainItem.SaveAsAsync(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+                    packages.Main.SaveAs(packages.Main.Filename);
                     // backup
                     if (Options.Curr.BackupDir != null)
-                        packages.MainItem.Container.BackupInDir(
-                            System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                            Options.Curr.BackupFiles,
-                            PackageContainerBase.BackupType.FullCopy);
+                    {
+                        var fullfn = System.IO.Path.GetFullPath(Options.Curr.BackupDir);
+                        packages.Main.BackupInDir(fullfn, Options.Curr.BackupFiles);
+                    }
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }
@@ -176,24 +192,20 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Error(ex, "When saving AASX, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", packages.MainItem.Filename);
+                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", packages.Main.Filename);
             }
 
             if (cmd == "saveas")
             {
-                // open?
-                if (!packages.MainAvailable)
+                if (packages.Main == null)
                 {
-                    MessageBoxFlyoutShow(
-                        "No open AASX file to be saved.",
-                        "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
-                    return;
+                    throw new NullReferenceException(
+                        $"packages.Main unexpectedly null when executing the command: {cmd}");
                 }
 
-                // where
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
-                dlg.FileName = packages.MainItem.Filename;
+                dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
+                dlg.FileName = packages.Main.Filename;
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
@@ -203,7 +215,6 @@ namespace AasxPackageExplorer
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
                 if (res == true)
                 {
-                    // save
                     try
                     {
                         // preferred format
@@ -212,13 +223,13 @@ namespace AasxPackageExplorer
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
                         // save
                         RememberForInitialDirectory(dlg.FileName);
-                        await packages.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
+                        packages.Main.SaveAs(dlg.FileName, prefFmt: prefFmt);
                         // backup
                         if (Options.Curr.BackupDir != null)
-                            packages.MainItem.Container.BackupInDir(
-                                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                                Options.Curr.BackupFiles,
-                                PackageContainerBase.BackupType.FullCopy);
+                        {
+                            var fullfn = System.IO.Path.GetFullPath(Options.Curr.BackupDir);
+                            packages.Main.BackupInDir(fullfn, Options.Curr.BackupFiles);
+                        }
                         // as saving changes the structure of pending supplementary files, re-display
                         RedrawAllAasxElements();
                     }
@@ -228,32 +239,17 @@ namespace AasxPackageExplorer
                         return;
                     }
                     AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully as: {0}", dlg.FileName);
-
-                    // LRU?
-                    // record in LRU?
-                    try
-                    {
-                        var lru = packages?.Repositories?.FindLRU();
-                        if (lru != null)
-                            lru.Push(packages?.MainItem?.Container as PackageContainerRepoItem, dlg.FileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        AasxPackageExplorer.Log.Singleton.Error(
-                            ex, $"When managing LRU files");
-                        return;
-                    }
                 }
             }
 
-            if (cmd == "close" && packages?.Main != null)
+            if (cmd == "close" && packages.Main != null)
             {
                 if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to close the open package? Please make sure that you have saved before.",
                     "Close Package?", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     try
                     {
-                        packages.MainItem.Close();
+                        packages.Main.Close();
                         RedrawAllAasxElements();
                     }
                     catch (Exception ex)
@@ -262,7 +258,7 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && packages?.Main != null)
+            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && packages.Main != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
@@ -386,7 +382,7 @@ namespace AasxPackageExplorer
             if (cmd == "closeaux" && packages.AuxAvailable)
                 try
                 {
-                    packages.AuxItem.Close();
+                    packages.Aux.Close();
                 }
                 catch (Exception ex)
                 {
@@ -440,11 +436,20 @@ namespace AasxPackageExplorer
                 DisplayElements.Test();
             }
 
+            if (cmd == "queryrepo")
+                CommandBinding_QueryRepo();
+
+            if (cmd == "genrepo")
+                CommandBinding_GenerateRepo();
+
+            if (cmd == "printrepo")
+                CommandBinding_PrintRepo();
+
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
             if (cmd.StartsWith("filerepo"))
-                await CommandBinding_FileRepoAll(cmd);
+                CommandBinding_FileRepoAll(cmd);
 
             if (cmd == "opcread")
                 CommandBinding_OpcUaClientRead();
@@ -497,9 +502,6 @@ namespace AasxPackageExplorer
             if (cmd == "mqttpub")
                 CommandBinding_MQTTPub();
 
-            if (cmd == "connectintegrated")
-                CommandBinding_ConnectIntegrated();
-
             if (cmd == "connectsecure")
                 CommandBinding_ConnectSecure();
 
@@ -541,31 +543,6 @@ namespace AasxPackageExplorer
 
             if (cmd == "checkandfix")
                 CommandBinding_CheckAndFix();
-
-            if (cmd == "eventsresetlocks")
-            {
-                Log.Singleton.Info($"Event interlocking reset. Status was: " +
-                    $"update-value-pending={_eventsUpdateValuePending}");
-
-                _eventsUpdateValuePending = false;
-            }
-
-            if (cmd == "eventsshowlogkey")
-                MenuItemWorkspaceEventsShowLog.IsChecked = !MenuItemWorkspaceEventsShowLog.IsChecked;
-
-            if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
-            {
-                var targetState = MenuItemWorkspaceEventsShowLog.IsChecked;
-
-                if (!targetState)
-                {
-                    RowDefinitionConcurrent.Height = new GridLength(0);
-                }
-                else
-                {
-                    RowDefinitionConcurrent.Height = new GridLength(140);
-                }
-            }
         }
 
         public void CommandBinding_CheckAndFix()
@@ -665,19 +642,17 @@ namespace AasxPackageExplorer
             }
         }
 
-        public async Task CommandBinding_FileRepoAll(string cmd)
+        public void CommandBinding_FileRepoAll(string cmd)
         {
             if (cmd == "filereponew")
             {
                 if (MessageBoxResult.OK != MessageBoxFlyoutShow(
-                        "Create new (empty) file repository? It will be added to list of repos on the lower/ " +
-                        "left of the screen.",
+                        "Create new (empty) file repository? Pending changes might be unsaved!",
                         "AASX File Repository",
                         MessageBoxButton.OKCancel, MessageBoxImage.Hand))
                     return;
 
-                this.UiAssertFileRepository(visible: true);
-                packages.Repositories.AddAtTop(new PackageContainerListLocal());
+                this.UiSetFileRepository(new AasxFileRepository());
             }
 
             if (cmd == "filerepoopen")
@@ -693,29 +668,108 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     var fr = this.UiLoadFileRepository(dlg.FileName);
-                    this.UiAssertFileRepository(visible: true);
-                    packages.Repositories.AddAtTop(fr);
+                    if (fr != null)
+                        this.UiSetFileRepository(fr);
                 }
             }
 
-            if (cmd == "filerepoconnectrepository")
+            if (cmd == "filereposaveas")
             {
-                // read server address
-                var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", MessageBoxImage.Question);
-                uc.Text = "" + Options.Curr.DefaultConnectRepositoryLocation;
-                this.StartFlyoverModal(uc);
-                if (!uc.Result)
+                // any repository
+                if (packages.FileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently opened!",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // prepare dialogue
+                var outputDlg = new Microsoft.Win32.SaveFileDialog();
+                outputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                outputDlg.Title = "Select AASX file repository to be saved";
+                outputDlg.FileName = "new-aasx-repo.json";
+
+                if (packages.FileRepository?.Filename?.HasContent() == true)
+                {
+                    outputDlg.InitialDirectory = Path.GetDirectoryName(packages.FileRepository.Filename);
+                    outputDlg.FileName = Path.GetFileName(packages.FileRepository.Filename);
+                }
+
+                outputDlg.DefaultExt = "*.json";
+                outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = outputDlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res != true)
                     return;
 
-                var fr = new PackageContainerListHttpRestRepository(uc.Text);
-                await fr.SyncronizeFromServerAsync();
-                packages.Repositories.AddAtTop(fr);
+                // OK!
+                var fn = outputDlg.FileName;
+
+                if (packages.FileRepository == null)
+                {
+                    AasxPackageExplorer.Log.Singleton.Error("No file repository open to be saved. Aborting.");
+                    return;
+                }
+
+                try
+                {
+                    AasxPackageExplorer.Log.Singleton.Info($"Saving AASX file repository to {fn} ..");
+                    packages.FileRepository.SaveAs(fn);
+                }
+                catch (Exception ex)
+                {
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When saving AASX file repository to {fn}");
+                }
+            }
+
+            if (cmd == "filerepoclose")
+            {
+                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        "Close file repository? Pending changes might be unsaved!",
+                        "AASX File Repository",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                    return;
+
+                this.UiSetFileRepository(null);
+            }
+
+            if (cmd == "filerepomakerelative")
+            {
+                // access
+                if (packages.FileRepository == null || packages.FileRepository.Filename == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently opened!",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // execute (is data binded)
+                try
+                {
+                    AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}", Path.GetFullPath(
+                        Path.GetDirectoryName("" + packages.FileRepository.Filename)));
+                    packages.FileRepository.MakeFilenamesRelative();
+                }
+                catch (Exception ex)
+                {
+                    AasxPackageExplorer.Log.Singleton.Error(
+                        ex, $"When making AASX file names in repository relative.");
+                }
             }
 
             if (cmd == "filerepoquery")
             {
                 // access
-                if (packages.Repositories == null || packages.Repositories.Count < 1)
+                if (packages.FileRepository == null)
                 {
                     MessageBoxFlyoutShow(
                         "No repository currently available! Please open.",
@@ -728,35 +782,33 @@ namespace AasxPackageExplorer
                 // dialogue
                 var uc = new SelectFromRepositoryFlyout();
                 uc.Margin = new Thickness(10);
-                if (uc.LoadAasxRepoFile(items: packages.Repositories.EnumerateItems()))
+                if (uc.LoadAasxRepoFile(repo: packages.FileRepository))
                 {
                     uc.ControlClosed += () =>
                     {
                         var fi = uc.ResultItem;
-                        var fr = packages.Repositories?.FindRepository(fi);
-
-                        if (fr != null && fi?.Location != null)
+                        if (fi?.Filename != null)
                         {
                             // which file?
-                            var loc = fr?.GetFullItemLocation(fi);
-                            if (loc == null)
+                            var fn = packages.FileRepository?.GetFullFilename(fi);
+                            if (fn == null)
                                 return;
 
                             // start animation
-                            fr.StartAnimation(fi,
-                                PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+                            packages.FileRepository?.StartAnimation(fi,
+                                AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                             try
                             {
                                 // load
-                                Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
+                                AasxPackageExplorer.Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
                                 UiLoadPackageWithNew(
-                                    packages.MainItem, null, loc, onlyAuxiliary: false);
+                                    packages.MainContainer, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(
-                                    ex, $"When switching to AASX repository location {loc}.");
+                                AasxPackageExplorer.Log.Singleton.Error(
+                                    ex, $"When switching to AASX repository file {fn}.");
                             }
                         }
 
@@ -765,36 +817,92 @@ namespace AasxPackageExplorer
                 }
             }
 
-            if (cmd == "filerepocreatelru")
+            if (cmd == "filerepoprint")
             {
-                if (MessageBoxResult.OK != MessageBoxFlyoutShow(
-                        "Create new (empty) \"Last Recently Used (LRU)\" list? " +
-                        "It will be added to list of repos on the lower/ left of the screen. " +
-                        "It will be saved under \"last-recently-used.json\" in the binaries folder. " +
-                        "It will replace an existing LRU list w/o prompt!",
-                        "Last Recently Used AASX Packages",
-                        MessageBoxButton.OKCancel, MessageBoxImage.Hand))
-                    return;
+                // access
+                if (packages.FileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
 
-                var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
+                    return;
+                }
+
+                // try print
                 try
                 {
-                    this.UiAssertFileRepository(visible: true);
-                    var lruExist = packages?.Repositories?.FindLRU();
-                    if (lruExist != null)
-                        packages.Repositories.Remove(lruExist);
-                    var lruNew = new PackageContainerListLastRecentlyUsed();
-                    lruNew.Header = "Last Recently Used";
-                    lruNew.SaveAs(lruFn);
-                    packages?.Repositories?.AddAtTop(lruNew);
+                    AasxPrintFunctions.PrintRepositoryCodeSheet(
+                        repoDirect: packages.FileRepository, title: "AASX file repository");
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, $"while initializing last recently used file in {lruFn}.");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
                 }
             }
 
-            // Note: rest of the commands migrated to AasxRepoListControl
+            if (cmd == "filerepoaddcurrent")
+            {
+                // check
+                VisualElementAdminShell ve = null;
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAdminShell)
+                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+
+                if (ve == null || ve.theAas == null || ve.theEnv == null || ve.thePackage == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No valid AAS selected. Aborting.", "AASX File repository",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (packages.FileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please create new or open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+                    return;
+                }
+
+                // add
+                packages.FileRepository.AddByAas(ve.theEnv, ve.theAas, "" + ve.thePackage?.Filename);
+            }
+
+            if (cmd == "filerepomultiadd")
+            {
+                // access
+                if (packages.FileRepository == null)
+                {
+                    MessageBoxFlyoutShow(
+                        "No repository currently available! Please create new or open.",
+                        "AASX File Repository",
+                        MessageBoxButton.OK, MessageBoxImage.Hand);
+
+                    return;
+                }
+
+                // get the input files
+                var inputDlg = new Microsoft.Win32.OpenFileDialog();
+                inputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                inputDlg.Title = "Multi-select AASX package files to be in repository";
+                inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                inputDlg.Multiselect = true;
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var res = inputDlg.ShowDialog();
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                if (res != true || inputDlg.FileNames.Length < 1)
+                    return;
+
+                RememberForInitialDirectory(inputDlg.FileName);
+
+                // loop
+                foreach (var fn in inputDlg.FileNames)
+                    packages.FileRepository.AddByAasxFn(fn);
+            }
         }
 
         public void CommandBinding_ConnectSecure()
@@ -876,35 +984,102 @@ namespace AasxPackageExplorer
             AasxPackageExplorer.Log.Singleton.Info("Secure connect done.");
         }
 
-        public void CommandBinding_ConnectIntegrated()
+        public void CommandBinding_QueryRepo()
         {
-            // make dialogue flyout
-            var uc = new IntegratedConnectFlyout(
-                packages,
-                initialLocation: "" /* "http://admin-shell-io.com:51310/server/getaasx/0" */,
-                logger: new LogInstance());
-            uc.LoadPresets(Options.Curr.IntegratedConnectPresets);
-
-            // modal dialogue
-            this.StartFlyoverModal(uc, closingAction: () =>
+            var uc = new SelectFromRepositoryFlyout();
+            uc.Margin = new Thickness(10);
+            var fullfn = System.IO.Path.GetFullPath(Options.Curr.AasxRepositoryFn);
+            if (uc.LoadAasxRepoFile(fullfn))
             {
-            });
+                uc.ControlClosed += () =>
+                {
+                    var fn = uc.ResultItem?.Filename;
+                    if (fn != null && fn != "")
+                    {
+                        AasxPackageExplorer.Log.Singleton.Info("Switching to {0} ..", fn);
+                        UiLoadPackageWithNew(
+                            packages.MainContainer, new AdminShellPackageEnv(fn), fn, onlyAuxiliary: false);
+                    }
 
-            // execute
-            if (uc.Result && uc.ResultContainer != null)
+                };
+                this.StartFlyover(uc);
+            }
+        }
+
+        public void CommandBinding_GenerateRepo()
+        {
+            // get the input files
+            var inputDlg = new Microsoft.Win32.OpenFileDialog();
+            inputDlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+            inputDlg.Title = "Multi-select AASX package files to be in repository";
+            inputDlg.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+            inputDlg.Multiselect = true;
+
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = inputDlg.ShowDialog();
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+            if (res != true || inputDlg.FileNames.Length < 1)
+                return;
+
+            RememberForInitialDirectory(inputDlg.FileName);
+
+            // get the output file
+            var exFn = System.AppDomain.CurrentDomain.BaseDirectory;
+            if (inputDlg.FileNames.Length > 0)
+                exFn = inputDlg.FileNames[0];
+
+            var outputDlg = new Microsoft.Win32.SaveFileDialog();
+            outputDlg.InitialDirectory = DetermineInitialDirectory(exFn);
+            outputDlg.Title = "Select AASX repository to be generated";
+            outputDlg.FileName = "new-aasx-repo.json";
+            outputDlg.DefaultExt = "*.json";
+            outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
+
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            res = outputDlg.ShowDialog();
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+            if (res != true)
+                return;
+
+            RememberForInitialDirectory(outputDlg.FileName);
+
+            // ok
+            try
             {
-                Log.Singleton.Info($"For integrated connection, trying to take over " +
-                    $"{uc.ResultContainer.ToString()} ..");
-                try
+                AasxFileRepository.GenerateRepositoryFromFileNames(inputDlg.FileNames, outputDlg.FileName);
+            }
+            catch (Exception ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
+            }
+        }
+
+        public void CommandBinding_PrintRepo()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+            dlg.Title = "Select AASX repository to be printed";
+            dlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
+
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog(this);
+
+            try
+            {
+                if (res == true)
                 {
-                    UiLoadPackageWithNew(
-                        packages.MainItem, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
-                }
-                catch (Exception ex)
-                {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When opening {uc.ResultContainer.ToString()}");
+                    RememberForInitialDirectory(dlg.FileName);
+                    AasxPrintFunctions.PrintRepositoryCodeSheet(dlg.FileName);
                 }
             }
+            catch (Exception ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(ex, "When printing, an error occurred");
+            }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_PrintAsset()
@@ -1034,8 +1209,10 @@ namespace AasxPackageExplorer
                         prefix2 = input.Substring(0, tag2.Length);
                     if (prefix == tag || prefix2 == tag2) // get by AssetID
                     {
-                        if (packages.MainAvailable)
-                            packages.MainItem.Close();
+                        if (packages.Main != null && packages.Main.IsOpen)
+                        {
+                            packages.Main.Close();
+                        }
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
 
                         var handler = new HttpClientHandler();
@@ -1082,8 +1259,8 @@ namespace AasxPackageExplorer
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainItem,
-                                null,
+                                packages.MainContainer,
+                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                         return;
                     }
@@ -1111,15 +1288,17 @@ namespace AasxPackageExplorer
 
                     if (connect)
                     {
-                        if (packages.MainAvailable)
-                            packages.MainItem.Close();
+                        if (packages.Main != null && packages.Main.IsOpen)
+                        {
+                            packages.Main.Close();
+                        }
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                         await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainItem,
-                                null,
+                                packages.MainContainer,
+                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     }
                 }
@@ -1134,7 +1313,7 @@ namespace AasxPackageExplorer
                         theOnlineConnection = client;
                         var pe = client.OpenPackageByAasEnv();
                         if (pe != null)
-                            UiLoadPackageWithNew(packages.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
+                            UiLoadPackageWithNew(packages.MainContainer, pe, uc.Text, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -1162,7 +1341,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
             dlg.Filter = "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1201,7 +1380,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
             dlg.Filter = "CSV files (*.CSV)|*.csv|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1240,7 +1419,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
             dlg.Filter = "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1370,7 +1549,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(packages.Main.Filename);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
@@ -2412,7 +2591,7 @@ namespace AasxPackageExplorer
             {
                 RememberForInitialDirectory(dlg.FileName);
                 UANodeSet InformationModel = UANodeSetExport.getInformationModel(dlg.FileName);
-                packages.MainItem.TakeOver(UANodeSetImport.Import(InformationModel));
+                packages.Main = UANodeSetImport.Import(InformationModel);
                 RestartUIafterNewPackage();
             }
 

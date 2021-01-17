@@ -6,9 +6,9 @@
   /* "AasxToLoad": "sample-generated-modified.aasx", */
   /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json",
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\FestoProducts-repo2.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
-  /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
+  "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\Composite-AAS-with-Fluiddraw.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -35,15 +35,17 @@
   "IndirectLoadSave": true,
   "AccentColors": {},
   "LoadWithoutPrompt": true,
-  "DefaultStayConnected": true,
-  "DefaultUpdatePeriod": 1000,
-  "DefaultConnectRepositoryLocation": "http://localhost:51310",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\netstandard2.0\\AasxPluginUaNetServer.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxIntegrationEmptySample\\bin\\Debug\\net461\\AasxIntegrationEmptySample.dll",
+      "Args": [],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net461\\AasxPluginUaNetServer.dll",
       "Args": [
         "-single-nodeids",
         "-single-keys",
@@ -55,48 +57,44 @@
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net461\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net461\\AasxPluginBomStructure.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net461\\AasxPluginExportTable.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net461\\AasxPluginWebBrowser.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net461\\AasxPluginTechnicalData.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net461\\AasxPluginMtpViewer.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net461\\AasxPluginDocumentShelf.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net461\\AasxPluginGenericForms.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net461\\AasxPluginImageMap.dll",
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
-      "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net461\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
     },
     /* Festo specific from here on */
@@ -217,44 +215,6 @@
           "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
         ]
       }
-    }
-  ],
-  "IntegratedConnectPresets": [
-    {
-      "Name": "Empty",
-      "Location": "",
-      "Username": "",
-      "Password": ""
-    },
-    {
-      "Name": "First of admin-shell-io.com",
-      "Location": "http://admin-shell-io.com:51310/server/getaasx/0",
-      "Username": "",
-      "Password": "",
-      "StayConnected": true
-    },
-    {
-      "Name": "DEMO",
-      "Location": "http://demo/",
-      "Username": "Foo",
-      "Password": "Bar",
-      "AutoClose": false
-    },
-    {
-      "Name": "Long loading of admin-shell-io.com",
-      "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
-      "Username": "",
-      "Password": "",
-      "StayConnected": true,
-      "AutoClose": false
-    },
-    {
-      "Name": "Latest testing",
-      "Location": "http://admin-shell-io.com:52001/server/getaasx/0",
-      "Username": "",
-      "Password": "",
-      "StayConnected": true,
-      "AutoClose": false
     }
   ]
 }

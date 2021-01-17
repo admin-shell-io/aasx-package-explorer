@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -20,7 +20,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 
 namespace AasxPackageExplorer
@@ -351,7 +350,7 @@ namespace AasxPackageExplorer
                             this.AddKeyListKeys(
                                 stack, String.Format("reference[{0}]", i),
                                 hasDataSpecification[i].dataSpecification.Keys,
-                                repo, packages, PackageCentral.Selector.MainAux,
+                                repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists);
                 }
@@ -406,7 +405,7 @@ namespace AasxPackageExplorer
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
                             stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
-                            packages, PackageCentral.Selector.MainAux,
+                            packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true);
                 }
@@ -539,7 +538,7 @@ namespace AasxPackageExplorer
                     }))
                 this.AddKeyListKeys(
                     stack, "semanticId", semanticId.Keys, repo,
-                    packages, PackageCentral.Selector.MainAux,
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addPresetNames: bufferKeys.Item1,
                     addPresetKeyLists: bufferKeys.Item2,
@@ -677,7 +676,7 @@ namespace AasxPackageExplorer
             {
                 this.AddKeyListKeys(
                     stack, "unitId", dsiec.unitId.Keys, repo,
-                    packages, PackageCentral.Selector.MainAux,
+                    packages, AasxWpfControlLibrary.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true);
             }
 
@@ -789,7 +788,7 @@ namespace AasxPackageExplorer
                     levelColors[1][0], levelColors[1][1]);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
-                    repo, packages, PackageCentral.Selector.Main, "Submodel");
+                    repo, packages, AasxWpfControlLibrary.PackageCentral.Selector.Main, "Submodel");
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -32,7 +32,7 @@ namespace AasxPackageExplorer
 
         private static Plugins.PluginInstance browserPlugin = null;
         private static Grid theOnscreenBrowser = null;
-        private string browserHandlesFiles = ".html .htm .jpeg .jpg .png .bmp .pdf .xml .txt .md *";
+        private string browserHandlesFiles = ".jpeg .jpg .png .bmp .pdf .xml .txt .md *";
 
         private FakeBrowser theFallbackBrowser = null;
         private string fallbackBrowserHandlesFiles = ".jpeg .jpg .png .bmp";

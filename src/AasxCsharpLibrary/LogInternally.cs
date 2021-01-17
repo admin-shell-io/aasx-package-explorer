@@ -13,22 +13,12 @@ namespace AdminShellNS
 {
     public static class Logging
     {
-        // see: https://stackoverflow.com/questions/9314172/getting-all-messages-from-innerexceptions
-        private static string GetExceptionMessages(this Exception e, string msgs = "")
-        {
-            if (e == null) return string.Empty;
-            if (msgs == "") msgs = e.Message;
-            if (e.InnerException != null)
-                msgs += "\r\nInnerException: " + GetExceptionMessages(e.InnerException);
-            return msgs;
-        }
-
         public static string FormatError(Exception ex, string where)
         {
             return string.Format("Error: {0}: {1} {2} at {3}.",
                 where,
                 ex.Message,
-                ex.GetExceptionMessages(),
+                (ex.InnerException != null) ? ex.InnerException.Message : "",
                 ex.StackTrace);
         }
     }

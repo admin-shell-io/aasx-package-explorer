@@ -5,15 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AasxWpfControlLibrary"
-        xmlns:events="clr-namespace:AasxWpfControlLibrary.AdminShellEvents;assembly=AasxWpfControlLibrary"
-        xmlns:repo="clr-namespace:AasxWpfControlLibrary.PackageCentral;assembly=AasxWpfControlLibrary"
         mc:Ignorable="d"
         x:Name="mainWindow"
         Title="AASX Package Explorer" Height="350" Width="700" Loaded="Window_Loaded" AllowDrop="True"
         DragEnter="Window_DragEnter" Drop="Window_Drop" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
         PreviewKeyDown="mainWindow_PreviewKeyDown" >
     <!--
-    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
 
     This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -38,7 +36,6 @@
         <RoutedUICommand x:Key="OpenAux" Text="OpenAux" />
         <RoutedUICommand x:Key="CloseAux" Text="CloseAux" />
         <RoutedUICommand x:Key="ConnectSecure" Text="ConnectSecure" />
-        <RoutedUICommand x:Key="ConnectIntegrated" Text="ConnectIntegrated" />
         <RoutedUICommand x:Key="ConnectOpcUa" Text="ConnectOpcUa" />
         <RoutedUICommand x:Key="ConnectRest" Text="ConnectRest" />
         <RoutedUICommand x:Key="QueryRepo" Text="QueryRepo" />
@@ -80,20 +77,20 @@
         <RoutedUICommand x:Key="ToolsFindBackward" Text="ToolsFindbackward" />
         <RoutedUICommand x:Key="NewSubmodelFromPlugin" Text="NewSubmodelFromPlugin" />
         <RoutedUICommand x:Key="ConvertElement" Text="ConvertElement" />
-        <RoutedUICommand x:Key="EventsShowLogMenu" Text="EventsShowLogMenu" />
-        <RoutedUICommand x:Key="EventsShowLogKey" Text="EventsShowLogKey" />
-        <RoutedUICommand x:Key="EventsResetLocks" Text="EventsResetLocks" />
         <RoutedUICommand x:Key="Help" Text="Help" />
         <RoutedUICommand x:Key="About" Text="About" />
         <RoutedUICommand x:Key="HelpGithub" Text="HelpGithub" />
 
         <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
         <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
-        <RoutedUICommand x:Key="FileRepoConnectRepository" Text="FileRepoConnectRepository" />
-        <RoutedUICommand x:Key="FileRepoConnectRegistry" Text="FileRepoConnectRegistry" />
+        <RoutedUICommand x:Key="FileRepoSaveAs" Text="FileRepoSaveAs" />
+        <RoutedUICommand x:Key="FileRepoClose" Text="FileRepoClose" />
+        <RoutedUICommand x:Key="FileRepoMakeRelative" Text="FileRepoMakeRelative" />
         <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
-        <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
         <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
+        <RoutedUICommand x:Key="FileRepoMultiAdd" Text="FileRepoMultiAdd" />
+        <RoutedUICommand x:Key="FileRepoAddCurrent" Text="FileRepoAddCurrent" />
+        <RoutedUICommand x:Key="FileRepoPrint" Text="FileRepoPrint" />
 
         <!-- TODO: move this to separate xaml file -->
         <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
@@ -157,8 +154,8 @@
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{StaticResource Save}"/>
         <KeyBinding Key="C" Modifiers="Ctrl" Command="{StaticResource Close}"/>
         <KeyBinding Key="X" Modifiers="Ctrl" Command="{StaticResource OpenAux}"/>
-        <KeyBinding Key="L" Modifiers="Ctrl" Command="{StaticResource EventsShowLogKey}"/>
-        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="{StaticResource ConnectIntegrated}"/>
+        <KeyBinding Key="L" Modifiers="Ctrl" Command="{StaticResource CloseAux}"/>
+        <KeyBinding Key="O" Modifiers="Ctrl+Shift" Command="{StaticResource ConnectSecure}"/>
         <KeyBinding Key="F6" Command="{StaticResource ConnectRest}"/>
         <KeyBinding Key="F6" Modifiers="Shift" Command="{StaticResource ServerRest}"/>
         <KeyBinding Key="F4" Modifiers="Alt" Command="{StaticResource Exit}"/>
@@ -189,7 +186,6 @@
         <CommandBinding Command="{StaticResource OpenAux}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CloseAux}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectSecure}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource ConnectIntegrated}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectOpcUa}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConnectRest}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource QueryRepo}" Executed="CommandBinding_Executed"/>
@@ -230,20 +226,20 @@
         <CommandBinding Command="{StaticResource ToolsFindBackward}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource NewSubmodelFromPlugin}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConvertElement}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource EventsShowLogKey}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource EventsShowLogMenu}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource EventsResetLocks}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Help}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource About}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HelpGithub}" Executed="CommandBinding_Executed"/>
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoConnectRepository}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoConnectRegistry}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoSaveAs}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoClose}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoMakeRelative}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
-        <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoMultiAdd}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoAddCurrent}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource FileRepoPrint}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
 
     <Grid x:Name="OuterGrid">
@@ -261,14 +257,8 @@
                 <RowDefinition Height="30" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <!-- Initially, the concurrent activities (events, plugins) are initially hidden -->
-                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" />
                 <RowDefinition Height="28" />
             </Grid.RowDefinitions>
-
-            <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
-                          ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
 
             <!-- Menu area -->
 
@@ -287,7 +277,6 @@
                     <MenuItem Header="_File" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem Header="_New .." Command="{StaticResource New}"/>
                         <MenuItem Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
-                        <MenuItem Header="Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectIntegrated}"/>
                         <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{StaticResource Save}"/>
                         <MenuItem Header="_Save as .." Command="{StaticResource SaveAs}"/>
                         <MenuItem Header="_Close .." Command="{StaticResource Close}"/>
@@ -302,22 +291,36 @@
                         <MenuItem Header="Open Au_xiliary AAS .." InputGestureText="Ctrl+X" Command="{StaticResource OpenAux}"/>
                         <MenuItem Header="Close Auxiliary AAS" Command="{StaticResource CloseAux}"/>
                         <Separator/>
-                        <MenuItem Header="Further connect options ..">
+                        <MenuItem Header="Connect ..">
                             <MenuItem Header="Secure Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectSecure}"/>
                             <MenuItem Header="Connect via OPC-UA .." Command="{StaticResource ConnectOpcUa}"/>
                             <MenuItem Header="Connect via REST .." InputGestureText="F6" Command="{StaticResource ConnectRest}"/>
                         </MenuItem>
                         <Separator/>
+                        <!--
+                        <MenuItem Header="Query AASX repository .." InputGestureText="F12" Command="{StaticResource QueryRepo}"/>
+                        <MenuItem Header="Advanced repository ..">
+                            <MenuItem Header="Generate repository from filenames .." Command="{StaticResource GenRepo}"/>
+                            <MenuItem Header="Print 2D code sheet for repository .." Command="{StaticResource PrintRepo}"/>
+                            <Separator/>
+                            <MenuItem Header="Print code sheet for asset .." Command="{StaticResource PrintAsset}"/>
+                        </MenuItem>
+                        -->
                         <MenuItem Header="AASX File Repository ..">
-                            <MenuItem Header="New (local) repository.." Command="{StaticResource FileRepoNew}"/>
-                            <MenuItem Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
-                            <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
-                            <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
+                            <MenuItem Header="_New .." Command="{StaticResource FileRepoNew}"/>
+                            <MenuItem Header="_Open .." Command="{StaticResource FileRepoOpen}"/>
+                            <MenuItem Header="_Save as .." Command="{StaticResource FileRepoSaveAs}"/>
+                            <MenuItem Header="_Close .." Command="{StaticResource FileRepoClose}"/>
                             <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
                             <Separator/>
-                            <MenuItem Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
+                            <MenuItem Header="Make AASX filenames relative" Command="{StaticResource FileRepoMakeRelative}"/>
                             <Separator/>
-                            <MenuItem Header="Query open repositories .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
+                            <MenuItem Header="_Query .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
+                            <Separator/>
+                            <MenuItem Header="Add current AAS" Command="{StaticResource FileRepoAddCurrent}"/>
+                            <MenuItem Header="Add multiple AASX files .." Command="{StaticResource FileRepoMultiAdd}"/>
+                            <MenuItem Header="Print 2D code sheet .." Command="{StaticResource FileRepoPrint}"/>
+                            <Separator/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Import ..">
@@ -368,11 +371,6 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem x:Name="MenuItemWorkspacConvertElement" Header="Convert .." Command="{StaticResource ConvertElement}"/>
-                        <Separator/>
-                        <MenuItem Header="Events ..">
-                            <MenuItem x:Name="MenuItemWorkspaceEventsShowLog" Header="_Event log" InputGestureText="Ctrl+L" IsCheckable="True" Command="{StaticResource EventsShowLogMenu}"/>
-                            <MenuItem x:Name="MenuItemWorkspaceEventsResetLocks" Header="Reset interlocking" Command="{StaticResource EventsResetLocks}"/>
-                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
@@ -463,8 +461,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
-                        <!-- Row height set to zero to have invisibility ov repo list control at very program start -->
-                        <RowDefinition x:Name="RowDefinitonForRepoList" Height="50" />
+                        <!-- Row height set to zero to have invisibility at very program start -->
+                        <RowDefinition Height="0" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -492,13 +490,9 @@
                         </Canvas>
                     </Viewbox>
 
-                    <!--
-                    <repo:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0">
-                    </repo:AasxFileRepoControl>
-                    -->
+                    <local:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0" AllowDrop="True" Drop="RepoControl_Drop">
 
-                    <repo:PackageContainerListOfListControl x:Name="RepoListControl" Grid.Row="2" Grid.Column="0">
-                    </repo:PackageContainerListOfListControl>
+                    </local:AasxFileRepoControl>
 
                 </Grid>
 
@@ -576,52 +570,16 @@
 
             </Grid>
 
-            <!-- concurrent activities: Events / Plugins / .. -->
-
-            <Grid Grid.Row="4">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <TabControl x:Name="TabControlConcurrent" TabStripPlacement="Left">
-                    <TabItem Header="Events">
-                        <events:AasEventCollectionViewer x:Name="UserContrlEventCollection" />
-                    </TabItem>
-                    <TabItem Header="Plugins">
-                    </TabItem>
-                </TabControl>
-            </Grid>
-            
             <!-- Footer area -->
 
-            <DockPanel Grid.Row="5" Margin="0,2,0,0">
+            <DockPanel Grid.Row="3" Margin="0,2,0,0">
                 <Button x:Name="ButtonReport" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Report ..</Button>
                 <Button x:Name="ButtonClear" DockPanel.Dock="Right" Margin="6,3,2,2" Padding="2,0,2,0" Click="ButtonReport_Click">Clear</Button>
 
                 <Label x:Name="LabelNumberErrors"
-                       DockPanel.Dock="Right" MinWidth="60" Margin="2,3,2,2" Padding="2,0,2,0"
+                       DockPanel.Dock="Right" MinWidth="60" Margin="6,3,2,2" Padding="2,0,2,0"
                        VerticalContentAlignment="Center" BorderBrush="LightGray" BorderThickness="1"
                        Content="No errors"/>
-
-                <Grid DockPanel.Dock="Right">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ProgressBar x:Name="ProgressBarInfo" 
-                             BorderBrush="LightGray"
-                             Background="Transparent" Foreground="{DynamicResource DarkAccentColor}" 
-                             MinWidth="120" Margin="2,3,6,2"/>
-                    <Label Grid.Row="0" Grid.Column="0" x:Name="LabelProgressBarInfo"
-                            Content="0 bytes" Foreground="LightGray"
-                            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                </Grid>
 
                 <Label x:Name="Message" VerticalContentAlignment="Center"></Label>
             </DockPanel>

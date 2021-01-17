@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -86,7 +86,6 @@ namespace AasxPredefinedConcepts
             thePool.IndexDefinitions(new DefinitionsExperimental.InteropRelations());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ImageMap.Static);
-            thePool.IndexDefinitions(AasxPredefinedConcepts.Plotting.Static);
 
             thePool.IndexDefinitions(new AasxPredefinedConcepts.DefinitionsMTP.ModuleTypePackage());
 
@@ -110,8 +109,6 @@ namespace AasxPredefinedConcepts
                 new DefinitionsZveiTechnicalData.SetOfDefs(new DefinitionsZveiTechnicalData()).GetAllReferables());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
-
-            thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
         }
 
         //

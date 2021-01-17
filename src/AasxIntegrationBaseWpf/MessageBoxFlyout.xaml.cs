@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -102,7 +102,7 @@ namespace AasxIntegrationBase
                 b.Style = (Style)FindResource("TranspRoundCorner");
                 b.Content = "" + bd;
                 b.Height = 40;
-                b.Width = Math.Max(40, 10 * bd.Length);
+                b.Width = 40;
                 b.Margin = new Thickness(5, 0, 5, 0);
                 b.Foreground = Brushes.White;
                 b.Click += StackPanelButton_Click;

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -77,23 +77,6 @@ namespace AdminShellNS
                     res = false;
             if (src.Length > 0 && !Char.IsLetter(src[0]))
                 res = false;
-            return res;
-        }
-
-        public static string ByteSizeHumanReadable(long len)
-        {
-            // see: https://stackoverflow.com/questions/281640/
-            // how-do-i-get-a-human-readable-file-size-in-bytes-abbreviation-using-net
-            string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-            int order = 0;
-            while (len >= 1024 && order < sizes.Length - 1)
-            {
-                order++;
-                len = len / 1024;
-            }
-            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
-            // show a single decimal place, and no space.
-            string res = String.Format("{0:0.##} {1}", len, sizes[order]);
             return res;
         }
 

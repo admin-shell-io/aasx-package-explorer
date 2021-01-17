@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -22,8 +21,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
-using AdminShellEvents;
 using AdminShellNS;
 
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
@@ -131,9 +128,9 @@ namespace AasxPackageExplorer
         {
             var t = "AASX Package Explorer";
             if (packages.MainAvailable)
-                t += " - " + packages.MainItem.ToString();
+                t += " - " + System.IO.Path.GetFileName(packages.Main.Filename);
             if (packages.AuxAvailable)
-                t += " (auxiliary AASX: " + packages.AuxItem.ToString() + ")";
+                t += " (auxiliary AASX: " + System.IO.Path.GetFileName(packages.Aux.Filename) + ")";
             this.Title = t;
 
             // clear the right section, first (might be rebuild by callback from below)
@@ -179,70 +176,27 @@ namespace AasxPackageExplorer
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
 
-        private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
-        {
-            var ro = new PackCntRuntimeOptions()
-            {
-                Log = Log.Singleton,
-                ProgressChanged = (state, tfs, tbd) =>
-                {
-                    if (state == PackCntRuntimeOptions.Progress.Starting
-                        || state == PackCntRuntimeOptions.Progress.Ongoing)
-                        SetProgressBar(
-                            Math.Min(100.0, 100.0 * tbd / (tfs.HasValue ? tfs.Value : 5 * 1024 * 1024)),
-                            AdminShellUtil.ByteSizeHumanReadable(tbd));
-
-                    if (state == PackCntRuntimeOptions.Progress.Final)
-                        SetProgressBar();
-                }
-            };
-            return ro;
-        }
-
         public void UiLoadPackageWithNew(
-            PackageCentralItem packItem,
-            AdminShellPackageEnv takeOverEnv = null,
-            string loadLocalFilename = null,
-            string info = null,
+            PackageContainer packContainer, AdminShellPackageEnv packnew, string info = "",
             bool onlyAuxiliary = false,
-            bool doNotNavigateAfterLoaded = false,
-            PackageContainerBase takeOverContainer = null,
-            string storeFnToLRU = null)
+            bool doNotNavigateAfterLoaded = false)
         {
             // access
-            if (packItem == null)
+            if (packContainer == null)
                 return;
 
-            if (loadLocalFilename != null)
+            AasxPackageExplorer.Log.Singleton.Info(
+                "Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
+            // loading
+            try
             {
-                if (info == null)
-                    info = loadLocalFilename;
-                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                if (!packItem.Load(packages, loadLocalFilename,
-                    overrideLoadResident: true,
-                    PackageContainerOptionsBase.CreateDefault(Options.Curr)))
-                {
-                    Log.Singleton.Error($"Loading local-file {info} as auxiliary {onlyAuxiliary} did not " +
-                        $"return any result!");
-                    return;
-                }
+                if (packContainer.Env != null)
+                    packContainer.Env.Close();
+                packContainer.Env = packnew;
             }
-            else
-            if (takeOverEnv != null)
+            catch (Exception ex)
             {
-                Log.Singleton.Info("Loading new AASX from: {0} as auxiliary {1} ..", info, onlyAuxiliary);
-                packItem.TakeOver(takeOverEnv);
-            }
-            else
-            if (takeOverContainer != null)
-            {
-                Log.Singleton.Info("Loading new AASX from container: {0} as auxiliary {1} ..",
-                    "" + takeOverContainer.ToString(), onlyAuxiliary);
-                packItem.TakeOver(takeOverContainer);
-            }
-            else
-            {
-                Log.Singleton.Error("UiLoadPackageWithNew(): no information what to load!");
+                AasxPackageExplorer.Log.Singleton.Error(ex, $"When loading {info}, an error occurred");
                 return;
             }
 
@@ -271,43 +225,28 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            // record in LRU?
-            try
-            {
-                var lru = packages?.Repositories?.FindLRU();
-                if (lru != null && storeFnToLRU.HasContent())
-                    lru.Push(packItem?.Container as PackageContainerRepoItem, storeFnToLRU);
-            }
-            catch (Exception ex)
-            {
-                AasxPackageExplorer.Log.Singleton.Error(
-                    ex, $"When managing LRU files");
-                return;
-            }
-
             // done
             AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
-        public PackageContainerListBase UiLoadFileRepository(string fn)
+        public AasxFileRepository UiLoadFileRepository(string fn)
         {
             try
             {
                 AasxPackageExplorer.Log.Singleton.Info(
-                    $"Loading aasx file repository {fn} ..");
-
-                var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+                    $"Loading aasx file repository {Options.Curr.AasxRepositoryFn} ..");
+                var fr = AasxFileRepository.Load(fn);
 
                 if (fr != null)
                     return fr;
                 else
                     AasxPackageExplorer.Log.Singleton.Info(
-                        $"File not found when loading aasx file repository {fn}");
+                        $"File not found when auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
             catch (Exception ex)
             {
                 AasxPackageExplorer.Log.Singleton.Error(
-                    ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
+                    ex, $"When auto-loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
 
             return null;
@@ -364,26 +303,66 @@ namespace AasxPackageExplorer
             return false;
         }
 
-
-        public void UiAssertFileRepository(bool visible)
+        public void UiSetFileRepository(AasxFileRepository repo)
         {
-            // ALWAYS assert an accessible repo (even if invisble)
-            if (packages.Repositories == null)
-            {
-                packages.Repositories = new PackageContainerListOfList();
-                RepoListControl.RepoList = packages.Repositories;
-            }
-
-            if (!visible)
+            if (repo == null)
             {
                 // disable completely
-                RowDefinitonForRepoList.Height = new GridLength(0.0);
+                packages.FileRepository = null;
+                this.RepoControl.FileRepository = packages.FileRepository;
+                this.RepoControl.Visibility = Visibility.Visible;
+                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
+                    this.ColumnAasRepoGrid.RowDefinitions[2].Height = new GridLength(0.0);
             }
             else
             {
                 // enable, what has been stored
-                RowDefinitonForRepoList.Height =
+                packages.FileRepository = repo;
+                this.RepoControl.FileRepository = packages.FileRepository;
+                this.RepoControl.Visibility = Visibility.Visible;
+                if (this.ColumnAasRepoGrid.RowDefinitions.Count >= 3)
+                    this.ColumnAasRepoGrid.RowDefinitions[2].Height =
                         new GridLength(this.ColumnAasRepoGrid.ActualHeight / 2);
+            }
+        }
+
+        private void RepoControl_Drop(object sender, DragEventArgs e)
+        {
+            // Appearantly you need to figure out if OriginalSource would have handled the Drop?
+            if (!e.Handled && e.Data.GetDataPresent(DataFormats.FileDrop, true))
+            {
+                // Note that you can have more than one file.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Assuming you have one file that you care about, pass it off to whatever
+                // handling code you have defined.
+                if (files != null && files.Length > 0)
+                    foreach (var fn in files)
+                    {
+                        // repo?
+                        var ext = Path.GetExtension(fn).ToLower();
+                        if (ext == ".json")
+                        {
+                            // try handle as repository
+                            var fr = UiLoadFileRepository(fn);
+                            if (fr != null)
+                                UiSetFileRepository(fr);
+                            // handled
+                            e.Handled = true;
+                            // no more!
+                            return;
+                        }
+
+                        // aasx?
+                        if (ext == ".aasx")
+                        {
+                            // add?
+                            packages.FileRepository?.AddByAasxFn(fn);
+
+                            // handled, but may be more to come ..
+                            e.Handled = true;
+                        }
+                    }
             }
         }
 
@@ -560,7 +539,7 @@ namespace AasxPackageExplorer
         #region Callbacks
         //===============
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
@@ -597,10 +576,7 @@ namespace AasxPackageExplorer
 
             // Timer for below
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
-            MainTimer.Tick += async (s, a) =>
-            {
-                await MainTimer_Tick(s, a);
-            };
+            MainTimer.Tick += MainTimer_Tick;
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
 
@@ -608,45 +584,27 @@ namespace AasxPackageExplorer
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
 
             // start with empty repository and load, if given by options
-            RepoListControl.FlyoutProvider = this;
-            RepoListControl.ManageVisuElems = DisplayElements;
-            this.UiAssertFileRepository(visible: false);
-
-            // LRU repository?
-            var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
-            try
+            AasxFileRepository fr = null;
+#if __Create_Demo_Daten
+            if (true)
             {
-                if (File.Exists(lruFn))
-                {
-                    var lru = PackageContainerListLastRecentlyUsed.Load<PackageContainerListLastRecentlyUsed>(lruFn);
-                    packages?.Repositories.Add(lru);
-                }
+                fr = AasxFileRepository.CreateDemoData();
             }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, $"while loading last recently used file {lruFn}");
-            }
-
-            // Repository pointed by the Options
+#endif
             if (Options.Curr.AasxRepositoryFn.HasContent())
             {
                 var fr2 = UiLoadFileRepository(Options.Curr.AasxRepositoryFn);
                 if (fr2 != null)
-                {
-                    this.UiAssertFileRepository(visible: true);
-                    packages.Repositories.AddAtTop(fr2);
-                }
+                    fr = fr2;
             }
+            UiSetFileRepository(fr);
 
-            // what happens on a repo file click
-            RepoListControl.FileDoubleClick += async (repo, fi) =>
+            // query repo
+            this.RepoControl.FileDoubleClick += (fi) =>
             {
-                // access
-                if (repo == null || fi == null)
-                    return;
-
-                var location = repo.GetFullItemLocation(fi);
-                if (location == null)
+                // which file?
+                var fn = packages.FileRepository?.GetFullFilename(fi);
+                if (fn == null)
                     return;
 
                 // safety?
@@ -661,118 +619,43 @@ namespace AasxPackageExplorer
                 }
 
                 // start animation
-                repo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
-
-                // container options
-                var copts = PackageContainerOptionsBase.CreateDefault(Options.Curr);
-                if (fi.ContainerOptions != null)
-                    copts = fi.ContainerOptions;
+                packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                 // try load ..
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
-
-                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        packages,
-                        location,
-                        overrideLoadResident: true,
-                        takeOver: fi,
-                        containerOptions: copts,
-                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
-
-                    if (container == null)
-                        Log.Singleton.Error($"Failed to load AASX from {location}");
-                    else
-                        UiLoadPackageWithNew(packages.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false,
-                            storeFnToLRU: location);
-
-                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                    var pkg = LoadPackageFromFile(fn);
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
                 }
             };
-
-            // what happens on a file drop -> dispatch
-            RepoListControl.FileDrop += (fr, files) =>
+            this.RepoControl.QueryClick += () =>
             {
-                // access
-                if (files == null || files.Length < 1)
-                    return;
-
-                // more than one?
-                foreach (var fn in files)
-                {
-                    // repo?
-                    var ext = Path.GetExtension(fn).ToLower();
-                    if (ext == ".json")
-                    {
-                        // try handle as repository
-                        var newRepo = UiLoadFileRepository(fn);
-                        if (newRepo != null)
-                        {
-                            packages.Repositories.AddAtTop(newRepo);
-                        }
-                        // no more files ..
-                        return;
-                    }
-
-                    // aasx?
-                    if (fr != null && ext == ".aasx")
-                    {
-                        // add?
-                        fr.AddByAasxFn(fn);
-                    }
-                }
+                this.CommandBinding_GeneralDispatch("filerepoquery");
             };
 
-#if __Create_Demo_Daten
-            if (true)
-            {
-                fr = AasxFileRepository.CreateDemoData();
-            }
-#endif
-
-            // initialize menu
+            // initialze menu
             MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
 
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
 
-            // start with a new file
-            packages.MainItem.New();
-            RedrawAllAasxElements();
-
-            // Try to load?            
+            // Try to load?
             if (Options.Curr.AasxToLoad != null)
             {
-                var location = Options.Curr.AasxToLoad;
+                // make a fully qualified filename from that one provided as input argument
+                var fn = System.IO.Path.GetFullPath(Options.Curr.AasxToLoad);
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file at application start " +
-                        $"from {location} into container");
-
-                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        packages,
-                        location,
-                        overrideLoadResident: true,
-                        containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                        runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
-
-                    if (container == null)
-                        Log.Singleton.Error($"Failed to auto-load AASX from {location}");
-                    else
-                        UiLoadPackageWithNew(packages.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false);
-
-                    Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
+                    var pkg = LoadPackageFromFile(fn);
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
                 }
             }
 
@@ -802,6 +685,8 @@ namespace AasxPackageExplorer
                         resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
                     onlyReFocus: true));
         }
+
+
 
         private void MainTimer_HandleLogMessages()
         {
@@ -834,13 +719,6 @@ namespace AasxPackageExplorer
                             Message.FontWeight = FontWeights.Normal;
                             break;
                         }
-                    case StoredPrint.Color.Yellow:
-                        {
-                            Message.Background = Brushes.Yellow;
-                            Message.Foreground = Brushes.Black;
-                            Message.FontWeight = FontWeights.Bold;
-                            break;
-                        }
                     case StoredPrint.Color.Red:
                         {
                             Message.Background = new SolidColorBrush(Color.FromRgb(0xd4, 0x20, 0x44)); // #D42044
@@ -865,7 +743,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task MainTimer_HandleEntityPanel()
+        private void MainTimer_HandleEntityPanel()
         {
             // check if Display/ Edit Control has some work to do ..
             try
@@ -909,7 +787,7 @@ namespace AasxPackageExplorer
                         if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
                         {
                             // handle it by UI
-                            await UiHandleNavigateTo(tempNavTo.targetReference);
+                            UiHandleNavigateTo(tempNavTo.targetReference);
                         }
                     }
                 }
@@ -920,48 +798,41 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFileRepository(PackageContainerRepoItem fi,
+        private AdminShell.Referable LoadFromFilerepository(AasxFileRepository.FileItem fi,
             AdminShell.Reference requireReferable = null)
         {
-            // access single file repo
-            var fileRepo = packages.Repositories.FindRepository(fi);
-            if (fileRepo == null)
+            // access
+            if (packages.FileRepository == null)
                 return null;
 
             // which file?
-            var location = fileRepo.GetFullItemLocation(fi);
-            if (location == null)
+            var fn = packages.FileRepository?.GetFullFilename(fi);
+            if (fn == null)
                 return null;
 
             // try load (in the background/ RAM first..
-            PackageContainerBase container = null;
+            AdminShellPackageEnv pkg = null;
             try
             {
-                Log.Singleton.Info($"Auto-load file from repository {location} into container");
-                container = await PackageContainerFactory.GuessAndCreateForAsync(
-                    packages,
-                    location,
-                    overrideLoadResident: true,
-                    null,
-                    PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                    runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+                AasxPackageExplorer.Log.Singleton.Info($"Auto-load AASX file from repository {fn}");
+                pkg = LoadPackageFromFile(fn);
             }
             catch (Exception ex)
             {
-                Log.Singleton.Error(ex, $"When auto-loading {location}");
+                AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {fn}");
             }
 
             // if successfull ..
-            if (container != null)
+            if (pkg != null)
             {
                 // .. try find business object!
                 AdminShell.Referable bo = null;
                 if (requireReferable != null)
-                    bo = container.Env?.AasEnv.FindReferableByReference(requireReferable);
+                    bo = pkg.AasEnv.FindReferableByReference(requireReferable);
 
                 // only proceed, if business object was found .. else: close directly
                 if (requireReferable != null && bo == null)
-                    container.Close();
+                    pkg.Close();
                 else
                 {
                     // make sure the user wants to change
@@ -976,13 +847,10 @@ namespace AasxPackageExplorer
                     }
 
                     // start animation
-                    fileRepo.StartAnimation(fi, PackageContainerRepoItem.VisualStateEnum.ReadFrom);
+                    packages.FileRepository?.StartAnimation(fi, AasxFileRepository.FileItem.VisualStateEnum.ReadFrom);
 
                     // activate
-                    UiLoadPackageWithNew(packages.MainItem,
-                        takeOverContainer: container, onlyAuxiliary: false);
-
-                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                    UiLoadPackageWithNew(packages.MainContainer, pkg, fn, onlyAuxiliary: false);
                 }
 
                 // return bo to focus
@@ -992,7 +860,7 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        private async Task UiHandleNavigateTo(AdminShell.Reference targetReference)
+        private void UiHandleNavigateTo(AdminShell.Reference targetReference)
         {
             // access
             if (targetReference == null || targetReference.Count < 1)
@@ -1021,16 +889,16 @@ namespace AasxPackageExplorer
                         bo = packages.Aux.AasEnv.FindReferableByReference(work);
 
                     // if not, may look into the AASX file repo
-                    if (bo == null && packages.Repositories != null)
+                    if (bo == null && packages.FileRepository != null)
                     {
                         // find?
-                        PackageContainerRepoItem fi = null;
+                        AasxFileRepository.FileItem fi = null;
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
-                            fi = packages.Repositories.FindByAssetId(work[0].value.Trim());
+                            fi = packages.FileRepository.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
-                            fi = packages.Repositories.FindByAasId(work[0].value.Trim());
+                            fi = packages.FileRepository.FindByAasId(work[0].value.Trim());
 
-                        bo = await LoadFromFileRepository(fi, work);
+                        bo = LoadFromFilerepository(fi, work);
                     }
 
                     // still yes?
@@ -1085,7 +953,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task MainTimer_HandlePlugins()
+        private void MainTimer_HandlePlugins()
         {
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
@@ -1100,7 +968,7 @@ namespace AasxPackageExplorer
                     var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
                     if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
                     {
-                        await UiHandleNavigateTo(evtNavTo.targetReference);
+                        UiHandleNavigateTo(evtNavTo.targetReference);
                     }
                     #endregion
 
@@ -1174,173 +1042,11 @@ namespace AasxPackageExplorer
             }
         }
 
-        private DateTime _lastQueuedUpdateValueEvent = DateTime.Now;
-
-        private bool _eventsUpdateValuePending = false;
-
-        private void MainTimer_PeriodicalTaskForSelectedEntity()
-        {
-            // first check, if the selected page points to something
-            var veSelected = DisplayElements.SelectedItem;
-            if (veSelected == null)
-                return;
-
-            // some container options are required
-            var copts = packages?.MainItem?.Container?.ContainerOptions;
-
-            //
-            // Investigate on Update Value Events
-            // Note: for the time being, Events will be only valid, if Event and observed entity are 
-            // within the SAME Submodel
-            //
-
-            if (true == copts?.StayConnected
-                && !_eventsUpdateValuePending
-                && (DateTime.Now - _lastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
-            {
-                _lastQueuedUpdateValueEvent = DateTime.Now;
-
-                try
-                {
-                    // for update values, do not concern about plugins, but use superior Submodel,
-                    // as they will relate to this
-                    var veSubject = veSelected;
-                    if (veSelected is VisualElementPluginExtension)
-                        veSubject = veSelected.Parent;
-
-                    // now, filter for know applications
-                    if (!(veSubject is VisualElementSubmodelRef || veSubject is VisualElementSubmodelElement))
-                        return;
-
-                    // will always require a root Submodel
-                    var smrSel = veSelected.FindFirstParent((ve) => (ve is VisualElementSubmodelRef), includeThis: true)
-                        as VisualElementSubmodelRef;
-                    if (smrSel != null && smrSel.theSubmodel != null)
-                    {
-                        // parents need to be set
-                        var rootSm = smrSel.theSubmodel;
-                        rootSm.SetAllParents();
-
-                        // check, if the Submodel has interesting events
-                        foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
-                            (true == x?.semanticId?.Matches(
-                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                                AdminShellV20.Key.MatchMode.Relaxed))))
-                        {
-                            // Submodel defines an events for outgoing value updates -> does the observed scope
-                            // lie in the selection?
-                            var klObserved = ev.observed?.Keys;
-                            var klSelected = veSubject.BuildKeyListToTop(includeAas: false);
-                            // no, klSelected shall lie in klObserved
-                            if (klObserved != null && klSelected != null &&
-                                klSelected.StartsWith(klObserved,
-                                emptyIsTrue: false, matchMode: AdminShellV20.Key.MatchMode.Relaxed))
-                            {
-                                // take a shortcut
-                                if (packages?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
-                                    && cntHttp.ConnectorPrimary is PackageConnectorHttpRest connRest)
-                                {
-                                    Task.Run(async () =>
-                                    {
-                                        try
-                                        {
-                                            var evSnd = await
-                                                connRest.SimulateUpdateValuesEventByGetAsync(
-                                                    smrSel.theSubmodel,
-                                                    ev,
-                                                    veSubject.GetDereferencedMainDataObject() as AdminShell.Referable,
-                                                    timestamp: DateTime.Now,
-                                                    topic: "MY-TOPIC",
-                                                    subject: "ANY-SUBJECT");
-                                            if (evSnd)
-                                                _eventsUpdateValuePending = true;
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Log.Singleton.Error(ex,
-                                                "periodically triggering event for simulated update");
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "periodically checking for triggering events");
-                }
-            }
-        }
-
-        public void MainTaimer_HandleIncomingAasEvents()
-        {
-            // access
-            var ev = packages?.EventBufferEditor?.PopEvent();
-            if (ev == null)
-                return;
-
-            // log viewer
-            UserContrlEventCollection.PushEvent(ev);
-
-            // to be applicable, the event message Observable has to relate into Main's environment
-            var foundObservable = packages?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
-            if (foundObservable == null)
-                return;
-
-            //
-            // Update values?
-            //
-            var changedSomething = false;
-            if (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement)
-                foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
-                {
-                    changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
-
-                    // update value received
-                    _eventsUpdateValuePending = false;
-                }
-
-            // stupid
-            if (changedSomething)
-            {
-                // just for test
-                DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
-                DisplayElements.Refresh();
-
-                // apply white list for automatic redisplay
-                // Note: do not re-display plugins!!
-                var ves = DisplayElements.SelectedItem;
-                if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
-                    RedrawElementView();
-            }
-        }
-
-        private async Task MainTimer_Tick(object sender, EventArgs e)
+        private void MainTimer_Tick(object sender, EventArgs e)
         {
             MainTimer_HandleLogMessages();
-            await MainTimer_HandleEntityPanel();
-            await MainTimer_HandlePlugins();
-            MainTimer_PeriodicalTaskForSelectedEntity();
-            MainTaimer_HandleIncomingAasEvents();
-        }
-
-        private void SetProgressBar()
-        {
-            SetProgressBar(0.0, "");
-        }
-
-        private void SetProgressBar(double? percent, string message = null)
-        {
-            if (percent.HasValue)
-                ProgressBarInfo.Dispatcher.BeginInvoke(
-                            System.Windows.Threading.DispatcherPriority.Background,
-                            new Action(() => ProgressBarInfo.Value = percent.Value));
-
-            if (message != null)
-                LabelProgressBarInfo.Dispatcher.BeginInvoke(
-                    System.Windows.Threading.DispatcherPriority.Background,
-                    new Action(() => LabelProgressBarInfo.Content = message));
+            MainTimer_HandleEntityPanel();
+            MainTimer_HandlePlugins();
         }
 
         private void ButtonHistory_HomeRequested(object sender, EventArgs e)
@@ -1356,7 +1062,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
+        private void ButtonHistory_ObjectRequested(object sender, VisualElementHistoryItem hi)
         {
             // be careful
             try
@@ -1380,12 +1086,12 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (packages.Repositories != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
+                if (packages.FileRepository != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = packages.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = packages.FileRepository.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
                         AasxPackageExplorer.Log.Singleton.Error(
@@ -1400,7 +1106,7 @@ namespace AasxPackageExplorer
                     AdminShell.Referable bo = null;
                     try
                     {
-                        bo = await LoadFromFileRepository(fi, sri.CleanReference);
+                        bo = LoadFromFilerepository(fi, sri.CleanReference);
                     }
                     catch (Exception ex)
                     {
@@ -1456,7 +1162,6 @@ namespace AasxPackageExplorer
                 Message.Background = Brushes.White;
                 Message.Foreground = Brushes.Black;
                 Message.FontWeight = FontWeights.Normal;
-                SetProgressBar();
             }
             if (sender == ButtonReport)
             {
@@ -1598,25 +1303,10 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            AasxPackageExplorer.Log.Singleton.Info("Closing main package ..");
+            AasxPackageExplorer.Log.Singleton.Info("Closing ..");
             try
             {
-                packages?.MainItem?.Close();
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            }
-
-            try
-            {
-                var lru = packages?.Repositories?.FindLRU();
-                if (lru != null)
-                {
-                    AasxPackageExplorer.Log.Singleton.Info("Saving LRU ..");
-                    var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
-                    lru.SaveAsLocalFile(lruFn);
-                }
+                packages.Main.Close();
             }
             catch (Exception ex)
             {
@@ -1947,7 +1637,7 @@ namespace AasxPackageExplorer
                     try
                     {
                         UiLoadPackageWithNew(
-                            packages.MainItem, null, loadLocalFilename: fn, onlyAuxiliary: false);
+                            packages.MainContainer, LoadPackageFromFile(fn), fn, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {

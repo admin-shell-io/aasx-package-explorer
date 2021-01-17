@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -386,7 +386,6 @@ namespace AdminShellNS
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
-            public static string SubmodelElement = "SubmodelElement";
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
@@ -415,20 +414,6 @@ namespace AdminShellNS
                     if (s.Trim().ToLower() == ke.Trim().ToLower())
                         res = true;
                 return res;
-            }
-
-            public bool IsIdType(string[] value)
-            {
-                if (value == null || idType == null || idType.Trim() == "")
-                    return false;
-                return value.Contains(idType.Trim());
-            }
-
-            public bool IsIdType(string value)
-            {
-                if (value == null || idType == null || idType.Trim() == "")
-                    return false;
-                return value.Trim().Equals(idType.Trim());
             }
 
             public bool Matches(
@@ -558,19 +543,6 @@ namespace AdminShellNS
                 return kl;
             }
 
-            public static KeyList CreateNew(string type, bool local, string idType, string[] valueItems)
-            {
-                // access
-                if (valueItems == null)
-                    return null;
-
-                // prepare
-                var kl = new AdminShell.KeyList();
-                foreach (var x in valueItems)
-                    kl.Add(new AdminShell.Key(type, local, idType, "" + x));
-                return kl;
-            }
-
             // other
 
             public void NumberIndices()
@@ -585,17 +557,6 @@ namespace AdminShellNS
                 foreach (var k in this)
                     res += k.ToString(format) + delimiter;
                 return res.TrimEnd(',');
-            }
-
-            public string MostSignificantInfo()
-            {
-                if (this.Count < 1)
-                    return "-";
-                var i = this.Count - 1;
-                var res = this[i].value;
-                if (this[i].IsIdType(new[] { Key.FragmentId }) && i > 0)
-                    res += this[i - 1].value;
-                return res;
             }
 
             // validation
@@ -619,30 +580,6 @@ namespace AdminShellNS
                     }
                     idx++;
                 }
-            }
-
-            public bool StartsWith(KeyList head, bool emptyIsTrue = false,
-                Key.MatchMode matchMode = Key.MatchMode.Strict)
-            {
-                // access
-                if (head == null)
-                    return false;
-                if (head.Count == 0)
-                    return emptyIsTrue;
-
-                // simply test element-wise
-                for (int i = 0; i < head.Count; i++)
-                {
-                    // does head have more elements than this list?
-                    if (i >= this.Count)
-                        return false;
-
-                    if (!head[i].Matches(this[i], matchMode))
-                        return false;
-                }
-
-                // ok!
-                return true;
             }
         }
 
@@ -877,14 +814,9 @@ namespace AdminShellNS
                 return same;
             }
 
-            public bool Matches(SemanticId other, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(SemanticId other)
             {
-                return Matches(new Reference(other), matchMode);
-            }
-
-            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Strict)
-            {
-                return Matches(cd?.GetReference(), matchMode);
+                return Matches(new Reference(other));
             }
 
             public string ToString(int format = 0, string delimiter = ",")
@@ -2167,11 +2099,6 @@ namespace AdminShellNS
         public interface IFindAllReferences
         {
             IEnumerable<Reference> FindAllReferences();
-        }
-
-        public interface IGetSemanticId
-        {
-            SemanticId GetSemanticId();
         }
 
         public class AdministrationShell : Identifiable, IFindAllReferences, IGetReference
@@ -3760,22 +3687,6 @@ namespace AdminShellNS
             }
 #endif
 
-            // to String
-
-            public override string ToString()
-            {
-                var res = "AAS-ENV";
-                if (AdministrationShells != null)
-                    res += $" {AdministrationShells.Count} AAS";
-                if (Assets != null)
-                    res += $" {Assets.Count} Assets";
-                if (Submodels != null)
-                    res += $" {Submodels.Count} Submodels";
-                if (ConceptDescriptions != null)
-                    res += $" {ConceptDescriptions.Count} CDs";
-                return res;
-            }
-
             // finders
 
             public AdministrationShell FindAAS(Identification id)
@@ -3979,9 +3890,6 @@ namespace AdminShellNS
                             yield return cd;
             }
 
-            //
-            // Reference handling
-            //
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
@@ -4075,10 +3983,6 @@ namespace AdminShellNS
                 // nothing in this Environment
                 return null;
             }
-
-            //
-            // Handling of CDs
-            //
 
             public ConceptDescription FindConceptDescription(ConceptDescriptionRef cdr)
             {
@@ -4808,7 +4712,7 @@ namespace AdminShellNS
             // ReSharper enable RedundantArgumentDefaultValue
         }
 
-        public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
+        public class SubmodelElement : Referable, System.IDisposable, IGetReference
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
@@ -4850,7 +4754,6 @@ namespace AdminShellNS
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();
-            public SemanticId GetSemanticId() { return semanticId; }
 
             // from Qualifiable:
             [XmlArray("qualifier")]
@@ -5005,35 +4908,6 @@ namespace AdminShellNS
                 return r;
             }
 
-            public IEnumerable<Referable> FindAllParents(
-                Predicate<Referable> p,
-                bool includeThis = false, bool includeSubmodel = false)
-            {
-                // call for this?
-                if (includeThis)
-                {
-                    if (p == null || p.Invoke(this))
-                        yield return this;
-                    else
-                        yield break;
-                }
-
-                // daisy chain all parents ..
-                if (this.parent != null)
-                {
-                    if (this.parent is SubmodelElement psme)
-                    {
-                        foreach (var q in psme.FindAllParents(p, includeThis: true))
-                            yield return q;
-                    }
-                    else if (includeSubmodel && this.parent is Submodel psm)
-                    {
-                        if (p == null || p.Invoke(psm))
-                            yield return this;
-                    }
-                }
-            }
-
             public Tuple<string, string> ToCaptionInfo()
             {
                 var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
@@ -5052,11 +4926,6 @@ namespace AdminShellNS
             public virtual string ValueAsText(string defaultLang = null)
             {
                 return "";
-            }
-
-            public virtual double? ValueAsDouble()
-            {
-                return null;
             }
 
             // validation
@@ -5305,7 +5174,7 @@ namespace AdminShellNS
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
 
-                // as SubmodelElements are not Identifiables, the actual key shall be IdShort
+                // as SubmodelElements are not Identifiables, the actual key shall be IdSHort
                 if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(
                                                                 Key.IdentifierType.IdShort).Trim().ToLower())
                     return null;
@@ -5837,8 +5706,7 @@ namespace AdminShellNS
         }
 
         public class Submodel : Identifiable, IManageSubmodelElements,
-                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences,
-                                    IGetSemanticId
+                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences
         {
             // for JSON only
             [XmlIgnore]
@@ -5876,7 +5744,6 @@ namespace AdminShellNS
             // from hasSemanticId:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = new SemanticId();
-            public SemanticId GetSemanticId() { return semanticId; }
 
             // from Qualifiable:
             [XmlArray("qualifier")]
@@ -6017,16 +5884,6 @@ namespace AdminShellNS
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
                 submodelElements.Add(sew);
-            }
-
-            public void Insert(int index, SubmodelElement sme)
-            {
-                if (submodelElements == null)
-                    submodelElements = new SubmodelElementWrapperCollection();
-                var sew = new SubmodelElementWrapper();
-                sme.parent = this; // track parent here!
-                sew.submodelElement = sme;
-                submodelElements.Insert(index, sew);
             }
 
             public void Remove(SubmodelElement sme)
@@ -6220,12 +6077,6 @@ namespace AdminShellNS
                     "double", "duration",
                     "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
-            public static string[] ValueTypes_Number = new[] {
-                    "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
-                    "positiveInteger",
-                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                    "double", "float" };
-
             public DataElement() { }
 
             public DataElement(SubmodelElement src) : base(src) { }
@@ -6361,26 +6212,6 @@ namespace AdminShellNS
                 }
                 return false;
             }
-
-            public override double? ValueAsDouble()
-            {
-                // pointless
-                if (this.value == null || this.value.Trim() == "" || this.valueType == null)
-                    return null;
-
-                // type?
-                var vt = this.valueType.Trim().ToLower();
-                if (!DataElement.ValueTypes_Number.Contains(vt))
-                    return null;
-
-                // try convert
-                if (double.TryParse(this.value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
-                    return dbl;
-
-                // no
-                return null;
-            }
-
         }
 
         public class MultiLanguageProperty : DataElement
@@ -6674,17 +6505,17 @@ namespace AdminShellNS
             {
                 return
                     new[] {
-                    System.Net.Mime.MediaTypeNames.Text.Plain,
-                    System.Net.Mime.MediaTypeNames.Text.Xml,
-                    System.Net.Mime.MediaTypeNames.Text.Html,
-                    "application/json",
-                    "application/rdf+xml",
-                    System.Net.Mime.MediaTypeNames.Application.Pdf,
-                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                    "image/png",
-                    System.Net.Mime.MediaTypeNames.Image.Gif,
-                    "application/iges",
-                    "application/step"
+                System.Net.Mime.MediaTypeNames.Text.Plain,
+                System.Net.Mime.MediaTypeNames.Text.Xml,
+                System.Net.Mime.MediaTypeNames.Text.Html,
+                "application/json",
+                "application/rdf+xml",
+                System.Net.Mime.MediaTypeNames.Application.Pdf,
+                System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                "image/png",
+                System.Net.Mime.MediaTypeNames.Image.Gif,
+                "application/iges",
+                "application/step"
                     };
             }
 
@@ -7074,16 +6905,6 @@ namespace AdminShellNS
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
                 value.Add(sew);
-            }
-
-            public void Insert(int index, SubmodelElement sme)
-            {
-                if (value == null)
-                    value = new SubmodelElementWrapperCollection();
-                var sew = new SubmodelElementWrapper();
-                sme.parent = this; // track parent here!
-                sew.submodelElement = sme;
-                value.Insert(index, sew);
             }
 
             public void Remove(SubmodelElement sme)

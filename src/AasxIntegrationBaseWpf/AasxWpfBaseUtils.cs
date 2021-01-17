@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -169,7 +169,7 @@ namespace AasxIntegrationBase
 
         public class StoredPrintColors
         {
-            public SolidColorBrush BrushError, BrushRed, BrushBlue, BrushYellow, BrushLink, BrushBlack;
+            public SolidColorBrush BrushError, BrushRed, BrushBlue, BrushLink;
         }
 
         public static StoredPrintColors BrightPrintColors = new StoredPrintColors()
@@ -177,9 +177,7 @@ namespace AasxIntegrationBase
             BrushError = new SolidColorBrush(Color.FromRgb(255, 0, 0)),
             BrushRed = new SolidColorBrush(Color.FromRgb(251, 144, 55)),
             BrushBlue = new SolidColorBrush(Color.FromRgb(143, 170, 220)),
-            BrushYellow = new SolidColorBrush(Color.FromRgb(248, 242, 0)),
-            BrushLink = new SolidColorBrush(Color.FromRgb(46, 117, 182)),
-            BrushBlack = new SolidColorBrush(Color.FromRgb(255, 255, 255))
+            BrushLink = new SolidColorBrush(Color.FromRgb(46, 117, 182))
         };
 
         public static StoredPrintColors DarkPrintColors = new StoredPrintColors()
@@ -187,9 +185,7 @@ namespace AasxIntegrationBase
             BrushError = new SolidColorBrush(Color.FromRgb(255, 0, 0)),
             BrushRed = new SolidColorBrush(Color.FromRgb(192, 0, 0)),
             BrushBlue = new SolidColorBrush(Color.FromRgb(0, 109, 165)),
-            BrushYellow = new SolidColorBrush(Color.FromRgb(255, 153, 0)),
-            BrushLink = new SolidColorBrush(Color.FromRgb(5, 14, 187)),
-            BrushBlack = new SolidColorBrush(Color.FromRgb(0, 0, 0))
+            BrushLink = new SolidColorBrush(Color.FromRgb(5, 14, 187))
         };
 
         public static void StoredPrintToRichTextBox(
@@ -222,11 +218,8 @@ namespace AasxIntegrationBase
                     case StoredPrint.Color.Blue:
                         tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
                         break;
-                    case StoredPrint.Color.Yellow:
-                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushYellow);
-                        break;
                     case StoredPrint.Color.Black:
-                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlack);
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(Colors.Black));
                         break;
                 }
             }
@@ -257,6 +250,5 @@ namespace AasxIntegrationBase
                 }
             }
         }
-
     }
 }

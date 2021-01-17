@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -18,15 +18,6 @@ using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
-    /// <summary>
-    /// This interface is implemented by the visual tree, which shows the different element of
-    /// one or more AASX packages, environments, AAS and so forth.
-    /// </summary>
-    public interface IManageVisualAasxElements
-    {
-        VisualElementGeneric GetSelectedItem();
-    }
-
     public class TreeViewLineCache
     {
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
@@ -247,75 +238,6 @@ namespace AasxPackageExplorer
                 if (p(e))
                     yield return e;
         }
-
-        public VisualElementGeneric FindFirstParent(
-            Predicate<VisualElementGeneric> p, bool includeThis = false)
-        {
-            foreach (var x in FindAllParents(p, includeThis))
-                return x;
-            return null;
-        }
-
-        public AdminShell.KeyList BuildKeyListToTop(
-            bool includeAas = false)
-        {
-            // prepare result
-            var res = new AdminShell.KeyList();
-            var ve = this;
-            while (ve != null)
-            {
-                if (ve is VisualElementSubmodelRef smr)
-                {
-                    // import special case, as Submodel ref is important part of the chain!
-                    if (smr.theSubmodel != null)
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                smr.theSubmodel.GetElementName(), true,
-                                smr.theSubmodel.identification.idType,
-                                smr.theSubmodel.identification.id));
-
-                    // include aas
-                    if (includeAas && ve.Parent is VisualElementAdminShell veAas
-                        && veAas.theAas?.identification != null)
-                    {
-                        res.Insert(
-                            0,
-                            AdminShell.Key.CreateNew(
-                                AdminShell.Key.AAS, true,
-                                veAas.theAas.identification.idType,
-                                veAas.theAas.identification.id));
-                    }
-
-                    break;
-                }
-                else
-                if (ve.GetMainDataObject() is AdminShell.Identifiable iddata)
-                {
-                    // a Identifiable will terminate the list of keys
-                    res.Insert(
-                        0,
-                        AdminShell.Key.CreateNew(
-                            iddata.GetElementName(), true, iddata.identification.idType, iddata.identification.id));
-                    break;
-                }
-                else
-                if (ve.GetMainDataObject() is AdminShell.Referable rf)
-                {
-                    // add a key and go up ..
-                    res.Insert(
-                        0,
-                        AdminShell.Key.CreateNew(rf.GetElementName(), true, "IdShort", rf.idShort));
-                }
-                else
-                // uups!
-                { }
-                // need to go up
-                ve = ve.Parent;
-            }
-
-            return res;
-        }
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
@@ -329,15 +251,13 @@ namespace AasxPackageExplorer
             "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty" };
 
-        public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
         public AdminShell.AdministrationShellEnv theEnv = null;
         public ItemType theItemType = ItemType.Env;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
-            AdminShell.AdministrationShellEnv env, ItemType itemType,
-            string packageSourceFn = null)
+            AdminShell.AdministrationShellEnv env, ItemType itemType)
         : base()
         {
             this.Parent = parent;
@@ -345,7 +265,6 @@ namespace AasxPackageExplorer
             this.thePackage = package;
             this.theEnv = env;
             this.theItemType = itemType;
-            this.thePackageSourceFn = packageSourceFn;
 
             this.Background = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkAccentColor"];
             this.Border = (SolidColorBrush)System.Windows.Application.Current.Resources["DarkestAccentColor"];
@@ -364,10 +283,7 @@ namespace AasxPackageExplorer
             if (theItemType == ItemType.Package && thePackage != null)
             {
                 this.TagString = "\u25a2";
-                if (thePackageSourceFn != null)
-                    this.Info += "" + thePackageSourceFn;
-                else
-                    this.Info += "" + thePackage.Filename;
+                this.Info += "" + thePackage.Filename;
             }
             RestoreFromCache();
         }
@@ -1000,7 +916,7 @@ namespace AasxPackageExplorer
 
     public static class Generators
     {
-        private static void GenerateVisualElementsFromShellEnvAddElements(
+        public static void GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
@@ -1048,7 +964,6 @@ namespace AasxPackageExplorer
 
         public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
-            string packageSourceFn = null,
             bool editMode = false, int expandMode = 0)
         {
             // clear tree
@@ -1082,7 +997,7 @@ namespace AasxPackageExplorer
                     }
                 }
 
-            // many operations -> make it bulletproof
+            // many operytions -> make it bulletproof
             try
             {
 
@@ -1090,8 +1005,7 @@ namespace AasxPackageExplorer
                 {
                     // package
                     tiPackage = new VisualElementEnvironmentItem(
-                        null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package,
-                        packageSourceFn);
+                        null /* Parent */, cache, package, env, VisualElementEnvironmentItem.ItemType.Package);
                     tiPackage.SetIsExpandedIfNotTouched(true);
                     res.Add(tiPackage);
 

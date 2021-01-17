@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -23,7 +23,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.PackageCentral;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -32,9 +31,9 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public PackageContainerRepoItem ResultItem = null;
+        public AasxFileRepository.FileItem ResultItem = null;
 
-        private List<PackageContainerRepoItem> _listFileItems;
+        private AasxFileRepository TheAasxRepo = null;
 
         public SelectFromRepositoryFlyout()
         {
@@ -53,24 +52,31 @@ namespace AasxPackageExplorer
         {
         }
 
-        public bool LoadAasxRepoFile(IEnumerable<PackageContainerRepoItem> items = null)
+        public bool LoadAasxRepoFile(string fn = null, AasxFileRepository repo = null)
         {
             try
             {
-                this._listFileItems = new List<PackageContainerRepoItem>();
+                this.TheAasxRepo = null;
 
-                if (items != null)
+                if (fn != null)
                 {
-                    // from RAM
-                    this._listFileItems.AddRange(items);
+                    // from file
+                    this.TheAasxRepo = AasxFileRepository.Load(fn);
+
                 }
 
-                if (_listFileItems == null || _listFileItems.Count < 1)
+                if (repo != null)
+                {
+                    // from RAM
+                    this.TheAasxRepo = repo;
+                }
+
+                if (this.TheAasxRepo == null)
                     return false;
 
                 // rework buttons
                 this.StackPanelTags.Children.Clear();
-                foreach (var fm in this._listFileItems)
+                foreach (var fm in this.TheAasxRepo.FileMap)
                 {
                     var tag = fm.Tag.Trim();
                     if (tag != "")
@@ -92,7 +98,7 @@ namespace AasxPackageExplorer
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                this._listFileItems = null;
+                this.TheAasxRepo = null;
                 return false;
             }
 
@@ -102,9 +108,9 @@ namespace AasxPackageExplorer
         private void TagButton_Click(object sender, RoutedEventArgs e)
         {
             var b = sender as Button;
-            if (b?.Tag != null && this._listFileItems != null && this._listFileItems.Contains(b.Tag))
+            if (b?.Tag != null && this.TheAasxRepo?.FileMap != null && this.TheAasxRepo.FileMap.Contains(b.Tag))
             {
-                this.ResultItem = b.Tag as PackageContainerRepoItem;
+                this.ResultItem = b.Tag as AasxFileRepository.FileItem;
                 ControlClosed?.Invoke();
             }
         }
@@ -133,8 +139,8 @@ namespace AasxPackageExplorer
             var aid = TextBoxAssetId.Text.Trim().ToLower();
 
             // first compare against tags
-            if (this._listFileItems != null && this._listFileItems != null)
-                foreach (var fm in this._listFileItems)
+            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
+                foreach (var fm in this.TheAasxRepo.FileMap)
                     if (aid == fm.Tag.Trim().ToLower())
                     {
                         this.ResultItem = fm;
@@ -143,15 +149,14 @@ namespace AasxPackageExplorer
                     }
 
             // if not, compare asset ids
-            if (this._listFileItems != null && this._listFileItems != null)
-                foreach (var fm in this._listFileItems)
-                    foreach (var id in fm.EnumerateAssetIds())
-                        if (aid == id.Trim().ToLower())
-                        {
-                            this.ResultItem = fm;
-                            ControlClosed?.Invoke();
-                            return;
-                        }
+            if (this.TheAasxRepo != null && this.TheAasxRepo.FileMap != null)
+                foreach (var fm in this.TheAasxRepo.FileMap)
+                    if (aid == fm.AssetId.Trim().ToLower())
+                    {
+                        this.ResultItem = fm;
+                        ControlClosed?.Invoke();
+                        return;
+                    }
         }
 
         private void TextBoxAssetId_KeyDown(object sender, KeyEventArgs e)

@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -14,9 +14,7 @@ using System.IO.Packaging;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using AdminShellNS;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AdminShellNS
 {
@@ -156,31 +154,6 @@ namespace AdminShellNS
 
             // nope!
             return null;
-        }
-
-        public static JsonSerializer BuildDefaultAasxJsonSerializer()
-        {
-            var serializer = new JsonSerializer();
-            serializer.Converters.Add(
-                new AdminShellConverters.JsonAasxConverter(
-                    "modelType", "name"));
-            return serializer;
-        }
-
-        public static T DeserializeFromJSON<T>(TextReader textReader) where T : AdminShell.Referable
-        {
-            var serializer = BuildDefaultAasxJsonSerializer();
-            var rf = (T)serializer.Deserialize(textReader, typeof(T));
-            return rf;
-        }
-
-        public static T DeserializeFromJSON<T>(JToken obj) where T : AdminShell.Referable
-        {
-            if (obj == null)
-                return null;
-            var serializer = BuildDefaultAasxJsonSerializer();
-            var rf = obj.ToObject<T>(serializer);
-            return rf;
         }
 
     }
@@ -582,14 +555,7 @@ namespace AdminShellNS
                                 if (_tempFn != null)
                                     System.IO.File.Copy(_tempFn, fn);
                                 else
-                                {
-                                    /* TODO (MIHO, 2021-01-02): check again.
-                                     * Revisiting this code after a while, and after
-                                     * the code has undergo some changes by MR, the following copy command needed
-                                     * to be amended with a if to protect against self-copy. */
-                                    if (_fn != fn)
-                                        System.IO.File.Copy(_fn, fn);
-                                }
+                                    System.IO.File.Copy(_fn, fn);
                             }
                         }
                         catch (Exception ex)
@@ -883,44 +849,6 @@ namespace AdminShellNS
 
             // Don't know to handle
             throw new Exception($"Does not know how to handle the file: {fn}");
-        }
-
-        /// <summary>
-        /// Temporariyl saves & closes package and executes lambda. Afterwards, the package is re-opened
-        /// under the same file name
-        /// </summary>
-        /// <param name="lambda"></param>
-        public void TemporarilySaveCloseAndReOpenPackage(Action lambda)
-        {
-            // access 
-            if (!this.IsOpen)
-                throw (new Exception(
-                    string.Format("Could not temporarily close and re-open AASX {0}, because package" +
-                    "not open as expected!", Filename)));
-
-            try
-            {
-                // save (it will be open, still)
-                SaveAs(this.Filename);
-
-                // close
-                _openPackage.Flush();
-                _openPackage.Close();
-
-                // execute lambda
-                lambda?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                throw (new Exception(
-                    string.Format("While temporarily close and re-open AASX {0} at {1} gave: {2}",
-                    Filename, AdminShellUtil.ShortLocation(ex), ex.Message)));
-            }
-            finally
-            {
-                // even after failing of the lambda, the package shall be re-opened
-                _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
-            }
         }
 
         private int BackupIndex = 0;
@@ -1332,6 +1260,5 @@ namespace AdminShellNS
                 }
             }
         }
-
     }
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -156,6 +156,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // args
                 var url = args[0] as string;
+                Log.Info("AasxPluginWebBrowser go to {0}", url);
 
                 // check, if possible
                 if (this.browserGrid != null && this.theBrowser != null)
