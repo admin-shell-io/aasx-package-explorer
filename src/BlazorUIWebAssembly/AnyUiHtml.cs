@@ -25,7 +25,6 @@ namespace AnyUi
         {
         }
 
-        public static Thread htmlDotnetThread = new Thread(htmlDotnetLoop);
         static object htmlDotnetLock = new object();
         public static bool htmlDotnetEventIn = false;
         public static bool htmlDotnetEventOut = false;
@@ -39,14 +38,16 @@ namespace AnyUi
         public static List<object> htmlEventInputs = new List<object>();
         public static List<object> htmlEventOutputs = new List<object>();
 
-        public static void htmlDotnetLoop()
+        public static async void htmlDotnetLoop()
         {
             AnyUiUIElement el;
 
             bool newData = false;
-            //while (true)
-            //{
-                lock(htmlDotnetLock)
+            while (true)
+            {
+                //Task.Yield();
+
+                lock (htmlDotnetLock)
                 {
                     if (htmlDotnetEventIn)
                     {
@@ -93,8 +94,11 @@ namespace AnyUi
                     newData = false;
                     Program.signalNewData(2); // build new tree
                 }
-            //    Thread.Sleep(100);
-            //}
+                // this is some intesive task, since there is no threading in webasssmebly
+                // https://www.meziantou.net/don-t-freeze-ui-while-executing-cpu-intensive-work-in-blazor-webassembly.htm
+                await Task.Delay(100);
+                
+            }
         }
 
         public static void setValueLambdaHtml(AnyUiUIElement el, object o)
