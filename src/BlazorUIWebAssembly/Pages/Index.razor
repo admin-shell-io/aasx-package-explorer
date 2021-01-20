@@ -1,0 +1,907 @@
+﻿@page "/"
+@using AdminShellNS
+@using static AdminShellNS.AdminShellV20;
+@using BlazorUIWebAssembly
+@using AnyUi
+@using BlazorUIWebAssembly.Shared
+@using System
+@using System.Net;
+@using BlazorUI.Data; 
+@inject BlazorUIWebAssembly.Data.AASService SubmodelService
+
+<div class="col-12 row">
+    <br />
+    <div class="col-4">
+        <div class="row-12">
+            <div class="row">
+                @if (AnyUiDisplayContextHtml.htmlEventIn)
+                {
+                    <Modal @bind-Open="AnyUiDisplayContextHtml.htmlEventIn" Close="OnClose">
+                        <form method="dialog">
+                            @switch (AnyUiDisplayContextHtml.htmlEventType)
+                            {
+                                case "MessageBoxFlyoutShow":
+                                    string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                    AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
+                                    AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                    <p><span style="font-weight:bold">@caption</span></p>
+                                    <br />
+                                    <p>@message</p>
+                                    <br />
+                                    @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
+                                    {
+                                        <button value="OK">OK</button>
+                                    }
+                                    @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                    {
+                                        <button value="Yes">Yes</button>
+                                        <button value="No">No</button>
+                                    }
+                                    @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                    {
+                                        <button value="Cancel">Cancel</button>
+                                    }
+                                    break;
+                                case "contextMenu":
+                                    AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    AnyUiSpecialActionContextMenu cntlcm =
+                                        (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                    var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                                    int i = 0;
+                                    string icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                    string header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                    string v = i + ": " + icon + " " + header;
+                                    <select class="form-control selectpicker" size="@nmi"
+                                            @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                        @for (i = 0; i < nmi; i++)
+                                        {
+                                            // menu item itself
+                                            icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                            header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                            <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                        }
+                                    </select>
+                                    break;
+                            }
+                        </form>
+                    </Modal>
+                }
+
+                @code{
+                    void OnClose(string value)
+                    {
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Clear();
+                        switch (AnyUiDisplayContextHtml.htmlEventType)
+                        {
+                            case "MessageBoxFlyoutShow":
+                                AnyUiDisplayContextHtml.htmlEventIn = false;
+                                AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
+                                switch (value)
+                                {
+                                    case "OK":
+                                        r = AnyUiMessageBoxResult.OK;
+                                        break;
+                                    case "Cancel":
+                                        r = AnyUiMessageBoxResult.Cancel;
+                                        break;
+                                    case "Yes":
+                                        r = AnyUiMessageBoxResult.Yes;
+                                        break;
+                                    case "No":
+                                        r = AnyUiMessageBoxResult.No;
+                                        break;
+                                }
+                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(r);
+                                break;
+                            case "contextMenu":
+                                break;
+                        }
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                    }
+
+                    void MyContextMenuSelect(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
+                        AnyUiDisplayContextHtml.htmlEventIn = false;
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                    }
+                }
+            </div>
+            <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                <div class="col" style="word-wrap:break-word">
+                    @updateVisibleTree(Items, selectedNode)
+                    @* @if (Program.isLoading)
+                        {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                    <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
+                          @bind-SelectedNode="SelectedNode"
+                          @bind-ExpandedNodes="ExpandedNodes"
+                          HasChildNodes="@(item => item.Childs?.Any() == true)">
+                        <TitleTemplate>
+                            @{ //// SubmodelService.syncSubTree(context);
+                            }
+                            <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                            <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                        </TitleTemplate>
+                    </Tree>
+                    @*<br /><br />*@
+                    <br />
+                </div>
+            </div>
+            <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
+                @{
+                    if (selectedNode == null || selectedNode.Tag != null)
+                    {
+                        {
+                            if (Program.thumbNail == null)
+                            {
+                                var s = Program.env.GetLocalThumbnailStream();
+                                if (s != null)
+                                {
+                                    using (var m = new System.IO.MemoryStream())
+                                    {
+                                        s.CopyTo(m);
+                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                    }
+                                }
+                            }
+                            if (Program.thumbNail != null)
+                            {
+                                <br />
+                                <img src=data:image;base64,@Program.thumbNail style="max-width: 60%;" alt="Details Image" />
+                            }
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky;padding:10px">
+        <div class="sticky-top" style="word-wrap:break-word">
+            @{
+                if (selectedNode != null && selectedNode.Tag != null)
+                {
+                    bool view = false;
+                    Program.helper.editMode = Program.editMode;
+                    if (Program.editMode)
+                    {
+                        Program.helper.repo = Program.repo;
+                    }
+                    else
+                    {
+                        Program.helper.repo = null;
+                    }
+                    var displayContext = new AnyUiDisplayContextHtml();
+                    Program.helper.context = displayContext;
+                    if (selectedNode.Tag is AdministrationShell)
+                    {
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntityAas(
+                                    Program.packages, Program.env.AasEnv, selectedNode.Tag as AdministrationShell, Program.editMode, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+                    if (selectedNode.Tag is Submodel)
+                    {
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntitySubmodelOrRef(
+                                    Program.packages, Program.env.AasEnv, Program.env.AasEnv.AdministrationShells[0],
+                                    null, selectedNode.Tag as Submodel, Program.editMode, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+                    if (selectedNode.Tag is SubmodelElement sme)
+                    {
+                        Program.stack17 = new AnyUiStackPanel();
+                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
+                        Program.helper.DisplayOrEditAasEntitySubmodelElement(
+                                    Program.packages, Program.env.AasEnv, selectedNode.ParentContainer,
+                                    selectedNode.Wrapper,
+                                    sme, Program.editMode, Program.helper.repo, Program.stack17, hintMode: Program.hintMode);
+                        if (Program.stack17.Children.Count != 0)
+                            view = true;
+                    }
+
+                    if (view)
+                    {
+                        AnyUiPanel topPanel = Program.stack17;
+                        Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
+
+                        foreach (AnyUiUIElement topCh in topPanel.Children)
+                        {
+                            AnyUiPanel uiPanel = null;
+                            if (topCh is AnyUiPanel)
+                                uiPanel = topCh as AnyUiPanel;
+                            int iChild = 0;
+                            bool newTab = true;
+                            AnyUiUIElement prevCh = null;
+
+                            while (newTab)
+                            {
+                                newTab = false;
+                                <table>
+                                    <tr>
+                                        @{
+                                            do
+                                            {
+                                                if (uiPanel != null && iChild == uiPanel.Children.Count)
+                                                {
+                                                    uipStack.Pop(out uiPanel, out iChild);
+                                                }
+
+                                                int iChildCount = 1;
+                                                if (uiPanel != null)
+                                                    iChildCount = uiPanel.Children.Count;
+
+                                                while (!newTab && iChild < iChildCount)
+                                                {
+                                                    AnyUiUIElement ch;
+                                                    if (uiPanel != null)
+                                                        ch = uiPanel.Children[iChild];
+                                                    else
+                                                        ch = topCh;
+
+                                                    if (ch is AnyUiPanel chp)
+                                                    {
+                                                        uipStack.Push(uiPanel, iChild);
+
+                                                        uiPanel = chp;
+                                                        iChild = 0;
+                                                        iChildCount = uiPanel.Children.Count;
+                                                        continue;
+                                                    }
+
+                                                    string backColor = "";
+                                                    string foreColor = "";
+                                                    if (ch is AnyUiControl ctrl)
+                                                    {
+                                                        if (ctrl.Background != null)
+                                                        {
+                                                            backColor = "rgb(" +
+                                                                ctrl.Background.Color.R + ", " +
+                                                                ctrl.Background.Color.G + ", " +
+                                                                ctrl.Background.Color.B + ")";
+                                                        }
+                                                        if (ctrl.Foreground != null)
+                                                        {
+                                                            foreColor = "rgb(" +
+                                                                ctrl.Foreground.Color.R + ", " +
+                                                                ctrl.Foreground.Color.G + ", " +
+                                                                ctrl.Foreground.Color.B + ")";
+                                                        }
+                                                    }
+                                                    string style = "";
+                                                    if (foreColor != "")
+                                                        style += "color:" + foreColor + ";";
+                                                    if (backColor != "")
+                                                        style += "background-color:" + backColor + ";";
+
+                                                    if (ch is AnyUiLabel chlb)
+                                                    {
+                                                        <td><span style="@style">@chlb.Content</span></td>
+                                                    }
+
+                                                    if (ch is AnyUiTextBlock tb)
+                                                    {
+                                                        <td><span>@tb.Text</span></td>
+                                                    }
+
+                                                    if (ch is AnyUiTextBox chtb)
+                                                    {
+                                                        if (ch is AnyUiHintBubble hb)
+                                                        {
+                                                            if (Program.editMode)
+                                                            {
+                                                                <td><span style="@style">@hb.Text</span></td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            int w = chtb.Text.Length;
+                                                            if (w > 60)
+                                                                w = 60;
+                                                            <td>
+                                                                <span style="@style">
+                                                                    <input size="@w" value="@chtb.Text"
+                                                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                                                </span>
+                                                            </td>
+                                                            @code {
+                                                                private void MyTextInput(AnyUiTextBox chtb, string value)
+                                                                {
+                                                                    chtb.setValueLambda?.Invoke(value);
+                                                                    Program.signalNewData(0); // same tree, only values changed
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (ch is AnyUiButton chbt)
+                                                    {
+                                                        if (chbt.Content == "Delete")
+                                                        {
+                                                            int i = 0;
+                                                        }
+                                                        <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
+                                                        @code {
+                                                            private void MyClickButton(AnyUiButton chbt)
+                                                            {
+                                                                if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
+                                                                {
+                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                                                                    return;
+                                                                }
+                                                                // chbt.setValueLambda?.Invoke(chbt.Content);
+                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (ch is AnyUiCheckBox cb)
+                                                    {
+                                                        <td>
+                                                            <input type="checkbox" value="@cb.IsChecked"
+                                                                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                                            @cb.Content
+                                                        </td>
+                                                        @code {
+                                                            private void MyCheck(AnyUiCheckBox cb, string value)
+                                                            {
+                                                                cb.setValueLambda?.Invoke(value.ToLower() == "true");
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (ch is AnyUiComboBox comb)
+                                                    {
+                                                        if (prevCh is AnyUiButton)
+                                                        {
+                                                            newTab = true;
+                                                            prevCh = null;
+                                                            continue;
+                                                        }
+
+                                                        string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                                                        <td>
+                                                            <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
+                                                                    @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+                                                                @foreach (var item in comb.Items)
+                                                                {
+                                                                    <option value="@item">@item</option>
+                                                                }
+                                                            </select>
+                                                        </td>
+                                                        @code {
+                                                            private void MyComboSelect(AnyUiComboBox comb, string value)
+                                                            {
+                                                                comb.setValueLambda?.Invoke(value);
+                                                                Program.signalNewData(0); // same tree, only values changed
+                                                            }
+                                                        }
+                                                    }
+
+                                                    prevCh = ch;
+                                                    iChild++;
+                                                }
+                                            }
+                                            while (!newTab && uipStack.getIndex() > 0);
+                                        }
+                                    </tr>
+                                </table>
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    <br />
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    /*
+    public class Item
+    {
+        public string Text { get; set; }
+        public IEnumerable<Item>
+        Childs
+        { get; set; }
+        public object parent { get; set; }
+        public string Type { get; set; }
+        public object Tag { get; set; }
+        public Referable ParentContainer { get; set; }
+        public SubmodelElementWrapper Wrapper { get; set; }
+        public int envIndex { get; set; }
+    }
+    */
+
+    List<Item> Items = null;
+
+    IList<Item> ExpandedNodes = new List<Item>();
+    Item selectedNode;
+    Item SelectedNode
+    {
+        get { return selectedNode; }
+        set
+        {
+            selectedNode = value;
+            // OnSelectNode(selectedNode);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        // OnInitialized() allways called twice
+        //// if (hack++ == 0)
+        ////    return;
+
+        SubmodelService.buildTree();
+        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+        // StateHasChanged();
+
+        //ExpandedNodes.Add(Items.Skip(1).First());
+        //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
+
+        SubmodelService.NewDataAvailable += NewData;
+    }
+
+    public void Dispose()
+    {
+        SubmodelService.NewDataAvailable -= NewData;
+    }
+
+    static int newDataMode = 0;
+
+    void NewData(object source, EventArgs args)
+    {
+        // update = true;
+        if (newDataMode == 0)
+            newDataMode = Program.getSignalNewDataMode();
+        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+
+        InvokeAsync(() => this.StateHasChanged());
+        // this.StateHasChanged();
+    }
+
+    bool update = true;
+
+    string updateVisibleTree(List<Item> viewItems, Item selectedNode)
+    {
+        if (update && !AnyUiDisplayContextHtml.htmlEventIn && !AnyUiDisplayContextHtml.htmlEventOut)
+        {
+            switch (newDataMode)
+            {
+                // 0 == same tree, only values changed
+                case 0:
+                    break;
+                // 1 == same tree, structure may change
+                // 2 == build new tree, keep open nodes
+                case 1:
+                case 2:
+                    bool isSelected = selectedNode != null;
+                    bool isExpanded = ExpandedNodes.Count != 0;
+                    List<string>[] expandedNodesPath = new List<string>[ExpandedNodes.Count+1];
+                    List<string> selectedNodePath = getPath(selectedNode);
+                    if (isExpanded)
+                    {
+                        for (int j = 0; j < ExpandedNodes.Count; j++)
+                        {
+                            expandedNodesPath[j] = getPath(ExpandedNodes[j]);
+                        }
+                    }
+                    SubmodelService.buildTree();
+                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    ExpandedNodes.Clear();
+                    selectedNode = null;
+                    if (isSelected)
+                    {
+                        selectedNode = findPath(selectedNodePath);
+                    }
+                    if (isExpanded)
+                    {
+                        foreach (var path in expandedNodesPath)
+                        {
+                            Item p = findPath(path);
+                            if (p != null)
+                                ExpandedNodes.Add(p);                 }
+                    }
+                    newDataMode = 0;
+                    break;
+                // 3 == build new tree, all nodes closed
+                case 3:
+                    SubmodelService.buildTree();
+                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    ExpandedNodes.Clear();
+                    selectedNode = null;
+                    newDataMode = 0;
+                    break;
+            }
+            SelectedNode = selectedNode;
+            // update = false;
+            // updateNode(viewItems[0]);
+        }
+        return "";
+    }
+
+    List<string> getPath(Item i)
+    {
+        if (i == null)
+            return null;
+
+        List<string> upPath = new List<string>();
+        upPath.Add(i.Text);
+        while (i.parent != null)
+        {
+            i = (Item)i.parent;
+            upPath.Add(i.Text);
+        }
+        List<string> downPath = new List<string>();
+        int j = upPath.Count - 1;
+        while (j >= 0)
+        {
+            downPath.Add(upPath[j--]);
+        }
+        return downPath;
+    }
+
+    Item findPath(List<string> path)
+    {
+        if (path != null && path.Count > 0)
+        {
+            Item i = Items[0];
+            if (i.Text != path[0])
+                return null;
+            int j = 0;
+            Item found = i;
+            while (++j < path.Count)
+            {
+                if (i.Childs != null)
+                {
+                    found = null;
+                    foreach (var c in i.Childs)
+                    {
+                        if (c.Text == path[j])
+                        {
+                            found = c;
+                            break;
+                        }
+                    }
+                }
+                if (found == null)
+                {
+                    return null;
+                }
+                i = found;
+            }
+            return found;
+        }
+        return null;
+    }
+
+    void updateNode(Item i)
+    {
+        var clist = i.Childs as List<Item>;
+        List<string> listIdshort = new List<string>();
+        bool done = false;
+        if (!done && i.Tag is Submodel sm)
+        {
+            foreach (var smew1 in sm.submodelElements)
+            {
+                listIdshort.Add(smew1.submodelElement.idShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is SubmodelElementCollection smec)
+        {
+            foreach (var smew2 in smec.value)
+            {
+                listIdshort.Add(smew2.submodelElement.idShort);
+            }
+            done = true;
+        }
+        if (!done && i.Tag is SubmodelElement sme)
+        {
+            listIdshort.Add(sme.idShort);
+            done = true;
+        }
+        // check if child name exists in data children idshorts, if not delete
+        if (done)
+        {
+            List<Item> toDelete = new List<Item>();
+            if (clist != null)
+            {
+                foreach (var c in clist)
+                {
+                    if (!listIdshort.Contains(c.Text))
+                    {
+                        toDelete.Add(c);
+                    }
+                }
+            }
+            else
+            {
+                if (!listIdshort.Contains(i.Text))
+                {
+                    toDelete.Add(i);
+                }
+            }
+            foreach (var c in toDelete)
+            {
+                var parent = c.parent as Item;
+                if (parent != null)
+                {
+                    (parent.Childs as List<Item>).Remove(c);
+                }
+            }
+        }
+        // check if data children idshorts exist in child names, if not insert
+        if (clist != null)
+        {
+            foreach (var c in clist)
+            {
+                updateNode(c);
+            }
+        }
+    }
+
+    string getSymbols(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+        }
+
+        return ret;
+    }
+
+    string ViewNodeType(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+
+        if (item.Type != null)
+        {
+            ret = item.Type + " ";
+        }
+
+        object o = item.Tag;
+
+        /*
+        if (o is Referable)
+        {
+            ret = (o as Referable).GetElementName();
+            return (ret);
+        }
+        */
+
+        if (o is AdministrationShell)
+        {
+            ret += "AAS";
+        }
+        if (o is Submodel)
+        {
+            ret += "Sub";
+        }
+        if (o is SubmodelElement)
+        {
+            if (o is SubmodelElementCollection)
+            {
+                ret += "Coll";
+            }
+            if (o is Property)
+            {
+                ret += "Prop";
+            }
+        }
+        if (o is Operation)
+        {
+            ret += "Opr";
+        }
+        if (o is File)
+        {
+            ret += "File";
+        }
+        if (o is Blob)
+        {
+            ret += "Blob";
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            ret += "Range";
+        }
+        if (o is MultiLanguageProperty)
+        {
+            ret += "Lang";
+        }
+        if (o is RelationshipElement)
+        {
+            ret += "Rel";
+        }
+        if (o is ReferenceElement)
+        {
+            ret += "Ref";
+        }
+        if (o is Entity)
+        {
+            ret += "Ent";
+        }
+        if (o is AdminShellNS.AdminShellV20.BasicEvent)
+        {
+            ret += "Evt";
+        }
+
+        return (ret);
+    }
+
+    string ViewNodeID(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "NULL";
+
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+            var aas = o as AdministrationShell;
+            ret = aas.idShort;
+        }
+        if (o is Submodel)
+        {
+            var sm = o as Submodel;
+            ret = "";
+            if (sm.kind != null && sm.kind.IsTemplate)
+                ret += "<T> ";
+            ret += sm.idShort;
+        }
+        if (o is SubmodelElement)
+        {
+            var sme = o as SubmodelElement;
+            ret = "";
+            if (sme.kind != null && sme.kind.IsTemplate)
+                ret += "<T> ";
+            ret += sme.idShort;
+        }
+        if (o is File)
+        {
+            var f = o as File;
+            ret = "";
+            if (f.kind != null && f.kind.IsTemplate)
+                ret += "<T> ";
+            ret += f.idShort;
+        }
+        if (o is Blob)
+        {
+            var b = o as Blob;
+            ret = "";
+            if (b.kind != null && b.kind.IsTemplate)
+                ret += "<T> ";
+            ret += b.idShort;
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            var r = o as AdminShellNS.AdminShellV20.Range;
+            ret = "";
+            if (r.kind != null && r.kind.IsTemplate)
+                ret += "<T> ";
+            ret += r.idShort;
+        }
+        if (o is MultiLanguageProperty)
+        {
+            var mlp = o as MultiLanguageProperty;
+            ret = "";
+            if (mlp.kind != null && mlp.kind.IsTemplate)
+                ret += "<T> ";
+            ret += mlp.idShort;
+        }
+        return (ret);
+    }
+
+    string ViewNodeInfo(Item item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string ret = "";
+
+        object o = item.Tag;
+
+        if (o is AdministrationShell)
+        {
+            var aas = o as AdministrationShell;
+            // ret = aas.identification.ToString();
+        }
+        if (o is Submodel)
+        {
+            var sm = o as Submodel;
+            // ret = sm.identification.ToString();
+            if (sm.qualifiers != null && sm.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        if (o is SubmodelElementCollection)
+        {
+            var sme = o as SubmodelElementCollection;
+            // ret = sm.identification.ToString();
+            if (sme.value.Count > 0)
+            {
+                ret += " #" + sme.value.Count;
+            }
+        }
+        if (o is SubmodelElement)
+        {
+            if (o is Property)
+            {
+                var prop = o as Property;
+                if (prop.value != "")
+                {
+                    ret = " = " + prop.value;
+                }
+                if (prop.qualifiers != null && prop.qualifiers.Count > 0)
+                {
+                    ret += " @QUALIFIERS";
+                }
+            }
+            if (o is File)
+            {
+                var f = o as File;
+                ret = " = " + f.value;
+                if (f.qualifiers != null && f.qualifiers.Count > 0)
+                {
+                    ret += " @QUALIFIERS";
+                }
+            }
+        }
+        if (o is AdminShellNS.AdminShellV20.Range)
+        {
+            var r = o as AdminShellNS.AdminShellV20.Range;
+            ret = " = " + r.min + " .. " + r.max;
+            if (r.qualifiers != null && r.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        if (o is MultiLanguageProperty)
+        {
+            var mlp = o as MultiLanguageProperty;
+            var ls = mlp.value;
+            ret = " = ";
+            for (int i = 0; i < ls.Count; i++)
+            {
+                ret += ls.langString[i].lang + " ";
+            }
+            if (mlp.qualifiers != null && mlp.qualifiers.Count > 0)
+            {
+                ret += " @QUALIFIERS";
+            }
+        }
+        return (ret);
+    }
+}
+
