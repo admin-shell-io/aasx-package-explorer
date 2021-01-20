@@ -170,7 +170,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private async void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var mi = sender as MenuItem;
             var fi = this.rightClickSelectedItem;
@@ -188,6 +188,24 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (mi?.Name == "MenuItemMoveDown" && fi != null)
             {
                 this.FileRepository?.MoveDown(fi);
+            }
+
+            if (mi?.Name == "MenuItemUnload" && fi != null)
+            {
+                fi.Close();
+            }
+
+            if (mi?.Name == "MenuItemRecalc" && fi != null)
+            {
+                await fi.LoadResidentIfPossible(theFileRepository?.GetFullItemLocation(fi.Location));
+
+                if (fi.Env?.AasEnv == null)
+                {
+                    Log.Singleton.Error("AAS information not already loaded for this item.");
+                    return;
+                }    
+
+                fi.CalculateIdsTagAndDesc();
             }
         }
 

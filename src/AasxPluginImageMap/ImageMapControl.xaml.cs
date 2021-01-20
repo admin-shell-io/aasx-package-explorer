@@ -284,7 +284,7 @@ namespace AasxPluginImageMap
             lb.HorizontalContentAlignment = HorizontalAlignment.Center;
             lb.VerticalContentAlignment = VerticalAlignment.Center;
             lb.Content = "" + text;
-            lb.FontSize = 8.0;
+            lb.FontSize = 10.0;
             lb.Foreground = fg;
             lb.Tag = tag;
             Canvas.SetLeft(lb, x0);

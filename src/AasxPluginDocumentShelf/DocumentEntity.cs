@@ -39,6 +39,7 @@ namespace AasxPluginDocumentShelf
         public string FurtherInfo = "";
         public string[] CountryCodes;
         public string DigitalFile = "";
+        public string MimeType = null;
         public System.Windows.Controls.Viewbox ImgContainer = null;
         public string ReferableHash = null;
 
@@ -206,9 +207,10 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.value;
 
                         // filename
-                        var fn = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            options?.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed)?.value;
-                        ent.DigitalFile = fn;
+                        var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
+                            options?.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);                        
+                        ent.DigitalFile = fl?.value;
+                        ent.MimeType = fl?.mimeType;
 
                         // add
                         ent.SmVersion = DocumentEntity.SubmodelVersion.Default;
@@ -394,9 +396,10 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.value;
 
                         // filename
-                        var fn = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            defs11.CD_DigitalFile?.GetReference())?.value;
-                        ent.DigitalFile = fn;
+                        var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
+                            defs11.CD_DigitalFile?.GetReference());
+                        ent.DigitalFile = fl?.value;
+                        ent.MimeType = fl?.mimeType;
 
                         // relations
                         SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.DocumentedEntity,

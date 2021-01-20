@@ -111,7 +111,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Location of the Container in a certain storage container, e.g. a local or network based
         /// repository. In this base implementation, it maps to a empty string.
         /// </summary>
-        [JsonIgnore]
         public virtual string Location
         {
             get { return _location; }
@@ -157,7 +156,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonIgnore]
         public bool IsOpen { get { return Env != null && Env.IsOpen; } }
 
-        public void Close()
+        public virtual void Close()
         {
             if (!IsOpen)
                 return;
@@ -165,11 +164,17 @@ namespace AasxWpfControlLibrary.PackageCentral
             Env = null;
         }
 
+        public virtual async Task LoadResidentIfPossible(string fullItemLocation)
+        {
+            await Task.Yield();
+        }
+
         public virtual void BackupInDir(string backupDir, int maxFiles, BackupType backupType = BackupType.XML)
         {
         }
 
         public virtual async Task LoadFromSourceAsync(
+            string fullItemLocation,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             await Task.Yield();

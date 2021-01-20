@@ -42,6 +42,17 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
+                <MenuItem Name="MenuItemUnload" Header="Un-load" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x1f5d1;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Name="MenuItemRecalc" Header="Re-calculate ids" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x27f3;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
                 <MenuItem Name="MenuItemEditTag">
                     <MenuItem.Header>
                         <Grid>
@@ -191,11 +202,41 @@
                     <GridViewColumn Header="Icon">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Grid Width="40" Height="40" Margin="0,2,0,2">
-                                    <Image Grid.Row="0" Grid.Column="0" Source="{StaticResource Icon_AASX}" Width="40" Height="40"/>
+                                <Grid Width="60" Height="40" Margin="0,2,0,2">
 
-                                    <Border BorderBrush="{Binding Path=VisualLabelBackground}" Background="{Binding Path=VisualLabelBackground}" CornerRadius="4" Margin="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Row="0" Grid.Column="0"
+                                            BorderThickness="0" Background="LightGray" 
+                                            CornerRadius="0" Margin="0,0,2,0" Visibility="Visible">
+                                    </Border>
+                                    
+                                    <Border Grid.Row="0" Grid.Column="0"
+                                            BorderThickness="0" Background="#303060" 
+                                            CornerRadius="0" Margin="0,0,2,0" Visibility="{Binding Path=VisualIsEdited}">
+                                        <TextBlock Text="E" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                                    </Border>
+
+                                    <Image Grid.Row="0" Grid.Column="1" 
+                                           Source="{StaticResource Icon_AASX}" Width="40" Height="40"/>
+
+                                    <Border Grid.Row="0" Grid.Column="1"
+                                            BorderBrush="{Binding Path=VisualLabelBackground}" Background="{Binding Path=VisualLabelBackground}" CornerRadius="4" Margin="4">
                                         <TextBlock Text="{Binding Path=VisualLabelText}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                                    </Border>
+
+                                    <Border Grid.Row="0" Grid.Column="1"
+                                            BorderThickness="0" Background="#303030" 
+                                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                                            CornerRadius="3" Margin="2" Width="20" Height="20" Visibility="{Binding Path=VisualIsLoaded}">
+                                        <TextBlock Text="Ld" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
                                 </Grid>
                             </DataTemplate>

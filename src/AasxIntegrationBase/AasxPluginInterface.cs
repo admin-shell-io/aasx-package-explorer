@@ -71,6 +71,7 @@ namespace AasxIntegrationBase
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
     {
         public string fn = null;
+        public string mimeType = null;
         public bool preferInternalDisplay = false;
     }
 

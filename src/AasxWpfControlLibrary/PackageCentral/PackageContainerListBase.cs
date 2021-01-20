@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxPackageExplorer;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
@@ -165,7 +166,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public virtual string GetFullItemLocation(PackageContainerRepoItem fi)
+        public virtual string GetFullItemLocation(string location)
         {
             return null;
         }
@@ -182,59 +183,31 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
-        public void AddByAas(AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas, string fn)
+        public void AddByAasPackage(PackageCentral packageCentral, AdminShellPackageEnv env, string fn)
         {
             // access
-            if (env == null || aas?.identification == null)
+            if (env == null)
                 return;
-            var aasId = "" + aas.identification.id;
-
-            // demand also asset
-            var asset = env.FindAsset(aas.assetRef);
-            if (asset?.identification == null)
-                return;
-            var assetId = "" + asset.identification.id;
-
-            // try determine tag
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            var tag = "";
-            try
-            {
-                var threeFn = Path.GetFileNameWithoutExtension(fn);
-                tag = AdminShellUtil.ExtractPascalCasingLetters(asset.idShort);
-                if (tag == null || tag.Length < 2)
-                    tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
-                if (tag == null || tag.Length < 2)
-                    tag = ("" + asset.idShort).SubstringMax(0, 3).ToUpper();
-                if (tag == null || tag.Length < 3)
-                    tag = ("" + threeFn).SubstringMax(0, 3).ToUpper();
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            }
-            // ReSharper enable ConditionIsAlwaysTrueOrFalse
-
-            // build description
-            var desc = "";
-            if (aas.idShort.HasContent())
-                desc += $"\"{aas.idShort}\"";
-            if (asset.idShort.HasContent())
-            {
-                if (desc.HasContent())
-                    desc += ",";
-                desc += $"\"{asset.idShort}\"";
-            }
 
             // ok, add
-            var fi = new PackageContainerRepoItem(
-                assetId: assetId, aasId: aasId, fn: fn, tag: "" + tag, description: desc);
-            fi.VisualState = PackageContainerRepoItem.VisualStateEnum.ReadFrom;
-            fi.VisualTime = 2.0;
-            this.Add(fi);
+            var fi = PackageContainerFactory.GuessAndCreateFor(
+                packageCentral,
+                location:fn, 
+                fullItemLocation: fn,
+                overrideLoadResident: false,
+                containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
+
+            if (fi is PackageContainerRepoItem ri)
+            {
+                fi.Env = env;
+                ri.CalculateIdsTagAndDesc();
+                ri.VisualState = PackageContainerRepoItem.VisualStateEnum.ReadFrom;
+                ri.VisualTime = 2.0;
+                this.Add(ri);
+            }
         }
 
-        public void AddByAasxFn(string fn)
+        public void AddByAasxFn(PackageCentral packageCentral, string fn)
         {
             try
             {
@@ -242,11 +215,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var pkg = new AdminShellPackageEnv(fn);
 
                 // for each Admin Shell and then each Asset
-                if (pkg.AasEnv?.AdministrationShells?.Count > 0)
-                    foreach (var aas in pkg.AasEnv.AdministrationShells)
-                    {
-                        this.AddByAas(pkg.AasEnv, aas, fn);
-                    }
+                this.AddByAasPackage(packageCentral, pkg, fn);
 
                 // close directly!
                 pkg.Close();

@@ -32,7 +32,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Location of the Container in a certain storage container, e.g. a local or network based
         /// repository. In this implementation, the Location refers to a HTTP network ressource.
         /// </summary>
-        [JsonIgnore]
         public override string Location
         {
             get { return _location; }
@@ -79,17 +78,18 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public static async Task<PackageContainerNetworkHttpFile> CreateAndLoadAsync(
             PackageCentral packageCentral,
-            string sourceFn,
+            string location,
+            string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var res = new PackageContainerNetworkHttpFile(CopyMode.Serialized, takeOver,
-                packageCentral, sourceFn, containerOptions);
+                packageCentral, location, containerOptions);
 
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
-                await res.LoadFromSourceAsync(runtimeOptions);
+                await res.LoadFromSourceAsync(fullItemLocation, runtimeOptions);
 
             return res;
         }
@@ -195,17 +195,18 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         public override async Task LoadFromSourceAsync(
+            string fullItemLocation,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             // buffer to temp file
             try
             {
-                await DownloadFromSource(new Uri(Location), runtimeOptions);
+                await DownloadFromSource(new Uri(fullItemLocation), runtimeOptions);
             }
             catch (Exception ex)
             {
                 throw new PackageContainerException(
-                    $"While buffering aasx from {Location} via HttpClient " +
+                    $"While buffering aasx from {Location} full-location {fullItemLocation} via HttpClient " +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
 
@@ -229,7 +230,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // read via HttpClient (uses standard proxies)
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
-
+                
             var client = new HttpClient(handler);
             client.BaseAddress = new Uri(serverUri.GetLeftPart(UriPartial.Authority));
             var requestPath = serverUri.PathAndQuery;

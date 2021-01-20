@@ -25,19 +25,22 @@ namespace AasxWpfControlLibrary.PackageCentral
         public static PackageContainerBase GuessAndCreateFor(
             PackageCentral packageCentral,
             string location,
+            string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var task = Task.Run(() => GuessAndCreateForAsync(
-                packageCentral, location, overrideLoadResident, takeOver, containerOptions, runtimeOptions));
+                packageCentral, location, fullItemLocation, overrideLoadResident, 
+                takeOver, containerOptions, runtimeOptions));
             return task.Result;
         }
 
         public static async Task<PackageContainerBase> GuessAndCreateForAsync(
             PackageCentral packageCentral,
             string location,
+            string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
             PackageContainerOptionsBase containerOptions = null,
@@ -62,7 +65,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
                     var cnt = await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
-                                            packageCentral, location,
+                                            packageCentral, location, fullItemLocation,
                                             overrideLoadResident, takeOver,
                                             containerOptions, runtimeOptions);
 
@@ -102,7 +105,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (fi != null)
                 // seems to be a valid (possible) file
                 return await PackageContainerLocalFile.CreateAndLoadAsync(
-                    packageCentral, location, overrideLoadResident, takeOver, containerOptions);
+                    packageCentral, location, fullItemLocation, overrideLoadResident, takeOver, containerOptions);
 
             // no??
             runtimeOptions?.Log?.Info($".. no any possible option for package container found .. Aborting!");
@@ -158,6 +161,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             ro?.Log?.Info($".. demo loading from internet ..");
             return await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
                 packageCentral,
+                "http://admin-shell-io.com:51310/server/getaasx/0",
                 "http://admin-shell-io.com:51310/server/getaasx/0",
                 // "http://localhost:51310/server/getaasx/0",
                 overrideLoadResident, null, containerOptions, ro);

@@ -657,6 +657,7 @@ namespace AasxPluginDocumentShelf
                 // give over to event stack
                 var evt = new AasxPluginResultEventDisplayContentFile();
                 evt.fn = inputFn;
+                evt.mimeType = e.MimeType;
                 this.theEventStack.PushEvent(evt);
             }
             catch (Exception ex)

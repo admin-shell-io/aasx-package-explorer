@@ -157,7 +157,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Location of the Container in a certain storage container, e.g. a local or network based
         /// repository. In this base implementation, it maps to a empty string.
         /// </summary>
-        [JsonIgnore]
         public override string Location
         {
             get { return _location; }
@@ -282,6 +281,61 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
         }
 
+        /// <summary>
+        /// True, if the actual editor window is editing exactly this one repo item.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsEdited { 
+            get { return _isEdited; } 
+            set { _isEdited = value; OnPropertyChanged("VisualIsEdited"); }
+        }
+        private bool _isEdited = false;
+
+        [JsonIgnore]
+        public System.Windows.Visibility VisualIsEdited
+        {
+            get
+            {
+                return _isEdited ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+            }
+        }
+
+        /// <summary>
+        /// True, if <c>Env</c> is loaded with contents, e.g. due to "LoadResident".
+        /// State of this flag is required to be maintained by the class logic.
+        /// </summary>
+        [JsonIgnore]
+        protected bool IsLoaded
+        {
+            get { return _isLoaded; }
+            set { _isLoaded = value; OnPropertyChanged("VisualIsLoaded"); }
+        }
+        private bool _isLoaded
+        {
+            get
+            {
+                return true == Env?.IsOpen;
+            }
+            set
+            {
+            }
+        }
+
+        [JsonIgnore]
+        public System.Windows.Visibility VisualIsLoaded
+        {
+            get
+            {
+                return _isLoaded ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+            }
+        }
+
+        public override void Close()
+        {
+            base.Close();
+            OnPropertyChanged("VisualIsLoaded");
+        }
+
         //
         // Constructors
         //
@@ -364,7 +418,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// re-calculates the particulare lists of ids. If the tag and/ or description is empty, 
         /// it will also build a generated tag or descriptions
         /// </summary>
-        public void CalculateIdsTagAndDesc()
+        public void CalculateIdsTagAndDesc(bool force = false)
         {
             // Ids
 
@@ -394,7 +448,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
 
             // Tag
-            if (!Tag.HasContent())
+            if (!Tag.HasContent() || force)
             {
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
                 var tag = "";
@@ -419,16 +473,16 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // Description
-            if (!Description.HasContent())
+            if (!Description.HasContent() || force)
             {
                 var desc = "";
                 if (aas0?.idShort.HasContent() == true)
-                    desc += $"\"{aas0.idShort}\"";
+                    desc += $"{aas0.idShort}";
                 if (asset0?.idShort.HasContent() == true)
                 {
                     if (desc.HasContent())
                         desc += ",";
-                    desc += $"\"{asset0.idShort}\"";
+                    desc += $"{asset0.idShort}";
                 }
                 Description = desc;
             }

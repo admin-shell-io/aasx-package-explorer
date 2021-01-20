@@ -89,16 +89,16 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public override string GetFullItemLocation(PackageContainerRepoItem fi)
+        public override string GetFullItemLocation(string location)
         {
             // access
-            if (fi?.Location == null)
+            if (location == null)
                 return null;
 
             // there is a good chance, that fi.Location is already absolute
-            var ll = fi.Location.Trim().ToLower();
+            var ll = location.Trim().ToLower();
             if (ll.StartsWith("http://") || ll.StartsWith("https://"))
-                return fi.Location;
+                return location;
 
             // TODO (MIHO, 2021-01-08): check, how to make absolute
             throw new NotImplementedException("AasxFileRepoHttpRestRepository.GetFullItemLocation()");

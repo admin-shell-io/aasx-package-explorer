@@ -38,9 +38,15 @@ namespace AasxWpfControlLibrary.PackageCentral
         public event Action<PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
         public event Action<PackageContainerListBase, string[]> FileDrop;
 
+        private PackageCentral _packageCentral;
         private IFlyoutProvider _flyout;
         private IManageVisualAasxElements _manageVisuElems;
         private PackageContainerListOfList _repoList;
+
+        /// <summary>
+        /// In order to directly create new valid items, PakcageCentral shall be given
+        /// </summary>
+        public PackageCentral PackageCentral { set { _packageCentral = value; } }
 
         /// <summary>
         /// Window (handler) which provides flyout control for this control. Is expected to sit in the MainWindow.
@@ -161,6 +167,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     {
                         Log.Singleton.Info($"Saving AASX file repository to {fn} ..");
                         fr.SaveAsLocalFile(fn);
+                        if (fr is PackageContainerListLocal frl2)
+                            frl2.Filename = fn;
                     }
                     catch (Exception ex)
                     {
@@ -213,6 +221,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 MessageBoxButton.OKCancel, MessageBoxImage.Hand))
                             return;
 
+                        if (!frl.Filename.HasContent())
+                        {
+                            Log.Singleton.Error("AASX file repository has no valid filename!");
+                            return;
+                        }
 
                         // execute (is data binded)
                         try
@@ -264,7 +277,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     // generate appropriate container
                     var cnt = PackageContainerFactory.GuessAndCreateFor(
-                        null, veEnv.thePackageSourceFn,
+                        null, veEnv.thePackageSourceFn, veEnv.thePackageSourceFn,
                         overrideLoadResident: false,
                         containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
                     if (cnt is PackageContainerRepoItem ri)
@@ -293,7 +306,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     // loop
                     foreach (var fn in inputDlg.FileNames)
-                        fr.AddByAasxFn(fn);
+                        fr.AddByAasxFn(_packageCentral, fn);
                 }
 
                 if (cmd == "filerepoaddfromserver")

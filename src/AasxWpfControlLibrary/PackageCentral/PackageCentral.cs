@@ -67,6 +67,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public bool Load(
             PackageCentral packageCentral,
             string location,
+            string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
@@ -85,6 +86,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var task = Task.Run(async () => await PackageContainerFactory.GuessAndCreateForAsync(
                     packageCentral,
                     location,
+                    fullItemLocation,
                     overrideLoadResident,
                     null,
                     containerOptions,
@@ -209,6 +211,20 @@ namespace AasxWpfControlLibrary.PackageCentral
     public class PackageCentral
     {
         public enum Selector { Main, MainAux, MainAuxFileRepo }
+
+        //
+        // Non-container  members
+        //
+
+        /// <summary>
+        /// Runtime options allow Logging, Progress and dialogues go to a certain "place". This holds the
+        /// "default" place, e.g. the main app.
+        /// </summary>
+        public PackCntRuntimeOptions CentralRuntimeOptions = null;
+
+        //
+        // Container members
+        //
 
         private PackageCentralItem _main = new PackageCentralItem();
         private PackageCentralItem _aux = new PackageCentralItem();

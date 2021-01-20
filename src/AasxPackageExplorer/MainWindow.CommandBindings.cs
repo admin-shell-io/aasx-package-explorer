@@ -103,7 +103,7 @@ namespace AasxPackageExplorer
                         // clear
                         ClearAllViews();
                         // create new AASX package
-                        packages.MainItem.New();
+                        _packageCentral.MainItem.New();
                         // redraw
                         CommandExecution_RedrawAll();
                     }
@@ -118,7 +118,7 @@ namespace AasxPackageExplorer
             if (cmd == "open" || cmd == "openaux")
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(packages.Main?.Filename);
+                dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.Main?.Filename);
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
                     "AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
@@ -134,12 +134,12 @@ namespace AasxPackageExplorer
                     {
                         case "open":
                             UiLoadPackageWithNew(
-                                packages.MainItem, null, dlg.FileName, onlyAuxiliary: false,
+                                _packageCentral.MainItem, null, dlg.FileName, onlyAuxiliary: false,
                                 storeFnToLRU: dlg.FileName);
                             break;
                         case "openaux":
                             UiLoadPackageWithNew(
-                                packages.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
+                                _packageCentral.AuxItem, null, dlg.FileName, onlyAuxiliary: true);
                             break;
                         default:
                             throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
@@ -150,21 +150,21 @@ namespace AasxPackageExplorer
             if (cmd == "save")
             {
                 // open?
-                if (!packages.MainStorable)
+                if (!_packageCentral.MainStorable)
                 {
                     MessageBoxFlyoutShow(
                         "No open AASX file to be saved.",
                         "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
                     return;
-                }
+                }                
 
                 try
                 {
                     // save
-                    await packages.MainItem.SaveAsAsync(runtimeOptions: UiBuildRuntimeOptionsForMainAppLoad());
+                    await _packageCentral.MainItem.SaveAsAsync(runtimeOptions: _packageCentral.CentralRuntimeOptions);
                     // backup
                     if (Options.Curr.BackupDir != null)
-                        packages.MainItem.Container.BackupInDir(
+                        _packageCentral.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
@@ -176,13 +176,13 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Error(ex, "When saving AASX, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", packages.MainItem.Filename);
+                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", _packageCentral.MainItem.Filename);
             }
 
             if (cmd == "saveas")
             {
                 // open?
-                if (!packages.MainAvailable)
+                if (!_packageCentral.MainAvailable)
                 {
                     MessageBoxFlyoutShow(
                         "No open AASX file to be saved.",
@@ -192,8 +192,8 @@ namespace AasxPackageExplorer
 
                 // where
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
-                dlg.FileName = packages.MainItem.Filename;
+                dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                dlg.FileName = _packageCentral.MainItem.Filename;
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
@@ -212,10 +212,10 @@ namespace AasxPackageExplorer
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
                         // save
                         RememberForInitialDirectory(dlg.FileName);
-                        await packages.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
+                        await _packageCentral.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
                         // backup
                         if (Options.Curr.BackupDir != null)
-                            packages.MainItem.Container.BackupInDir(
+                            _packageCentral.MainItem.Container.BackupInDir(
                                 System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                                 Options.Curr.BackupFiles,
                                 PackageContainerBase.BackupType.FullCopy);
@@ -233,9 +233,9 @@ namespace AasxPackageExplorer
                     // record in LRU?
                     try
                     {
-                        var lru = packages?.Repositories?.FindLRU();
+                        var lru = _packageCentral?.Repositories?.FindLRU();
                         if (lru != null)
-                            lru.Push(packages?.MainItem?.Container as PackageContainerRepoItem, dlg.FileName);
+                            lru.Push(_packageCentral?.MainItem?.Container as PackageContainerRepoItem, dlg.FileName);
                     }
                     catch (Exception ex)
                     {
@@ -246,14 +246,14 @@ namespace AasxPackageExplorer
                 }
             }
 
-            if (cmd == "close" && packages?.Main != null)
+            if (cmd == "close" && _packageCentral?.Main != null)
             {
                 if (MessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to close the open package? Please make sure that you have saved before.",
                     "Close Package?", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     try
                     {
-                        packages.MainItem.Close();
+                        _packageCentral.MainItem.Close();
                         RedrawAllAasxElements();
                     }
                     catch (Exception ex)
@@ -262,7 +262,7 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && packages?.Main != null)
+            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
@@ -326,7 +326,7 @@ namespace AasxPackageExplorer
                     }
                 }
             }
-            if ((cmd == "decrypt") && packages.Main != null)
+            if ((cmd == "decrypt") && _packageCentral.Main != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx2)|*.aasx2";
@@ -383,10 +383,10 @@ namespace AasxPackageExplorer
                 }
             }
 
-            if (cmd == "closeaux" && packages.AuxAvailable)
+            if (cmd == "closeaux" && _packageCentral.AuxAvailable)
                 try
                 {
-                    packages.AuxItem.Close();
+                    _packageCentral.AuxItem.Close();
                 }
                 catch (Exception ex)
                 {
@@ -572,7 +572,7 @@ namespace AasxPackageExplorer
         {
             // work on package
             var msgBoxHeadline = "Check, validate and fix ..";
-            var env = packages.Main?.AasEnv;
+            var env = _packageCentral.Main?.AasEnv;
             if (env == null)
             {
                 MessageBoxFlyoutShow(
@@ -590,7 +590,7 @@ namespace AasxPackageExplorer
 
                 // validate as XML
                 var ms = new MemoryStream();
-                packages.Main.SaveAs("noname.xml", true, AdminShellPackageEnv.SerializationFormat.Xml, ms,
+                _packageCentral.Main.SaveAs("noname.xml", true, AdminShellPackageEnv.SerializationFormat.Xml, ms,
                     saveOnlyCopy: true);
                 ms.Flush();
                 ms.Position = 0;
@@ -599,7 +599,7 @@ namespace AasxPackageExplorer
 
                 // validate as JSON
                 var ms2 = new MemoryStream();
-                packages.Main.SaveAs("noname.json", true, AdminShellPackageEnv.SerializationFormat.Json, ms2,
+                _packageCentral.Main.SaveAs("noname.json", true, AdminShellPackageEnv.SerializationFormat.Json, ms2,
                     saveOnlyCopy: true);
                 ms2.Flush();
                 ms2.Position = 0;
@@ -677,7 +677,7 @@ namespace AasxPackageExplorer
                     return;
 
                 this.UiAssertFileRepository(visible: true);
-                packages.Repositories.AddAtTop(new PackageContainerListLocal());
+                _packageCentral.Repositories.AddAtTop(new PackageContainerListLocal());
             }
 
             if (cmd == "filerepoopen")
@@ -694,7 +694,7 @@ namespace AasxPackageExplorer
                 {
                     var fr = this.UiLoadFileRepository(dlg.FileName);
                     this.UiAssertFileRepository(visible: true);
-                    packages.Repositories.AddAtTop(fr);
+                    _packageCentral.Repositories.AddAtTop(fr);
                 }
             }
 
@@ -709,13 +709,13 @@ namespace AasxPackageExplorer
 
                 var fr = new PackageContainerListHttpRestRepository(uc.Text);
                 await fr.SyncronizeFromServerAsync();
-                packages.Repositories.AddAtTop(fr);
+                _packageCentral.Repositories.AddAtTop(fr);
             }
 
             if (cmd == "filerepoquery")
             {
                 // access
-                if (packages.Repositories == null || packages.Repositories.Count < 1)
+                if (_packageCentral.Repositories == null || _packageCentral.Repositories.Count < 1)
                 {
                     MessageBoxFlyoutShow(
                         "No repository currently available! Please open.",
@@ -728,17 +728,17 @@ namespace AasxPackageExplorer
                 // dialogue
                 var uc = new SelectFromRepositoryFlyout();
                 uc.Margin = new Thickness(10);
-                if (uc.LoadAasxRepoFile(items: packages.Repositories.EnumerateItems()))
+                if (uc.LoadAasxRepoFile(items: _packageCentral.Repositories.EnumerateItems()))
                 {
                     uc.ControlClosed += () =>
                     {
                         var fi = uc.ResultItem;
-                        var fr = packages.Repositories?.FindRepository(fi);
+                        var fr = _packageCentral.Repositories?.FindRepository(fi);
 
                         if (fr != null && fi?.Location != null)
                         {
                             // which file?
-                            var loc = fr?.GetFullItemLocation(fi);
+                            var loc = fr?.GetFullItemLocation(fi.Location);
                             if (loc == null)
                                 return;
 
@@ -751,7 +751,7 @@ namespace AasxPackageExplorer
                                 // load
                                 Log.Singleton.Info("Switching to AASX repository location {0} ..", loc);
                                 UiLoadPackageWithNew(
-                                    packages.MainItem, null, loc, onlyAuxiliary: false);
+                                    _packageCentral.MainItem, null, loc, onlyAuxiliary: false);
                             }
                             catch (Exception ex)
                             {
@@ -780,13 +780,13 @@ namespace AasxPackageExplorer
                 try
                 {
                     this.UiAssertFileRepository(visible: true);
-                    var lruExist = packages?.Repositories?.FindLRU();
+                    var lruExist = _packageCentral?.Repositories?.FindLRU();
                     if (lruExist != null)
-                        packages.Repositories.Remove(lruExist);
+                        _packageCentral.Repositories.Remove(lruExist);
                     var lruNew = new PackageContainerListLastRecentlyUsed();
                     lruNew.Header = "Last Recently Used";
                     lruNew.SaveAs(lruFn);
-                    packages?.Repositories?.AddAtTop(lruNew);
+                    _packageCentral?.Repositories?.AddAtTop(lruNew);
                 }
                 catch (Exception ex)
                 {
@@ -880,7 +880,7 @@ namespace AasxPackageExplorer
         {
             // make dialogue flyout
             var uc = new IntegratedConnectFlyout(
-                packages,
+                _packageCentral,
                 initialLocation: "" /* "http://admin-shell-io.com:51310/server/getaasx/0" */,
                 logger: new LogInstance());
             uc.LoadPresets(Options.Curr.IntegratedConnectPresets);
@@ -898,7 +898,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     UiLoadPackageWithNew(
-                        packages.MainItem, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
+                        _packageCentral.MainItem, null, takeOverContainer: uc.ResultContainer, onlyAuxiliary: false);
                 }
                 catch (Exception ex)
                 {
@@ -960,7 +960,7 @@ namespace AasxPackageExplorer
             worker.DoWork += (s1, e1) =>
             {
                 AasxRestServerLibrary.AasxRestServer.Start(
-                    packages.Main, Options.Curr.RestServerHost, Options.Curr.RestServerPort, logger);
+                    _packageCentral.Main, Options.Curr.RestServerHost, Options.Curr.RestServerPort, logger);
             };
             worker.RunWorkerAsync();
 
@@ -989,7 +989,7 @@ namespace AasxPackageExplorer
             {
                 try
                 {
-                    await AasxMqttClient.MqttClient.StartAsync(packages.Main, logger);
+                    await AasxMqttClient.MqttClient.StartAsync(_packageCentral.Main, logger);
                 }
                 catch (Exception e)
                 {
@@ -1034,8 +1034,8 @@ namespace AasxPackageExplorer
                         prefix2 = input.Substring(0, tag2.Length);
                     if (prefix == tag || prefix2 == tag2) // get by AssetID
                     {
-                        if (packages.MainAvailable)
-                            packages.MainItem.Close();
+                        if (_packageCentral.MainAvailable)
+                            _packageCentral.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
 
                         var handler = new HttpClientHandler();
@@ -1082,7 +1082,7 @@ namespace AasxPackageExplorer
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainItem,
+                                _packageCentral.MainItem,
                                 null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                         return;
@@ -1111,14 +1111,14 @@ namespace AasxPackageExplorer
 
                     if (connect)
                     {
-                        if (packages.MainAvailable)
-                            packages.MainItem.Close();
+                        if (_packageCentral.MainAvailable)
+                            _packageCentral.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
                         await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
-                                packages.MainItem,
+                                _packageCentral.MainItem,
                                 null,
                                 AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
                     }
@@ -1134,7 +1134,7 @@ namespace AasxPackageExplorer
                         theOnlineConnection = client;
                         var pe = client.OpenPackageByAasEnv();
                         if (pe != null)
-                            UiLoadPackageWithNew(packages.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
+                            UiLoadPackageWithNew(_packageCentral.MainItem, pe, info: uc.Text, onlyAuxiliary: false);
                     }
                     catch (Exception ex)
                     {
@@ -1162,7 +1162,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
             dlg.Filter = "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1201,7 +1201,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
             dlg.Filter = "CSV files (*.CSV)|*.csv|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1240,7 +1240,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
             dlg.Filter = "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -1314,7 +1314,7 @@ namespace AasxPackageExplorer
                         totalArgs.AddRange(additionalArgs);
 
                     // invoke
-                    pi.InvokeAction(actionName, packages.Main, totalArgs.ToArray());
+                    pi.InvokeAction(actionName, _packageCentral.Main, totalArgs.ToArray());
 
                 }
                 catch (Exception ex)
@@ -1370,7 +1370,7 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(packages.MainItem.Filename);
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
             dlg.FileName = "Submodel_" + obj.idShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
@@ -1414,7 +1414,7 @@ namespace AasxPackageExplorer
 
             if (res == true)
             {
-                var aas = packages.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1448,7 +1448,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (packages.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.Assets == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -1457,10 +1457,10 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = packages.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
                 if (existingSm != null)
-                    packages.Main.AasEnv.Submodels.Remove(existingSm);
-                packages.Main.AasEnv.Submodels.Add(submodel);
+                    _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
+                _packageCentral.Main.AasEnv.Submodels.Add(submodel);
 
                 // add SubmodelRef to AAS
                 // access the AAS
@@ -1565,7 +1565,7 @@ namespace AasxPackageExplorer
             }
 
             {
-                var aas = packages.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1596,7 +1596,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (packages.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.Assets == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -1605,10 +1605,10 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = packages.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
                 if (existingSm != null)
-                    packages.Main.AasEnv.Submodels.Remove(existingSm);
-                packages.Main.AasEnv.Submodels.Add(submodel);
+                    _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
+                _packageCentral.Main.AasEnv.Submodels.Add(submodel);
 
                 // add SubmodelRef to AAS
                 // access the AAS
@@ -1793,7 +1793,7 @@ namespace AasxPackageExplorer
                 if (ve != null && ve.theEnv != null && ve.theAas != null)
                     dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
                 else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(packages.Main.AasEnv);
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv);
             }
             catch (Exception e)
             {
@@ -1865,7 +1865,7 @@ namespace AasxPackageExplorer
                 if (res == true)
                 {
                     RememberForInitialDirectory(dlg.FileName);
-                    AasxAmlImExport.AmlImport.ImportInto(packages.Main, dlg.FileName);
+                    AasxAmlImExport.AmlImport.ImportInto(_packageCentral.Main, dlg.FileName);
                     this.RestartUIafterNewPackage();
                 }
             }
@@ -1898,7 +1898,7 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     AasxAmlImExport.AmlExport.ExportTo(
-                        packages.Main, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
+                        _packageCentral.Main, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
                 }
             }
             catch (Exception ex)
@@ -1994,7 +1994,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportGenericForms()
         {
             // trivial things
-            if (!packages.MainStorable)
+            if (!_packageCentral.MainStorable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -2048,7 +2048,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportPredefineConcepts()
         {
             // trivial things
-            if (!packages.MainAvailable)
+            if (!_packageCentral.MainAvailable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -2087,7 +2087,7 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Info(
                         "Exporting text snippets for PredefinedConcepts: {0}", dlg.FileName);
                     AasxPredefinedConcepts.ExportPredefinedConcepts.Export(
-                        packages.Main.AasEnv, ve1.theSubmodel, dlg.FileName);
+                        _packageCentral.Main.AasEnv, ve1.theSubmodel, dlg.FileName);
                 }
             }
             catch (Exception ex)
@@ -2102,7 +2102,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ConvertElement()
         {
             // trivial things
-            if (!packages.MainStorable)
+            if (!_packageCentral.MainStorable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open for storage", "Error",
@@ -2155,7 +2155,7 @@ namespace AasxPackageExplorer
                     {
                         var offer = uc.ResultItem.Tag as AasxPredefinedConcepts.Convert.ConvertOfferBase;
                         offer?.Provider?.ExecuteOffer(
-                            packages.Main, rf, offer, deleteOldCDs: true, addNewCDs: true);
+                            _packageCentral.Main, rf, offer, deleteOldCDs: true, addNewCDs: true);
                     }
                 }
                 catch (Exception ex)
@@ -2171,7 +2171,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_ExportTable()
         {
             // trivial things
-            if (!packages.MainAvailable)
+            if (!_packageCentral.MainAvailable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -2217,7 +2217,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_NewSubmodelFromPlugin()
         {
             // trivial things
-            if (!packages.MainStorable)
+            if (!_packageCentral.MainStorable)
             {
                 MessageBoxFlyoutShow(
                     "An AASX package needs to be open for storage", "Error"
@@ -2336,7 +2336,7 @@ namespace AasxPackageExplorer
                     // add Submodel
                     var smref = new AdminShell.SubmodelRef(smres.GetReference());
                     ve1.theAas.AddSubmodelRef(smref);
-                    packages.Main.AasEnv.Submodels.Add(smres);
+                    _packageCentral.Main.AasEnv.Submodels.Add(smres);
 
                     // add ConceptDescriptions?
                     if (cdres != null && cdres.Count > 0)
@@ -2383,7 +2383,7 @@ namespace AasxPackageExplorer
 
                 // set the link to the AAS environment
                 // Note: dangerous, as it might change WHILE the find tool is opened!
-                ToolFindReplace.TheAasEnv = packages.Main?.AasEnv;
+                ToolFindReplace.TheAasEnv = _packageCentral.Main?.AasEnv;
 
                 // cursor
                 ToolFindReplace.FocusFirstField();
@@ -2412,7 +2412,7 @@ namespace AasxPackageExplorer
             {
                 RememberForInitialDirectory(dlg.FileName);
                 UANodeSet InformationModel = UANodeSetExport.getInformationModel(dlg.FileName);
-                packages.MainItem.TakeOver(UANodeSetImport.Import(InformationModel));
+                _packageCentral.MainItem.TakeOver(UANodeSetImport.Import(InformationModel));
                 RestartUIafterNewPackage();
             }
 
@@ -2458,9 +2458,9 @@ namespace AasxPackageExplorer
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
-                foreach (AdminShellV20.Asset ass in packages.Main.AasEnv.Assets)
+                foreach (AdminShellV20.Asset ass in _packageCentral.Main.AasEnv.Assets)
                 {
-                    UANodeSetExport.CreateAAS(ass.idShort, packages.Main.AasEnv);
+                    UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();

@@ -68,14 +68,14 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// (filesystem, HTTP, ..)
         /// </summary>
         /// <returns></returns>
-        public override string GetFullItemLocation(PackageContainerRepoItem fi)
+        public override string GetFullItemLocation(string location)
         {
             // access
-            if (fi?.Location == null)
+            if (location == null)
                 return null;
 
             // relative to this?
-            var fn = fi.Location;
+            var fn = location;
             try
             {
                 bool doFull =

@@ -374,6 +374,7 @@ namespace AasxPackageExplorer
                 var x = await PackageContainerFactory.GuessAndCreateForAsync(
                     _packageCentral,
                     location,
+                    location,
                     overrideLoadResident: true,
                     containerOptions: copts,
                     runtimeOptions: ro);
