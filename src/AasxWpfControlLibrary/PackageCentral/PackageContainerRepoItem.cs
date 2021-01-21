@@ -285,8 +285,9 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// True, if the actual editor window is editing exactly this one repo item.
         /// </summary>
         [JsonIgnore]
-        public bool IsEdited { 
-            get { return _isEdited; } 
+        public bool IsEdited
+        {
+            get { return _isEdited; }
             set { _isEdited = value; OnPropertyChanged("VisualIsEdited"); }
         }
         private bool _isEdited = false;
@@ -310,6 +311,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             get { return _isLoaded; }
             set { _isLoaded = value; OnPropertyChanged("VisualIsLoaded"); }
         }
+
+        // Resharper disable ValueParameterNotUsed
         private bool _isLoaded
         {
             get
@@ -320,6 +323,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
             }
         }
+        // Resharper enable ValueParameterNotUsed
 
         [JsonIgnore]
         public System.Windows.Visibility VisualIsLoaded

@@ -34,8 +34,6 @@ namespace AasxPackageExplorer
         private static Grid theOnscreenBrowser = null;
         private string browserHandlesFiles = ".html .htm .jpeg .jpg .png .bmp .pdf .xml .txt .md *";
 
-        private string browserHandlesMimeTypes = "application/pdf application/xml application/json application/html ";
-
         private FakeBrowser theFallbackBrowser = null;
         private string fallbackBrowserHandlesFiles = ".jpeg .jpg .png .bmp";
 

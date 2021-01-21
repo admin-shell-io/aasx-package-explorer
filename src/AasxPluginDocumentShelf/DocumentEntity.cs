@@ -208,7 +208,7 @@ namespace AasxPluginDocumentShelf
 
                         // filename
                         var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            options?.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);                        
+                            options?.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);
                         ent.DigitalFile = fl?.value;
                         ent.MimeType = fl?.mimeType;
 

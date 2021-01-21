@@ -32,7 +32,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var task = Task.Run(() => GuessAndCreateForAsync(
-                packageCentral, location, fullItemLocation, overrideLoadResident, 
+                packageCentral, location, fullItemLocation, overrideLoadResident,
                 takeOver, containerOptions, runtimeOptions));
             return task.Result;
         }

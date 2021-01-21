@@ -230,7 +230,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // read via HttpClient (uses standard proxies)
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
-                
+
             var client = new HttpClient(handler);
             client.BaseAddress = new Uri(serverUri.GetLeftPart(UriPartial.Authority));
             var requestPath = serverUri.PathAndQuery;

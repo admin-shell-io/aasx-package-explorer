@@ -156,7 +156,7 @@ namespace AasxPackageExplorer
                         "No open AASX file to be saved.",
                         "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
                     return;
-                }                
+                }
 
                 try
                 {
@@ -176,7 +176,7 @@ namespace AasxPackageExplorer
                     AasxPackageExplorer.Log.Singleton.Error(ex, "When saving AASX, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("AASX saved successfully: {0}", _packageCentral.MainItem.Filename);
+                Log.Singleton.Info("AASX saved successfully: {0}", _packageCentral.MainItem.Filename);
             }
 
             if (cmd == "saveas")

@@ -192,7 +192,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // ok, add
             var fi = PackageContainerFactory.GuessAndCreateFor(
                 packageCentral,
-                location:fn, 
+                location: fn,
                 fullItemLocation: fn,
                 overrideLoadResident: false,
                 containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));

@@ -1390,7 +1390,8 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.id != null && hi.ReferableReference != null)
+                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.id != null
+                    && hi.ReferableReference != null)
                 {
                     ;
 
@@ -1662,7 +1663,8 @@ namespace AasxPackageExplorer
                         && !this.showContentPackageUri.ToLower().Trim().StartsWith("https://"))
                     {
                         // make it as file
-                        contentUri = _packageCentral.Main.MakePackageFileAvailableAsTempFile(this.showContentPackageUri);
+                        contentUri = _packageCentral.Main.MakePackageFileAvailableAsTempFile(
+                            this.showContentPackageUri);
                     }
 
                     BrowserDisplayLocalFile(contentUri, this.showContentPackageMime);

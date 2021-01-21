@@ -203,7 +203,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     Log.Singleton.Error("AAS information not already loaded for this item.");
                     return;
-                }    
+                }
 
                 fi.CalculateIdsTagAndDesc();
             }
