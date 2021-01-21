@@ -709,6 +709,7 @@ namespace AasxPackageExplorer
 
                 var fr = new PackageContainerListHttpRestRepository(uc.Text);
                 await fr.SyncronizeFromServerAsync();
+                this.UiAssertFileRepository(visible: true);
                 _packageCentral.Repositories.AddAtTop(fr);
             }
 
@@ -786,6 +787,7 @@ namespace AasxPackageExplorer
                     var lruNew = new PackageContainerListLastRecentlyUsed();
                     lruNew.Header = "Last Recently Used";
                     lruNew.SaveAs(lruFn);
+                    this.UiAssertFileRepository(visible: true);
                     _packageCentral?.Repositories?.AddAtTop(lruNew);
                 }
                 catch (Exception ex)
