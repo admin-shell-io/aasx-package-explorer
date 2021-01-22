@@ -46,7 +46,7 @@ https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-
 
 We provide a couple of sample admin shells (packaged as .aasx) for you to 
 test and play with the software at:
-https://www.admin-shell-io.com/samples/
+http://www.admin-shell-io.com/samples/
 
 ## Installation
 
