@@ -208,11 +208,14 @@ namespace AasxPluginDocumentShelf
                         string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
                         string exeFn = System.IO.Path.Combine(
                             System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
-                        var startInfo = new ProcessStartInfo(exeFn, arguments);
-                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        var process = new Process();
-                        process.StartInfo = startInfo;
-                        process.EnableRaisingEvents = true;
+
+                        var startInfo = new ProcessStartInfo(exeFn, arguments)
+                        {
+                            WindowStyle = ProcessWindowStyle.Hidden
+                        };
+
+                        var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+
                         DocumentEntity lambdaEntity = ent;
                         string outputFnBuffer = outputFn;
                         process.Exited += (sender2, args) =>
@@ -230,7 +233,17 @@ namespace AasxPluginDocumentShelf
                                 lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
                             }
                         };
-                        process.Start();
+
+                        try
+                        {
+                            process.Start();
+                        }
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.Error(
+                                ex, $"Failed to start the process: {startInfo.FileName} " +
+                                    $"with arguments {string.Join(" ", startInfo.Arguments)}");
+                        }
 
                         // limit the number of parallel executions
                         lock (mutexDocEntitiesInPreview)

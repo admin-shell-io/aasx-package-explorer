@@ -14,6 +14,7 @@ using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
+using AasxPackageExplorer;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -65,6 +66,7 @@ namespace AasxOpenIdClient
                 authServer = "";
                 certPfx = "";
                 certPfxPW = "";
+                value = "";
             }
             else
             {
@@ -134,7 +136,7 @@ namespace AasxOpenIdClient
 
             while (operation != "" && operation != "error")
             {
-                System.Windows.Forms.MessageBox.Show("operation: " + operation + "\ntoken: " + token,
+                System.Windows.Forms.MessageBox.Show("operation: " + operation + value + "\ntoken: " + token,
                     "Operation", MessageBoxButtons.OK);
 
                 switch (operation)
@@ -172,19 +174,46 @@ namespace AasxOpenIdClient
                                 operation = "error";
                                 continue;
                             }
-                            String urlContents = urlContents = await response2.Content.ReadAsStringAsync();
+                            String urlContents = await response2.Content.ReadAsStringAsync();
                             switch (operation)
                             {
                                 case "/server/listaas/":
-                                    System.Windows.Forms.MessageBox.Show(urlContents, "/server/listaas/",
-                                        MessageBoxButtons.OK);
-                                    var uc = new AasxPackageExplorer.TextBoxFlyout("REST server adress:",
-                                        MessageBoxImage.Question);
-                                    uc.Text = "0";
-                                    flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.Result)
+                                    var listOfAas = new List<SelectFromListFlyoutItem>();
+                                    string[] split = urlContents.Split('\n');
+                                    int i = 0;
+                                    int offset = 0;
+                                    foreach (string s in split)
                                     {
-                                        value = uc.Text;
+                                        if (offset >= 2 && offset < split.Length - 2)
+                                        {
+                                            listOfAas.Add(new SelectFromListFlyoutItem(s, new Tuple<int>(i++)));
+                                        }
+                                        offset++;
+                                    }
+                                    if (listOfAas.Count < 1)
+                                    {
+                                        System.Windows.Forms.MessageBox.Show(
+                                            "No AAS found. Aborting.", "Select AAS to get ..",
+                                            MessageBoxButtons.OK);
+                                        return;
+                                    }
+                                    var uc = new SelectFromListFlyout();
+                                    uc.Caption = "Select AAS to get ..";
+                                    uc.ListOfItems = listOfAas;
+                                    flyoutProvider.StartFlyoverModal(uc);
+                                    if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
+                                        uc.ResultItem.Tag is Tuple<int>)
+                                    {
+                                        // get result arguments
+                                        var TagTuple = uc.ResultItem.Tag as Tuple<int>;
+                                        value = TagTuple.Item1.ToString();
+                                    }
+                                    else
+                                    {
+                                        System.Windows.Forms.MessageBox.Show(
+                                            "No AAS found. Aborting.", "Select AAS to get ..",
+                                            MessageBoxButtons.OK);
+                                        return;
                                     }
                                     operation = "/server/getaasx2/";
                                     break;

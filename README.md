@@ -37,7 +37,7 @@ https://github.com/admin-shell-io/aasx-package-explorer/raw/master/screenshot.pn
 
 To help you familiarize with the concept of Asset Administration Shell 
 we provide the screencasts (both in English and German) at: 
-http://admin-shell-io.com/screencasts/.
+https://admin-shell-io.com/screencasts/.
 
 For further information about the Asset Administration Shell, see the 
 publication [Details of the Asset Administration Shell](

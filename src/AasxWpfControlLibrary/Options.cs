@@ -177,12 +177,6 @@ namespace AasxPackageExplorer
         public bool EclassTwoPass = false;
 
         /// <summary>
-        /// If not null, read a text file containing the options
-        /// </summary>
-        [JsonIgnore]
-        public string OptionsTextFn = null;
-
-        /// <summary>
         /// If not null, enables backing up XML files of the AAS-ENV in some files under BackupDir,
         /// which could be relative
         /// </summary>
@@ -473,7 +467,12 @@ namespace AasxPackageExplorer
                 }
                 if (arg == "-options" && morearg > 0)
                 {
-                    optionsInformation.OptionsTextFn = args[index + 1];
+                    string pathToOptions = args[index + 1];
+                    AasxPackageExplorer.Log.Singleton.Info(
+                        $"Parsing options from a non-default options file: {pathToOptions}");
+                    var fullFilename = System.IO.Path.GetFullPath(pathToOptions);
+                    OptionsInformation.TryReadOptionsFile(fullFilename, optionsInformation);
+
                     index++;
                     continue;
                 }

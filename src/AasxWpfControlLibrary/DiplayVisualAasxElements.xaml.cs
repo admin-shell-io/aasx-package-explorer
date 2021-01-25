@@ -383,7 +383,7 @@ namespace AasxPackageExplorer
         /// <param name="mem"></param>
         /// <param name="fullFilterElementName"></param>
         /// <returns></returns>
-        public bool FilterLeafsOfVisualElements(VisualElementGeneric mem, string fullFilterElementName)
+        public bool FilterLeavesOfVisualElements(VisualElementGeneric mem, string fullFilterElementName)
         {
             if (fullFilterElementName == null)
                 return (false);
@@ -397,7 +397,7 @@ namespace AasxPackageExplorer
                 // go into non-leafs mode -> simply go over list
                 var todel = new List<VisualElementGeneric>();
                 foreach (var x in mem.Members)
-                    if (FilterLeafsOfVisualElements(x, fullFilterElementName))
+                    if (FilterLeavesOfVisualElements(x, fullFilterElementName))
                         todel.Add(x);
                 // delete items on list
                 foreach (var td in todel)
@@ -477,7 +477,7 @@ namespace AasxPackageExplorer
                 if (filterElementName != null)
                     foreach (var dtl in displayedTreeViewLines)
                         // it is not likely, that we have to delete on this level, therefore don't care
-                        FilterLeafsOfVisualElements(dtl, filterElementName);
+                        FilterLeavesOfVisualElements(dtl, filterElementName);
 
                 // any of these lines?
                 if (displayedTreeViewLines.Count < 1)

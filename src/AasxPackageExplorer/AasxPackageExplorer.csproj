@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
@@ -39,20 +39,28 @@
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
   </ItemGroup>
 
-  <!-- The default options for Debug differ from Release such that the plugin directory is
-       ".", while Release's plugin directory is ".\\plugins" -->
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="AasxPackageExplorer.options-for-debug.json">
-      <Link>AasxPackageExplorer.options.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <None Update="AasxPackageExplorer.options-for-release.json">
-      <Link>AasxPackageExplorer.options.json</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <!--
+    The default options for Debug differ from Release such that the plugin directory is
+    ".", while Release's plugin directory is ".\\plugins"
+  -->
+  <Choose>
+    <When Condition="'$(Configuration)' == 'Debug'">
+      <ItemGroup>
+        <None Update="AasxPackageExplorer.options-for-debug.json">
+          <Link>AasxPackageExplorer.options.json</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Configuration)' == 'Release'">
+      <ItemGroup>
+        <None Update="AasxPackageExplorer.options-for-release.json">
+          <Link>AasxPackageExplorer.options.json</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
 
   <ItemGroup>
     <None Update="options-debug.MIHO.json">

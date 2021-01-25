@@ -1,5 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Interop;
 using FlaUI.Core.AutomationElements;
+using FlaUI.Core.Definitions;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;
 using File = System.IO.File;
@@ -29,7 +34,7 @@ namespace AasxPackageExplorer.GuiTests
                 Retry.WhileNull(() =>
                         // ReSharper disable once AccessToDisposedClosure
                         application.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title == "AASX Package Explorer Splash Screen"),
+                            .FirstOrDefault((w) => w.AutomationId == "splashScreen"),
                     throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
                     timeoutMessage: "Could not find the splash screen"
                 );
@@ -73,6 +78,19 @@ namespace AasxPackageExplorer.GuiTests
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
                 Common.AssertLoadAasx(application, mainWindow, path);
+                Common.AssertNoErrors(application, mainWindow);
+            });
+        }
+
+        [Test]
+        public void Test_to_load_and_reload_sample_aasxes()
+        {
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertLoadAasx(application, mainWindow, Common.PathTo01FestoAasx());
+                Common.AssertNoErrors(application, mainWindow);
+
+                Common.AssertLoadAasx(application, mainWindow, Common.PathTo34FestoAasx());
                 Common.AssertNoErrors(application, mainWindow);
             });
         }
@@ -163,6 +181,237 @@ namespace AasxPackageExplorer.GuiTests
                     throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
                     timeoutMessage: "Could not find the 'Message Report' window");
             });
+        }
+
+        [Test]
+        public void Test_that_tree_doesnt_change()
+        {
+            var path = Common.PathTo01FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                if (tree == null)
+                {
+                    throw new AssertionException("tree unexpectedly null");
+                }
+
+                static string RenderTree(Tree aTree)
+                {
+                    using var sw = new StringWriter();
+
+                    void RenderItem(TreeItem item, int level)
+                    {
+                        item.Patterns.ScrollItem.Pattern.ScrollIntoView();
+
+                        // Collect all text children to create a label
+                        var children = item.FindAllChildren(
+                            cf => cf.ByClassName("TextBlock"));
+
+                        var label = "[" + string.Join(", ",
+                            children.Select(c => Common.Quote(c.AsLabel().Text))) + "]";
+
+                        sw.WriteLine($"{new string('*', level)}{label}");
+
+                        // Expand
+                        var expander = item
+                            .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                            .AsToggleButton();
+
+                        if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                        {
+                            expander.Click(false);
+                        }
+
+                        foreach (var subitem in item.Items)
+                        {
+                            RenderItem(subitem, level + 1);
+                        }
+                    }
+
+                    foreach (var item in aTree.Items)
+                    {
+                        RenderItem(item, 1);
+                    }
+
+                    return sw.ToString();
+                }
+
+                string got = RenderTree(tree);
+
+                string relExpectedPth = Path.Combine(
+                    "TestResources", "AasxPackageExplorer.GuiTests",
+                    "ExpectedTrees", $"{Path.GetFileName(path)}.tree.txt");
+
+                string expectedPth = Path.Combine(TestContext.CurrentContext.TestDirectory, relExpectedPth);
+                string expected = File.ReadAllText(expectedPth);
+
+                string gotPth = Path.Combine(
+                    TestContext.CurrentContext.TestDirectory,
+                    Path.GetDirectoryName(relExpectedPth) ??
+                        throw new InvalidOperationException(
+                            $"Unexpected null directory from: {relExpectedPth}"),
+                    Path.GetFileName(relExpectedPth) + ".got");
+                File.WriteAllText(gotPth, got);
+
+                Assert.AreEqual(got, expected,
+                    "The expected tree structure does not coincide with the tree structure rendered from the UI. " +
+                    "If you made changes to UI, please make sure you update the file containing expected values " +
+                    $"accordingly (search for the file {relExpectedPth}).\n\n" +
+                    $"The test used the file available in the test context: {expectedPth} " +
+                    "(you probably don't want to change *that* file, but the original one in the source code)\n\n" +
+                    "The tree structure obtained from the application was stored " +
+                    $"for your convenience to: {gotPth}\n\n" +
+                    "Use a diff tool to inspect the differences.");
+            }, new Run { Args = new[] { "-splash", "0", path } });
+        }
+
+        [Test]
+        public void Test_that_document_shelf_doesnt_break_the_app()
+        {
+            var path = Common.PathTo34FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                Assert.AreEqual(1, tree.Items.Length,
+                    $"Expected only one node at the root, but got: {tree.Items.Length}");
+
+                var root = tree.Items[0];
+
+                // Find documentation
+
+                const string documentationLabel = "\"Documentation\" ";
+
+                TreeItem? documentationItem = root.Items.FirstOrDefault(
+                    item =>
+                        item.FindFirstChild(
+                            cf =>
+                                cf.ByClassName("TextBlock").And(
+                                    cf.ByName(documentationLabel))) != null);
+
+                Assert.IsNotNull(documentationItem,
+                    $"Could not find the item in the tree containing the text block '{documentationLabel}'");
+
+                var expander = documentationItem!
+                    .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                    .AsToggleButton();
+
+                if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                {
+                    expander.Click(false);
+                }
+
+                // Find Document shelf
+
+                const string documentShelfLabel = "Document Shelf";
+
+                var documentShelfTextBlock = documentationItem.FindFirstDescendant(
+                    cf => cf.ByClassName("TextBlock").And(cf.ByName(documentShelfLabel)));
+
+                Assert.IsNotNull(documentShelfTextBlock,
+                    $"Could not find the text block in the tree '{documentShelfLabel}'");
+
+                documentShelfTextBlock.Click();
+
+                Common.AssertNoErrors(application, mainWindow);
+
+                var shelfControl = mainWindow.FindFirstDescendant(
+                    cf => cf.ByAutomationId("shelfControl"));
+                Assert.IsNotNull(shelfControl, "Could not find 'shelfControl' by automation ID");
+            }, new Run { Args = new[] { "-splash", "0", path } });
+        }
+
+        [Test]
+        public void Test_that_technical_viewer_doesnt_break_the_app()
+        {
+            var path = Common.PathTo34FestoAasx();
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.AssertNoErrors(application, mainWindow);
+
+                var tree = Retry.Find(
+                    () => mainWindow.FindFirstDescendant(
+                        cf => cf.ByAutomationId("treeViewInner")),
+                    new RetrySettings
+                    {
+                        ThrowOnTimeout = true,
+                        Timeout = TimeSpan.FromSeconds(5),
+                        TimeoutMessage = "Could not find the treeViewInner tree"
+                    }).AsTree();
+
+                Assert.AreEqual(1, tree.Items.Length,
+                    $"Expected only one node at the root, but got: {tree.Items.Length}");
+
+                var root = tree.Items[0];
+
+                // Find the ZVEI tree item
+
+                const string technicalDataZveiLabel = "\"TechnicalData ZVEI\" ";
+
+                TreeItem? technicalDataZvei = root.Items.FirstOrDefault(
+                    item =>
+                        item.FindFirstChild(
+                            cf =>
+                                cf.ByClassName("TextBlock").And(
+                                    cf.ByName(technicalDataZveiLabel))) != null);
+
+                Assert.IsNotNull(technicalDataZvei,
+                    $"Could not find the item in the tree containing the text block '{technicalDataZveiLabel}'");
+
+
+                var expander = technicalDataZvei!
+                    .FindFirstChild(cf => cf.ByAutomationId("Expander"))
+                    .AsToggleButton();
+
+                if (expander != null && !expander.IsOffscreen && expander.ToggleState == ToggleState.Off)
+                {
+                    expander.Click();
+                }
+
+                const string technicalDataViewerLabel = "Technical Data Viewer";
+
+                var technicalDataViewer = technicalDataZvei.FindFirstDescendant(
+                    cf => cf.ByClassName("TextBlock").And(
+                        cf.ByName(technicalDataViewerLabel)));
+
+                Assert.IsNotNull(technicalDataViewer,
+                    $"Could not find the text block '{technicalDataViewerLabel}'");
+
+                var technicalDataViewControl =
+                    mainWindow.FindFirstDescendant(cf => cf.ByClassName("TechnicalDataViewControl"));
+                Assert.IsNull(
+                    technicalDataViewControl,
+                    "Unexpectedly found the control with class name 'TechnicalDataViewControl'");
+
+                technicalDataViewer.Click();
+
+                technicalDataViewControl =
+                    mainWindow.FindFirstDescendant(cf => cf.ByClassName("TechnicalDataViewControl"));
+                Assert.IsNotNull(
+                    technicalDataViewControl, "Could not find the control with class name 'TechnicalDataViewControl'");
+
+            }, new Run { Args = new[] { "-splash", "0", path } });
         }
     }
 }

@@ -832,17 +832,17 @@ namespace AasxPackageExplorer
         {
             if (theFile != null)
             {
-                this.Caption = "" + theFile.uri.ToString();
+                this.Caption = "" + theFile.Uri.ToString();
                 this.Info = "";
 
-                if (theFile.location == AdminShellPackageSupplementaryFile.LocationType.AddPending)
+                if (theFile.Location == AdminShellPackageSupplementaryFile.LocationType.AddPending)
                     this.Info += "(add pending) ";
-                if (theFile.location == AdminShellPackageSupplementaryFile.LocationType.DeletePending)
+                if (theFile.Location == AdminShellPackageSupplementaryFile.LocationType.DeletePending)
                     this.Info += "(delete pending) ";
-                if (theFile.sourceLocalPath != null)
-                    this.Info += "\u2b60 " + theFile.sourceLocalPath;
+                if (theFile.SourceLocalPath != null)
+                    this.Info += "\u2b60 " + theFile.SourceLocalPath;
 
-                if (theFile.specialHandling == AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
+                if (theFile.SpecialHandling == AdminShellPackageSupplementaryFile.SpecialHandlingType.EmbedAsThumbnail)
                     this.Info += " [Thumbnail]";
             }
         }

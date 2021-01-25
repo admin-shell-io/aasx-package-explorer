@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1179,40 +1181,118 @@ namespace AasxPackageExplorer
             this.StartFlyoverModal(uc, closingAction: () => { });
         }
 
+        static string lastConnectInput = "";
         public async void CommandBinding_ConnectRest()
         {
             var uc = new TextBoxFlyout("REST server adress:", MessageBoxImage.Question);
-            uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
+            if (lastConnectInput == "")
+            {
+                uc.Text = "http://" + Options.Curr.RestServerHost + ":" + Options.Curr.RestServerPort;
+            }
+            else
+            {
+                uc.Text = lastConnectInput;
+            }
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
                 string value = "";
                 string input = uc.Text.ToLower();
-                if (input != "http://localhost:1111")
+                lastConnectInput = input;
+                if (!input.StartsWith("http://localhost:1111"))
                 {
                     bool connect = false;
-                    string tag = "http";
-                    tag = input.Substring(0, tag.Length);
-                    if (tag == "http")
+
+                    string tag = "http://admin-shell-io.com:52001/server/aasxbyasset/";
+                    string prefix = "";
+                    if (input.Length > tag.Length)
+                        prefix = input.Substring(0, tag.Length);
+                    string tag2 = "http://localhost:52001/server/aasxbyasset/";
+                    string prefix2 = "";
+                    if (input.Length > tag2.Length)
+                        prefix2 = input.Substring(0, tag2.Length);
+                    if (prefix == tag || prefix2 == tag2) // get by AssetID
                     {
-                        connect = true;
-                        tag = "openid ";
-                        value = input;
+                        if (packages.Main != null && packages.Main.IsOpen)
+                        {
+                            packages.Main.Close();
+                        }
+                        File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
+
+                        var handler = new HttpClientHandler();
+                        handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+                        //// handler.AllowAutoRedirect = false;
+                        string dataServer = "";
+                        if (prefix == tag)
+                            dataServer = "http://admin-shell-io.com:52001";
+                        if (prefix2 == tag2)
+                            dataServer = "http://localhost:52001";
+                        var client = new HttpClient(handler)
+                        {
+                            BaseAddress = new Uri(dataServer)
+                        };
+                        input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
+                        client.DefaultRequestHeaders.Add("Accept", "application/aas");
+                        var response2 = await client.GetAsync(input);
+                        String urlContents = await response2.Content.ReadAsStringAsync();
+
+                        try
+                        {
+                            var parsed3 = JObject.Parse(urlContents);
+
+                            //// string fileName = parsed3.SelectToken("fileName").Value<string>();
+                            string fileData = parsed3.SelectToken("fileData").Value<string>();
+
+                            var enc = new System.Text.ASCIIEncoding();
+                            var fileString4 = Jose.JWT.Decode(
+                                fileData, enc.GetBytes(AasxOpenIdClient.OpenIDClient.secretString),
+                                JwsAlgorithm.HS256);
+                            var parsed4 = JObject.Parse(fileString4);
+
+                            string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
+                            Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
+
+                            string outputDir = ".";
+                            Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
+                            File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
+                        }
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {input}");
+                        }
+
+                        if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
+                            UiLoadPackageWithNew(
+                                packages.MainContainer,
+                                new AdminShellPackageEnv(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"),
+                                AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx", onlyAuxiliary: false);
+                        return;
                     }
                     else
                     {
-                        tag = "openid1";
+                        tag = "http";
                         tag = input.Substring(0, tag.Length);
-                        if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                        if (tag == "http")
                         {
                             connect = true;
-                            value = input.Substring(tag.Length);
+                            tag = "openid ";
+                            value = input;
+                        }
+                        else
+                        {
+                            tag = "openid1";
+                            tag = input.Substring(0, tag.Length);
+                            if (tag == "openid " || tag == "openid1" || tag == "openid2" || tag == "openid3")
+                            {
+                                connect = true;
+                                value = input.Substring(tag.Length);
+                            }
                         }
                     }
 
                     if (connect)
                     {
-                        if (packages.Main.IsOpen)
+                        if (packages.Main != null && packages.Main.IsOpen)
                         {
                             packages.Main.Close();
                         }
@@ -1621,7 +1701,7 @@ namespace AasxPackageExplorer
             try
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(PUTURL);
-                client.PutSubmodel(json);
+                client.PutSubmodelAsync(json);
             }
             catch (Exception ex)
             {
