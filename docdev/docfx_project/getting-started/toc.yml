@@ -7,9 +7,6 @@
 - name: Installing the Dependencies
   href: installing-the-dependencies.md
 
-- name: Building the Solution
-  href: building-the-solution.md
-
 - name: Continuous Integration
   href: continuous-integration.md
 
