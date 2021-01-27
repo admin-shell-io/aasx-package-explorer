@@ -242,10 +242,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             // make base64
             var ba = File.ReadAllBytes(copyFn);
             var base64 = Convert.ToBase64String(ba);
-            var msBase64 = new MemoryStream(Encoding.UTF8.GetBytes(base64));
+            // var msBase64 = new MemoryStream(Encoding.UTF8.GetBytes(base64));
 
             // customised HttpContent to track progress
-            var data = new ProgressableStreamContent(msBase64, runtimeOptions);
+            var data = new ProgressableStreamContent(Encoding.UTF8.GetBytes(base64), runtimeOptions);
 
             // get response?
             using (var response = await client.PutAsync(requestPath, data))

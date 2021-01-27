@@ -39,7 +39,8 @@
   "LoadWithoutPrompt": true,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
-  "DefaultConnectRepositoryLocation": "http://localhost:51310",
+  /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
+  "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
@@ -104,7 +105,7 @@
     /* Festo specific from here on */
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
-      "Args": [],
+      "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -119,11 +120,11 @@
             ]
           }
         ]
-      }
+      }*/
     },
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-      "Args": [],
+      "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -138,7 +139,7 @@
             ]
           }
         ]
-      }
+      } */
     }
   ],
   "SecureConnectPresets": [

@@ -24,20 +24,22 @@ namespace AasxWpfControlLibrary.PackageCentral
     // see: https://stackoverflow.com/questions/35320238/
     // how-to-display-upload-progress-using-c-sharp-httpclient-postasync
 
+    // for the Proxy issue:
+    // https://github.com/dotnet/runtime/issues/25413
+
     public class ProgressableStreamContent : HttpContent
     {
         private const int _defaultBufferSize = 4024;
         private const int _deltaSizeForProgress = 256 * 1024;
 
-        private Stream _content;
+        private byte[] _content;
         private int _bufferSize;
-        private bool _contentConsumed;
         private PackCntRuntimeOptions _runtimeOptions = null;
 
-        public ProgressableStreamContent(Stream content, PackCntRuntimeOptions runtimeOptions = null)
+        public ProgressableStreamContent(byte[] content, PackCntRuntimeOptions runtimeOptions = null)
             : this(content, _defaultBufferSize, runtimeOptions) { }
 
-        public ProgressableStreamContent(Stream content, int bufferSize,
+        public ProgressableStreamContent(byte[] content, int bufferSize,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             if (bufferSize <= 0)
@@ -51,9 +53,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-        {
-            PrepareContent();
-
+        {           
             return Task.Run(() =>
             {
                 var buffer = new Byte[this._bufferSize];
@@ -63,10 +63,10 @@ namespace AasxWpfControlLibrary.PackageCentral
                 _runtimeOptions?.ProgressChanged(
                     PackCntRuntimeOptions.Progress.Starting, null, uploaded);
 
-                using (_content)
+                using (var _instream = new MemoryStream(_content))
                     while (true)
                     {
-                        var length = _content.Read(buffer, 0, buffer.Length);
+                        var length = _instream.Read(buffer, 0, buffer.Length);
                         if (length <= 0)
                             break;
 
@@ -93,34 +93,5 @@ namespace AasxWpfControlLibrary.PackageCentral
             return true;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _content.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-
-        private void PrepareContent()
-        {
-            if (_contentConsumed)
-            {
-                // If the content needs to be written to a target stream a 2nd time, then the stream must support
-                // seeking (e.g. a FileStream), otherwise the stream can't be copied a second time to a target 
-                // stream (e.g. a NetworkStream).
-                if (_content.CanSeek)
-                {
-                    _content.Position = 0;
-                }
-                else
-                {
-                    throw new InvalidOperationException("SR.net_http_content_stream_already_read");
-                }
-            }
-
-            _contentConsumed = true;
-        }
     }
 }
