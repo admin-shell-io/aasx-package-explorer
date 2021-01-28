@@ -53,7 +53,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-        {           
+        {
             return Task.Run(() =>
             {
                 var buffer = new Byte[this._bufferSize];
