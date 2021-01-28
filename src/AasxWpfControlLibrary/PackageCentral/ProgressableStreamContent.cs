@@ -61,7 +61,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var lastUploaded = 0;
 
                 _runtimeOptions?.ProgressChanged(
-                    PackCntRuntimeOptions.Progress.Starting, null, uploaded);
+                    PackCntRuntimeOptions.Progress.Starting, _content.Length, uploaded);
 
                 using (var _instream = new MemoryStream(_content))
                     while (true)
@@ -75,7 +75,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                         if (uploaded > lastUploaded + _deltaSizeForProgress)
                         {
                             _runtimeOptions?.ProgressChanged(
-                                PackCntRuntimeOptions.Progress.Ongoing, null, uploaded);
+                                PackCntRuntimeOptions.Progress.Ongoing, _content.Length, uploaded);
                             lastUploaded = uploaded;
                         }
 
@@ -83,7 +83,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                 _runtimeOptions?.ProgressChanged(
-                    PackCntRuntimeOptions.Progress.Final, null, uploaded);
+                    PackCntRuntimeOptions.Progress.Final, _content.Length, uploaded);
             });
         }
 
