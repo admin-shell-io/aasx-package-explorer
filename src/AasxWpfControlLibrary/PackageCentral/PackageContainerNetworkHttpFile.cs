@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,6 +123,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
 
             var client = new HttpClient(handler);
+
             client.DefaultRequestHeaders.Add("Accept", "application/aas");
             client.BaseAddress = new Uri(sourceUri.GetLeftPart(UriPartial.Authority));
             var requestPath = sourceUri.PathAndQuery;
@@ -152,7 +154,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (contentFn != null)
                     givenFn = contentFn;
                 TempFn = CreateNewTempFn(givenFn, IsFormat);
-                runtimeOptions?.Log?.Info($".. downloading to temp-file {TempFn}");
+                runtimeOptions?.Log?.Info($".. connecting to server with base-address {client.BaseAddress} " +
+                    $"and request {requestPath} .. ");
 
                 using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
@@ -177,6 +180,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                         if (totalBytesRead > lastBytesRead + deltaSize)
                         {
+                            runtimeOptions?.Log?.Info($".. downloading to temp-file {TempFn}");
                             runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
                                 contentLength, totalBytesRead);
                             lastBytesRead = totalBytesRead;
@@ -232,6 +236,30 @@ namespace AasxWpfControlLibrary.PackageCentral
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
 
             var client = new HttpClient(handler);
+
+            // BEGIN Workaround behind some proxies
+            // Stream is sent twice, if proxy-authorization header is not set
+            string proxyFile = "c:/dat/proxy.dat";
+            string username = "";
+            string password = "";
+            if (File.Exists(proxyFile))
+            {
+                string proxyAddress = "";
+                using (StreamReader sr = new StreamReader(proxyFile))
+                {
+                    proxyAddress = sr.ReadLine();
+                    username = sr.ReadLine();
+                    password = sr.ReadLine();
+                }
+            }
+            if (username != "" && password != "")
+            {
+                var authToken = Encoding.ASCII.GetBytes(username + ":" + password);
+                client.DefaultRequestHeaders.ProxyAuthorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(authToken));
+            }
+            // END Workaround behind some proxies
+
             client.BaseAddress = new Uri(serverUri.GetLeftPart(UriPartial.Authority));
             var requestPath = serverUri.PathAndQuery;
 
