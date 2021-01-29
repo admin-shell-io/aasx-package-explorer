@@ -244,12 +244,13 @@ namespace AasxWpfControlLibrary.PackageCentral
             string password = "";
             if (File.Exists(proxyFile))
             {
-                string proxyAddress = "";
                 using (StreamReader sr = new StreamReader(proxyFile))
                 {
-                    proxyAddress = sr.ReadLine();
+                    // ReSharper disable MethodHasAsyncOverload
+                    sr.ReadLine();
                     username = sr.ReadLine();
                     password = sr.ReadLine();
+                    // ReSharper enable MethodHasAsyncOverload
                 }
             }
             if (username != "" && password != "")
