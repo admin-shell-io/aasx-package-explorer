@@ -239,7 +239,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // BEGIN Workaround behind some proxies
             // Stream is sent twice, if proxy-authorization header is not set
-            string proxyFile = "c:/dat/proxy.dat";
+            string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
             string username = "";
             string password = "";
             if (File.Exists(proxyFile))
