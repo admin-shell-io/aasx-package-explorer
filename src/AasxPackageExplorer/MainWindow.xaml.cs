@@ -1284,45 +1284,54 @@ namespace AasxPackageExplorer
         }
 
         public void MainTaimer_HandleIncomingAasEvents()
-        {
-            // access
-            var ev = _packageCentral?.EventBufferEditor?.PopEvent();
-            if (ev == null)
-                return;
-
-            // log viewer
-            UserContrlEventCollection.PushEvent(ev);
-
-            // to be applicable, the event message Observable has to relate into Main's environment
-            var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
-            if (foundObservable == null)
-                return;
-
-            //
-            // Update values?
-            //
-            var changedSomething = false;
-            if (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement)
-                foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
-                {
-                    changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
-
-                    // update value received
-                    _eventsUpdateValuePending = false;
-                }
-
-            // stupid
-            if (changedSomething)
+        {            
+            int nEvent = 0;
+            while (true)
             {
-                // just for test
-                DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
-                DisplayElements.Refresh();
+                // try handle a reasonable number of events ..
+                nEvent += 1;
+                if (nEvent > 100)
+                    break;
 
-                // apply white list for automatic redisplay
-                // Note: do not re-display plugins!!
-                var ves = DisplayElements.SelectedItem;
-                if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
-                    RedrawElementView();
+                // access
+                var ev = _packageCentral?.EventBufferEditor?.PopEvent();
+                if (ev == null)
+                    break;
+
+                // log viewer
+                UserContrlEventCollection.PushEvent(ev);
+
+                // to be applicable, the event message Observable has to relate into Main's environment
+                var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
+                if (foundObservable == null)
+                    return;
+
+                //
+                // Update values?
+                //
+                var changedSomething = false;
+                if (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement)
+                    foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
+                    {
+                        changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
+
+                        // update value received
+                        _eventsUpdateValuePending = false;
+                    }
+
+                // stupid
+                if (changedSomething)
+                {
+                    // just for test
+                    DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
+                    DisplayElements.Refresh();
+
+                    // apply white list for automatic redisplay
+                    // Note: do not re-display plugins!!
+                    var ves = DisplayElements.SelectedItem;
+                    if (ves != null && (ves is VisualElementSubmodelRef || ves is VisualElementSubmodelElement))
+                        RedrawElementView();
+                }
             }
         }
 

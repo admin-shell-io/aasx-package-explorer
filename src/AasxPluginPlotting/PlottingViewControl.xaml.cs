@@ -289,12 +289,18 @@ namespace AasxPluginPlotting
                     return null;
                 panel.Children.Clear();
 
+                // before applying arguments
+                _autoScale = true;
+
                 // go over all groups                
                 ScottPlot.WpfPlot lastPlot = null;
                 foreach (var groupPI in GetItemsGrouped())
                 {
                     // start new group
-                    var wpfPlot = new ScottPlot.WpfPlot();
+                    // var wpfPlot = new ScottPlot.WpfPlot();
+                    var pvc = new WpfPlotViewControl();
+                    var wpfPlot = pvc.WpfPlot;
+
                     lastPlot = wpfPlot;
                     wpfPlot.plt.AntiAlias(false, false, false);
                     wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
@@ -302,13 +308,26 @@ namespace AasxPluginPlotting
                     res.Add(groupPI);
 
                     // for all wpf / all signals
-                    wpfPlot.Height = plotHeight;
+                    pvc.Height = plotHeight;
+                    pvc.ButtonClick += WpfPlot_ButtonClicked;
 
                     // for each signal
+                    double? yMin = null, yMax = null;
+
                     foreach (var pi in groupPI)
                     {
                         // value
                         var val = pi.SME?.ValueAsDouble();
+
+                        // integrate args
+                        if (pi.Args != null)
+                        {
+                            if (pi.Args.ymin.HasValue)
+                                yMin = Nullable.Compare(pi.Args.ymin, yMin) > 0 ? pi.Args.ymin : yMin;
+
+                            if (pi.Args.ymax.HasValue)
+                                yMax = Nullable.Compare(yMax, pi.Args.ymax) > 0 ? yMax : pi.Args.ymax;
+                        }
 
                         // prepare data
                         var pb = new PlotBuffer();
@@ -319,9 +338,25 @@ namespace AasxPluginPlotting
                         pb.Push(val.HasValue ? val.Value : 0.0);
                     }
 
+                    // apply some more args to the group
+                    if (yMin.HasValue)
+                    {
+                        wpfPlot.plt.Axis(y1: yMin.Value);
+                        _autoScale = false;
+                    }
+
+                    if (yMax.HasValue)
+                    {
+                        wpfPlot.plt.Axis(y2: yMax.Value);
+                        _autoScale = false;
+                    }
+
+                    // control panel
+                    var vc = new WpfPlotViewControl();
+
                     // render the plot into panel
                     wpfPlot.plt.Legend(fontSize: 9.0f);
-                    panel.Children.Add(wpfPlot);
+                    panel.Children.Add(pvc);
                     wpfPlot.Render(skipIfCurrentlyRendering: true);
                 }
 
@@ -332,7 +367,6 @@ namespace AasxPluginPlotting
                 }
 
                 // return groups for notice
-                _autoScale = true;
                 return res;
             }
 
@@ -348,6 +382,67 @@ namespace AasxPluginPlotting
                         continue;
                     foreach (var pi in grp)
                         lambda?.Invoke(grp, pi);
+                }
+            }
+
+            private void WpfPlot_ButtonClicked(WpfPlotViewControl sender, int ndx)
+            {
+                // access
+                var wpfPlot = sender?.WpfPlot;
+                if (wpfPlot == null)
+                    return;
+
+                // disable autoscale
+                _autoScale = false;
+
+                if (ndx == 1 || ndx == 2)
+                {
+                    // Horizontal scale Plus / Minus
+                    var ax = wpfPlot.plt.Axis();
+                    var width = Math.Abs(ax[1] - ax[0]);
+
+                    if (ndx == 1)
+                        wpfPlot.plt.Axis(x1: ax[0] - width / 2, x2: ax[1] + width / 2);
+
+                    if (ndx == 2)
+                        wpfPlot.plt.Axis(x1: ax[0] + width / 4, x2: ax[1] - width / 4);
+
+                    // call for the other
+                    WpfPlot_AxisChanged(wpfPlot, null);
+                }
+
+                if (ndx == 3 || ndx == 4)
+                {
+                    // Vertical scale Plus / Minus
+                    var ax = wpfPlot.plt.Axis();
+                    var height = Math.Abs(ax[3] - ax[2]);
+
+                    if (ndx == 3)
+                        wpfPlot.plt.Axis(y1: ax[2] - height / 2, y2: ax[3] + height / 2);
+
+                    if (ndx == 4)
+                        wpfPlot.plt.Axis(y1: ax[2] + height / 4, y2: ax[3] - height / 4);
+
+                    // call for the other
+                    WpfPlot_AxisChanged(wpfPlot, null);
+                }
+
+                if (ndx == 5)
+                {
+                    // swithc auto scale ON and hope the best
+                    _autoScale = true;
+                }
+
+                if (ndx == 6)
+                {
+                    // plot larger
+                    sender.Height += 100;
+                }
+
+                if (ndx == 7 && sender.Height >= 299)
+                {
+                    // plot smaller
+                    sender.Height -= 100;
                 }
             }
 
@@ -541,22 +636,47 @@ namespace AasxPluginPlotting
             }
         }
 
+        private bool scrollInEventRaising = false;
+
         private void ScrollViewerContent_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            // simply disable the WHOLE preview -> mosue wheel handling, as the WpfControls get disturbed
+            e.Handled = true;
+
+            // scroll ourselves
+            ScrollViewerContent.ScrollToVerticalOffset(ScrollViewerContent.VerticalOffset - e.Delta);
+
+
+#if __TEST_DOES_NOT_WORK
+
             // simply disable mouse scroll for ScrollViewer, as it conflicts with the plots
             e.Handled = true;
 
-#if __TEST_DOES_NOT_WORK
+            // if in inner loop, discard
+            if (scrollInEventRaising)
+                return;
+
+            // OK, not already in, now enter ..
+            scrollInEventRaising = true;
+
             if (StackPanelCharts.Children != null)
                 foreach (var uc in StackPanelCharts.Children)
                     if (uc is ScottPlot.WpfPlot wpfPlot)
                     {
+                        if (wpfPlot.IsMouseOver)
+                            continue;
+
                         // wpfPlot.RaiseEvent(new RoutedEventArgs(UIElement.PreviewMouseWheelEvent, sender));
                         var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                        eventArg.RoutedEvent = UIElement.PreviewMouseWheelEvent;
-                        eventArg.Source = sender;
+                        eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                        eventArg.Source = uc;
+                        // this seems to raise consecutive events .. somehow??
                         wpfPlot.RaiseEvent(eventArg);
                     }
+            
+            // out
+            scrollInEventRaising = false;
+
 #endif
         }
 
