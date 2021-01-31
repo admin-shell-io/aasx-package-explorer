@@ -301,7 +301,6 @@ namespace AasxPluginPlotting
                 foreach (var groupPI in GetItemsGrouped())
                 {
                     // start new group
-                    // var wpfPlot = new ScottPlot.WpfPlot();
                     var pvc = new WpfPlotViewControlHorizontal();
                     pvc.Text = "Single value plot";
                     if (groupPI.Group >= 0 && groupPI.Group < 9999)
@@ -358,9 +357,6 @@ namespace AasxPluginPlotting
                         wpfPlot.plt.Axis(y2: yMax.Value);
                         _autoScaleY = false;
                     }
-
-                    // control panel
-                    var vc = new WpfPlotViewControlVertical();
 
                     // render the plot into panel
                     wpfPlot.plt.Legend(fontSize: 9.0f);
@@ -656,8 +652,6 @@ namespace AasxPluginPlotting
             }
         }
 
-        private bool scrollInEventRaising = false;
-
         private void ScrollViewerContent_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             // simply disable the WHOLE preview -> mosue wheel handling, as the WpfControls get disturbed
@@ -666,8 +660,7 @@ namespace AasxPluginPlotting
             // scroll ourselves
             ScrollViewerContent.ScrollToVerticalOffset(ScrollViewerContent.VerticalOffset - e.Delta);
 
-
-#if __TEST_DOES_NOT_WORK
+#if SAMPLE_CODE_EVENT_RAISE
 
             // simply disable mouse scroll for ScrollViewer, as it conflicts with the plots
             e.Handled = true;
@@ -675,9 +668,6 @@ namespace AasxPluginPlotting
             // if in inner loop, discard
             if (scrollInEventRaising)
                 return;
-
-            // OK, not already in, now enter ..
-            scrollInEventRaising = true;
 
             if (StackPanelCharts.Children != null)
                 foreach (var uc in StackPanelCharts.Children)
@@ -693,10 +683,6 @@ namespace AasxPluginPlotting
                         // this seems to raise consecutive events .. somehow??
                         wpfPlot.RaiseEvent(eventArg);
                     }
-            
-            // out
-            scrollInEventRaising = false;
-
 #endif
         }
 

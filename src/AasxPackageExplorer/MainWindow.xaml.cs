@@ -1284,7 +1284,7 @@ namespace AasxPackageExplorer
         }
 
         public void MainTaimer_HandleIncomingAasEvents()
-        {            
+        {
             int nEvent = 0;
             while (true)
             {

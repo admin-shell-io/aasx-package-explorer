@@ -227,8 +227,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             else if (reqSme != null && reqSme.idShort.HasContent()
                 && rootSubmodel.idShort.HasContent())
             {
-                // TODO (all, 21-01-30): check periodically for supported element types
-                
+                // TODO (all, 2021-01-30): check periodically for supported element types
+
                 // the query prepared here will fail deterministically, if the reqSme element type is not supported
                 // be the AAS server. Therefore, filter for element types, which are not expected to return a valid
                 // response
