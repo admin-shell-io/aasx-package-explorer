@@ -18,13 +18,13 @@ namespace AasxPluginPlotting
     /// <summary>
     /// Interaktionslogik für WpfPlotViewControl.xaml
     /// </summary>
-    public partial class WpfPlotViewControl : UserControl
+    public partial class WpfPlotViewControlVertical : UserControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
 
-        public event Action<WpfPlotViewControl, int> ButtonClick;
+        public event Action<WpfPlotViewControlVertical, int> ButtonClick;
 
-        public WpfPlotViewControl()
+        public WpfPlotViewControlVertical()
         {
             InitializeComponent();
         }

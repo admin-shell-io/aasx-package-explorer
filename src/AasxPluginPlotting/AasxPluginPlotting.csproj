@@ -21,11 +21,77 @@
     <PackageReference Include="ScottPlot.WPF" Version="4.0.48" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29 - Kopieren %282%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren (2).xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29 - Kopieren - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren (2) - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29 - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren (2).xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %283%29 - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren (3).xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren %283%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlHorizontal.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren %282%29 - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren - Kopieren (2).xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren %282%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren %283%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren - Kopieren %282%29.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren - Kopieren - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren - Kopieren - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical - Kopieren.xaml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="WpfPlotViewControlVertical - Kopieren.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>WpfPlotViewControlVertical.xaml.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <None Update="AasxPluginPlotting.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="AasxPluginPlotting.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="WpfPlotViewControlHorizontal.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

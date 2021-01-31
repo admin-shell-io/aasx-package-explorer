@@ -245,6 +245,7 @@ namespace AasxPluginPlotting
             public class PlotItemGroup : List<PlotItem>
             {
                 public ScottPlot.WpfPlot WpfPlot;
+                public int Group = 0;
             }
 
             public IEnumerable<PlotItemGroup> GetItemsGrouped()
@@ -256,6 +257,7 @@ namespace AasxPluginPlotting
                 // start 1st chunk
                 var temp = new PlotItemGroup();
                 temp.Add(this[0]);
+                temp.Group = this[0].Group;
                 var startI = 0;
                 for (int i = 1; i < this.Count; i++)
                 {
@@ -269,6 +271,7 @@ namespace AasxPluginPlotting
                         temp = new PlotItemGroup();
                         startI = i;
                         temp.Add(this[i]);
+                        temp.Group = this[i].Group;
                     }
                 }
 
@@ -277,7 +280,7 @@ namespace AasxPluginPlotting
                     yield return temp;
             }
 
-            private bool _autoScale;
+            private bool _autoScaleX, _autoScaleY;
 
             public List<PlotItemGroup> RenderedGroups;
 
@@ -290,7 +293,8 @@ namespace AasxPluginPlotting
                 panel.Children.Clear();
 
                 // before applying arguments
-                _autoScale = true;
+                _autoScaleX = true;
+                _autoScaleY = true;
 
                 // go over all groups                
                 ScottPlot.WpfPlot lastPlot = null;
@@ -298,9 +302,13 @@ namespace AasxPluginPlotting
                 {
                     // start new group
                     // var wpfPlot = new ScottPlot.WpfPlot();
-                    var pvc = new WpfPlotViewControl();
+                    var pvc = new WpfPlotViewControlHorizontal();
+                    pvc.Text = "Single value plot";
+                    if (groupPI.Group >= 0 && groupPI.Group < 9999)
+                        pvc.Text += $"; grp={groupPI.Group}";
                     var wpfPlot = pvc.WpfPlot;
 
+                    // some basic attributes
                     lastPlot = wpfPlot;
                     wpfPlot.plt.AntiAlias(false, false, false);
                     wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
@@ -342,17 +350,17 @@ namespace AasxPluginPlotting
                     if (yMin.HasValue)
                     {
                         wpfPlot.plt.Axis(y1: yMin.Value);
-                        _autoScale = false;
+                        _autoScaleY = false;
                     }
 
                     if (yMax.HasValue)
                     {
                         wpfPlot.plt.Axis(y2: yMax.Value);
-                        _autoScale = false;
+                        _autoScaleY = false;
                     }
 
                     // control panel
-                    var vc = new WpfPlotViewControl();
+                    var vc = new WpfPlotViewControlVertical();
 
                     // render the plot into panel
                     wpfPlot.plt.Legend(fontSize: 9.0f);
@@ -385,15 +393,12 @@ namespace AasxPluginPlotting
                 }
             }
 
-            private void WpfPlot_ButtonClicked(WpfPlotViewControl sender, int ndx)
+            private void WpfPlot_ButtonClicked(WpfPlotViewControlHorizontal sender, int ndx)
             {
                 // access
                 var wpfPlot = sender?.WpfPlot;
                 if (wpfPlot == null)
                     return;
-
-                // disable autoscale
-                _autoScale = false;
 
                 if (ndx == 1 || ndx == 2)
                 {
@@ -406,6 +411,9 @@ namespace AasxPluginPlotting
 
                     if (ndx == 2)
                         wpfPlot.plt.Axis(x1: ax[0] + width / 4, x2: ax[1] - width / 4);
+
+                    // no autoscale for X
+                    _autoScaleX = false;
 
                     // call for the other
                     WpfPlot_AxisChanged(wpfPlot, null);
@@ -423,6 +431,9 @@ namespace AasxPluginPlotting
                     if (ndx == 4)
                         wpfPlot.plt.Axis(y1: ax[2] + height / 4, y2: ax[3] - height / 4);
 
+                    // no autoscale for Y
+                    _autoScaleY = false;
+
                     // call for the other
                     WpfPlot_AxisChanged(wpfPlot, null);
                 }
@@ -430,7 +441,8 @@ namespace AasxPluginPlotting
                 if (ndx == 5)
                 {
                     // swithc auto scale ON and hope the best
-                    _autoScale = true;
+                    _autoScaleX = true;
+                    _autoScaleY = true;
                 }
 
                 if (ndx == 6)
@@ -450,9 +462,10 @@ namespace AasxPluginPlotting
             {
                 if (sender is ScottPlot.WpfPlot wpfPlot)
                 {
-                    if (_autoScale)
+                    if (_autoScaleX || _autoScaleY)
                     {
-                        _autoScale = false;
+                        _autoScaleX = false;
+                        _autoScaleY = false;
                         ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
                         {
                             // disable
@@ -495,8 +508,15 @@ namespace AasxPluginPlotting
                     }
 
                     // scale?
-                    if (_autoScale)
+                    if (_autoScaleX && _autoScaleY)
                         grp.WpfPlot?.plt.AxisAuto();
+                    else
+                    if (_autoScaleX)
+                        grp.WpfPlot?.plt.AxisAutoX();
+                    else
+                    if (_autoScaleY)
+                        grp.WpfPlot?.plt.AxisAutoY();
+
                     grp.WpfPlot?.Render(skipIfCurrentlyRendering: true);
                 }
             }
