@@ -14,7 +14,7 @@ using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
-using AasxPackageExplorer;
+// using AasxPackageExplorer;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -49,8 +49,8 @@ namespace AasxOpenIdClient
         public static string certPfxPW = "i40";
         public static string outputDir = ".";
 
-        static string token = "";
-        public static async Task Run(string tag, string value, AasxIntegrationBase.IFlyoutProvider flyoutProvider)
+        public static string token = "";
+        public static async Task Run(string tag, string value/*, AasxIntegrationBase.IFlyoutProvider flyoutProvider*/)
         {
             ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(AcceptAllCertifications);
@@ -178,6 +178,11 @@ namespace AasxOpenIdClient
                             switch (operation)
                             {
                                 case "/server/listaas/":
+                                    System.Windows.Forms.MessageBox.Show(
+                                    "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
+                                    MessageBoxButtons.OK);
+                                    return;
+                                    /*
                                     var listOfAas = new List<SelectFromListFlyoutItem>();
                                     string[] split = urlContents.Split('\n');
                                     int i = 0;
@@ -216,6 +221,7 @@ namespace AasxOpenIdClient
                                         return;
                                     }
                                     operation = "/server/getaasx2/";
+                                    */
                                     break;
                                 case "/server/getaasx2/":
                                     try
@@ -288,7 +294,7 @@ namespace AasxOpenIdClient
             }
         }
 
-        static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
+        public static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
         {
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;

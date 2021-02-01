@@ -44,32 +44,34 @@
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
-  "PluginDll": [
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
-      "Args": [
-        "-single-nodeids",
-        "-single-keys",
-        "-ns",
-        "2",
-        "-ns",
-        "3"
-      ],
-      "Options": null
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
-      "Args": [],
-      "Options": null
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
-      "Args": []
-    },
+    "PluginDll": [
+        {
+            "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
+            "Args": [
+                "-single-nodeids",
+                "-single-keys",
+                "-ns",
+                "2",
+                "-ns",
+                "3"
+            ],
+            "Options": null
+        },
+        {
+            "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
+            "Args": [],
+            "Options": null
+        },
+        {
+            "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
+            "Args": []
+        },
+        /*
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
       "Args": []
     },
+        */
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
       "Args": []
@@ -103,9 +105,9 @@
       "Args": []
     },
     /* Festo specific from here on */
-    {
-      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
-      "Args": [] /*,
+        {
+            "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+            "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -121,10 +123,10 @@
           }
         ]
       }*/
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-      "Args": [] /*,
+        },
+        {
+            "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+            "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -140,8 +142,8 @@
           }
         ]
       } */
-    }
-  ],
+        }
+    ],
   "SecureConnectPresets": [
     {
       "Name": "Internet Demo",

@@ -1116,7 +1116,7 @@ namespace AasxPackageExplorer
                         if (_packageCentral.MainAvailable)
                             _packageCentral.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
-                        await AasxOpenIdClient.OpenIDClient.Run(tag, value, this);
+                        await AasxOpenIdClient.OpenIDClient.Run(tag, value/*, this*/);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(

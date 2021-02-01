@@ -17,8 +17,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AasxOpenIdClient;
 using AasxPackageExplorer;
 using AdminShellNS;
+using IdentityModel.Client;
 using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -121,6 +123,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // read via HttpClient (uses standard proxies)
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            handler.AllowAutoRedirect = false;
 
             var client = new HttpClient(handler);
 
@@ -132,10 +135,39 @@ namespace AasxWpfControlLibrary.PackageCentral
             runtimeOptions?.Log?.Info($"HttpClient() with base-address {client.BaseAddress} " +
                 $"and request {requestPath} .. ");
 
-            // get response?
-            using (var response = await client.GetAsync(requestPath,
-                HttpCompletionOption.ResponseHeadersRead))
+            if (OpenIDClient.token != "")
+                client.SetBearerToken(OpenIDClient.token);
+
+            bool repeat = true;
+
+            while (repeat)
             {
+                // get response?
+                var response = await client.GetAsync(requestPath,
+                    HttpCompletionOption.ResponseHeadersRead);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
+                {
+                    string redirectUrl = response.Headers.Location.ToString();
+                    string[] splitResult = redirectUrl.Split(new string[] { "?" },
+                        StringSplitOptions.RemoveEmptyEntries);
+                    Console.WriteLine("Redirect to:" + splitResult[0]);
+                    OpenIDClient.authServer = splitResult[0];
+
+                    runtimeOptions?.Log?.Info($".. authentication at auth server {OpenIDClient.authServer} needed");
+
+                    var response2 = await OpenIDClient.RequestTokenAsync(null);
+                    OpenIDClient.token = response2.AccessToken;
+                    client.SetBearerToken(OpenIDClient.token);
+
+                    repeat = true;
+                    continue;
+
+                    // throw new PackageContainerException($".. authentication at auth server {authServer} needed");
+                }
+
+                repeat = false;
+
                 var contentLength = response.Content.Headers.ContentLength;
                 var contentFn = response.Content.Headers.ContentDisposition?.FileName;
 
@@ -194,7 +226,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // log                
                     runtimeOptions?.Log?.Info($".. download done with {totalBytesRead} bytes read!");
                 }
-
             }
         }
 
@@ -236,6 +267,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
 
             var client = new HttpClient(handler);
+
+            if (OpenIDClient.token != "")
+                client.SetBearerToken(OpenIDClient.token);
 
             // BEGIN Workaround behind some proxies
             // Stream is sent twice, if proxy-authorization header is not set

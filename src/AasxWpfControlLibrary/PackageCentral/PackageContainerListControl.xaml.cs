@@ -79,6 +79,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 TextBoxRepoHeader.IsReadOnlyCaretVisible = false;
                 TextBoxRepoHeader.IsHitTestVisible = false; // work around for above
             }
+            if (icon == "\u2601" && AasxOpenIdClient.OpenIDClient.token != "")
+                icon = "\u26c5";
             TextBoxRepoIcon.Text = icon;
 
             // set header
@@ -110,6 +112,16 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
                 this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as PackageContainerRepoItem);
+
+            var icon = TextBoxRepoIcon.Text.Substring(0, 1);
+            if (icon == "\u2601" || icon == "\u26c5")
+            {
+                if (AasxOpenIdClient.OpenIDClient.token == "")
+                    icon = "\u2601";
+                else
+                    icon = "\u26c5";
+                TextBoxRepoIcon.Text = icon + TextBoxRepoIcon.Text.Substring(1);
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
