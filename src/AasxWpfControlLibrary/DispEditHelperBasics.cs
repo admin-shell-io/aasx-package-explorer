@@ -12,13 +12,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+using System.IO;
 
 namespace AasxPackageExplorer
 {
@@ -895,6 +898,86 @@ namespace AasxPackageExplorer
             panel.Children.Add(g);
         }
 
+
+        public void AddGetInfo(Panel view, string key, string buttionText, String IRDI)
+        {
+            if (buttionText == null)
+                return;
+
+            // Grid
+            var g = new Grid();
+            g.Margin = new Thickness(0, 5, 0, 5);
+
+            // 0 key
+            var gc = new ColumnDefinition();
+            gc.Width = GridLength.Auto;
+            gc.MinWidth = this.standardFirstColWidth;
+            g.ColumnDefinitions.Add(gc);
+
+            // button
+            gc = new ColumnDefinition();
+            gc.Width = new GridLength(1.0, GridUnitType.Star);
+            g.ColumnDefinitions.Add(gc);
+
+            // 0 row
+            var gr = new RowDefinition();
+            gr.Height = new GridLength(1.0, GridUnitType.Star);
+            g.RowDefinitions.Add(gr);
+
+            // key label
+            var x = AddSmallLabelTo(g, 0, 0, margin: new Thickness(5, 0, 0, 0), content: "" + key);
+            x.VerticalAlignment = VerticalAlignment.Center;
+
+            var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new Thickness(5, 0, 5, 0));
+            var b = new Button();
+            b.Content = buttionText;
+            b.Margin = new Thickness(2, 2, 2, 2);
+            b.Padding = new Thickness(5, 0, 5, 0);
+            wp.Children.Add(b);
+            b.Click += async (object sender, RoutedEventArgs e) =>
+            {
+                try
+                {
+                    using (var httpClientHandler = new HttpClientHandler())
+                    {
+                        httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                        using (var client = new HttpClient(httpClientHandler))
+                        {
+                            var irdi_url = Regex.Replace(IRDI, @"\W", "_");
+                            client.DefaultRequestHeaders.Add("Accept", "application/ld+json");
+                            HttpResponseMessage response = await client.GetAsync("https://18.157.197.66:8443/eclass/IRDI_" + irdi_url);
+                            response.EnsureSuccessStatusCode();
+                            string responseBody = await response.Content.ReadAsStringAsync();
+                            AasxPackageExplorer.Log.Singleton.Info(irdi_url);
+                            AasxIntegrationBase.StoredPrint sp = new AasxIntegrationBase.StoredPrint(JsonPrettify(responseBody));
+                            AasxPackageExplorer.Log.Singleton.Append(sp);
+                        }
+                    }
+                }
+                catch (HttpRequestException exp)
+                {
+                    Console.WriteLine("Message :{0} ", exp.Message);
+                }
+                
+            };
+
+            // in total
+            view.Children.Add(g);
+        }
+
+        public static string JsonPrettify(string json)
+        {
+            using (var stringReader = new StringReader(json))
+            using (var stringWriter = new StringWriter())
+            {
+                var jsonReader = new JsonTextReader(stringReader);
+                var jsonWriter = new JsonTextWriter(stringWriter) { Formatting = Formatting.Indented };
+                jsonWriter.WriteToken(jsonReader);
+                return stringWriter.ToString();
+            }
+        }
+
+
         public void AddAction(Panel view, string key, string[] actionStr, ModifyRepo repo = null,
                 Func<int, ModifyRepo.LambdaAction> action = null)
         {
@@ -1154,6 +1237,33 @@ namespace AasxPackageExplorer
             return res;
         }
 
+
+        public bool ReserveIDAtEclass(
+            ref string resIRDI,
+            ref AdminShell.ConceptDescription resCD)
+        {
+            var res = false;
+            if (this.flyoutProvider != null)
+            {
+                var uc = new ReserveAtEclassFlyout();
+                this.flyoutProvider.StartFlyoverModal(uc);
+                //resIRDI = uc.ResultIRDI;
+                //resCD = uc.ResultCD;
+                res = resIRDI != null;
+            }
+            else
+            {
+                //var dlg = new SelectEclassEntity(fullfn);
+                //if (dlg.ShowDialog() == true)
+                //{
+                //    resIRDI = dlg.ResultIRDI;
+                //    resCD = dlg.ResultCD;
+                //    res = true;
+                //}
+            }
+            return res;
+        }
+
         /// <summary>
         /// Asks the user for SME element type, allowing exclusion of types.
         /// </summary>
@@ -1366,10 +1476,33 @@ namespace AasxPackageExplorer
                                 return new ModifyRepo.LambdaActionRedrawEntity();
                         });
 
+                repo.RegisterControl(
+                    AddSmallButtonTo(
+                        g2, 0, 3,
+                        margin: new Thickness(2, 2, 2, 2),
+                        padding: new Thickness(5, 0, 5, 0),
+                        content: "Reserved id at eclass"),
+                    (o) =>
+                    {
+                        string resIRDI = null;
+                        AdminShell.ConceptDescription resCD = null;
+                        if (this.ReserveIDAtEclass(ref resIRDI, ref resCD))
+                        {
+                            keys.Add(
+                                AdminShell.Key.CreateNew(
+                                    AdminShell.Key.GlobalReference, false,
+                                    AdminShell.Identification.IRDI, resIRDI));
+                        }
+                        if (takeOverLambdaAction != null)
+                            return takeOverLambdaAction;
+                        else
+                            return new ModifyRepo.LambdaActionRedrawEntity();
+                    });
+
                 if (addExistingEntities != null && packages.MainAvailable)
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 3,
+                            g2, 0, 4,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "Add existing"),
@@ -1388,7 +1521,7 @@ namespace AasxPackageExplorer
 
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 4,
+                        g2, 0, 5,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Add blank"),
@@ -1405,7 +1538,7 @@ namespace AasxPackageExplorer
                 if (jumpLambda != null)
                     repo.RegisterControl(
                         AddSmallButtonTo(
-                            g2, 0, 5,
+                            g2, 0, 6,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
                             content: "Jump"),
@@ -1416,7 +1549,7 @@ namespace AasxPackageExplorer
 
                 repo.RegisterControl(
                     AddSmallButtonTo(
-                        g2, 0, 6,
+                        g2, 0, 7,
                         margin: new Thickness(2, 2, 2, 2),
                         padding: new Thickness(5, 0, 5, 0),
                         content: "Clipboard"),
