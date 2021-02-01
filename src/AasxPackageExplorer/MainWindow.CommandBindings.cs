@@ -1970,9 +1970,17 @@ namespace AasxPackageExplorer
             try
             {
                 if (ve != null && ve.theEnv != null && ve.theAas != null)
+                {
                     dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
+                }
                 else
+                {
+                    if (packages.Main == null)
+                    {
+                        packages.Main = new AdminShellPackageEnv();
+                    }
                     dataChanged = AasxDictionaryImport.Import.ImportSubmodel(packages.Main.AasEnv);
+                }
             }
             catch (Exception e)
             {
