@@ -169,7 +169,6 @@ namespace AasxPackageExplorer
                 this.AddKeyListLangStr(stack, "description", referable.description.langString, repo);
             }
         }
-
         //
         // Identifiable
         //
@@ -243,6 +242,8 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
             }
+
+            this.testmethod1(stack, "testlabelzaib", "zaibtestvalue");
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
