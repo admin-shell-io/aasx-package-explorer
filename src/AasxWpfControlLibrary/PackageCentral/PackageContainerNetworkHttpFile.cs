@@ -160,6 +160,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                     OpenIDClient.token = response2.AccessToken;
                     client.SetBearerToken(OpenIDClient.token);
 
+                    System.Windows.Forms.MessageBox.Show(response2.AccessToken,
+                        "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
+
                     repeat = true;
                     continue;
 
@@ -186,7 +189,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (contentFn != null)
                     givenFn = contentFn;
                 TempFn = CreateNewTempFn(givenFn, IsFormat);
-                runtimeOptions?.Log?.Info($".. connecting to server with base-address {client.BaseAddress} " +
+                runtimeOptions?.Log?.Info($".. downloading and scanning by proxy/firewall {client.BaseAddress} " +
                     $"and request {requestPath} .. ");
 
                 using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
