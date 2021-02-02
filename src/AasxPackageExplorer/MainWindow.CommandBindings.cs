@@ -190,14 +190,31 @@ namespace AasxPackageExplorer
                     return;
                 }
 
+                // shall be a local file?!
+                var isLocalFile = _packageCentral.MainItem.Container is PackageContainerLocalFile;
+                if (!isLocalFile)
+                    if (MessageBoxResult.Yes != MessageBoxFlyoutShow(
+                        "Current AASX file is not a local file. Proceed and convert to local AASX file?",
+                        "Save", MessageBoxButton.YesNo, MessageBoxImage.Hand))
+                        return;
+
                 // where
                 var dlg = new Microsoft.Win32.SaveFileDialog();
-                dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-                dlg.FileName = _packageCentral.MainItem.Filename;
+                if (isLocalFile)
+                {
+                    dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                    dlg.FileName = _packageCentral.MainItem.Filename;
+                } 
+                else
+                {
+                    dlg.FileName = "copy";
+                }
+                
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
-                    "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
+                    (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") + 
+                    "All files (*.*)|*.*";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
@@ -206,13 +223,41 @@ namespace AasxPackageExplorer
                     // save
                     try
                     {
+                        // if not local, do a bit of voodoo ..
+                        if (!isLocalFile)
+                        {
+                            // establish local
+                            if (!await _packageCentral.MainItem.Container.SaveLocalCopyAsync(
+                                dlg.FileName,
+                                runtimeOptions: _packageCentral.CentralRuntimeOptions))
+                            {
+                                // Abort
+                                MessageBoxFlyoutShow(
+                                    "Not able to copy current AASX file to local file. Aborting!",
+                                    "Save", MessageBoxButton.OK, MessageBoxImage.Hand);
+                                return;
+                            }
+
+                            // re-load
+                            UiLoadPackageWithNew(
+                                _packageCentral.MainItem, null, dlg.FileName, onlyAuxiliary: false,
+                                storeFnToLRU: dlg.FileName);
+                            return;
+                        }
+
+                        //
+                        // ELSE .. already local
+                        //
+
                         // preferred format
                         var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
                         if (dlg.FilterIndex == 2)
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
-                        // save
+
+                        // save 
                         RememberForInitialDirectory(dlg.FileName);
                         await _packageCentral.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
+                        
                         // backup
                         if (Options.Curr.BackupDir != null)
                             _packageCentral.MainItem.Container.BackupInDir(

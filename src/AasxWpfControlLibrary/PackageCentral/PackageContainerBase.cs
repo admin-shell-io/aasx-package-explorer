@@ -180,6 +180,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             await Task.Yield();
         }
 
+        public virtual async Task<bool> SaveLocalCopyAsync(
+            string targetFilename,
+            PackCntRuntimeOptions runtimeOptions = null)
+        {
+            await Task.Yield();
+            return false;
+        }
+
         public virtual async Task SaveToSourceAsync(string saveAsNewFileName = null,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None,
             PackCntRuntimeOptions runtimeOptions = null)

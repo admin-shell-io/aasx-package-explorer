@@ -67,6 +67,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // set icon
+            TextBoxRepoIcon.Foreground = Brushes.Black;
             var icon = "\U0001F4BE";
             if (FileRepository is PackageContainerListHttpRestRegistry)
                 icon = "\U0001f4d6";
@@ -80,7 +81,10 @@ namespace AasxWpfControlLibrary.PackageCentral
                 TextBoxRepoHeader.IsHitTestVisible = false; // work around for above
             }
             if (icon == "\u2601" && AasxOpenIdClient.OpenIDClient.token != "")
-                icon = "\u26c5";
+            {
+                icon = "\u2600";
+                TextBoxRepoIcon.Foreground = Brushes.Green;
+            }
             TextBoxRepoIcon.Text = icon;
 
             // set header
