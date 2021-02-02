@@ -2591,16 +2591,9 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ExportOPCUANodeSet()
         {
-            string filename = "i4AASCS.xml";
-            string workingDirectory = "" + Environment.CurrentDirectory;
+            UANodeSet InformationModel = UANodeSetExport.getDefaultI4AAS();
 
-            // ReSharper disable PossibleNullReferenceException
-            if (File.Exists(
-                Path.Combine(
-                    System.IO.Path.GetDirectoryName(
-                        Directory.GetParent(workingDirectory).Parent.FullName),
-                    filename)))
-            // ReSharper enable PossibleNullReferenceException
+            if (InformationModel != null)
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
@@ -2615,16 +2608,6 @@ namespace AasxPackageExplorer
                     return;
 
                 RememberForInitialDirectory(dlg.FileName);
-
-                UANodeSet InformationModel = null;
-
-                // ReSharper disable PossibleNullReferenceException
-                InformationModel = UANodeSetExport.getInformationModel(
-                    Path.Combine(
-                        System.IO.Path.GetDirectoryName(
-                            Directory.GetParent(workingDirectory).Parent.FullName),
-                        filename));
-                // ReSharper enable PossibleNullReferenceException
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
@@ -2642,11 +2625,6 @@ namespace AasxPackageExplorer
                     writer.Flush();
                 }
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
-            }
-            else
-            {
-                System.Windows.MessageBox.Show(
-                    "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
         }
     }

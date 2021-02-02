@@ -6,6 +6,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="i4AASCS.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="i4AASCS.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
   </ItemGroup>
 </Project>
