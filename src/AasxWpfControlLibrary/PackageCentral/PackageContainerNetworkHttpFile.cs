@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AasxOpenIdClient;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
 using IdentityModel.Client;
@@ -151,7 +152,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     string redirectUrl = response.Headers.Location.ToString();
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
-                    Console.WriteLine("Redirect to:" + splitResult[0]);
+                    runtimeOptions?.Log?.Info("Redirect to:" + splitResult[0]);
                     OpenIDClient.authServer = splitResult[0];
 
                     runtimeOptions?.Log?.Info($".. authentication at auth server {OpenIDClient.authServer} needed");
@@ -162,8 +163,6 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     repeat = true;
                     continue;
-
-                    // throw new PackageContainerException($".. authentication at auth server {authServer} needed");
                 }
 
                 repeat = false;
@@ -257,6 +256,43 @@ namespace AasxWpfControlLibrary.PackageCentral
                     $"While opening buffered aasx {TempFn} from source {this.ToString()} " +
                     $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
             }
+        }
+
+        public override async Task<bool> SaveLocalCopyAsync(
+            string targetFilename,
+            PackCntRuntimeOptions runtimeOptions = null)
+        {
+            // Location shall be present
+            if (!Location.HasContent())
+                return false;
+
+            // buffer to temp file
+            try
+            {
+                await DownloadFromSource(new Uri(Location), runtimeOptions);
+            }
+            catch (Exception ex)
+            {
+                throw new PackageContainerException(
+                    $"While buffering aasx from {Location} via HttpClient " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+
+            // copy temp file
+            try
+            {
+                File.Copy(TempFn, targetFilename, overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                throw new PackageContainerException(
+                    $"While copying local copy buffered aasx {TempFn} from source {this.ToString()} " +
+                    $"to target file {targetFilename} " +
+                    $"at {AdminShellUtil.ShortLocation(ex)} gave: {ex.Message}");
+            }
+
+            // ok ?!
+            return true;
         }
 
         private async Task UploadToServerAsync(string copyFn, Uri serverUri,
