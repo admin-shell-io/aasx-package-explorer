@@ -46,6 +46,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// Guess the container type based on <c>location</c> and parse necessary arguments
         /// </summary>
         /// <param name="location"></param>
+        /// <param name="runtimeOptions"></param>
         /// <returns></returns>
         public static PackageContainerGuess FromLocation(
             string location,
@@ -164,14 +165,14 @@ namespace AasxWpfControlLibrary.PackageCentral
                             overrideLoadResident, takeOver,
                             containerOptions, runtimeOptions);
 
-                if (cnt.ContainerOptions.StayConnected 
+                if (cnt.ContainerOptions.StayConnected
                     && guess.AasId.HasContent()
                     && guess.HeadOfPath.HasContent())
                 {
-                    cnt.ConnectorPrimary = new PackageConnectorHttpRest(cnt, 
+                    cnt.ConnectorPrimary = new PackageConnectorHttpRest(cnt,
                         new Uri(guess.HeadOfPath + "/aas/" + guess.AasId));
                 }
-                
+
                 return cnt;
             }
 

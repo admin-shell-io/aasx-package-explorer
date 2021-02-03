@@ -14,7 +14,6 @@ using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
-// using AasxPackageExplorer;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -182,47 +181,6 @@ namespace AasxOpenIdClient
                                     "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
                                     MessageBoxButtons.OK);
                                     return;
-                                    /*
-                                    var listOfAas = new List<SelectFromListFlyoutItem>();
-                                    string[] split = urlContents.Split('\n');
-                                    int i = 0;
-                                    int offset = 0;
-                                    foreach (string s in split)
-                                    {
-                                        if (offset >= 2 && offset < split.Length - 2)
-                                        {
-                                            listOfAas.Add(new SelectFromListFlyoutItem(s, new Tuple<int>(i++)));
-                                        }
-                                        offset++;
-                                    }
-                                    if (listOfAas.Count < 1)
-                                    {
-                                        System.Windows.Forms.MessageBox.Show(
-                                            "No AAS found. Aborting.", "Select AAS to get ..",
-                                            MessageBoxButtons.OK);
-                                        return;
-                                    }
-                                    var uc = new SelectFromListFlyout();
-                                    uc.Caption = "Select AAS to get ..";
-                                    uc.ListOfItems = listOfAas;
-                                    flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                                        uc.ResultItem.Tag is Tuple<int>)
-                                    {
-                                        // get result arguments
-                                        var TagTuple = uc.ResultItem.Tag as Tuple<int>;
-                                        value = TagTuple.Item1.ToString();
-                                    }
-                                    else
-                                    {
-                                        System.Windows.Forms.MessageBox.Show(
-                                            "No AAS found. Aborting.", "Select AAS to get ..",
-                                            MessageBoxButtons.OK);
-                                        return;
-                                    }
-                                    operation = "/server/getaasx2/";
-                                    */
-                                    break;
                                 case "/server/getaasx2/":
                                     try
                                     {
@@ -401,7 +359,8 @@ namespace AasxOpenIdClient
             if (credential == null)
             {
                 var res = System.Windows.Forms.MessageBox.Show(
-                    "Select certificate chain from certificate store? \n(otherwise use file Andreas_Orzelski_Chain.pfx)",
+                    "Select certificate chain from certificate store? \n" +
+                    "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                     "Select certificate chain", MessageBoxButtons.YesNo);
                 if (res == DialogResult.No)
                     credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));

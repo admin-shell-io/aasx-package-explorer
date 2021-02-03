@@ -204,16 +204,16 @@ namespace AasxPackageExplorer
                 {
                     dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
                     dlg.FileName = _packageCentral.MainItem.Filename;
-                } 
+                }
                 else
                 {
                     dlg.FileName = "copy";
                 }
-                
+
                 dlg.DefaultExt = "*.aasx";
                 dlg.Filter =
                     "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
-                    (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") + 
+                    (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
                     "All files (*.*)|*.*";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var res = dlg.ShowDialog();
@@ -257,7 +257,7 @@ namespace AasxPackageExplorer
                         // save 
                         RememberForInitialDirectory(dlg.FileName);
                         await _packageCentral.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
-                        
+
                         // backup
                         if (Options.Curr.BackupDir != null)
                             _packageCentral.MainItem.Container.BackupInDir(

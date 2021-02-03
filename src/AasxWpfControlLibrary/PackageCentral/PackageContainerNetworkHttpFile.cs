@@ -17,8 +17,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AasxOpenIdClient;
 using AasxIntegrationBase;
+using AasxOpenIdClient;
 using AasxPackageExplorer;
 using AdminShellNS;
 using IdentityModel.Client;
@@ -150,6 +150,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 if (response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
                 {
                     string redirectUrl = response.Headers.Location.ToString();
+                    // ReSharper disable once RedundantExplicitArrayCreation
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
                     runtimeOptions?.Log?.Info("Redirect to:" + splitResult[0]);
