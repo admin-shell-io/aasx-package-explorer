@@ -37,7 +37,7 @@ function Main
         "15_Siemens.aasx",
         "16_Lenze.aasx",
         "17_ABB.aasx",
-        "18_Hitachi_HX_DigTyp40.aasx",
+        "18_Hitachi.aasx",
         "34_Festo.aasx"
         )
 
