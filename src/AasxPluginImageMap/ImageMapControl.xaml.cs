@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -284,7 +284,7 @@ namespace AasxPluginImageMap
             lb.HorizontalContentAlignment = HorizontalAlignment.Center;
             lb.VerticalContentAlignment = VerticalAlignment.Center;
             lb.Content = "" + text;
-            lb.FontSize = 8.0;
+            lb.FontSize = 10.0;
             lb.Foreground = fg;
             lb.Tag = tag;
             Canvas.SetLeft(lb, x0);

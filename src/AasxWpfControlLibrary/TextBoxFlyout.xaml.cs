@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -59,19 +59,19 @@ namespace AasxPackageExplorer
             this.ImageIcon.Source = null;
             if (image == MessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Question)
-                this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(new Uri(
+                    "/AasxIntegrationBaseWpf;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
             if (image == MessageBoxImage.Warning)
-                this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxWpfControlLibrary;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+                this.ImageIcon.Source = new BitmapImage(new Uri(
+                    "/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
             // focus
             this.TextBoxText.Text = "";

@@ -35,7 +35,9 @@ function PackageRelease($outputDir)
     "AasxPluginDocumentShelf",
     "AasxPluginExportTable",
     "AasxPluginGenericForms",
+    "AasxPluginImageMap",
     "AasxPluginMtpViewer",
+    "AasxPluginPlotting",
     "AasxPluginTechnicalData",
     "AasxPluginUaNetClient",
     "AasxPluginUaNetServer"

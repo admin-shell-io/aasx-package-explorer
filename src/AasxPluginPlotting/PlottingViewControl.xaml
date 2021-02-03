@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="AasxPluginPlotting.PlottingViewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AasxPluginPlotting"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600" Loaded="UserControl_Loaded">
+    <!--
+    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" Background="LightBlue">
+            <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">
+                Plotting of Properties</Label>
+            <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                <Label Content="Lang:"/>
+                <ComboBox x:Name="ComboBoxLang" MinWidth="70" Margin="2" IsEditable="True" TextBoxBase.TextChanged="ComboBoxLang_TextChanged"/>
+                <Label />
+            </WrapPanel>
+            <Label/>
+        </DockPanel>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" x:Name="ScrollViewerContent" 
+                      HorizontalScrollBarVisibility="Disabled" Margin="4,4,4,2" PreviewMouseWheel="ScrollViewerContent_PreviewMouseWheel">
+            <Grid x:Name="GridContent" MinWidth="300">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1*" MinHeight="50"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1*" MinHeight="50"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                           Margin="0,10,0,0" FontWeight="Bold">
+                    The following Properties have been qualified by "Plotting.Args":
+                </TextBlock>
+
+                <DataGrid  x:Name="DataGridPlotItems" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding}" 
+                           CanUserAddRows="False" BorderThickness="0" Background="Transparent"
+                           HeadersVisibility="Column" Margin="4, 0, 4, 0" IsReadOnly="True"
+                           AutoGenerateColumns="False">
+                    <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Property" Width="1*" MinWidth="150" Binding="{Binding DisplayPath}"/>
+                        <DataGridTextColumn Header="Value" Width="1*" MinWidth="100" Binding="{Binding DisplayValue}"/>
+                        <DataGridTextColumn Header="Description" Width="3*" MinWidth="300" Binding="{Binding DisplayDescription}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style>
+                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                    <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                           Margin="0,10,0,0" FontWeight="Bold">
+                    Charts, sorted by groups:
+                </TextBlock>
+
+                <StackPanel Grid.Row="3" Grid.Column="0" x:Name="StackPanelCharts" Orientation="Vertical">
+                    
+                </StackPanel>
+                
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

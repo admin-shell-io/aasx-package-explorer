@@ -14,7 +14,6 @@ using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
-using AasxPackageExplorer;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -49,8 +48,8 @@ namespace AasxOpenIdClient
         public static string certPfxPW = "i40";
         public static string outputDir = ".";
 
-        static string token = "";
-        public static async Task Run(string tag, string value, AasxIntegrationBase.IFlyoutProvider flyoutProvider)
+        public static string token = "";
+        public static async Task Run(string tag, string value/*, AasxIntegrationBase.IFlyoutProvider flyoutProvider*/)
         {
             ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(AcceptAllCertifications);
@@ -178,45 +177,10 @@ namespace AasxOpenIdClient
                             switch (operation)
                             {
                                 case "/server/listaas/":
-                                    var listOfAas = new List<SelectFromListFlyoutItem>();
-                                    string[] split = urlContents.Split('\n');
-                                    int i = 0;
-                                    int offset = 0;
-                                    foreach (string s in split)
-                                    {
-                                        if (offset >= 2 && offset < split.Length - 2)
-                                        {
-                                            listOfAas.Add(new SelectFromListFlyoutItem(s, new Tuple<int>(i++)));
-                                        }
-                                        offset++;
-                                    }
-                                    if (listOfAas.Count < 1)
-                                    {
-                                        System.Windows.Forms.MessageBox.Show(
-                                            "No AAS found. Aborting.", "Select AAS to get ..",
-                                            MessageBoxButtons.OK);
-                                        return;
-                                    }
-                                    var uc = new SelectFromListFlyout();
-                                    uc.Caption = "Select AAS to get ..";
-                                    uc.ListOfItems = listOfAas;
-                                    flyoutProvider.StartFlyoverModal(uc);
-                                    if (uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                                        uc.ResultItem.Tag is Tuple<int>)
-                                    {
-                                        // get result arguments
-                                        var TagTuple = uc.ResultItem.Tag as Tuple<int>;
-                                        value = TagTuple.Item1.ToString();
-                                    }
-                                    else
-                                    {
-                                        System.Windows.Forms.MessageBox.Show(
-                                            "No AAS found. Aborting.", "Select AAS to get ..",
-                                            MessageBoxButtons.OK);
-                                        return;
-                                    }
-                                    operation = "/server/getaasx2/";
-                                    break;
+                                    System.Windows.Forms.MessageBox.Show(
+                                    "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
+                                    MessageBoxButtons.OK);
+                                    return;
                                 case "/server/getaasx2/":
                                     try
                                     {
@@ -288,7 +252,7 @@ namespace AasxOpenIdClient
             }
         }
 
-        static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
+        public static async Task<TokenResponse> RequestTokenAsync(SigningCredentials credential)
         {
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -337,6 +301,10 @@ namespace AasxOpenIdClient
             {
                 throw new Exception(response.Error);
             }
+
+            System.Windows.Forms.MessageBox.Show(response.AccessToken,
+                "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
+
             return response;
         }
 
@@ -387,6 +355,16 @@ namespace AasxOpenIdClient
             string certFileName = certPfx;
             string password = certPfxPW;
             X509Certificate2 certificate = null;
+
+            if (credential == null)
+            {
+                var res = System.Windows.Forms.MessageBox.Show(
+                    "Select certificate chain from certificate store? \n" +
+                    "(otherwise use file Andreas_Orzelski_Chain.pfx)",
+                    "Select certificate chain", MessageBoxButtons.YesNo);
+                if (res == DialogResult.No)
+                    credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));
+            }
 
             if (credential == null)
             {
