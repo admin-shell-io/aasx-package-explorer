@@ -343,6 +343,10 @@ namespace AasxOpenIdClient
             {
                 throw new Exception(response.Error);
             }
+
+            System.Windows.Forms.MessageBox.Show(response.AccessToken,
+                "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
+
             return response;
         }
 
@@ -393,6 +397,15 @@ namespace AasxOpenIdClient
             string certFileName = certPfx;
             string password = certPfxPW;
             X509Certificate2 certificate = null;
+
+            if (credential == null)
+            {
+                var res = System.Windows.Forms.MessageBox.Show(
+                    "Select certificate chain from certificate store? \n(otherwise use file Andreas_Orzelski_Chain.pfx)",
+                    "Select certificate chain", MessageBoxButtons.YesNo);
+                if (res == DialogResult.No)
+                    credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));
+            }
 
             if (credential == null)
             {

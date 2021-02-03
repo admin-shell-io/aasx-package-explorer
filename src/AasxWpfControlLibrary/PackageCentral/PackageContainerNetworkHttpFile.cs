@@ -160,9 +160,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     OpenIDClient.token = response2.AccessToken;
                     client.SetBearerToken(OpenIDClient.token);
 
-                    System.Windows.Forms.MessageBox.Show(response2.AccessToken,
-                        "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
-
                     repeat = true;
                     continue;
 
