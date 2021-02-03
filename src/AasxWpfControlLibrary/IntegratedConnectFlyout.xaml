@@ -1,0 +1,283 @@
+﻿<UserControl x:Class="AasxPackageExplorer.IntegratedConnectFlyout"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900" Loaded="UserControl_Loaded">
+    <!--
+    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="Themes/Generic.xaml"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="OuterGrid">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="40" MinHeight="30"/>
+            <RowDefinition Height="230"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="1" Grid.RowSpan="6" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
+
+        <Label Grid.Row="1" Grid.Column="1" x:Name="LabelCaption" VerticalAlignment="Bottom" Foreground="White" 
+               HorizontalContentAlignment="Center" FontSize="22">Connect ...</Label>
+
+        <Viewbox Grid.Row="1" Grid.Column="2" Margin="8,8,8,8" HorizontalAlignment="Right" VerticalAlignment="Top" MaxHeight="26">
+            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+        </Viewbox>
+
+        <TabControl Grid.Row="2" Grid.Column="1" x:Name="TabControlMain" Background="Transparent" 
+                    BorderThickness="0"
+                    TabStripPlacement="Right">
+
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                <Grid>
+                                    <Border Name="Border" Background="#20303030" Margin="20,-2,2,4" 
+                                            BorderBrush="#FF606060" BorderThickness="1,1,1,1" CornerRadius="4">
+                                        <Label x:Name="Label" Foreground="#ff404040" VerticalAlignment="Center" HorizontalContentAlignment="Right">
+                                            <ContentPresenter x:Name="ContentSite" ContentSource="Header" RecognizesAccessKey="True"/>
+                                        </Label>
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Label" Property="Foreground" Value="#ff606060"/>
+                                        <Setter TargetName="Label" Property="FontWeight" Value="Bold" />
+                                        <Setter TargetName="Border" Property="Background" Value="#20808080" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="#00000000" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter TargetName="Label" Property="FontWeight" Value="Bold" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="HeaderTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <ContentPresenter Content="{TemplateBinding Content}">
+                                    <ContentPresenter.LayoutTransform>
+                                        <RotateTransform Angle="0" />
+                                    </ContentPresenter.LayoutTransform>
+                                </ContentPresenter>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background" Value="#FF6E6C67" />
+                    <Setter Property="Height" Value="30" />
+                    <Setter Property="Width" Value="100" />
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FontFamily" Value="Arial" />
+                    <Setter Property="FontSize" Value="11" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="UseLayoutRounding" Value="False" />
+                </Style>
+            </TabControl.Resources>
+
+            <TabItem x:Name="TabItemStart" Header="Start" Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" x:Name="LabelCaption2" VerticalAlignment="Bottom" Foreground="White" 
+                           FontSize="22">Enter location:</Label>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" 
+                                HorizontalAlignment="Right">
+                        <Label Foreground="White" FontSize="22" Content="Preset (in options): "/>
+                        <ComboBox x:Name="ComboBoxPresets" MinWidth="150" Margin="4" 
+                                  SelectionChanged="ComboBoxPresets_SelectionChanged"/>
+                    </StackPanel>
+
+                    <TextBox Grid.Row="1" Grid.Column="0" x:Name="TextBoxStartLocation" Margin="4" FontSize="24" VerticalContentAlignment="Center"></TextBox>
+                    <Button Grid.Row="1" Grid.Column="1" x:Name="ButtonStartSelect" Style="{DynamicResource TranspRoundCorner}" Margin="4" Foreground="White" FontSize="16" Click="Button_Click">...</Button>
+
+                    <WrapPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <CheckBox x:Name="CheckBoxStayAutoClose" Content="auto close dialogue   " Foreground="White" 
+                                  FontSize="16" VerticalContentAlignment="Center" Margin="4,1,0,0" IsChecked="True"/>
+                        <CheckBox x:Name="CheckBoxStayConnected" Content="Stay connected (when possible)   " Foreground="White" 
+                                  FontSize="16" VerticalContentAlignment="Center" Margin="4,1,0,0"/>
+                        <Label FontSize="16" Foreground="White">Period (ms):</Label>
+                        <TextBox x:Name="TextBoxUpdatePeriod" Width="50" Foreground="White" Background="#ff202e4c" 
+                                 HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" FontSize="16" Text="2000"/>
+                    </WrapPanel>
+
+                    <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonStartProceed" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" 
+                            Click="Button_Click">Proceed</Button>
+                </Grid>
+
+            </TabItem>
+
+            <TabItem x:Name="TabItemSelectFromList" Header="Select" Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" x:Name="LabelSelectFromListCaption" VerticalAlignment="Bottom" Foreground="White" FontSize="22">Select AAS:</Label>
+
+                    <ListBox x:Name="ListBoxSelectFromList" Grid.Row="1" Grid.Column="0" Margin="5,10,5,10" Background="#c0202030" Foreground="White" FontWeight="Bold" FontSize="16" 
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" MouseDoubleClick="ListBoxSelectFromList_MouseDoubleClick">
+                    </ListBox>
+
+                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonPageSelectFromListProceed" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" 
+                            Click="Button_Click">Proceed</Button>
+                </Grid>
+
+            </TabItem>
+
+            <TabItem x:Name="TabItemCredentials" Header="Cred." Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                           x:Name="LabelCredentialsCaption" VerticalAlignment="Bottom" Foreground="White" FontSize="22" FontWeight="Bold">Credentials</Label>
+
+                    <Label Grid.Row="1" Grid.Column="0" FontSize="22" Foreground="White">Username:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxUsername" Margin="4" FontSize="24" VerticalContentAlignment="Center"></TextBox>
+
+                    <Label Grid.Row="2" Grid.Column="0" FontSize="22" Foreground="White">Password:</Label>
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxPassword" Margin="4" FontSize="24" VerticalContentAlignment="Center"></TextBox>
+
+                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonPageCredentialsProceed" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" 
+                            Click="Button_Click">Proceed</Button>
+                </Grid>
+
+            </TabItem>
+
+            <TabItem x:Name="TabItemSummary" Header="Summary" Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                           x:Name="TextBlockSummaryMessage" Foreground="White" FontSize="16">
+                        Operation was successfull. <LineBreak/>
+                        The dialogue might be closed to proceed with main application.
+                    </TextBlock>
+
+                    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ButtonPageSummaryDone" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" 
+                            Click="Button_Click">Done &amp; take over connection</Button>
+                </Grid>
+
+            </TabItem>
+
+        </TabControl>
+
+        <DockPanel Grid.Row="3" Grid.Column="1">
+            <Label DockPanel.Dock="Left" FontStyle="Italic" Foreground="Gray" 
+                   Margin="0"
+                   VerticalContentAlignment="Top"
+                   Content="(use Control-1..9 to call presets)"/>
+            <Button DockPanel.Dock="Right" x:Name="ButtonMsgSmaller" Style="{DynamicResource TranspRoundCorner}"
+                    Margin="2,2,6,2" Height="22" Width="22" Foreground="White" Click="Button_Click">&#x1F5DB;</Button>
+            <Button DockPanel.Dock="Right" x:Name="ButtonMsgLarger" Style="{DynamicResource TranspRoundCorner}"
+                    Margin="2" Height="22" Width="22" Foreground="White" Click="Button_Click">&#x1F5DA;</Button>
+            <Label Content=" "/>
+        </DockPanel>
+        
+        <RichTextBox Grid.Row="4" Grid.Column="1" x:Name="TextBoxMessages" Background="#40404040"  Margin="4,0,4,0"
+                     BorderBrush="Transparent" Foreground="White" FontSize="12" VerticalScrollBarVisibility="Auto" 
+                     HorizontalScrollBarVisibility="Disabled" PreviewMouseWheel="TextBoxMessages_PreviewMouseWheel"
+                     SelectionBrush="White" IsInactiveSelectionHighlightEnabled="True"
+                     IsDocumentEnabled="true" IsReadOnly="True">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="2" />
+                </Style>
+            </RichTextBox.Resources>
+        </RichTextBox>
+
+        <Grid Grid.Row="5" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ProgressBar Grid.Row="0" Grid.Column="0" x:Name="TheProgressBar" 
+                         BorderBrush="#ff202020"
+                         Background="#40404040" Foreground="{DynamicResource DarkAccentColor}" 
+                         Margin="4,2,4,2"/>
+            <Label Grid.Row="0" Grid.Column="0" x:Name="LabelProgressText"
+                   Content="0 bytes" Foreground="LightGray"
+                   HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        </Grid>
+
+    </Grid>
+</UserControl>

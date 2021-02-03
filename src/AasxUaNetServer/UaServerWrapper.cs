@@ -98,6 +98,7 @@ namespace AasxUaNetServer
             catch (Exception ex)
             {
                 Utils.Trace("ServiceResultException:" + ex.Message);
+                Log.Error(ex, "starting server");
                 Console.WriteLine("Exception: {0}", ex.Message);
                 exitCode = ExitCode.ErrorServerException;
                 return;

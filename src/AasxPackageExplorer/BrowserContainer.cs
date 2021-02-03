@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -32,7 +32,7 @@ namespace AasxPackageExplorer
 
         private static Plugins.PluginInstance browserPlugin = null;
         private static Grid theOnscreenBrowser = null;
-        private string browserHandlesFiles = ".jpeg .jpg .png .bmp .pdf .xml .txt .md *";
+        private string browserHandlesFiles = ".html .htm .jpeg .jpg .png .bmp .pdf .xml .txt .md *";
 
         private FakeBrowser theFallbackBrowser = null;
         private string fallbackBrowserHandlesFiles = ".jpeg .jpg .png .bmp";
@@ -122,9 +122,34 @@ namespace AasxPackageExplorer
         #region Functions to the outside
         //==============================
 
-        public bool CanHandleFileNameExtension(string fn)
+        // Note: this is a copy of the Array in AdminShell.cs
+        public static string[] GetHandableMimeTypes()
         {
-            // prepare extension
+            return
+                new[] {
+                    System.Net.Mime.MediaTypeNames.Text.Plain,
+                    System.Net.Mime.MediaTypeNames.Text.Xml,
+                    System.Net.Mime.MediaTypeNames.Text.Html,
+                    "application/json",
+                    "application/rdf+xml",
+                    System.Net.Mime.MediaTypeNames.Application.Pdf,
+                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                    "image/png",
+                    System.Net.Mime.MediaTypeNames.Image.Gif
+                };
+        }
+
+        public bool CanHandleFileNameExtension(string fn, string mimeType)
+        {
+            // check mime type with priority 1
+            if (mimeType.HasContent())
+            {
+                var handles = String.Join(" ", GetHandableMimeTypes());
+                if (handles.ToLower().Contains(mimeType.ToLower()))
+                    return true;
+            }
+
+            // no .. prepare extension
             var ext = System.IO.Path.GetExtension(fn.ToLower());
             if (ext == "")
                 ext = "*";
