@@ -84,7 +84,7 @@ function Main
                     $proxyMessage = "the script uses the default proxy: $("$proxyAddress"|ConvertTo-Json))"
                 }
 
-                $nl = [System]::Environment.NewLine
+                $nl = [Environment]::NewLine
 
                 throw (
                     "The script failed to download the sample AASX from: $url.$nl$nl" +
