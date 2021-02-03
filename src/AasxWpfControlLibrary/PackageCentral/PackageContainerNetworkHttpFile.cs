@@ -19,7 +19,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxOpenIdClient;
-using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AdminShellNS;
 using IdentityModel.Client;
