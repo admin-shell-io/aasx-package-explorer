@@ -7435,10 +7435,12 @@ namespace AdminShellNS
                     this.assetRef = new AssetRef(ent.assetRef);
             }
 
-            public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null)
+            public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null,
+                string category = null, Key semanticIdKey = null)
             {
+                CreateNewLogic(idShort, null, semanticIdKey);
+
                 this.entityType = EntityTypeNames[(int)entityType];
-                this.idShort = idShort;
                 this.assetRef = assetRef;
             }
 
