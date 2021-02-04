@@ -31,14 +31,8 @@ namespace AasxPackageExplorer.GuiTests
         {
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                Retry.WhileNull(() =>
-                        // ReSharper disable once AccessToDisposedClosure
-                        application.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.AutomationId == "splashScreen"),
-                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
-                    timeoutMessage: "Could not find the splash screen"
-                );
-
+                Common.FindTopLevelWindow(application, automation, (w) => w.AutomationId == "splashScreen",
+                        "Could not find the splash screen window");
                 Common.AssertNoErrors(application, mainWindow);
             }, new Run { Args = new[] { "-splash", "5000" } });
         }
@@ -48,26 +42,8 @@ namespace AasxPackageExplorer.GuiTests
         {
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                var helpMenuItem = mainWindow
-                    .FindFirstDescendant(
-                        cf => cf.ByClassName("MenuItem").And(cf.ByName("Help")))
-                    .AsMenuItem();
-
-                helpMenuItem.Click();
-
-                var aboutMenuItem = helpMenuItem
-                    .FindFirstChild(cf => cf.ByName("About .."))
-                    .AsMenuItem();
-
-                aboutMenuItem.Click();
-
-                Retry.WhileNull(() =>
-                        // ReSharper disable once AccessToDisposedClosure
-                        application.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title == "About"),
-                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
-                    timeoutMessage: "Could not find the about window"
-                );
+                Common.FindMenuItem(mainWindow, "Help", "About ..").Click();
+                Common.FindTopLevelWindowByTitle(application, automation, "About");
             });
         }
 
@@ -174,12 +150,7 @@ namespace AasxPackageExplorer.GuiTests
 
                 buttonReport.Click();
 
-                Retry.WhileNull(() =>
-                        // ReSharper disable once AccessToDisposedClosure
-                        application.GetAllTopLevelWindows(automation)
-                            .FirstOrDefault((w) => w.Title == "Message Report"),
-                    throwOnTimeout: true, timeout: TimeSpan.FromSeconds(5),
-                    timeoutMessage: "Could not find the 'Message Report' window");
+                Common.FindTopLevelWindowByTitle(application, automation, "Message Report");
             });
         }
 
@@ -412,6 +383,65 @@ namespace AasxPackageExplorer.GuiTests
                     technicalDataViewControl, "Could not find the control with class name 'TechnicalDataViewControl'");
 
             }, new Run { Args = new[] { "-splash", "0", path } });
+        }
+    }
+
+    public class TestDictionaryImport
+    {
+        [Test]
+        public void Test_import_dialog()
+        {
+            var aasxPath = Common.PathTo01FestoAasx();
+            var dictImportDir = Path.Combine(Common.TestResourcesDir(), "IecCdd", "empty");
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.FindMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
+
+                var window = Common.FindTopLevelWindowByTitle(application, automation, "Dictionary Import");
+
+                var dataProviders = window.FindFirstChild("DataSourceLabel").AsLabel().Text;
+                Assert.That(dataProviders.Contains("IEC CDD"), "IEC CDD is not listed as a data provider");
+
+                var dataSources = window.FindFirstChild("ComboBoxSource").AsComboBox().Items;
+                Assert.That(dataSources.Length == 0, "Expected no default sources for an empty dictionary import dir");
+
+                Common.AssertNoErrors(application, mainWindow);
+            }, new Run { Args = new[] { "-dict-import-dir", dictImportDir, aasxPath } });
+        }
+
+        [Test]
+        public void Test_simple_iec_cdd_data_source()
+        {
+            var aasxPath = Common.PathTo01FestoAasx();
+            var dictImportDir = Path.Combine(Common.TestResourcesDir(), "IecCdd", "simple");
+            Common.RunWithMainWindow((application, automation, mainWindow) =>
+            {
+                Common.FindMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
+
+                var window = Common.FindTopLevelWindowByTitle(application, automation, "Dictionary Import");
+
+                var comboBoxDataSources = window.FindFirstChild("ComboBoxSource").AsComboBox();
+                var dataSources = comboBoxDataSources.Items;
+                Assert.That(dataSources.Length == 1,
+                        "Expected one default sources for the dictionary import dir 'simple'");
+                var dataSource = dataSources[0].Text;
+                Assert.That(dataSource == "IEC CDD: simple",
+                        $"Unexpected label for the simple IEC CDD data source: '{dataSource}'");
+
+                comboBoxDataSources.Select(0);
+
+                var topLevelView = window.FindFirstChild("ClassViewControl").AsListBox();
+                var topLevelElements = Retry.WhileEmpty(() => topLevelView.Items,
+                        timeout: TimeSpan.FromSeconds(5),
+                        throwOnTimeout: true,
+                        timeoutMessage: "Could not find top-level elements from simple IEC CDD source"
+                ).Result;
+
+                Assert.That(topLevelElements.Select(e => e.Text), Is.EqualTo(new[] { "C1", "C2", "C3" }),
+                        "Unexpected top-level elements for the simple IEC CDD source");
+
+                Common.AssertNoErrors(application, mainWindow);
+            }, new Run { Args = new[] { "-dict-import-dir", dictImportDir, aasxPath } });
         }
     }
 }
