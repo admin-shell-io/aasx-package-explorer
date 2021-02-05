@@ -1,7 +1,10 @@
 ﻿param(
     [Parameter(HelpMessage = "If set, cleans up the previous build instead of performing a new one")]
     [switch]
-    $clean = $false
+    $clean = $false,
+    [Parameter(HelpMessage = "If set, builds and publishes only the given project")]
+    [string]
+    $project = $null
 )
 
 <#
@@ -35,16 +38,24 @@ function Main
 
         New-Item -ItemType Directory -Force -Path $outputPath|Out-Null
 
-        & dotnet.exe publish `
-            --configuration $configuration `
-            --runtime win-x64 `
-            --output $outputPath
+        $dotnetArgs = @(
+            "publish",
+            "--configuration", $configuration,
+            "--runtime", "win-x64",
+            "--output", $outputPath
+        )
+
+        if($null -ne $project)
+        {
+            $dotnetArgs += $project
+        }
+
+        & dotnet $dotnetArgs
 
         $exitCode = $LASTEXITCODE
-        Write-Host "dotnet publish exit code: $exitCode"
         if ($exitCode -ne 0)
         {
-            throw "dotnet publish failed."
+            throw "dotnet publish failed with the exit code: $exitCode"
         }
     }
     else
@@ -56,10 +67,9 @@ function Main
             --runtime win-x64
 
         $exitCode = $LASTEXITCODE
-        Write-Host "dotnet clean exit code: $exitCode"
         if ($exitCode -ne 0)
         {
-            throw "dotnet clean failed."
+            throw "dotnet clean failed with the exit code: $exitCode"
         }
 
         if (Test-Path $outputPath)

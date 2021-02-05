@@ -14,6 +14,14 @@ To build the solution for debugging and testing, invoke:
 .\src\BuildForDebug.ps1
 ```
 
+You can also build a single project. 
+This is practical when you want to manually test something and do not want to
+waste time on MSBuild inspecting which projects need to be rebuilt:
+
+```powershell
+.\src\BuildForDebug.ps1 -Project AasxToolkit
+```
+
 To clean the build, call:
 ```powershell
 .\src\BuildForDebug.ps1 -clean
