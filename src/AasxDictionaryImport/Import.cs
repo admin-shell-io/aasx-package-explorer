@@ -60,14 +60,16 @@ namespace AasxDictionaryImport
         /// null, a new empty admin shell is created in the given environment.
         /// </summary>
         /// <param name="env">The AAS environment to import into</param>
+        /// <param name="defaultSourceDir">The search path for the default data sources, e. g. the current working
+        /// directory</param>
         /// <param name="adminShell">The admin shell to import into, or null if a new admin shell should be
         /// created</param>
         /// <returns>true if at least one submodel was imported</returns>
         public static bool ImportSubmodel(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell? adminShell = null)
+            string defaultSourceDir, AdminShellV20.AdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
-            return PerformImport(ImportMode.Submodels, e => e.ImportSubmodelInto(env, adminShell));
+            return PerformImport(ImportMode.Submodels, defaultSourceDir, e => e.ImportSubmodelInto(env, adminShell));
         }
 
         /// <summary>
@@ -76,17 +78,20 @@ namespace AasxDictionaryImport
         /// element (usually a submodel).
         /// </summary>
         /// <param name="env">The AAS environment to import into</param>
+        /// <param name="defaultSourceDir">The search path for the default data sources, e. g. the current working
+        /// directory</param>
         /// <param name="parent">The parent element to import into</param>
         /// <returns>true if at least one submodel element was imported</returns>
         public static bool ImportSubmodelElements(AdminShell.AdministrationShellEnv env,
-            AdminShell.IManageSubmodelElements parent)
+            string defaultSourceDir, AdminShell.IManageSubmodelElements parent)
         {
-            return PerformImport(ImportMode.SubmodelElements, e => e.ImportSubmodelElementsInto(env, parent));
+            return PerformImport(ImportMode.SubmodelElements, defaultSourceDir,
+                e => e.ImportSubmodelElementsInto(env, parent));
         }
 
-        private static bool PerformImport(ImportMode importMode, Func<Model.IElement, bool> f)
+        private static bool PerformImport(ImportMode importMode, string defaultSourceDir, Func<Model.IElement, bool> f)
         {
-            var dialog = new ImportDialog(importMode);
+            var dialog = new ImportDialog(importMode, defaultSourceDir);
             if (dialog.ShowDialog() != true || dialog.Context == null)
                 return false;
 

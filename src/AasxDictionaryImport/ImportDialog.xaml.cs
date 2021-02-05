@@ -64,7 +64,7 @@ namespace AasxDictionaryImport
             }
         }
 
-        public ImportDialog(ImportMode importMode)
+        public ImportDialog(ImportMode importMode, string defaultSourceDir)
         {
             DataContext = this;
 
@@ -75,7 +75,7 @@ namespace AasxDictionaryImport
             InitializeComponent();
 
             foreach (var provider in DataProviders)
-                foreach (var source in provider.FindDefaultDataSources())
+                foreach (var source in provider.FindDefaultDataSources(defaultSourceDir))
                     ComboBoxSource.Items.Add(source);
 
             DataSourceLabel.Content = String.Join(", ", DataProviders.Select(p => p.Name));

@@ -1834,13 +1834,15 @@ namespace AasxPackageExplorer
             }
 
 #if !DoNotUseAasxDictionaryImport
+            string defaultSourceDir = Options.Curr.DictImportDir ?? System.IO.Directory.GetCurrentDirectory();
             var dataChanged = false;
             try
             {
                 if (ve != null && ve.theEnv != null && ve.theAas != null)
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, defaultSourceDir, ve.theAas);
                 else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv);
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv,
+                        defaultSourceDir);
             }
             catch (Exception e)
             {
@@ -1878,10 +1880,11 @@ namespace AasxPackageExplorer
             }
 
 #if !DoNotUseAasxDictionaryImport
+            string defaultSourceDir = Options.Curr.DictImportDir ?? System.IO.Directory.GetCurrentDirectory();
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, submodel);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, defaultSourceDir, submodel);
             }
             catch (Exception e)
             {

@@ -120,30 +120,27 @@ namespace AasxDictionaryImport.Cdd.Tests
             public void MissingDirectory()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.Empty);
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.Empty);
             }
 
             [Test]
             public void EmptyDirectory()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
                 Directory.CreateDirectory(iecCddPath);
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.Empty);
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.Empty);
             }
 
             [Test]
             public void EmptySource()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
@@ -151,14 +148,13 @@ namespace AasxDictionaryImport.Cdd.Tests
 
                 using var sourcePath = TempDir.Create(iecCddPath);
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.Empty);
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.Empty);
             }
 
             [Test]
             public void IncompleteSource()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
@@ -167,14 +163,13 @@ namespace AasxDictionaryImport.Cdd.Tests
                 using var source = TempDir.Create(iecCddPath);
                 CreateEmptyXls(source, GetExportFileName("class", "12345"));
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.Empty);
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.Empty);
             }
 
             [Test]
             public void ValidSource()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
@@ -184,7 +179,7 @@ namespace AasxDictionaryImport.Cdd.Tests
                 CreateEmptyXls(source, GetExportFileName("class", "12345"));
                 CreateEmptyXls(source, GetExportFileName("property", "12345"));
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.EquivalentTo(new[] {
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.EquivalentTo(new[] {
                     new DataSource(dataProvider, source, Model.DataSourceType.Default),
                 }));
             }
@@ -193,7 +188,6 @@ namespace AasxDictionaryImport.Cdd.Tests
             public void TwoValidSources()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
@@ -207,7 +201,7 @@ namespace AasxDictionaryImport.Cdd.Tests
                 CreateEmptyXls(source2, GetExportFileName("class", "67890"));
                 CreateEmptyXls(source2, GetExportFileName("property", "67890"));
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.EquivalentTo(new[] {
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.EquivalentTo(new[] {
                     new DataSource(dataProvider, source1, Model.DataSourceType.Default),
                     new DataSource(dataProvider, source2, Model.DataSourceType.Default),
                 }));
@@ -217,7 +211,6 @@ namespace AasxDictionaryImport.Cdd.Tests
             public void OneValidOneInvalidSource()
             {
                 using var tempDir = TempDir.Create();
-                using var wd = WorkingDirectory.ChangeTo(tempDir);
                 var dataProvider = new DataProvider();
 
                 var iecCddPath = Path.Combine(tempDir, "iec-cdd");
@@ -232,7 +225,7 @@ namespace AasxDictionaryImport.Cdd.Tests
                 CreateEmptyXls(source2, GetExportFileName("property", "67890"));
                 CreateEmptyXls(source2, GetExportFileName("class", "12345"));
 
-                Assert.That(dataProvider.FindDefaultDataSources(), Is.EquivalentTo(new[] {
+                Assert.That(dataProvider.FindDefaultDataSources(tempDir), Is.EquivalentTo(new[] {
                     new DataSource(dataProvider, source1, Model.DataSourceType.Default),
                 }));
             }

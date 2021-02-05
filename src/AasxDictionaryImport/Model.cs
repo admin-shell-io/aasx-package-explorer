@@ -45,8 +45,9 @@ namespace AasxDictionaryImport.Model
         /// Returns a list of all default data sources for this provider, i. e. all data sources that have been shipped
         /// with the AASX Package Explorer or that are freely available on the internet.
         /// </summary>
+        /// <param name="dir">The search path for the default data sources, e. g. the current working directory</param>
         /// <returns>A list of all default data sources</returns>
-        IEnumerable<IDataSource> FindDefaultDataSources();
+        IEnumerable<IDataSource> FindDefaultDataSources(string dir);
 
         /// <summary>
         /// Checks whether the given path contains valid data that can be read by this data provider.  This method
@@ -321,9 +322,9 @@ namespace AasxDictionaryImport.Model
         public abstract string Name { get; }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<IDataSource> FindDefaultDataSources()
+        public virtual IEnumerable<IDataSource> FindDefaultDataSources(string dir)
         {
-            return GetDefaultPaths()
+            return GetDefaultPaths(dir)
                 .Where(IsValidPath)
                 .Select(p => OpenPath(p, Model.DataSourceType.Default))
                 .ToList();
@@ -342,8 +343,9 @@ namespace AasxDictionaryImport.Model
         /// <summary>
         /// Returns all paths that could contain a default data source.
         /// </summary>
+        /// <param name="dir">The search path for the default data sources, e. g. the current working directory</param>
         /// <returns>A list of all possible default data sources</returns>
-        protected abstract IEnumerable<string> GetDefaultPaths();
+        protected abstract IEnumerable<string> GetDefaultPaths(string dir);
 
         /// <summary>
         /// Creates a new data source that reads the data stored at the given path and sets the data source type to the
