@@ -18,9 +18,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasxOpenIdClient;
 using AasxPackageExplorer;
 using AdminShellEvents;
 using AdminShellNS;
+using IdentityModel.Client;
 using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -370,6 +372,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
+                if (OpenIDClient.token != "")
+                    _client.SetBearerToken(OpenIDClient.token);
+
                 // query
                 var listAasResponse = await _client.GetAsync(
                     StartQuery("server", "listaas"));
