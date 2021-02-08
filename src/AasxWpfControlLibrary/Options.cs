@@ -138,9 +138,9 @@ namespace AasxPackageExplorer
 
         /// <summary>
         /// Path to the directory with the default sources for the Dictionary Import feature (see
-        /// AasxDictionaryImport).  If this option is not set, the current working directory should be used.
+        /// AasxDictionaryImport).  If this option is not set, the current working directory is used.
         /// </summary>
-        public string DictImportDir = null;
+        public string DictImportDir = System.IO.Directory.GetCurrentDirectory();
 
         /// <summary>
         /// Path to an image to be displayed as logo
