@@ -8,7 +8,7 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
     AssertDotnetToolVersion
 
 function Main {
-    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "1.0.0-beta3"
+    AssertDotnetToolVersion -PackageID "BiteSized" -ExpectedVersion "1.0.1"
 
     Set-Location $PSScriptRoot
 

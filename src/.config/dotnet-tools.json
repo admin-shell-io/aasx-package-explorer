@@ -15,7 +15,7 @@
       ]
     },
     "bitesized": {
-      "version": "1.0.0-beta3",
+      "version": "1.0.1",
       "commands": [
         "bite-sized"
       ]
