@@ -3241,7 +3241,7 @@ namespace AdminShellNS
             }
         }
 
-        public class ConceptDescription : Identifiable, System.IDisposable
+        public class ConceptDescription : Identifiable, System.IDisposable, IGetReference
         {
             // for JSON only
             [XmlIgnore]

@@ -3331,8 +3331,9 @@ namespace AasxPackageExplorer
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             VisualElementGeneric entity,
-            bool editMode, bool hintMode = false,
+            bool editMode, bool hintMode = false, bool showIriMode = false,
             IFlyoutProvider flyoutProvider = null,
+            IPushApplicationEvent appEventProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             //
@@ -3376,6 +3377,7 @@ namespace AasxPackageExplorer
             this.theEntity = entity;
             helper.packages = packages;
             helper.flyoutProvider = flyoutProvider;
+            helper.appEventsProvider = appEventProvider;
             helper.levelColors = levelColors;
             helper.highlightField = hightlightField;
 
@@ -3388,6 +3390,7 @@ namespace AasxPackageExplorer
             }
             helper.editMode = editMode;
             helper.hintMode = hintMode;
+            helper.showIriMode = showIriMode;
             helper.repo = repo;
 
             //

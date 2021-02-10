@@ -104,6 +104,17 @@ namespace AasxPluginBomStructure
             currRef.Keys.RemoveAt(currRef.Keys.Count - 1);
         }
 
+        public void Index(AdminShell.ConceptDescription cd)
+        {
+            // access
+            if (cd == null)
+                return;
+
+            // make curr ref and index
+            var currRef = cd.GetReference();
+            dict.Add(ComputeHashOnReference(currRef), cd);
+        }
+
         public void Index(AdminShell.Submodel sm)
         {
             // access
@@ -128,6 +139,10 @@ namespace AasxPluginBomStructure
             // iterate
             foreach (var sm in env.Submodels)
                 this.Index(sm);
+
+            // Concept Descriptions
+            foreach (var cd in env.ConceptDescriptions)
+                this.Index(cd);
         }
 
         public AdminShell.Referable FindReferableByReference(AdminShell.Reference r)

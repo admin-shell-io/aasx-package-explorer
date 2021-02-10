@@ -72,8 +72,10 @@
         <RoutedUICommand x:Key="Exit" Text="Exit" />
         <RoutedUICommand x:Key="EditKey" Text="EditKey" />
         <RoutedUICommand x:Key="HintsKey" Text="HintsKey" />
+        <RoutedUICommand x:Key="ShowIriKey" Text="ShowIriKey" />
         <RoutedUICommand x:Key="EditMenu" Text="EditMenu" />
         <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
+        <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
         <RoutedUICommand x:Key="Test" Text="Test" />
         <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
         <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
@@ -164,6 +166,7 @@
         <KeyBinding Key="F4" Modifiers="Alt" Command="{StaticResource Exit}"/>
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{StaticResource EditKey}"/>
         <KeyBinding Key="H" Modifiers="Ctrl" Command="{StaticResource HintsKey}"/>
+        <KeyBinding Key="I" Modifiers="Ctrl" Command="{StaticResource ShowIriKey}"/>
         <KeyBinding Key="C" Modifiers="Ctrl+Shift" Command="{StaticResource CopyClipboardElementJson}"/>
         <KeyBinding Key="F1" Command="{StaticResource Help}"/>
         <KeyBinding Key="F12" Command="{StaticResource FileRepoQuery}"/>
@@ -224,6 +227,8 @@
         <CommandBinding Command="{StaticResource EditMenu}" Executed="CommandBinding_Executed" />
         <CommandBinding Command="{StaticResource HintsKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HintsMenu}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
@@ -359,6 +364,7 @@
                     <MenuItem Header="Workspace" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemWorkspaceEdit" Header="_Edit" InputGestureText="Ctrl+E" IsCheckable="True" Command="{StaticResource EditMenu}"/>
                         <MenuItem x:Name="MenuItemWorkspaceHints" Header="_Hints" InputGestureText="Ctrl+H" IsCheckable="True" IsChecked="True" Command="{StaticResource HintsMenu}"/>
+                        <MenuItem x:Name="MenuItemWorkspaceShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
                         <MenuItem x:Name="MenuItemTest" Header="Test" Command="{StaticResource Test}"/>
                         <Separator/>
                         <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>

@@ -464,7 +464,12 @@ namespace AasxPackageExplorer
             if (cmd == "hintskey")
                 MenuItemWorkspaceHints.IsChecked = !MenuItemWorkspaceHints.IsChecked;
 
-            if (cmd == "editmenu" || cmd == "editkey" || cmd == "hintsmenu" || cmd == "hintskey")
+            if (cmd == "showirikey")
+                MenuItemWorkspaceShowIri.IsChecked = !MenuItemWorkspaceShowIri.IsChecked;
+
+            if (cmd == "editmenu" || cmd == "editkey" 
+                || cmd == "hintsmenu" || cmd == "hintskey"
+                || cmd == "showirimenu" || cmd == "showirikey")
             {
                 // try to remember current selected data object
                 object currMdo = null;

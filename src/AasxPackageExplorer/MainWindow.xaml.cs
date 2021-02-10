@@ -30,7 +30,7 @@ using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
 {
-    public partial class MainWindow : Window, IFlyoutProvider
+    public partial class MainWindow : Window, IFlyoutProvider, IPushApplicationEvent
     {
         #region Dependencies
         // (mristin, 2020-11-18): consider injecting OptionsInformation, Package environment *etc.* to the main window
@@ -389,14 +389,15 @@ namespace AasxPackageExplorer
         }
 
         public void PrepareDispEditEntity(
-            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode,
+            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // make UI visible settings ..
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, entity, editMode, hintMode,
+                _packageCentral, entity, editMode, hintMode, showIriMode,
                 flyoutProvider: this,
+                appEventProvider: this,
                 hightlightField: hightlightField);
 
             // panels
@@ -553,8 +554,12 @@ namespace AasxPackageExplorer
 
             // for all, prepare the display
             PrepareDispEditEntity(
-                _packageCentral.Main, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked,
-                MenuItemWorkspaceHints.IsChecked, hightlightField: hightlightField);
+                _packageCentral.Main, 
+                DisplayElements.SelectedItem, 
+                MenuItemWorkspaceEdit.IsChecked,
+                MenuItemWorkspaceHints.IsChecked,
+                MenuItemWorkspaceShowIri.IsChecked,
+                hightlightField: hightlightField);
 
         }
 
@@ -745,6 +750,7 @@ namespace AasxPackageExplorer
 
             // initialize menu
             MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
+            MenuItemWorkspaceShowIri.IsChecked = Options.Curr.ShowIdAsIri;
 
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
@@ -1094,93 +1100,112 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task MainTimer_HandlePlugins()
+        private async Task HandleApplicationEvent(
+            AasxIntegrationBase.AasxPluginResultEventBase evt,
+            Plugins.PluginInstance pluginInstance)
+        {
+            try
+            {
+                // Navigate To
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo 
+                    && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
+                {
+                    await UiHandleNavigateTo(evtNavTo.targetReference);
+                }
+
+                // Display Content Url
+                //====================
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont 
+                    && evtDispCont.fn != null)
+                    try
+                    {
+                        BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
+                            preferInternal: evtDispCont.preferInternalDisplay);
+                    }
+                    catch (Exception ex)
+                    {
+                        AasxPackageExplorer.Log.Singleton.Error(
+                            ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
+                    }
+
+                // Redraw All
+                //===========
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements evtRedrawAll)
+                {
+                    if (DispEditEntityPanel != null)
+                    {
+                        // figure out the current business object
+                        object nextFocus = null;
+                        if (DisplayElements != null && DisplayElements.SelectedItem != null &&
+                            DisplayElements.SelectedItem != null)
+                            nextFocus = DisplayElements.SelectedItem.GetMainDataObject();
+
+                        // add to "normal" event quoue
+                        DispEditEntityPanel.AddWishForOutsideAction(
+                            new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
+                    }
+                }
+
+                // Select AAS entity
+                //=======================
+
+                var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
+                if (evSelectEntity != null)
+                {
+                    var uc = new SelectAasEntityFlyout(
+                        _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
+                        evSelectEntity.filterEntities);
+                    this.StartFlyoverModal(uc);
+                    if (uc.ResultKeys != null)
+                    {
+                        // formulate return event
+                        var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
+                        retev.sourceEvent = evt;
+                        retev.resultKeys = uc.ResultKeys;
+
+                        // fire back
+                        pluginInstance?.InvokeAction("event-return", retev);
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(
+                    ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
+            }
+        }
+
+        private List<AasxIntegrationBase.AasxPluginResultEventBase> _applicationEvents 
+            = new List<AasxPluginResultEventBase>();
+
+        public void PushApplicationEvent(AasxIntegrationBase.AasxPluginResultEventBase evt)
+        {
+            if (evt == null)
+                return;
+            _applicationEvents.Add(evt);
+        }
+
+        private async Task MainTimer_HandleApplicationEvents()
         {
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
-                try
-                {
-                    var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+                var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+                await HandleApplicationEvent(evt, lpi);
+            }
 
-                    #region Navigate To
-                    //=================
-
-                    var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
-                    if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
-                    {
-                        await UiHandleNavigateTo(evtNavTo.targetReference);
-                    }
-                    #endregion
-
-                    #region Display content file
-                    //==========================
-
-                    var evtDispCont = evt as AasxIntegrationBase.AasxPluginResultEventDisplayContentFile;
-                    if (evtDispCont != null && evtDispCont.fn != null)
-                        try
-                        {
-                            BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
-                                preferInternal: evtDispCont.preferInternalDisplay);
-                        }
-                        catch (Exception ex)
-                        {
-                            AasxPackageExplorer.Log.Singleton.Error(
-                                ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
-                        }
-
-                    #endregion
-                    #region Redisplay explorer contents
-                    //=================================
-
-                    var evtRedrawAll = evt as AasxIntegrationBase.AasxPluginResultEventRedrawAllElements;
-                    if (evtRedrawAll != null)
-                    {
-                        if (DispEditEntityPanel != null)
-                        {
-                            // figure out the current business object
-                            object nextFocus = null;
-                            if (DisplayElements != null && DisplayElements.SelectedItem != null &&
-                                DisplayElements.SelectedItem != null)
-                                nextFocus = DisplayElements.SelectedItem.GetMainDataObject();
-
-                            // add to "normal" event quoue
-                            DispEditEntityPanel.AddWishForOutsideAction(
-                                new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
-                        }
-                    }
-
-                    #endregion
-                    #region Select AAS entity
-                    //=======================
-
-                    var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
-                    if (evSelectEntity != null)
-                    {
-                        var uc = new SelectAasEntityFlyout(
-                            _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
-                            evSelectEntity.filterEntities);
-                        this.StartFlyoverModal(uc);
-                        if (uc.ResultKeys != null)
-                        {
-                            // formulate return event
-                            var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
-                            retev.sourceEvent = evt;
-                            retev.resultKeys = uc.ResultKeys;
-
-                            // fire back
-                            lpi.InvokeAction("event-return", retev);
-                        }
-                    }
-
-
-                    #endregion
-                }
-                catch (Exception ex)
-                {
-                    AasxPackageExplorer.Log.Singleton.Error(
-                        ex, $"While responding to a event from plug-in {"" + lpi?.name}");
-                }
+            // check for application events from main app
+            while (_applicationEvents.Count > 0)
+            {
+                var evt = _applicationEvents[0];
+                _applicationEvents.RemoveAt(0);
+                await HandleApplicationEvent(evt, null);
             }
         }
 
@@ -1339,7 +1364,7 @@ namespace AasxPackageExplorer
         {
             MainTimer_HandleLogMessages();
             await MainTimer_HandleEntityPanel();
-            await MainTimer_HandlePlugins();
+            await MainTimer_HandleApplicationEvents();
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
         }
@@ -1759,7 +1784,6 @@ namespace AasxPackageExplorer
             }
         }
 
-        #endregion
         #region Modal Flyovers
         //====================
 

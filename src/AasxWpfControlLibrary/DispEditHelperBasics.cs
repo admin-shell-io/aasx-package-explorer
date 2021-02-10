@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary;
@@ -93,6 +94,7 @@ namespace AasxPackageExplorer
         public PackageCentral packages = null;
 
         public IFlyoutProvider flyoutProvider = null;
+        public IPushApplicationEvent appEventsProvider = null; 
 
         public Brush[][] levelColors = null;
 
@@ -100,6 +102,7 @@ namespace AasxPackageExplorer
 
         public bool editMode = false;
         public bool hintMode = false;
+        public bool showIriMode = false;
 
         public ModifyRepo repo = null;
 
@@ -549,7 +552,36 @@ namespace AasxPackageExplorer
                 lab.Background = background;
             if (setBold)
                 lab.FontWeight = FontWeights.Bold;
-            lab.Text = content;
+
+            // check, which content
+            if (this.showIriMode 
+                && content.HasContent()
+                && (content.Trim().ToLower().StartsWith("http://")
+                 || content.Trim().ToLower().StartsWith("https://")))
+            {
+                var hl = new Hyperlink() { 
+                    NavigateUri = new Uri(content),                    
+                };
+                hl.Inlines.Add(content);
+                hl.RequestNavigate += (sender, e) =>
+                {
+                    if (appEventsProvider != null)
+                        appEventsProvider.PushApplicationEvent(new AasxPluginResultEventDisplayContentFile()
+                        {
+                            fn = e.Uri.ToString(),
+                            preferInternalDisplay = true
+                        });
+                    else
+                        System.Diagnostics.Process.Start(e.Uri.ToString());
+                };
+                lab.Inlines.Clear();
+                lab.Inlines.Add(hl);                    
+            }
+            else
+            {
+                lab.Text = content;
+            }
+
             Grid.SetRow(lab, row);
             Grid.SetColumn(lab, col);
             g.Children.Add(lab);

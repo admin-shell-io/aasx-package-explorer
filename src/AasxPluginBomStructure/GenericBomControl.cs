@@ -19,6 +19,12 @@ using AdminShellNS;
 
 namespace AasxPluginBomStructure
 {
+    public class GenericBomCreatorOptions
+    {
+        public bool CompactLabels = false;
+        public int LayoutIndex = 0;
+    }
+
     public class GenericBomCreator
     {
         public static int WrapMaxColumn = 20;
@@ -44,23 +50,27 @@ namespace AasxPluginBomStructure
             new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
         private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation =
             new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
-        private AdminShell.AdministrationShellEnv env;
+        
+        private AdminShell.AdministrationShellEnv _env;
+        private GenericBomCreatorOptions _options;
+
         private int maxNodeId = 1;
 
-        private AasReferenceStore refStore = null;
+        private AasReferenceStore _refStore = null;
 
-        public GenericBomCreator(AdminShell.AdministrationShellEnv env)
+        public GenericBomCreator(AdminShell.AdministrationShellEnv env, GenericBomCreatorOptions options)
         {
-            this.env = env;
-            this.refStore = new AasReferenceStore();
-            this.refStore.Index(env);
+            _env = env;
+            _options = options;
+            _refStore = new AasReferenceStore();
+            _refStore.Index(env);
         }
 
         public AdminShell.Referable FindReferableByReference(AdminShell.Reference r)
         {
-            if (refStore == null)
-                return this.env?.FindReferableByReference(r);
-            return refStore.FindReferableByReference(r);
+            if (_refStore == null)
+                return this._env?.FindReferableByReference(r);
+            return _refStore.FindReferableByReference(r);
         }
 
         private string GenerateNodeID()
@@ -370,8 +380,16 @@ namespace AasxPluginBomStructure
                                 var cd = this.FindReferableByReference(
                                     new AdminShell.Reference(
                                         rel.semanticId)) as AdminShell.ConceptDescription;
+
                                 if (cd != null)
+                                {
                                     labelText += " = " + cd.ToIdShortString();
+
+                                    // option
+                                    if (_options?.CompactLabels == true
+                                        && cd.idShort.HasContent())
+                                        labelText = cd.idShort;
+                                }
                             }
 
                             // format it
@@ -527,6 +545,9 @@ namespace AasxPluginBomStructure
     /// </summary>
     public class GenericBomControl
     {
+        private AdminShellPackageEnv _package;
+        private AdminShell.Submodel _submodel;
+
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
         private AdminShell.Referable theReferable = null;
@@ -536,6 +557,8 @@ namespace AasxPluginBomStructure
         private Dictionary<AdminShell.Referable, int> preferredPresetIndex =
             new Dictionary<AdminShellV20.Referable, int>();
 
+        private GenericBomCreatorOptions _options = new GenericBomCreatorOptions();
+
         public void SetEventStack(PluginEventStack es)
         {
             this.eventStack = es;
@@ -544,14 +567,14 @@ namespace AasxPluginBomStructure
         public object FillWithWpfControls(object opackage, object osm, object masterDockPanel)
         {
             // access
-            var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            _package = opackage as AdminShellPackageEnv;
+            _submodel = osm as AdminShell.Submodel;
             var master = masterDockPanel as DockPanel;
-            if (package == null || sm == null || master == null)
+            if (_package == null || _submodel == null || master == null)
                 return null;
 
             // the Submodel elements need to have parents
-            sm.SetAllParents();
+            _submodel.SetAllParents();
 
             // create TOP controls
             var spTop = new StackPanel();
@@ -570,6 +593,14 @@ namespace AasxPluginBomStructure
             cbli.SelectionChanged += CbLayoutIndex_SelectionChanged;
             spTop.Children.Add(cbli);
 
+            var cbcomp = new CheckBox();
+            cbcomp.Content = "Compact labels";
+            cbcomp.Margin = new System.Windows.Thickness(10, 0, 10, 0);
+            cbcomp.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
+            cbcomp.Checked += CbCompactLabels_CheckedChanged;
+            cbcomp.Unchecked += CbCompactLabels_CheckedChanged;
+            spTop.Children.Add(cbcomp);
+
             // create BOTTOM controls
             var legend = GenericBomCreator.GenerateWrapLegend();
             DockPanel.SetDock(legend, Dock.Bottom);
@@ -577,6 +608,45 @@ namespace AasxPluginBomStructure
 
             // set default for very small edge label size
             Microsoft.Msagl.Drawing.Label.DefaultFontSize = 6;
+
+            // make a Dock panel
+            var dp = new DockPanel();
+            dp.ClipToBounds = true;
+            dp.MinWidth = 10;
+            dp.MinHeight = 10;
+
+            // very important: add first the panel, then add graph
+            master.Children.Add(dp);
+
+            // graph
+            var graph = CreateGraph(_package, _submodel, _options);
+
+            // very important: first bind it, then add graph
+            var viewer = new Microsoft.Msagl.WpfGraphControl.GraphViewer();
+            viewer.BindToPanel(dp);
+            viewer.MouseDown += Viewer_MouseDown;
+            viewer.MouseMove += Viewer_MouseMove;
+            viewer.MouseUp += Viewer_MouseUp;
+            viewer.ObjectUnderMouseCursorChanged += Viewer_ObjectUnderMouseCursorChanged;
+            viewer.Graph = graph;
+
+            // make it re-callable
+            theGraph = graph;
+            theViewer = viewer;
+            theReferable = _submodel;
+
+            // return viewer for advanced manilulation
+            return viewer;
+        }
+
+        private Microsoft.Msagl.Drawing.Graph CreateGraph(
+            AdminShellPackageEnv env,
+            AdminShell.Submodel sm,
+            GenericBomCreatorOptions options)
+        {
+            // access
+            if (env == null || sm == null || options == null)
+                return null;
 
             //create a graph object
             Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("BOM-graph");
@@ -599,7 +669,7 @@ namespace AasxPluginBomStructure
 
 #else
 
-            var creator = new GenericBomCreator(package.AasEnv);
+            var creator = new GenericBomCreator(env?.AasEnv, options);
 
             using (var tw = new StreamWriter("bomgraph.log"))
             {
@@ -609,40 +679,14 @@ namespace AasxPluginBomStructure
             }
 
             // make default or (already) preferred settings
-            var settings = GivePresetSettings(cbli.SelectedIndex);
+            var settings = GivePresetSettings(options.LayoutIndex);
             if (this.preferredPresetIndex != null && this.preferredPresetIndex.ContainsKey(sm))
                 settings = GivePresetSettings(this.preferredPresetIndex[sm]);
             if (settings != null)
                 graph.LayoutAlgorithmSettings = settings;
 
 #endif
-
-            // make a Dock panel
-            var dp = new DockPanel();
-            dp.ClipToBounds = true;
-            dp.MinWidth = 10;
-            dp.MinHeight = 10;
-
-            // very important: add first the panel, then add graph
-            master.Children.Add(dp);
-
-            // very important: first bind it, then add graph
-            var viewer = new Microsoft.Msagl.WpfGraphControl.GraphViewer();
-            viewer.BindToPanel(dp);
-            viewer.MouseDown += Viewer_MouseDown;
-            viewer.MouseMove += Viewer_MouseMove;
-            viewer.MouseUp += Viewer_MouseUp;
-            viewer.ObjectUnderMouseCursorChanged += Viewer_ObjectUnderMouseCursorChanged;
-            viewer.Graph = graph;
-
-            // make it re-callable
-            theGraph = graph;
-            theViewer = viewer;
-            theReferable = sm;
-
-            // return viewer for advanced manilulation
-            return viewer;
-
+            return graph;
         }
 
         private void Viewer_ObjectUnderMouseCursorChanged(
@@ -739,6 +783,18 @@ namespace AasxPluginBomStructure
             return null;
         }
 
+        private void CbCompactLabels_CheckedChanged(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is CheckBox cb)
+            {
+                // re-draw (brutally)
+                _options.CompactLabels = cb.IsChecked == true;
+                theGraph = CreateGraph(_package, _submodel, _options);
+                theViewer.Graph = null;
+                theViewer.Graph = theGraph;
+            }
+        }
+
         private void CbLayoutIndex_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var cb = sender as ComboBox;
@@ -751,13 +807,9 @@ namespace AasxPluginBomStructure
                 if (this.theReferable != null && preferredPresetIndex != null && cb.SelectedIndex >= 0)
                     this.preferredPresetIndex[this.theReferable] = cb.SelectedIndex;
 
-                // generate settings
-                var settings = GivePresetSettings(cb.SelectedIndex);
-                if (settings == null)
-                    return;
-
                 // re-draw (brutally)
-                theGraph.LayoutAlgorithmSettings = settings;
+                _options.LayoutIndex = cb.SelectedIndex;
+                theGraph = CreateGraph(_package, _submodel, _options);
                 theViewer.Graph = null;
                 theViewer.Graph = theGraph;
             }

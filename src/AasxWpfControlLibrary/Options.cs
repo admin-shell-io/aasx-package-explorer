@@ -233,6 +233,12 @@ namespace AasxPackageExplorer
         public bool LoadWithoutPrompt = false;
 
         /// <summary>
+        /// When activated, the UI will check if identifications and other texts are
+        /// starting with schemes like http:// and will render IRIs for them
+        /// </summary>
+        public bool ShowIdAsIri = false;
+
+        /// <summary>
         /// Default value for the StayConnected options of PackageContainer.
         /// That is, a loaded container will automatically try receive events, e.g. for value update.
         /// </summary>
@@ -366,6 +372,11 @@ namespace AasxPackageExplorer
                 if (arg == "-load-without-prompt")
                 {
                     optionsInformation.LoadWithoutPrompt = true;
+                    continue;
+                }
+                if (arg == "-show-id-as-iri")
+                {
+                    optionsInformation.ShowIdAsIri = true;
                     continue;
                 }
                 if (arg == "-stay-connected")
