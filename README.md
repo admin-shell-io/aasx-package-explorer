@@ -53,6 +53,9 @@ http://www.admin-shell-io.com/samples/
 We provide the binaries for Windows 10 in [the releases](
 https://github.com/admin-shell-io/aasx-package-explorer/releases). 
 
+(Remark: In special cases you may like to use a current build.
+Please click on a green check mark and select "Check-release" details.)
+
 ## Issues
 
 If you want to request new features or report bugs, please 
