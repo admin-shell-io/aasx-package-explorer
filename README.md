@@ -88,6 +88,10 @@ implementations of asset administration shells (AAS):
   on Docker images implementing the RAMI 4.0 reference architecture (including
   AAS).
 
+*	**NOVAAS** (https://gitlab.com/gidouninova/novaas) provides an implementation
+  of the AAS concept by using JavaScript and Low-code development platform (LCDP)
+  Node-Red.
+
 While these projects try to implement a wider scope of programatic features,
 AASX Package Explorer, in contrast, is a tool with graphical user interface 
 meant for experimenting and demonstrating the potential of asset administration
