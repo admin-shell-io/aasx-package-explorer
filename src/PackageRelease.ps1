@@ -68,6 +68,13 @@ function PackageRelease($outputDir)
 
         $aasxPEDir = Join-Path $destinationDir "AasxPackageExplorer"
 
+        # We need to include the backup directory in the release as the package explorer
+        # expects it during runtime.
+        #
+        # See the default option: AasxPackageExplorer.options.json#/BackupDir.
+        $backupDir = Join-Path $aasxPEDir "backup"
+        New-Item -ItemType Directory -Force -Path $backupDir|Out-Null
+
         Write-Host "* Copying README-packages.md to: $aasxPEDir"
         Copy-Item `
             -Path (Join-Path $PSScriptRoot "README-packages.md") `
