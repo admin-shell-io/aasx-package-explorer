@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+Copyright (c) 2020 TU Dresden Institute of Applied Computer Science <https://tu-dresden.de/inf/pk>
+Author: Nico Braunisch <nico.braunisch@tu-dresden.de>
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+using System;
 using System.Collections.Generic;
 using System.Windows;
 
