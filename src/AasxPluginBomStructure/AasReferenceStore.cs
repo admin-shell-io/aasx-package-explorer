@@ -18,9 +18,9 @@ using AdminShellNS;
 
 namespace AasxPluginBomStructure
 {
-    public class AasReferenceStore
+    public class AasReferenceStore<T>
     {
-        private class MultiValueDictionary<K, V>
+        protected class MultiValueDictionary<K, V>
         {
             private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();
             public void Add(K key, V value)
@@ -36,12 +36,12 @@ namespace AasxPluginBomStructure
             public List<V> this[K key] => dict[key];
         }
 
-        private MultiValueDictionary<uint, AdminShell.Referable> dict =
-            new MultiValueDictionary<uint, AdminShellV20.Referable>();
+        protected MultiValueDictionary<uint, T> dict =
+            new MultiValueDictionary<uint, T>();
 
         private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
 
-        private uint ComputeHashOnReference(AdminShell.Reference r)
+        protected uint ComputeHashOnReference(AdminShell.Reference r)
         {
             // access
             if (r == null || r.Keys == null)
@@ -79,6 +79,38 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
+        public void Index(AdminShell.Reference rf, T elem)
+        {
+            // access
+            if (elem == null || rf == null)
+                return;
+
+            // make curr ref and index
+            dict.Add(ComputeHashOnReference(rf), elem);
+        }
+
+        public T FindElementByReference(
+            AdminShell.Reference r, 
+            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Strict)
+        {
+            var hk = ComputeHashOnReference(r);
+            if (hk == 0 || !dict.ContainsKey(hk))
+                return default(T);
+
+            foreach (var test in dict[hk])
+            {
+                var xx = (test as AdminShell.IGetReference)?.GetReference();
+                if (xx != null && xx.Matches(r, matchMode))
+                    return test;
+            }
+
+            return default(T);
+        }
+
+    }
+
+    public class AasReferableStore : AasReferenceStore<AdminShell.Referable>
+    {
         private void RecurseIndexSME(AdminShell.Reference currRef, AdminShell.SubmodelElement sme)
         {
             // access
@@ -144,22 +176,5 @@ namespace AasxPluginBomStructure
             foreach (var cd in env.ConceptDescriptions)
                 this.Index(cd);
         }
-
-        public AdminShell.Referable FindReferableByReference(AdminShell.Reference r)
-        {
-            var hk = ComputeHashOnReference(r);
-            if (hk == 0 || !dict.ContainsKey(hk))
-                return null;
-
-            foreach (var test in dict[hk])
-            {
-                var xx = (test as AdminShell.IGetReference)?.GetReference();
-                if (xx != null && xx.Matches(r))
-                    return test;
-            }
-
-            return null;
-        }
-
     }
 }
