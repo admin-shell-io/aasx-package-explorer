@@ -24,9 +24,9 @@ namespace AasxProtoBufExport
         private RestApiDef api;
         public ProtoBufExport()
         {
-            this.msg = new ProtoMessage("",new List<ProtField>());
+            this.msg = new ProtoMessage("", new List<ProtField>());
             this.rpc = new ProtoRPC();
-            this.api = new RestApiDef("","");
+            this.api = new RestApiDef("", "");
         }
 
         public void exportProtoFile(string protoFileName, Asset asset,
@@ -109,21 +109,21 @@ namespace AasxProtoBufExport
                         protoMsg.Add("}\n\n");
 
 
-                            String probufEntry = "  rpc " + op.idShort + " (" + inVar + ") returns (" + outVar + ")";
+                        String probufEntry = "  rpc " + op.idShort + " (" + inVar + ") returns (" + outVar + ")";
 
-                            if (createRestApi)
-                            {
-                                probufEntry +=
-                                    "{ \n    option (google.api.http) = {\n      post: \"/" + assetID
-                                    + "/" + subModel.idShort + "/"
-                                    + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
-                            }
-                            else
-                            {
-                                probufEntry += ";";
-                            }
+                        if (createRestApi)
+                        {
+                            probufEntry +=
+                                "{ \n    option (google.api.http) = {\n      post: \"/" + assetID
+                                + "/" + subModel.idShort + "/"
+                                + op.idShort + "\"\n	  body: \"*\"\n    };\n  }\n";
+                        }
+                        else
+                        {
+                            probufEntry += ";";
+                        }
 
-                            protoService.Add(probufEntry);
+                        protoService.Add(probufEntry);
 
                     }
                 }

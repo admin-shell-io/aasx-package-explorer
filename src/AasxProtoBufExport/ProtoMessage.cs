@@ -27,7 +27,7 @@ namespace AasxProtoBufExport
         {
             String str = "";
             str += "message " + name + " {\n";
-            ProtField pf = new ProtField("","","");
+            ProtField pf = new ProtField("", "", "");
             var s = pf.ToString();
             if (!s.Equals(""))
             {
@@ -52,7 +52,7 @@ namespace AasxProtoBufExport
 
         public override string ToString()
         {
-            return name+type+ fieldRules;
+            return name + type + fieldRules;
         }
     }
 }
