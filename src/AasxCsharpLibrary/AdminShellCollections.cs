@@ -29,5 +29,13 @@ namespace AdminShellNS
         public bool ContainsKey(K key) => dict.ContainsKey(key);
 
         public List<V> this[K key] => dict[key];
+
+        public IEnumerable<List<V>> Keys
+        {
+            get
+            {
+                return dict.Values;
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿/*
-  Help on LinkStyles
-  ==================
+  Help on Styles
+  ==============
 
   "LinkStyles": [
         {
@@ -18,7 +18,32 @@
           "Dashed": false,
           "Bold": false,
           "Dotted": false
-        }
+        } ..
+      ]
+
+  "NodeStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/IsPartOfForBOM/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Skip": false,
+          "Shape": , "Diamond" | "Ellipse" | "Box" | "Circle" | "Record" | "Plaintext" | "Point" | "Mdiamond" 
+                     | "Msquare" | "Polygon" | "DoubleCircle" | "House" | "InvHouse" | "Parallelogram" | "Octagon" 
+                     | "TripleOctagon" | "Triangle" | "Trapezium" | "DrawFromGeometry" | "Hexagon",
+          "Background": "DarkGreen" | "#ff223344",
+          "Foreground": "DarkGreen" | "#ff223344",
+          "LineWidth": 1.0,
+          "Radius": 3.0,
+          "Text": "Override",
+          "FontSize": 8.0,
+          "Dashed": false,
+          "Bold": false,
+          "Dotted": false
+        } ..
       ]
 */
 {
@@ -55,8 +80,8 @@
           "idType": "IRI"
         }
       ],
-      "Layout": 3,
-      "Compact":  true,
+      "Layout": 2,
+      "Compact": true,
       "LinkStyles": [
         {
           "Match": {
@@ -69,7 +94,28 @@
           "Direction": "Forward",
           "Color": "DarkGreen",
           "Width": 1.0,
-          "Text":  "isPartOf"
+          "Text": "isPartOf"
+        }
+      ],
+      "NodeStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/PneumaticFeature/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Skip": false,
+          "Shape": "Circle",
+          "Background": "LightBlue",
+          "Foreground": "DarkBlue",
+          "LineWidth": 1.0,
+          "Radius": 0.0,
+          "FontSize": 8.0,
+          "Dashed": true,
+          "Bold": false,
+          "Dotted": false
         }
       ]
     }

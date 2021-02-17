@@ -431,6 +431,13 @@ namespace AdminShellNS
                 return value.Trim().Equals(idType.Trim());
             }
 
+            public bool IsType(string value)
+            {
+                if (value == null || type == null || type.Trim() == "")
+                    return false;
+                return value.Trim().ToLower().Equals(type.Trim().ToLower());
+            }
+
             public bool Matches(
                 string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {

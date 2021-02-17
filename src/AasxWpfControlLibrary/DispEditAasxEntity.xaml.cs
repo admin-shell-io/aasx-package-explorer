@@ -3154,9 +3154,20 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
+                    /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
+                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
                     helper.AddKeyListKeys(
                         stack, "Asset", ent.assetRef.Keys, repo, packages, PackageCentral.Selector.MainAuxFileRepo,
-                        AdminShell.Key.AllElements);
+                        AdminShell.Key.AllElements,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(
+                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        },
+                        noEditJumpLambda: (kl) =>
+                        {
+                            ;
+                        });
                 }
 
             }

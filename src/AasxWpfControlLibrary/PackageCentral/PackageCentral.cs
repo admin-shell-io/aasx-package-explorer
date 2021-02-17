@@ -286,6 +286,26 @@ namespace AasxWpfControlLibrary.PackageCentral
                 yield return _aux?.Container;
         }
 
+        public IEnumerable<AdminShellPackageEnv> GetAllPackageEnv()
+        {
+            if (_main?.Container?.Env != null)
+                yield return _main?.Container.Env;
+            if (_aux?.Container?.Env != null)
+                yield return _aux?.Container.Env;
+            if (_repositories != null)
+                foreach (var repo in _repositories)
+                    foreach (var ri in repo.EnumerateItems())
+                        if (ri.Env != null)
+                            yield return ri.Env;
+        }
+
+        public IEnumerable<AdminShellPackageEnv> GetAllPackageEnv(Func<AdminShellPackageEnv, bool> lambda)
+        {
+            foreach (var pe in GetAllPackageEnv())
+                if (lambda == null || lambda.Invoke(pe))
+                    yield return pe;
+        }
+
         //
         // Event management
         //

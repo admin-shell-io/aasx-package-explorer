@@ -922,8 +922,31 @@ namespace AasxPackageExplorer
 
                         if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
                         {
+                            // do some more adoptions
+                            var rf = new AdminShell.Reference(tempNavTo.targetReference);
+                            
+                            if (tempNavTo.translateAssetToAAS
+                                && rf.Count == 1
+                                && rf.First.IsType(AdminShell.Key.Asset))
+                            {
+                                // try to find possible environments containg the asset and try making
+                                // replacement
+                                foreach (var pe in _packageCentral.GetAllPackageEnv())
+                                {
+                                    if (pe?.AasEnv?.AdministrationShells == null)
+                                        continue;
+
+                                    foreach (var aas in pe.AasEnv.AdministrationShells)
+                                        if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                                        {
+                                            rf = aas.GetReference();
+                                            break;
+                                        }
+                                }
+                            }
+
                             // handle it by UI
-                            await UiHandleNavigateTo(tempNavTo.targetReference);
+                            await UiHandleNavigateTo(rf);
                         }
                     }
                 }

@@ -347,6 +347,82 @@ namespace AasxPluginBomStructure
             return new Microsoft.Msagl.Drawing.Color(0, 0, 0);
         }
 
+        public void ApplyNodeStyle(
+            Microsoft.Msagl.Drawing.Node node,
+            BomNodeStyle ns)
+        {
+            // any 
+            if (node == null || ns == null)
+                return;
+
+            // try find a shape
+            foreach (var x in (Microsoft.Msagl.Drawing.Shape[])Enum.GetValues(typeof(Microsoft.Msagl.Drawing.Shape)))
+                if (Enum.GetName(typeof(Microsoft.Msagl.Drawing.Shape), x).Trim().ToLower()
+                    == ("" + ns.Shape).Trim().ToLower())
+                    node.Attr.Shape = x;
+
+            if (ns.Background.HasContent())
+                node.Attr.FillColor = GetMsaglColor(ns.Background);
+
+            if (ns.Foreground.HasContent())
+                node.Attr.Color = GetMsaglColor(ns.Foreground);
+
+            if (ns.Radius > 0.0)
+            {
+                node.Attr.XRadius = ns.Radius;
+                node.Attr.YRadius = ns.Radius;
+            }
+
+            if (ns.FontSize > 0.0)
+                node.Label.FontSize = ns.FontSize;
+
+            if (ns.Dashed)
+                node.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dashed);
+            if (ns.Dotted)
+                node.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dotted);
+            if (ns.Bold)
+                node.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Bold);
+
+            if (ns.LineWidth > 0.0)
+                node.Attr.LineWidth = ns.LineWidth;
+
+            if (ns.Text.HasContent())
+                node.LabelText = ns.Text;
+        }
+
+        public void ApplyLinkStyle (
+            Microsoft.Msagl.Drawing.Edge e, 
+            BomLinkStyle ls)
+        {
+            // any 
+            if (e == null || ls == null)
+                return;
+           
+            if (ls.Direction == BomLinkDirection.None)
+            {
+                e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
+                e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
+            }
+            if (ls.Direction == BomLinkDirection.Forward)
+                e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
+            if (ls.Direction == BomLinkDirection.Backward)
+                e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
+
+            if (ls.Color.HasContent())
+                e.Attr.Color = GetMsaglColor(ls.Color);
+
+            if (ls.Dashed)
+                e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dashed);
+            if (ls.Dotted)
+                e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dotted);
+            if (ls.Bold)
+                e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Bold);
+
+            e.Attr.LineWidth = ls.Width;
+
+            if (ls.Text.HasContent())
+                e.LabelText = ls.Text;
+        }
 
         public void RecurseOnLayout(
             int pass,
@@ -433,40 +509,15 @@ namespace AasxPluginBomStructure
 
                             var n1 = referableToNode[x1];
                             var n2 = referableToNode[x2];
+
                             var e = graph.AddEdge(n1.Id, labelText, n2.Id);
                             e.UserData = rel;
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.LineWidth = 1;
 
-                            // special formatting for it                            
-                            if (ls != null)
-                            {
-                                if (ls.Direction == BomLinkDirection.None)
-                                {
-                                    e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
-                                    e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
-                                }
-                                if (ls.Direction == BomLinkDirection.Forward)
-                                    e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
-                                if (ls.Direction == BomLinkDirection.Backward)
-                                    e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
-
-                                if (ls.Color.HasContent())
-                                    e.Attr.Color = GetMsaglColor(ls.Color);
-
-                                if (ls.Dashed)
-                                    e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dashed);
-                                if (ls.Dotted)
-                                    e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Dotted);
-                                if (ls.Bold)
-                                    e.Attr.AddStyle(Microsoft.Msagl.Drawing.Style.Bold);
-
-                                e.Attr.LineWidth = ls.Width;
-
-                                if (ls.Text.HasContent())
-                                    e.LabelText = ls.Text;
-                            }
+                            // more style based on semantic id?
+                            ApplyLinkStyle(e, ls);
                         }
                         catch (Exception ex)
                         {
@@ -483,6 +534,13 @@ namespace AasxPluginBomStructure
                     // add as a Node to the graph?
                     if (pass == 2 && referableByRelation.ContainsKey(prop))
                     {
+                        // can get an link style?
+                        var ns = _bomRecords?.FindFirstNodeStyle(prop.semanticId);
+
+                        // skip?
+                        if (ns?.Skip == true)
+                            continue;
+
                         // this gives nodes!
                         var node = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
                         node.UserData = prop;
@@ -493,6 +551,9 @@ namespace AasxPluginBomStructure
                         node.Attr.XRadius = 0;
                         node.Attr.YRadius = 0;
                         node.Label.FontSize = 8;
+
+                        // more style based on semantic id?
+                        ApplyNodeStyle(node, ns);
 
                         // add
                         graph.AddNode(node);
@@ -516,7 +577,7 @@ namespace AasxPluginBomStructure
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
                             e.Attr.Color = PropertyBorderColor;
                             e.Attr.LineWidth = 2;
-                            e.Attr.Weight = 10;
+                            e.Attr.Weight = 10000;
                         }
                         catch (Exception ex)
                         {

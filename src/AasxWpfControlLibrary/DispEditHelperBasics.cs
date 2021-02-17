@@ -1265,7 +1265,8 @@ namespace AasxPackageExplorer
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, ModifyRepo.LambdaAction> jumpLambda = null,
-            ModifyRepo.LambdaAction takeOverLambdaAction = null)
+            ModifyRepo.LambdaAction takeOverLambdaAction = null,
+            Action<AdminShell.KeyList> noEditJumpLambda = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1333,7 +1334,8 @@ namespace AasxPackageExplorer
 
             if (repo == null)
             {
-                // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??
+                // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??               
+                // no .. see furthermore below
             }
             else
             if (keys != null)
@@ -1506,8 +1508,23 @@ namespace AasxPackageExplorer
                             g, 0 + i + rowOfs, 4,
                             padding: new Thickness(2, 0, 0, 0),
                             content: "" + keys[i].value);
-                    }
 
+                        // jump
+                        /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
+                           It shall be replaced (after intergrating AnyUI) by a better repo handling */  
+                        if (noEditJumpLambda != null && i== 0)
+                        {
+                            var jmpBtn = AddSmallButtonTo(
+                                g, 0, 5,
+                                margin: new Thickness(2, 2, 2, 2),
+                                padding: new Thickness(5, 0, 5, 0),
+                                content: "Jump");
+                            jmpBtn.Click += (s, e) =>
+                            {
+                                noEditJumpLambda.Invoke(keys);
+                            };
+                        }
+                    }
                     else
                     {
                         // save in current context
