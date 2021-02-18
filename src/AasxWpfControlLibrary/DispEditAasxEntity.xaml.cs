@@ -3166,7 +3166,8 @@ namespace AasxPackageExplorer
                         },
                         noEditJumpLambda: (kl) =>
                         {
-                            ;
+                            AddWishForOutsideAction(new ModifyRepo.LambdaActionNavigateTo(
+                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true));
                         });
                 }
 

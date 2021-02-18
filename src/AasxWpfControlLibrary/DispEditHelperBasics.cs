@@ -1277,8 +1277,6 @@ namespace AasxPackageExplorer
             int rowOfs = 0;
             if (repo != null)
                 rowOfs = 1;
-            if (jumpLambda != null)
-                rowOfs = 1;
 
             // Grid
             var g = new Grid();
@@ -1515,7 +1513,7 @@ namespace AasxPackageExplorer
                         if (noEditJumpLambda != null && i== 0)
                         {
                             var jmpBtn = AddSmallButtonTo(
-                                g, 0, 5,
+                                g, 0 + + rowOfs, 5,
                                 margin: new Thickness(2, 2, 2, 2),
                                 padding: new Thickness(5, 0, 5, 0),
                                 content: "Jump");
