@@ -28,9 +28,9 @@ namespace AasxDictionaryImport.Cdd
         public override bool IsValidPath(string path) => Parser.IsValidDirectory(path);
 
         /// <inheritdoc/>
-        protected override IEnumerable<string> GetDefaultPaths()
+        protected override IEnumerable<string> GetDefaultPaths(string dir)
         {
-            var searchDirectory = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "iec-cdd");
+            var searchDirectory = System.IO.Path.Combine(dir, "iec-cdd");
             if (!System.IO.Directory.Exists(searchDirectory))
                 return new List<string>();
             return System.IO.Directory.GetDirectories(searchDirectory);

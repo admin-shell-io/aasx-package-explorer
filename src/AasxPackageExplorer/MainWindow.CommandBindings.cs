@@ -1838,9 +1838,11 @@ namespace AasxPackageExplorer
             try
             {
                 if (ve != null && ve.theEnv != null && ve.theAas != null)
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, Options.Curr.DictImportDir,
+                        ve.theAas);
                 else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv);
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv,
+                        Options.Curr.DictImportDir);
             }
             catch (Exception e)
             {
@@ -1881,7 +1883,8 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, submodel);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, Options.Curr.DictImportDir,
+                    submodel);
             }
             catch (Exception e)
             {
