@@ -1818,15 +1818,25 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportSubmodel()
         {
-            VisualElementAdminShell ve = null;
+            AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
+            AdminShell.AdministrationShell aas = null;
             if (DisplayElements.SelectedItem != null)
             {
-                if (DisplayElements.SelectedItem is VisualElementAdminShell)
+                if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
                 {
-                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+                    // AAS is selected --> import into AAS
+                    env = aasItem.theEnv;
+                    aas = aasItem.theAas;
+                }
+                else if (DisplayElements.SelectedItem is VisualElementEnvironmentItem envItem &&
+                        envItem.theItemType == VisualElementEnvironmentItem.ItemType.EmptySet)
+                {
+                    // Empty environment is selected --> create new AAS
+                    env = envItem.theEnv;
                 }
                 else
                 {
+                    // Other element is selected --> error
                     MessageBoxFlyoutShow("Please select the administration shell for the submodel import.",
                         "Submodel Import", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1837,12 +1847,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                if (ve != null && ve.theEnv != null && ve.theAas != null)
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, Options.Curr.DictImportDir,
-                        ve.theAas);
-                else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv,
-                        Options.Curr.DictImportDir);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(env, Options.Curr.DictImportDir, aas);
             }
             catch (Exception e)
             {
