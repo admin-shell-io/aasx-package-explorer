@@ -304,7 +304,7 @@ namespace AasxDictionaryImport
 
         public string Id => Element.Id;
 
-        public string Name => Element.Name;
+        public string Name => Element.DisplayName;
 
         public bool IsExpanded => Parent == null;
 

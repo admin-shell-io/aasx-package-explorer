@@ -526,6 +526,23 @@ namespace AasxDictionaryImport.Eclass
         /// </summary>
         public ICollection<Class> Aspects { get; } = new List<Class>();
 
+        /// <inheritdoc/>
+        public override string DisplayName
+        {
+            get
+            {
+                var name = PreferredName.GetDefault();
+                if (Id.Contains("BASIC"))
+                {
+                    return $"{name} (ECLASS Basic)";
+                }
+                else
+                {
+                    return name;
+                }
+            }
+        }
+
         /// <summary>
         /// Creates a new Class object within the given context, backed by the given XML element.
         /// </summary>

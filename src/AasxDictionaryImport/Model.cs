@@ -173,6 +173,11 @@ namespace AasxDictionaryImport.Model
         string Name { get; }
 
         /// <summary>
+        /// The display name of this element, usually in English.
+        /// </summary>
+        string DisplayName { get; }
+
+        /// <summary>
         /// The parent of this element or null if the element is a root element of the element tree.
         /// </summary>
         IElement? Parent { get; }
@@ -373,6 +378,9 @@ namespace AasxDictionaryImport.Model
 
         /// <inheritdoc/>
         public abstract string Name { get; }
+
+        /// <inheritdoc/>
+        public virtual string DisplayName => Name;
 
         /// <inheritdoc/>
         public virtual IElement? Parent { get; }
