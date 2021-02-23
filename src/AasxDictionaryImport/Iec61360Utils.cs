@@ -44,7 +44,8 @@ namespace AasxDictionaryImport
             AdminShellV20.AdministrationShellEnv env,
             AdminShellV20.AdministrationShell adminShell, Iec61360Data data)
         {
-            // TODO: fix
+            // We need this to ensure that we don't use the same AAS ID twice when importing multiple submodels (as
+            // GenerateIdAccordingTemplate uses the timestamp as part of the ID).
             Thread.Sleep(1000);
             var submodel = new AdminShellV20.Submodel()
             {

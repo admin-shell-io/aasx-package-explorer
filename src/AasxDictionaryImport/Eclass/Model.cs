@@ -236,7 +236,10 @@ namespace AasxDictionaryImport.Eclass
             AssignApplicationClasses();
             AssignAspects(document.Descendants(Namespaces.OntoML + "a_posteriori_semantic_relationship"));
 
-            var properties = document.Descendants(Namespaces.OntoML + "property").Select(e => new Property(this, e)).ToList();
+            var properties = document
+                .Descendants(Namespaces.OntoML + "property")
+                .Select(e => new Property(this, e))
+                .ToList();
             AddElements(properties);
             if (units != null)
                 AssignUnits(properties, units);
@@ -290,7 +293,7 @@ namespace AasxDictionaryImport.Eclass
                 if (data.TryGetValue("IRDI", out string irdi) && data.TryGetValue("SI code", out string siCode))
                 {
                     if (!units.ContainsKey(irdi))
-                        // TODO: HTML-decode SI code
+                        // TODO (krahlro-sick, 2021-02-03): HTML-decode SI code
                         units.Add(irdi, siCode);
                 }
             }
@@ -336,7 +339,6 @@ namespace AasxDictionaryImport.Eclass
                 }
                 else
                 {
-                    // TODO: possible duplicates
                     if (!_elements.ContainsKey(element.Id))
                         _elements.Add(element.Id, element);
                 }
@@ -489,8 +491,6 @@ namespace AasxDictionaryImport.Eclass
                 { "Hierarchical Position", HierarchicalPosition },
             };
         }
-
-        // TODO: check -- do we have a public URI?
     }
 
     /// <summary>
@@ -701,7 +701,6 @@ namespace AasxDictionaryImport.Eclass
 
         protected override Iec61360Data GetIec61360Data()
         {
-            // TODO: unit
             var data = base.GetIec61360Data();
             data.DataType = GetDataType(Type);
             data.ShortName = ShortName;
@@ -719,8 +718,8 @@ namespace AasxDictionaryImport.Eclass
 
         private static string GetDataType(string type)
         {
-            // TODO: This logic is copied from EclassUtils.GenerateConceptDescription -- does it handle all possible
-            // values?
+            // TODO (krahlro-sick, 2021-02-23): This logic is copied from EclassUtils.GenerateConceptDescription -- does
+            // it handle all possible values?
             var lowerType = type.ToLower();
             foreach (var aasType in AdminShell.DataSpecificationIEC61360.DataTypeNames)
             {
@@ -740,7 +739,7 @@ namespace AasxDictionaryImport.Eclass
                 case "REAL_MEASURE":
                 case "REAL_COUNT":
                 case "REAL_CURRENCY":
-                    return "double"; // TODO: float?
+                    return "double";
                 case "INTEGER_MEASURE":
                 case "INTEGER_COUNT":
                 case "INTEGER_CURRENCY":
