@@ -36,6 +36,7 @@ namespace AasxDictionaryImport
     {
         public ISet<Model.IDataProvider> DataProviders = new HashSet<Model.IDataProvider> {
             new Cdd.DataProvider(),
+            new Eclass.DataProvider(),
         };
         public Model.IDataContext? Context;
         private readonly ObservableCollection<Model.IElement> _topLevelElements
@@ -91,15 +92,15 @@ namespace AasxDictionaryImport
             ButtonImport.IsEnabled = _detailsElements.Any(w => w.IsChecked != false);
         }
 
-        private string? GetImportDirectory()
+        private string? GetImportPath()
         {
-            using var dialog = new System.Windows.Forms.FolderBrowserDialog
+            using var dialog = new System.Windows.Forms.OpenFileDialog
             {
-                Description = "Select the import directory."
+                Title = "Select a local file for the Dictionary Import"
             };
 
             return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
-                ? dialog.SelectedPath : null;
+                ? dialog.FileName : null;
         }
 
         private void ApplyFilter()
@@ -169,7 +170,7 @@ namespace AasxDictionaryImport
 
         private void ComboBoxSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Title = "IEC CDD Import";
+            Title = "Dictionary Import";
             _topLevelElements.Clear();
             _detailsElements.Clear();
 
@@ -191,7 +192,7 @@ namespace AasxDictionaryImport
                     {
                         _topLevelElements.Add(element);
                     }
-                    Title = $"IEC CDD Import [{source}]";
+                    Title = $"Dictionary Import [{source}]";
 
                     if (ClassViewControl.Items.Count > 0)
                         ClassViewControl.SelectedItem = ClassViewControl.Items[0];
@@ -209,9 +210,9 @@ namespace AasxDictionaryImport
             }
         }
 
-        private void ButtonOpenDirectory_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var path = GetImportDirectory();
+            var path = GetImportPath();
             if (path == null)
                 return;
 
@@ -303,7 +304,7 @@ namespace AasxDictionaryImport
 
         public string Id => Element.Id;
 
-        public string Name => Element.Name;
+        public string Name => Element.DisplayName;
 
         public bool IsExpanded => Parent == null;
 
@@ -321,7 +322,7 @@ namespace AasxDictionaryImport
             Element = element;
             Children = element.Children.Select(e => new ElementWrapper(e, this)).ToList();
 
-            Element.IsSelected = _isChecked != false;
+            _isChecked = Element.IsSelected;
         }
 
         protected void PropagateIsChecked(bool up, bool down)

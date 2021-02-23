@@ -11,6 +11,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using AdminShellNS;
 
 namespace AasxDictionaryImport
@@ -43,6 +44,9 @@ namespace AasxDictionaryImport
             AdminShellV20.AdministrationShellEnv env,
             AdminShellV20.AdministrationShell adminShell, Iec61360Data data)
         {
+            // We need this to ensure that we don't use the same AAS ID twice when importing multiple submodels (as
+            // GenerateIdAccordingTemplate uses the timestamp as part of the ID).
+            Thread.Sleep(1000);
             var submodel = new AdminShellV20.Submodel()
             {
                 identification = new AdminShellV20.Identification(
