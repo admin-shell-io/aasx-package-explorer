@@ -330,7 +330,8 @@ namespace AasxPackageExplorer.GuiTests
             {
                 // Expand the current menu item and find the next
                 menuItem.Click();
-                element = menuItem.FindFirstChild(cf => cf.ByName(path[i]));
+                var name = path[i];
+                element = menuItem.FindFirstChild(cf => cf.ByName(name));
                 if (element == null)
                 {
                     var itemPath = String.Join(" → ", path.Take(i + 1));
