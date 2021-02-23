@@ -92,15 +92,15 @@ namespace AasxDictionaryImport
             ButtonImport.IsEnabled = _detailsElements.Any(w => w.IsChecked != false);
         }
 
-        private string? GetImportDirectory()
+        private string? GetImportPath()
         {
-            using var dialog = new System.Windows.Forms.FolderBrowserDialog
+            using var dialog = new System.Windows.Forms.OpenFileDialog
             {
-                Description = "Select the import directory."
+                Title = "Select a local file for the Dictionary Import"
             };
 
             return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
-                ? dialog.SelectedPath : null;
+                ? dialog.FileName : null;
         }
 
         private void ApplyFilter()
@@ -210,9 +210,9 @@ namespace AasxDictionaryImport
             }
         }
 
-        private void ButtonOpenDirectory_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var path = GetImportDirectory();
+            var path = GetImportPath();
             if (path == null)
                 return;
 

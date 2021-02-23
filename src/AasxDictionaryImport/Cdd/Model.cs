@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AdminShellNS;
 
@@ -25,20 +26,27 @@ namespace AasxDictionaryImport.Cdd
         public override string Name => "IEC CDD";
 
         /// <inheritdoc/>
-        public override bool IsValidPath(string path) => Parser.IsValidDirectory(path);
+        public override bool IsValidPath(string path)
+        {
+            string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;
+            return Parser.IsValidDirectory(dir);
+        }
 
         /// <inheritdoc/>
         protected override IEnumerable<string> GetDefaultPaths(string dir)
         {
-            var searchDirectory = System.IO.Path.Combine(dir, "iec-cdd");
-            if (!System.IO.Directory.Exists(searchDirectory))
+            var searchDirectory = Path.Combine(dir, "iec-cdd");
+            if (!Directory.Exists(searchDirectory))
                 return new List<string>();
-            return System.IO.Directory.GetDirectories(searchDirectory);
+            return Directory.GetDirectories(searchDirectory);
         }
 
         /// <inheritdoc/>
         protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
-            => new DataSource(this, path, type);
+        {
+            string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;
+            return new DataSource(this, dir, type);
+        }
     }
 
     /// <summary>
@@ -65,7 +73,7 @@ namespace AasxDictionaryImport.Cdd
         public DataSource(Model.IDataProvider dataProvider, string directory, Model.DataSourceType type)
             : base(dataProvider, directory, type)
         {
-            if (!System.IO.Directory.Exists(directory))
+            if (!Directory.Exists(directory))
                 throw new Model.ImportException($"Directory '{directory}' does not exist");
         }
 
