@@ -31,7 +31,7 @@ namespace AasxPackageExplorer.GuiTests
         {
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                Common.FindTopLevelWindow(application, automation, (w) => w.AutomationId == "splashScreen",
+                Common.RequireTopLevelWindow(application, automation, (w) => w.AutomationId == "splashScreen",
                         "Could not find the splash screen window");
                 Common.AssertNoErrors(application, mainWindow);
             }, new Run { Args = new[] { "-splash", "5000" } });
@@ -42,8 +42,8 @@ namespace AasxPackageExplorer.GuiTests
         {
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                Common.FindMenuItem(mainWindow, "Help", "About ..").Click();
-                Common.FindTopLevelWindowByTitle(application, automation, "About");
+                Common.RequireMenuItem(mainWindow, "Help", "About ..").Click();
+                Common.RequireTopLevelWindowByTitle(application, automation, "About");
             });
         }
 
@@ -150,7 +150,7 @@ namespace AasxPackageExplorer.GuiTests
 
                 buttonReport.Click();
 
-                Common.FindTopLevelWindowByTitle(application, automation, "Message Report");
+                Common.RequireTopLevelWindowByTitle(application, automation, "Message Report");
             });
         }
 
@@ -395,9 +395,9 @@ namespace AasxPackageExplorer.GuiTests
             var dictImportDir = Path.Combine(Common.TestResourcesDir(), "IecCdd", "empty");
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                Common.FindMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
+                Common.RequireMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
 
-                var window = Common.FindTopLevelWindowByTitle(application, automation, "Dictionary Import");
+                var window = Common.RequireTopLevelWindowByTitle(application, automation, "Dictionary Import");
 
                 var dataProviders = window.FindFirstChild("DataSourceLabel").AsLabel().Text;
                 Assert.That(dataProviders.Contains("IEC CDD"), "IEC CDD is not listed as a data provider");
@@ -416,9 +416,9 @@ namespace AasxPackageExplorer.GuiTests
             var dictImportDir = Path.Combine(Common.TestResourcesDir(), "IecCdd", "simple");
             Common.RunWithMainWindow((application, automation, mainWindow) =>
             {
-                Common.FindMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
+                Common.RequireMenuItem(mainWindow, "File", "Import ..", "Import Submodel from Dictionary ..").Click();
 
-                var window = Common.FindTopLevelWindowByTitle(application, automation, "Dictionary Import");
+                var window = Common.RequireTopLevelWindowByTitle(application, automation, "Dictionary Import");
 
                 var comboBoxDataSources = window.FindFirstChild("ComboBoxSource").AsComboBox();
                 var dataSources = comboBoxDataSources.Items;

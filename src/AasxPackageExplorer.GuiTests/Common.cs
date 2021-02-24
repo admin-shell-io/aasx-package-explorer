@@ -292,7 +292,7 @@ namespace AasxPackageExplorer.GuiTests
                     $"Check manually why the file could not be opened: {path}");
         }
 
-        public static Window FindTopLevelWindow(Application application, UIA3Automation automation,
+        public static Window RequireTopLevelWindow(Application application, UIA3Automation automation,
                 Func<Window, bool> filter, string timeoutMessage, int timeoutSeconds = 5)
         {
             return Retry.WhileNull(() =>
@@ -302,19 +302,19 @@ namespace AasxPackageExplorer.GuiTests
             ).Result;
         }
 
-        public static Window FindTopLevelWindowByTitle(Application application, UIA3Automation automation,
+        public static Window RequireTopLevelWindowByTitle(Application application, UIA3Automation automation,
                 string title, int timeoutSeconds = 5)
         {
-            return FindTopLevelWindow(application, automation, (w) => w.Title == title,
-                    $"Could not find the top-level window with the title '{title}'", timeoutSeconds);
+            return RequireTopLevelWindow(application, automation, (w) => w.Title == title,
+                    $"Could not find the top-level window with the title {Quote(title)}", timeoutSeconds);
         }
 
 
-        public static MenuItem FindMenuItem(AutomationElement parent, params string[] path)
+        public static MenuItem RequireMenuItem(AutomationElement parent, params string[] path)
         {
             if (path.Length == 0)
             {
-                throw new AssertionException("FindMenuItem may not be called with an empty path.");
+                throw new AssertionException("RequireMenuItem may not be called with an empty path.");
             }
 
             // Find the top-level menu item
@@ -322,7 +322,7 @@ namespace AasxPackageExplorer.GuiTests
                 cf => cf.ByClassName("MenuItem").And(cf.ByName(path[0])));
             if (element == null)
             {
-                throw new AssertionException($"Could not find menu item {path[0]}");
+                throw new AssertionException($"Could not find menu item {Quote(path[0])}");
             }
 
             var menuItem = element.AsMenuItem();
@@ -335,7 +335,7 @@ namespace AasxPackageExplorer.GuiTests
                 if (element == null)
                 {
                     var itemPath = String.Join(" → ", path.Take(i + 1));
-                    throw new AssertionException($"Could not find menu item {itemPath}");
+                    throw new AssertionException($"Could not find menu item {Quote(itemPath)}");
                 }
                 menuItem = element.AsMenuItem();
             }
