@@ -264,7 +264,7 @@ namespace AasxDictionaryImport
             }
             finally
             {
-                        Mouse.OverrideCursor = null;
+                Mouse.OverrideCursor = null;
             }
         }
 
