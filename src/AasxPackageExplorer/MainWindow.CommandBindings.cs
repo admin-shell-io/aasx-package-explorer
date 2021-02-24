@@ -1847,7 +1847,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(env, Options.Curr.DictImportDir, aas);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
             }
             catch (Exception e)
             {
@@ -1888,7 +1888,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, Options.Curr.DictImportDir,
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
                     submodel);
             }
             catch (Exception e)
