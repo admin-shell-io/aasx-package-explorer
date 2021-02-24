@@ -25,8 +25,9 @@ namespace AasxDictionaryImport
         public Model.IDataProvider? DataProvider => ComboBoxProvider.SelectedItem as Model.IDataProvider;
         public string Query { get; set; } = string.Empty;
 
-        public FetchOnlineDialog(ICollection<Model.IDataProvider> providers)
+        public FetchOnlineDialog(Window owner, ICollection<Model.IDataProvider> providers)
         {
+            Owner = owner;
             DataContext = this;
 
             InitializeComponent();

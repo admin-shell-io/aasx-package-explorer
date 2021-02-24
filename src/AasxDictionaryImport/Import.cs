@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using AdminShellNS;
 
@@ -59,17 +60,19 @@ namespace AasxDictionaryImport
         /// converted into an AAS submodel and imported into the given admin shell.  If <paramref name="adminShell"/> is
         /// null, a new empty admin shell is created in the given environment.
         /// </summary>
+        /// <param name="window">The parent window for the import dialog</param>
         /// <param name="env">The AAS environment to import into</param>
         /// <param name="defaultSourceDir">The search path for the default data sources, e. g. the current working
         /// directory</param>
         /// <param name="adminShell">The admin shell to import into, or null if a new admin shell should be
         /// created</param>
         /// <returns>true if at least one submodel was imported</returns>
-        public static bool ImportSubmodel(AdminShellV20.AdministrationShellEnv env,
+        public static bool ImportSubmodel(Window window, AdminShellV20.AdministrationShellEnv env,
             string defaultSourceDir, AdminShellV20.AdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
-            return PerformImport(ImportMode.Submodels, defaultSourceDir, e => e.ImportSubmodelInto(env, adminShell));
+            return PerformImport(window, ImportMode.Submodels, defaultSourceDir,
+                    e => e.ImportSubmodelInto(env, adminShell));
         }
 
         /// <summary>
@@ -77,21 +80,23 @@ namespace AasxDictionaryImport
         /// converted into AAS submodel elements (usually properties and collections) and imported into the given parent
         /// element (usually a submodel).
         /// </summary>
+        /// <param name="window">The parent window for the import dialog</param>
         /// <param name="env">The AAS environment to import into</param>
         /// <param name="defaultSourceDir">The search path for the default data sources, e. g. the current working
         /// directory</param>
         /// <param name="parent">The parent element to import into</param>
         /// <returns>true if at least one submodel element was imported</returns>
-        public static bool ImportSubmodelElements(AdminShell.AdministrationShellEnv env,
+        public static bool ImportSubmodelElements(Window window, AdminShell.AdministrationShellEnv env,
             string defaultSourceDir, AdminShell.IManageSubmodelElements parent)
         {
-            return PerformImport(ImportMode.SubmodelElements, defaultSourceDir,
+            return PerformImport(window, ImportMode.SubmodelElements, defaultSourceDir,
                 e => e.ImportSubmodelElementsInto(env, parent));
         }
 
-        private static bool PerformImport(ImportMode importMode, string defaultSourceDir, Func<Model.IElement, bool> f)
+        private static bool PerformImport(Window window, ImportMode importMode, string defaultSourceDir,
+                Func<Model.IElement, bool> f)
         {
-            var dialog = new ImportDialog(importMode, defaultSourceDir);
+            var dialog = new ImportDialog(window, importMode, defaultSourceDir);
             if (dialog.ShowDialog() != true || dialog.Context == null)
                 return false;
 

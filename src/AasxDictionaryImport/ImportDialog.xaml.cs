@@ -65,8 +65,9 @@ namespace AasxDictionaryImport
             }
         }
 
-        public ImportDialog(ImportMode importMode, string defaultSourceDir)
+        public ImportDialog(Window owner, ImportMode importMode, string defaultSourceDir)
         {
+            Owner = owner;
             DataContext = this;
 
             ImportMode = importMode;
@@ -242,7 +243,7 @@ namespace AasxDictionaryImport
             if (fetchProviders.Count == 0)
                 return;
 
-            var dialog = new FetchOnlineDialog(fetchProviders);
+            var dialog = new FetchOnlineDialog(this, fetchProviders);
             if (dialog.ShowDialog() != true || dialog.DataProvider == null)
                 return;
 
