@@ -248,6 +248,7 @@ namespace AasxDictionaryImport
 
             try
             {
+                Mouse.OverrideCursor = Cursors.Wait;
                 var source = dialog.DataProvider.Fetch(dialog.Query);
                 ComboBoxSource.Items.Add(source);
                 ComboBoxSource.SelectedItem = source;
@@ -260,6 +261,10 @@ namespace AasxDictionaryImport
                         "Could not fetch the requested data.\n" +
                         "Details: " + ex.Message,
                         "Fetch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                        Mouse.OverrideCursor = null;
             }
         }
 
