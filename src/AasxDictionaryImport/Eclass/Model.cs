@@ -136,15 +136,42 @@ namespace AasxDictionaryImport.Eclass
         /// <exception cref="Model.ImportException">If the element could not be fetched from the web API</exception>
         private string FetchXmlFile(string irdi)
         {
-            X509Certificate2 cert;
-            try
+            X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+            X509Certificate2Collection collection = store.Certificates;
+            X509Certificate2Collection fcollection = collection.Find(
+                X509FindType.FindByTimeValid, DateTime.Now, false);
+
+            Boolean certFound = false;
+            X509Certificate2Collection fcollection2 = new X509Certificate2Collection();
+            foreach (X509Certificate2 fc in fcollection)
             {
-                // TODO (aorzelski, 2021-02-24): Use system certificate storage
-                cert = new X509Certificate2(@"C:\Users\krahlro\certs\19-SICK_Webservice.full.pfx", "");
+                if (fc.Issuer.ToLower().Contains("eclass-cdp.com"))
+                {
+                    certFound = true;
+                    fcollection2.Add(fc);
+                }
             }
-            catch (CryptographicException ex)
+
+            X509Certificate2 cert = new X509Certificate2();
+            if (certFound)
             {
-                throw new ImportException("Could not open ECLASS webservice certificate", ex);
+                certFound = false;
+                X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection2,
+                    "Test Certificate Select",
+                    "Select an ECLASS client certificate which you alreay imported into your certificate store",
+                    X509SelectionFlag.SingleSelection);
+                if (scollection.Count != 0)
+                {
+                    certFound = true;
+                    cert = scollection[0];
+                }
+            }
+
+            if (!certFound)
+            {
+                throw new ImportException($"No valid ECLASS certificate selected");
             }
 
             HttpClientHandler clientHandler = new HttpClientHandler();
