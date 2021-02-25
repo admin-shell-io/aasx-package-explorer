@@ -16,8 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
   </ItemGroup>
 </Project>
