@@ -1470,6 +1470,8 @@ namespace AasxPackageExplorer
                     }),
                 categoryUsual: false);
 
+       
+
             // Identifiable
 
             helper.DisplayOrEditEntityIdentifiable(

@@ -741,6 +741,32 @@ namespace AasxPackageExplorer
             view.Children.Add(g);
         }
 
+        public void testmethod1(
+            StackPanel view, string key, string value)
+        {
+
+            // Grid
+            var g = new Grid();
+            g.Margin = new Thickness(0, 1, 0, 1);
+            var gc1 = new ColumnDefinition();
+            gc1.Width = GridLength.Auto;
+            gc1.MinWidth = this.standardFirstColWidth;
+            g.ColumnDefinitions.Add(gc1);
+            var gc2 = new ColumnDefinition();
+            gc2.Width = new GridLength(1.0, GridUnitType.Star);
+            g.ColumnDefinitions.Add(gc2);
+
+            // Label for key
+            AddSmallLabelTo(g, 0, 0, padding: new Thickness(5, 0, 0, 0), content: "" + key + ":");
+
+            // Label / TextBox for value
+            AddSmallLabelTo(g, 0, 1, padding: new Thickness(2, 0, 0, 0), content: "" + value);
+
+            // in total
+            view.Children.Add(g);
+        }
+
+
         public void AddKeyDropTarget(
             StackPanel view, string key, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, ModifyRepo.LambdaAction> setValue = null, int minHeight = 0)
