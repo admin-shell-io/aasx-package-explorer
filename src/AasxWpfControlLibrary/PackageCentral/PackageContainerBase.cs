@@ -58,6 +58,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AskForSelectFromListHandler AskForSelectFromList;
 
         public AskForCredentialsHandler AskForCredentials;
+
+        public delegate System.Windows.Forms.DialogResult ShowMessageDelegate(
+                            string content, string caption, 
+                            System.Windows.Forms.MessageBoxButtons buttons = 0);
+        public ShowMessageDelegate ShowMesssageBox;
     }
 
     /// <summary>

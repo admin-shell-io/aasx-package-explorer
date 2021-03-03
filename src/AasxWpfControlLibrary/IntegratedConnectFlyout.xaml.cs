@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -183,9 +184,17 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
+            // execute in any case (will lead to properly close the the Flyout)
             this.Result = false;
             this.ResultContainer = null;
             ControlClosed?.Invoke();
+
+            // special case
+            if (_dispatcherFrame != null)
+            {
+                _dispatcherFrame.Continue = false;
+                _dialogResult = System.Windows.Forms.DialogResult.Abort;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -232,6 +241,21 @@ namespace AasxPackageExplorer
             if (sender == ButtonPageSummaryDone)
             {
                 DoneOnPageSummary();
+            }
+
+            System.Windows.Forms.DialogResult tmpRes = System.Windows.Forms.DialogResult.None;
+            if (sender == ButtonMessageBoxOK)
+                tmpRes = System.Windows.Forms.DialogResult.OK;
+            if (sender == ButtonMessageBoxCancel)
+                tmpRes = System.Windows.Forms.DialogResult.Cancel;
+            if (sender == ButtonMessageBoxYes)
+                tmpRes = System.Windows.Forms.DialogResult.Yes;
+            if (sender == ButtonMessageBoxNo)
+                tmpRes = System.Windows.Forms.DialogResult.No;
+            if (tmpRes != System.Windows.Forms.DialogResult.None)
+            {
+                if (_dispatcherFrame != null)
+                    _dispatcherFrame.Continue = false;
             }
         }
 
@@ -523,6 +547,53 @@ namespace AasxPackageExplorer
         {
             if (Result && ResultContainer != null)
                 ControlClosed?.Invoke();
+        }
+
+        //
+        // MessageBox
+        //
+
+        private DispatcherFrame _dispatcherFrame = null;
+        private System.Windows.Forms.DialogResult _dialogResult = System.Windows.Forms.DialogResult.None;
+
+        /// <summary>
+        /// Assumes, that the flyout is open and BLOCKS the message loop until a result button
+        /// is being pressed!
+        /// </summary>
+        public System.Windows.Forms.DialogResult MessageBoxShow(
+            string content, string caption, System.Windows.Forms.MessageBoxButtons buttons)
+        {
+            // show tab page
+            TabControlMain.SelectedItem = TabItemMessageBox;
+
+            // set
+            LabelMessageBoxCaption.Content = "" + caption;
+            TextBlockMessageBoxContent.Text = "" + content;
+            ButtonMessageBoxOK.Visibility =
+                (buttons == System.Windows.Forms.MessageBoxButtons.OK 
+                 || buttons == System.Windows.Forms.MessageBoxButtons.OKCancel) ?
+                    Visibility.Visible : Visibility.Collapsed;
+            ButtonMessageBoxCancel.Visibility =
+                (buttons == System.Windows.Forms.MessageBoxButtons.OKCancel 
+                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel) ?
+                    Visibility.Visible : Visibility.Collapsed;
+            ButtonMessageBoxYes.Visibility =
+                (buttons == System.Windows.Forms.MessageBoxButtons.YesNo 
+                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
+                ? Visibility.Visible : Visibility.Collapsed;
+            ButtonMessageBoxNo.Visibility =
+                (buttons == System.Windows.Forms.MessageBoxButtons.YesNo 
+                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
+                ? Visibility.Visible : Visibility.Collapsed;
+
+            // modified from StartFlyoverModal()
+            // This will "block" execution of the current dispatcher frame
+            // and run our frame until the dialog is closed.
+            _dialogResult = System.Windows.Forms.DialogResult.None;
+            _dispatcherFrame = new DispatcherFrame();
+            Dispatcher.PushFrame(_dispatcherFrame);
+
+            return _dialogResult;
         }
     }
 }

@@ -237,6 +237,60 @@
 
             </TabItem>
 
+            <TabItem x:Name="TabItemMessageBox" Header="Message" Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" x:Name="LabelMessageBoxCaption" VerticalAlignment="Bottom" 
+                           Foreground="White" FontSize="22">Caption:</Label>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                           x:Name="TextBlockMessageBoxContent" 
+                           Margin="5,10,5,10" Background="#c0202030" Foreground="White" 
+                           FontWeight="Light" FontSize="12" Padding="2" TextWrapping="Wrap">
+                        Content
+                    </TextBlock>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
+
+                        <Button x:Name="ButtonMessageBoxOK" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">OK</Button>
+
+                        <Button x:Name="ButtonMessageBoxCancel" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">Cancel</Button>
+
+                        <Button x:Name="ButtonMessageBoxYes" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">Yes</Button>
+
+                        <Button x:Name="ButtonMessageBoxNo" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">No</Button>
+
+                    </StackPanel>
+                    
+                    
+                </Grid>
+
+            </TabItem>
+
         </TabControl>
 
         <DockPanel Grid.Row="3" Grid.Column="1">

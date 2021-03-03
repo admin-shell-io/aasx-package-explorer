@@ -118,6 +118,16 @@ namespace AasxWpfControlLibrary.PackageCentral
             return "HTTP file: " + Location;
         }
 
+        private OpenIDClient.UiLambdaSet GenerateUiLambdaSet(PackCntRuntimeOptions runtimeOptions = null)
+        {
+            var res = new OpenIDClient.UiLambdaSet();
+
+            if (runtimeOptions?.ShowMesssageBox != null)
+                res.MesssageBox = (content, title, buttons) => runtimeOptions.ShowMesssageBox(content, title, buttons);
+
+            return res;
+        }
+
         private async Task DownloadFromSource(Uri sourceUri,
             PackCntRuntimeOptions runtimeOptions = null)
         {
@@ -158,7 +168,8 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     runtimeOptions?.Log?.Info($".. authentication at auth server {OpenIDClient.authServer} needed");
 
-                    var response2 = await OpenIDClient.RequestTokenAsync(null);
+                    var response2 = await OpenIDClient.RequestTokenAsync(null, 
+                        GenerateUiLambdaSet(runtimeOptions));
                     OpenIDClient.token = response2.AccessToken;
                     client.SetBearerToken(OpenIDClient.token);
 

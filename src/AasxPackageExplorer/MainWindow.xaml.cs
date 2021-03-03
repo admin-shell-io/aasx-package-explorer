@@ -195,6 +195,20 @@ namespace AasxPackageExplorer
 
                     if (state == PackCntRuntimeOptions.Progress.Final)
                         SetProgressBar();
+                },
+                ShowMesssageBox = (content, title, buttons) =>
+                {
+                    // make sure the correct flyout is loaded
+                    if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
+                        return System.Windows.Forms.DialogResult.Cancel;
+                    if (currentFlyoutControl == null)
+                        StartFlyover(new IntegratedConnectFlyout(_packageCentral, "Connecting .."));
+
+                    // ok -- perform dialogue in dedicated function / frame
+                    var ucic = currentFlyoutControl as IntegratedConnectFlyout;
+                    ucic.MessageBoxShow(content, title, buttons);
+
+                    return System.Windows.Forms.DialogResult.None;
                 }
             };
             return ro;
