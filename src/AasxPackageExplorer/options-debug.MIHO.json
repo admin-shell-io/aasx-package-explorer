@@ -40,6 +40,7 @@
   "AccentColors": {},
   "LoadWithoutPrompt": true,
   "ShowIdAsIri": false,
+  "VerboseConnect": true,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
   /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */

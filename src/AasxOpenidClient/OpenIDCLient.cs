@@ -45,16 +45,16 @@ namespace AasxOpenIdClient
         public class UiLambdaSet
         {
             public delegate DialogResult ShowMessageDelegate(
-                                    string content, string caption, MessageBoxButtons buttons = 0);
+                                    string content, string text, string caption, MessageBoxButtons buttons = 0);
             public ShowMessageDelegate MesssageBox;
 
             public static DialogResult MesssageBoxShow(
                 UiLambdaSet lambdaSet,
-                string content, string caption, MessageBoxButtons buttons = 0)
+                string content, string text, string caption, MessageBoxButtons buttons = 0)
             {
                 if (lambdaSet?.MesssageBox != null)
-                    return lambdaSet.MesssageBox(content, caption, buttons);
-                return System.Windows.Forms.MessageBox.Show(content, caption, buttons);
+                    return lambdaSet.MesssageBox(content, text, caption, buttons);
+                return System.Windows.Forms.MessageBox.Show(content + text, caption, buttons);
             }
         }
 
@@ -114,14 +114,14 @@ namespace AasxOpenIdClient
                 "\nConinue?";
 
             // Displays the MessageBox.
-            var result = UiLambdaSet.MesssageBoxShow(uiLambda, message, caption, MessageBoxButtons.YesNo);            
+            var result = UiLambdaSet.MesssageBoxShow(uiLambda, message, "", caption, MessageBoxButtons.YesNo);            
             if (result != System.Windows.Forms.DialogResult.Yes)
             {
                 // Closes the parent form.
                 return;
             }
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, "Access Aasx Server at " + dataServer,
+            UiLambdaSet.MesssageBoxShow(uiLambda, "", "Access Aasx Server at " + dataServer,
                 "Data Server", MessageBoxButtons.OK);
 
             var handler = new HttpClientHandler();
@@ -148,7 +148,7 @@ namespace AasxOpenIdClient
 
             while (operation != "" && operation != "error")
             {
-                UiLambdaSet.MesssageBoxShow(uiLambda, "operation: " + operation + value + "\ntoken: " + token,
+                UiLambdaSet.MesssageBoxShow(uiLambda, "", "operation: " + operation + value + "\ntoken: " + token,
                     "Operation", MessageBoxButtons.OK);
 
                 switch (operation)
@@ -175,7 +175,7 @@ namespace AasxOpenIdClient
                                     StringSplitOptions.RemoveEmptyEntries);
                                 Console.WriteLine("Redirect to:" + splitResult[0]);
                                 authServer = splitResult[0];
-                                UiLambdaSet.MesssageBoxShow(uiLambda, authServer, "Redirect to", MessageBoxButtons.OK);
+                                UiLambdaSet.MesssageBoxShow(uiLambda, authServer, "", "Redirect to", MessageBoxButtons.OK);
                                 lastOperation = operation;
                                 operation = "authenticate";
                                 continue;
@@ -191,7 +191,7 @@ namespace AasxOpenIdClient
                             {
                                 case "/server/listaas/":
                                     UiLambdaSet.MesssageBoxShow(uiLambda,
-                                        "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
+                                        "", "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
                                         MessageBoxButtons.OK);
                                     return;
                                 case "/server/getaasx2/":
@@ -239,12 +239,12 @@ namespace AasxOpenIdClient
                                 x509Credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));
                             }
 
-                            var response = await RequestTokenAsync(x509Credential);
+                            var response = await RequestTokenAsync(x509Credential, uiLambda);
                             token = response.AccessToken;
                             client.SetBearerToken(token);
 
                             response.Show();
-                            UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken,
+                            UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken, "",
                                 "Access Token", MessageBoxButtons.OK);
 
                             operation = lastOperation;
@@ -258,7 +258,7 @@ namespace AasxOpenIdClient
                         }
                         break;
                     case "error":
-                        UiLambdaSet.MesssageBoxShow(uiLambda, $"Can not perform: {lastOperation}",
+                        UiLambdaSet.MesssageBoxShow(uiLambda, "", $"Can not perform: {lastOperation}",
                             "Error", MessageBoxButtons.OK);
                         break;
                 }
@@ -276,7 +276,7 @@ namespace AasxOpenIdClient
             var disco = await client.GetDiscoveryDocumentAsync(authServer);
             if (disco.IsError) throw new Exception(disco.Error);
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "Discovery JSON", MessageBoxButtons.OK);
+            UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", MessageBoxButtons.OK);
 
             List<string> rootCertSubject = new List<string>();
             dynamic discoObject = Json.Decode(disco.Raw);
@@ -289,14 +289,14 @@ namespace AasxOpenIdClient
                 }
             }
 
-            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint, rootCertSubject);
+            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint, rootCertSubject, uiLambda);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nClientToken with x5c in header: \n");
             Console.ResetColor();
             Console.WriteLine(clientToken + "\n");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "Client Token", MessageBoxButtons.OK);
+            UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", MessageBoxButtons.OK);
 
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -317,7 +317,7 @@ namespace AasxOpenIdClient
                 throw new Exception(response.Error);
             }
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken,
+            UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken, "",
                 "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
 
             return response;
@@ -374,7 +374,7 @@ namespace AasxOpenIdClient
 
             if (credential == null)
             {
-                var res = UiLambdaSet.MesssageBoxShow(uiLambda,
+                var res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
                         "Select certificate chain from certificate store? \n" +
                         "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                         "Select certificate chain", MessageBoxButtons.YesNo);
@@ -471,7 +471,7 @@ namespace AasxOpenIdClient
                 Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "Client Certificate", MessageBoxButtons.OK);
+            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate", MessageBoxButtons.OK);
 
             credential = new X509SigningCredentials(certificate);
             // oz end

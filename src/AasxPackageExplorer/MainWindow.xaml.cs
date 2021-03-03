@@ -194,10 +194,28 @@ namespace AasxPackageExplorer
                             AdminShellUtil.ByteSizeHumanReadable(tbd));
 
                     if (state == PackCntRuntimeOptions.Progress.Final)
+                    {
+                        // clear
                         SetProgressBar();
+
+                        // close message boxes
+                        if (currentFlyoutControl is IntegratedConnectFlyout)
+                            CloseFlyover(threadSafe: true);
+                    }
                 },
-                ShowMesssageBox = (content, title, buttons) =>
+                ShowMesssageBox = (content, text, title, buttons) =>
                 {
+                    // not verbose
+                    if (MenuItemWorkspaceVerboseConnect.IsChecked == false)
+                    {
+                        // give specific default answers
+                        if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
+                            return System.Windows.Forms.DialogResult.Yes;
+
+                        // default answer
+                        return System.Windows.Forms.DialogResult.OK;
+                    }
+
                     // make sure the correct flyout is loaded
                     if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
                         return System.Windows.Forms.DialogResult.Cancel;
@@ -206,9 +224,9 @@ namespace AasxPackageExplorer
 
                     // ok -- perform dialogue in dedicated function / frame
                     var ucic = currentFlyoutControl as IntegratedConnectFlyout;
-                    ucic.MessageBoxShow(content, title, buttons);
+                    var res = ucic.MessageBoxShow(content, text, title, buttons);
 
-                    return System.Windows.Forms.DialogResult.None;
+                    return res;
                 }
             };
             return ro;
@@ -765,6 +783,7 @@ namespace AasxPackageExplorer
             // initialize menu
             MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
             MenuItemWorkspaceShowIri.IsChecked = Options.Curr.ShowIdAsIri;
+            MenuItemWorkspaceVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
@@ -1916,19 +1935,27 @@ namespace AasxPackageExplorer
             CloseFlyover();
         }
 
-        public void CloseFlyover()
+        public void CloseFlyover(bool threadSafe = false)
         {
-            // blur the normal grid
-            this.InnerGrid.Opacity = 1.0;
-            this.InnerGrid.Effect = null;
-            this.InnerGrid.IsEnabled = true;
+            Action lambda = () =>
+            {
+                // blur the normal grid
+                this.InnerGrid.Opacity = 1.0;
+                this.InnerGrid.Effect = null;
+                this.InnerGrid.IsEnabled = true;
 
-            // un-populate the flyover grid
-            this.GridFlyover.Children.Clear();
-            this.GridFlyover.Visibility = Visibility.Hidden;
+                // un-populate the flyover grid
+                this.GridFlyover.Children.Clear();
+                this.GridFlyover.Visibility = Visibility.Hidden;
 
-            // unregister
-            currentFlyoutControl = null;
+                // unregister
+                currentFlyoutControl = null;
+            };
+
+            if (!threadSafe)
+                lambda.Invoke();
+            else
+                Dispatcher.BeginInvoke(lambda);
         }
 
         public void StartFlyoverModal(UserControl uc, Action closingAction = null)

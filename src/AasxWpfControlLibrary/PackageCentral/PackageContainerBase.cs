@@ -60,7 +60,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AskForCredentialsHandler AskForCredentials;
 
         public delegate System.Windows.Forms.DialogResult ShowMessageDelegate(
-                            string content, string caption, 
+                            string content, string text, string caption, 
                             System.Windows.Forms.MessageBoxButtons buttons = 0);
         public ShowMessageDelegate ShowMesssageBox;
     }

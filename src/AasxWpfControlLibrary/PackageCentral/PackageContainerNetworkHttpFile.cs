@@ -123,7 +123,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             var res = new OpenIDClient.UiLambdaSet();
 
             if (runtimeOptions?.ShowMesssageBox != null)
-                res.MesssageBox = (content, title, buttons) => runtimeOptions.ShowMesssageBox(content, title, buttons);
+                res.MesssageBox = (content, text, title, buttons) => runtimeOptions.ShowMesssageBox(content, text, title, buttons);
 
             return res;
         }

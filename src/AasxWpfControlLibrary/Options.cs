@@ -239,6 +239,12 @@ namespace AasxPackageExplorer
         public bool ShowIdAsIri = false;
 
         /// <summary>
+        /// When activated, the UI will show verbose information on (secure) connect procedures.
+        /// When de-activated, default answers to questions within these procedures will be given
+        /// </summary>
+        public bool VerboseConnect = false;
+
+        /// <summary>
         /// Default value for the StayConnected options of PackageContainer.
         /// That is, a loaded container will automatically try receive events, e.g. for value update.
         /// </summary>
@@ -377,6 +383,11 @@ namespace AasxPackageExplorer
                 if (arg == "-show-id-as-iri")
                 {
                     optionsInformation.ShowIdAsIri = true;
+                    continue;
+                }
+                if (arg == "-verbose-connect")
+                {
+                    optionsInformation.VerboseConnect = true;
                     continue;
                 }
                 if (arg == "-stay-connected")

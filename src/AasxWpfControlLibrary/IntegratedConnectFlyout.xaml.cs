@@ -161,11 +161,16 @@ namespace AasxPackageExplorer
             }
         }
 
+        private string _lastTextMessage = "";
+
         public void LogMessage(StoredPrint sp)
         {
             // access
             if (sp == null || sp.msg == null)
                 return;
+
+            // remember
+            _lastTextMessage = "" + sp.msg;
 
             // add to rich text box
             AasxWpfBaseUtils.StoredPrintToRichTextBox(
@@ -256,6 +261,18 @@ namespace AasxPackageExplorer
             {
                 if (_dispatcherFrame != null)
                     _dispatcherFrame.Continue = false;
+                _dialogResult = tmpRes;
+            }
+
+            if (sender == ButtonMsgCopyLast)
+            {
+                System.Windows.Clipboard.SetText("" + _lastTextMessage);
+            }
+
+            if (sender == ButtonMsgCopyAll)
+            {
+                var tr = new TextRange(TextBoxMessages.Document.ContentStart, TextBoxMessages.Document.ContentEnd);
+                System.Windows.Clipboard.SetText("" + tr.Text);
             }
         }
 
@@ -561,14 +578,23 @@ namespace AasxPackageExplorer
         /// is being pressed!
         /// </summary>
         public System.Windows.Forms.DialogResult MessageBoxShow(
-            string content, string caption, System.Windows.Forms.MessageBoxButtons buttons)
+            string content, string text, string caption, 
+            System.Windows.Forms.MessageBoxButtons buttons)
         {
             // show tab page
             TabControlMain.SelectedItem = TabItemMessageBox;
 
-            // set
-            LabelMessageBoxCaption.Content = "" + caption;
-            TextBlockMessageBoxContent.Text = "" + content;
+            // set text portions
+            TextBlockMessageBoxCaption.Text = "" + caption;
+            TextBlockMessageBoxText.Text = "" + text;
+            if (caption.HasContent())
+                LogMessage(new StoredPrint(StoredPrint.Color.Yellow, "" + caption));
+            if (text.HasContent())
+                LogMessage(new StoredPrint("" + text));
+            if (content.HasContent())
+                LogMessage(new StoredPrint("" + content));
+
+            // set respective buttons
             ButtonMessageBoxOK.Visibility =
                 (buttons == System.Windows.Forms.MessageBoxButtons.OK 
                  || buttons == System.Windows.Forms.MessageBoxButtons.OKCancel) ?

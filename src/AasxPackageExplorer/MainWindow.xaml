@@ -76,6 +76,7 @@
         <RoutedUICommand x:Key="EditMenu" Text="EditMenu" />
         <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
         <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
+        <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
         <RoutedUICommand x:Key="Test" Text="Test" />
         <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
         <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
@@ -229,6 +230,7 @@
         <CommandBinding Command="{StaticResource HintsMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
@@ -365,6 +367,7 @@
                         <MenuItem x:Name="MenuItemWorkspaceEdit" Header="_Edit" InputGestureText="Ctrl+E" IsCheckable="True" Command="{StaticResource EditMenu}"/>
                         <MenuItem x:Name="MenuItemWorkspaceHints" Header="_Hints" InputGestureText="Ctrl+H" IsCheckable="True" IsChecked="True" Command="{StaticResource HintsMenu}"/>
                         <MenuItem x:Name="MenuItemWorkspaceShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
+                        <MenuItem x:Name="MenuItemWorkspaceVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemTest" Header="Test" Command="{StaticResource Test}"/>
                         <Separator/>
                         <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
