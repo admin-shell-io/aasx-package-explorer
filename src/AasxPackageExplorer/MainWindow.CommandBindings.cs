@@ -2594,12 +2594,11 @@ namespace AasxPackageExplorer
             string filename = "i4AASCS.xml";
             string workingDirectory = "" + Environment.CurrentDirectory;
 
+            string test = Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName), filename);
+
             // ReSharper disable PossibleNullReferenceException
             if (File.Exists(
-                Path.Combine(
-                    System.IO.Path.GetDirectoryName(
-                        Directory.GetParent(workingDirectory).Parent.FullName),
-                    filename)))
+                Path.Combine(System.IO.Path.GetDirectoryName(Directory.GetParent(workingDirectory).Parent.FullName),filename)))
             // ReSharper enable PossibleNullReferenceException
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
@@ -2630,7 +2629,7 @@ namespace AasxPackageExplorer
 
                 foreach (AdminShellV20.Asset ass in packages.Main.AasEnv.Assets)
                 {
-                    UANodeSetExport.CreateAAS(ass.idShort, packages.Main.AasEnv);
+                    UANodeSetExport.createRootObject(ass.idShort, packages.Main.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();

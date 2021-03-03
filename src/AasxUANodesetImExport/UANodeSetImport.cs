@@ -273,10 +273,10 @@ namespace AasxUANodesetImExport
             }
             catch (Exception ex)
             {
-                MessageBoxResult result = MessageBox.Show(
-                    "NodeId " + nodeId + " could not be found.\nPlease check your NodeSet file.",
-                    "Error",
-                    MessageBoxButton.OK);
+                //MessageBoxResult result = MessageBox.Show(
+                //    "NodeId " + nodeId + " could not be found.\nPlease check your NodeSet file.",
+                //    "Error",
+                //    MessageBoxButton.OK);
                 throw ex;
             }
         }
