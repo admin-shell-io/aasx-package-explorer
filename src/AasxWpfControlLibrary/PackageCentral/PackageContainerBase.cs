@@ -85,7 +85,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         public Format IsFormat = Format.Unknown;
 
         private PackageCentral _packageCentral;
-
         [JsonIgnore]
         public PackageCentral PackageCentral { get { return _packageCentral; } }
 
