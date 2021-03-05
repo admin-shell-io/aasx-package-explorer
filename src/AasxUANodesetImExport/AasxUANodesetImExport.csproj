@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="i4AASCS.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="i4AASCS.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
   </ItemGroup>
 

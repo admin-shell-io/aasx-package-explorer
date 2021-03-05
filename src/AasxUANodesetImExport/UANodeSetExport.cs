@@ -13,6 +13,7 @@ namespace AasxUANodesetImExport
 {
     public class UANodeSetExport
     {
+
         //consists of every single node that will be created
         public static List<UANode> root = new List<UANode>();
 
@@ -43,6 +44,29 @@ namespace AasxUANodesetImExport
                     throw ex;
                 }
 
+            }
+            return InformationModel;
+        }
+
+        public static UANodeSet getDefaultI4AAS()
+        {
+            var thisAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            UANodeSet InformationModel = new UANodeSet();
+            string fullname = "AasxUANodesetImExport.i4AASCS.xml";
+            try
+            {
+                using (Stream stream = thisAssembly.GetManifestResourceStream(fullname))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(UANodeSet));
+                    InformationModel = (UANodeSet)serializer.Deserialize(stream);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //MessageBoxResult result = MessageBox.Show("Error loading I4AAS CS: \n\n" + ex.ToString(),
+                //                      "Error",
+                //                      MessageBoxButton.OK);
             }
             return InformationModel;
         }
