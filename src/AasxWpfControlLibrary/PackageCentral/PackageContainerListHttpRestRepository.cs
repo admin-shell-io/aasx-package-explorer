@@ -27,7 +27,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// AasxFileRepository, which is held synchronized with a AAS REST repository interface. 
     /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
     /// </summary>
-    public class PackageContainerListHttpRestRepository : PackageContainerListBase
+    public class PackageContainerListHttpRestRepository : PackageContainerListHttpRestBase
     {
         //
         // Member
@@ -78,7 +78,11 @@ namespace AasxWpfControlLibrary.PackageCentral
             // just re-set
             FileMap.Clear();
             foreach (var fi in items)
-                FileMap.Add(fi);
+                if (fi != null)
+                {
+                    FileMap.Add(fi);
+                    fi.ContainerList = this;
+                }
 
             // ok
             return true;

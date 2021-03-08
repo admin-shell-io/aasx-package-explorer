@@ -67,7 +67,10 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public void Add(PackageContainerRepoItem fi)
         {
+            if (fi == null)
+                return;
             this.FileMap?.Add(fi);
+            fi.ContainerList = this;
         }
 
         public void Remove(PackageContainerRepoItem fi)

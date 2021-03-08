@@ -88,7 +88,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     location,
                     fullItemLocation,
                     overrideLoadResident,
-                    null,
+                    null, null,
                     containerOptions,
                     runtimeOptions));
                 var guess = task.Result;

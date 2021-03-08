@@ -35,9 +35,12 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public enum CustomButton { Query, Context }
 
-        public event Action<PackageContainerListBase, CustomButton, Button> ButtonClick;
-        public event Action<PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
-        public event Action<PackageContainerListBase, string[]> FileDrop;
+        public event Action<Control, PackageContainerListBase, CustomButton, Button> 
+            ButtonClick;
+        public event Action<Control, PackageContainerListBase, PackageContainerRepoItem> 
+            FileDoubleClick;
+        public event Action<Control, PackageContainerListBase, string[]> 
+            FileDrop;
 
         private PackageContainerListBase theFileRepository = null;
         public PackageContainerListBase FileRepository
@@ -66,6 +69,18 @@ namespace AasxWpfControlLibrary.PackageCentral
                 this.RepoList.UpdateLayout();
             }
 
+            // redraw
+            RedrawStatus();
+
+            // Timer for animations
+            System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
+            MainTimer.Tick += MainTimer_Tick;
+            MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            MainTimer.Start();
+        }
+
+        public void RedrawStatus()
+        {
             // set icon
             TextBoxRepoIcon.Foreground = Brushes.Black;
             var icon = "\U0001F4BE";
@@ -80,7 +95,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 TextBoxRepoHeader.IsReadOnlyCaretVisible = false;
                 TextBoxRepoHeader.IsHitTestVisible = false; // work around for above
             }
-            if (icon == "\u2601" && AasxOpenIdClient.OpenIDClient.token != "")
+
+            var oidc = (theFileRepository as PackageContainerListHttpRestBase)?.OpenIdClient;
+            if (icon == "\u2601" && oidc != null && oidc.token != "")
             {
                 icon = "\u2600";
                 TextBoxRepoIcon.Foreground = Brushes.Green;
@@ -92,12 +109,6 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (!header.HasContent())
                 header = "Unnamed repository";
             TextBoxRepoHeader.Text = "" + header;
-
-            // Timer for animations
-            System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
-            MainTimer.Tick += MainTimer_Tick;
-            MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-            MainTimer.Start();
         }
 
         private void MainTimer_Tick(object sender, EventArgs e)
@@ -115,25 +126,15 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(theFileRepository, this.RepoList.SelectedItem as PackageContainerRepoItem);
-
-            var icon = TextBoxRepoIcon.Text.Substring(0, 1);
-            if (icon == "\u2601" || icon == "\u26c5")
-            {
-                if (AasxOpenIdClient.OpenIDClient.token == "")
-                    icon = "\u2601";
-                else
-                    icon = "\u26c5";
-                TextBoxRepoIcon.Text = icon + TextBoxRepoIcon.Text.Substring(1);
-            }
+                this.FileDoubleClick?.Invoke(this, theFileRepository, this.RepoList.SelectedItem as PackageContainerRepoItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == this.ButtonQuery)
-                this.ButtonClick?.Invoke(theFileRepository, CustomButton.Query, this.ButtonQuery);
+                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Query, this.ButtonQuery);
             if (sender == this.ButtonContext)
-                this.ButtonClick?.Invoke(theFileRepository, CustomButton.Context, this.ButtonContext);
+                this.ButtonClick?.Invoke(this, theFileRepository, CustomButton.Context, this.ButtonContext);
         }
 
         private void RepoList_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -278,7 +279,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 // simply pass over to upper layer to decide, how to finally handle
                 e.Handled = true;
-                FileDrop?.Invoke(FileRepository, files);
+                FileDrop?.Invoke(this, FileRepository, files);
             }
         }
 

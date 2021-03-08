@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxOpenIdClient;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
@@ -24,11 +25,14 @@ using Newtonsoft.Json;
 namespace AasxWpfControlLibrary.PackageCentral
 {
     /// <summary>
-    /// AasxFileRepository, which is build temporarily from a AAS registry query. 
-    /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
+    /// Intermediate class, to add features common to all HttpRest classes
     /// </summary>
-    // Resharper disable once ClassNeverInstantiated.Global
-    public class PackageContainerListHttpRestRegistry : PackageContainerListHttpRestBase
+    public class PackageContainerListHttpRestBase : PackageContainerListBase
     {
+        /// <summary>
+        /// OpenIdClient to be used by the repository/ registry. To be set, when
+        /// first time used.
+        /// </summary>
+        public OpenIdClientInstance OpenIdClient = null;
     }
 }

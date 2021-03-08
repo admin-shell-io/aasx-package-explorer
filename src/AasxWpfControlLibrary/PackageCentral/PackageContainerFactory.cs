@@ -115,12 +115,13 @@ namespace AasxWpfControlLibrary.PackageCentral
             string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
+            PackageContainerListBase containerList = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var task = Task.Run(() => GuessAndCreateForAsync(
                 packageCentral, location, fullItemLocation, overrideLoadResident,
-                takeOver, containerOptions, runtimeOptions));
+                takeOver, containerList, containerOptions, runtimeOptions));
             return task.Result;
         }
 
@@ -130,6 +131,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
+            PackageContainerListBase containerList = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
@@ -162,7 +164,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 var cnt = await PackageContainerNetworkHttpFile.CreateAndLoadAsync(
                             packageCentral, location, fullItemLocation,
-                            overrideLoadResident, takeOver,
+                            overrideLoadResident, takeOver, containerList,
                             containerOptions, runtimeOptions);
 
                 if (cnt.ContainerOptions.StayConnected
@@ -250,7 +252,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 "http://admin-shell-io.com:51310/server/getaasx/0",
                 "http://admin-shell-io.com:51310/server/getaasx/0",
                 // "http://localhost:51310/server/getaasx/0",
-                overrideLoadResident, null, containerOptions, ro);
+                overrideLoadResident, null, null, containerOptions, ro);
         }
 
     }

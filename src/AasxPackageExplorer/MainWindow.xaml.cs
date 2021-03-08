@@ -682,7 +682,7 @@ namespace AasxPackageExplorer
             }
 
             // what happens on a repo file click
-            RepoListControl.FileDoubleClick += async (repo, fi) =>
+            RepoListControl.FileDoubleClick += async (senderList, repo, fi) =>
             {
                 // access
                 if (repo == null || fi == null)
@@ -722,6 +722,7 @@ namespace AasxPackageExplorer
                         location,
                         overrideLoadResident: true,
                         takeOver: fi,
+                        fi.ContainerList,
                         containerOptions: copts,
                         runtimeOptions: _packageCentral.CentralRuntimeOptions);
 
@@ -733,6 +734,9 @@ namespace AasxPackageExplorer
                             storeFnToLRU: location);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
+
+                    if (senderList is PackageContainerListControl pclc)
+                        pclc.RedrawStatus();
                 }
                 catch (Exception ex)
                 {
@@ -741,7 +745,7 @@ namespace AasxPackageExplorer
             };
 
             // what happens on a file drop -> dispatch
-            RepoListControl.FileDrop += (fr, files) =>
+            RepoListControl.FileDrop += (senderList, fr, files) =>
             {
                 // access
                 if (files == null || files.Length < 1)
@@ -1013,7 +1017,7 @@ namespace AasxPackageExplorer
                     location,
                     location,
                     overrideLoadResident: true,
-                    null,
+                    null, null,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr),
                     runtimeOptions: _packageCentral.CentralRuntimeOptions);
             }

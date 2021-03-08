@@ -84,15 +84,25 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonIgnore]
         public Format IsFormat = Format.Unknown;
 
-        private PackageCentral _packageCentral;
+        /// <summary>
+        /// Limks to the PackageCentral. Only on init.
+        /// </summary>
         [JsonIgnore]
         public PackageCentral PackageCentral { get { return _packageCentral; } }
+        private PackageCentral _packageCentral;
 
         /// <summary>
         /// Holds the container (user) options in a base oder derived class.
         /// </summary>
         [JsonProperty(PropertyName = "Options")]
         public PackageContainerOptionsBase ContainerOptions = new PackageContainerOptionsBase();
+
+        /// <summary>
+        /// Links (optionally) to the ContainerList, which hold this Container.
+        /// To be set after adding to the list.
+        /// </summary>
+        [JsonIgnore]
+        public PackageContainerListBase ContainerList;
 
         /// <summary>
         /// If the connection shall stay alive, a appropriate connector needs to be created.
