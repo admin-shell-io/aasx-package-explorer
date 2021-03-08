@@ -206,7 +206,7 @@ namespace AasxPackageExplorer
                 ShowMesssageBox = (content, text, title, buttons) =>
                 {
                     // not verbose
-                    if (MenuItemWorkspaceVerboseConnect.IsChecked == false)
+                    if (MenuItemOptionsVerboseConnect.IsChecked == false)
                     {
                         // give specific default answers
                         if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
@@ -590,7 +590,7 @@ namespace AasxPackageExplorer
                 DisplayElements.SelectedItem, 
                 MenuItemWorkspaceEdit.IsChecked,
                 MenuItemWorkspaceHints.IsChecked,
-                MenuItemWorkspaceShowIri.IsChecked,
+                MenuItemOptionsShowIri.IsChecked,
                 hightlightField: hightlightField);
 
         }
@@ -693,7 +693,7 @@ namespace AasxPackageExplorer
                     return;
 
                 // safety?
-                if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
+                if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
                     // ask double question
                     if (MessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -785,9 +785,9 @@ namespace AasxPackageExplorer
 #endif
 
             // initialize menu
-            MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
-            MenuItemWorkspaceShowIri.IsChecked = Options.Curr.ShowIdAsIri;
-            MenuItemWorkspaceVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
+            MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
+            MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
+            MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
             // Last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
@@ -1040,7 +1040,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // make sure the user wants to change
-                    if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
+                    if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                     {
                         // ask double question
                         if (MessageBoxResult.OK != MessageBoxFlyoutShow(

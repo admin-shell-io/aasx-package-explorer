@@ -284,7 +284,7 @@
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="20" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*"/>
@@ -320,7 +320,6 @@
                             <MenuItem Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
                             <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
                             <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
-                            <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
                             <Separator/>
                             <MenuItem Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
                             <Separator/>
@@ -366,8 +365,6 @@
                     <MenuItem Header="Workspace" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemWorkspaceEdit" Header="_Edit" InputGestureText="Ctrl+E" IsCheckable="True" Command="{StaticResource EditMenu}"/>
                         <MenuItem x:Name="MenuItemWorkspaceHints" Header="_Hints" InputGestureText="Ctrl+H" IsCheckable="True" IsChecked="True" Command="{StaticResource HintsMenu}"/>
-                        <MenuItem x:Name="MenuItemWorkspaceShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
-                        <MenuItem x:Name="MenuItemWorkspaceVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemTest" Header="Test" Command="{StaticResource Test}"/>
                         <Separator/>
                         <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
@@ -383,9 +380,12 @@
                             <MenuItem x:Name="MenuItemWorkspaceEventsResetLocks" Header="Reset interlocking" Command="{StaticResource EventsResetLocks}"/>
                         </MenuItem>
                     </MenuItem>
+                    <MenuItem Header="_Options"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
+                        <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
+                        <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
+                        <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                    </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
-                        <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
                     </MenuItem>
                 </Menu>
 

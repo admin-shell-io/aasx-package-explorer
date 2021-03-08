@@ -465,7 +465,7 @@ namespace AasxPackageExplorer
                 MenuItemWorkspaceHints.IsChecked = !MenuItemWorkspaceHints.IsChecked;
 
             if (cmd == "showirikey")
-                MenuItemWorkspaceShowIri.IsChecked = !MenuItemWorkspaceShowIri.IsChecked;
+                MenuItemOptionsShowIri.IsChecked = !MenuItemOptionsShowIri.IsChecked;
 
             if (cmd == "editmenu" || cmd == "editkey" 
                 || cmd == "hintsmenu" || cmd == "hintskey"
