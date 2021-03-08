@@ -280,8 +280,18 @@ namespace AasxPackageExplorer
         {
             if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Escape)
             {
-                this.Result = false;
-                ControlClosed?.Invoke();
+                if (_dispatcherFrame != null)
+                {
+                    // message box
+                    _dialogResult = _presetNoCancel;
+                    _dispatcherFrame.Continue = false;
+                }
+                else
+                {
+                    // normal mode
+                    this.Result = false;
+                    ControlClosed?.Invoke();
+                }
             }
 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Return)
@@ -297,6 +307,30 @@ namespace AasxPackageExplorer
 
                 if (TabControlMain.SelectedItem == TabItemSummary)
                     DoneOnPageSummary();
+
+                if (TabControlMain.SelectedItem == TabItemMessageBox && _dispatcherFrame != null)
+                {
+                    // message box
+                    _dialogResult = _presetOkYes;
+                    _dispatcherFrame.Continue = false;
+                }
+            }
+
+            if (TabControlMain.SelectedItem == TabItemMessageBox && _dispatcherFrame != null
+                && _presetOkYes == System.Windows.Forms.DialogResult.Yes)
+            {
+                // has a Yes/No message box
+                if (e.Key == Key.Y)
+                {
+                    _dialogResult = _presetOkYes;
+                    _dispatcherFrame.Continue = false;
+                }
+
+                if (e.Key == Key.N)
+                {
+                    _dialogResult = System.Windows.Forms.DialogResult.No;
+                    _dispatcherFrame.Continue = false;
+                }
             }
 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key >= Key.D1 && e.Key <= Key.D9)
@@ -573,6 +607,9 @@ namespace AasxPackageExplorer
         private DispatcherFrame _dispatcherFrame = null;
         private System.Windows.Forms.DialogResult _dialogResult = System.Windows.Forms.DialogResult.None;
 
+        private System.Windows.Forms.DialogResult _presetOkYes = System.Windows.Forms.DialogResult.None;
+        private System.Windows.Forms.DialogResult _presetNoCancel = System.Windows.Forms.DialogResult.None;
+
         /// <summary>
         /// Assumes, that the flyout is open and BLOCKS the message loop until a result button
         /// is being pressed!
@@ -595,22 +632,44 @@ namespace AasxPackageExplorer
                 LogMessage(new StoredPrint("" + content));
 
             // set respective buttons
-            ButtonMessageBoxOK.Visibility =
-                (buttons == System.Windows.Forms.MessageBoxButtons.OK 
-                 || buttons == System.Windows.Forms.MessageBoxButtons.OKCancel) ?
-                    Visibility.Visible : Visibility.Collapsed;
-            ButtonMessageBoxCancel.Visibility =
-                (buttons == System.Windows.Forms.MessageBoxButtons.OKCancel 
-                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel) ?
-                    Visibility.Visible : Visibility.Collapsed;
-            ButtonMessageBoxYes.Visibility =
-                (buttons == System.Windows.Forms.MessageBoxButtons.YesNo 
-                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
-                ? Visibility.Visible : Visibility.Collapsed;
-            ButtonMessageBoxNo.Visibility =
-                (buttons == System.Windows.Forms.MessageBoxButtons.YesNo 
-                 || buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
-                ? Visibility.Visible : Visibility.Collapsed;
+            _presetOkYes = System.Windows.Forms.DialogResult.None;
+            _presetNoCancel = System.Windows.Forms.DialogResult.None;
+
+            ButtonMessageBoxOK.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxCancel.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxYes.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxNo.Visibility = Visibility.Collapsed;
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.OK)
+            {
+                ButtonMessageBoxOK.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.OK;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.OKCancel)
+            {
+                ButtonMessageBoxOK.Visibility = Visibility.Visible;
+                ButtonMessageBoxCancel.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.OK;
+                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNo)
+            {
+                ButtonMessageBoxYes.Visibility = Visibility.Visible;
+                ButtonMessageBoxNo.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
+                _presetNoCancel = System.Windows.Forms.DialogResult.No;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
+            {
+                ButtonMessageBoxCancel.Visibility = Visibility.Visible;
+                ButtonMessageBoxYes.Visibility = Visibility.Visible;
+                ButtonMessageBoxNo.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
+                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+            }
 
             // modified from StartFlyoverModal()
             // This will "block" execution of the current dispatcher frame
