@@ -26,6 +26,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using AasxIntegrationBase;
+using AasxProtoBufExport;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AasxWpfControlLibrary.PackageCentral;
@@ -34,6 +35,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+
 
 namespace AasxPackageExplorer
 {
@@ -526,6 +528,9 @@ namespace AasxPackageExplorer
 
             if (cmd == "exportaml")
                 CommandBinding_ExportAML();
+
+            if (cmd == "exportprotobuf")
+                CommandBinding_ExportProtoBuf();
 
             if (cmd == "opcuai4aasexport")
                 CommandBinding_ExportOPCUANodeSet();
@@ -1964,6 +1969,63 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
+        public void CommandBinding_ExportProtoBuf()
+        {
+
+            VisualElementSubmodelRef ve1 = DisplayElements.SelectedItem != null
+                                            && DisplayElements.SelectedItem is VisualElementSubmodelRef
+                                    ? DisplayElements.SelectedItem as VisualElementSubmodelRef
+                                    : null;
+
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow("No valid SubModel selected.",
+                    "Protocol Buffer Generator", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                AdminShellV20.AdministrationShell aas = ve1.theEnv.FindAASwithSubmodel(ve1.theSubmodel.identification);
+
+                AdminShellV20.Asset asset = ve1.theEnv.FindAsset(aas.assetRef);
+
+                var cursor = ve1.theSubmodel as AdminShellNS.AdminShell.Referable;
+                var stemParts = new List<string>();
+
+                while (cursor != null)
+                {
+                    stemParts.Add(cursor.idShort);
+                    cursor = cursor.parent;
+                }
+                stemParts.Add(aas.idShort);
+
+                stemParts.Reverse();
+                bool createRestApi = MessageBoxResult.Yes == MessageBoxFlyoutShow("Create RESTfull HTTP API Endpoints?",
+                    "Protocol Buffer Generator", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+
+                dlg.FileName = $"{string.Join("_", stemParts)}.proto";
+                dlg.Filter = "Protobuffer files (*.proto)|*.proto|All files (*.*)|*.*";
+
+                var res = dlg.ShowDialog();
+                if (res != null && res == true)
+                {
+                    try
+                    {
+                        ProtoBufExport proto = new ProtoBufExport();
+                        proto.exportProtoFile(dlg.FileName, asset, ve1.theSubmodel, createRestApi);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Singleton.Error(e, "Protocol Buffer Generator");
+                    }
+                }
+            }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
         public void CommandBinding_ExportNodesetUaPlugin()
         {
             // get the output file

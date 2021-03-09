@@ -56,6 +56,7 @@
         <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
         <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
         <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
+        <RoutedUICommand x:Key="ExportProtoBuf" Text="ExportProtoBuf" />
         <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
         <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
         <RoutedUICommand x:Key="OPCUAi4aasImport" Text="OPCUAi4aasImport" />
@@ -207,6 +208,7 @@
         <CommandBinding Command="{StaticResource BMEcatImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CSVImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportAML}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ExportProtoBuf}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpcUaImportNodeSet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasExport}" Executed="CommandBinding_Executed"/>
@@ -343,6 +345,7 @@
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+                            <MenuItem Header="Export Submodel as Protocol Buffers .." Command="{StaticResource ExportProtoBuf}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">
