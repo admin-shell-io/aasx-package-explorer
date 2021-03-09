@@ -199,7 +199,7 @@ namespace AasxRestServerLibrary
             return value;
         }
 
-        
+
         public AdminShellPackageEnv OpenPackageByAasEnv(string url)
         {
             var request = new RestRequest(url);
@@ -212,6 +212,6 @@ namespace AasxRestServerLibrary
             var res = new AdminShellPackageEnv();
             res.LoadFromAasEnvString(respose.GetContent());
             return res;
-         }
-}
+        }
+    }
 }
