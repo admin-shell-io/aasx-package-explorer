@@ -34,7 +34,7 @@ namespace AasxDictionaryImport
             foreach (var field in details.Keys)
                 AddString(field, details[field]);
 
-            Title = $"{Element} [{Element.DataSource}]";
+            Title = $"{Element.DisplayName} [{Element.DataSource}]";
         }
 
         private void AddString(string label, string value)

@@ -18,7 +18,8 @@ namespace AasxDictionaryImport.Cdd.Tests
     {
         protected static string GetDataDir()
         {
-            return Path.Combine(TestContext.CurrentContext.TestDirectory, "Cdd", "data");
+            return Path.Combine(TestContext.CurrentContext.TestDirectory, "TestResources",
+                    "AasxDictionaryImport.Tests", "Cdd");
         }
 
         protected static string GetExportFileName(string type, string id)

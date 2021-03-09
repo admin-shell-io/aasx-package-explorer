@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FlaUI.Core.AutomationElements;
 using NUnit.Framework; // necessary extension for AsLabel() and other methods
 
@@ -29,6 +30,34 @@ namespace AasxPackageExplorer.GuiTests
 
     internal static class Common
     {
+        private static string ReleaseDir()
+        {
+            const string variable = "AASX_PACKAGE_EXPLORER_RELEASE_DIR";
+
+            string releaseDir = System.Environment.GetEnvironmentVariable(variable);
+            if (releaseDir == null)
+            {
+                throw new InvalidOperationException(
+                    $"Expected the environment variable to be set: {variable}; " +
+                    "otherwise we can not find binaries to be tested through functional tests.");
+            }
+
+            return releaseDir;
+        }
+
+        public static string TestResourcesDir()
+        {
+            var testResourcesDir = Path.Combine(ReleaseDir(), "TestResources", "AasxPackageExplorer.GuiTests");
+
+            if (!Directory.Exists(testResourcesDir))
+            {
+                throw new InvalidOperationException("Could not find the test resources for the GuiTests at " +
+                        testResourcesDir);
+            }
+
+            return testResourcesDir;
+        }
+
         private static string SampleAasxDir()
         {
             const string variable = "SAMPLE_AASX_DIR";
@@ -89,15 +118,7 @@ namespace AasxPackageExplorer.GuiTests
         /// <param name="run">Run options. If null, a new run with default values is used</param>
         public static void RunWithMainWindow(Implementation implementation, Run? run = null)
         {
-            string environmentVariable = "AASX_PACKAGE_EXPLORER_RELEASE_DIR";
-            string releaseDir = System.Environment.GetEnvironmentVariable(environmentVariable);
-            if (releaseDir == null)
-            {
-                throw new InvalidOperationException(
-                    $"Expected the environment variable to be set: {environmentVariable}; " +
-                    "otherwise we can not find binaries to be tested through functional tests.");
-            }
-
+            string releaseDir = ReleaseDir();
             string pathToExe = Path.Combine(releaseDir, "AasxPackageExplorer.exe");
             if (!File.Exists(pathToExe))
             {
@@ -269,6 +290,57 @@ namespace AasxPackageExplorer.GuiTests
                 throw new AssertionException(
                     "The application unexpectedly exited. " +
                     $"Check manually why the file could not be opened: {path}");
+        }
+
+        public static Window RequireTopLevelWindow(Application application, UIA3Automation automation,
+                Func<Window, bool> filter, string timeoutMessage, int timeoutSeconds = 5)
+        {
+            return Retry.WhileNull(() =>
+                    // ReSharper disable once AccessToDisposedClosure
+                    application.GetAllTopLevelWindows(automation).FirstOrDefault(filter),
+                throwOnTimeout: true, timeout: TimeSpan.FromSeconds(timeoutSeconds), timeoutMessage: timeoutMessage
+            ).Result;
+        }
+
+        public static Window RequireTopLevelWindowByTitle(Application application, UIA3Automation automation,
+                string title, int timeoutSeconds = 5)
+        {
+            return RequireTopLevelWindow(application, automation, (w) => w.Title == title,
+                    $"Could not find the top-level window with the title {Quote(title)}", timeoutSeconds);
+        }
+
+
+        public static MenuItem RequireMenuItem(AutomationElement parent, params string[] path)
+        {
+            if (path.Length == 0)
+            {
+                throw new AssertionException("RequireMenuItem may not be called with an empty path.");
+            }
+
+            // Find the top-level menu item
+            var element = parent.FindFirstDescendant(
+                cf => cf.ByClassName("MenuItem").And(cf.ByName(path[0])));
+            if (element == null)
+            {
+                throw new AssertionException($"Could not find menu item {Quote(path[0])}");
+            }
+
+            var menuItem = element.AsMenuItem();
+            for (var i = 1; i < path.Length; i++)
+            {
+                // Expand the current menu item and find the next
+                menuItem.Click();
+                var name = path[i];
+                element = menuItem.FindFirstChild(cf => cf.ByName(name));
+                if (element == null)
+                {
+                    var itemPath = String.Join(" → ", path.Take(i + 1));
+                    throw new AssertionException($"Could not find menu item {Quote(itemPath)}");
+                }
+                menuItem = element.AsMenuItem();
+            }
+
+            return menuItem;
         }
 
         /// <summary>

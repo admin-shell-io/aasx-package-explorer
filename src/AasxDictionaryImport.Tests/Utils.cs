@@ -69,26 +69,4 @@ namespace AasxDictionaryImport.Tests
 
         public static implicit operator string(TempDir tempDir) => tempDir.Path;
     }
-
-    internal sealed class WorkingDirectory : IDisposable
-    {
-        public string Path;
-
-        private WorkingDirectory(string path)
-        {
-            Path = path;
-        }
-
-        public void Dispose()
-        {
-            Directory.SetCurrentDirectory(Path);
-        }
-
-        public static WorkingDirectory ChangeTo(string path)
-        {
-            var oldPath = Directory.GetCurrentDirectory();
-            Directory.SetCurrentDirectory(path);
-            return new WorkingDirectory(oldPath);
-        }
-    }
 }

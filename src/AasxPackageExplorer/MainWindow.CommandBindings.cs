@@ -1829,15 +1829,25 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportSubmodel()
         {
-            VisualElementAdminShell ve = null;
+            AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
+            AdminShell.AdministrationShell aas = null;
             if (DisplayElements.SelectedItem != null)
             {
-                if (DisplayElements.SelectedItem is VisualElementAdminShell)
+                if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
                 {
-                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+                    // AAS is selected --> import into AAS
+                    env = aasItem.theEnv;
+                    aas = aasItem.theAas;
+                }
+                else if (DisplayElements.SelectedItem is VisualElementEnvironmentItem envItem &&
+                        envItem.theItemType == VisualElementEnvironmentItem.ItemType.EmptySet)
+                {
+                    // Empty environment is selected --> create new AAS
+                    env = envItem.theEnv;
                 }
                 else
                 {
+                    // Other element is selected --> error
                     MessageBoxFlyoutShow("Please select the administration shell for the submodel import.",
                         "Submodel Import", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1848,10 +1858,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                if (ve != null && ve.theEnv != null && ve.theAas != null)
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
-                else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
             }
             catch (Exception e)
             {
@@ -1892,7 +1899,8 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, submodel);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
+                    submodel);
             }
             catch (Exception e)
             {

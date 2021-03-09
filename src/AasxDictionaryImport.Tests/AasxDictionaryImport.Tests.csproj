@@ -22,14 +22,8 @@
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Cdd\data\empty.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Cdd\data\simple-class.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Cdd\data\simple-property.xls">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestResources\AasxDictionaryImport.Tests\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
