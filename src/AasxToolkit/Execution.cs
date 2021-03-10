@@ -205,6 +205,48 @@ namespace AasxToolkit
                             Console.Out.WriteLine("Package {0} written.", exportTemplate.Path);
                             break;
                         }
+                    case Instruction.ExportCst ecst:
+                        {
+                            if (package == null)
+                            {
+                                Console.Error.WriteLine(
+                                    "You must either generate a package (`gen`) or " +
+                                    "load a package (`load`) before you can export it as a template.");
+                                return -1;
+                            }
+
+                            Console.Out.WriteLine("Exporting to file {0} ..", ecst.Path);
+
+                            try
+                            {
+                                var ei = new AasxFormatCst.AasxToCst();
+
+                                var dnp = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
+                                            new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
+
+                                ei.ExportSingleSubmodel(
+                                    package, ecst.Path,
+                                    dnp.SM_Nameplate.GetSemanticKey(),
+                                    dnp.GetAllReferables(),
+                                    topClassId: new AasxFormatCst.CstId() {
+                                        Namespace = "IDTA",
+                                        ID = "SMNP001",
+                                        Revision = "001",
+                                        Name = "Submodel Nameplate"
+                                    });
+                                AasFormUtils.ExportAsTemplate(package, ecst.Path);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine(
+                                    "While exporting CST {0}: {1} at {2}",
+                                    ecst.Path, ex.Message, ex.StackTrace);
+                                return -1;
+                            }
+
+                            Console.Out.WriteLine("File {0} written.", ecst.Path);
+                            break;
+                        }
                     case Instruction.CheckAndFix checkAndFix:
                         {
                             try

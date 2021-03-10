@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AasxToolkit": {
+      "commandName": "Project",
+      "commandLineArgs": "load Festo_SMT.aasx export-cst cst-smt"
+    }
+  }
+}
