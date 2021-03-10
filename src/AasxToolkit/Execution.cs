@@ -219,7 +219,7 @@ namespace AasxToolkit
 
                             try
                             {
-                                var ei = new AasxFormatCst.AasxToCst();
+                                var ei = new AasxFormatCst.AasxToCst(jsonDefaultId: "cst-default-id-map.json");
 
                                 var dnp = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                                             new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
@@ -228,7 +228,7 @@ namespace AasxToolkit
                                     package, ecst.Path,
                                     dnp.SM_Nameplate.GetSemanticKey(),
                                     dnp.GetAllReferables(),
-                                    topClassId: new AasxFormatCst.CstId() {
+                                    topClassId: new AasxFormatCst.CstIdObjectBase() {
                                         Namespace = "IDTA",
                                         ID = "SMNP001",
                                         Revision = "001",

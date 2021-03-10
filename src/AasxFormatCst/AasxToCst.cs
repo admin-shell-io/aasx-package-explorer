@@ -22,9 +22,16 @@ namespace AasxFormatCst
         protected Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>
             _cdToProp = new Dictionary<AdminShellV20.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
-        private CstId GenerateCustomId(string threePrefix)
+        protected CstIdStore _defaultIdMapping = new CstIdStore();
+
+        public AasxToCst(string jsonDefaultId = null)
         {
-            var res = new CstId()
+            _defaultIdMapping.AddFromFile(jsonDefaultId);
+        }
+
+        private CstIdObjectBase GenerateCustomId(string threePrefix)
+        {
+            var res = new CstIdObjectBase()
             {
                 Namespace = "CustomNS",
                 ID = String.Format("{0:}{1:000}", threePrefix, _customIndex++),
@@ -35,7 +42,7 @@ namespace AasxFormatCst
 
         private void RecurseOnSme(
             AdminShell.SubmodelElementWrapperCollection smwc,
-            CstId presetId,
+            CstIdObjectBase presetId,
             string presetClassType)
         {
             // access
@@ -85,7 +92,7 @@ namespace AasxFormatCst
                     }
 
                     // already existing as property def?
-                    if (_cdToProp.ContainsKey())
+                    // if (_cdToProp.ContainsKey())
 
                     clsdef.ClassAttributes.Add(a1);
                 }
@@ -99,7 +106,7 @@ namespace AasxFormatCst
             AdminShellPackageEnv env, string path,
             AdminShell.Key smId,
             IEnumerable<AdminShell.Referable> cdReferables,
-            CstId topClassId)
+            CstIdObjectBase topClassId)
         {
             // access
             if (env?.AasEnv == null || path == null)
@@ -115,6 +122,11 @@ namespace AasxFormatCst
                 foreach (var rf in cdReferables)
                     if (rf is AdminShell.ConceptDescription cd)
                         env?.AasEnv.ConceptDescriptions.AddIfNew(cd);
+
+            // Step 2: make up a list of used semantic references and write to default file
+            var tmpIdStore = new CstIdStore();
+            tmpIdStore.CreateEmptyItemsFromSMEs(sm.submodelElements);
+            tmpIdStore.WriteToFile(path + "_default_prop_refs.json");
 
             // Step 2: start list of (later) lson entities
             // Note: already done by class init

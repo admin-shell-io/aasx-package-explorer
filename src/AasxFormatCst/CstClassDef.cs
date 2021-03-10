@@ -18,22 +18,22 @@ namespace AasxFormatCst
             public string Reference;
         }
 
-        public class ClassDefinition
+        public class ClassDefinition : CstIdObjectBase
         {
-            public string ObjectType = "01";
-            public string Namespace;
-            public string ID;
-            public string Revision;
-            public string Name;
-            public string MinorRevision = "001";
-            public string Status = "Released";
-            public int UnitSystem = 3;
+            public int UnitSystem;
             public string ClassType;
             public List<ClassAttribute> ClassAttributes = new List<ClassAttribute>();
 
-            public ClassDefinition () { }
+            public ClassDefinition () 
+            {
+                ObjectType = "01";
+                MinorRevision = "001";
+                Status = "Released";
+                UnitSystem = 3;
+            }
 
-            public ClassDefinition(CstId id)
+            public ClassDefinition(CstIdObjectBase id)
+                : this()
             {
                 if (id == null)
                     return;
@@ -46,12 +46,6 @@ namespace AasxFormatCst
                     MinorRevision = id.MinorRevision;
                 if (id.Status != null)
                     Status = id.Status;
-            }
-
-            public string ToRef()
-            {
-                var res = String.Format("{0}{1}-{2}#{3}", Namespace, ObjectType, ID, Revision);
-                return res;
             }
         }
 

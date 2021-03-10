@@ -17,23 +17,22 @@ namespace AasxFormatCst
             public string BlockReference;
         }
 
-        public class PropertyDefinition
+        public class PropertyDefinition : CstIdObjectBase
         {
-            public string ObjectType = "02";
-            public string Namespace;
-            public string ID;
-            public string Revision = "001";
-            public string Name;
-            public string Status = "Released";
             public string Definition;
             public DataType DataType;
-            public string MinorRevision;
             public string SourceStandard;
             public string Remark;
 
-            public PropertyDefinition() { }
+            public PropertyDefinition() 
+            {
+                ObjectType = "02";
+                Revision = "001";
+                Status = "Released";
+            }
 
-            public PropertyDefinition(CstId id)
+            public PropertyDefinition(CstIdObjectBase id)
+                : this()
             {
                 if (id == null)
                     return;

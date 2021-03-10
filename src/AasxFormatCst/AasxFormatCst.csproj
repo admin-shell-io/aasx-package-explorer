@@ -46,8 +46,8 @@
   <ItemGroup>
     <Compile Include="AasxToCst.cs" />
     <Compile Include="CstClassDef.cs" />
-    <Compile Include="CstId.cs" />
-    <Compile Include="CstIdDictionary.cs" />
+    <Compile Include="CstIdObjectBase.cs" />
+    <Compile Include="CstIdStore.cs" />
     <Compile Include="CstListOfValues.cs" />
     <Compile Include="CstPropertyDef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
