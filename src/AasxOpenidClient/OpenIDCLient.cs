@@ -146,7 +146,7 @@ namespace AasxOpenIdClient
                 operation = "/server/listaas/";
             }
 
-            while (operation != "" && operation != "error")
+            while (operation != "")
             {
                 UiLambdaSet.MesssageBoxShow(uiLambda, "", "operation: " + operation + value + "\ntoken: " + token,
                     "Operation", MessageBoxButtons.OK);
@@ -193,7 +193,10 @@ namespace AasxOpenIdClient
                                     UiLambdaSet.MesssageBoxShow(uiLambda,
                                         "", "SelectFromListFlyoutItem missing", "SelectFromListFlyoutItem missing",
                                         MessageBoxButtons.OK);
-                                    return;
+                                    value = "0";
+                                    operation = "/server/getaasx2/";
+                                    break;
+                                    //// return;
                                 case "/server/getaasx2/":
                                     try
                                     {
@@ -260,6 +263,7 @@ namespace AasxOpenIdClient
                     case "error":
                         UiLambdaSet.MesssageBoxShow(uiLambda, "", $"Can not perform: {lastOperation}",
                             "Error", MessageBoxButtons.OK);
+                        operation = "";
                         break;
                 }
             }
@@ -317,8 +321,10 @@ namespace AasxOpenIdClient
                 throw new Exception(response.Error);
             }
 
+            /*
             UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken, "",
                 "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
+            */
 
             return response;
         }
@@ -380,7 +386,11 @@ namespace AasxOpenIdClient
                         "Select certificate chain", MessageBoxButtons.YesNo);
                 
                 if (res == DialogResult.No)
-                    credential = new X509SigningCredentials(new X509Certificate2(certPfx, certPfxPW));
+                {
+                    certFileName = "Andreas_Orzelski_Chain.pfx";
+                    password = "i40";
+                    credential = new X509SigningCredentials(new X509Certificate2(certFileName, password));
+                }
             }
 
             if (credential == null)
