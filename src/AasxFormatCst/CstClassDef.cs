@@ -49,12 +49,12 @@ namespace AasxFormatCst
             }
         }
 
-        public class Root
+        public class Root : CstRootBase
         {
             public string SchemaVersion = "1.2.0";
             public string Locale = "en_US";
             public bool SkipExistingIRDI = true;
-            public List<ClassDefinition> ClassDefinitions = new List<ClassDefinition>();
+            public ListOfUnique<ClassDefinition> ClassDefinitions = new ListOfUnique<ClassDefinition>();
         }
     }
 }

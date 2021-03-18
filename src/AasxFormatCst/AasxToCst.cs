@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 
 namespace AasxFormatCst
 {
@@ -16,17 +17,18 @@ namespace AasxFormatCst
         protected int _customIndex = 1;
         public string CustomNS = "UNSPEC";
 
-        public List<CstClassDef.ClassDefinition> ClassDefs = new List<CstClassDef.ClassDefinition>();
-        public List<CstPropertyDef.PropertyDefinition> PropertyDefs = new List<CstPropertyDef.PropertyDefinition>();
+        public ListOfUnique<CstClassDef.ClassDefinition> ClassDefs = new ListOfUnique<CstClassDef.ClassDefinition>();
+        public ListOfUnique<CstPropertyDef.PropertyDefinition> PropertyDefs = new ListOfUnique<CstPropertyDef.PropertyDefinition>();
+        public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
         protected Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>
             _cdToProp = new Dictionary<AdminShellV20.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
-        protected CstIdStore _defaultIdMapping = new CstIdStore();
+        protected CstIdStore _knownIdStore = new CstIdStore();
 
-        public AasxToCst(string jsonDefaultId = null)
+        public AasxToCst(string jsonKnownIds = null)
         {
-            _defaultIdMapping.AddFromFile(jsonDefaultId);
+            _knownIdStore.AddFromFile(jsonKnownIds);
         }
 
         private CstIdObjectBase GenerateCustomId(string threePrefix)
@@ -43,7 +45,8 @@ namespace AasxFormatCst
         private void RecurseOnSme(
             AdminShell.SubmodelElementWrapperCollection smwc,
             CstIdObjectBase presetId,
-            string presetClassType)
+            string presetClassType,
+            CstPropertyRecord.ListOfProperty propRecs)
         {
             // access
             if (smwc == null)
@@ -57,6 +60,9 @@ namespace AasxFormatCst
                 clsdef = new CstClassDef.ClassDefinition(GenerateCustomId("CLS"));
             clsdef.ClassType = presetClassType;
 
+            // add the class def (to have the following classes below)
+            ClassDefs.AddIfUnique(clsdef);
+
             // values
             foreach (var smw in smwc)
             {
@@ -64,42 +70,158 @@ namespace AasxFormatCst
                 if (sme == null)
                     continue;
 
+                // check, if ConceptDescription exists ..
+                var cd = _env?.AasEnv.FindConceptDescription(sme.semanticId);
+
+                // try to take over as much information from the pure SME as possible
+                var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
+                string refStr = null;
+                CstIdDictionaryItem refItem = null;
+                if (semid != null)
+                {
+                    // standardized ID?
+                    if (semid.StartsWith("0173") || semid.StartsWith("0112"))
+                    {
+                        refStr = semid;
+                    }
+
+                    // already known, fixed id?
+                    var it = _knownIdStore?.FindStringSemId(semid);
+                    if (it != null)
+                    {
+                        if (it.cstRef != null)
+                            refStr = it.cstRef;
+                        if (it.cstId != null)
+                        {
+                            refStr = it.cstId.ToRef();
+                            refItem = it;
+                        }
+                    }
+                }
+
+                // prepare a prop def & data type
+                CstPropertyDef.PropertyDefinition tmpPd = null;
+                string tmpDt = null;
+                if (refStr != null)
+                {
+                    // make it
+                    var bo = CstIdObjectBase.Parse(refStr);
+                    tmpPd = new CstPropertyDef.PropertyDefinition(bo);
+
+                    // more info
+                    tmpPd.Name = "" + sme.idShort;
+                    if (sme.description != null)
+                        tmpPd.Remark = sme.description.GetDefaultStr("en");
+
+                    if (sme is AdminShell.Property prop)
+                        tmpDt = prop.valueType;
+
+                    // more info
+                    if (cd != null)
+                    {
+                        var ds61360 = cd.IEC61360Content;
+                        if (ds61360 != null)
+                        {
+                            if (ds61360.definition != null)
+                                tmpPd.Definition = ds61360.definition.GetDefaultStr("en");
+
+                            var dst = ds61360.dataType?.Trim().ToUpper();
+                            if (ds61360 == null && dst != null)
+                            {
+                                tmpDt = dst;
+                            }
+                        }
+                    }
+
+                    // default
+                    if (!tmpDt.HasContent())
+                        tmpDt = "STRING";
+                }
+
                 if (sme is AdminShell.SubmodelElementCollection smc)
                 {
+                    // SMC
 
+                    // make a reference property def
+                    // the property itself needs to have an ALTERED ID, to be not ídentical with
+                    if (tmpPd != null)
+                    {
+                        // class id
+                        tmpPd.ID = "BLPRP_" + tmpPd.ID;
+
+                        // will be a reference to the intended class
+                        tmpPd.DataType = new CstPropertyDef.DataType() {
+                            Type = "Reference",
+                            BlockReference = "" + refStr
+                        };
+
+                        // rest of attributes
+                        tmpPd.ObjectType = "02";
+                        tmpPd.Status = "Released";
+
+                        // add
+                        PropertyDefs.AddIfUnique(tmpPd);
+                    }
+
+                    // create a new class attribute (with reference to ALTERED ID!)
+                    var attr = new CstClassDef.ClassAttribute()
+                    {
+                        Type = "Property",
+                        Reference = tmpPd?.ToRef() ?? "NULL"
+                    };
+                    clsdef.ClassAttributes.Add(attr);
+
+                    // start new list of property values
+                    var lop = new CstPropertyRecord.ListOfProperty();
+                    var pr = new CstPropertyRecord.Property()
+                    {
+                        ID = refStr,
+                        Name = "" + smc.idShort,
+                        ValueProps = lop
+                    };
+                    if (propRecs != null)
+                        propRecs.Add(pr);
+
+                    // recursion, but as Block
+                    // TODO: extend Parse() to parse also ECLASS, IEC CDD
+                    var blockId = CstIdObjectBase.Parse(refStr);
+                    RecurseOnSme(smc.value, blockId, "Block", lop);
                 }
                 else
                 {
                     // normal case .. Property or so
 
-                    // check, if ConceptDescription exists ..
-                    var cd = _env?.AasEnv.FindConceptDescription(sme.semanticId);
-
                     // create a new class attribute
-                    var a1 = new CstClassDef.ClassAttribute()
+                    var attr = new CstClassDef.ClassAttribute()
                     {
-                        Type = "Property"
+                        Type = "Property",
+                        Reference = refStr
                     };
+                    clsdef.ClassAttributes.Add(attr);
 
-                    // try to take over as much information from the pure SME as possible
-                    var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
-                    if (semid != null)
+                    // make a "normal" property definition
+                    if (tmpPd != null)
                     {
-                        if (semid.StartsWith("0173") || semid.StartsWith("0112"))
-                        {
-                            a1.Reference = semid;
-                        }
+                        // use data type?
+                        if (tmpDt != null)
+                            tmpPd.DataType = new CstPropertyDef.DataType() { Type = tmpDt };
+
+                        tmpPd.ObjectType = "02";
+                        tmpPd.Status = "Released";
+                        PropertyDefs.AddIfUnique(tmpPd);
                     }
 
-                    // already existing as property def?
-                    // if (_cdToProp.ContainsKey())
-
-                    clsdef.ClassAttributes.Add(a1);
+                    // make a prop rec
+                    var pr = new CstPropertyRecord.Property()
+                    {
+                        ValueStr = sme.ValueAsText(),
+                        ID = refStr,
+                        Name = "" + sme.idShort
+                    };
+                    if (propRecs != null)
+                        propRecs.Add(pr);
                 }
-            }
-
-            // finally add the class def
-            ClassDefs.Add(clsdef);
+            }            
         }
 
         public void ExportSingleSubmodel(
@@ -125,18 +247,35 @@ namespace AasxFormatCst
 
             // Step 2: make up a list of used semantic references and write to default file
             var tmpIdStore = new CstIdStore();
-            tmpIdStore.CreateEmptyItemsFromSMEs(sm.submodelElements);
+            tmpIdStore.CreateEmptyItemsFromSMEs(sm.submodelElements, omitIecEclass: true);
             tmpIdStore.WriteToFile(path + "_default_prop_refs.json");
 
-            // Step 2: start list of (later) lson entities
+            // Step 3: start list of (later) lson entities
             // Note: already done by class init
 
-            // Step 3: recursively look at SME
-            RecurseOnSme(sm.submodelElements, topClassId, "Application Class");
+            var lop = new CstPropertyRecord.ListOfProperty();
+            PropertyRecs.Add(new CstPropertyRecord.PropertyRecord()
+            {
+                ID = "0815",
+                ClassDefinition = topClassId.ToRef(),
+                ObjectType = "PR",
+                Properties = lop
+            });
+
+            // Step 4: recursively look at SME
+            RecurseOnSme(sm.submodelElements, topClassId, "Application Class", lop);
 
             // Step 90: write class definitions
             var clsRoot = new CstClassDef.Root() { ClassDefinitions = ClassDefs };
-            File.WriteAllText(path + "_classdefs.json", JsonConvert.SerializeObject(clsRoot, Formatting.Indented));
+            clsRoot.WriteToFile(path + "_classdefs.json");           
+
+            // Step 91: write property definitions
+            var prpRoot = new CstPropertyDef.Root() { PropertyDefinitions = PropertyDefs };
+            prpRoot.WriteToFile(path + "_propdefs.json");
+
+            // Step 92: write property definitions
+            var recRoot = new CstPropertyRecord.Root() { PropertyRecords = PropertyRecs };
+            recRoot.WriteToFile(path + "_proprecs.json");
         }
     }
 }

@@ -49,7 +49,10 @@
     <Compile Include="CstIdObjectBase.cs" />
     <Compile Include="CstIdStore.cs" />
     <Compile Include="CstListOfValues.cs" />
+    <Compile Include="CstPropertyRecord.cs" />
     <Compile Include="CstPropertyDef.cs" />
+    <Compile Include="CstRootBase.cs" />
+    <Compile Include="ListOfUnique.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

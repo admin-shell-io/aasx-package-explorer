@@ -34,6 +34,22 @@ namespace AasxFormatCst
 
     public class CstIdStore : List<CstIdDictionaryItem>
     {
+        public CstIdDictionaryItem FindStringSemId(string semId)
+        {
+            if (semId == null)
+                return null;
+
+            foreach (var it in this)
+                if (it?.semId != null)
+                {
+                    if (it.semId.Trim().ToLower() == semId.Trim().ToLower())
+                        return it;
+                }
+
+            return null;
+        }
+
+
         public void CreateEmptyItemsFromCDs(IEnumerable<AdminShell.ConceptDescription> cds)
         {
             if (cds == null)
@@ -54,7 +70,9 @@ namespace AasxFormatCst
             }
         }
 
-        public void CreateEmptyItemsFromSMEs(AdminShell.SubmodelElementWrapperCollection smwc)
+        public void CreateEmptyItemsFromSMEs(
+            AdminShell.SubmodelElementWrapperCollection smwc,
+            bool omitIecEclass = false)
         {
             if (smwc == null)
                 return;
@@ -65,31 +83,40 @@ namespace AasxFormatCst
                 if (sme == null)
                     continue;
 
+                // any
+                var si = sme.semanticId?.GetAsExactlyOneKey()?.value;
+                if (si != null)
+                {
+                    if (omitIecEclass && (si.StartsWith("0173") || si.StartsWith("0112")))
+                        continue;
+
+                    var item = new CstIdDictionaryItem()
+                    {
+                        semId = si,
+                        cstRef = ""
+                    };
+                    this.Add(item);
+                }
+
                 if (sme is AdminShell.SubmodelElementCollection smc)
                 {
                     // SMC ? recurse!
-                    CreateEmptyItemsFromSMEs(smc.value);
-                }
-                else
-                {
-                    // any other
-                    var si = sme.semanticId?.GetAsExactlyOneKey()?.value;
-                    if (si != null)
-                    {
-                        var item = new CstIdDictionaryItem()
-                        {
-                            semId = si,
-                            cstRef = ""
-                        };
-                        this.Add(item);
-                    }
+                    CreateEmptyItemsFromSMEs(smc.value, omitIecEclass);
                 }
             }
         }
 
         public void WriteToFile(string fn)
         {
-            File.WriteAllText(fn, JsonConvert.SerializeObject(this, Formatting.Indented));
+            var srl = new JsonSerializer
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
+            };
+            using (var sw = new StreamWriter(fn))
+            {
+                srl.Serialize(sw, this);
+            }            
         }
 
         public void AddFromFile(string fn)

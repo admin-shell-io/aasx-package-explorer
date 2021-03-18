@@ -219,7 +219,7 @@ namespace AasxToolkit
 
                             try
                             {
-                                var ei = new AasxFormatCst.AasxToCst(jsonDefaultId: "cst-default-id-map.json");
+                                var ei = new AasxFormatCst.AasxToCst(jsonKnownIds: "cst-default-id-map.json");
 
                                 var dnp = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                                             new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());

@@ -11,7 +11,7 @@
   "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
-  "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx",
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -29,7 +29,7 @@
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 1000,
-  "InternalBrowser": false,
+  "InternalBrowser": true,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
   "BackupFiles": 10,

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,14 +8,28 @@ using System.Threading.Tasks;
 
 namespace AasxFormatCst
 {
-    public class CstIdObjectBase
+    public class CstIdObjectBase // : IEquatable<CstIdObjectBase>
     {
+        
+        [JsonProperty(Order = -2)]
         public string ObjectType;
+        
+        [JsonProperty(Order = -2)]
         public string Namespace;
+        
+        [JsonProperty(Order = -2)]
         public string ID;
+        
+        [JsonProperty(Order = -2)]
         public string Revision;
+        
+        [JsonProperty(Order = -2)]
         public string Name;
+        
+        [JsonProperty(Order = -2)]
         public string MinorRevision;
+        
+        [JsonProperty(Order = -2)]
         public string Status;
 
         public string ToRef()
@@ -25,16 +40,71 @@ namespace AasxFormatCst
 
         public static CstIdObjectBase Parse(string input)
         {
-            var m = Regex.Match(input, @"^\s*(\w+)#(\w+)-(\w+)#(\w+)");
-            if (!m.Success)
+            if (input == null)
                 return null;
-            var res = new CstIdObjectBase()
+            input = input.Trim();
+
+            // ECLASS 
+            var m = Regex.Match(input, @"^0173(|-)(\w*)#(\w+)-(\w+)#(\w+)");
+            if (m.Success)
             {
-                Namespace = m.Groups[1].ToString(),
-                ObjectType = m.Groups[2].ToString(),
-                ID = m.Groups[2].ToString(),
-                Revision = m.Groups[4].ToString()
-            };
+                var res = new CstIdObjectBase()
+                {
+                    Namespace = "0173" + m.Groups[1].ToString() + m.Groups[2].ToString(),
+                    ObjectType = m.Groups[3].ToString(),
+                    ID = m.Groups[4].ToString(),
+                    Revision = m.Groups[5].ToString()
+                };
+                return res;
+            }
+
+            // IEC CDD 
+            m = Regex.Match(input, @"^0112/(\w*)/(\w*)/(\w*)/(\w*)#(\w+)#(\w+)");
+            if (m.Success)
+            {
+                var res = new CstIdObjectBase()
+                {
+                    Namespace = "0112" + "_" + m.Groups[4].ToString(),
+                    ObjectType = m.Groups[2].ToString(),
+                    ID = m.Groups[5].ToString(),
+                    Revision = m.Groups[6].ToString()
+                };
+                return res;
+            }
+
+            // CST style
+            m = Regex.Match(input, @"^\s*(\w+)#(\w+)-(\w+)#(\w+)");
+            if (m.Success)
+            {
+                var res = new CstIdObjectBase()
+                {
+                    Namespace = m.Groups[1].ToString(),
+                    ObjectType = m.Groups[2].ToString(),
+                    ID = m.Groups[3].ToString(),
+                    Revision = m.Groups[4].ToString()
+                };
+                return res;
+            }
+
+            // no
+            return null;
+        }
+
+        public bool Equals1(CstIdObjectBase other)
+        {
+            if (other == null)
+                return false;
+
+            var res = other.ObjectType.Equals(ObjectType, StringComparison.InvariantCultureIgnoreCase)
+                && other.Namespace.Equals(Namespace, StringComparison.InvariantCultureIgnoreCase)
+                && other.ID.Equals(ID, StringComparison.InvariantCultureIgnoreCase)
+                && other.Revision.Equals(Revision, StringComparison.InvariantCultureIgnoreCase)
+#if __SWITCH_OFF
+                && other.Name.Equals(Name, StringComparison.InvariantCultureIgnoreCase)
+                && other.MinorRevision.Equals(MinorRevision, StringComparison.InvariantCultureIgnoreCase)
+#endif
+                && other.Status.Equals(Status, StringComparison.InvariantCultureIgnoreCase);
+            
             return res;
         }
     }
