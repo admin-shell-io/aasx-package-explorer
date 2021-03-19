@@ -55,7 +55,7 @@ namespace AasxDictionaryImport.Eclass
         public override bool IsFetchSupported => true;
 
         /// <inheritdoc/>
-        public override string FetchPrompt => "IRDI";
+        public override string FetchPrompt => "IRDI / Code";
 
         /// <summary>
         /// Checks whether the given path contains valid eCl@ss data that can be read by this data provider.  If this
