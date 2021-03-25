@@ -86,7 +86,7 @@
                   Click="CheckBoxAllIecCddAttributes_Click"/>
 
         <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" HorizontalAlignment="Right">
-            <Button Content="Cancel" Width="75" Margin="0,0,10,0" IsCancel="True"/>
+            <Button Content="Cancel" Width="75" Margin="0,0,10,0" IsCancel="True" Click="ButtonCancel_Click"/>
             <Button x:Name="ButtonImport" Content="Import" Width="75" IsDefault="True" IsEnabled="False" Click="ButtonImport_Click"/>
         </WrapPanel>
 

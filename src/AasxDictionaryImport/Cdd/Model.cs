@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AasxDictionaryImport.Model;
 using AdminShellNS;
 
 namespace AasxDictionaryImport.Cdd
@@ -24,6 +25,12 @@ namespace AasxDictionaryImport.Cdd
     {
         /// <inheritdoc/>
         public override string Name => "IEC CDD";
+
+        /// <inheritdoc/>
+        public Model.FileSystemDataSource NewFileSystemDataSource(string fileName, Model.DataSourceType type)
+        {
+            return new DataSource(this, fileName, type);
+        }
 
         /// <inheritdoc/>
         public override bool IsValidPath(string path)
@@ -42,7 +49,7 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = Model.DataSourceType.Custom)
         {
             string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;
             return new DataSource(this, dir, type);
