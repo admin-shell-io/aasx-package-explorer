@@ -39,6 +39,7 @@
             <WrapPanel>
                 <Label Content="Source:" Margin="0,0,10,0" VerticalAlignment="Center"/>
                 <ComboBox x:Name="ComboBoxSource" Width="250" Margin="0,0,10,0" SelectionChanged="ComboBoxSource_SelectionChanged" VerticalAlignment="Center"/>
+                <Button Content="Clear" Margin="0,0,10,0" Padding="5,0" VerticalAlignment="Center" Click="ButtonClear_Click"/>
                 <Button Content="Open Local File" Padding="5,0" Click="ButtonOpenFile_Click" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <Button x:Name="ButtonFetchOnline" Content="Fetch Online" Padding="5,0" Click="ButtonFetchOnline_Click" VerticalAlignment="Center" Margin="0,0,10,0"/>
             </WrapPanel>

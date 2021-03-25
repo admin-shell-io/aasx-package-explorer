@@ -368,9 +368,11 @@ namespace AasxDictionaryImport
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
         {
-
+            ComboBoxSource.Items.Clear();
+            _topLevelElements.Clear();
+            _detailsElements.Clear();
         }
     }
 
