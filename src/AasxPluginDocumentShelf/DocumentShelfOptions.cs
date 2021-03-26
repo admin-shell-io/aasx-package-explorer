@@ -264,7 +264,7 @@ namespace AasxPluginDocumentShelf
             // DocumentIdDomain
 
             var descDocIdDom = new FormDescSubmodelElementCollection(
-                "DocumentIdDomain", FormMultiplicity.ZeroToMany, defs.CD_DocumentIdDomain?.GetSingleKey(),
+                "DocumentIdDomain", FormMultiplicity.OneToMany, defs.CD_DocumentId?.GetSingleKey(),
                 "DocumentIdDomain{0:00}",
                 "Set of information on the Document within a given domain, e.g. the providing organisation.");
             descDoc.Add(descDocIdDom);
@@ -279,6 +279,13 @@ namespace AasxPluginDocumentShelf
                 "DocumentId",
                 "Identification of the Document within a given domain, e.g. the providing organisation."));
 
+            descDocIdDom.Add(new FormDescProperty(
+                "IsPrimary", FormMultiplicity.ZeroToOne, defs.CD_IsPrimary?.GetSingleKey(),
+                "IsPrimary",
+                "Flag indicating that a DocumentId within a collection of at least two DocumentId`s is the " +
+                "‘primary’ identifier for the document. This is the preferred ID of the document (commonly from " +
+                "the point of view of the owner of the asset)."));
+
             // DocumentClassification
 
             var descDocClass = new FormDescSubmodelElementCollection(
@@ -289,7 +296,7 @@ namespace AasxPluginDocumentShelf
 
             var descDocClassSystem = new FormDescProperty(
                             "ClassificationSystem",
-                            FormMultiplicity.One, defs.CD_DocumentClassificationSystem?.GetSingleKey(),
+                            FormMultiplicity.One, defs.CD_ClassificationSystem?.GetSingleKey(),
                             "ClassificationSystem",
                             "Identification of the classification system. A classification according to " +
                             "VDI2770:2018 shall be given.");
@@ -300,7 +307,7 @@ namespace AasxPluginDocumentShelf
             descDocClass.Add(descDocClassSystem);
 
             var descDocClassId = new FormDescProperty(
-                "ClassId", FormMultiplicity.One, defs.CD_DocumentClassId?.GetSingleKey(),
+                "ClassId", FormMultiplicity.One, defs.CD_ClassId?.GetSingleKey(),
                 "ClassId",
                 "ClassId of the document in VDI2770 or other.");
 
@@ -321,10 +328,10 @@ namespace AasxPluginDocumentShelf
             descDocClass.Add(descDocClassId);
 
             var descDocName = new FormDescProperty(
-                "ClassName", FormMultiplicity.One, defs.CD_DocumentClassName?.GetSingleKey(),
+                "ClassName", FormMultiplicity.One, defs.CD_ClassName?.GetSingleKey(),
                 "ClassName",
                 "ClassName of the document in VDI2770 or other. " +
-                "This property is automaticall computed based on ClassId.");
+                "This property is automatically computed based on ClassId.");
 
             descDocName.SlaveOfIdShort = "ClassId";
 
@@ -346,18 +353,22 @@ namespace AasxPluginDocumentShelf
             descDoc.Add(descDocVer);
 
             descDocVer.Add(new FormDescProperty(
-                "Languages", FormMultiplicity.ZeroToMany, defs.CD_Language?.GetSingleKey(), "Language{0:00}",
+                "Languages", FormMultiplicity.OneToMany, defs.CD_Language?.GetSingleKey(), "Language{0:00}",
                 "List of languages used in the DocumentVersion. For most cases, " +
                 "at least one language shall be given."));
 
             descDocVer.Add(new FormDescProperty(
-                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionIdValue?.GetSingleKey(),
+                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionId?.GetSingleKey(),
                 "DocumentVersionId",
-                "The combination of DocumentId and DocumentVersionId shall be unqiue."));
+                "Unambigous identification number of a DocumentVersion."));
 
             descDocVer.Add(new FormDescMultiLangProp(
                 "Title", FormMultiplicity.One, defs.CD_Title?.GetSingleKey(), "Title",
                 "Language dependent title of the document."));
+
+            descDocVer.Add(new FormDescMultiLangProp(
+                "SubTitle", FormMultiplicity.ZeroToOne, defs.CD_SubTitle?.GetSingleKey(), "SubTitle",
+                "Language dependent sub title of the document."));
 
             descDocVer.Add(new FormDescMultiLangProp(
                 "Summary", FormMultiplicity.One, defs.CD_Summary?.GetSingleKey(), "Summary",
@@ -368,11 +379,11 @@ namespace AasxPluginDocumentShelf
                 "Language dependent keywords of the document."));
 
             descDocVer.Add(new FormDescProperty(
-                "SetDate", FormMultiplicity.One, defs.CD_Date?.GetSingleKey(), "SetDate",
-                "Date when the document was introduced into the AAS or set to the status. Format is YYYY-MM-dd."));
+                "SetDate", FormMultiplicity.One, defs.CD_SetDate?.GetSingleKey(), "SetDate",
+                "Date when the document status was set. Format is YYYY-MM-dd."));
 
             var descStatus = new FormDescProperty(
-                "StatusValue", FormMultiplicity.One, defs.CD_LifeCycleStatusValue?.GetSingleKey(), "StatusValue",
+                "StatusValue", FormMultiplicity.One, defs.CD_StatusValue?.GetSingleKey(), "StatusValue",
                 "Each document version represents a point in time in the document life cycle. " +
                 "This status value refers to the milestones in the document life cycle. " +
                 "The following two statuses should be used for the application of this guideline: " +
@@ -380,20 +391,15 @@ namespace AasxPluginDocumentShelf
             descDocVer.Add(descStatus);
             descStatus.comboBoxChoices = new[] { "InReview", "Released" };
 
-            var descRole = new FormDescProperty(
-                "Role", FormMultiplicity.One, defs.CD_Role?.GetSingleKey(), "Role",
-                "Define a role for the organisation according to the following selection list.");
-            descDocVer.Add(descRole);
-            descRole.comboBoxChoices = new[] { "Author", "Customer", "Supplier", "Manufacturer", "Responsible" };
-
             descDocVer.Add(new FormDescProperty(
                 "OrganizationName", FormMultiplicity.One, defs.CD_OrganizationName?.GetSingleKey(), "OrganizationName",
-                "Common name for the organisation."));
+                "Organiziation name of the author of the Document."));
 
             descDocVer.Add(new FormDescProperty(
                 "OrganizationOfficialName", FormMultiplicity.One, defs.CD_OrganizationOfficialName?.GetSingleKey(),
                 "OrganizationOfficialName",
-                "Official name for the organisation (which might be longer or include legal information)."));
+                "Official name of the organization of author of the Document " +
+                "(which might be longer or include legal information)."));
 
             descDocVer.Add(new FormDescFile(
                 "DigitalFile", FormMultiplicity.OneToMany, defs.CD_DigitalFile?.GetSingleKey(), "DigitalFile{0:00}",
@@ -405,11 +411,24 @@ namespace AasxPluginDocumentShelf
                 "Provides a preview image of the Document, e.g. first page, in a commonly used " +
                 "image format and low resolution."));
 
-            descDocVer.Add(new FormDescMultiLangProp(
-                "Comment", FormMultiplicity.ZeroToMany, defs.CD_Comment?.GetSingleKey(),
-                "Comment{0:00}",
-                "States a user-defined comment to the DocumentVersion. Can be freely defined, even in " +
-                "multiple languages."));
+            descDocVer.Add(new FormDescReferenceElement(
+                "RefersTo", FormMultiplicity.ZeroToMany, defs.CD_RefersTo?.GetSingleKey(),
+                "RefersTo{0:00}",
+                "Forms a generic RefersTo-relationship to another Document or DocumentVersion. " +
+                "They have a loose relationship."));
+
+            descDocVer.Add(new FormDescReferenceElement(
+                "BasedOn", FormMultiplicity.ZeroToMany, defs.CD_BasedOn?.GetSingleKey(),
+                "BasedOn{0:00}",
+                "Forms a BasedOn-relationship to another Document or DocumentVersion. Typically states, that the " +
+                "content of the document bases on another document (e.g. specification requirements). Both have a " +
+                "strong relationship."));
+
+            descDocVer.Add(new FormDescReferenceElement(
+                "TranslationOf", FormMultiplicity.ZeroToMany, defs.CD_TranslationOf?.GetSingleKey(),
+                "TranslationOf{0:00}",
+                "Forms a TranslationOf-relationship to another Document or DocumentVersion. Both have a " +
+                "strong relationship."));
 
             // back to Document
 
@@ -417,34 +436,6 @@ namespace AasxPluginDocumentShelf
                 "DocumentedEntity", FormMultiplicity.ZeroToOne, defs.CD_DocumentedEntity?.GetSingleKey(),
                 "DocumentedEntity",
                 "Identifies the Entity, which is subject to the Documentation."));
-
-            descDoc.Add(new FormDescReferenceElement(
-                "RefersTo", FormMultiplicity.ZeroToMany, defs.CD_RefersTo?.GetSingleKey(),
-                "RefersTo{0:00}",
-                "Forms a RefersTo-relationship to another Document. Typically, this other Document is a dependent " +
-                "document of the originating (main) document."));
-
-            descDoc.Add(new FormDescReferenceElement(
-                "BasedOn", FormMultiplicity.ZeroToMany, defs.CD_BasedOn?.GetSingleKey(),
-                "BasedOn{0:00}",
-                "Forms a BasedOn-relationship to another Document. Typically states, that this document bases " +
-                "on another document."));
-
-            descDoc.Add(new FormDescReferenceElement(
-                "Affecting", FormMultiplicity.ZeroToMany, defs.CD_Affecting?.GetSingleKey(),
-                "Affecting{0:00}",
-                "Forms an Affecting-relationship to another Document."));
-
-            descDoc.Add(new FormDescReferenceElement(
-                "TranslationOf", FormMultiplicity.ZeroToMany, defs.CD_TranslationOf?.GetSingleKey(),
-                "TranslationOf{0:00}",
-                "Forms a TranslationOf-relationship to another Document."));
-
-            descDoc.Add(new FormDescMultiLangProp(
-                "Comment", FormMultiplicity.ZeroToMany, defs.CD_Comment?.GetSingleKey(),
-                "Comment{0:00}",
-                "States a user-defined comment to the Document. Can be freely defined, even in " +
-                "multiple languages."));
 
             // end
 

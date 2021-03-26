@@ -1292,30 +1292,57 @@ namespace AasxPackageExplorer
 
                 helper.AddAction(
                     stack, "Submodel & -elements:",
-                    new[] { "Turn to kind Template", "Turn to kind Instance" },
+                    new[] { "Turn to kind Template", "Turn to kind Instance", "Remove qualifiers" },
                     repo,
                     (buttonNdx) =>
                     {
-                        if (helper.flyoutProvider != null &&
-                            MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "This operation will affect all Kind attributes of " +
-                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
-                                "Setting Kind",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                            return new ModifyRepo.LambdaActionNone();
-
-                        submodel.kind = (buttonNdx == 0)
-                            ? AdminShell.ModelingKind.CreateAsTemplate()
-                            : AdminShell.ModelingKind.CreateAsInstance();
-
-                        submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                        if (buttonNdx == 0 || buttonNdx == 1)
                         {
-                            sme.kind = (buttonNdx == 0)
+                            if (helper.flyoutProvider != null &&
+                                MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "This operation will affect all Kind attributes of " +
+                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Setting Kind",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                return new ModifyRepo.LambdaActionNone();
+
+                            submodel.kind = (buttonNdx == 0)
                                 ? AdminShell.ModelingKind.CreateAsTemplate()
                                 : AdminShell.ModelingKind.CreateAsInstance();
-                        });
 
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                            {
+                                sme.kind = (buttonNdx == 0)
+                                    ? AdminShell.ModelingKind.CreateAsTemplate()
+                                    : AdminShell.ModelingKind.CreateAsInstance();
+                            });
+
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        if (buttonNdx == 2)
+                        {
+                            if (helper.flyoutProvider != null &&
+                                MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "This operation will affect all Qualifers of " +
+                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Remove qualifiers",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                return new ModifyRepo.LambdaActionNone();
+
+                            if (submodel.qualifiers != null)
+                                submodel.qualifiers.Clear();
+
+                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                            {
+                                if (sme.qualifiers != null)
+                                    sme.qualifiers.Clear();
+                            });
+
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        return new ModifyRepo.LambdaActionNone();
                     });
 
             }
