@@ -17,7 +17,7 @@ namespace AasxFormatCst
             public string BlockReference;
         }
 
-        public class PropertyDefinition : CstIdObjectBase
+        public class PropertyDefinition : CstIdObjectBase, IUniqueness<PropertyDefinition>
         {
             public string Definition;
             public DataType DataType;
@@ -43,6 +43,11 @@ namespace AasxFormatCst
                 Name = id.Name;
                 MinorRevision = id.MinorRevision;
                 Status = id.Status;
+            }
+
+            public bool EqualsForUniqueness(PropertyDefinition other)
+            {
+                return base.EqualsForUniqueness(other);
             }
         }
 

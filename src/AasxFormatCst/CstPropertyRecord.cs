@@ -31,7 +31,7 @@ namespace AasxFormatCst
             public string ValueStr;
 
             [JsonIgnore]
-            public ListOfProperty ValueProps;
+            public PropertyRecord ValueProps;
 
             public object Value
             {
@@ -46,6 +46,8 @@ namespace AasxFormatCst
 
         public class ListOfProperty : List<Property>
         {
+            public ListOfProperty() : base() { }
+            public ListOfProperty(Property[] arr) : base(arr) { }
         }
 
         public class ClassifiedObject
@@ -61,14 +63,14 @@ namespace AasxFormatCst
             public string ID;
             public string ObjectType;
             public string ClassDefinition;
-            public int UnitSystem;
             public ClassifiedObject ClassifiedObject;
+            public int? UnitSystem;
             public ListOfProperty Properties;
         }
 
         public class Root : CstRootBase
         {
-            public string SchemaVersion = "1.0.0";
+            public string SchemaVersion = "1.1.0";
             public string Locale = "en_US";
             public List<PropertyRecord> PropertyRecords;
         }

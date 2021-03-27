@@ -230,6 +230,7 @@ namespace AasxToolkit
                                     dnp.GetAllReferables(),
                                     topClassId: new AasxFormatCst.CstIdObjectBase() {
                                         Namespace = "IDTA",
+                                        ObjectType = "01",
                                         ID = "SMNP001",
                                         Revision = "001",
                                         Name = "Submodel Nameplate"

@@ -12,17 +12,28 @@ namespace AasxFormatCst
     {
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
 
-        public class ClassAttribute
+        public class ClassAttribute : IUniqueness<ClassAttribute>
         {
             public string Type;
             public string Reference;
+
+            public bool EqualsForUniqueness(ClassAttribute other)
+            {
+                if (other == null)
+                    return false;
+
+                var res = Type == other.Type
+                    && Reference == other.Reference;
+
+                return res;
+            }
         }
 
-        public class ClassDefinition : CstIdObjectBase
+        public class ClassDefinition : CstIdObjectBase, IUniqueness<ClassDefinition>
         {
             public int UnitSystem;
             public string ClassType;
-            public List<ClassAttribute> ClassAttributes = new List<ClassAttribute>();
+            public ListOfUnique<ClassAttribute> ClassAttributes = new ListOfUnique<ClassAttribute>();
 
             public ClassDefinition () 
             {
@@ -46,6 +57,11 @@ namespace AasxFormatCst
                     MinorRevision = id.MinorRevision;
                 if (id.Status != null)
                     Status = id.Status;
+            }
+
+            public bool EqualsForUniqueness(ClassDefinition other)
+            {
+                return base.EqualsForUniqueness(other);
             }
         }
 

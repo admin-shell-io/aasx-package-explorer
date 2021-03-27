@@ -8,11 +8,19 @@ using System.Threading.Tasks;
 
 namespace AasxFormatCst
 {
-    public class ListOfUnique<T> : List<T> where T : CstIdObjectBase
+    public interface IUniqueness<T>
     {
+        bool EqualsForUniqueness(T other);
+    }
+
+    public class ListOfUnique<T> : List<T> where T : IUniqueness<T>
+    {
+        public ListOfUnique() : base() { }
+        public ListOfUnique(T[] arr) : base(arr) { }
+
         public void AddIfUnique(T other)
         {
-            var exist = this.Find((x) => x.Equals1(other));
+            var exist = this.Find((x) => x.EqualsForUniqueness(other));
             if (exist != null)
                 return;
             this.Add(other);

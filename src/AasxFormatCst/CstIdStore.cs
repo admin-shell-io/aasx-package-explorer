@@ -27,7 +27,12 @@ namespace AasxFormatCst
         public string cstRef;
 
         /// <summary>
-        /// Full fledge object with tingle files for CST Id.
+        /// Preferred name for the reference.
+        /// </summary>
+        public string preferredName;
+
+        /// <summary>
+        /// Full fledged object with single attributes for CST Id.
         /// </summary>
         public CstIdObjectBase cstId;
     }

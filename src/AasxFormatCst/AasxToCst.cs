@@ -64,164 +64,180 @@ namespace AasxFormatCst
             ClassDefs.AddIfUnique(clsdef);
 
             // values
-            foreach (var smw in smwc)
-            {
-                var sme = smw?.submodelElement;
-                if (sme == null)
-                    continue;
-
-                // check, if ConceptDescription exists ..
-                var cd = _env?.AasEnv.FindConceptDescription(sme.semanticId);
-
-                // try to take over as much information from the pure SME as possible
-                var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
-                string refStr = null;
-                CstIdDictionaryItem refItem = null;
-                if (semid != null)
+            for (int smcMode=0; smcMode < 2; smcMode++)
+                foreach (var smw in smwc)
                 {
-                    // standardized ID?
-                    if (semid.StartsWith("0173") || semid.StartsWith("0112"))
-                    {
-                        refStr = semid;
-                    }
+                    // trivial
+                    var sme = smw?.submodelElement;
+                    if (sme == null)
+                        continue;
 
-                    // already known, fixed id?
-                    var it = _knownIdStore?.FindStringSemId(semid);
-                    if (it != null)
+                    // is SMC? .. ugly contraption to have first all Properties, then all SMCs
+                    var smc = sme as AdminShell.SubmodelElementCollection;
+                    if ((smcMode == 0 && smc != null)
+                        || (smcMode == 1 && smc == null))
+                        continue;
+
+                    // check, if ConceptDescription exists ..
+                    var cd = _env?.AasEnv.FindConceptDescription(sme.semanticId);
+
+                    // try to take over as much information from the pure SME as possible
+                    var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
+                    string refStr = null;
+                    string refName = null;
+                    CstIdDictionaryItem refItem = null;
+                    if (semid != null)
                     {
-                        if (it.cstRef != null)
-                            refStr = it.cstRef;
-                        if (it.cstId != null)
+                        // standardized ID?
+                        if (semid.StartsWith("0173") || semid.StartsWith("0112"))
                         {
-                            refStr = it.cstId.ToRef();
-                            refItem = it;
+                            refStr = semid;
+                        }
+
+                        // already known, fixed id?
+                        var it = _knownIdStore?.FindStringSemId(semid);
+                        if (it != null)
+                        {
+                            if (it.cstRef != null)
+                                refStr = it.cstRef;
+                            if (it.cstId != null)
+                            {
+                                refStr = it.cstId.ToRef();
+                                refItem = it;
+                            }
+                            if (it.preferredName != null)
+                                refName = it.preferredName;
                         }
                     }
-                }
 
-                // prepare a prop def & data type
-                CstPropertyDef.PropertyDefinition tmpPd = null;
-                string tmpDt = null;
-                if (refStr != null)
-                {
-                    // make it
-                    var bo = CstIdObjectBase.Parse(refStr);
-                    tmpPd = new CstPropertyDef.PropertyDefinition(bo);
-
-                    // more info
-                    tmpPd.Name = "" + sme.idShort;
-                    if (sme.description != null)
-                        tmpPd.Remark = sme.description.GetDefaultStr("en");
-
-                    if (sme is AdminShell.Property prop)
-                        tmpDt = prop.valueType;
-
-                    // more info
-                    if (cd != null)
+                    // prepare a prop def & data type
+                    CstPropertyDef.PropertyDefinition tmpPd = null;
+                    string tmpDt = null;
+                    if (refStr != null)
                     {
-                        var ds61360 = cd.IEC61360Content;
-                        if (ds61360 != null)
-                        {
-                            if (ds61360.definition != null)
-                                tmpPd.Definition = ds61360.definition.GetDefaultStr("en");
+                        // make it
+                        var bo = CstIdObjectBase.Parse(refStr);
+                        tmpPd = new CstPropertyDef.PropertyDefinition(bo);
 
-                            var dst = ds61360.dataType?.Trim().ToUpper();
-                            if (ds61360 == null && dst != null)
+                        // more info
+                        tmpPd.Name = "" + sme.idShort;
+                        if (sme.description != null)
+                            tmpPd.Remark = sme.description.GetDefaultStr("en");
+
+                        if (sme is AdminShell.Property prop)
+                            tmpDt = prop.valueType;
+
+                        // more info
+                        if (cd != null)
+                        {
+                            var ds61360 = cd.IEC61360Content;
+                            if (ds61360 != null)
                             {
-                                tmpDt = dst;
+                                if (ds61360.definition != null)
+                                    tmpPd.Definition = ds61360.definition.GetDefaultStr("en");
+
+                                var dst = ds61360.dataType?.Trim().ToUpper();
+                                if (ds61360 == null && dst != null)
+                                {
+                                    tmpDt = dst;
+                                }
                             }
                         }
+
+                        // default
+                        if (!tmpDt.HasContent())
+                            tmpDt = "STRING";
                     }
 
-                    // default
-                    if (!tmpDt.HasContent())
-                        tmpDt = "STRING";
-                }
-
-                if (sme is AdminShell.SubmodelElementCollection smc)
-                {
-                    // SMC
-
-                    // make a reference property def
-                    // the property itself needs to have an ALTERED ID, to be not ídentical with
-                    if (tmpPd != null)
+                    if (smc != null)
                     {
-                        // class id
-                        tmpPd.ID = "BLPRP_" + tmpPd.ID;
+                        // SMC
 
-                        // will be a reference to the intended class
-                        tmpPd.DataType = new CstPropertyDef.DataType() {
-                            Type = "Reference",
-                            BlockReference = "" + refStr
+                        // make a reference property def
+                        // the property itself needs to have an ALTERED ID, to be not ídentical with
+                        if (tmpPd != null)
+                        {
+                            // class id
+                            tmpPd.ID = "BLPRP_" + tmpPd.ID;
+
+                            // will be a reference to the intended class
+                            tmpPd.DataType = new CstPropertyDef.DataType() {
+                                Type = "Reference",
+                                BlockReference = "" + refStr
+                            };
+
+                            // rest of attributes
+                            tmpPd.ObjectType = "02";
+                            tmpPd.Status = "Released";
+
+                            // add
+                            PropertyDefs.AddIfUnique(tmpPd);
+                        }
+
+                        // create a new class attribute (with reference to ALTERED ID!)
+                        var attr = new CstClassDef.ClassAttribute()
+                        {
+                            Type = "Property",
+                            Reference = tmpPd?.ToRef() ?? "NULL"
                         };
+                        clsdef.ClassAttributes.AddIfUnique(attr);
 
-                        // rest of attributes
-                        tmpPd.ObjectType = "02";
-                        tmpPd.Status = "Released";
+                        // start new list of property values, embedded in a PropertyRecord
+                        var rec = new CstPropertyRecord.PropertyRecord();
+                        var lop = new CstPropertyRecord.ListOfProperty();
+                        rec.ClassDefinition = refStr;
+                        rec.Properties = lop;
+                        var pr = new CstPropertyRecord.Property()
+                        {
+                            // ID = refStr, // to be the block id
+                            ID = tmpPd.ToRef(),
+                            Name = "" + smc.idShort,
+                            ValueProps = rec
+                        };
+                        if (propRecs != null)
+                            propRecs.Add(pr);
 
-                        // add
-                        PropertyDefs.AddIfUnique(tmpPd);
+                        // recursion, but as Block
+                        // TODO: extend Parse() to parse also ECLASS, IEC CDD
+                        var blockId = CstIdObjectBase.Parse(refStr);
+                        blockId.Name = refName;
+                        RecurseOnSme(smc.value, blockId, "Block", lop);
                     }
-
-                    // create a new class attribute (with reference to ALTERED ID!)
-                    var attr = new CstClassDef.ClassAttribute()
+                    else
                     {
-                        Type = "Property",
-                        Reference = tmpPd?.ToRef() ?? "NULL"
-                    };
-                    clsdef.ClassAttributes.Add(attr);
+                        // normal case .. Property or so
 
-                    // start new list of property values
-                    var lop = new CstPropertyRecord.ListOfProperty();
-                    var pr = new CstPropertyRecord.Property()
-                    {
-                        ID = refStr,
-                        Name = "" + smc.idShort,
-                        ValueProps = lop
-                    };
-                    if (propRecs != null)
-                        propRecs.Add(pr);
+                        // create a new class attribute
+                        var attr = new CstClassDef.ClassAttribute()
+                        {
+                            Type = "Property",
+                            Reference = refStr
+                        };
+                        clsdef.ClassAttributes.AddIfUnique(attr);
 
-                    // recursion, but as Block
-                    // TODO: extend Parse() to parse also ECLASS, IEC CDD
-                    var blockId = CstIdObjectBase.Parse(refStr);
-                    RecurseOnSme(smc.value, blockId, "Block", lop);
-                }
-                else
-                {
-                    // normal case .. Property or so
+                        // make a "normal" property definition
+                        if (tmpPd != null)
+                        {
+                            // use data type?
+                            if (tmpDt != null)
+                                tmpPd.DataType = new CstPropertyDef.DataType() { Type = AasxCstUtils.ToPascalCase(tmpDt) };
 
-                    // create a new class attribute
-                    var attr = new CstClassDef.ClassAttribute()
-                    {
-                        Type = "Property",
-                        Reference = refStr
-                    };
-                    clsdef.ClassAttributes.Add(attr);
+                            tmpPd.ObjectType = "02";
+                            tmpPd.Status = "Released";
+                            PropertyDefs.AddIfUnique(tmpPd);
+                        }
 
-                    // make a "normal" property definition
-                    if (tmpPd != null)
-                    {
-                        // use data type?
-                        if (tmpDt != null)
-                            tmpPd.DataType = new CstPropertyDef.DataType() { Type = tmpDt };
-
-                        tmpPd.ObjectType = "02";
-                        tmpPd.Status = "Released";
-                        PropertyDefs.AddIfUnique(tmpPd);
+                        // make a prop rec
+                        var pr = new CstPropertyRecord.Property()
+                        {
+                            ValueStr = sme.ValueAsText(),
+                            ID = refStr,
+                            Name = "" + sme.idShort
+                        };
+                        if (propRecs != null)
+                            propRecs.Add(pr);
                     }
-
-                    // make a prop rec
-                    var pr = new CstPropertyRecord.Property()
-                    {
-                        ValueStr = sme.ValueAsText(),
-                        ID = refStr,
-                        Name = "" + sme.idShort
-                    };
-                    if (propRecs != null)
-                        propRecs.Add(pr);
-                }
-            }            
+                }            
         }
 
         public void ExportSingleSubmodel(
@@ -259,7 +275,21 @@ namespace AasxFormatCst
                 ID = "0815",
                 ClassDefinition = topClassId.ToRef(),
                 ObjectType = "PR",
-                Properties = lop
+                UnitSystem = 1,
+                Properties = lop,
+                ClassifiedObject = new CstPropertyRecord.ClassifiedObject()
+                {
+                    ObjectType = "Item",
+                    ClassifyRevision = true,
+                    ID = new List<CstPropertyRecord.ID>(new[] { new CstPropertyRecord.ID() { 
+                        PropertyName = "item_id",
+                        PropertyValue = "000337"
+                    }}),
+                    Properties = new CstPropertyRecord.ListOfProperty(new[] { new CstPropertyRecord.Property() {
+                        PropertyName = "object_name",
+                        PropertyValue = "" + topClassId.Name
+                    }})
+                }
             });
 
             // Step 4: recursively look at SME

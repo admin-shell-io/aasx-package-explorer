@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AasxFormatCst
 {
-    public class CstIdObjectBase // : IEquatable<CstIdObjectBase>
+    public class CstIdObjectBase : IUniqueness<CstIdObjectBase>
     {
         
         [JsonProperty(Order = -2)]
@@ -90,7 +90,7 @@ namespace AasxFormatCst
             return null;
         }
 
-        public bool Equals1(CstIdObjectBase other)
+        public bool EqualsForUniqueness(CstIdObjectBase other)
         {
             if (other == null)
                 return false;
