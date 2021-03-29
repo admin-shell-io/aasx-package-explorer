@@ -12,11 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Xml.Linq;
+using AasxDictionaryImport.Model;
 
 namespace AasxDictionaryImport
 {
@@ -82,6 +85,62 @@ namespace AasxDictionaryImport
 
             DataSourceLabel.Content = String.Join(", ", DataProviders.Select(p => p.Name));
             ButtonFetchOnline.IsEnabled = DataProviders.Any(p => p.IsFetchSupported);
+
+            LoadCachedImports();
+        }
+
+        private void LoadCachedImports()
+        {
+            var indexFile = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), $"cache.index.xml");
+            try
+            {
+                if (File.Exists(indexFile))
+                {
+                    XDocument doc = XDocument.Load(indexFile);
+                    foreach (var cacheEl in doc.Root.Elements("CachedElement"))
+                    {
+                        var fileName = cacheEl.Attribute("FileName").Value;
+                        if (File.Exists(fileName) && cacheEl.Attribute("Source").Value.Equals("Online"))
+                        {
+                            ICollection<Model.IDataProvider> providers =
+                                DataProviders.Where(p => p.IsFetchSupported).ToList();
+                            foreach (var provider in providers)
+                            {
+                                if (cacheEl.Attribute("Provider").Value.Equals(provider.Name))
+                                {
+                                    var source = provider.OpenPath(fileName, Model.DataSourceType.Online);
+                                    ComboBoxSource.Items.Add(source);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (ArgumentNullException e) 
+            {
+                /* Nothin to do */
+            }
+
+        }
+        private void SaveCachedIndex()
+        {
+            var indexFile = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), $"cache.index.xml");
+            XDocument doc = new XDocument(
+                new XElement("Cache")
+                );
+            var rootEl = doc.Root;
+            foreach (var listItem in ComboBoxSource.Items)
+            {
+                if (listItem is Model.FileSystemDataSource source)
+                {
+                    var el = new XElement("CachedElement");
+                    el.SetAttributeValue("FileName", source.Path);
+                    el.SetAttributeValue("Source", source.Type.ToString());
+                    el.SetAttributeValue("Provider", source.DataProvider.ToString());
+                    rootEl.Add(el);
+                }
+            }
+            doc.Save(indexFile);
         }
 
         public IEnumerable<Model.IElement> GetResult()
@@ -140,6 +199,13 @@ namespace AasxDictionaryImport
         private void ButtonImport_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+            SaveCachedIndex();
+            Close();
+        }
+        private void ButtonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            SaveCachedIndex();
             Close();
         }
 
@@ -306,6 +372,13 @@ namespace AasxDictionaryImport
                     System.Diagnostics.Process.Start("https://cdd.iec.ch/CDD/iec61360/iec61360.nsf/License?openPage");
                 }
             }
+        }
+
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
+        {
+            ComboBoxSource.Items.Clear();
+            _topLevelElements.Clear();
+            _detailsElements.Clear();
         }
     }
 

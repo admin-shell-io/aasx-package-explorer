@@ -197,7 +197,7 @@ namespace AasxDictionaryImport.Eclass
                 throw new ImportException($"ECLASS query failed with status code: {response.ReasonPhrase}");
             }
 
-            var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempDir = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDir);
             var tempFile = Path.Combine(tempDir, irdi + ".xml");
 
@@ -217,7 +217,7 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = DataSourceType.Custom)
             => new DataSource(this, path, type);
     }
 
