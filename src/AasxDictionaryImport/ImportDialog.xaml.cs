@@ -92,29 +92,32 @@ namespace AasxDictionaryImport
         private void LoadCachedImports()
         {
             var indexFile = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), $"cache.index.xml");
-            if (File.Exists(indexFile))
+            try
             {
-                XDocument doc = XDocument.Load(indexFile);
-                foreach (var cacheEl in doc.Root.Elements("CachedElement"))
+                if (File.Exists(indexFile))
                 {
-                    var fileName = cacheEl.Attribute("FileName").Value;
-                    if (File.Exists(fileName) && cacheEl.Attribute("Source").Value.Equals("Online"))
+                    XDocument doc = XDocument.Load(indexFile);
+                    foreach (var cacheEl in doc.Root.Elements("CachedElement"))
                     {
-                        ICollection<Model.IDataProvider> providers =
-                            DataProviders.Where(p => p.IsFetchSupported).ToList();
-                        foreach (var provider in providers)
+                        var fileName = cacheEl.Attribute("FileName").Value;
+                        if (File.Exists(fileName) && cacheEl.Attribute("Source").Value.Equals("Online"))
                         {
-                            if (cacheEl.Attribute("Provider").Value.Equals(provider.Name))
+                            ICollection<Model.IDataProvider> providers =
+                                DataProviders.Where(p => p.IsFetchSupported).ToList();
+                            foreach (var provider in providers)
                             {
-                                var source = provider.OpenPath(fileName, Model.DataSourceType.Online);
-                                ComboBoxSource.Items.Add(source);
-                                break;
+                                if (cacheEl.Attribute("Provider").Value.Equals(provider.Name))
+                                {
+                                    var source = provider.OpenPath(fileName, Model.DataSourceType.Online);
+                                    ComboBoxSource.Items.Add(source);
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+            } catch (ArgumentNullException e) {}
 
-            }
         }
         private void SaveCachedIndex()
         {

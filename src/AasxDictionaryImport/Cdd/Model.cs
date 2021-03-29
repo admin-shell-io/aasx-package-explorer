@@ -27,12 +27,6 @@ namespace AasxDictionaryImport.Cdd
         public override string Name => "IEC CDD";
 
         /// <inheritdoc/>
-        public Model.FileSystemDataSource NewFileSystemDataSource(string fileName, Model.DataSourceType type)
-        {
-            return new DataSource(this, fileName, type);
-        }
-
-        /// <inheritdoc/>
         public override bool IsValidPath(string path)
         {
             string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;

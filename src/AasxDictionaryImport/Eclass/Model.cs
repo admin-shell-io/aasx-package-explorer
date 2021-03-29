@@ -57,12 +57,6 @@ namespace AasxDictionaryImport.Eclass
         /// <inheritdoc/>
         public override string FetchPrompt => "IRDI";
 
-        /// <inheritdoc/>
-        public Model.FileSystemDataSource NewFileSystemDataSource(string fileName, Model.DataSourceType type)
-        {
-            return new DataSource(this, fileName, type);
-        }
-
         /// <summary>
         /// Checks whether the given path contains valid eCl@ss data that can be read by this data provider.  If this
         /// method returns true, the data source at the given path can be opened using the <see cref="OpenPath"/>
@@ -223,7 +217,7 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = DataSourceType.Custom)
             => new DataSource(this, path, type);
     }
 
