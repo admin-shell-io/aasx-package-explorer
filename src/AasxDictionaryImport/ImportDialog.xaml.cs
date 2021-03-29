@@ -116,7 +116,10 @@ namespace AasxDictionaryImport
                         }
                     }
                 }
-            } catch (ArgumentNullException e) {}
+            } catch (ArgumentNullException e) 
+            {
+                /* Nothin to do */
+            }
 
         }
         private void SaveCachedIndex()
