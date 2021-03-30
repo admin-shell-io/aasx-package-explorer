@@ -18,9 +18,15 @@ namespace AasxFormatCst
         public ListOfUnique() : base() { }
         public ListOfUnique(T[] arr) : base(arr) { }
 
-        public void AddIfUnique(T other)
+        public T FindExisting(T other)
         {
             var exist = this.Find((x) => x.EqualsForUniqueness(other));
+            return exist;
+        }
+
+        public void AddIfUnique(T other)
+        {
+            var exist = FindExisting(other);
             if (exist != null)
                 return;
             this.Add(other);

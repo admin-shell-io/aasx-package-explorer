@@ -18,7 +18,7 @@ namespace AasxFormatCst
             public string PropertyValue;
         }
 
-        public class Property
+        public class Property : IUniqueness<Property>
         {
             public string PropertyName;
             public string PropertyValue;
@@ -42,9 +42,17 @@ namespace AasxFormatCst
                     return ValueStr;
                 }
             }
+
+            public bool EqualsForUniqueness(Property other)
+            {
+                if (other == null)
+                    return false;
+
+                return ID.Equals(other.ID, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
 
-        public class ListOfProperty : List<Property>
+        public class ListOfProperty : ListOfUnique<Property>
         {
             public ListOfProperty() : base() { }
             public ListOfProperty(Property[] arr) : base(arr) { }

@@ -224,11 +224,27 @@ namespace AasxToolkit
                                 var dnp = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                                             new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
+                                ei.DoNotAddMultipleBlockRecordsWithSameIds = true; // requested by Siemens
+
                                 ei.ExportSingleSubmodel(
                                     package, ecst.Path,
                                     dnp.SM_Nameplate.GetSemanticKey(),
                                     dnp.GetAllReferables(),
-                                    topClassId: new AasxFormatCst.CstIdObjectBase() {
+                                    firstNodeId: new AasxFormatCst.CstIdObjectBase()
+                                    {
+                                        Namespace = "IDTA",
+                                        ID = "FESTOAAS",
+                                        Revision = "001",
+                                        Name = "Festo"
+                                    },
+                                    secondNodeId: new AasxFormatCst.CstIdObjectBase()
+                                    {
+                                        Namespace = "IDTA",
+                                        ID = "FESTOSM",
+                                        Revision = "001",
+                                        Name = "Submodel Nameplate"
+                                    },
+                                    appClassId: new AasxFormatCst.CstIdObjectBase() {
                                         Namespace = "IDTA",
                                         ObjectType = "01",
                                         ID = "SMNP001",

@@ -18,6 +18,7 @@ namespace AasxFormatCst
         public string CustomNS = "UNSPEC";
 
         public ListOfUnique<CstClassDef.ClassDefinition> ClassDefs = new ListOfUnique<CstClassDef.ClassDefinition>();
+        public CstNodeDef.Root NodeDefRoot = new CstNodeDef.Root();
         public ListOfUnique<CstPropertyDef.PropertyDefinition> PropertyDefs = new ListOfUnique<CstPropertyDef.PropertyDefinition>();
         public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
@@ -25,6 +26,8 @@ namespace AasxFormatCst
             _cdToProp = new Dictionary<AdminShellV20.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
         protected CstIdStore _knownIdStore = new CstIdStore();
+
+        public bool DoNotAddMultipleBlockRecordsWithSameIds;
 
         public AasxToCst(string jsonKnownIds = null)
         {
@@ -194,14 +197,26 @@ namespace AasxFormatCst
                             Name = "" + smc.idShort,
                             ValueProps = rec
                         };
-                        if (propRecs != null)
-                            propRecs.Add(pr);
 
-                        // recursion, but as Block
-                        // TODO: extend Parse() to parse also ECLASS, IEC CDD
-                        var blockId = CstIdObjectBase.Parse(refStr);
-                        blockId.Name = refName;
-                        RecurseOnSme(smc.value, blockId, "Block", lop);
+                        // execute the following, only if twice the same ID in proprety records 
+                        // (for blocks are allowed)
+                        var addBlockRec = true;
+                        if (DoNotAddMultipleBlockRecordsWithSameIds 
+                            && propRecs.FindExisting(pr) != null)
+                            addBlockRec = false;
+
+                        // ok?
+                        if (addBlockRec)
+                        {
+                            if (propRecs != null)
+                                propRecs.Add(pr);
+
+                            // recursion, but as Block
+                            // TODO: extend Parse() to parse also ECLASS, IEC CDD
+                            var blockId = CstIdObjectBase.Parse(refStr);
+                            blockId.Name = refName;
+                            RecurseOnSme(smc.value, blockId, "Block", lop);
+                        }
                     }
                     else
                     {
@@ -244,7 +259,9 @@ namespace AasxFormatCst
             AdminShellPackageEnv env, string path,
             AdminShell.Key smId,
             IEnumerable<AdminShell.Referable> cdReferables,
-            CstIdObjectBase topClassId)
+            CstIdObjectBase firstNodeId,
+            CstIdObjectBase secondNodeId,
+            CstIdObjectBase appClassId)
         {
             // access
             if (env?.AasEnv == null || path == null)
@@ -266,14 +283,23 @@ namespace AasxFormatCst
             tmpIdStore.CreateEmptyItemsFromSMEs(sm.submodelElements, omitIecEclass: true);
             tmpIdStore.WriteToFile(path + "_default_prop_refs.json");
 
-            // Step 3: start list of (later) lson entities
+            // Step 3: initialize node defs
+            var nd1 = new CstNodeDef.NodeDefinition(firstNodeId);
+            NodeDefRoot.Add(nd1);
+
+            var nd2 = new CstNodeDef.NodeDefinition(secondNodeId);
+            nd2.Parent = nd1;
+            nd2.ApplicationClass= new CstNodeDef.NodeDefinition(appClassId);
+            NodeDefRoot.Add(nd2);
+
+            // Step 4: start list of (later) lson entities
             // Note: already done by class init
 
             var lop = new CstPropertyRecord.ListOfProperty();
             PropertyRecs.Add(new CstPropertyRecord.PropertyRecord()
             {
                 ID = "0815",
-                ClassDefinition = topClassId.ToRef(),
+                ClassDefinition = appClassId.ToRef(),
                 ObjectType = "PR",
                 UnitSystem = 1,
                 Properties = lop,
@@ -287,23 +313,26 @@ namespace AasxFormatCst
                     }}),
                     Properties = new CstPropertyRecord.ListOfProperty(new[] { new CstPropertyRecord.Property() {
                         PropertyName = "object_name",
-                        PropertyValue = "" + topClassId.Name
+                        PropertyValue = "" + appClassId.Name
                     }})
                 }
             });
 
             // Step 4: recursively look at SME
-            RecurseOnSme(sm.submodelElements, topClassId, "Application Class", lop);
+            RecurseOnSme(sm.submodelElements, appClassId, "Application Class", lop);
 
             // Step 90: write class definitions
             var clsRoot = new CstClassDef.Root() { ClassDefinitions = ClassDefs };
             clsRoot.WriteToFile(path + "_classdefs.json");           
 
-            // Step 91: write property definitions
+            // Step 91: write node definitions
+            NodeDefRoot.WriteToFile(path + "_nodedefs.json");
+
+            // Step 92: write property definitions
             var prpRoot = new CstPropertyDef.Root() { PropertyDefinitions = PropertyDefs };
             prpRoot.WriteToFile(path + "_propdefs.json");
 
-            // Step 92: write property definitions
+            // Step 93: write property definitions
             var recRoot = new CstPropertyRecord.Root() { PropertyRecords = PropertyRecs };
             recRoot.WriteToFile(path + "_proprecs.json");
         }
