@@ -88,11 +88,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     new MediaTypeWithQualityHeaderValue("application/json"));
             _client.BaseAddress = _baseAddress;
 
-            OpenIDClient.auth = false;
-            if (endpoint.ToString().Contains("?auth"))
-            {
-                OpenIDClient.auth = true;
-            }
+            OpenIDClient.auth = endpoint.ToString().Contains("?auth");
         }
 
         //
