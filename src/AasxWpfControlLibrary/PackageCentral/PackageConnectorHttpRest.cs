@@ -87,6 +87,12 @@ namespace AasxWpfControlLibrary.PackageCentral
             _client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
             _client.BaseAddress = _baseAddress;
+
+            OpenIDClient.auth = false;
+            if (endpoint.ToString().Contains("?auth"))
+            {
+                OpenIDClient.auth = true;
+            }
         }
 
         //
@@ -372,6 +378,22 @@ namespace AasxWpfControlLibrary.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
+                if (OpenIDClient.auth)
+                {
+                    var responseAuth = _client.GetAsync("/authserver").Result;
+                    if (responseAuth.IsSuccessStatusCode)
+                    {
+                        var content = responseAuth.Content.ReadAsStringAsync().Result;
+                        if (content != null && content != "")
+                        {
+                            OpenIDClient.authServer = content;
+                            var response2 = await OpenIDClient.RequestTokenAsync(null);
+                            OpenIDClient.token = response2.AccessToken;
+                            OpenIDClient.auth = false;
+                        }
+                    }
+                }
+
                 if (OpenIDClient.token != "")
                     _client.SetBearerToken(OpenIDClient.token);
 

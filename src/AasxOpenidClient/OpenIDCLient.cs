@@ -48,6 +48,7 @@ namespace AasxOpenIdClient
         public static string certPfxPW = "i40";
         public static string outputDir = ".";
 
+        public static bool auth = false;
         public static string token = "";
         public static async Task Run(string tag, string value/*, AasxIntegrationBase.IFlyoutProvider flyoutProvider*/)
         {
