@@ -7,7 +7,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
-	<Platforms>x64</Platforms>
+    <Platform>x64</Platform>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />

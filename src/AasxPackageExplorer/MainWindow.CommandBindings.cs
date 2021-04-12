@@ -1092,10 +1092,11 @@ namespace AasxPackageExplorer
                         client.DefaultRequestHeaders.Add("Accept", "application/aas");
                         var response2 = await client.GetAsync(input);
 
+                        // ReSharper disable PossibleNullReferenceException
                         var contentStream = await response2?.Content?.ReadAsStreamAsync();
-
                         if (contentStream == null)
                             return;
+                        // ReSharper enable PossibleNullReferenceException
 
                         string outputDir = ".";
                         Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
