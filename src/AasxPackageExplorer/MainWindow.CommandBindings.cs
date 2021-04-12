@@ -1069,17 +1069,10 @@ namespace AasxPackageExplorer
                 lastConnectInput = input;
                 if (!input.StartsWith("http://localhost:1111"))
                 {
+                    string tag = "";
                     bool connect = false;
 
-                    string tag = "http://admin-shell-io.com:52001/server/aasxbyasset/";
-                    string prefix = "";
-                    if (input.Length > tag.Length)
-                        prefix = input.Substring(0, tag.Length);
-                    string tag2 = "http://localhost:52001/server/aasxbyasset/";
-                    string prefix2 = "";
-                    if (input.Length > tag2.Length)
-                        prefix2 = input.Substring(0, tag2.Length);
-                    if (prefix == tag || prefix2 == tag2) // get by AssetID
+                    if (input.Contains("/getaasxbyassetid/")) // get by AssetID
                     {
                         if (_packageCentral.MainAvailable)
                             _packageCentral.MainItem.Close();
@@ -1088,11 +1081,9 @@ namespace AasxPackageExplorer
                         var handler = new HttpClientHandler();
                         handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
                         //// handler.AllowAutoRedirect = false;
-                        string dataServer = "";
-                        if (prefix == tag)
-                            dataServer = "http://admin-shell-io.com:52001";
-                        if (prefix2 == tag2)
-                            dataServer = "http://localhost:52001";
+
+                        string dataServer = new Uri(input).GetLeftPart(UriPartial.Authority);
+
                         var client = new HttpClient(handler)
                         {
                             BaseAddress = new Uri(dataServer)
@@ -1100,31 +1091,19 @@ namespace AasxPackageExplorer
                         input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
                         client.DefaultRequestHeaders.Add("Accept", "application/aas");
                         var response2 = await client.GetAsync(input);
-                        String urlContents = await response2.Content.ReadAsStringAsync();
 
-                        try
+                        // ReSharper disable PossibleNullReferenceException
+                        var contentStream = await response2?.Content?.ReadAsStreamAsync();
+                        if (contentStream == null)
+                            return;
+                        // ReSharper enable PossibleNullReferenceException
+
+                        string outputDir = ".";
+                        Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
+                        using (var file = new FileStream(outputDir + "\\" + "download.aasx",
+                            FileMode.Create, FileAccess.Write, FileShare.None))
                         {
-                            var parsed3 = JObject.Parse(urlContents);
-
-                            //// string fileName = parsed3.SelectToken("fileName").Value<string>();
-                            string fileData = parsed3.SelectToken("fileData").Value<string>();
-
-                            var enc = new System.Text.ASCIIEncoding();
-                            var fileString4 = Jose.JWT.Decode(
-                                fileData, enc.GetBytes(AasxOpenIdClient.OpenIDClient.secretString),
-                                JwsAlgorithm.HS256);
-                            var parsed4 = JObject.Parse(fileString4);
-
-                            string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
-                            Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
-
-                            string outputDir = ".";
-                            Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
-                            File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
-                        }
-                        catch (Exception ex)
-                        {
-                            AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {input}");
+                            await contentStream.CopyToAsync(file);
                         }
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
