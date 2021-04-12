@@ -1101,7 +1101,8 @@ namespace AasxPackageExplorer
 
                         string outputDir = ".";
                         Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
-                        using (var file = new FileStream(outputDir + "\\" + "download.aasx", FileMode.Create, FileAccess.Write, FileShare.None))
+                        using (var file = new FileStream(outputDir + "\\" + "download.aasx",
+                            FileMode.Create, FileAccess.Write, FileShare.None))
                         {
                             await contentStream.CopyToAsync(file);
                         }
