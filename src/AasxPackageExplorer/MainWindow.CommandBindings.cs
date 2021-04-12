@@ -1064,12 +1064,12 @@ namespace AasxPackageExplorer
             this.StartFlyoverModal(uc);
             if (uc.Result)
             {
-                string tag = "";
                 string value = "";
                 string input = uc.Text.ToLower();
                 lastConnectInput = input;
                 if (!input.StartsWith("http://localhost:1111"))
                 {
+                    string tag = "";
                     bool connect = false;
 
                     if (input.Contains("/getaasxbyassetid/")) // get by AssetID
@@ -1092,8 +1092,6 @@ namespace AasxPackageExplorer
                         client.DefaultRequestHeaders.Add("Accept", "application/aas");
                         var response2 = await client.GetAsync(input);
 
-                        var contentLength = response2.Content.Headers.ContentLength;
-                        var contentFn = response2.Content.Headers.ContentDisposition?.FileName;
                         var contentStream = await response2?.Content?.ReadAsStreamAsync();
 
                         if (contentStream == null)
