@@ -1081,7 +1081,7 @@ namespace AasxPackageExplorer
                         var handler = new HttpClientHandler();
                         handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
                         //// handler.AllowAutoRedirect = false;
-                        
+
                         string dataServer = new Uri(input).GetLeftPart(UriPartial.Authority);
 
                         var client = new HttpClient(handler)
