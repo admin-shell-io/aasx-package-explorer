@@ -485,6 +485,9 @@ namespace AasxPackageExplorer
                 DisplayElements.Test();
             }
 
+            if (cmd == "exportsmd")
+                CommandBinding_ExportSMD();
+
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
@@ -2533,6 +2536,74 @@ namespace AasxPackageExplorer
                 System.Windows.MessageBox.Show(
                     "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
+        }
+
+        public void CommandBinding_ExportSMD()
+        {
+            // trivial things
+            if (!_packageCentral.MainStorable)
+            {
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // check, if required plugin can be found
+            var pluginName = "AasxPluginSmdExporter";
+            var actionName = "generate-SMD";
+            var pi = Plugins.FindPluginInstance(pluginName);
+            if (pi == null || !pi.HasAction(actionName))
+            {
+                var res = MessageBoxFlyoutShow(
+                        $"This function requires a binary plug-in file named '{pluginName}', " +
+                        $"which needs to be added to the command line, with an action named '{actionName}'." +
+                        $"Press 'OK' to show help page on GitHub.",
+                        "Plug-in not present",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand);
+                if (res == MessageBoxResult.OK)
+                {
+                    ShowHelp();
+                }
+                return;
+            }
+            //-----------------------------------
+            // make a logger
+            var logger = new AasxRestServerLibrary.GrapevineLoggerToListOfStrings();
+
+            AasxRestServerLibrary.AasxRestServer.Start(_packageCentral.Main,
+                                                        Options.Curr.RestServerHost,
+                                                        Options.Curr.RestServerPort,
+                                                        logger);
+
+            Queue<string> stack = new Queue<string>();
+
+            // Invoke Plugin
+            var ret = pi.InvokeAction(actionName,
+                                      this,
+                                      stack,
+                                      $"http://{Options.Curr.RestServerHost}:{Options.Curr.RestServerPort}/",
+                                      "");
+
+            if (ret == null) return;
+
+            // make listing flyout
+            var uc = new LogMessageFlyout("SMD Exporter", "Generating SMD ..", () =>
+            {
+                string st;
+                if (stack.Count != 0)
+                    st = stack.Dequeue();
+                else
+                    st = null;
+                return (st == null) ? null : new StoredPrint(st);
+            });
+
+            this.StartFlyoverModal(uc, closingAction: () =>
+            {
+                AasxRestServerLibrary.AasxRestServer.Stop();
+            });
+            //--------------------------------
+            // Redraw for changes to be visible
+            RedrawAllAasxElements();
+            //-----------------------------------
         }
     }
 }
