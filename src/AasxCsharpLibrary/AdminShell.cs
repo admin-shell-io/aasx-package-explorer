@@ -5474,7 +5474,8 @@ namespace AdminShellNS
                 return FindAllIdShortAs<T>(idShort)?.FirstOrDefault<T>();
             }
 
-            public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(Key semId, Type[] allowedTypes = null)
+            public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement.semanticId != null)
@@ -5489,7 +5490,7 @@ namespace AdminShellNS
                                 continue;
                         }
 
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw;
                     }
             }
@@ -5515,15 +5516,45 @@ namespace AdminShellNS
                             yield return smw.submodelElement as T;
             }
 
-            public SubmodelElementWrapper FindFirstSemanticId(Key semId, Type[] allowedTypes = null)
+            public SubmodelElementWrapper FindFirstSemanticId(
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
-                return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
+                return FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<SubmodelElementWrapper>();
+            }
+
+            public SubmodelElementWrapper FindFirstAnySemanticId(
+                Key[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            {
+                if (semId == null)
+                    return null;
+                foreach (var si in semId)
+                {
+                    var found = FindAllSemanticId(si, allowedTypes, matchMode)?
+                                .FirstOrDefault<SubmodelElementWrapper>();
+                    if (found != null)
+                        return found;
+                }
+                return null;
             }
 
             public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
+            }
+
+            public T FindFirstAnySemanticIdAs<T>(Key[] semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                where T : SubmodelElement
+            {
+                if (semId == null)
+                    return null;
+                foreach (var si in semId)
+                {
+                    var found = FindAllSemanticIdAs<T>(si, matchMode)?.FirstOrDefault<T>();
+                    if (found != null)
+                        return found;
+                }
+                return null;
             }
 
             public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
@@ -5670,7 +5701,7 @@ namespace AdminShellNS
 
                 // try to potentially figure out idShort
                 var ids = cd.idShort;
-                if (ids == null && cd.GetIEC61360() != null)
+                if ((ids == null || ids.Trim() == "") && cd.GetIEC61360() != null)
                     ids = cd.GetIEC61360().shortName?
                         .GetDefaultStr();
                 if (idShort != null)
@@ -5732,13 +5763,56 @@ namespace AdminShellNS
 
             // for conversion
 
+            public T AdaptiveConvertTo<T>(
+                SubmodelElement anySrc,
+                ConceptDescription createDefault = null, 
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
+            {
+                if (typeof(T) == typeof(MultiLanguageProperty)
+                        && anySrc is Property srcProp)
+                {
+                    var res = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
+                    if (res is MultiLanguageProperty mlp)
+                    {
+                        mlp.value = new LangStringSet("EN?", srcProp.value);
+                        mlp.valueId = srcProp.valueId;
+                        return res;
+                    }
+                }
+
+                if (typeof(T) == typeof(Property)
+                        && anySrc is MultiLanguageProperty srcMlp)
+                {
+                    var res = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
+                    if (res is Property prp)
+                    {
+                        prp.value = "" + srcMlp.value?.GetDefaultStr();
+                        prp.valueId = srcMlp.valueId;
+                        return res;
+                    }
+                }
+
+                return null;
+            }
+
             public T CopyOneSMEbyCopy<T>(Key destSemanticId,
-                SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Key[] sourceSemanticId,
                 ConceptDescription createDefault = null, Action<T> setDefault = null,
-                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
                 // get source
-                var src = sourceSmc?.FindFirstSemanticIdAs<T>(sourceSemanticId, matchMode);
+                var src = sourceSmc?.FindFirstAnySemanticIdAs<T>(sourceSemanticId, matchMode);
+
+                // may be make an adaptive conversion
+                if (true && src == null)
+                {
+                    var anySrc = sourceSmc?.FindFirstAnySemanticId(sourceSemanticId, matchMode: matchMode);
+                    src = AdaptiveConvertTo<T>(anySrc?.submodelElement, createDefault, 
+                                idShort: idShort, addSme: false);
+                }
+
+                // proceed
                 var aeSrc = SubmodelElementWrapper.GetAdequateEnum(src?.GetElementName());
                 if (src == null || aeSrc == SubmodelElementWrapper.AdequateElementEnum.Unknown)
                 {
@@ -5747,7 +5821,7 @@ namespace AdminShellNS
                         return null;
 
                     // ok, default
-                    var dflt = this.CreateSMEForCD<T>(createDefault, addSme: addSme);
+                    var dflt = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
 
                     // set default?
                     setDefault?.Invoke(dflt);
@@ -5777,10 +5851,21 @@ namespace AdminShellNS
             public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
                 SubmodelElementWrapperCollection sourceSmc, ConceptDescription sourceCD,
                 bool createDefault = false, Action<T> setDefault = null,
-                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
-                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceCD?.GetSingleKey(),
-                    createDefault ? destCD : null, setDefault, matchMode, addSme);
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, new[] { sourceCD?.GetSingleKey() },
+                    createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
+            }
+
+            public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
+                SubmodelElementWrapperCollection sourceSmc, Key[] sourceKeys,
+                bool createDefault = false, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
+            {
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceKeys,
+                    createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
             }
 
             public void CopyManySMEbyCopy<T>(Key destSemanticId,
@@ -5834,7 +5919,7 @@ namespace AdminShellNS
             {
                 CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(),
                     createDefault ? destCD : null, setDefault, matchMode);
-            }
+            }            
         }
 
         public interface IManageSubmodelElements
