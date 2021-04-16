@@ -7,6 +7,9 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// to be disabled for AASX Server
+#define UseMarkup
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
-using AdminShellNS;
+using AdminShellNS; 
 
 namespace AdminShellEvents
 {
@@ -25,9 +28,11 @@ namespace AdminShellEvents
     /// </summary>
     public class AasPayloadBase
     {
+#if UseMarkup
         public virtual MiniMarkupBase ToMarkup()
         {
             return null;
         }
+#endif
     }
 }

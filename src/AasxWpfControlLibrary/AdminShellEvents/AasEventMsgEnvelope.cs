@@ -7,6 +7,9 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// to be disabled for AASX Server
+#define UseMarkup
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -158,6 +161,7 @@ namespace AdminShellEvents
             return res;
         }
 
+#if UseMarkup
         public MiniMarkupBase ToMarkup()
         {
             int w1 = 30;
@@ -194,6 +198,7 @@ namespace AdminShellEvents
 
             return res;
         }
+#endif
 
         //
         // Payloads

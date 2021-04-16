@@ -7,6 +7,9 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// to be disabled for AASX Server
+#define UseMarkup 
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +23,11 @@ using Newtonsoft.Json;
 
 namespace AdminShellEvents
 {
+    /// <summary>
+    /// Single item of a update value payload.
+    /// The element denoted by <c>Path</c> is changed in its value and shall not be devided into further
+    /// single payloads.
+    /// </summary>
     public class AasPayloadUpdateValueItem
     {
         /// <summary>
@@ -58,7 +66,7 @@ namespace AdminShellEvents
 
         public override string ToString()
         {
-            var res = "MsgUpdateValueItem: {Observable}";
+            var res = "PayloadUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
                     res += "/" + k.value;
@@ -69,6 +77,7 @@ namespace AdminShellEvents
             return res;
         }
 
+#if UseMarkup
         public MiniMarkupBase ToMarkup()
         {
             var left = "  MsgUpdateValueItem: {Observable}";
@@ -86,11 +95,11 @@ namespace AdminShellEvents
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
                 new MiniMarkupRun(right));
         }
-
+#endif
     }
 
     /// <summary>
-    /// This event-message transports updated information of values of designated SubmodelElements
+    /// This event payload transports updated information of values of designated SubmodelElements
     /// </summary>
     public class AasPayloadUpdateValue : AasPayloadBase
     {
@@ -138,6 +147,7 @@ namespace AdminShellEvents
             return res;
         }
 
+#if UseMarkup
         public override MiniMarkupBase ToMarkup()
         {
             var res = new MiniMarkupSequence();
@@ -146,5 +156,6 @@ namespace AdminShellEvents
                     res.Children.Add(val.ToMarkup());
             return res;
         }
+#endif
     }
 }
