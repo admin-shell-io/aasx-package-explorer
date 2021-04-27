@@ -438,6 +438,14 @@ namespace AdminShellNS
                 return value.Trim().ToLower().Equals(type.Trim().ToLower());
             }
 
+            public bool IsAbsolute()
+            {
+                return IsType(Key.GlobalReference)
+                    || IsType(Key.AAS)
+                    || IsType(Key.Asset)
+                    || IsType(Key.Submodel);
+            }
+
             public bool Matches(
                 string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
             {
@@ -3992,13 +4000,18 @@ namespace AdminShellNS
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
+                return FindReferableByReference(rf?.Keys);
+            }
+
+            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false)
+            {
                 // first index needs to exist ..
-                if (rf == null || keyIndex >= rf.Count)
+                if (kl == null || keyIndex >= kl.Count)
                     return null;
 
                 // which type?
-                var firstType = rf[keyIndex].type.Trim().ToLower();
-                var firstIdentification = new Identification(rf[keyIndex].idType, rf[keyIndex].value);
+                var firstType = kl[keyIndex].type.Trim().ToLower();
+                var firstIdentification = new Identification(kl[keyIndex].idType, kl[keyIndex].value);
                 AdministrationShell aasToFollow = null;
 
                 if (firstType == Key.AAS.Trim().ToLower())
@@ -4007,7 +4020,7 @@ namespace AdminShellNS
                     var aas = this.FindAAS(firstIdentification);
 
                     // not found or already at end with our search?
-                    if (aas == null || keyIndex >= rf.Count - 1)
+                    if (aas == null || keyIndex >= kl.Count - 1)
                         return aas;
 
                     // follow up
@@ -4020,7 +4033,7 @@ namespace AdminShellNS
                     var asset = this.FindAsset(firstIdentification);
 
                     // not found or already at end with our search?
-                    if (asset == null || keyIndex >= rf.Count - 1)
+                    if (asset == null || keyIndex >= kl.Count - 1)
                         return exactMatch ? null : asset;
 
                     // try find aas for it
@@ -4039,11 +4052,11 @@ namespace AdminShellNS
                 if (aasToFollow != null)
                 {
                     // search different entities
-                    if (rf[keyIndex + 1].type.Trim().ToLower() == Key.Submodel.ToLower()
-                        || rf[keyIndex + 1].type.Trim().ToLower() == Key.SubmodelRef.ToLower())
+                    if (kl[keyIndex + 1].type.Trim().ToLower() == Key.Submodel.ToLower()
+                        || kl[keyIndex + 1].type.Trim().ToLower() == Key.SubmodelRef.ToLower())
                     {
                         // ok, search SubmodelRef
-                        var smref = aasToFollow.FindSubmodelRef(rf[keyIndex + 1].ToId());
+                        var smref = aasToFollow.FindSubmodelRef(kl[keyIndex + 1].ToId());
                         if (smref == null)
                             return exactMatch ? null : aasToFollow;
 
@@ -4053,11 +4066,11 @@ namespace AdminShellNS
                             return exactMatch ? null : aasToFollow;
 
                         // at our end?
-                        if (keyIndex >= rf.Count - 2)
+                        if (keyIndex >= kl.Count - 2)
                             return sm;
 
                         // go inside
-                        return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 2);
+                        return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, kl, keyIndex + 2);
                     }
                 }
 
@@ -4067,16 +4080,16 @@ namespace AdminShellNS
                 if (firstType == Key.Submodel.Trim().ToLower())
                 {
                     // ok, search Submodel
-                    var sm = this.FindSubmodel(new Identification(rf[keyIndex].idType, rf[keyIndex].value));
+                    var sm = this.FindSubmodel(new Identification(kl[keyIndex].idType, kl[keyIndex].value));
                     if (sm == null)
                         return null;
 
                     // at our end?
-                    if (keyIndex >= rf.Count - 1)
+                    if (keyIndex >= kl.Count - 1)
                         return sm;
 
                     // go inside
-                    return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 1);
+                    return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, kl, keyIndex + 1);
                 }
 
                 // nothing in this Environment
@@ -5308,6 +5321,12 @@ namespace AdminShellNS
             public static Referable FindReferableByReference(
                 List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
             {
+                return FindReferableByReference(wrappers, rf?.Keys, keyIndex);
+            }
+
+            public static Referable FindReferableByReference(
+                List<SubmodelElementWrapper> wrappers, KeyList rf, int keyIndex)
+            {
                 // first index needs to exist ..
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
@@ -5664,6 +5683,16 @@ namespace AdminShellNS
                 if (sme == null)
                     return;
                 this.Add(SubmodelElementWrapper.CreateFor(sme));
+            }
+
+            /// <summary>
+            /// Add <c>sme</c> by creating a SubmodelElementWrapper for it and adding to this collection.
+            /// </summary>
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (sme == null || index < 0 || index >= this.Count)
+                    return;
+                this.Insert(index, SubmodelElementWrapper.CreateFor(sme));
             }
 
             /// <summary>
@@ -6134,13 +6163,18 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("Submodel", "SM");
             }
 
-            public Reference GetReference()
+            public SubmodelRef GetSubmodelRef()
             {
                 SubmodelRef l = new SubmodelRef();
                 l.Keys.Add(
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return l;
+            }
+
+            public Reference GetReference()
+            {
+                return GetSubmodelRef();
             }
 
             /// <summary>

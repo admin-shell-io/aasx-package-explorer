@@ -23,9 +23,9 @@ namespace AdminShellNS
     {
         /// <summary>
         /// This converter is used for reading JSON files; it claims to be responsible for
-        /// "SubmodelElements" (the base class)
+        /// "Referable" (the base class)
         /// and decides, which sub-class of the base class shall be populated.
-        /// The decision, shich special sub-class to create is done in a factory
+        /// If the object is SubmodelElement, the decision, shich special sub-class to create is done in a factory
         /// AdminShell.SubmodelElementWrapper.CreateAdequateType(),
         /// in order to have all sub-class specific decisions in one place (SubmodelElementWrapper)
         /// Remark: There is a NuGet package JsonSubTypes, which could have done the job, except the fact of having
@@ -48,7 +48,8 @@ namespace AdminShellNS
 
             public override bool CanConvert(Type objectType)
             {
-                if (typeof(AdminShell.SubmodelElement).IsAssignableFrom(objectType))
+                // Info MIHO 21 APR 2020: changed this from SubmodelElement to Referable
+                if (typeof(AdminShell.Referable).IsAssignableFrom(objectType))
                     return true;
                 return false;
             }
@@ -67,7 +68,7 @@ namespace AdminShellNS
                 JObject jObject = JObject.Load(reader);
 
                 // Create target object based on JObject
-                object target = new AdminShell.SubmodelElement();
+                object target = new AdminShell.Referable();
 
                 if (jObject.ContainsKey(UpperClassProperty))
                 {

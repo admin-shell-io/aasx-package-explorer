@@ -595,9 +595,9 @@ namespace AasxPackageExplorer
             if (cmd == "eventsresetlocks")
             {
                 Log.Singleton.Info($"Event interlocking reset. Status was: " +
-                    $"update-value-pending={_eventsUpdateValuePending}");
+                    $"update-value-pending={_eventHandling.UpdateValuePending}");
 
-                _eventsUpdateValuePending = false;
+                _eventHandling.Reset();
             }
 
             if (cmd == "eventsshowlogkey")

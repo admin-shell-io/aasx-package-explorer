@@ -8,7 +8,9 @@
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo2\\Festo-DemoBox-repo-local.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
@@ -43,6 +45,7 @@
   "VerboseConnect": true,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
+  "StayConnectOptions": "REST-QUEUE", // SIM
   /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
   "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510",
   "Remarks": [

@@ -41,11 +41,27 @@ namespace AdminShellEvents
         public ChangeReason Reason;
 
         /// <summary>
+        /// Timestamp of generated (sending) event in UTC time.
+        /// </summary>
+        public string Timestamp { get; set; }
+
+        /// <summary>
         /// Path of the element which was structurally changed. Contains one or more Keys, relative to the 
         /// Observable of the defined Event. 
         /// Is null / empty, if identical to Observable.
         /// </summary>
         public AdminShell.KeyList Path { get; set; }
+
+        /// <summary>
+        /// JSON-Serializatin of the Submodel, SMC, SME which was denoted by Observabale and Path.
+        /// </summary>
+        public string Data { get; set; }
+
+        /// <summary>
+        /// If the reason is create and the data element to be created is part of an (ordered) collection,
+        /// and if >= 0, give the index within the collection, where the data element is to be created
+        /// </summary>
+        public int CreateAtIndex = -1;
 
         //
         // Constructor
@@ -89,6 +105,17 @@ namespace AdminShellEvents
                 new MiniMarkupRun(right));
         }
 #endif
+
+        public AdminShell.Referable GetDataAsReferable()
+        {
+            // access
+            if (Data == null)
+                return null;
+
+            // try deserialize
+            return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
+        }
+
     }
 
     /// <summary>

@@ -165,6 +165,7 @@ namespace AasxPackageExplorer
                 RedrawAllAasxElements();
                 RedrawElementView();
                 ShowContentBrowser(Options.Curr.ContentHome, silent: true);
+                _eventHandling.Reset();
             }
         }
 
@@ -1269,9 +1270,25 @@ namespace AasxPackageExplorer
             }
         }
 
-        private DateTime _lastQueuedUpdateValueEvent = DateTime.Now;
+        public class EventHandlingStatus
+        {
+            public DateTime LastQueuedUpdateValueEvent = DateTime.Now;
+            public bool UpdateValuePending = false;
+            public bool GetEventsPending = false;
+            public int UserErrorsIndicated = 0;
+            public bool UserErrorsSuppress = false;
 
-        private bool _eventsUpdateValuePending = false;
+            public void Reset()
+            {
+                LastQueuedUpdateValueEvent = DateTime.Now;
+                UpdateValuePending = false;
+                GetEventsPending = false;
+                UserErrorsIndicated = 0;
+                UserErrorsSuppress = false;
+            }
+        }
+
+        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
@@ -1290,10 +1307,12 @@ namespace AasxPackageExplorer
             //
 
             if (true == copts?.StayConnected
-                && !_eventsUpdateValuePending
-                && (DateTime.Now - _lastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
+                && Options.Curr.StayConnectOptions.HasContent()
+                && Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
+                && !_eventHandling.UpdateValuePending
+                && (DateTime.Now - _eventHandling.LastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
             {
-                _lastQueuedUpdateValueEvent = DateTime.Now;
+                _eventHandling.LastQueuedUpdateValueEvent = DateTime.Now;
 
                 try
                 {
@@ -1348,12 +1367,26 @@ namespace AasxPackageExplorer
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
                                             if (evSnd)
-                                                _eventsUpdateValuePending = true;
+                                            {
+                                                _eventHandling.UpdateValuePending = true;
+                                                _eventHandling.UserErrorsSuppress = false;
+                                                _eventHandling.UserErrorsIndicated = 0;
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Singleton.Error(ex,
-                                                "periodically triggering event for simulated update");
+                                            if (!_eventHandling.UserErrorsSuppress)
+                                            {
+                                                Log.Singleton.Error(ex,
+                                                    "periodically triggering event for simulated update (time-out)");
+                                                _eventHandling.UserErrorsIndicated++;
+
+                                                if (_eventHandling.UserErrorsIndicated > 3)
+                                                {
+                                                    Log.Singleton.Info("Too many repetitive time-outs. Disabling!");
+                                                    _eventHandling.UserErrorsSuppress = true;
+                                                }
+                                            }
                                         }
                                     });
                                 }
@@ -1365,6 +1398,38 @@ namespace AasxPackageExplorer
                 {
                     Log.Singleton.Error(ex, "periodically checking for triggering events");
                 }
+            }
+
+            // Kick off all event updates?
+            if (copts != null
+                && Options.Curr.StayConnectOptions.HasContent()
+                && Options.Curr.StayConnectOptions.ToUpper().Contains("REST-QUEUE")
+                && !_eventHandling.GetEventsPending
+                && _packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp2
+                && cntHttp2.ConnectorPrimary is PackageConnectorHttpRest connRest2)
+            {
+                // mutex!
+                _eventHandling.GetEventsPending = true;
+
+                // async
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        var evSnd = await
+                            connRest2.PullEvents();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex,
+                            "pulling events from REST (time-out?)");
+                    }
+                    finally
+                    {
+                        // unlock mutex
+                        _eventHandling.GetEventsPending = false;
+                    }
+                });
             }
         }
 
@@ -1401,7 +1466,7 @@ namespace AasxPackageExplorer
                         changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
 
                         // update value received
-                        _eventsUpdateValuePending = false;
+                        _eventHandling.UpdateValuePending = false;
                     }
 
                 // stupid

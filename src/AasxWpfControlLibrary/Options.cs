@@ -266,6 +266,11 @@ namespace AasxPackageExplorer
         public string DefaultConnectRepositoryLocation = "";
 
         /// <summary>
+        /// May contain different string-based options for stay connect, event update mechanisms
+        /// </summary>
+        public string StayConnectOptions = "";
+
+        /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]
