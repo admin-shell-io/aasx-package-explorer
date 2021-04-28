@@ -1,6 +1,7 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
+Copyright (c) 2021 KEB Automation KG <https://www.keb.de/>,
+Copyright (c) 2021 Lenze SE <https://www.lenze.com/en-de/>,
+author: Jonas Grote, Denis Göllner, Sebastian Bischof
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
