@@ -28,22 +28,6 @@ jobs:
         with:
           dotnet-version: '3.1.100'
 
-      - name: Cache local nuget tools
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-local-nuget-tools
-        with:
-          path: tools
-          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-10-28
-
-      - name: Cache global nuget packages
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-global-nuget-packages
-        with:
-          path: ~/.nuget/packages/
-          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForBuildTestInspect.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-10-28
-
       - name: Install tools for build-test-inspect
         working-directory: src
         run: powershell .\InstallToolsForBuildTestInspect.ps1
@@ -64,14 +48,6 @@ jobs:
       - name: Check that all Doctests are there
         working-directory: src
         run: powershell .\Doctest.ps1 -check
-
-      - name: Cache sample AASXs
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-sample-aasx
-        with:
-          path: sample-aasx
-          key: ${{ env.cache-name }}-${{ hashFiles('src/DownloadSamples.ps1') }}-2020-08-01
 
       - name: Download samples
         working-directory: src
