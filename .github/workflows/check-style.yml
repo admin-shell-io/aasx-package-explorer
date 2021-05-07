@@ -28,15 +28,6 @@ jobs:
           dotnet-version: '3.1.100'
         if: always()
 
-      - name: Cache global nuget packages
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-global-nuget-packages
-        with:
-          path: ~/.nuget/packages/
-          key: ${{ env.cache-name }}-${{ hashFiles('src/InstallToolsForStyle.ps1') }}-${{ hashFiles('src/.config/dotnet-tools.json') }}-2020-07-06
-        if: always()
-
       - name: Install tools for style
         working-directory: src
         run: powershell .\InstallToolsForStyle.ps1
