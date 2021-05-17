@@ -84,7 +84,7 @@ namespace AdminShellEvents
             get
             {
                 return Timestamp.ToUniversalTime()
-.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                    .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
             }
         }
 

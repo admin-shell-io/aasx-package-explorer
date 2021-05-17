@@ -115,7 +115,6 @@ namespace AdminShellEvents
             // try deserialize
             return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
         }
-
     }
 
     /// <summary>

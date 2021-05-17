@@ -65,6 +65,60 @@ namespace AasxWpfControlLibrary.PackageCentral
         public ShowMessageDelegate ShowMesssageBox;
     }
 
+    public enum PackCntChangeEventReason
+    {
+        /// <summary>
+        /// A "session" of multiple possible changes is started
+        /// </summary>
+        StartOfChanges,
+
+        /// <summary>
+        /// A Referable is created within the "typical" enumeration of another Referable.
+        /// </summary>
+        Create,
+
+        /// <summary>
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable
+        /// </summary>
+        StructuralUpdate,
+
+        /// <summary>
+        /// A Referable is deleted
+        /// </summary>
+        Delete,
+
+        /// <summary>
+        /// A value upatde of a single Referable (not children) is performed
+        /// </summary>
+        ValueUpdateSingle,
+
+        /// <summary>
+        /// A value upatde of a Referable including possible children is performed
+        /// </summary>
+        ValueUpdateHierarchy,
+
+        /// <summary>
+        /// A "session" of multiple possible changes is finalized
+        /// </summary>
+        EndOfChanges
+    }
+
+    /// <summary>
+    /// Main application can register for a handler.
+    /// </summary>
+    /// <param name="container">Identification of the container</param>
+    /// <param name="reason">The reason</param>
+    /// <param name="thisRef">Changed Referable itself</param>
+    /// <param name="parentRef">A Referable, which contains the changed Referable.</param>
+    /// <param name="createAtIndex">If create, at which index; else: -1</param>
+    /// <returns></returns>
+    public delegate bool PackCntChangeEventHandler(
+        PackageContainerBase container,
+        PackCntChangeEventReason reason,        
+        AdminShell.Referable thisRef = null,
+        AdminShell.Referable parentRef = null,
+        int createAtIndex = -1);
+
     /// <summary>
     /// The container wraps an AdminShellPackageEnv with the availability to upload, download, re-new the package env
     /// and to transport further information (future use).
@@ -120,6 +174,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         public List<PackageConnectorBase> ConnectorSecondary = new List<PackageConnectorBase>();
 
         protected string _location = "";
+
+        /// <summary>
+        /// Main application can register for change events
+        /// </summary>
+        public PackCntChangeEventHandler ChangeEventHandler = null;
 
         /// <summary>
         /// Location of the Container in a certain storage container, e.g. a local or network based

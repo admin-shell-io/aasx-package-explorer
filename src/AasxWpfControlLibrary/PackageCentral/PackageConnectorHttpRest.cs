@@ -448,6 +448,11 @@ namespace AasxWpfControlLibrary.PackageCentral
             // parse dynamic response object
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
 
+            // change handler, start?
+            var handler = Container?.ChangeEventHandler;
+            handler?.Invoke(Container, PackCntChangeEventReason.StartOfChanges);
+
+            // which events?
             if (frame != null 
                 && frame.ContainsKey("Changes") 
                 && (frame["Changes"] is Newtonsoft.Json.Linq.JArray changes)
@@ -521,6 +526,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 "Error creating data within Observable/path!");
                     }
                 }
+
+            // change handler, start?
+            handler?.Invoke(Container, PackCntChangeEventReason.EndOfChanges);
 
             return true;
         }
