@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
 using AdminShellNS;
@@ -26,6 +27,7 @@ namespace AdminShellEvents
     /// <summary>
     /// Single item of a structural change payload
     /// </summary>
+    [DisplayName("AasPayloadStructuralChangeItem")]
     public class AasPayloadStructuralChangeItem
     {
         /// <summary>
@@ -121,6 +123,7 @@ namespace AdminShellEvents
     /// This event payload transports information, if structural elements of the AAS were created, modified or
     /// deleted (CRUD). (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
     /// </summary>
+    [DisplayName("AasPayloadStructuralChange")]
     public class AasPayloadStructuralChange : AasPayloadBase
     {
         /// <summary>

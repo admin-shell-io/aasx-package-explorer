@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
 using AdminShellNS;
@@ -28,6 +29,7 @@ namespace AdminShellEvents
     /// 
     /// Note: This envelope is able to carry one or multiple even payloads.
     /// </summary>
+    [DisplayName("AasEventMsgEnvelope")]
     public class AasEventMsgEnvelope
     {
         /// <summary>
@@ -78,13 +80,17 @@ namespace AdminShellEvents
         // Display
         //
 
+        public static string TimeToString(DateTime dt)
+        {
+            return dt.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+        }
+
         // see: https://stackoverflow.com/questions/1820915/how-can-i-format-datetime-to-web-utc-format
         public string DisplayTimestamp
         {
             get
             {
-                return Timestamp.ToUniversalTime()
-                    .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                return TimeToString(Timestamp.ToUniversalTime());
             }
         }
 

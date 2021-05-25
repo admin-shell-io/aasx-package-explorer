@@ -559,6 +559,15 @@ namespace AdminShellNS
 
             // constructors / creators
 
+            public KeyList() { }
+
+            public KeyList(KeyList src)
+            {
+                if (src != null)
+                    foreach (var k in src)
+                        this.Add(new Key(k));
+            }
+
             public static KeyList CreateNew(Key k)
             {
                 var kl = new KeyList { k };
@@ -5079,6 +5088,10 @@ namespace AdminShellNS
                 return null;
             }
 
+            public virtual void ValueFromText(string text)
+            {
+            }
+
             // validation
 
             public override void Validate(AasValidationRecordList results)
@@ -6475,6 +6488,11 @@ namespace AdminShellNS
             public override string ValueAsText(string defaultLang = null)
             {
                 return "" + value;
+            }
+
+            public override void ValueFromText(string text)
+            {
+                value = "" + text;
             }
 
             public bool IsTrue()

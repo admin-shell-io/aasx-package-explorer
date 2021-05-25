@@ -430,6 +430,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             return res;
         }
 
+#if OLD
         public async Task<bool> PullEvents()
         {
             // access
@@ -531,6 +532,421 @@ namespace AasxWpfControlLibrary.PackageCentral
             handler?.Invoke(Container, PackCntChangeEventReason.EndOfChanges);
 
             return true;
+        }
+#endif
+
+        private void ExecuteEventAction(
+            AasPayloadStructuralChangeItem change,
+            AasEventMsgEnvelope env,
+            PackCntChangeEventHandler handler = null)
+        {
+            // trivial
+            if (change == null)
+                return;
+
+            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
+                ;
+
+            // try determine tarket of {Observavle}/{path}
+            AdminShell.KeyList targetKl = null;
+            AdminShell.Referable target = null;
+            if (change.Path?.IsEmpty == false)
+            {
+                if (env.ObservableReference?.Keys != null)
+                    targetKl = new AdminShell.KeyList(env.ObservableReference.Keys);
+
+                targetKl.AddRange(change.Path);
+
+                if (targetKl.First().IsAbsolute())
+                    target = Env?.AasEnv?.FindReferableByReference(targetKl);
+            }
+
+            // try evaluate parent of target?
+            var parentKl = targetKl;
+            AdminShell.Referable parent = null;
+            if (target != null && parentKl != null && parentKl.Count > 1)
+            {
+                parentKl.RemoveAt(parentKl.Count - 1);
+                parent = Env?.AasEnv?.FindReferableByReference(parentKl);
+            }
+
+            // create
+            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
+            {
+                // need parent (target will not exist)
+                if (parent == null)
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Cannot find parent Referable!");
+                    return;
+                }
+
+                // target existing??
+                if (target != null)
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Target Referable already existing .. Aborting!");
+                    return;
+                }
+
+                // need data object
+                var dataRef = change.GetDataAsReferable();
+                if (dataRef == null)
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Cannot deserize StructuralChangeItem Referable data!");
+                    return;
+                }
+
+                // go through some cases
+                // all SM, SME with dependent elements
+                if (parent is AdminShell.IManageSubmodelElements parentMgr
+                    && dataRef is AdminShell.SubmodelElement sme
+                    && change.CreateAtIndex < 0)
+                {
+                    parentMgr.Add(sme);
+                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
+                        thisRef: sme, parentRef: parent);
+                }
+                else
+                // at least for SMC, handle CreateAtIndex
+                if (parent is AdminShell.SubmodelElementCollection parentSmc
+                    && dataRef is AdminShell.SubmodelElement sme2
+                    && change.CreateAtIndex >= 0
+                    && parentSmc.value != null
+                    && change.CreateAtIndex < parentSmc.value.Count)
+                {
+                    parentSmc.value.Insert(change.CreateAtIndex, sme2);
+                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
+                        thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex);
+                }
+                else
+                // add to AAS
+                if (parent is AdminShell.AdministrationShell parentAas
+                    && dataRef is AdminShell.Submodel sm
+                    && Env?.AasEnv != null)
+                {
+                    Env.AasEnv.Submodels.Add(sm);
+                    parentAas.AddSubmodelRef(sm?.GetSubmodelRef());
+                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
+                        thisRef: sm, parentRef: parent);
+                }
+                else
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Exception creating data within Observable/path! " +
+                        "Path was: " + change.Path);
+                    return;
+                }
+            }
+
+            // delete
+            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Delete)
+            {
+                // need target
+                if (target == null)
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Delete " +
+                        "Cannot find target Referable!");
+                    return;
+                }
+
+                // need target
+                if (parent == null)
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Delete " +
+                        "Cannot find parent Referable for target!");
+                    return;
+                }
+
+                // go through some cases
+                // all SM, SME with dependent elements
+                if (parent is AdminShell.IManageSubmodelElements parentMgr
+                    && target is AdminShell.SubmodelElement sme)
+                {
+                    // Note: assumption is, that Remove() will not throw exception,
+                    // if sme does not exist. Sadly, there is also no exception to 
+                    // handler in this case
+                    parentMgr.Remove(sme);
+                    handler?.Invoke(Container, PackCntChangeEventReason.Delete,
+                        thisRef: sme, parentRef: target);
+                }
+                else
+                // delete SM from AAS
+                // Note: this implementation requires, that path consists of:
+                //       <AAS> , <SM>
+                // TODO (MIHO, 21-05-2021): make sure, this is required by the specification!
+                if (parent is AdminShell.AdministrationShell parentAas
+                    && parentAas.submodelRefs != null
+                    && targetKl.Count >= 1
+                    && target is AdminShell.Submodel sm
+                    && Env?.AasEnv != null)
+                {
+                    AdminShell.SubmodelRef smrefFound = null;
+                    foreach (var smref in parentAas.submodelRefs)
+                        if (smref.Matches(targetKl.Last(), AdminShellV20.Key.MatchMode.Relaxed))
+                            smrefFound = smref;
+
+                    if (smrefFound == null)
+                    {
+                        handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                            info: "PackageConnector::PullEvents() Delete " +
+                            "Cannot find SubmodelRef in target AAS!");
+                        return;
+                    }
+
+                    parentAas.submodelRefs.Remove(smrefFound);
+                    Env.AasEnv.Submodels.Remove(sm);
+                    handler?.Invoke(Container, PackCntChangeEventReason.Delete,
+                        thisRef: target, parentRef: parent);
+                }
+                else
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Exception deleting data within Observable/path! " +
+                        "Path was: " + change.Path);
+                    return;
+                }
+            }
+        }
+
+        private void ExecuteEventAction(
+            AasPayloadUpdateValueItem value,
+            AasEventMsgEnvelope env,
+            PackCntChangeEventHandler handler = null)
+        {
+            // trivial
+            if (value == null)
+                return;
+
+            // try determine tarket of {Observavle}/{path}
+            AdminShell.KeyList targetKl = null;
+            AdminShell.Referable target = null;
+            if (value.Path?.IsEmpty == false)
+            {
+                if (env.ObservableReference?.Keys != null)
+                    targetKl = new AdminShell.KeyList(env.ObservableReference.Keys);
+
+                targetKl.AddRange(value.Path);
+
+                if (targetKl.First().IsAbsolute())
+                    target = Env?.AasEnv?.FindReferableByReference(targetKl);
+            }
+
+            // no target?
+            if (target == null)
+            {
+                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    info: "PackageConnector::PullEvents() Update " +
+                    "Cannot find target Referable!");
+                return;
+            }
+
+            // try to update
+            if (target is AdminShell.AdministrationShell aas)
+            {
+                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    info: "PackageConnector::PullEvents() Update " +
+                    "Update of AAS not implemented!");
+                return;
+            }
+            else
+            if (target is AdminShell.Submodel sm)
+            {
+                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    info: "PackageConnector::PullEvents() Update " +
+                    "Update of Submodel not implemented!");
+                return;
+            }
+            else
+            if (target is AdminShell.SubmodelElementCollection smec)
+            {
+                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    info: "PackageConnector::PullEvents() Update " +
+                    "Update of SubmodelElementCollection not implemented!");
+                return;
+            }
+            else
+            if (target is AdminShell.SubmodelElement sme)
+            {
+                // goal
+                sme.ValueFromText(value.Value);
+                if (sme is AdminShell.Property prop && value.ValueId != null)
+                    prop.valueId = value.ValueId;
+            }
+            else
+            {
+                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    info: "PackageConnector::PullEvents() Update " +
+                    "Target for path not recognised: " + value.Path);
+                return;
+            }
+        }
+
+        public async Task<DateTime> PullEvents(string qst)
+        {
+            // access
+            if (!IsValid() || !qst.HasContent())
+                throw new PackageConnectorException("PackageConnector::PullEvents() " +
+                    "connection not valid!");
+
+            // will return maximum timestamp
+            DateTime lastTS = DateTime.MinValue;
+
+            // do the query
+            var response = await _client.GetAsync(qst);
+            if (!response.IsSuccessStatusCode)
+                throw new PackageConnectorException($"PackageConnector::PullEvents() " +
+                    $"Server did not respond correctly on query {qst} !");
+
+            // ok
+            // parse dynamic response object
+            var settings = AasxIntegrationBase.AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                    new[] { typeof(AasEventMsgEnvelope) });
+            AasEventMsgEnvelope[] envelopes;
+            try
+            {
+                envelopes = Newtonsoft.Json.JsonConvert.DeserializeObject<AasEventMsgEnvelope[]>(
+                    await response.Content.ReadAsStringAsync(), settings);
+            }
+            catch (Exception ex)
+            {
+                throw new PackageConnectorException($"PackageConnector::PullEvents() " +
+                                    "Error parsing event message payload(s)", ex);
+            }
+
+            // change handler, start?
+            var handler = Container?.ChangeEventHandler;
+            handler?.Invoke(Container, PackCntChangeEventReason.StartOfChanges);
+
+            if (envelopes != null)
+                foreach (var env in envelopes)
+                {
+                    // trivial
+                    if (env?.Payloads == null)
+                        continue;
+
+                    // header parsing
+                    if (env.Timestamp > lastTS)
+                        lastTS = env.Timestamp;
+
+                    // payloads
+                    foreach (var pl in env.Payloads)
+                    {
+                        // Structural
+                        if (pl is AasPayloadStructuralChange chgStruct)
+                        {
+                            // trivial
+                            if (chgStruct?.Changes == null)
+                                continue;
+
+                            foreach (var change in chgStruct.Changes)
+                                ExecuteEventAction(change, env, handler);
+                        }
+
+                        // Update Value
+                        if (pl is AasPayloadUpdateValue chgUpdate)
+                        {
+                            // trivial
+                            if (chgUpdate?.Values == null)
+                                continue;
+
+                            foreach (var value in chgUpdate.Values)
+                                ExecuteEventAction(value, env, handler);
+                        }
+                    }
+                }
+#if _not_now
+
+            // which events?
+            if (frame != null
+                && frame.ContainsKey("Changes")
+                && (frame["Changes"] is Newtonsoft.Json.Linq.JArray changes)
+                && changes.Count > 0)
+                foreach (var changeJO in changes)
+                {
+                    // access
+                    if (changeJO == null)
+                        continue;
+
+                    // try deserialize
+                    var change = changeJO.ToObject<AasPayloadStructuralChangeItem>();
+                    if (change == null)
+                        throw new PackageConnectorException($"PackageConnector::PullEvents() " +
+                            "Cannot deserize payload StructuralChangeItem!");
+
+                    // try determine tarket of {Observavle}/{path}
+                    AdminShell.Referable target = null;
+                    if (change.Path?.IsEmpty == false)
+                    {
+                        AdminShell.KeyList kl = null;
+                        if (change.Path.First().IsAbsolute())
+                            kl = change.Path;
+                        else
+                        {
+                            // { Observavle}/{ path}
+                            // need outer event!
+                            throw new NotImplementedException("Outer Event Message!");
+                        }
+                        target = Env?.AasEnv?.FindReferableByReference(kl);
+                    }
+
+                    // create
+                    if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
+                    {
+                        // need data object
+                        var dataRef = change.GetDataAsReferable();
+                        if (dataRef == null)
+                            throw new PackageConnectorException($"PackageConnector::PullEvents() " +
+                                "Cannot deserize StructuralChangeItem Referable data!");
+
+                        // go through some cases
+                        // all SM, SME with dependent elements
+                        if (target is AdminShell.IManageSubmodelElements targetMgr
+                            && dataRef is AdminShell.SubmodelElement sme
+                            && change.CreateAtIndex < 0)
+                        {
+                            targetMgr.Add(sme);
+                        }
+                        else
+                        // at least for SMC, handle CreateAtIndex
+                        if (target is AdminShell.SubmodelElementCollection targetSmc
+                            && dataRef is AdminShell.SubmodelElement sme2
+                            && change.CreateAtIndex >= 0
+                            && targetSmc.value != null
+                            && change.CreateAtIndex < targetSmc.value.Count)
+                        {
+                            targetSmc.value.Insert(change.CreateAtIndex, sme2);
+                        }
+                        else
+                        // add to AAS
+                        if (target is AdminShell.AdministrationShell targetAas
+                            && dataRef is AdminShell.Submodel sm
+                            && Env?.AasEnv != null)
+                        {
+                            Env.AasEnv.Submodels.Add(sm);
+                            targetAas.AddSubmodelRef(sm?.GetSubmodelRef());
+                        }
+                        else
+                            throw new PackageConnectorException($"PackageConnector::PullEvents() " +
+                                "Error creating data within Observable/path!");
+                    }
+                }
+
+#endif
+
+            // change handler, start?
+            handler?.Invoke(Container, PackCntChangeEventReason.EndOfChanges);
+
+            // ok
+            return lastTS;
         }
 
     }

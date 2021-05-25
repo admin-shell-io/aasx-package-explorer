@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
 using AdminShellNS;
@@ -28,6 +29,7 @@ namespace AdminShellEvents
     /// The element denoted by <c>Path</c> is changed in its value and shall not be devided into further
     /// single payloads.
     /// </summary>
+    [DisplayName("AasPayloadUpdateValueItem")]
     public class AasPayloadUpdateValueItem
     {
         /// <summary>
@@ -101,6 +103,7 @@ namespace AdminShellEvents
     /// <summary>
     /// This event payload transports updated information of values of designated SubmodelElements
     /// </summary>
+    [DisplayName("AasPayloadUpdateValue")]
     public class AasPayloadUpdateValue : AasPayloadBase
     {
         /// <summary>

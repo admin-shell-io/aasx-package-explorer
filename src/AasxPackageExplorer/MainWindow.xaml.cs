@@ -1272,7 +1272,8 @@ namespace AasxPackageExplorer
 
         public class EventHandlingStatus
         {
-            public DateTime LastQueuedUpdateValueEvent = DateTime.Now;
+            public DateTime LastQueuedEventRequest = DateTime.Now;
+            public DateTime LastReceivedEventTimeStamp = DateTime.MinValue;
             public bool UpdateValuePending = false;
             public bool GetEventsPending = false;
             public int UserErrorsIndicated = 0;
@@ -1280,7 +1281,7 @@ namespace AasxPackageExplorer
 
             public void Reset()
             {
-                LastQueuedUpdateValueEvent = DateTime.Now;
+                LastQueuedEventRequest = DateTime.Now;
                 UpdateValuePending = false;
                 GetEventsPending = false;
                 UserErrorsIndicated = 0;
@@ -1288,7 +1289,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
+        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();        
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
@@ -1310,9 +1311,9 @@ namespace AasxPackageExplorer
                 && Options.Curr.StayConnectOptions.HasContent()
                 && Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
                 && !_eventHandling.UpdateValuePending
-                && (DateTime.Now - _eventHandling.LastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
+                && (DateTime.Now - _eventHandling.LastQueuedEventRequest).TotalMilliseconds > copts.UpdatePeriod)
             {
-                _eventHandling.LastQueuedUpdateValueEvent = DateTime.Now;
+                _eventHandling.LastQueuedEventRequest = DateTime.Now;
 
                 try
                 {
@@ -1406,18 +1407,30 @@ namespace AasxPackageExplorer
                 && Options.Curr.StayConnectOptions.ToUpper().Contains("REST-QUEUE")
                 && !_eventHandling.GetEventsPending
                 && _packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp2
-                && cntHttp2.ConnectorPrimary is PackageConnectorHttpRest connRest2)
+                && cntHttp2.ConnectorPrimary is PackageConnectorHttpRest connRest2
+                && (DateTime.Now - _eventHandling.LastQueuedEventRequest).TotalMilliseconds > copts.UpdatePeriod)
             {
                 // mutex!
                 _eventHandling.GetEventsPending = true;
+                _eventHandling.LastQueuedEventRequest = DateTime.Now;
 
                 // async
                 Task.Run(async () =>
                 {
                     try
                     {
-                        var evSnd = await
-                            connRest2.PullEvents();
+                        // prepare query
+                        var qst = "/geteventmessages";
+                        if (_eventHandling.LastReceivedEventTimeStamp != DateTime.MinValue)
+                            qst += "/time/" + AasEventMsgEnvelope.TimeToString(_eventHandling.LastReceivedEventTimeStamp);
+
+                        // execute and digest results
+                        var lastTS = await
+                            connRest2.PullEvents(qst);
+                        
+                        // remember for next time
+                        if (lastTS != DateTime.MinValue)
+                            _eventHandling.LastReceivedEventTimeStamp = lastTS;
                     }
                     catch (Exception ex)
                     {

@@ -98,6 +98,12 @@ namespace AasxWpfControlLibrary.PackageCentral
         ValueUpdateHierarchy,
 
         /// <summary>
+        /// An exception prevented the successful execution of the change.
+        /// The exception is detailed in the info message.
+        /// </summary>
+        Exception,
+
+        /// <summary>
         /// A "session" of multiple possible changes is finalized
         /// </summary>
         EndOfChanges
@@ -117,7 +123,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         PackCntChangeEventReason reason,        
         AdminShell.Referable thisRef = null,
         AdminShell.Referable parentRef = null,
-        int createAtIndex = -1);
+        int createAtIndex = -1,
+        string info = null);
 
     /// <summary>
     /// The container wraps an AdminShellPackageEnv with the availability to upload, download, re-new the package env
