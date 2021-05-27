@@ -368,7 +368,7 @@ namespace AasxPackageExplorer
                     continue;
 
                 // remember some further supplementary search information
-                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo.value);
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.value);
 
                 // lookup business objects
                 var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
@@ -791,10 +791,11 @@ namespace AasxPackageExplorer
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
             // the UI application might receive events from items in th package central
-            _packageCentral.ChangeEventHandler = (cnt, reason, thisRef, parentRef, createAtIndex, info) =>
+            _packageCentral.ChangeEventHandler = (data) =>
             {
-                if (reason == PackCntChangeEventReason.Exception)
-                    Log.Singleton.Info("PackageCentral events: " + info);
+                if (data.Reason == PackCntChangeEventReason.Exception)
+                    Log.Singleton.Info("PackageCentral events: " + data.Info);
+                DisplayElements.PushEvent(data);
                 return false;
             };
 
@@ -1089,7 +1090,7 @@ namespace AasxPackageExplorer
             try
             {
                 // remember some further supplementary search information
-                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
 
                 // incrementally make it unprecise
@@ -1491,7 +1492,8 @@ namespace AasxPackageExplorer
                     }
 
                 // stupid
-                if (changedSomething)
+                if (Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
+                    && changedSomething)
                 {
                     // just for test
                     DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
@@ -1513,6 +1515,7 @@ namespace AasxPackageExplorer
             await MainTimer_HandleApplicationEvents();
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
+            DisplayElements.UpdateFromQueuedEvents();
         }
 
         private void SetProgressBar()
@@ -1585,7 +1588,7 @@ namespace AasxPackageExplorer
                     }
 
                     // remember some further supplementary search information
-                    var sri = this.DisplayElements.StripSupplementaryReferenceInformation(hi.ReferableReference);
+                    var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
                     AdminShell.Referable bo = null;

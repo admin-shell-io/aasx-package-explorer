@@ -999,22 +999,33 @@ namespace AasxPackageExplorer
     // Generators
     //
 
-    public class ListOfVisualElement : List<VisualElementGeneric>
+    public class ListOfVisualElement : ObservableCollection<VisualElementGeneric>
     {
+        private List<Plugins.PluginInstance> _pluginsToCheck = new List<Plugins.PluginInstance>();
 
-        public void UpdateByEvent(
-            PackageContainerBase container,
-            PackCntChangeEventReason reason,
-            AdminShell.Referable thisRef = null,
-            AdminShell.Referable parentRef = null,
-            int createAtIndex = -1,
-            string info = null)
+        public ListOfVisualElement()
         {
-
+            // interested plug-ins
+            _pluginsToCheck.Clear();
+            if (Plugins.LoadedPlugins != null)
+                foreach (var lpi in Plugins.LoadedPlugins.Values)
+                {
+                    try
+                    {
+                        var x =
+                            lpi.InvokeAction(
+                                "get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
+                        if (x != null && (bool)x.obj)
+                            _pluginsToCheck.Add(lpi);
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+                }
         }
 
-
-        private static void GenerateVisualElementsFromShellEnvAddElements(
+        private void GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
@@ -1060,11 +1071,57 @@ namespace AasxPackageExplorer
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ela, elaa);
         }
 
-        private static VisualElementAdminShell GenerateVisuElemForAAS(
+        private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
+            AdminShell.Submodel sm,
+            AdminShell.SubmodelRef smr,
+            VisualElementGeneric parent,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
+            bool editMode = false, int expandMode = 0)
+        {
+            // trivial
+            if (smr == null || sm == null)
+                return null;
+
+            // item (even if sm is null)
+            var tiSm = new VisualElementSubmodelRef(parent, cache, env, smr, sm);
+            tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
+
+            // check for visual extensions
+            if (_pluginsToCheck != null)
+                foreach (var lpi in _pluginsToCheck)
+                {
+                    try
+                    {
+                        var ext = lpi.InvokeAction(
+                            "call-check-visual-extension", sm)
+                            as AasxIntegrationBase.AasxPluginResultVisualExtension;
+                        if (ext != null)
+                        {
+                            var tiExt = new VisualElementPluginExtension(
+                                tiSm, cache, package, sm, lpi, ext);
+                            tiSm.Members.Add(tiExt);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+                }
+
+            // recursively into the submodel elements
+            if (sm != null)
+                if (sm.submodelElements != null)
+                    foreach (var sme in sm.submodelElements)
+                        GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
+
+            // ok
+            return tiSm;
+        }
+
+        private VisualElementAdminShell GenerateVisuElemForAAS(
             AdminShell.AdministrationShell aas,
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
-            bool editMode = false, int expandMode = 0,
-            List<Plugins.PluginInstance> pluginsToCheck = null)
+            bool editMode = false, int expandMode = 0)
         {
             // trivial
             if (aas == null)
@@ -1080,42 +1137,15 @@ namespace AasxPackageExplorer
                 {
                     var sm = env.FindSubmodel(smr);
                     if (sm == null)
-                        AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");                    
+                        AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");
 
-                    // item (even if sm is null)
-                    var tiSm = new VisualElementSubmodelRef(tiAas, cache, env, smr, sm);
-                    tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
-
-                    // check for visual extensions
-                    if (pluginsToCheck != null)
-                        foreach (var lpi in pluginsToCheck)
-                        {
-                            try
-                            {
-                                var ext = lpi.InvokeAction(
-                                    "call-check-visual-extension", sm)
-                                    as AasxIntegrationBase.AasxPluginResultVisualExtension;
-                                if (ext != null)
-                                {
-                                    var tiExt = new VisualElementPluginExtension(
-                                        tiSm, cache, package, sm, lpi, ext);
-                                    tiSm.Members.Add(tiExt);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                            }
-                        }
-
-                    // recursively into the submodel elements
-                    if (sm != null)
-                        if (sm.submodelElements != null)
-                            foreach (var sme in sm.submodelElements)
-                                GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
+                    // generate
+                    var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
+                        sm, smr, tiAas, cache, env, package, editMode, expandMode);
 
                     // add
-                    tiAas.Members.Add(tiSm);
+                    if (tiSm != null)
+                        tiAas.Members.Add(tiSm);
                 }
 
             // have views?
@@ -1140,43 +1170,24 @@ namespace AasxPackageExplorer
             return tiAas;
         }
 
-        public static ListOfVisualElement GenerateVisualElementsFromShellEnv(
+        public void AddVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
             string packageSourceFn = null,
             bool editMode = false, int expandMode = 0)
         {
-            // clear tree
+            // temporary tree
             var res = new ListOfVisualElement();
+            
             // valid?
             if (env == null)
-                return res;
+                return;
 
             // need some attach points
-            VisualElementEnvironmentItem tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
-
-            // interested plug-ins
-            var pluginsToCheck = new List<Plugins.PluginInstance>();
-            if (Plugins.LoadedPlugins != null)
-                foreach (var lpi in Plugins.LoadedPlugins.Values)
-                {
-                    try
-                    {
-                        var x =
-                            lpi.InvokeAction(
-                                "get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
-                        if (x != null && (bool)x.obj)
-                            pluginsToCheck.Add(lpi);
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-                }
+            VisualElementEnvironmentItem tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;            
 
             // many operations -> make it bulletproof
             try
             {
-
                 if (editMode)
                 {
                     // package
@@ -1215,17 +1226,20 @@ namespace AasxPackageExplorer
                 foreach (var aas in env.AdministrationShells)
                 {
                     // item
-                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode, expandMode, pluginsToCheck);
+                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode, expandMode);
 
                     // add item
-                    if (editMode)
+                    if (tiAas != null)
                     {
-                        tiAas.Parent = tiShells;
-                        tiShells.Members.Add(tiAas);
-                    }
-                    else
-                    {
-                        res.Add(tiAas);
+                        if (editMode)
+                        {
+                            tiAas.Parent = tiShells;
+                            tiShells.Members.Add(tiAas);
+                        }
+                        else
+                        {
+                            res.Add(tiAas);
+                        }
                     }
                 }
 
@@ -1288,10 +1302,215 @@ namespace AasxPackageExplorer
             }
 
             // end
-            return res;
+            foreach (var r in res)
+                this.Add(r);
+        }        
 
+        //
+        // Element management
+        //
+
+        private IEnumerable<VisualElementGeneric> FindAllVisualElementInternal(VisualElementGeneric root)
+        {
+            yield return root;
+            if (root?.Members != null)
+                foreach (var m in root.Members)
+                    foreach (var e in FindAllVisualElementInternal(m))
+                        yield return e;
         }
 
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement()
+        {
+            foreach (var tvl in this)
+                foreach (var e in FindAllVisualElementInternal(tvl))
+                    yield return e;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement(Predicate<VisualElementGeneric> p)
+        {
+            if (p == null)
+                yield break;
+
+            foreach (var e in this.FindAllVisualElement())
+                if (p(e))
+                    yield return e;
+        }
+
+        public bool ContainsDeep(VisualElementGeneric ve)
+        {
+            // ReSharper disable UnusedVariable
+            foreach (var e in FindAllVisualElement((o) => { return ve == o; }))
+                return true;
+            // ReSharper enable UnusedVariable
+            return false;
+        }
+
+        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject,
+            bool alsoDereferenceObjects = false)
+        {
+            if (tvl == null || dataObject == null)
+                return null;
+
+            // Test for VirtualEntities. Allow a string comparison
+            var mdo = tvl.GetMainDataObject();
+            if (mdo == null)
+                return null;
+            var s1 = mdo as string;
+            var s2 = dataObject as string;
+            if (s1 != null && s1 == s2)
+                return tvl;
+
+            // normal comparison
+            if (tvl.GetMainDataObject() == dataObject)
+                return tvl;
+
+            // extended?
+            if (alsoDereferenceObjects && tvl.GetDereferencedMainDataObject() == dataObject)
+                return tvl;
+
+            // recursion
+            foreach (var mem in tvl.Members)
+            {
+                var x = SearchInListOfVisualElements(mem, dataObject, alsoDereferenceObjects);
+                if (x != null)
+                    return x;
+            }
+            return null;
+        }
+
+        private VisualElementGeneric InternalSearchVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false)
+        {
+            foreach (var tvl in this)
+            {
+                var x = SearchInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects);
+                if (x != null)
+                    return x;
+            }
+            return null;
+        }
+
+        public class SupplementaryReferenceInformation
+        {
+            public AdminShell.Reference CleanReference;
+
+            public string SearchPluginTag = null;
+        }
+
+        public static SupplementaryReferenceInformation StripSupplementaryReferenceInformation(AdminShell.Reference rf)
+        {
+            // in any case, provide record
+            var sri = new SupplementaryReferenceInformation();
+            sri.CleanReference = new AdminShell.Reference(rf);
+
+            // plug-in?
+            var srl = sri.CleanReference.Last;
+            if (srl?.type == AdminShell.Key.FragmentReference && srl?.idType == AdminShell.Key.Custom
+                && srl?.value?.StartsWith("Plugin:") == true)
+            {
+                sri.SearchPluginTag = srl.value.Substring("Plugin:".Length);
+                sri.CleanReference.Keys.Remove(srl);
+            }
+
+            // ok
+            return sri;
+        }
+
+        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false,
+            SupplementaryReferenceInformation sri = null)
+        {
+            // call internal
+            var ve = InternalSearchVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects);
+
+            // refine ve?
+            if (sri != null)
+            {
+                // plugin?
+                if (sri.SearchPluginTag != null && ve is VisualElementSubmodelRef veSm
+                    && veSm.Members != null)
+                    foreach (var vem in veSm.Members)
+                        if (vem is VisualElementPluginExtension vepe)
+                            if (vepe.theExt?.Tag?.Trim().ToLower() == sri.SearchPluginTag.Trim().ToLower())
+                            {
+                                ve = vepe;
+                                break;
+                            }
+            }
+
+            // return
+            return ve;
+        }
+
+        //
+        // Implementation of event queue
+        //
+
+        private List<PackCntChangeEventData> _eventQueue = new List<PackCntChangeEventData>();
+
+        public void PushEvent(PackCntChangeEventData data)
+        {
+            lock (_eventQueue)
+            {
+                _eventQueue.Add(data);
+            }
+        }
+
+        public void UpdateFromQueuedEvents(TreeViewLineCache cache)
+        {
+            lock (_eventQueue)
+            {
+                foreach (var e in _eventQueue)
+                    UpdateByEvent(cache, e);
+                _eventQueue.Clear();
+            }
+        }
+
+        public bool UpdateByEvent(
+            TreeViewLineCache cache,
+            PackCntChangeEventData data)
+        {
+            //
+            // Create
+            //
+
+            if (data.Reason == PackCntChangeEventReason.Create)
+            {
+                if (data.ParentRef is AdminShell.Submodel parentSm
+                    && data.ThisRef is AdminShell.SubmodelElement thisSme)
+                {
+
+                }
+                else
+                if (data.ParentRef is AdminShell.IManageSubmodelElements parentMgr
+                    && data.ParentRef is AdminShell.IEnumerateChildren parentEnum
+                    && data.ThisRef is AdminShell.SubmodelElement thisSme2)
+                {
+                    // try find according visual elements by business objects == Referables
+                    var parentVE = SearchVisualElementOnMainDataObject(data.ParentRef, alsoDereferenceObjects: false);
+
+                    if (parentVE == null)
+                        return false;
+
+                    // try find wrapper for sme 
+                    AdminShell.SubmodelElementWrapper foundSmw = null;
+                    foreach (var smw in parentEnum.EnumerateChildren())
+                        if (smw?.submodelElement == thisSme2)
+                        {
+                            foundSmw = smw;
+                            break;
+                        }
+
+                    // add to parent
+                    GenerateVisualElementsFromShellEnvAddElements(
+                        cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                }
+                else
+                    ;
+            }
+
+            return false;
+        }
     }
 
 }

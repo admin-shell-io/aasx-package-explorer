@@ -576,18 +576,18 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // need parent (target will not exist)
                 if (parent == null)
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent Referable! " + change.Path.ToString(1));
+                        "Cannot find parent Referable! " + change.Path.ToString(1)));
                     return;
                 }
 
                 // target existing??
                 if (target != null)
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target Referable already existing .. Aborting! " + change.Path.ToString(1));
+                        "Target Referable already existing .. Aborting! " + change.Path.ToString(1)));
                     return;
                 }
 
@@ -595,9 +595,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var dataRef = change.GetDataAsReferable();
                 if (dataRef == null)
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot deserize StructuralChangeItem Referable data!");
+                        "Cannot deserize StructuralChangeItem Referable data!"));
                     return;
                 }
 
@@ -607,9 +607,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                         "", false, AdminShell.Key.IdShort, sme0.idShort,
                         AdminShellV20.Key.MatchMode.Identification))
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target SME idShort does not match provided data section! " + change.Path.ToString(1));
+                        "Target SME idShort does not match provided data section! " + change.Path.ToString(1)));
                     return;
                 }
                 
@@ -620,8 +620,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     && change.CreateAtIndex < 0)
                 {
                     parentMgr.Add(sme);
-                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
-                        thisRef: sme, parentRef: parent);
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
+                        thisRef: sme, parentRef: parent));
                 }
                 else
                 // at least for SMC, handle CreateAtIndex
@@ -632,8 +632,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     && change.CreateAtIndex < parentSmc.value.Count)
                 {
                     parentSmc.value.Insert(change.CreateAtIndex, sme2);
-                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
-                        thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex);
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
+                        thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex));
                 }
                 else
                 // add to AAS
@@ -643,14 +643,14 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     Env.AasEnv.Submodels.Add(sm);
                     parentAas.AddSubmodelRef(sm?.GetSubmodelRef());
-                    handler?.Invoke(Container, PackCntChangeEventReason.Create,
-                        thisRef: sm, parentRef: parent);
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
+                        thisRef: sm, parentRef: parent));
                 }
                 else
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception creating data within Observable/path! " + change.Path.ToString(1));
+                        "Exception creating data within Observable/path! " + change.Path.ToString(1)));
                     return;
                 }
             }
@@ -661,18 +661,18 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // need target
                 if (target == null)
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target Referable! " + change.Path.ToString(1));
+                        "Cannot find target Referable! " + change.Path.ToString(1)));
                     return;
                 }
 
                 // need target
                 if (parent == null)
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent Referable for target! " + change.Path.ToString(1));
+                        "Cannot find parent Referable for target! " + change.Path.ToString(1)));
                     return;
                 }
 
@@ -685,8 +685,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // if sme does not exist. Sadly, there is also no exception to 
                     // handler in this case
                     parentMgr.Remove(sme);
-                    handler?.Invoke(Container, PackCntChangeEventReason.Delete,
-                        thisRef: sme, parentRef: target);
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
+                        thisRef: sme, parentRef: target));
                 }
                 else
                 // delete SM from AAS
@@ -706,22 +706,22 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     if (smrefFound == null)
                     {
-                        handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                             info: "PackageConnector::PullEvents() Delete " +
-                            "Cannot find SubmodelRef in target AAS!");
+                            "Cannot find SubmodelRef in target AAS!"));
                         return;
                     }
 
                     parentAas.submodelRefs.Remove(smrefFound);
                     Env.AasEnv.Submodels.Remove(sm);
-                    handler?.Invoke(Container, PackCntChangeEventReason.Delete,
-                        thisRef: target, parentRef: parent);
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
+                        thisRef: target, parentRef: parent));
                 }
                 else
                 {
-                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                    handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception deleting data within Observable/path! " + change.Path.ToString(1));
+                        "Exception deleting data within Observable/path! " + change.Path.ToString(1)));
                     return;
                 }
             }
@@ -753,34 +753,34 @@ namespace AasxWpfControlLibrary.PackageCentral
             // no target?
             if (target == null)
             {
-                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Cannot find target Referable!");
+                    "Cannot find target Referable!"));
                 return;
             }
 
             // try to update
             if (target is AdminShell.AdministrationShell aas)
             {
-                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of AAS not implemented!");
+                    "Update of AAS not implemented!"));
                 return;
             }
             else
             if (target is AdminShell.Submodel sm)
             {
-                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of Submodel not implemented!");
+                    "Update of Submodel not implemented!"));
                 return;
             }
             else
             if (target is AdminShell.SubmodelElementCollection smec)
             {
-                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of SubmodelElementCollection not implemented!");
+                    "Update of SubmodelElementCollection not implemented!"));
                 return;
             }
             else
@@ -793,9 +793,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
             else
             {
-                handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Target for path not recognised: " + value.Path);
+                    "Target for path not recognised: " + value.Path));
                 return;
             }
         }
@@ -834,7 +834,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // change handler, start?
             var handler = Container?.PackageCentral?.ChangeEventHandler;
-            handler?.Invoke(Container, PackCntChangeEventReason.StartOfChanges);
+            handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.StartOfChanges));
 
             if (envelopes != null)
                 foreach (var env in envelopes)
@@ -957,7 +957,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 #endif
 
             // change handler, start?
-            handler?.Invoke(Container, PackCntChangeEventReason.EndOfChanges);
+            handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.EndOfChanges));
 
             // ok
             return lastTS;
