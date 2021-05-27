@@ -37,7 +37,7 @@ namespace AasxPackageExplorer
 
     public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
     {
-        private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();
+        private ListOfVisualElement displayedTreeViewLines = new ListOfVisualElement();
         private TreeViewLineCache treeViewLineCache = null;
 
         #region Public events and properties
@@ -467,14 +467,14 @@ namespace AasxPackageExplorer
             bool editMode = false, string filterElementName = null)
         {
             // clear tree
-            displayedTreeViewLines = new List<VisualElementGeneric>();
+            displayedTreeViewLines = new ListOfVisualElement();
 
             // valid?
             if (packages.MainAvailable)
             {
 
                 // generate lines, add
-                var x = Generators.GenerateVisualElementsFromShellEnv(
+                var x = ListOfVisualElement.GenerateVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
                     packages.MainItem?.Filename, editMode, expandMode: 1);
                 foreach (var xx in x)
@@ -485,7 +485,7 @@ namespace AasxPackageExplorer
                     (selector == PackageCentral.Selector.MainAux
                      || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
-                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                    var x2 = ListOfVisualElement.GenerateVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
                         packages.AuxItem?.Filename, editMode, expandMode: 1);
                     foreach (var xx in x2)
@@ -499,7 +499,7 @@ namespace AasxPackageExplorer
                     foreach (var fr in packages.Repositories)
                         fr.PopulateFakePackage(pkg);
 
-                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                    var x2 = ListOfVisualElement.GenerateVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
                     foreach (var xx in x2)
                         displayedTreeViewLines.Add(xx);

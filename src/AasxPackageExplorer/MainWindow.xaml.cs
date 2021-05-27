@@ -790,7 +790,15 @@ namespace AasxPackageExplorer
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
-            // Last task here ..
+            // the UI application might receive events from items in th package central
+            _packageCentral.ChangeEventHandler = (cnt, reason, thisRef, parentRef, createAtIndex, info) =>
+            {
+                if (reason == PackCntChangeEventReason.Exception)
+                    Log.Singleton.Info("PackageCentral events: " + info);
+                return false;
+            };
+
+            // nearly last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
 
             // start with a new file

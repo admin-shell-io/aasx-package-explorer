@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Media;
+using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 
 // ReSharper disable VirtualMemberCallInConstructor
@@ -998,8 +999,21 @@ namespace AasxPackageExplorer
     // Generators
     //
 
-    public static class Generators
+    public class ListOfVisualElement : List<VisualElementGeneric>
     {
+
+        public void UpdateByEvent(
+            PackageContainerBase container,
+            PackCntChangeEventReason reason,
+            AdminShell.Referable thisRef = null,
+            AdminShell.Referable parentRef = null,
+            int createAtIndex = -1,
+            string info = null)
+        {
+
+        }
+
+
         private static void GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
@@ -1046,22 +1060,99 @@ namespace AasxPackageExplorer
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ela, elaa);
         }
 
-        public static List<VisualElementGeneric> GenerateVisualElementsFromShellEnv(
+        private static VisualElementAdminShell GenerateVisuElemForAAS(
+            AdminShell.AdministrationShell aas,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
+            bool editMode = false, int expandMode = 0,
+            List<Plugins.PluginInstance> pluginsToCheck = null)
+        {
+            // trivial
+            if (aas == null)
+                return null;
+
+            // item
+            var tiAas = new VisualElementAdminShell(null, cache, package, env, aas);
+            tiAas.SetIsExpandedIfNotTouched(expandMode > 0);
+
+            // have submodels?
+            if (aas.submodelRefs != null)
+                foreach (var smr in aas.submodelRefs)
+                {
+                    var sm = env.FindSubmodel(smr);
+                    if (sm == null)
+                        AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");                    
+
+                    // item (even if sm is null)
+                    var tiSm = new VisualElementSubmodelRef(tiAas, cache, env, smr, sm);
+                    tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
+
+                    // check for visual extensions
+                    if (pluginsToCheck != null)
+                        foreach (var lpi in pluginsToCheck)
+                        {
+                            try
+                            {
+                                var ext = lpi.InvokeAction(
+                                    "call-check-visual-extension", sm)
+                                    as AasxIntegrationBase.AasxPluginResultVisualExtension;
+                                if (ext != null)
+                                {
+                                    var tiExt = new VisualElementPluginExtension(
+                                        tiSm, cache, package, sm, lpi, ext);
+                                    tiSm.Members.Add(tiExt);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
+                        }
+
+                    // recursively into the submodel elements
+                    if (sm != null)
+                        if (sm.submodelElements != null)
+                            foreach (var sme in sm.submodelElements)
+                                GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
+
+                    // add
+                    tiAas.Members.Add(tiSm);
+                }
+
+            // have views?
+            if (aas.views != null && aas.views.views != null)
+                foreach (var vw in aas.views.views)
+                {
+                    // item
+                    var tiVw = new VisualElementView(tiAas, cache, env, vw);
+                    tiVw.SetIsExpandedIfNotTouched(expandMode > 1);
+                    // recursion -> submodel elements
+                    if (vw.containedElements != null && vw.containedElements.reference != null)
+                        foreach (var ce in vw.containedElements.reference)
+                        {
+                            var tiRf = new VisualElementReference(tiVw, cache, env, ce);
+                            tiVw.Members.Add(tiRf);
+                        }
+                    // add
+                    tiAas.Members.Add(tiVw);
+                }
+
+            // ok
+            return tiAas;
+        }
+
+        public static ListOfVisualElement GenerateVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
             string packageSourceFn = null,
             bool editMode = false, int expandMode = 0)
         {
             // clear tree
-            var res = new List<VisualElementGeneric>();
+            var res = new ListOfVisualElement();
             // valid?
             if (env == null)
                 return res;
 
             // need some attach points
             VisualElementEnvironmentItem tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
-
-            // tracking references of Submodels
-            var referencedSubmodels = new List<AdminShell.Submodel>();
 
             // interested plug-ins
             var pluginsToCheck = new List<Plugins.PluginInstance>();
@@ -1124,8 +1215,7 @@ namespace AasxPackageExplorer
                 foreach (var aas in env.AdministrationShells)
                 {
                     // item
-                    var tiAas = new VisualElementAdminShell(null, cache, package, env, aas);
-                    tiAas.SetIsExpandedIfNotTouched(expandMode > 0);
+                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode, expandMode, pluginsToCheck);
 
                     // add item
                     if (editMode)
@@ -1137,69 +1227,6 @@ namespace AasxPackageExplorer
                     {
                         res.Add(tiAas);
                     }
-
-                    // have submodels?
-                    if (aas.submodelRefs != null)
-                        foreach (var smr in aas.submodelRefs)
-                        {
-                            var sm = env.FindSubmodel(smr);
-                            if (sm == null)
-                                AasxPackageExplorer.Log.Singleton.Error("Cannot find some submodel!");
-                            else
-                                referencedSubmodels.Add(sm);
-
-                            // item (even if sm is null)
-                            var tiSm = new VisualElementSubmodelRef(tiAas, cache, env, smr, sm);
-                            tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
-
-                            // check for visual extensions
-                            foreach (var lpi in pluginsToCheck)
-                            {
-                                try
-                                {
-                                    var ext = lpi.InvokeAction(
-                                        "call-check-visual-extension", sm)
-                                        as AasxIntegrationBase.AasxPluginResultVisualExtension;
-                                    if (ext != null)
-                                    {
-                                        var tiExt = new VisualElementPluginExtension(
-                                            tiSm, cache, package, sm, lpi, ext);
-                                        tiSm.Members.Add(tiExt);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                                }
-                            }
-
-                            // recursively into the submodel elements
-                            if (sm != null)
-                                if (sm.submodelElements != null)
-                                    foreach (var sme in sm.submodelElements)
-                                        GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
-
-                            // add
-                            tiAas.Members.Add(tiSm);
-                        }
-
-                    // have views?
-                    if (aas.views != null && aas.views.views != null)
-                        foreach (var vw in aas.views.views)
-                        {
-                            // item
-                            var tiVw = new VisualElementView(tiAas, cache, env, vw);
-                            tiVw.SetIsExpandedIfNotTouched(expandMode > 1);
-                            // recursion -> submodel elements
-                            if (vw.containedElements != null && vw.containedElements.reference != null)
-                                foreach (var ce in vw.containedElements.reference)
-                                {
-                                    var tiRf = new VisualElementReference(tiVw, cache, env, ce);
-                                    tiVw.Members.Add(tiRf);
-                                }
-                            // add
-                            tiAas.Members.Add(tiVw);
-                        }
                 }
 
                 // if edit mode, then display further ..

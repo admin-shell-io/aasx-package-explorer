@@ -562,9 +562,9 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // try evaluate parent of target?
-            var parentKl = targetKl;
+            var parentKl = new AdminShell.KeyList(targetKl);
             AdminShell.Referable parent = null;
-            if (target != null && parentKl != null && parentKl.Count > 1)
+            if (parentKl != null && parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
                 parent = Env?.AasEnv?.FindReferableByReference(parentKl);
@@ -578,7 +578,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent Referable!");
+                        "Cannot find parent Referable! " + change.Path.ToString(1));
                     return;
                 }
 
@@ -587,7 +587,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target Referable already existing .. Aborting!");
+                        "Target Referable already existing .. Aborting! " + change.Path.ToString(1));
                     return;
                 }
 
@@ -601,6 +601,18 @@ namespace AasxWpfControlLibrary.PackageCentral
                     return;
                 }
 
+                // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
+                if (dataRef is AdminShell.SubmodelElement sme0
+                    && true != targetKl?.Last()?.Matches(
+                        "", false, AdminShell.Key.IdShort, sme0.idShort,
+                        AdminShellV20.Key.MatchMode.Identification))
+                {
+                    handler?.Invoke(Container, PackCntChangeEventReason.Exception,
+                        info: "PackageConnector::PullEvents() Create " +
+                        "Target SME idShort does not match provided data section! " + change.Path.ToString(1));
+                    return;
+                }
+                
                 // go through some cases
                 // all SM, SME with dependent elements
                 if (parent is AdminShell.IManageSubmodelElements parentMgr
@@ -638,8 +650,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception creating data within Observable/path! " +
-                        "Path was: " + change.Path);
+                        "Exception creating data within Observable/path! " + change.Path.ToString(1));
                     return;
                 }
             }
@@ -652,7 +663,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target Referable!");
+                        "Cannot find target Referable! " + change.Path.ToString(1));
                     return;
                 }
 
@@ -661,7 +672,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent Referable for target!");
+                        "Cannot find parent Referable for target! " + change.Path.ToString(1));
                     return;
                 }
 
@@ -710,8 +721,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     handler?.Invoke(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception deleting data within Observable/path! " +
-                        "Path was: " + change.Path);
+                        "Exception deleting data within Observable/path! " + change.Path.ToString(1));
                     return;
                 }
             }
@@ -823,7 +833,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // change handler, start?
-            var handler = Container?.ChangeEventHandler;
+            var handler = Container?.PackageCentral?.ChangeEventHandler;
             handler?.Invoke(Container, PackCntChangeEventReason.StartOfChanges);
 
             if (envelopes != null)
@@ -862,6 +872,10 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 ExecuteEventAction(value, env, handler);
                         }
                     }
+
+                    // send to upper structure?
+                    if (true)
+                        Container?.PackageCentral?.PushEvent(env);
                 }
 #if _not_now
 

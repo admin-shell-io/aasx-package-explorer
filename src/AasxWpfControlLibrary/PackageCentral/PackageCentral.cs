@@ -222,6 +222,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// </summary>
         public PackCntRuntimeOptions CentralRuntimeOptions = null;
 
+        /// <summary>
+        /// Main application can register for change events
+        /// </summary>
+        public PackCntChangeEventHandler ChangeEventHandler = null;
+
         //
         // Container members
         //

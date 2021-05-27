@@ -183,11 +183,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         protected string _location = "";
 
         /// <summary>
-        /// Main application can register for change events
-        /// </summary>
-        public PackCntChangeEventHandler ChangeEventHandler = null;
-
-        /// <summary>
         /// Location of the Container in a certain storage container, e.g. a local or network based
         /// repository. In this base implementation, it maps to a empty string.
         /// </summary>
