@@ -35,13 +35,13 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey(), 
+            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey(),
                 AdminShellV20.Key.MatchMode.Relaxed))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Digital Nameplate HSU to ZVEI V1.0"));
 
             return res;
-        }       
+        }
 
         public override bool ExecuteOffer(AdminShellPackageEnv package, AdminShell.Referable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
@@ -186,8 +186,8 @@ namespace AasxPredefinedConcepts.Convert
                 // go into the valueId of the Name
 
                 foreach (var other in smcHSUmk.value.FindAll((smw) => smw?.submodelElement is AdminShell.Property))
-                    if (mkNameProp != null 
-                        && other?.submodelElement?.semanticId != null 
+                    if (mkNameProp != null
+                        && other?.submodelElement?.semanticId != null
                         && !other.submodelElement.semanticId.IsEmpty
                         && other.submodelElement.semanticId[0].IsIdType(AdminShell.Identification.IRDI))
                     {

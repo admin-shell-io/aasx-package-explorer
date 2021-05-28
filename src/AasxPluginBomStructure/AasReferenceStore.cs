@@ -39,8 +39,6 @@ namespace AasxPluginBomStructure
         protected MultiValueDictionary<uint, T> dict =
             new MultiValueDictionary<uint, T>();
 
-        private static System.Security.Cryptography.SHA256 HashProvider = System.Security.Cryptography.SHA256.Create();
-
         protected uint ComputeHashOnReference(AdminShell.Reference r)
         {
             // access
@@ -90,7 +88,7 @@ namespace AasxPluginBomStructure
         }
 
         public T FindElementByReference(
-            AdminShell.Reference r, 
+            AdminShell.Reference r,
             AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Strict)
         {
             var hk = ComputeHashOnReference(r);

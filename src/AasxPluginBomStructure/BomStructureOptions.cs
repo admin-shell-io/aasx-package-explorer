@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnassignedField.Global
+
 namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }

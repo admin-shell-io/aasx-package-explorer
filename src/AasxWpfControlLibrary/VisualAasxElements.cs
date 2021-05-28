@@ -10,8 +10,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Media;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -50,10 +50,10 @@ namespace AasxPackageExplorer
         public string TagString { get; set; }
 
         private string _caption = "";
-        public string Caption 
-        { 
-            get { return _caption; } 
-            set { _caption = value; this.OnPropertyChanged("Caption"); } 
+        public string Caption
+        {
+            get { return _caption; }
+            set { _caption = value; this.OnPropertyChanged("Caption"); }
         }
 
         private string _info = "";
@@ -1123,10 +1123,9 @@ namespace AasxPackageExplorer
                 }
 
             // recursively into the submodel elements
-            if (sm != null)
-                if (sm.submodelElements != null)
-                    foreach (var sme in sm.submodelElements)
-                        GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
+            if (sm.submodelElements != null)
+                foreach (var sme in sm.submodelElements)
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
 
             // ok
             return tiSm;
@@ -1191,13 +1190,14 @@ namespace AasxPackageExplorer
         {
             // temporary tree
             var res = new ListOfVisualElement();
-            
+
             // valid?
             if (env == null)
                 return;
 
             // need some attach points
-            VisualElementEnvironmentItem tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;            
+            VisualElementEnvironmentItem
+                tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
 
             // many operations -> make it bulletproof
             try
@@ -1295,6 +1295,7 @@ namespace AasxPackageExplorer
                 }
 
                 // package as well?
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (editMode && package != null && tiPackage != null)
                 {
                     // file folder
@@ -1318,7 +1319,7 @@ namespace AasxPackageExplorer
             // end
             foreach (var r in res)
                 this.Add(r);
-        }        
+        }
 
         //
         // Element management
@@ -1464,7 +1465,7 @@ namespace AasxPackageExplorer
             bool alsoDereferenceObjects = false,
             SupplementaryReferenceInformation sri = null) where T : VisualElementGeneric
         {
-            foreach (var ve in 
+            foreach (var ve in
                 FindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects, sri))
             {
                 var vet = ve as T;
@@ -1477,7 +1478,7 @@ namespace AasxPackageExplorer
             bool alsoDereferenceObjects = false,
             SupplementaryReferenceInformation sri = null)
         {
-            return FindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects, sri).FirstOrDefault();                
+            return FindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects, sri).FirstOrDefault();
         }
 
         //
@@ -1533,7 +1534,7 @@ namespace AasxPackageExplorer
 
                         // generate
                         var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
-                            thisSm, smr, parentVE, cache, 
+                            thisSm, smr, parentVE, cache,
                             data.Container?.Env?.AasEnv, data.Container?.Env, editMode, expandMode: 0);
 
                         // add
@@ -1546,7 +1547,7 @@ namespace AasxPackageExplorer
                         (ve is VisualElementEnvironmentItem veei
                          && veei.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels)))
                     {
-                        var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, 
+                        var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache,
                                     data.Container?.Env?.AasEnv, thisSm);
                         tiSm.SetIsExpandedIfNotTouched(false);
                         tiAllSubmodels.Members.Add(tiSm);

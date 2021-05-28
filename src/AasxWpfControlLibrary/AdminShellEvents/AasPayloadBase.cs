@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Documents;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
-using AdminShellNS; 
+using AdminShellNS;
 
 namespace AdminShellEvents
 {

@@ -35,11 +35,11 @@ namespace AasxWpfControlLibrary.PackageCentral
 
         public enum CustomButton { Query, Context }
 
-        public event Action<Control, PackageContainerListBase, CustomButton, Button> 
+        public event Action<Control, PackageContainerListBase, CustomButton, Button>
             ButtonClick;
-        public event Action<Control, PackageContainerListBase, PackageContainerRepoItem> 
+        public event Action<Control, PackageContainerListBase, PackageContainerRepoItem>
             FileDoubleClick;
-        public event Action<Control, PackageContainerListBase, string[]> 
+        public event Action<Control, PackageContainerListBase, string[]>
             FileDrop;
 
         private PackageContainerListBase theFileRepository = null;
@@ -126,7 +126,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         {
             if (sender == this.RepoList && e.LeftButton == MouseButtonState.Pressed)
                 // hoping, that correct item is selected
-                this.FileDoubleClick?.Invoke(this, theFileRepository, this.RepoList.SelectedItem as PackageContainerRepoItem);
+                this.FileDoubleClick?.Invoke(this, theFileRepository,
+                    this.RepoList.SelectedItem as PackageContainerRepoItem);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

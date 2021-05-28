@@ -244,7 +244,8 @@ namespace AasxToolkit
                                         Revision = "001",
                                         Name = "Submodel Nameplate"
                                     },
-                                    appClassId: new AasxFormatCst.CstIdObjectBase() {
+                                    appClassId: new AasxFormatCst.CstIdObjectBase()
+                                    {
                                         Namespace = "IDTA",
                                         ObjectType = "01",
                                         ID = "SMNP001",

@@ -225,9 +225,10 @@ namespace AasxPackageExplorer
 
                     // ok -- perform dialogue in dedicated function / frame
                     var ucic = currentFlyoutControl as IntegratedConnectFlyout;
-                    var res = ucic.MessageBoxShow(content, text, title, buttons);
-
-                    return res;
+                    if (ucic == null)
+                        return System.Windows.Forms.DialogResult.Abort;
+                    else
+                        return ucic.MessageBoxShow(content, text, title, buttons);
                 }
             };
             return ro;
@@ -587,8 +588,8 @@ namespace AasxPackageExplorer
 
             // for all, prepare the display
             PrepareDispEditEntity(
-                _packageCentral.Main, 
-                DisplayElements.SelectedItem, 
+                _packageCentral.Main,
+                DisplayElements.SelectedItem,
                 MenuItemWorkspaceEdit.IsChecked,
                 MenuItemWorkspaceHints.IsChecked,
                 MenuItemOptionsShowIri.IsChecked,
@@ -971,7 +972,7 @@ namespace AasxPackageExplorer
                         {
                             // do some more adoptions
                             var rf = new AdminShell.Reference(tempNavTo.targetReference);
-                            
+
                             if (tempNavTo.translateAssetToAAS
                                 && rf.Count == 1
                                 && rf.First.IsType(AdminShell.Key.Asset))
@@ -1179,7 +1180,7 @@ namespace AasxPackageExplorer
                 // Navigate To
                 //============
 
-                if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo 
+                if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
                     && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
                 {
                     await UiHandleNavigateTo(evtNavTo.targetReference);
@@ -1188,7 +1189,7 @@ namespace AasxPackageExplorer
                 // Display Content Url
                 //====================
 
-                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont 
+                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                     && evtDispCont.fn != null)
                     try
                     {
@@ -1204,7 +1205,7 @@ namespace AasxPackageExplorer
                 // Redraw All
                 //===========
 
-                if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements evtRedrawAll)
+                if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
                 {
                     if (DispEditEntityPanel != null)
                     {
@@ -1251,7 +1252,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private List<AasxIntegrationBase.AasxPluginResultEventBase> _applicationEvents 
+        private List<AasxIntegrationBase.AasxPluginResultEventBase> _applicationEvents
             = new List<AasxPluginResultEventBase>();
 
         public void PushApplicationEvent(AasxIntegrationBase.AasxPluginResultEventBase evt)
@@ -1298,7 +1299,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();        
+        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
@@ -1431,12 +1432,13 @@ namespace AasxPackageExplorer
                         // prepare query
                         var qst = "/geteventmessages";
                         if (_eventHandling.LastReceivedEventTimeStamp != DateTime.MinValue)
-                            qst += "/time/" + AasEventMsgEnvelope.TimeToString(_eventHandling.LastReceivedEventTimeStamp);
+                            qst += "/time/"
+                                   + AasEventMsgEnvelope.TimeToString(_eventHandling.LastReceivedEventTimeStamp);
 
                         // execute and digest results
                         var lastTS = await
                             connRest2.PullEvents(qst);
-                        
+
                         // remember for next time
                         if (lastTS != DateTime.MinValue)
                             _eventHandling.LastReceivedEventTimeStamp = lastTS;

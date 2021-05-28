@@ -1,5 +1,12 @@
-﻿using AdminShellNS;
-using Newtonsoft.Json;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +14,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AdminShellNS;
+using Newtonsoft.Json;
+
+// ReSharper disable ReplaceWithSingleAssignment.True
 
 namespace AasxFormatCst
 {
@@ -17,9 +28,11 @@ namespace AasxFormatCst
         protected int _customIndex = 1;
         public string CustomNS = "UNSPEC";
 
-        public ListOfUnique<CstClassDef.ClassDefinition> ClassDefs = new ListOfUnique<CstClassDef.ClassDefinition>();
+        public ListOfUnique<CstClassDef.ClassDefinition> ClassDefs =
+                    new ListOfUnique<CstClassDef.ClassDefinition>();
         public CstNodeDef.Root NodeDefRoot = new CstNodeDef.Root();
-        public ListOfUnique<CstPropertyDef.PropertyDefinition> PropertyDefs = new ListOfUnique<CstPropertyDef.PropertyDefinition>();
+        public ListOfUnique<CstPropertyDef.PropertyDefinition> PropertyDefs =
+                    new ListOfUnique<CstPropertyDef.PropertyDefinition>();
         public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
         protected Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>
@@ -36,6 +49,7 @@ namespace AasxFormatCst
 
         private CstIdObjectBase GenerateCustomId(string threePrefix)
         {
+            // ReSharper disable once FormatStringProblem
             var res = new CstIdObjectBase()
             {
                 Namespace = "CustomNS",
@@ -67,7 +81,7 @@ namespace AasxFormatCst
             ClassDefs.AddIfUnique(clsdef);
 
             // values
-            for (int smcMode=0; smcMode < 2; smcMode++)
+            for (int smcMode = 0; smcMode < 2; smcMode++)
                 foreach (var smw in smwc)
                 {
                     // trivial
@@ -88,7 +102,6 @@ namespace AasxFormatCst
                     var semid = sme.semanticId.GetAsExactlyOneKey()?.value;
                     string refStr = null;
                     string refName = null;
-                    CstIdDictionaryItem refItem = null;
                     if (semid != null)
                     {
                         // standardized ID?
@@ -106,7 +119,6 @@ namespace AasxFormatCst
                             if (it.cstId != null)
                             {
                                 refStr = it.cstId.ToRef();
-                                refItem = it;
                             }
                             if (it.preferredName != null)
                                 refName = it.preferredName;
@@ -164,7 +176,8 @@ namespace AasxFormatCst
                             tmpPd.ID = "BLPRP_" + tmpPd.ID;
 
                             // will be a reference to the intended class
-                            tmpPd.DataType = new CstPropertyDef.DataType() {
+                            tmpPd.DataType = new CstPropertyDef.DataType()
+                            {
                                 Type = "Reference",
                                 BlockReference = "" + refStr
                             };
@@ -192,7 +205,6 @@ namespace AasxFormatCst
                         rec.Properties = lop;
                         var pr = new CstPropertyRecord.Property()
                         {
-                            // ID = refStr, // to be the block id
                             ID = tmpPd.ToRef(),
                             Name = "" + smc.idShort,
                             ValueProps = rec
@@ -201,7 +213,7 @@ namespace AasxFormatCst
                         // execute the following, only if twice the same ID in proprety records 
                         // (for blocks are allowed)
                         var addBlockRec = true;
-                        if (DoNotAddMultipleBlockRecordsWithSameIds 
+                        if (DoNotAddMultipleBlockRecordsWithSameIds
                             && propRecs.FindExisting(pr) != null)
                             addBlockRec = false;
 
@@ -212,7 +224,7 @@ namespace AasxFormatCst
                                 propRecs.Add(pr);
 
                             // recursion, but as Block
-                            // TODO: extend Parse() to parse also ECLASS, IEC CDD
+                            // TODO (MIHO, 2021-05-28): extend Parse() to parse also ECLASS, IEC CDD
                             var blockId = CstIdObjectBase.Parse(refStr);
                             blockId.Name = refName;
                             RecurseOnSme(smc.value, blockId, "Block", lop);
@@ -235,7 +247,8 @@ namespace AasxFormatCst
                         {
                             // use data type?
                             if (tmpDt != null)
-                                tmpPd.DataType = new CstPropertyDef.DataType() { Type = AasxCstUtils.ToPascalCase(tmpDt) };
+                                tmpPd.DataType = new CstPropertyDef.DataType()
+                                { Type = AasxCstUtils.ToPascalCase(tmpDt) };
 
                             tmpPd.ObjectType = "02";
                             tmpPd.Status = "Released";
@@ -252,7 +265,7 @@ namespace AasxFormatCst
                         if (propRecs != null)
                             propRecs.Add(pr);
                     }
-                }            
+                }
         }
 
         public void ExportSingleSubmodel(
@@ -289,7 +302,7 @@ namespace AasxFormatCst
 
             var nd2 = new CstNodeDef.NodeDefinition(secondNodeId);
             nd2.Parent = nd1;
-            nd2.ApplicationClass= new CstNodeDef.NodeDefinition(appClassId);
+            nd2.ApplicationClass = new CstNodeDef.NodeDefinition(appClassId);
             NodeDefRoot.Add(nd2);
 
             // Step 4: start list of (later) lson entities
@@ -307,7 +320,7 @@ namespace AasxFormatCst
                 {
                     ObjectType = "Item",
                     ClassifyRevision = true,
-                    ID = new List<CstPropertyRecord.ID>(new[] { new CstPropertyRecord.ID() { 
+                    ID = new List<CstPropertyRecord.ID>(new[] { new CstPropertyRecord.ID() {
                         PropertyName = "item_id",
                         PropertyValue = "000337"
                     }}),
@@ -323,7 +336,7 @@ namespace AasxFormatCst
 
             // Step 90: write class definitions
             var clsRoot = new CstClassDef.Root() { ClassDefinitions = ClassDefs };
-            clsRoot.WriteToFile(path + "_classdefs.json");           
+            clsRoot.WriteToFile(path + "_classdefs.json");
 
             // Step 91: write node definitions
             NodeDefRoot.WriteToFile(path + "_nodedefs.json");

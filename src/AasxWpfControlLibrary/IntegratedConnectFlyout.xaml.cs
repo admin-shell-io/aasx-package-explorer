@@ -615,7 +615,7 @@ namespace AasxPackageExplorer
         /// is being pressed!
         /// </summary>
         public System.Windows.Forms.DialogResult MessageBoxShow(
-            string content, string text, string caption, 
+            string content, string text, string caption,
             System.Windows.Forms.MessageBoxButtons buttons)
         {
             // show tab page

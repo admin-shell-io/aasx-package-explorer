@@ -22,6 +22,8 @@ using AasxWpfControlLibrary.MiniMarkup;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// ReSharper disable ClassNeverInstantiated.Global
+
 namespace AdminShellEvents
 {
     /// <summary>

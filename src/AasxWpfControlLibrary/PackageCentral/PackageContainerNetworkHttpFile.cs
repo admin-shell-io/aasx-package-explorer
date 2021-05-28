@@ -126,7 +126,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             var res = new OpenIdClientInstance.UiLambdaSet();
 
             if (runtimeOptions?.ShowMesssageBox != null)
-                res.MesssageBox = (content, text, title, buttons) => runtimeOptions.ShowMesssageBox(content, text, title, buttons);
+                res.MesssageBox = (content, text, title, buttons) =>
+                    runtimeOptions.ShowMesssageBox(content, text, title, buttons);
 
             return res;
         }
@@ -171,7 +172,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var response = await client.GetAsync(requestPath,
                     HttpCompletionOption.ResponseHeadersRead);
 
-                if (clhttp != null 
+                if (clhttp != null
                     && response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
                 {
                     string redirectUrl = response.Headers.Location.ToString();
@@ -198,7 +199,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     runtimeOptions?.Log?.Info($".. authentication at auth server {oidc.authServer} needed");
 
-                    var response2 = await oidc.RequestTokenAsync(null, 
+                    var response2 = await oidc.RequestTokenAsync(null,
                         GenerateUiLambdaSet(runtimeOptions));
                     oidc.token = response2.AccessToken;
                     client.SetBearerToken(oidc.token);

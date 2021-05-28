@@ -5807,7 +5807,7 @@ namespace AdminShellNS
 
             public T AdaptiveConvertTo<T>(
                 SubmodelElement anySrc,
-                ConceptDescription createDefault = null, 
+                ConceptDescription createDefault = null,
                 string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
                 if (typeof(T) == typeof(MultiLanguageProperty)
@@ -5847,10 +5847,10 @@ namespace AdminShellNS
                 var src = sourceSmc?.FindFirstAnySemanticIdAs<T>(sourceSemanticId, matchMode);
 
                 // may be make an adaptive conversion
-                if (true && src == null)
+                if (src == null)
                 {
                     var anySrc = sourceSmc?.FindFirstAnySemanticId(sourceSemanticId, matchMode: matchMode);
-                    src = AdaptiveConvertTo<T>(anySrc?.submodelElement, createDefault, 
+                    src = AdaptiveConvertTo<T>(anySrc?.submodelElement, createDefault,
                                 idShort: idShort, addSme: false);
                 }
 
@@ -5961,7 +5961,7 @@ namespace AdminShellNS
             {
                 CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(),
                     createDefault ? destCD : null, setDefault, matchMode);
-            }            
+            }
         }
 
         public interface IManageSubmodelElements

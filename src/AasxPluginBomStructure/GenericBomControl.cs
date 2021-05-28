@@ -178,8 +178,8 @@ namespace AasxPluginBomStructure
 #else
 
             var creator = new GenericBomCreator(
-                env?.AasEnv, 
-                _bomRecords, 
+                env?.AasEnv,
+                _bomRecords,
                 options);
 
             using (var tw = new StreamWriter("bomgraph.log"))

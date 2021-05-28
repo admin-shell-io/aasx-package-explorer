@@ -239,7 +239,7 @@ namespace AasxPackageExplorer
                 return displayedTreeViewLines.ContainsDeep(ve);
             return false;
         }
-       
+
         public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
             bool alsoDereferenceObjects = false,
             ListOfVisualElement.SupplementaryReferenceInformation sri = null)

@@ -114,7 +114,8 @@ namespace AasxOpenIdClient
                 "\nConinue?";
 
             // Displays the MessageBox.
-            var result = UiLambdaSet.MesssageBoxShow(uiLambda, message, "", caption, MessageBoxButtons.YesNo);            
+            var result = UiLambdaSet.MesssageBoxShow(
+                uiLambda, message, "", caption, MessageBoxButtons.YesNo);
             if (result != System.Windows.Forms.DialogResult.Yes)
             {
                 // Closes the parent form.
@@ -175,7 +176,8 @@ namespace AasxOpenIdClient
                                     StringSplitOptions.RemoveEmptyEntries);
                                 Console.WriteLine("Redirect to:" + splitResult[0]);
                                 authServer = splitResult[0];
-                                UiLambdaSet.MesssageBoxShow(uiLambda, authServer, "", "Redirect to", MessageBoxButtons.OK);
+                                UiLambdaSet.MesssageBoxShow(
+                                    uiLambda, authServer, "", "Redirect to", MessageBoxButtons.OK);
                                 lastOperation = operation;
                                 operation = "authenticate";
                                 continue;
@@ -196,7 +198,7 @@ namespace AasxOpenIdClient
                                     value = "0";
                                     operation = "/server/getaasx2/";
                                     break;
-                                    //// return;
+                                //// return;
                                 case "/server/getaasx2/":
                                     try
                                     {
@@ -293,7 +295,8 @@ namespace AasxOpenIdClient
                 }
             }
 
-            var clientToken = CreateClientToken(credential, "client.jwt", disco.TokenEndpoint, rootCertSubject, uiLambda);
+            var clientToken = CreateClientToken(credential, "client.jwt",
+                    disco.TokenEndpoint, rootCertSubject, uiLambda);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nClientToken with x5c in header: \n");
@@ -320,11 +323,6 @@ namespace AasxOpenIdClient
             {
                 throw new Exception(response.Error);
             }
-
-            /*
-            UiLambdaSet.MesssageBoxShow(uiLambda, response.AccessToken, "",
-                "Access Token", System.Windows.Forms.MessageBoxButtons.OK);
-            */
 
             return response;
         }
@@ -384,7 +382,7 @@ namespace AasxOpenIdClient
                         "Select certificate chain from certificate store? \n" +
                         "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                         "Select certificate chain", MessageBoxButtons.YesNo);
-                
+
                 if (res == DialogResult.No)
                 {
                     certFileName = "Andreas_Orzelski_Chain.pfx";

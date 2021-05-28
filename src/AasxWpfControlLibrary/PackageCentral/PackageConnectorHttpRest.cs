@@ -541,14 +541,11 @@ namespace AasxWpfControlLibrary.PackageCentral
             PackCntChangeEventHandler handler = null)
         {
             // trivial
-            if (change == null)
+            if (change?.Path == null)
                 return;
 
-            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
-                ;
-
-            // try determine tarket of {Observavle}/{path}
-            AdminShell.KeyList targetKl = null;
+            // try determine tarket of "Observavle"/"path"
+            var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (change.Path?.IsEmpty == false)
             {
@@ -564,7 +561,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             // try evaluate parent of target?
             var parentKl = new AdminShell.KeyList(targetKl);
             AdminShell.Referable parent = null;
-            if (parentKl != null && parentKl.Count > 1)
+            if (parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
                 parent = Env?.AasEnv?.FindReferableByReference(parentKl);
@@ -612,7 +609,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                         "Target SME idShort does not match provided data section! " + change.Path.ToString(1)));
                     return;
                 }
-                
+
                 // go through some cases
                 // all SM, SME with dependent elements
                 if (parent is AdminShell.IManageSubmodelElements parentMgr
@@ -692,7 +689,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 // delete SM from AAS
                 // Note: this implementation requires, that path consists of:
                 //       <AAS> , <SM>
-                // TODO (MIHO, 21-05-2021): make sure, this is required by the specification!
+                // TODO (MIHO, 2021-05-21): make sure, this is required by the specification!
                 if (parent is AdminShell.AdministrationShell parentAas
                     && parentAas.submodelRefs != null
                     && targetKl.Count >= 1
@@ -722,7 +719,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
                         "Exception deleting data within Observable/path! " + change.Path.ToString(1)));
-                    return;
                 }
             }
         }
@@ -733,11 +729,11 @@ namespace AasxWpfControlLibrary.PackageCentral
             PackCntChangeEventHandler handler = null)
         {
             // trivial
-            if (value == null)
+            if (value?.Path == null)
                 return;
 
-            // try determine tarket of {Observavle}/{path}
-            AdminShell.KeyList targetKl = null;
+            // try determine tarket of "Observavle"/"path"
+            var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (value.Path?.IsEmpty == false)
             {
@@ -760,30 +756,33 @@ namespace AasxWpfControlLibrary.PackageCentral
             }
 
             // try to update
-            if (target is AdminShell.AdministrationShell aas)
+            if (target is AdminShell.AdministrationShell)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of AAS not implemented!"));
+                // TODO (MIHO, 2021-05-28): implmenent
                 return;
             }
-            else
-            if (target is AdminShell.Submodel sm)
+
+            if (target is AdminShell.Submodel)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of Submodel not implemented!"));
+                // TODO (MIHO, 2021-05-28): implmenent
                 return;
             }
-            else
-            if (target is AdminShell.SubmodelElementCollection smec)
+
+            if (target is AdminShell.SubmodelElementCollection)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of SubmodelElementCollection not implemented!"));
+                // TODO (MIHO, 2021-05-28): implmenent
                 return;
             }
-            else
+
             if (target is AdminShell.SubmodelElement sme)
             {
                 // goal
@@ -792,14 +791,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                     prop.valueId = value.ValueId;
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.ValueUpdateSingle,
                         thisRef: sme));
-            }
-            else
-            {
-                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
-                    info: "PackageConnector::PullEvents() Update " +
-                    "Target for path not recognised: " + value.Path));
                 return;
             }
+
+            // else
+            handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
+                info: "PackageConnector::PullEvents() Update " +
+                "Target for path not recognised: " + value.Path));
         }
 
         public async Task<DateTime> PullEvents(string qst)

@@ -60,7 +60,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AskForCredentialsHandler AskForCredentials;
 
         public delegate System.Windows.Forms.DialogResult ShowMessageDelegate(
-                            string content, string text, string caption, 
+                            string content, string text, string caption,
                             System.Windows.Forms.MessageBoxButtons buttons = 0);
         public ShowMessageDelegate ShowMesssageBox;
     }
@@ -139,7 +139,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// If create, at which index; else: -1
         /// </summary>
         public int CreateAtIndex = -1;
-        
+
         /// <summary>
         /// Human readable explanatin, help, annotation, info
         /// </summary>
@@ -153,6 +153,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <param name="thisRef">Changed Referable itself</param>
         /// <param name="parentRef">A Referable, which contains the changed Referable.</param>
         /// <param name="createAtIndex">If create, at which index; else: -1</param>
+        /// <param name="info">Human readable information</param>
         public PackCntChangeEventData(PackageContainerBase container,
             PackCntChangeEventReason reason,
             AdminShell.Referable thisRef = null,

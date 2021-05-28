@@ -1,34 +1,43 @@
-﻿using Newtonsoft.Json;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace AasxFormatCst
 {
     public class CstIdObjectBase : IUniqueness<CstIdObjectBase>
     {
-        
+
         [JsonProperty(Order = -2)]
         public string ObjectType;
-        
+
         [JsonProperty(Order = -2)]
         public string Namespace;
-        
+
         [JsonProperty(Order = -2)]
         public string ID;
-        
+
         [JsonProperty(Order = -2)]
         public string Revision;
-        
+
         [JsonProperty(Order = -2)]
         public string Name;
-        
+
         [JsonProperty(Order = -2)]
         public string MinorRevision;
-        
+
         [JsonProperty(Order = -2)]
         public string Status;
 
@@ -104,7 +113,7 @@ namespace AasxFormatCst
                 && other.MinorRevision.Equals(MinorRevision, StringComparison.InvariantCultureIgnoreCase)
 #endif
                 && other.Status.Equals(Status, StringComparison.InvariantCultureIgnoreCase);
-            
+
             return res;
         }
     }

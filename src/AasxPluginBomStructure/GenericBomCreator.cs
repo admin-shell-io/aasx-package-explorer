@@ -390,14 +390,14 @@ namespace AasxPluginBomStructure
                 node.LabelText = ns.Text;
         }
 
-        public void ApplyLinkStyle (
-            Microsoft.Msagl.Drawing.Edge e, 
+        public void ApplyLinkStyle(
+            Microsoft.Msagl.Drawing.Edge e,
             BomLinkStyle ls)
         {
             // any 
             if (e == null || ls == null)
                 return;
-           
+
             if (ls.Direction == BomLinkDirection.None)
             {
                 e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;

@@ -107,6 +107,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
+                // ReSharper disable UnusedVariable
                 foreach (var x in _options.MatchingRecords(sm.semanticId))
                 {
                     found = true;
@@ -114,6 +115,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 if (!found)
                     return null;
+                // ReSharper enable UnusedVariable
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("BOM", "Bill of Material - Graph display");

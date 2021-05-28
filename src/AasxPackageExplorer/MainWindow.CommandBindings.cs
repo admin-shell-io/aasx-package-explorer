@@ -467,7 +467,7 @@ namespace AasxPackageExplorer
             if (cmd == "showirikey")
                 MenuItemOptionsShowIri.IsChecked = !MenuItemOptionsShowIri.IsChecked;
 
-            if (cmd == "editmenu" || cmd == "editkey" 
+            if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
                 || cmd == "showirimenu" || cmd == "showirikey")
             {

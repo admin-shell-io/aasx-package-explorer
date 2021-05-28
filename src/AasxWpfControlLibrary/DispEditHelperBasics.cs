@@ -94,7 +94,7 @@ namespace AasxPackageExplorer
         public PackageCentral packages = null;
 
         public IFlyoutProvider flyoutProvider = null;
-        public IPushApplicationEvent appEventsProvider = null; 
+        public IPushApplicationEvent appEventsProvider = null;
 
         public Brush[][] levelColors = null;
 
@@ -554,13 +554,14 @@ namespace AasxPackageExplorer
                 lab.FontWeight = FontWeights.Bold;
 
             // check, which content
-            if (this.showIriMode 
+            if (this.showIriMode
                 && content.HasContent()
                 && (content.Trim().ToLower().StartsWith("http://")
                  || content.Trim().ToLower().StartsWith("https://")))
             {
-                var hl = new Hyperlink() { 
-                    NavigateUri = new Uri(content),                    
+                var hl = new Hyperlink()
+                {
+                    NavigateUri = new Uri(content),
                 };
                 hl.Inlines.Add(content);
                 hl.RequestNavigate += (sender, e) =>
@@ -575,7 +576,7 @@ namespace AasxPackageExplorer
                         System.Diagnostics.Process.Start(e.Uri.ToString());
                 };
                 lab.Inlines.Clear();
-                lab.Inlines.Add(hl);                    
+                lab.Inlines.Add(hl);
             }
             else
             {
@@ -1509,11 +1510,11 @@ namespace AasxPackageExplorer
 
                         // jump
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
-                           It shall be replaced (after intergrating AnyUI) by a better repo handling */  
-                        if (noEditJumpLambda != null && i== 0)
+                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
+                        if (noEditJumpLambda != null && i == 0)
                         {
                             var jmpBtn = AddSmallButtonTo(
-                                g, 0 + + rowOfs, 5,
+                                g, 0 + +rowOfs, 5,
                                 margin: new Thickness(2, 2, 2, 2),
                                 padding: new Thickness(5, 0, 5, 0),
                                 content: "Jump");
