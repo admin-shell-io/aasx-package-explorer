@@ -18,9 +18,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasxOpenIdClient;
 using AasxPackageExplorer;
 using AdminShellEvents;
 using AdminShellNS;
+using IdentityModel.Client;
 using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -85,6 +87,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             _client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
             _client.BaseAddress = _baseAddress;
+
+            OpenIDClient.auth = endpoint.ToString().Contains("?auth");
         }
 
         //
@@ -370,6 +374,25 @@ namespace AasxWpfControlLibrary.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
+                if (OpenIDClient.auth)
+                {
+                    var responseAuth = _client.GetAsync("/authserver").Result;
+                    if (responseAuth.IsSuccessStatusCode)
+                    {
+                        var content = responseAuth.Content.ReadAsStringAsync().Result;
+                        if (content != null && content != "")
+                        {
+                            OpenIDClient.authServer = content;
+                            var response2 = await OpenIDClient.RequestTokenAsync(null);
+                            OpenIDClient.token = response2.AccessToken;
+                            OpenIDClient.auth = false;
+                        }
+                    }
+                }
+
+                if (OpenIDClient.token != "")
+                    _client.SetBearerToken(OpenIDClient.token);
+
                 // query
                 var listAasResponse = await _client.GetAsync(
                     StartQuery("server", "listaas"));

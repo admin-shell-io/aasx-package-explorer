@@ -210,63 +210,72 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 repeat = false;
 
-                var contentLength = response.Content.Headers.ContentLength;
-                var contentFn = response.Content.Headers.ContentDisposition?.FileName;
-
-                // log
-                runtimeOptions?.Log?.Info($".. response with header-content-len {contentLength} " +
-                    $"and file-name {contentFn} ..");
-
-                var contentStream = await response?.Content?.ReadAsStreamAsync();
-                if (contentStream == null)
-                    throw new PackageContainerException(
-                    $"While getting data bytes from {Location} via HttpClient " +
-                    $"no data-content was responded!");
-
-                // create temp file and write to it
-                var givenFn = Location;
-                if (contentFn != null)
-                    givenFn = contentFn;
-                TempFn = CreateNewTempFn(givenFn, IsFormat);
-                runtimeOptions?.Log?.Info($".. downloading and scanning by proxy/firewall {client.BaseAddress} " +
-                    $"and request {requestPath} .. ");
-
-                using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
+                if (response.IsSuccessStatusCode)
                 {
-                    // copy with progress
-                    var bufferSize = 4024;
-                    var deltaSize = 512 * 1024;
-                    var buffer = new byte[bufferSize];
-                    long totalBytesRead = 0;
-                    long lastBytesRead = 0;
-                    int bytesRead;
+                    var contentLength = response.Content.Headers.ContentLength;
+                    var contentFn = response.Content.Headers.ContentDisposition?.FileName;
 
-                    runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Starting,
-                            contentLength, totalBytesRead);
+                    // log
+                    runtimeOptions?.Log?.Info($".. response with header-content-len {contentLength} " +
+                        $"and file-name {contentFn} ..");
 
-                    while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length,
-                        default(CancellationToken)).ConfigureAwait(false)) != 0)
+                    var contentStream = await response?.Content?.ReadAsStreamAsync();
+                    if (contentStream == null)
+                        throw new PackageContainerException(
+                        $"While getting data bytes from {Location} via HttpClient " +
+                        $"no data-content was responded!");
+
+                    // create temp file and write to it
+                    var givenFn = Location;
+                    if (contentFn != null)
+                        givenFn = contentFn;
+                    TempFn = CreateNewTempFn(givenFn, IsFormat);
+                    runtimeOptions?.Log?.Info($".. downloading and scanning by proxy/firewall {client.BaseAddress} " +
+                        $"and request {requestPath} .. ");
+
+                    using (var file = new FileStream(TempFn, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
-                        await file.WriteAsync(buffer, 0, bytesRead,
-                            default(CancellationToken)).ConfigureAwait(false);
+                        // copy with progress
+                        var bufferSize = 4024;
+                        var deltaSize = 512 * 1024;
+                        var buffer = new byte[bufferSize];
+                        long totalBytesRead = 0;
+                        long lastBytesRead = 0;
+                        int bytesRead;
 
-                        totalBytesRead += bytesRead;
-
-                        if (totalBytesRead > lastBytesRead + deltaSize)
-                        {
-                            runtimeOptions?.Log?.Info($".. downloading to temp-file {TempFn}");
-                            runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                        runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Starting,
                                 contentLength, totalBytesRead);
-                            lastBytesRead = totalBytesRead;
+
+                        while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length,
+                            default(CancellationToken)).ConfigureAwait(false)) != 0)
+                        {
+                            await file.WriteAsync(buffer, 0, bytesRead,
+                                default(CancellationToken)).ConfigureAwait(false);
+
+                            totalBytesRead += bytesRead;
+
+                            if (totalBytesRead > lastBytesRead + deltaSize)
+                            {
+                                runtimeOptions?.Log?.Info($".. downloading to temp-file {TempFn}");
+                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                                    contentLength, totalBytesRead);
+                                lastBytesRead = totalBytesRead;
+                            }
                         }
+
+                        // assume bytes read to be total bytes
+                        runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final,
+                            totalBytesRead, totalBytesRead);
+
+                        // log                
+                        runtimeOptions?.Log?.Info($".. download done with {totalBytesRead} bytes read!");
                     }
-
-                    // assume bytes read to be total bytes
-                    runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final,
-                        totalBytesRead, totalBytesRead);
-
-                    // log                
-                    runtimeOptions?.Log?.Info($".. download done with {totalBytesRead} bytes read!");
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Operation not allowed!",
+                        "Server Message", System.Windows.Forms.MessageBoxButtons.OK);
+                    throw new PackageContainerException($"Server operation not allowed!");
                 }
             }
         }
@@ -404,7 +413,15 @@ namespace AasxWpfControlLibrary.PackageCentral
             // get response?
             using (var response = await client.PutAsync(requestPath, data))
             {
-                await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                    await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    System.Windows.Forms.MessageBox.Show("Operation not allowed!",
+                        "Server Message", System.Windows.Forms.MessageBoxButtons.OK);
+                    throw new PackageContainerException($"Server operation not allowed!");
+                }
             }
         }
 

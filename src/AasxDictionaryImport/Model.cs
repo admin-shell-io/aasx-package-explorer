@@ -42,11 +42,24 @@ namespace AasxDictionaryImport.Model
         string Name { get; }
 
         /// <summary>
+        /// The prompt to use in the user interface when asking the user for the query string for fetching online data
+        /// using the <see cref="Fetch"/> method.
+        /// </summary>
+        string FetchPrompt { get; }
+
+        /// <summary>
+        /// Whether this data provider supports fetching data from the network based on a search string provided by the
+        /// user.
+        /// </summary>
+        bool IsFetchSupported { get; }
+
+        /// <summary>
         /// Returns a list of all default data sources for this provider, i. e. all data sources that have been shipped
         /// with the AASX Package Explorer or that are freely available on the internet.
         /// </summary>
+        /// <param name="dir">The search path for the default data sources, e. g. the current working directory</param>
         /// <returns>A list of all default data sources</returns>
-        IEnumerable<IDataSource> FindDefaultDataSources();
+        IEnumerable<IDataSource> FindDefaultDataSources(string dir);
 
         /// <summary>
         /// Checks whether the given path contains valid data that can be read by this data provider.  This method
@@ -66,6 +79,17 @@ namespace AasxDictionaryImport.Model
         /// <exception cref="ImportException">If the path could not be accessed or does not contain valid data for this
         /// data provider</exception>
         IDataSource OpenPath(string path);
+
+        /// <summary>
+        /// Fetch data from this data provider from the network using the given query string provided by the user.
+        /// This method will only work if <see cref="IsFetchSupported"/> is true.  Otherwise it will throw an
+        /// ImportException.
+        /// </summary>
+        /// <param name="query">The query string provided by the user</param>
+        /// <returns>A data source loaded from the network using the given query string</returns>
+        /// <exception cref="ImportException">If the data cannot be retrieved from the network or if this data provider
+        /// does not support fetching data from the network</exception>
+        IDataSource Fetch(string query);
     }
 
     /// <summary>
@@ -170,6 +194,11 @@ namespace AasxDictionaryImport.Model
         /// The name of this element, usually in English.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The display name of this element, usually in English.
+        /// </summary>
+        string DisplayName { get; }
 
         /// <summary>
         /// The parent of this element or null if the element is a root element of the element tree.
@@ -321,9 +350,15 @@ namespace AasxDictionaryImport.Model
         public abstract string Name { get; }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<IDataSource> FindDefaultDataSources()
+        public virtual string FetchPrompt { get; } = string.Empty;
+
+        /// <inheritdoc/>
+        public virtual bool IsFetchSupported { get; } = false;
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<IDataSource> FindDefaultDataSources(string dir)
         {
-            return GetDefaultPaths()
+            return GetDefaultPaths(dir)
                 .Where(IsValidPath)
                 .Select(p => OpenPath(p, Model.DataSourceType.Default))
                 .ToList();
@@ -339,11 +374,16 @@ namespace AasxDictionaryImport.Model
         public virtual IDataSource OpenPath(string path)
             => OpenPath(path, DataSourceType.Custom);
 
+        /// <inheritdoc/>
+        public virtual IDataSource Fetch(string query) =>
+            throw new ImportException("Fetch not supported by this data provider");
+
         /// <summary>
         /// Returns all paths that could contain a default data source.
         /// </summary>
+        /// <param name="dir">The search path for the default data sources, e. g. the current working directory</param>
         /// <returns>A list of all possible default data sources</returns>
-        protected abstract IEnumerable<string> GetDefaultPaths();
+        protected abstract IEnumerable<string> GetDefaultPaths(string dir);
 
         /// <summary>
         /// Creates a new data source that reads the data stored at the given path and sets the data source type to the
@@ -373,13 +413,16 @@ namespace AasxDictionaryImport.Model
         public abstract string Name { get; }
 
         /// <inheritdoc/>
+        public virtual string DisplayName => Name;
+
+        /// <inheritdoc/>
         public virtual IElement? Parent { get; }
 
         /// <inheritdoc/>
         public abstract ICollection<IElement> Children { get; }
 
         /// <inheritdoc/>
-        public virtual bool IsSelected { get; set; }
+        public bool IsSelected { get; set; } = true;
 
         protected ElementBase(IDataSource dataSource, IElement? parent = null)
         {

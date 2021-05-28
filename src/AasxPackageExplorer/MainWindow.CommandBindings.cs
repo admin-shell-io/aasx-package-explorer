@@ -490,6 +490,9 @@ namespace AasxPackageExplorer
                 DisplayElements.Test();
             }
 
+            if (cmd == "exportsmd")
+                CommandBinding_ExportSMD();
+
             if (cmd == "printasset")
                 CommandBinding_PrintAsset();
 
@@ -1074,17 +1077,10 @@ namespace AasxPackageExplorer
                 lastConnectInput = input;
                 if (!input.StartsWith("http://localhost:1111"))
                 {
+                    string tag = "";
                     bool connect = false;
 
-                    string tag = "http://admin-shell-io.com:52001/server/aasxbyasset/";
-                    string prefix = "";
-                    if (input.Length > tag.Length)
-                        prefix = input.Substring(0, tag.Length);
-                    string tag2 = "http://localhost:52001/server/aasxbyasset/";
-                    string prefix2 = "";
-                    if (input.Length > tag2.Length)
-                        prefix2 = input.Substring(0, tag2.Length);
-                    if (prefix == tag || prefix2 == tag2) // get by AssetID
+                    if (input.Contains("/getaasxbyassetid/")) // get by AssetID
                     {
                         if (_packageCentral.MainAvailable)
                             _packageCentral.MainItem.Close();
@@ -1093,11 +1089,9 @@ namespace AasxPackageExplorer
                         var handler = new HttpClientHandler();
                         handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
                         //// handler.AllowAutoRedirect = false;
-                        string dataServer = "";
-                        if (prefix == tag)
-                            dataServer = "http://admin-shell-io.com:52001";
-                        if (prefix2 == tag2)
-                            dataServer = "http://localhost:52001";
+
+                        string dataServer = new Uri(input).GetLeftPart(UriPartial.Authority);
+
                         var client = new HttpClient(handler)
                         {
                             BaseAddress = new Uri(dataServer)
@@ -1105,31 +1099,19 @@ namespace AasxPackageExplorer
                         input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
                         client.DefaultRequestHeaders.Add("Accept", "application/aas");
                         var response2 = await client.GetAsync(input);
-                        String urlContents = await response2.Content.ReadAsStringAsync();
 
-                        try
+                        // ReSharper disable PossibleNullReferenceException
+                        var contentStream = await response2?.Content?.ReadAsStreamAsync();
+                        if (contentStream == null)
+                            return;
+                        // ReSharper enable PossibleNullReferenceException
+
+                        string outputDir = ".";
+                        Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
+                        using (var file = new FileStream(outputDir + "\\" + "download.aasx",
+                            FileMode.Create, FileAccess.Write, FileShare.None))
                         {
-                            var parsed3 = JObject.Parse(urlContents);
-
-                            //// string fileName = parsed3.SelectToken("fileName").Value<string>();
-                            string fileData = parsed3.SelectToken("fileData").Value<string>();
-
-                            var enc = new System.Text.ASCIIEncoding();
-                            var fileString4 = Jose.JWT.Decode(
-                                fileData, enc.GetBytes(AasxOpenIdClient.OpenIDClient.secretString),
-                                JwsAlgorithm.HS256);
-                            var parsed4 = JObject.Parse(fileString4);
-
-                            string binaryBase64_4 = parsed4.SelectToken("file").Value<string>();
-                            Byte[] fileBytes4 = Convert.FromBase64String(binaryBase64_4);
-
-                            string outputDir = ".";
-                            Console.WriteLine("Writing file: " + outputDir + "\\" + "download.aasx");
-                            File.WriteAllBytes(outputDir + "\\" + "download.aasx", fileBytes4);
-                        }
-                        catch (Exception ex)
-                        {
-                            AdminShellNS.LogInternally.That.Error(ex, $"Failed at operation: {input}");
+                            await contentStream.CopyToAsync(file);
                         }
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
@@ -1823,15 +1805,25 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportSubmodel()
         {
-            VisualElementAdminShell ve = null;
+            AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
+            AdminShell.AdministrationShell aas = null;
             if (DisplayElements.SelectedItem != null)
             {
-                if (DisplayElements.SelectedItem is VisualElementAdminShell)
+                if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
                 {
-                    ve = DisplayElements.SelectedItem as VisualElementAdminShell;
+                    // AAS is selected --> import into AAS
+                    env = aasItem.theEnv;
+                    aas = aasItem.theAas;
+                }
+                else if (DisplayElements.SelectedItem is VisualElementEnvironmentItem envItem &&
+                        envItem.theItemType == VisualElementEnvironmentItem.ItemType.EmptySet)
+                {
+                    // Empty environment is selected --> create new AAS
+                    env = envItem.theEnv;
                 }
                 else
                 {
+                    // Other element is selected --> error
                     MessageBoxFlyoutShow("Please select the administration shell for the submodel import.",
                         "Submodel Import", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
@@ -1842,10 +1834,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                if (ve != null && ve.theEnv != null && ve.theAas != null)
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(ve.theEnv, ve.theAas);
-                else
-                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(_packageCentral.Main.AasEnv);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
             }
             catch (Exception e)
             {
@@ -1886,7 +1875,8 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(env, submodel);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
+                    submodel);
             }
             catch (Exception e)
             {
@@ -2530,6 +2520,74 @@ namespace AasxPackageExplorer
                 System.Windows.MessageBox.Show(
                     "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
+        }
+
+        public void CommandBinding_ExportSMD()
+        {
+            // trivial things
+            if (!_packageCentral.MainStorable)
+            {
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            // check, if required plugin can be found
+            var pluginName = "AasxPluginSmdExporter";
+            var actionName = "generate-SMD";
+            var pi = Plugins.FindPluginInstance(pluginName);
+            if (pi == null || !pi.HasAction(actionName))
+            {
+                var res = MessageBoxFlyoutShow(
+                        $"This function requires a binary plug-in file named '{pluginName}', " +
+                        $"which needs to be added to the command line, with an action named '{actionName}'." +
+                        $"Press 'OK' to show help page on GitHub.",
+                        "Plug-in not present",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Hand);
+                if (res == MessageBoxResult.OK)
+                {
+                    ShowHelp();
+                }
+                return;
+            }
+            //-----------------------------------
+            // make a logger
+            var logger = new AasxRestServerLibrary.GrapevineLoggerToListOfStrings();
+
+            AasxRestServerLibrary.AasxRestServer.Start(_packageCentral.Main,
+                                                        Options.Curr.RestServerHost,
+                                                        Options.Curr.RestServerPort,
+                                                        logger);
+
+            Queue<string> stack = new Queue<string>();
+
+            // Invoke Plugin
+            var ret = pi.InvokeAction(actionName,
+                                      this,
+                                      stack,
+                                      $"http://{Options.Curr.RestServerHost}:{Options.Curr.RestServerPort}/",
+                                      "");
+
+            if (ret == null) return;
+
+            // make listing flyout
+            var uc = new LogMessageFlyout("SMD Exporter", "Generating SMD ..", () =>
+            {
+                string st;
+                if (stack.Count != 0)
+                    st = stack.Dequeue();
+                else
+                    st = null;
+                return (st == null) ? null : new StoredPrint(st);
+            });
+
+            this.StartFlyoverModal(uc, closingAction: () =>
+            {
+                AasxRestServerLibrary.AasxRestServer.Stop();
+            });
+            //--------------------------------
+            // Redraw for changes to be visible
+            RedrawAllAasxElements();
+            //-----------------------------------
         }
     }
 }

@@ -25,6 +25,7 @@
     <!-- ReSharper disable Xaml.MissingGridIndex -->
 
     <Window.Resources>
+		<RoutedUICommand x:Key="ExportSMD" Text="ExportSMD" />
         <RoutedUICommand x:Key="New" Text="New" />
         <RoutedUICommand x:Key="Open" Text="Open" />
         <RoutedUICommand x:Key="Save" Text="Save" />
@@ -179,6 +180,7 @@
     </Window.InputBindings>
 
     <Window.CommandBindings>
+		<CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Open}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Save}" Executed="CommandBinding_Executed"/>
@@ -349,6 +351,7 @@
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+							<MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">

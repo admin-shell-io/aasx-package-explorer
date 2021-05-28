@@ -137,6 +137,12 @@ namespace AasxPackageExplorer
         public string EclassDir = null;
 
         /// <summary>
+        /// Path to the directory with the default sources for the Dictionary Import feature (see
+        /// AasxDictionaryImport).  If this option is not set, the current working directory is used.
+        /// </summary>
+        public string DictImportDir = System.IO.Directory.GetCurrentDirectory();
+
+        /// <summary>
         /// Path to an image to be displayed as logo
         /// </summary>
         public string LogoFile = null;
@@ -490,6 +496,12 @@ namespace AasxPackageExplorer
                 if (arg == "-eclass" && morearg > 0)
                 {
                     optionsInformation.EclassDir = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-dict-import-dir" && morearg > 0)
+                {
+                    optionsInformation.DictImportDir = args[index + 1];
                     index++;
                     continue;
                 }

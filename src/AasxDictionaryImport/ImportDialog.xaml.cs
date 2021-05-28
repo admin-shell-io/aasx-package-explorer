@@ -36,6 +36,7 @@ namespace AasxDictionaryImport
     {
         public ISet<Model.IDataProvider> DataProviders = new HashSet<Model.IDataProvider> {
             new Cdd.DataProvider(),
+            new Eclass.DataProvider(),
         };
         public Model.IDataContext? Context;
         private readonly ObservableCollection<Model.IElement> _topLevelElements
@@ -64,8 +65,9 @@ namespace AasxDictionaryImport
             }
         }
 
-        public ImportDialog(ImportMode importMode)
+        public ImportDialog(Window owner, ImportMode importMode, string defaultSourceDir)
         {
+            Owner = owner;
             DataContext = this;
 
             ImportMode = importMode;
@@ -75,10 +77,11 @@ namespace AasxDictionaryImport
             InitializeComponent();
 
             foreach (var provider in DataProviders)
-                foreach (var source in provider.FindDefaultDataSources())
+                foreach (var source in provider.FindDefaultDataSources(defaultSourceDir))
                     ComboBoxSource.Items.Add(source);
 
             DataSourceLabel.Content = String.Join(", ", DataProviders.Select(p => p.Name));
+            ButtonFetchOnline.IsEnabled = DataProviders.Any(p => p.IsFetchSupported);
         }
 
         public IEnumerable<Model.IElement> GetResult()
@@ -91,15 +94,15 @@ namespace AasxDictionaryImport
             ButtonImport.IsEnabled = _detailsElements.Any(w => w.IsChecked != false);
         }
 
-        private string? GetImportDirectory()
+        private string? GetImportPath()
         {
-            using var dialog = new System.Windows.Forms.FolderBrowserDialog
+            using var dialog = new System.Windows.Forms.OpenFileDialog
             {
-                Description = "Select the import directory."
+                Title = "Select a local file for the Dictionary Import"
             };
 
             return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK
-                ? dialog.SelectedPath : null;
+                ? dialog.FileName : null;
         }
 
         private void ApplyFilter()
@@ -169,7 +172,7 @@ namespace AasxDictionaryImport
 
         private void ComboBoxSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Title = "IEC CDD Import";
+            Title = "Dictionary Import";
             _topLevelElements.Clear();
             _detailsElements.Clear();
 
@@ -191,7 +194,7 @@ namespace AasxDictionaryImport
                     {
                         _topLevelElements.Add(element);
                     }
-                    Title = $"IEC CDD Import [{source}]";
+                    Title = $"Dictionary Import [{source}]";
 
                     if (ClassViewControl.Items.Count > 0)
                         ClassViewControl.SelectedItem = ClassViewControl.Items[0];
@@ -209,9 +212,9 @@ namespace AasxDictionaryImport
             }
         }
 
-        private void ButtonOpenDirectory_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenFile_Click(object sender, RoutedEventArgs e)
         {
-            var path = GetImportDirectory();
+            var path = GetImportPath();
             if (path == null)
                 return;
 
@@ -232,6 +235,38 @@ namespace AasxDictionaryImport
 
             ComboBoxSource.Items.Add(source);
             ComboBoxSource.SelectedItem = source;
+        }
+
+        private void ButtonFetchOnline_Click(object sender, RoutedEventArgs e)
+        {
+            var fetchProviders = DataProviders.Where(p => p.IsFetchSupported).ToList();
+            if (fetchProviders.Count == 0)
+                return;
+
+            var dialog = new FetchOnlineDialog(this, fetchProviders);
+            if (dialog.ShowDialog() != true || dialog.DataProvider == null)
+                return;
+
+            try
+            {
+                Mouse.OverrideCursor = Cursors.Wait;
+                var source = dialog.DataProvider.Fetch(dialog.Query);
+                ComboBoxSource.Items.Add(source);
+                ComboBoxSource.SelectedItem = source;
+            }
+            catch (Model.ImportException ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(ex,
+                        $"Could not fetch data from {dialog.DataProvider} using the query {dialog.Query}.");
+                MessageBox.Show(
+                        "Could not fetch the requested data.\n" +
+                        "Details: " + ex.Message,
+                        "Fetch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
         }
 
         private void ViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -303,7 +338,7 @@ namespace AasxDictionaryImport
 
         public string Id => Element.Id;
 
-        public string Name => Element.Name;
+        public string Name => Element.DisplayName;
 
         public bool IsExpanded => Parent == null;
 
@@ -321,7 +356,7 @@ namespace AasxDictionaryImport
             Element = element;
             Children = element.Children.Select(e => new ElementWrapper(e, this)).ToList();
 
-            Element.IsSelected = _isChecked != false;
+            _isChecked = Element.IsSelected;
         }
 
         protected void PropagateIsChecked(bool up, bool down)
