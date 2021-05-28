@@ -435,6 +435,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // file item
                     var fi = new PackageContainerRepoItem()
                     {
+                        ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
                         Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
