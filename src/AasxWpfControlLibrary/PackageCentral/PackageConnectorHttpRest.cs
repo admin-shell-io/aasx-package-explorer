@@ -686,7 +686,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     // handler in this case
                     parentMgr.Remove(sme);
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
-                        thisRef: sme, parentRef: target));
+                        thisRef: sme, parentRef: parent));
                 }
                 else
                 // delete SM from AAS
@@ -790,6 +790,8 @@ namespace AasxWpfControlLibrary.PackageCentral
                 sme.ValueFromText(value.Value);
                 if (sme is AdminShell.Property prop && value.ValueId != null)
                     prop.valueId = value.ValueId;
+                handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.ValueUpdateSingle,
+                        thisRef: sme));
             }
             else
             {

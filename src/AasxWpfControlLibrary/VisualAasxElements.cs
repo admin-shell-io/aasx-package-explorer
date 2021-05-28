@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.ComponentModel;
 using System.Windows.Media;
 using AasxWpfControlLibrary.PackageCentral;
@@ -47,8 +48,21 @@ namespace AasxPackageExplorer
         private bool _isExpandedTouched = false;
         private bool _isSelected = false;
         public string TagString { get; set; }
-        public string Caption { get; set; }
-        public string Info { get; set; }
+
+        private string _caption = "";
+        public string Caption 
+        { 
+            get { return _caption; } 
+            set { _caption = value; this.OnPropertyChanged("Caption"); } 
+        }
+
+        private string _info = "";
+        public string Info
+        {
+            get { return _info; }
+            set { _info = value; this.OnPropertyChanged("Info"); }
+        }
+
         public string Value { get; set; }
         public string ValueInfo { get; set; }
         public Brush Background { get; set; }
@@ -1345,49 +1359,47 @@ namespace AasxPackageExplorer
             return false;
         }
 
-        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject,
-            bool alsoDereferenceObjects = false)
+        private IEnumerable<VisualElementGeneric> FindAllInListOfVisualElements(
+            VisualElementGeneric tvl, object dataObject, bool alsoDereferenceObjects = false)
         {
             if (tvl == null || dataObject == null)
-                return null;
+                yield break;
 
             // Test for VirtualEntities. Allow a string comparison
             var mdo = tvl.GetMainDataObject();
             if (mdo == null)
-                return null;
+                yield break;
             var s1 = mdo as string;
             var s2 = dataObject as string;
             if (s1 != null && s1 == s2)
-                return tvl;
+                yield return tvl;
 
             // normal comparison
             if (tvl.GetMainDataObject() == dataObject)
-                return tvl;
+                yield return tvl;
 
             // extended?
             if (alsoDereferenceObjects && tvl.GetDereferencedMainDataObject() == dataObject)
-                return tvl;
+                yield return tvl;
 
             // recursion
             foreach (var mem in tvl.Members)
             {
-                var x = SearchInListOfVisualElements(mem, dataObject, alsoDereferenceObjects);
-                if (x != null)
-                    return x;
+                foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects))
+                    if (x != null)
+                        yield return x;
             }
-            return null;
         }
 
-        private VisualElementGeneric InternalSearchVisualElementOnMainDataObject(object dataObject,
+        private IEnumerable<VisualElementGeneric> InternalFindAllVisualElementOnMainDataObject(object dataObject,
             bool alsoDereferenceObjects = false)
         {
             foreach (var tvl in this)
             {
-                var x = SearchInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects);
-                if (x != null)
-                    return x;
+                foreach (var x in FindAllInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects))
+                    if (x != null)
+                        yield return x;
             }
-            return null;
         }
 
         public class SupplementaryReferenceInformation
@@ -1416,30 +1428,56 @@ namespace AasxPackageExplorer
             return sri;
         }
 
-        public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
+        public IEnumerable<VisualElementGeneric> FindAllVisualElementOnMainDataObject(object dataObject,
             bool alsoDereferenceObjects = false,
             SupplementaryReferenceInformation sri = null)
         {
             // call internal
-            var ve = InternalSearchVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects);
-
-            // refine ve?
-            if (sri != null)
+            foreach (var ve0 in InternalFindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects))
             {
-                // plugin?
-                if (sri.SearchPluginTag != null && ve is VisualElementSubmodelRef veSm
-                    && veSm.Members != null)
-                    foreach (var vem in veSm.Members)
-                        if (vem is VisualElementPluginExtension vepe)
-                            if (vepe.theExt?.Tag?.Trim().ToLower() == sri.SearchPluginTag.Trim().ToLower())
-                            {
-                                ve = vepe;
-                                break;
-                            }
-            }
+                // trivial
+                var ve = ve0;
+                if (ve == null)
+                    continue;
 
-            // return
-            return ve;
+                // refine ve?
+                if (sri != null)
+                {
+                    // plugin?
+                    if (sri.SearchPluginTag != null && ve is VisualElementSubmodelRef veSm
+                        && veSm.Members != null)
+                        foreach (var vem in veSm.Members)
+                            if (vem is VisualElementPluginExtension vepe)
+                                if (vepe.theExt?.Tag?.Trim().ToLower() == sri.SearchPluginTag.Trim().ToLower())
+                                {
+                                    ve = vepe;
+                                    break;
+                                }
+                }
+
+                // yield this
+                yield return ve;
+            }
+        }
+
+        public IEnumerable<T> FindAllVisualElementOnMainDataObject<T>(object dataObject,
+            bool alsoDereferenceObjects = false,
+            SupplementaryReferenceInformation sri = null) where T : VisualElementGeneric
+        {
+            foreach (var ve in 
+                FindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects, sri))
+            {
+                var vet = ve as T;
+                if (vet != null)
+                    yield return vet;
+            }
+        }
+
+        public VisualElementGeneric FindFirstVisualElementOnMainDataObject(object dataObject,
+            bool alsoDereferenceObjects = false,
+            SupplementaryReferenceInformation sri = null)
+        {
+            return FindAllVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects, sri).FirstOrDefault();                
         }
 
         //
@@ -1456,19 +1494,20 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void UpdateFromQueuedEvents(TreeViewLineCache cache)
+        public void UpdateFromQueuedEvents(TreeViewLineCache cache, bool editMode = false)
         {
             lock (_eventQueue)
             {
                 foreach (var e in _eventQueue)
-                    UpdateByEvent(cache, e);
+                    UpdateByEvent(e, cache, editMode);
                 _eventQueue.Clear();
             }
         }
 
         public bool UpdateByEvent(
+            PackCntChangeEventData data,
             TreeViewLineCache cache,
-            PackCntChangeEventData data)
+            bool editMode = false)
         {
             //
             // Create
@@ -1476,10 +1515,70 @@ namespace AasxPackageExplorer
 
             if (data.Reason == PackCntChangeEventReason.Create)
             {
+                if (data.ParentRef is AdminShell.AdministrationShell parentAas
+                    && data.ThisRef is AdminShell.Submodel thisSm)
+                {
+                    // try find according visual elements by business objects == Referables
+                    // presumably, this is only one AAS Element
+                    foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementAdminShell>(
+                        data.ParentRef, alsoDereferenceObjects: false))
+                    {
+                        if (parentVE == null)
+                            continue;
+
+                        // figure out the SubmodelRef
+                        var smr = parentAas.FindSubmodelRef(thisSm.identification);
+                        if (smr == null)
+                            continue;
+
+                        // generate
+                        var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
+                            thisSm, smr, parentVE, cache, 
+                            data.Container?.Env?.AasEnv, data.Container?.Env, editMode, expandMode: 0);
+
+                        // add
+                        if (tiSm != null)
+                            parentVE.Members.Add(tiSm);
+                    }
+
+                    // additionally, there might be also as pure Submodel item
+                    foreach (var tiAllSubmodels in FindAllVisualElement((ve) =>
+                        (ve is VisualElementEnvironmentItem veei
+                         && veei.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels)))
+                    {
+                        var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, 
+                                    data.Container?.Env?.AasEnv, thisSm);
+                        tiSm.SetIsExpandedIfNotTouched(false);
+                        tiAllSubmodels.Members.Add(tiSm);
+                    }
+
+                    // just good
+                    return true;
+                }
+                else
                 if (data.ParentRef is AdminShell.Submodel parentSm
                     && data.ThisRef is AdminShell.SubmodelElement thisSme)
                 {
+                    // try specifically SubmodelRef visual elements by Submodel business object,
+                    // as these are the carriers of child information
+                    foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementSubmodelRef>(
+                        parentSm, alsoDereferenceObjects: true))
+                    {
+                        if (parentVE == null)
+                            continue;
 
+                        // try find wrapper for sme 
+                        var foundSmw = parentSm.submodelElements.FindSubModelElement(thisSme);
+                        if (foundSmw == null)
+                            continue;
+
+                        // add to parent
+                        GenerateVisualElementsFromShellEnvAddElements(
+                            cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                    }
+
+                    // just good
+                    return true;
                 }
                 else
                 if (data.ParentRef is AdminShell.IManageSubmodelElements parentMgr
@@ -1487,26 +1586,87 @@ namespace AasxPackageExplorer
                     && data.ThisRef is AdminShell.SubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables
-                    var parentVE = SearchVisualElementOnMainDataObject(data.ParentRef, alsoDereferenceObjects: false);
+                    foreach (var parentVE in FindAllVisualElementOnMainDataObject(
+                        data.ParentRef, alsoDereferenceObjects: false))
+                    {
+                        if (parentVE == null)
+                            continue;
 
-                    if (parentVE == null)
-                        return false;
+                        // try find wrapper for sme 
+                        AdminShell.SubmodelElementWrapper foundSmw = null;
+                        foreach (var smw in parentEnum.EnumerateChildren())
+                            if (smw?.submodelElement == thisSme2)
+                            {
+                                foundSmw = smw;
+                                break;
+                            }
 
-                    // try find wrapper for sme 
-                    AdminShell.SubmodelElementWrapper foundSmw = null;
-                    foreach (var smw in parentEnum.EnumerateChildren())
-                        if (smw?.submodelElement == thisSme2)
-                        {
-                            foundSmw = smw;
-                            break;
-                        }
+                        if (foundSmw == null)
+                            continue;
 
-                    // add to parent
-                    GenerateVisualElementsFromShellEnvAddElements(
-                        cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                        // add to parent
+                        GenerateVisualElementsFromShellEnvAddElements(
+                            cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                    }
+
+                    // just good
+                    return true;
                 }
-                else
-                    ;
+            }
+
+            //
+            // Delete
+            //
+
+            if (data.Reason == PackCntChangeEventReason.Delete)
+            {
+                if (data.ParentRef is AdminShell.IManageSubmodelElements parentMgr
+                    && data.ThisRef is AdminShell.SubmodelElement sme)
+                {
+                    // find the correct parent(s)
+                    foreach (var parentVE in FindAllVisualElementOnMainDataObject(
+                        data.ParentRef, alsoDereferenceObjects: true))
+                    {
+                        // trivial
+                        if (parentVE?.Members == null)
+                            continue;
+
+                        // now, below these find direct childs matching the SME (only these can be removed)
+                        var childsToDel = new List<VisualElementGeneric>();
+                        foreach (var x in parentVE.Members)
+                            if (x.GetMainDataObject() == data.ThisRef)
+                                childsToDel.Add(x);
+
+                        // AFTER iterating, do the removal
+                        foreach (var ctd in childsToDel)
+                            parentVE.Members.Remove(ctd);
+                    }
+
+                    // just good
+                    return true;
+                }
+            }
+
+            //
+            // Update
+            //
+
+            if (data.Reason == PackCntChangeEventReason.ValueUpdateSingle)
+            {
+                if (data.ThisRef is AdminShell.SubmodelElement sme)
+                {
+                    // find the correct parent(s)
+                    foreach (var ve in FindAllVisualElementOnMainDataObject(
+                        data.ThisRef, alsoDereferenceObjects: false))
+                    {
+                        // trivial
+                        if (ve == null)
+                            continue;
+
+                        // trigger update, SME value is supposed to be actual
+                        ve.RefreshFromMainData();
+                    }
+                }
             }
 
             return false;

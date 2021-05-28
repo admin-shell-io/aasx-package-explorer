@@ -39,6 +39,7 @@ namespace AasxPackageExplorer
     {
         private ListOfVisualElement displayedTreeViewLines = new ListOfVisualElement();
         private TreeViewLineCache treeViewLineCache = null;
+        private bool _lastEditMode = false;
 
         #region Public events and properties
         //
@@ -211,7 +212,7 @@ namespace AasxPackageExplorer
         public void UpdateFromQueuedEvents()
         {
             if (displayedTreeViewLines != null)
-                displayedTreeViewLines.UpdateFromQueuedEvents(treeViewLineCache);
+                displayedTreeViewLines.UpdateFromQueuedEvents(treeViewLineCache, _lastEditMode);
         }
 
         //
@@ -244,7 +245,7 @@ namespace AasxPackageExplorer
             ListOfVisualElement.SupplementaryReferenceInformation sri = null)
         {
             if (displayedTreeViewLines != null)
-                return displayedTreeViewLines.SearchVisualElementOnMainDataObject(
+                return displayedTreeViewLines.FindFirstVisualElementOnMainDataObject(
                     dataObject, alsoDereferenceObjects, sri);
             return null;
         }
@@ -379,6 +380,7 @@ namespace AasxPackageExplorer
         {
             // clear tree
             displayedTreeViewLines.Clear();
+            _lastEditMode = editMode;
 
             // valid?
             if (packages.MainAvailable)
