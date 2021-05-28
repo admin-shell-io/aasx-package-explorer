@@ -390,6 +390,7 @@ namespace AdminShellNS
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
+            public static string View = "View";
             // Resharper enable MemberHidesStaticFromOuterClass
 
             public static string[] IdentifierTypeNames = new string[] {
@@ -1821,6 +1822,25 @@ namespace AdminShellNS
                     this.description = new Description(src.description);
             }
 #endif
+
+            /// <summary>
+            /// Introduced for JSON serialization, can create Referables based on a string name
+            /// </summary>
+            /// <param name="elementName">string name (standard PascalCased)</param>
+            public static Referable CreateAdequateType(string elementName)
+            {
+                if (elementName == Key.AAS)
+                    return new AdministrationShell();
+                if (elementName == Key.Asset)
+                    return new Asset();
+                if (elementName == Key.ConceptDescription)
+                    return new ConceptDescription();
+                if (elementName == Key.Submodel)
+                    return new Submodel();
+                if (elementName == Key.View)
+                    return new View();
+                return SubmodelElementWrapper.CreateAdequateType(elementName);
+            }
 
             public void AddDescription(string lang, string str)
             {

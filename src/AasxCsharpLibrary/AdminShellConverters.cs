@@ -84,7 +84,8 @@ namespace AdminShellNS
                                 var cpval = cprop.Value.ToObject<string>();
                                 if (cpval == null)
                                     continue;
-                                var o = AdminShell.SubmodelElementWrapper.CreateAdequateType(cpval);
+                                // Info MIHO 21 APR 2020: use Referable.CreateAdequateType instead of SMW...
+                                var o = AdminShell.Referable.CreateAdequateType(cpval);
                                 if (o != null)
                                     target = o;
                             }
