@@ -24,10 +24,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginBomStructure.BomStructureOptions options = new AasxPluginBomStructure.BomStructureOptions();
+        private PluginEventStack _eventStack = new PluginEventStack();
+        private AasxPluginBomStructure.BomStructureOptions _options = new AasxPluginBomStructure.BomStructureOptions();
 
-        private AasxPluginBomStructure.GenericBomControl bomControl = new AasxPluginBomStructure.GenericBomControl();
+        private AasxPluginBomStructure.GenericBomControl _bomControl = new AasxPluginBomStructure.GenericBomControl();
 
         public string GetPluginName()
         {
@@ -40,7 +40,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginBomStructure.BomStructureOptions.CreateDefault();
+            _options = AasxPluginBomStructure.BomStructureOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -50,7 +50,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         .LoadDefaultOptionsFromAssemblyDir<AasxPluginBomStructure.BomStructureOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
@@ -102,22 +102,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // looking only for Submodels
                 var sm = args[0] as AdminShell.Submodel;
-                if (sm == null)
+                if (sm == null || _options == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options != null && this.options.Records != null)
-                    foreach (var rec in this.options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
+                // ReSharper disable UnusedVariable
+                foreach (var x in _options.MatchingRecords(sm.semanticId))
+                {
+                    found = true;
+                    break;
+                }
                 if (!found)
                     return null;
+                // ReSharper enable UnusedVariable
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("BOM", "Bill of Material - Graph display");
@@ -134,13 +132,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginBomStructure.BomStructureOptions>(
                         (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -157,10 +155,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && this._eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return this._eventStack.PopEvent();
             }
 
             if (action == "get-check-visual-extension")
@@ -171,15 +169,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
-            if (action == "fill-panel-visual-extension" && this.bomControl != null)
+            if (action == "fill-panel-visual-extension" && this._bomControl != null)
             {
                 // arguments
                 if (args == null || args.Length < 3)
                     return null;
 
                 // call
-                this.bomControl.SetEventStack(this.eventStack);
-                var resobj = this.bomControl.FillWithWpfControls(args[0], args[1], args[2]);
+                this._bomControl.SetEventStack(this._eventStack);
+                var resobj = this._bomControl.FillWithWpfControls(_options, args[0], args[1], args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

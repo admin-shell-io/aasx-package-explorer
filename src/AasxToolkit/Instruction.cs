@@ -20,6 +20,7 @@ namespace AasxToolkit.Instruction
         typeof(Save),
         typeof(Validate),
         typeof(ExportTemplate),
+        typeof(ExportCst),
         typeof(CheckAndFix),
         typeof(Test))]
     public interface IInstruction { }
@@ -69,6 +70,16 @@ namespace AasxToolkit.Instruction
         public readonly string Path;
 
         public ExportTemplate(string path)
+        {
+            Path = path;
+        }
+    }
+
+    public class ExportCst : IInstruction
+    {
+        public readonly string Path;
+
+        public ExportCst(string path)
         {
             Path = path;
         }

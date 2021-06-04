@@ -7,12 +7,16 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// to be disabled for AASX Server
+#define UseMarkup
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxWpfControlLibrary.MiniMarkup;
 using AdminShellNS;
@@ -25,6 +29,7 @@ namespace AdminShellEvents
     /// 
     /// Note: This envelope is able to carry one or multiple even payloads.
     /// </summary>
+    [DisplayName("AasEventMsgEnvelope")]
     public class AasEventMsgEnvelope
     {
         /// <summary>
@@ -75,13 +80,17 @@ namespace AdminShellEvents
         // Display
         //
 
+        public static string TimeToString(DateTime dt)
+        {
+            return dt.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+        }
+
         // see: https://stackoverflow.com/questions/1820915/how-can-i-format-datetime-to-web-utc-format
         public string DisplayTimestamp
         {
             get
             {
-                return Timestamp.ToUniversalTime()
-.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                return TimeToString(Timestamp.ToUniversalTime());
             }
         }
 
@@ -158,6 +167,7 @@ namespace AdminShellEvents
             return res;
         }
 
+#if UseMarkup
         public MiniMarkupBase ToMarkup()
         {
             int w1 = 30;
@@ -194,6 +204,7 @@ namespace AdminShellEvents
 
             return res;
         }
+#endif
 
         //
         // Payloads

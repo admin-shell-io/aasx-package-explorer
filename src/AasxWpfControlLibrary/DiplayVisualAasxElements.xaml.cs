@@ -37,8 +37,9 @@ namespace AasxPackageExplorer
 
     public partial class DiplayVisualAasxElements : UserControl, IManageVisualAasxElements
     {
-        private List<VisualElementGeneric> displayedTreeViewLines = new List<VisualElementGeneric>();
+        private ListOfVisualElement displayedTreeViewLines = new ListOfVisualElement();
         private TreeViewLineCache treeViewLineCache = null;
+        private bool _lastEditMode = false;
 
         #region Public events and properties
         //
@@ -199,143 +200,54 @@ namespace AasxPackageExplorer
         #region Elememt view drawing / handling
 
         //
+        // Event queuing
+        //
+
+        public void PushEvent(PackCntChangeEventData data)
+        {
+            if (displayedTreeViewLines != null)
+                displayedTreeViewLines.PushEvent(data);
+        }
+
+        public void UpdateFromQueuedEvents()
+        {
+            if (displayedTreeViewLines != null)
+                displayedTreeViewLines.UpdateFromQueuedEvents(treeViewLineCache, _lastEditMode);
+        }
+
+        //
         // Element management
         //
 
-        private IEnumerable<VisualElementGeneric> FindAllVisualElementInternal(VisualElementGeneric root)
-        {
-            yield return root;
-            if (root?.Members != null)
-                foreach (var m in root.Members)
-                    foreach (var e in FindAllVisualElementInternal(m))
-                        yield return e;
-        }
-
         public IEnumerable<VisualElementGeneric> FindAllVisualElement()
         {
-            if (displayedTreeViewLines == null)
-                yield break;
-            foreach (var tvl in displayedTreeViewLines)
-                foreach (var e in FindAllVisualElementInternal(tvl))
-                    yield return e;
+            if (displayedTreeViewLines != null)
+                foreach (var ve in displayedTreeViewLines.FindAllVisualElement())
+                    yield return ve;
         }
 
         public IEnumerable<VisualElementGeneric> FindAllVisualElement(Predicate<VisualElementGeneric> p)
         {
-            if (p == null)
-                yield break;
-
-            foreach (var e in this.FindAllVisualElement())
-                if (p(e))
-                    yield return e;
+            if (displayedTreeViewLines != null)
+                foreach (var ve in displayedTreeViewLines.FindAllVisualElement(p))
+                    yield return ve;
         }
 
         public bool Contains(VisualElementGeneric ve)
         {
-            // ReSharper disable UnusedVariable
-            foreach (var e in FindAllVisualElement((o) => { return ve == o; }))
-                return true;
-            // ReSharper enable UnusedVariable
+            if (displayedTreeViewLines != null)
+                return displayedTreeViewLines.ContainsDeep(ve);
             return false;
-        }
-
-        private VisualElementGeneric SearchInListOfVisualElements(VisualElementGeneric tvl, object dataObject,
-            bool alsoDereferenceObjects = false)
-        {
-            if (tvl == null || dataObject == null)
-                return null;
-
-            // Test for VirtualEntities. Allow a string comparison
-            var mdo = tvl.GetMainDataObject();
-            if (mdo == null)
-                return null;
-            var s1 = mdo as string;
-            var s2 = dataObject as string;
-            if (s1 != null && s1 == s2)
-                return tvl;
-
-            // normal comparison
-            if (tvl.GetMainDataObject() == dataObject)
-                return tvl;
-
-            // extended?
-            if (alsoDereferenceObjects && tvl.GetDereferencedMainDataObject() == dataObject)
-                return tvl;
-
-            // recursion
-            foreach (var mem in tvl.Members)
-            {
-                var x = SearchInListOfVisualElements(mem, dataObject, alsoDereferenceObjects);
-                if (x != null)
-                    return x;
-            }
-            return null;
-        }
-
-        public class SupplementaryReferenceInformation
-        {
-            public AdminShell.Reference CleanReference;
-
-            public string SearchPluginTag = null;
-        }
-
-        public SupplementaryReferenceInformation StripSupplementaryReferenceInformation(AdminShell.Reference rf)
-        {
-            // in any case, provide record
-            var sri = new SupplementaryReferenceInformation();
-            sri.CleanReference = new AdminShell.Reference(rf);
-
-            // plug-in?
-            var srl = sri.CleanReference.Last;
-            if (srl?.type == AdminShell.Key.FragmentReference && srl?.idType == AdminShell.Key.Custom
-                && srl?.value?.StartsWith("Plugin:") == true)
-            {
-                sri.SearchPluginTag = srl.value.Substring("Plugin:".Length);
-                sri.CleanReference.Keys.Remove(srl);
-            }
-
-            // ok
-            return sri;
-        }
-
-        private VisualElementGeneric InternalSearchVisualElementOnMainDataObject(object dataObject,
-            bool alsoDereferenceObjects = false)
-        {
-            if (displayedTreeViewLines == null)
-                return null;
-            foreach (var tvl in displayedTreeViewLines)
-            {
-                var x = SearchInListOfVisualElements(tvl, dataObject, alsoDereferenceObjects);
-                if (x != null)
-                    return x;
-            }
-            return null;
         }
 
         public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
             bool alsoDereferenceObjects = false,
-            SupplementaryReferenceInformation sri = null)
+            ListOfVisualElement.SupplementaryReferenceInformation sri = null)
         {
-            // call internal
-            var ve = InternalSearchVisualElementOnMainDataObject(dataObject, alsoDereferenceObjects);
-
-            // refine ve?
-            if (sri != null)
-            {
-                // plugin?
-                if (sri.SearchPluginTag != null && ve is VisualElementSubmodelRef veSm
-                    && veSm.Members != null)
-                    foreach (var vem in veSm.Members)
-                        if (vem is VisualElementPluginExtension vepe)
-                            if (vepe.theExt?.Tag?.Trim().ToLower() == sri.SearchPluginTag.Trim().ToLower())
-                            {
-                                ve = vepe;
-                                break;
-                            }
-            }
-
-            // return
-            return ve;
+            if (displayedTreeViewLines != null)
+                return displayedTreeViewLines.FindFirstVisualElementOnMainDataObject(
+                    dataObject, alsoDereferenceObjects, sri);
+            return null;
         }
 
         public VisualElementGeneric GetDefaultVisualElement()
@@ -467,29 +379,26 @@ namespace AasxPackageExplorer
             bool editMode = false, string filterElementName = null)
         {
             // clear tree
-            displayedTreeViewLines = new List<VisualElementGeneric>();
+            displayedTreeViewLines.Clear();
+            _lastEditMode = editMode;
 
             // valid?
             if (packages.MainAvailable)
             {
 
                 // generate lines, add
-                var x = Generators.GenerateVisualElementsFromShellEnv(
+                displayedTreeViewLines.AddVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
                     packages.MainItem?.Filename, editMode, expandMode: 1);
-                foreach (var xx in x)
-                    displayedTreeViewLines.Add(xx);
 
                 // more?
                 if (packages.AuxAvailable &&
                     (selector == PackageCentral.Selector.MainAux
                      || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
-                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                    displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
                         packages.AuxItem?.Filename, editMode, expandMode: 1);
-                    foreach (var xx in x2)
-                        displayedTreeViewLines.Add(xx);
                 }
 
                 // more?
@@ -499,10 +408,8 @@ namespace AasxPackageExplorer
                     foreach (var fr in packages.Repositories)
                         fr.PopulateFakePackage(pkg);
 
-                    var x2 = Generators.GenerateVisualElementsFromShellEnv(
+                    displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
-                    foreach (var xx in x2)
-                        displayedTreeViewLines.Add(xx);
                 }
 
                 // may be filter

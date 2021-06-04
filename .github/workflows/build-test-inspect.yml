@@ -36,14 +36,13 @@ jobs:
         working-directory: src
         run: powershell .\InstallBuildDependencies.ps1
 
-      - name: Install coveralls.net (to send test coverage)
-        working-directory: src
-        if: github.repository == 'admin-shell-io/aasx-package-explorer'
-        run: dotnet tool install coveralls.net --version 2.0.0-beta0002
-
       - name: Build
         working-directory: src
         run: powershell .\BuildForDebug.ps1
+
+      - name: Inspect code
+        working-directory: src
+        run: powershell .\InspectCode.ps1
 
       - name: Check that all Doctests are there
         working-directory: src
@@ -56,6 +55,11 @@ jobs:
       - name: Test
         working-directory: src
         run: powershell .\Test.ps1
+
+      - name: Install coveralls.net (to send test coverage)
+        working-directory: src
+        if: github.repository == 'admin-shell-io/aasx-package-explorer'
+        run: dotnet tool install coveralls.net --version 2.0.0-beta0002
 
       - name: Send to Coveralls
         working-directory: src
@@ -81,7 +85,3 @@ jobs:
           echo "Branch is: $branch"
           echo "Commit is: $commit"
           dotnet tool run csmacnz.Coveralls --opencover -i ..\artefacts\CoverageResults.xml --useRelativePaths --repoToken $env:COVERALLS_REPO_TOKEN --commitId $commit --commitBranch $branch
-
-      - name: Inspect code
-        working-directory: src
-        run: powershell .\InspectCode.ps1

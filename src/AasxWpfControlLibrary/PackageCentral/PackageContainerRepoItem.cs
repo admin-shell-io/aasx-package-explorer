@@ -344,7 +344,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // Constructors
         //
 
-        public PackageContainerRepoItem() { }
+        public PackageContainerRepoItem() : base() { }
 
         public PackageContainerRepoItem(PackageCentral packageCentral) : base(packageCentral) { }
 

@@ -112,6 +112,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -145,6 +146,12 @@
                             Style="{DynamicResource TranspRoundCorner}" 
                             Margin="4" Foreground="White" FontSize="18" 
                             Click="Button_Click">Proceed</Button>
+
+                    <Label Grid.Row="5" Grid.Column="0" FontStyle="Italic" Foreground="Gray" 
+                   Margin="0"
+                   VerticalContentAlignment="Top"
+                   Content="(use Control-1..9 to call presets)"/>
+
                 </Grid>
 
             </TabItem>
@@ -237,17 +244,81 @@
 
             </TabItem>
 
+            <TabItem x:Name="TabItemMessageBox" Header="Message" Margin="0,5,0,-5" Visibility="Collapsed">
+
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="#c0202030" 
+                            Margin="20" CornerRadius="8">
+                        <StackPanel Orientation="Vertical"  VerticalAlignment="Center">
+                            <TextBlock  
+                               x:Name="TextBlockMessageBoxCaption" 
+                               Foreground="White" 
+                               FontWeight="Normal" FontSize="26" Padding="2" TextWrapping="Wrap"
+                               HorizontalAlignment="Center">
+                                Content
+                            </TextBlock>
+                            <TextBlock  
+                               x:Name="TextBlockMessageBoxText" 
+                               Margin="0,5,0,0" Foreground="White" 
+                               FontWeight="Normal" FontSize="16" Padding="2" TextWrapping="Wrap"
+                               HorizontalAlignment="Center">
+                                This is a bit longer text
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" 
+                                HorizontalAlignment="Center">
+
+                        <Button x:Name="ButtonMessageBoxOK" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">OK</Button>
+
+                        <Button x:Name="ButtonMessageBoxCancel" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">Cancel</Button>
+
+                        <Button x:Name="ButtonMessageBoxYes" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">Yes</Button>
+
+                        <Button x:Name="ButtonMessageBoxNo" 
+                            Style="{DynamicResource TranspRoundCorner}" 
+                            Margin="4" Foreground="White" FontSize="18" Width="100"
+                            Click="Button_Click">No</Button>
+
+                    </StackPanel>
+                    
+                    
+                </Grid>
+
+            </TabItem>
+
         </TabControl>
 
         <DockPanel Grid.Row="3" Grid.Column="1">
-            <Label DockPanel.Dock="Left" FontStyle="Italic" Foreground="Gray" 
-                   Margin="0"
-                   VerticalContentAlignment="Top"
-                   Content="(use Control-1..9 to call presets)"/>
             <Button DockPanel.Dock="Right" x:Name="ButtonMsgSmaller" Style="{DynamicResource TranspRoundCorner}"
                     Margin="2,2,6,2" Height="22" Width="22" Foreground="White" Click="Button_Click">&#x1F5DB;</Button>
             <Button DockPanel.Dock="Right" x:Name="ButtonMsgLarger" Style="{DynamicResource TranspRoundCorner}"
                     Margin="2" Height="22" Width="22" Foreground="White" Click="Button_Click">&#x1F5DA;</Button>
+            <Button DockPanel.Dock="Right" x:Name="ButtonMsgCopyLast" Style="{DynamicResource TranspRoundCorner}"
+                    Margin="2" Height="22" Foreground="White" Click="Button_Click">&#160;Copy last&#160;</Button>
+            <Button DockPanel.Dock="Right" x:Name="ButtonMsgCopyAll" Style="{DynamicResource TranspRoundCorner}"
+                    Margin="2" Height="22" Foreground="White" Click="Button_Click">&#160;Copy all&#160;</Button>
             <Label Content=" "/>
         </DockPanel>
         

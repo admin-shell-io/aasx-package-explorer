@@ -35,8 +35,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         // External properties
         //
 
-        public event Action<PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
-        public event Action<PackageContainerListBase, string[]> FileDrop;
+        public event Action<Control, PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
+        public event Action<Control, PackageContainerListBase, string[]> FileDrop;
 
         private PackageCentral _packageCentral;
         private IFlyoutProvider _flyout;
@@ -95,7 +95,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(PackageContainerListBase fr, string cmd)
+        public void CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
         {
             // access
             if (cmd == null)
@@ -197,7 +197,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                                 {
                                     // load
                                     Log.Singleton.Info("Switching to AASX repository file {0} ..", fn);
-                                    FileDoubleClick?.Invoke(fr, fi);
+                                    FileDoubleClick?.Invoke(senderList, fr, fi);
                                 }
                                 catch (Exception ex)
                                 {
@@ -359,12 +359,14 @@ namespace AasxWpfControlLibrary.PackageCentral
         }
 
         private void PackageContainerListControl_FileDoubleClick(
+            Control senderList,
             PackageContainerListBase fr, PackageContainerRepoItem fi)
         {
-            FileDoubleClick?.Invoke(fr, fi);
+            FileDoubleClick?.Invoke(senderList, fr, fi);
         }
 
         private void PackageContainerListControl_ButtonClick(
+            Control senderList,
             PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
         {
@@ -398,19 +400,21 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 cm.Start(sender, (tag) =>
                 {
-                    CommandBinding_FileRepoAll(fr, tag);
+                    CommandBinding_FileRepoAll(senderList, fr, tag);
                 });
             }
 
             if (btn == PackageContainerListControl.CustomButton.Query)
             {
-                CommandBinding_FileRepoAll(fr, "FileRepoQuery");
+                CommandBinding_FileRepoAll(senderList, fr, "FileRepoQuery");
             }
         }
 
-        private void PackageContainerListControl_FileDrop(PackageContainerListBase fr, string[] files)
+        private void PackageContainerListControl_FileDrop(
+            Control senderList,
+            PackageContainerListBase fr, string[] files)
         {
-            FileDrop?.Invoke(fr, files);
+            FileDrop?.Invoke(senderList, fr, files);
         }
 
         private void UserControl_Drop(object sender, DragEventArgs e)
@@ -422,7 +426,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 // simply pass over to upper layer to decide, how to finally handle
                 e.Handled = true;
-                FileDrop?.Invoke(null, files);
+                FileDrop?.Invoke(null, null, files);
             }
 
         }

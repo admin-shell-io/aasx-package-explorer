@@ -390,6 +390,7 @@ namespace AdminShellNS
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
+            public static string View = "View";
             // Resharper enable MemberHidesStaticFromOuterClass
 
             public static string[] IdentifierTypeNames = new string[] {
@@ -429,6 +430,21 @@ namespace AdminShellNS
                 if (value == null || idType == null || idType.Trim() == "")
                     return false;
                 return value.Trim().Equals(idType.Trim());
+            }
+
+            public bool IsType(string value)
+            {
+                if (value == null || type == null || type.Trim() == "")
+                    return false;
+                return value.Trim().ToLower().Equals(type.Trim().ToLower());
+            }
+
+            public bool IsAbsolute()
+            {
+                return IsType(Key.GlobalReference)
+                    || IsType(Key.AAS)
+                    || IsType(Key.Asset)
+                    || IsType(Key.Submodel);
             }
 
             public bool Matches(
@@ -543,6 +559,15 @@ namespace AdminShellNS
             public bool IsEmpty { get { return this.Count < 1; } }
 
             // constructors / creators
+
+            public KeyList() { }
+
+            public KeyList(KeyList src)
+            {
+                if (src != null)
+                    foreach (var k in src)
+                        this.Add(new Key(k));
+            }
 
             public static KeyList CreateNew(Key k)
             {
@@ -1797,6 +1822,25 @@ namespace AdminShellNS
                     this.description = new Description(src.description);
             }
 #endif
+
+            /// <summary>
+            /// Introduced for JSON serialization, can create Referables based on a string name
+            /// </summary>
+            /// <param name="elementName">string name (standard PascalCased)</param>
+            public static Referable CreateAdequateType(string elementName)
+            {
+                if (elementName == Key.AAS)
+                    return new AdministrationShell();
+                if (elementName == Key.Asset)
+                    return new Asset();
+                if (elementName == Key.ConceptDescription)
+                    return new ConceptDescription();
+                if (elementName == Key.Submodel)
+                    return new Submodel();
+                if (elementName == Key.View)
+                    return new View();
+                return SubmodelElementWrapper.CreateAdequateType(elementName);
+            }
 
             public void AddDescription(string lang, string str)
             {
@@ -3241,7 +3285,7 @@ namespace AdminShellNS
             }
         }
 
-        public class ConceptDescription : Identifiable, System.IDisposable
+        public class ConceptDescription : Identifiable, System.IDisposable, IGetReference
         {
             // for JSON only
             [XmlIgnore]
@@ -3985,13 +4029,18 @@ namespace AdminShellNS
 
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
+                return FindReferableByReference(rf?.Keys);
+            }
+
+            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false)
+            {
                 // first index needs to exist ..
-                if (rf == null || keyIndex >= rf.Count)
+                if (kl == null || keyIndex >= kl.Count)
                     return null;
 
                 // which type?
-                var firstType = rf[keyIndex].type.Trim().ToLower();
-                var firstIdentification = new Identification(rf[keyIndex].idType, rf[keyIndex].value);
+                var firstType = kl[keyIndex].type.Trim().ToLower();
+                var firstIdentification = new Identification(kl[keyIndex].idType, kl[keyIndex].value);
                 AdministrationShell aasToFollow = null;
 
                 if (firstType == Key.AAS.Trim().ToLower())
@@ -4000,7 +4049,7 @@ namespace AdminShellNS
                     var aas = this.FindAAS(firstIdentification);
 
                     // not found or already at end with our search?
-                    if (aas == null || keyIndex >= rf.Count - 1)
+                    if (aas == null || keyIndex >= kl.Count - 1)
                         return aas;
 
                     // follow up
@@ -4013,7 +4062,7 @@ namespace AdminShellNS
                     var asset = this.FindAsset(firstIdentification);
 
                     // not found or already at end with our search?
-                    if (asset == null || keyIndex >= rf.Count - 1)
+                    if (asset == null || keyIndex >= kl.Count - 1)
                         return exactMatch ? null : asset;
 
                     // try find aas for it
@@ -4032,11 +4081,11 @@ namespace AdminShellNS
                 if (aasToFollow != null)
                 {
                     // search different entities
-                    if (rf[keyIndex + 1].type.Trim().ToLower() == Key.Submodel.ToLower()
-                        || rf[keyIndex + 1].type.Trim().ToLower() == Key.SubmodelRef.ToLower())
+                    if (kl[keyIndex + 1].type.Trim().ToLower() == Key.Submodel.ToLower()
+                        || kl[keyIndex + 1].type.Trim().ToLower() == Key.SubmodelRef.ToLower())
                     {
                         // ok, search SubmodelRef
-                        var smref = aasToFollow.FindSubmodelRef(rf[keyIndex + 1].ToId());
+                        var smref = aasToFollow.FindSubmodelRef(kl[keyIndex + 1].ToId());
                         if (smref == null)
                             return exactMatch ? null : aasToFollow;
 
@@ -4046,11 +4095,11 @@ namespace AdminShellNS
                             return exactMatch ? null : aasToFollow;
 
                         // at our end?
-                        if (keyIndex >= rf.Count - 2)
+                        if (keyIndex >= kl.Count - 2)
                             return sm;
 
                         // go inside
-                        return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 2);
+                        return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, kl, keyIndex + 2);
                     }
                 }
 
@@ -4060,16 +4109,16 @@ namespace AdminShellNS
                 if (firstType == Key.Submodel.Trim().ToLower())
                 {
                     // ok, search Submodel
-                    var sm = this.FindSubmodel(new Identification(rf[keyIndex].idType, rf[keyIndex].value));
+                    var sm = this.FindSubmodel(new Identification(kl[keyIndex].idType, kl[keyIndex].value));
                     if (sm == null)
                         return null;
 
                     // at our end?
-                    if (keyIndex >= rf.Count - 1)
+                    if (keyIndex >= kl.Count - 1)
                         return sm;
 
                     // go inside
-                    return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, rf, keyIndex + 1);
+                    return SubmodelElementWrapper.FindReferableByReference(sm.submodelElements, kl, keyIndex + 1);
                 }
 
                 // nothing in this Environment
@@ -5059,6 +5108,10 @@ namespace AdminShellNS
                 return null;
             }
 
+            public virtual void ValueFromText(string text)
+            {
+            }
+
             // validation
 
             public override void Validate(AasValidationRecordList results)
@@ -5301,6 +5354,12 @@ namespace AdminShellNS
             public static Referable FindReferableByReference(
                 List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
             {
+                return FindReferableByReference(wrappers, rf?.Keys, keyIndex);
+            }
+
+            public static Referable FindReferableByReference(
+                List<SubmodelElementWrapper> wrappers, KeyList rf, int keyIndex)
+            {
                 // first index needs to exist ..
                 if (wrappers == null || rf == null || keyIndex >= rf.Count)
                     return null;
@@ -5467,7 +5526,8 @@ namespace AdminShellNS
                 return FindAllIdShortAs<T>(idShort)?.FirstOrDefault<T>();
             }
 
-            public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(Key semId, Type[] allowedTypes = null)
+            public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement.semanticId != null)
@@ -5482,7 +5542,7 @@ namespace AdminShellNS
                                 continue;
                         }
 
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
                             yield return smw;
                     }
             }
@@ -5508,15 +5568,45 @@ namespace AdminShellNS
                             yield return smw.submodelElement as T;
             }
 
-            public SubmodelElementWrapper FindFirstSemanticId(Key semId, Type[] allowedTypes = null)
+            public SubmodelElementWrapper FindFirstSemanticId(
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
             {
-                return FindAllSemanticId(semId, allowedTypes)?.FirstOrDefault<SubmodelElementWrapper>();
+                return FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<SubmodelElementWrapper>();
+            }
+
+            public SubmodelElementWrapper FindFirstAnySemanticId(
+                Key[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            {
+                if (semId == null)
+                    return null;
+                foreach (var si in semId)
+                {
+                    var found = FindAllSemanticId(si, allowedTypes, matchMode)?
+                                .FirstOrDefault<SubmodelElementWrapper>();
+                    if (found != null)
+                        return found;
+                }
+                return null;
             }
 
             public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
+            }
+
+            public T FindFirstAnySemanticIdAs<T>(Key[] semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                where T : SubmodelElement
+            {
+                if (semId == null)
+                    return null;
+                foreach (var si in semId)
+                {
+                    var found = FindAllSemanticIdAs<T>(si, matchMode)?.FirstOrDefault<T>();
+                    if (found != null)
+                        return found;
+                }
+                return null;
             }
 
             public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
@@ -5629,6 +5719,16 @@ namespace AdminShellNS
             }
 
             /// <summary>
+            /// Add <c>sme</c> by creating a SubmodelElementWrapper for it and adding to this collection.
+            /// </summary>
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (sme == null || index < 0 || index >= this.Count)
+                    return;
+                this.Insert(index, SubmodelElementWrapper.CreateFor(sme));
+            }
+
+            /// <summary>
             /// Finds the first (shall be only 1!) SubmodelElementWrapper with SubmodelElement <c>sme</c>.
             /// </summary>
             public SubmodelElementWrapper FindSubModelElement(SubmodelElement sme)
@@ -5663,7 +5763,7 @@ namespace AdminShellNS
 
                 // try to potentially figure out idShort
                 var ids = cd.idShort;
-                if (ids == null && cd.GetIEC61360() != null)
+                if ((ids == null || ids.Trim() == "") && cd.GetIEC61360() != null)
                     ids = cd.GetIEC61360().shortName?
                         .GetDefaultStr();
                 if (idShort != null)
@@ -5725,13 +5825,56 @@ namespace AdminShellNS
 
             // for conversion
 
+            public T AdaptiveConvertTo<T>(
+                SubmodelElement anySrc,
+                ConceptDescription createDefault = null,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
+            {
+                if (typeof(T) == typeof(MultiLanguageProperty)
+                        && anySrc is Property srcProp)
+                {
+                    var res = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
+                    if (res is MultiLanguageProperty mlp)
+                    {
+                        mlp.value = new LangStringSet("EN?", srcProp.value);
+                        mlp.valueId = srcProp.valueId;
+                        return res;
+                    }
+                }
+
+                if (typeof(T) == typeof(Property)
+                        && anySrc is MultiLanguageProperty srcMlp)
+                {
+                    var res = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
+                    if (res is Property prp)
+                    {
+                        prp.value = "" + srcMlp.value?.GetDefaultStr();
+                        prp.valueId = srcMlp.valueId;
+                        return res;
+                    }
+                }
+
+                return null;
+            }
+
             public T CopyOneSMEbyCopy<T>(Key destSemanticId,
-                SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Key[] sourceSemanticId,
                 ConceptDescription createDefault = null, Action<T> setDefault = null,
-                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
                 // get source
-                var src = sourceSmc?.FindFirstSemanticIdAs<T>(sourceSemanticId, matchMode);
+                var src = sourceSmc?.FindFirstAnySemanticIdAs<T>(sourceSemanticId, matchMode);
+
+                // may be make an adaptive conversion
+                if (src == null)
+                {
+                    var anySrc = sourceSmc?.FindFirstAnySemanticId(sourceSemanticId, matchMode: matchMode);
+                    src = AdaptiveConvertTo<T>(anySrc?.submodelElement, createDefault,
+                                idShort: idShort, addSme: false);
+                }
+
+                // proceed
                 var aeSrc = SubmodelElementWrapper.GetAdequateEnum(src?.GetElementName());
                 if (src == null || aeSrc == SubmodelElementWrapper.AdequateElementEnum.Unknown)
                 {
@@ -5740,7 +5883,7 @@ namespace AdminShellNS
                         return null;
 
                     // ok, default
-                    var dflt = this.CreateSMEForCD<T>(createDefault, addSme: addSme);
+                    var dflt = this.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
 
                     // set default?
                     setDefault?.Invoke(dflt);
@@ -5770,10 +5913,21 @@ namespace AdminShellNS
             public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
                 SubmodelElementWrapperCollection sourceSmc, ConceptDescription sourceCD,
                 bool createDefault = false, Action<T> setDefault = null,
-                Key.MatchMode matchMode = Key.MatchMode.Relaxed, bool addSme = false) where T : SubmodelElement, new()
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
-                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceCD?.GetSingleKey(),
-                    createDefault ? destCD : null, setDefault, matchMode, addSme);
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, new[] { sourceCD?.GetSingleKey() },
+                    createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
+            }
+
+            public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
+                SubmodelElementWrapperCollection sourceSmc, Key[] sourceKeys,
+                bool createDefault = false, Action<T> setDefault = null,
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                string idShort = null, bool addSme = false) where T : SubmodelElement, new()
+            {
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceKeys,
+                    createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
             }
 
             public void CopyManySMEbyCopy<T>(Key destSemanticId,
@@ -6042,13 +6196,18 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("Submodel", "SM");
             }
 
-            public Reference GetReference()
+            public SubmodelRef GetSubmodelRef()
             {
                 SubmodelRef l = new SubmodelRef();
                 l.Keys.Add(
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return l;
+            }
+
+            public Reference GetReference()
+            {
+                return GetSubmodelRef();
             }
 
             /// <summary>
@@ -6349,6 +6508,11 @@ namespace AdminShellNS
             public override string ValueAsText(string defaultLang = null)
             {
                 return "" + value;
+            }
+
+            public override void ValueFromText(string text)
+            {
+                value = "" + text;
             }
 
             public bool IsTrue()
@@ -7435,10 +7599,12 @@ namespace AdminShellNS
                     this.assetRef = new AssetRef(ent.assetRef);
             }
 
-            public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null)
+            public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null,
+                string category = null, Key semanticIdKey = null)
             {
+                CreateNewLogic(idShort, null, semanticIdKey);
+
                 this.entityType = EntityTypeNames[(int)entityType];
-                this.idShort = idShort;
                 this.assetRef = assetRef;
             }
 

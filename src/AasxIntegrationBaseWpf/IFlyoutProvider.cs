@@ -35,7 +35,7 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Initiate closing an existing flyout
         /// </summary>
-        void CloseFlyover();
+        void CloseFlyover(bool threadSafe = false);
 
         /// <summary>
         /// Start UserControl as modal flyout. The UserControl has to implement

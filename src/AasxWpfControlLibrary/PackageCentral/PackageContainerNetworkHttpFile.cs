@@ -86,11 +86,14 @@ namespace AasxWpfControlLibrary.PackageCentral
             string fullItemLocation,
             bool overrideLoadResident,
             PackageContainerBase takeOver = null,
+            PackageContainerListBase containerList = null,
             PackageContainerOptionsBase containerOptions = null,
             PackCntRuntimeOptions runtimeOptions = null)
         {
             var res = new PackageContainerNetworkHttpFile(CopyMode.Serialized, takeOver,
                 packageCentral, location, containerOptions);
+
+            res.ContainerList = containerList;
 
             if (overrideLoadResident || true == res.ContainerOptions?.LoadResident)
                 await res.LoadFromSourceAsync(fullItemLocation, runtimeOptions);
@@ -118,6 +121,17 @@ namespace AasxWpfControlLibrary.PackageCentral
             return "HTTP file: " + Location;
         }
 
+        private OpenIdClientInstance.UiLambdaSet GenerateUiLambdaSet(PackCntRuntimeOptions runtimeOptions = null)
+        {
+            var res = new OpenIdClientInstance.UiLambdaSet();
+
+            if (runtimeOptions?.ShowMesssageBox != null)
+                res.MesssageBox = (content, text, title, buttons) =>
+                    runtimeOptions.ShowMesssageBox(content, text, title, buttons);
+
+            return res;
+        }
+
         private async Task DownloadFromSource(Uri sourceUri,
             PackCntRuntimeOptions runtimeOptions = null)
         {
@@ -136,8 +150,19 @@ namespace AasxWpfControlLibrary.PackageCentral
             runtimeOptions?.Log?.Info($"HttpClient() with base-address {client.BaseAddress} " +
                 $"and request {requestPath} .. ");
 
-            if (OpenIDClient.token != "")
-                client.SetBearerToken(OpenIDClient.token);
+            // Token existing?
+            var clhttp = ContainerList as PackageContainerListHttpRestBase;
+            var oidc = clhttp?.OpenIdClient;
+            if (oidc == null)
+                runtimeOptions?.Log?.Info("  no ContainerList available. No OpecIdClient possible!");
+            else
+            {
+                if (oidc.token != "")
+                {
+                    runtimeOptions?.Log?.Info($"  using existing bearer token.");
+                    client.SetBearerToken(oidc.token);
+                }
+            }
 
             bool repeat = true;
 
@@ -147,20 +172,37 @@ namespace AasxWpfControlLibrary.PackageCentral
                 var response = await client.GetAsync(requestPath,
                     HttpCompletionOption.ResponseHeadersRead);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
+                if (clhttp != null
+                    && response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
                 {
                     string redirectUrl = response.Headers.Location.ToString();
                     // ReSharper disable once RedundantExplicitArrayCreation
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
+
+                    if (splitResult.Length < 1)
+                    {
+                        runtimeOptions?.Log?.Error("TemporaryRedirect, but url split to successful");
+                        break;
+                    }
+
                     runtimeOptions?.Log?.Info("Redirect to:" + splitResult[0]);
-                    OpenIDClient.authServer = splitResult[0];
 
-                    runtimeOptions?.Log?.Info($".. authentication at auth server {OpenIDClient.authServer} needed");
+                    if (oidc == null)
+                    {
+                        runtimeOptions?.Log?.Info("Creating new OpenIdClient..");
+                        oidc = new OpenIdClientInstance();
+                        clhttp.OpenIdClient = oidc;
+                    }
 
-                    var response2 = await OpenIDClient.RequestTokenAsync(null);
-                    OpenIDClient.token = response2.AccessToken;
-                    client.SetBearerToken(OpenIDClient.token);
+                    oidc.authServer = splitResult[0];
+
+                    runtimeOptions?.Log?.Info($".. authentication at auth server {oidc.authServer} needed");
+
+                    var response2 = await oidc.RequestTokenAsync(null,
+                        GenerateUiLambdaSet(runtimeOptions));
+                    oidc.token = response2.AccessToken;
+                    client.SetBearerToken(oidc.token);
 
                     repeat = true;
                     continue;
@@ -312,10 +354,22 @@ namespace AasxWpfControlLibrary.PackageCentral
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
 
+            // new http client
             var client = new HttpClient(handler);
 
-            if (OpenIDClient.token != "")
-                client.SetBearerToken(OpenIDClient.token);
+            // Token existing?
+            var clhttp = ContainerList as PackageContainerListHttpRestBase;
+            var oidc = clhttp?.OpenIdClient;
+            if (oidc == null)
+                runtimeOptions?.Log?.Info("  no ContainerList available. No OpecIdClient possible!");
+            else
+            {
+                if (oidc.token != "")
+                {
+                    runtimeOptions?.Log?.Info($"  using existing bearer token.");
+                    client.SetBearerToken(oidc.token);
+                }
+            }
 
             // BEGIN Workaround behind some proxies
             // Stream is sent twice, if proxy-authorization header is not set

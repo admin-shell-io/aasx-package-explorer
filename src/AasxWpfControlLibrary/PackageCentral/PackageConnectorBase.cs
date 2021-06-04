@@ -28,6 +28,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     {
         public PackageConnectorException() { }
         public PackageConnectorException(string message) : base(message) { }
+        public PackageConnectorException(string message, Exception innerException) : base(message, innerException) { }
     }
 
     public interface IPackageConnectorManageEvents

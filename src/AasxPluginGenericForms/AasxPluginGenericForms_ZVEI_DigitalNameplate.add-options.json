@@ -1,0 +1,3818 @@
+{
+  "$type": "Options",
+  "Records": [
+    {
+      "$type": "Record",
+      "FormTag": "DNP",
+      "FormTitle": "ZVEI Digital Nameplate (V1.0)",
+      "FormSubmodel": {
+        "$type": "FormSubmodel",
+        "FormTitle": "Submodel",
+        "FormInfo": "",
+        "FormEditIdShort": false,
+        "FormEditDescription": false,
+        "PresetIdShort": "Nameplate",
+        "PresetCategory": "CONSTANT",
+        "KeySemanticId": {
+          "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+          "type": "Submodel",
+          "local": true,
+          "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate",
+          "index": 0,
+          "idType": "IRI"
+        },
+        "SubmodelElements": [
+          {
+            "$type": "FormMultiLangProp",
+            "FormTitle": "ManufacturerName",
+            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "ManufacturerName",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAO677#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false
+          },
+          {
+            "$type": "FormMultiLangProp",
+            "FormTitle": "ManufacturerProductDesignation",
+            "FormInfo": "Short description of the product (short text).",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "ManufacturerProductDesignation",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAW338#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Address",
+            "FormInfo": "Address information of a business partner.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "Address",
+            "PresetCategory": "VARIABLE",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAQ832#005",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Department",
+                "FormInfo": "Administrative section within an organisation where a business partner is located.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Department",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO127#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Street",
+                "FormInfo": "Street name and house number.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Street",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO128#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "Zipcode",
+                "FormInfo": "ZIP code of address.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Zipcode",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO129#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "POBox",
+                "FormInfo": "P.O. box number.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "POBox",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO130#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "ZipCodeOfPOBox",
+                "FormInfo": "ZIP code of P.O. box address.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "ZipCodeOfPOBox",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO131#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "CityTown",
+                "FormInfo": "Town or city name.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "CityTown",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO132#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "StateCounty",
+                "FormInfo": "Federal state; a part of a state.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "StateCounty",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO133#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "NationalCode",
+                "FormInfo": "Country code defined according to DIN EN ISO 3166-1.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "NationalCode",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO134#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "One",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "VATNumber",
+                "FormInfo": "VAT (value added tax) identification number of the business partner.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "VATNumber",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO135#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "AddressRemarks",
+                "FormInfo": "Plain text characterizing address information for which there is no property.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "AddressRemarks",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAO202#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false
+              },
+              {
+                "$type": "FormProperty",
+                "FormTitle": "AddressOfAdditionalLink",
+                "FormInfo": "Web site address where information about the product or contact is given.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "AddressOfAdditionalLink",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAQ326#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToOne",
+                "IsReadOnly": false,
+                "allowedValueTypes": [
+                  "string"
+                ],
+                "presetValue": ""
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Phone",
+                "FormInfo": "Phone number including type.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Phone{0:00}",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAQ833#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "TelephoneNumber",
+                    "FormInfo": "Complete telephone number to be called to reach a business partner.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TelephoneNumber",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO136#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfTelephone",
+                    "FormInfo": "Characterization of a telephone according to its location or usage.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfTelephone",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO137#003",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": "",
+                    "comboBoxChoices": [
+                      "Office",
+                      "Office mobile",
+                      "Secretary",
+                      "Substitute",
+                      "Home",
+                      "Private mobile"
+                    ]
+                  }
+                ]
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Fax",
+                "FormInfo": "Fax number including type.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Fax{0:00}",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAQ834#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "FaxNumber",
+                    "FormInfo": "Complete telephone number to be called to reach a business partner's fax machine.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "FaxNumber",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO195#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfFaxNumber",
+                    "FormInfo": "Characterization of the fax according its location or usage.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfFaxNumber",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO196#003",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": "",
+                    "comboBoxChoices": [
+                      "Office",
+                      "Secretary",
+                      "Home"
+                    ]
+                  }
+                ]
+              },
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Email",
+                "FormInfo": "E-mail address and encryption method.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Email{0:00}",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "0173-1#02-AAQ836#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                },
+                "Multiplicity": "ZeroToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "EmailAddress",
+                    "FormInfo": "Electronic mail address of a business partner.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "EmailAddress",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO198#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "PublicKey",
+                    "FormInfo": "Public part of an unsymmetrical key pair to sign or encrypt text or messages.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "PublicKey",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO200#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "TypeOfEmailAddress",
+                    "FormInfo": "Characterization of an e-mail address according to its location or usage.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfEmailAddress",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO199#003",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": "",
+                    "comboBoxChoices": [
+                      "Office",
+                      "Secretary",
+                      "Substitute",
+                      "Home"
+                    ]
+                  },
+                  {
+                    "$type": "FormMultiLangProp",
+                    "FormTitle": "TypeOfPublickKey",
+                    "FormInfo": "Characterization of a public key according to its encryption process.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "TypeOfPublickKey",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO201#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "ZeroToOne",
+                    "IsReadOnly": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "FormMultiLangProp",
+            "FormTitle": "ManufacturerProductFamily",
+            "FormInfo": "2nd level of a 3 level manufacturer specific product hierarchy.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "ManufacturerProductFamily",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAU731#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "SerialNumber",
+            "FormInfo": "Unique combination of numbers and letters used to identify the device once it has been manufactured.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "SerialNumber",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAM556#002",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "ZeroToOne",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormProperty",
+            "FormTitle": "YearOfConstruction",
+            "FormInfo": "Year as completion date of object.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "YearOfConstruction",
+            "PresetCategory": "PARAMETER",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "0173-1#02-AAP906#001",
+              "index": 0,
+              "idType": "IRDI"
+            },
+            "Multiplicity": "One",
+            "IsReadOnly": false,
+            "allowedValueTypes": [
+              "string"
+            ],
+            "presetValue": ""
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "Markings",
+            "FormInfo": "Collection of product markings.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "Markings",
+            "PresetCategory": "VARIABLE",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "ZeroToOne",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "Marking",
+                "FormInfo": "Individual information about the marking labelled on the device.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "Marking{0:00}",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "OneToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "MarkingName",
+                    "FormInfo": "Common name of the marking.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "MarkingName",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingName",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  },
+                  {
+                    "$type": "FormFile",
+                    "FormTitle": "MarkingFile",
+                    "FormInfo": "Common picture or logo of the marking.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "MarkingFile",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingFile",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "presetMimeType": ""
+                  },
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "MarkingAdditionalText",
+                    "FormInfo": "Where applicable, additional information on the marking in plain text.",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "MarkingAdditionalText{0:00}",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingAdditionalText",
+                      "index": 0,
+                      "idType": "IRI"
+                    },
+                    "Multiplicity": "ZeroToMany",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "$type": "FormSubmodelElementCollection",
+            "FormTitle": "AssetSpecificProperties",
+            "FormInfo": "Collection of asset or guideline specific properties.",
+            "FormEditIdShort": false,
+            "FormEditDescription": false,
+            "PresetIdShort": "AssetSpecificProperties",
+            "PresetCategory": "VARIABLE",
+            "KeySemanticId": {
+              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+              "type": "ConceptDescription",
+              "local": true,
+              "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/AssetSpecificProperties",
+              "index": 0,
+              "idType": "IRI"
+            },
+            "Multiplicity": "ZeroToOne",
+            "IsReadOnly": false,
+            "value": [
+              {
+                "$type": "FormSubmodelElementCollection",
+                "FormTitle": "GuidelineSpecificProperties",
+                "FormInfo": "Asset specific nameplate information required by guideline, stipulation or legislation.",
+                "FormEditIdShort": false,
+                "FormEditDescription": false,
+                "PresetIdShort": "GuidelineSpecificProperties{0:00}",
+                "PresetCategory": "VARIABLE",
+                "KeySemanticId": {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "ConceptDescription",
+                  "local": true,
+                  "value": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/AssetSpecificProperties/GuidelineSpecificProperties",
+                  "index": 0,
+                  "idType": "IRI"
+                },
+                "Multiplicity": "OneToMany",
+                "IsReadOnly": false,
+                "value": [
+                  {
+                    "$type": "FormProperty",
+                    "FormTitle": "GuidelineForConformityDeclaration",
+                    "FormEditIdShort": false,
+                    "FormEditDescription": false,
+                    "PresetIdShort": "GuidelineForConformityDeclaration",
+                    "PresetCategory": "VARIABLE",
+                    "KeySemanticId": {
+                      "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                      "type": "ConceptDescription",
+                      "local": true,
+                      "value": "0173-1#02-AAO856#002",
+                      "index": 0,
+                      "idType": "IRDI"
+                    },
+                    "Multiplicity": "One",
+                    "IsReadOnly": false,
+                    "allowedValueTypes": [
+                      "string"
+                    ],
+                    "presetValue": ""
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "ConceptDescriptions": [
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO677#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellername"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Manufacturer name"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ManNam"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bezeichnung für eine natürliche oder juristische Person, die für die Auslegung, Herstellung und Verpackung sowie die Etikettierung eines Produkts im Hinblick auf das 'Inverkehrbringen' im eigenen Namen verantwortlich ist"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO677#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAW338#001"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellerproduktbezeichnung"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Manufacturer product designation"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ManProDes"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Kurze Beschreibung des Produktes (Kurztext)"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Short description of the product (short text)"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAW338#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAQ832#005"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Address"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Adresse"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Add"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Address information of a business partner"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Adressinformationen zu einem Geschäftspartner"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAQ832#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO127#003"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Abteilung"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "department"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Dep"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "administrative Abteilung einer Organisation, in der ein Geschäftspartner vertreten ist"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "administrative section within an organization where a business partner is located"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO127#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO128#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "street"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Straße"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Str"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "street name and house number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Straßenname und Hausnummer"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO128#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO129#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "zip code"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Postleitzahl"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ZipCod"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ZIP code of address"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Postleitzahl der Anschrift"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO129#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO130#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "PO box"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Postfach"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "POBox"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "P.O. box number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Nummer des Postfachs"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO130#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO131#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "zip code of PO box"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Postleitzahl des Postfachs"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ZipCodOfPOBox"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ZIP code of P.O. box address"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Postleitzahl der Postfachadresse"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO131#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO132#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "city/town"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Ort"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "CitTow"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "town or city"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Ortsangabe"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO132#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO133#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "state/county"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Bundesland"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "StaCou"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "federal state a part of a state"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Teil eines Bundesstaats"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO133#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO134#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "national code"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Ländercode"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "NatCod"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "code of a country"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Code eines Landes"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO134#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO135#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "VAT number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Umsatzsteuer-ID"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "VATNum"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "VAT identification number of the business partner"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Umsatzsteuer-ID des Geschäftspartners"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO135#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO202#003"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "address remarks"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Anmerkungen zu Adresse"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "AddRem"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "plain text characterizing address information for which there is no property"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "einfacher Text, der Adressinformationen kennzeichnet, bei denen kein Merkmal zur Verfügung steht"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO202#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAQ326#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "address of additional link"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "zusätzlicher Online-Verweis"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "AddOfAddLin"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "web site address where information about the product or contact is given"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Angabe einer Web-Adresse, die zusätzliche Informationen zum Produkt oder Kontaktdaten enthält"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAQ326#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAQ833#005"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Phone"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Telefon"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Pho"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Phone number including type"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Telefonnummer mit Angabe der Art des Anschlusses"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAQ833#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO136#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "telephone number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Telefonnummer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "TelNum"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "complete telephone number to be called to reach a business partner"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "vollständige Telefonnummer, unter der ein Geschäftspartner erreichbar ist"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO136#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO137#003"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "type of telephone"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Art der Telefonnummer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "TypOfTel"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "characterization of a telephone according to its location or usage"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Charakterisierung einer Telefonnummer bezüglich ihres Orts oder ihrer Verwendung"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO137#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAQ834#005"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Fax"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Fax"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Fax"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Fax number including type"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Faxnummer mit Angabe der Art des Anschlusses"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAQ834#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO195#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "fax number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Faxnummer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "FaxNum"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "complete telephone number to be called to reach a business partner's fax machine"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "vollständige Telefonnummer, unter der das Faxgerät eines Geschäftspartners erreichbar ist"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO195#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO196#003"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "type of fax number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Art der Faxnummer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "TypOfFaxNum"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "characterization of the fax according its location or usage"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Charakterisierung des Fax bezüglich seines Orts oder Gebrauchs"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO196#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAQ836#005"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "E-mail"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "E-Mail"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Ema"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "E-mail address and encryption method"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "E-Mail-Adresse und Angaben zur Verschlüsselung"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAQ836#005",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO198#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "e-mail address"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "E-Mailadresse"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "EmaAdd"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "electronic mail address of a business partner"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "E-Mailadresse eines Geschäftspartners"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO198#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO200#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "public key"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "öffentlicher Schlüssel"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "PubKey"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "public part of an unsymmetrical key pair to sign or encrypt text or messages"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "öffentlicher Teil eines unsymmetrischen Schlüsselpaares zur Unterzeichnung oder Verschlüsselung von Text oder Meldungen"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO200#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO199#003"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "type of e-mail address"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Art der E-Mailadresse"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "TypOfEmaAdd"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "characterization of an e-mail address according its location or usage"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Charakterisierung einer E-Mail-Adresse bezüglich ihres Orts oder Gebrauchs"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO199#003",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO201#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "type of public key"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Art des öffentlichen Schlüssels"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "TypOfPubKey"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "characterization of a public key according to its encryption process"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Charakterisierung eines öffentlichen Schlüssels bezüglich seines Verschlüsselungsprozesses"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO201#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAU731#001"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Herstellerproduktfamilie"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Manufacturer product family"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "ManProFam"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "2. Ebene einer 3 stufigen herstellerspezifischen Produkthierarchie"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "2nd level of a 3 level manufacturer specific product hierarchy"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAU731#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAM556#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "serial number"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Seriennummer"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "SerNum"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING_TRANSLATABLE",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "unique combination of numbers and letters used to identify the device once it has been manufactured"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "eindeutige Zahlen- und Buchstabenkombination, mit der das Gerät nach seiner Herstellung identifiziert ist"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAM556#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAP906#001"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Baujahr"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Year of construction"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "YeaOfCon"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Jahreszahl als Datumsangabe für die Fertigstellung des Objektes"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Year as completion date of object"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAP906#001",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Markings"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Produktkennzeichnungen"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Markings"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Collection of product markings"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Sammlung für Produktkennzeichnungen"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Marking"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Produktkennzeichnung"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Marking"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "contains information about the marking labelled on the device"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "erfasst Information über die Produktkennzeichnung"
+                  }
+                ]
+              }
+            }
+          ],
+          "descriptions": []
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingName"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Marking name"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Name der Produktkennzeichnung"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "MarkingName"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "common name of the marking"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Marktüblicher Name der Produktkennzeichnung"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingFile"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "marking file"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Datei der Produktkennzeichnung"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "MarkingFile"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "picture of the marking"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Datei der Produktkennzeichnung"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/Markings/Marking/MarkingAdditionalText"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "marking additional text"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Zusatztext der Produktkennzeichnung"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "MarkingAdditionalText"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "where applicable, additional information on the marking in plain text"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Zusatztext auf der Produktkennzeichnung als einfacher Text, falls verfügbar"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/AssetSpecificProperties"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Asset-specific properties"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Asset-spezifische Merkmale"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "AssetSpecificProperties"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Collection of guideline-specific properties"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Sammlung der Richtlinien-spezifischen Merkmale"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRI",
+            "id": "https://admin-shell.io/zvei/nameplate/1/0/Nameplate/AssetSpecificProperties/GuidelineSpecificProperties"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Guideline-specific Properties"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Richtlinie-spezifische Merkmale"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "GuidelineSpecificProperties"
+                  }
+                ],
+                "unit": "",
+                "dataType": "",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "Asset specific nameplate information required by guideline, stipulation or legislation"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Asset-spezifische Typenschildinformation, die von weiteren Normen, Standards und Richtlinien gefordert wird"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "$type": "AdminShellNS.AdminShellV20+ConceptDescription, AasxCsharpLibrary",
+          "identification": {
+            "$type": "AdminShellNS.AdminShellV20+Identification, AasxCsharpLibrary",
+            "idType": "IRDI",
+            "id": "0173-1#02-AAO856#002"
+          },
+          "administration": {
+            "$type": "AdminShellNS.AdminShellV20+Administration, AasxCsharpLibrary",
+            "version": "",
+            "revision": "1"
+          },
+          "idShort": "",
+          "modelType": {
+            "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
+            "name": "ConceptDescription"
+          },
+          "embeddedDataSpecifications": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+EmbeddedDataSpecification, AasxCsharpLibrary",
+              "dataSpecification": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationRef, AasxCsharpLibrary",
+                "keys": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "GlobalReference",
+                    "local": false,
+                    "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+                    "index": 0,
+                    "idType": "IRI"
+                  }
+                ]
+              },
+              "dataSpecificationContent": {
+                "$type": "AdminShellNS.AdminShellV20+DataSpecificationIEC61360, AasxCsharpLibrary",
+                "preferredName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "guideline for conformity declaration"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Richtlinie der Konformitätserklärung"
+                  }
+                ],
+                "shortName": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "GuiForConDec"
+                  }
+                ],
+                "unit": "",
+                "dataType": "STRING",
+                "definition": [
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "en",
+                    "text": "guideline, stipulation or legislation used for determining conformity"
+                  },
+                  {
+                    "$type": "AdminShellNS.AdminShellV20+LangStr, AasxCsharpLibrary",
+                    "language": "de",
+                    "text": "Richtlinie, Vorschrift oder des Gesetzes an Hand der die Konformität ermittelt wurde"
+                  }
+                ]
+              }
+            }
+          ],
+          "isCaseOf": [
+            {
+              "$type": "AdminShellNS.AdminShellV20+Reference, AasxCsharpLibrary",
+              "keys": [
+                {
+                  "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                  "type": "GlobalReference",
+                  "local": false,
+                  "value": "0173-1#02-AAO856#002",
+                  "index": 0,
+                  "idType": "IRDI"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

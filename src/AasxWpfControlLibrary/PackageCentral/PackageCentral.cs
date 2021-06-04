@@ -88,7 +88,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     location,
                     fullItemLocation,
                     overrideLoadResident,
-                    null,
+                    null, null,
                     containerOptions,
                     runtimeOptions));
                 var guess = task.Result;
@@ -222,6 +222,11 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// </summary>
         public PackCntRuntimeOptions CentralRuntimeOptions = null;
 
+        /// <summary>
+        /// Main application can register for change events
+        /// </summary>
+        public PackCntChangeEventHandler ChangeEventHandler = null;
+
         //
         // Container members
         //
@@ -284,6 +289,26 @@ namespace AasxWpfControlLibrary.PackageCentral
                 yield return _main?.Container;
             if (_aux?.Container != null)
                 yield return _aux?.Container;
+        }
+
+        public IEnumerable<AdminShellPackageEnv> GetAllPackageEnv()
+        {
+            if (_main?.Container?.Env != null)
+                yield return _main?.Container.Env;
+            if (_aux?.Container?.Env != null)
+                yield return _aux?.Container.Env;
+            if (_repositories != null)
+                foreach (var repo in _repositories)
+                    foreach (var ri in repo.EnumerateItems())
+                        if (ri.Env != null)
+                            yield return ri.Env;
+        }
+
+        public IEnumerable<AdminShellPackageEnv> GetAllPackageEnv(Func<AdminShellPackageEnv, bool> lambda)
+        {
+            foreach (var pe in GetAllPackageEnv())
+                if (lambda == null || lambda.Invoke(pe))
+                    yield return pe;
         }
 
         //

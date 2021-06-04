@@ -875,7 +875,7 @@ namespace AasxPluginDocumentShelf
             {
                 // add entity
                 this.theSubmodel.SmeForWrite.CreateSMEForCD<AdminShell.Entity>(
-                    AasxPredefinedConcepts.VDI2770v11.Static.CD_Entity,
+                    AasxPredefinedConcepts.VDI2770v11.Static.CD_DocumentedEntity,
                     idShort: "" + TextBoxEntityIdShort.Text.Trim(),
                     addSme: true);
 

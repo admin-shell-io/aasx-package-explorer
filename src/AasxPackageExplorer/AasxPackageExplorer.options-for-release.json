@@ -25,6 +25,11 @@
   "WriteAllOptionsFN": null,
   "IndirectLoadSave": true,
   "AccentColors": {},
+  "LoadWithoutPrompt": false,
+  "ShowIdAsIri": false,
+  "VerboseConnect": true,
+  "DefaultStayConnected": false,
+  "DefaultUpdatePeriod": 1000,
   "Remarks": [
     "-arg",
     "\"17a\"",

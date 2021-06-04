@@ -8,9 +8,12 @@
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo2\\Festo-DemoBox-repo-local.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-HTTP.json",
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json",
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -22,12 +25,13 @@
   "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
   "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
   "EclassDir": ".\\eclass\\",
+  /* "LogoFile": "SpecPI40_t.png", */
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 1000,
-  "InternalBrowser": false,
+  "InternalBrowser": true,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",
   "BackupFiles": 10,
@@ -37,41 +41,42 @@
   "IndirectLoadSave": true,
   "AccentColors": {},
   "LoadWithoutPrompt": true,
+  "ShowIdAsIri": false,
+  "VerboseConnect": true,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
-  /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
-  "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510",
+  "StayConnectOptions": "REST-QUEUE", // SIM
+  "DefaultConnectRepositoryLocation": "http://localhost:51310",
+  /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
-    "PluginDll": [
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
-            "Args": [
-                "-single-nodeids",
-                "-single-keys",
-                "-ns",
-                "2",
-                "-ns",
-                "3"
-            ],
-            "Options": null
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
-            "Args": [],
-            "Options": null
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
-            "Args": []
-        },
-        /*
+  "PluginDll": [
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
+      "Args": [
+        "-single-nodeids",
+        "-single-keys",
+        "-ns",
+        "2",
+        "-ns",
+        "3"
+      ],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
+      "Args": [],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
       "Args": []
     },
-        */
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
       "Args": []
@@ -105,9 +110,9 @@
       "Args": []
     },
     /* Festo specific from here on */
-        {
-            "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
-            "Args": [] /*,
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+      "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -123,10 +128,10 @@
           }
         ]
       }*/
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-            "Args": [] /*,
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+      "Args": [] /*,
       "Options": {
         "Records": [
           {
@@ -142,8 +147,8 @@
           }
         ]
       } */
-        }
-    ],
+    }
+  ],
   "SecureConnectPresets": [
     {
       "Name": "Internet Demo",

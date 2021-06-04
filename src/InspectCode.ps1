@@ -58,7 +58,7 @@ function Main
 
         # Display a couple of the issues
 
-        $take = 20
+        $take = 200
         if ($issues.Count -lt $take)
         {
             $take = $issues.Count

@@ -349,14 +349,14 @@ namespace AasxPluginDocumentShelf
 
                             // shall be a 2770 classification
                             var classSys = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_DocumentClassificationSystem?.GetReference(),
+                                    defs11.CD_ClassificationSystem?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
                             if (classSys.ToLower().Trim() != DefinitionsVDI2770.Vdi2770Sys.ToLower())
                                 continue;
 
                             // class infos
                             var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_DocumentClassId?.GetReference(),
+                                    defs11.CD_ClassId?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
 
                             // evaluate, if in selection
@@ -377,10 +377,10 @@ namespace AasxPluginDocumentShelf
                         var further = "";
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_DocumentVersionIdValue?.GetReference()))
+                                defs11.CD_DocumentIdValue?.GetReference()))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Date?.GetReference(),
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_SetDate?.GetReference(),
                             AdminShellV20.Key.MatchMode.Relaxed))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
@@ -402,15 +402,13 @@ namespace AasxPluginDocumentShelf
                         ent.MimeType = fl?.mimeType;
 
                         // relations
-                        SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.DocumentedEntity,
+                        SeachForRelations(smcVer.value, DocumentEntity.DocRelationType.DocumentedEntity,
                             defs11.CD_DocumentedEntity?.GetReference(), ent);
-                        SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.RefersTo,
+                        SeachForRelations(smcVer.value, DocumentEntity.DocRelationType.RefersTo,
                             defs11.CD_RefersTo?.GetReference(), ent);
-                        SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.BasedOn,
+                        SeachForRelations(smcVer.value, DocumentEntity.DocRelationType.BasedOn,
                             defs11.CD_BasedOn?.GetReference(), ent);
-                        SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.Affecting,
-                            defs11.CD_Affecting?.GetReference(), ent);
-                        SeachForRelations(smcDoc.value, DocumentEntity.DocRelationType.TranslationOf,
+                        SeachForRelations(smcVer.value, DocumentEntity.DocRelationType.TranslationOf,
                             defs11.CD_TranslationOf?.GetReference(), ent);
 
                         // add

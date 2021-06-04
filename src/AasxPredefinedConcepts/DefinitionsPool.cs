@@ -102,6 +102,8 @@ namespace AasxPredefinedConcepts
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());
 
+            thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiNameplateV10.Static);
+
             thePool.IndexReferables("ZVEI Digital Identification v1.0",
                 new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfIdentification(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate()).GetAllReferables());

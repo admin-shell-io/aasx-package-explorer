@@ -121,6 +121,21 @@ namespace AasxToolkit
                 }
             );
 
+            var cmdExportCst = new Cli.Command(
+                "export-cst",
+                "exports AASX data in Siemens Teamcenter CST format.",
+                new[]
+                {
+                    new Cli.Arg(
+                        "export-file",
+                        "Path to the export file."),
+                },
+                (cmdArgs) =>
+                {
+                    return new Cli.Parsing(new Instruction.ExportCst(cmdArgs[0]));
+                }
+            );
+
             var validationExtensions = new[] { ".xml", ".json" };
             var cmdValidate = new Cli.Command(
                 "validate",
@@ -190,6 +205,7 @@ namespace AasxToolkit
                     cmdLoad,
                     cmdSave,
                     cmdExportTemplate,
+                    cmdExportCst,
                     cmdValidate,
                     cmdCheck,
                     cmdCheckAndFix,

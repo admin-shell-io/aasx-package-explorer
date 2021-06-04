@@ -49,11 +49,13 @@ namespace AasxPackageExplorer
         public class LambdaActionNavigateTo : LambdaAction
         {
             public LambdaActionNavigateTo() { }
-            public LambdaActionNavigateTo(AdminShell.Reference targetReference)
+            public LambdaActionNavigateTo(AdminShell.Reference targetReference, bool translateAssetToAAS = false)
             {
                 this.targetReference = targetReference;
+                this.translateAssetToAAS = translateAssetToAAS;
             }
             public AdminShell.Reference targetReference;
+            public bool translateAssetToAAS;
         }
 
         // some flags for the main application
