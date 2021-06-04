@@ -108,6 +108,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginPlotting", "AasxPluginPlotting\AasxPluginPlotting.csproj", "{85F1BAF6-AB96-47B6-A039-8F00182390B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxFormatCst", "AasxFormatCst\AasxFormatCst.csproj", "{CDFB6FFC-7D23-4168-B691-A8A56147F310}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AasxPluginSmdExporter", "AasxPluginSmdExporter\AasxPluginSmdExporter.csproj", "{02C78DBD-7C1E-4E61-9A30-E44A5736339A}"
 EndProject
 Global
