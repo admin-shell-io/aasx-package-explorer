@@ -464,7 +464,12 @@ namespace AasxPackageExplorer
             if (cmd == "hintskey")
                 MenuItemWorkspaceHints.IsChecked = !MenuItemWorkspaceHints.IsChecked;
 
-            if (cmd == "editmenu" || cmd == "editkey" || cmd == "hintsmenu" || cmd == "hintskey")
+            if (cmd == "showirikey")
+                MenuItemOptionsShowIri.IsChecked = !MenuItemOptionsShowIri.IsChecked;
+
+            if (cmd == "editmenu" || cmd == "editkey"
+                || cmd == "hintsmenu" || cmd == "hintskey"
+                || cmd == "showirimenu" || cmd == "showirikey")
             {
                 // try to remember current selected data object
                 object currMdo = null;
@@ -593,9 +598,9 @@ namespace AasxPackageExplorer
             if (cmd == "eventsresetlocks")
             {
                 Log.Singleton.Info($"Event interlocking reset. Status was: " +
-                    $"update-value-pending={_eventsUpdateValuePending}");
+                    $"update-value-pending={_eventHandling.UpdateValuePending}");
 
-                _eventsUpdateValuePending = false;
+                _eventHandling.Reset();
             }
 
             if (cmd == "eventsshowlogkey")

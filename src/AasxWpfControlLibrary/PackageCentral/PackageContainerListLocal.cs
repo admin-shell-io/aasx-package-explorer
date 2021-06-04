@@ -195,6 +195,7 @@ namespace AasxWpfControlLibrary.PackageCentral
 
             // add at top
             FileMap.Insert(0, itemCopy);
+            itemCopy.ContainerList = this;
 
             // if to large, crop
             if (FileMap.Count > MaxItems)

@@ -78,9 +78,11 @@ namespace AasxIntegrationBase
                 {
                     var dn = t.GetCustomAttributes(false).OfType<DisplayNameAttribute>().First().DisplayName;
                     var ntu = t.GetCustomAttributes(false).OfType<DisplayNameAttribute>().First().NoTypeLookup;
-                    if (!ntu)
+                    // MIHO, 21-05-24: added existence check to make more buller proof
+                    if (!ntu && !_nameToType.ContainsKey(dn))
                         _nameToType.Add(dn, t);
-                    _typeToName.Add(t, dn);
+                    if (!_typeToName.ContainsKey(t))
+                        _typeToName.Add(t, dn);
                 }
             }
         }

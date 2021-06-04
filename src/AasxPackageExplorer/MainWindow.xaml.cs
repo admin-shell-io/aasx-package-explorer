@@ -30,7 +30,7 @@ using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
 {
-    public partial class MainWindow : Window, IFlyoutProvider
+    public partial class MainWindow : Window, IFlyoutProvider, IPushApplicationEvent
     {
         #region Dependencies
         // (mristin, 2020-11-18): consider injecting OptionsInformation, Package environment *etc.* to the main window
@@ -165,6 +165,7 @@ namespace AasxPackageExplorer
                 RedrawAllAasxElements();
                 RedrawElementView();
                 ShowContentBrowser(Options.Curr.ContentHome, silent: true);
+                _eventHandling.Reset();
             }
         }
 
@@ -194,7 +195,40 @@ namespace AasxPackageExplorer
                             AdminShellUtil.ByteSizeHumanReadable(tbd));
 
                     if (state == PackCntRuntimeOptions.Progress.Final)
+                    {
+                        // clear
                         SetProgressBar();
+
+                        // close message boxes
+                        if (currentFlyoutControl is IntegratedConnectFlyout)
+                            CloseFlyover(threadSafe: true);
+                    }
+                },
+                ShowMesssageBox = (content, text, title, buttons) =>
+                {
+                    // not verbose
+                    if (MenuItemOptionsVerboseConnect.IsChecked == false)
+                    {
+                        // give specific default answers
+                        if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
+                            return System.Windows.Forms.DialogResult.Yes;
+
+                        // default answer
+                        return System.Windows.Forms.DialogResult.OK;
+                    }
+
+                    // make sure the correct flyout is loaded
+                    if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
+                        return System.Windows.Forms.DialogResult.Cancel;
+                    if (currentFlyoutControl == null)
+                        StartFlyover(new IntegratedConnectFlyout(_packageCentral, "Connecting .."));
+
+                    // ok -- perform dialogue in dedicated function / frame
+                    var ucic = currentFlyoutControl as IntegratedConnectFlyout;
+                    if (ucic == null)
+                        return System.Windows.Forms.DialogResult.Abort;
+                    else
+                        return ucic.MessageBoxShow(content, text, title, buttons);
                 }
             };
             return ro;
@@ -335,7 +369,7 @@ namespace AasxPackageExplorer
                     continue;
 
                 // remember some further supplementary search information
-                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(navTo.value);
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.value);
 
                 // lookup business objects
                 var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
@@ -389,14 +423,15 @@ namespace AasxPackageExplorer
         }
 
         public void PrepareDispEditEntity(
-            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode,
+            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // make UI visible settings ..
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, entity, editMode, hintMode,
+                _packageCentral, entity, editMode, hintMode, showIriMode,
                 flyoutProvider: this,
+                appEventProvider: this,
                 hightlightField: hightlightField);
 
             // panels
@@ -553,8 +588,12 @@ namespace AasxPackageExplorer
 
             // for all, prepare the display
             PrepareDispEditEntity(
-                _packageCentral.Main, DisplayElements.SelectedItem, MenuItemWorkspaceEdit.IsChecked,
-                MenuItemWorkspaceHints.IsChecked, hightlightField: hightlightField);
+                _packageCentral.Main,
+                DisplayElements.SelectedItem,
+                MenuItemWorkspaceEdit.IsChecked,
+                MenuItemWorkspaceHints.IsChecked,
+                MenuItemOptionsShowIri.IsChecked,
+                hightlightField: hightlightField);
 
         }
 
@@ -645,7 +684,7 @@ namespace AasxPackageExplorer
             }
 
             // what happens on a repo file click
-            RepoListControl.FileDoubleClick += async (repo, fi) =>
+            RepoListControl.FileDoubleClick += async (senderList, repo, fi) =>
             {
                 // access
                 if (repo == null || fi == null)
@@ -656,7 +695,7 @@ namespace AasxPackageExplorer
                     return;
 
                 // safety?
-                if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
+                if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
                     // ask double question
                     if (MessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -685,6 +724,7 @@ namespace AasxPackageExplorer
                         location,
                         overrideLoadResident: true,
                         takeOver: fi,
+                        fi.ContainerList,
                         containerOptions: copts,
                         runtimeOptions: _packageCentral.CentralRuntimeOptions);
 
@@ -696,6 +736,9 @@ namespace AasxPackageExplorer
                             storeFnToLRU: location);
 
                     Log.Singleton.Info($"Successfully loaded AASX {location}");
+
+                    if (senderList is PackageContainerListControl pclc)
+                        pclc.RedrawStatus();
                 }
                 catch (Exception ex)
                 {
@@ -704,7 +747,7 @@ namespace AasxPackageExplorer
             };
 
             // what happens on a file drop -> dispatch
-            RepoListControl.FileDrop += (fr, files) =>
+            RepoListControl.FileDrop += (senderList, fr, files) =>
             {
                 // access
                 if (files == null || files.Length < 1)
@@ -744,9 +787,20 @@ namespace AasxPackageExplorer
 #endif
 
             // initialize menu
-            MenuItemFileRepoLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
+            MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
+            MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
+            MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
-            // Last task here ..
+            // the UI application might receive events from items in th package central
+            _packageCentral.ChangeEventHandler = (data) =>
+            {
+                if (data.Reason == PackCntChangeEventReason.Exception)
+                    Log.Singleton.Info("PackageCentral events: " + data.Info);
+                DisplayElements.PushEvent(data);
+                return false;
+            };
+
+            // nearly last task here ..
             AasxPackageExplorer.Log.Singleton.Info("Application started ..");
 
             // start with a new file
@@ -916,8 +970,31 @@ namespace AasxPackageExplorer
 
                         if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
                         {
+                            // do some more adoptions
+                            var rf = new AdminShell.Reference(tempNavTo.targetReference);
+
+                            if (tempNavTo.translateAssetToAAS
+                                && rf.Count == 1
+                                && rf.First.IsType(AdminShell.Key.Asset))
+                            {
+                                // try to find possible environments containg the asset and try making
+                                // replacement
+                                foreach (var pe in _packageCentral.GetAllPackageEnv())
+                                {
+                                    if (pe?.AasEnv?.AdministrationShells == null)
+                                        continue;
+
+                                    foreach (var aas in pe.AasEnv.AdministrationShells)
+                                        if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                                        {
+                                            rf = aas.GetReference();
+                                            break;
+                                        }
+                                }
+                            }
+
                             // handle it by UI
-                            await UiHandleNavigateTo(tempNavTo.targetReference);
+                            await UiHandleNavigateTo(rf);
                         }
                     }
                 }
@@ -951,7 +1028,7 @@ namespace AasxPackageExplorer
                     location,
                     location,
                     overrideLoadResident: true,
-                    null,
+                    null, null,
                     PackageContainerOptionsBase.CreateDefault(Options.Curr),
                     runtimeOptions: _packageCentral.CentralRuntimeOptions);
             }
@@ -974,7 +1051,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // make sure the user wants to change
-                    if (!MenuItemFileRepoLoadWoPrompt.IsChecked)
+                    if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                     {
                         // ask double question
                         if (MessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -1014,7 +1091,7 @@ namespace AasxPackageExplorer
             try
             {
                 // remember some further supplementary search information
-                var sri = this.DisplayElements.StripSupplementaryReferenceInformation(work);
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
 
                 // incrementally make it unprecise
@@ -1094,99 +1171,135 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task MainTimer_HandlePlugins()
+        private async Task HandleApplicationEvent(
+            AasxIntegrationBase.AasxPluginResultEventBase evt,
+            Plugins.PluginInstance pluginInstance)
+        {
+            try
+            {
+                // Navigate To
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
+                    && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
+                {
+                    await UiHandleNavigateTo(evtNavTo.targetReference);
+                }
+
+                // Display Content Url
+                //====================
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                    && evtDispCont.fn != null)
+                    try
+                    {
+                        BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
+                            preferInternal: evtDispCont.preferInternalDisplay);
+                    }
+                    catch (Exception ex)
+                    {
+                        AasxPackageExplorer.Log.Singleton.Error(
+                            ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
+                    }
+
+                // Redraw All
+                //===========
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
+                {
+                    if (DispEditEntityPanel != null)
+                    {
+                        // figure out the current business object
+                        object nextFocus = null;
+                        if (DisplayElements != null && DisplayElements.SelectedItem != null &&
+                            DisplayElements.SelectedItem != null)
+                            nextFocus = DisplayElements.SelectedItem.GetMainDataObject();
+
+                        // add to "normal" event quoue
+                        DispEditEntityPanel.AddWishForOutsideAction(
+                            new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
+                    }
+                }
+
+                // Select AAS entity
+                //=======================
+
+                var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
+                if (evSelectEntity != null)
+                {
+                    var uc = new SelectAasEntityFlyout(
+                        _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
+                        evSelectEntity.filterEntities);
+                    this.StartFlyoverModal(uc);
+                    if (uc.ResultKeys != null)
+                    {
+                        // formulate return event
+                        var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
+                        retev.sourceEvent = evt;
+                        retev.resultKeys = uc.ResultKeys;
+
+                        // fire back
+                        pluginInstance?.InvokeAction("event-return", retev);
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                AasxPackageExplorer.Log.Singleton.Error(
+                    ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
+            }
+        }
+
+        private List<AasxIntegrationBase.AasxPluginResultEventBase> _applicationEvents
+            = new List<AasxPluginResultEventBase>();
+
+        public void PushApplicationEvent(AasxIntegrationBase.AasxPluginResultEventBase evt)
+        {
+            if (evt == null)
+                return;
+            _applicationEvents.Add(evt);
+        }
+
+        private async Task MainTimer_HandleApplicationEvents()
         {
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
-                try
-                {
-                    var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+                var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+                await HandleApplicationEvent(evt, lpi);
+            }
 
-                    #region Navigate To
-                    //=================
-
-                    var evtNavTo = evt as AasxIntegrationBase.AasxPluginResultEventNavigateToReference;
-                    if (evtNavTo != null && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
-                    {
-                        await UiHandleNavigateTo(evtNavTo.targetReference);
-                    }
-                    #endregion
-
-                    #region Display content file
-                    //==========================
-
-                    var evtDispCont = evt as AasxIntegrationBase.AasxPluginResultEventDisplayContentFile;
-                    if (evtDispCont != null && evtDispCont.fn != null)
-                        try
-                        {
-                            BrowserDisplayLocalFile(evtDispCont.fn, evtDispCont.mimeType,
-                                preferInternal: evtDispCont.preferInternalDisplay);
-                        }
-                        catch (Exception ex)
-                        {
-                            AasxPackageExplorer.Log.Singleton.Error(
-                                ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
-                        }
-
-                    #endregion
-                    #region Redisplay explorer contents
-                    //=================================
-
-                    var evtRedrawAll = evt as AasxIntegrationBase.AasxPluginResultEventRedrawAllElements;
-                    if (evtRedrawAll != null)
-                    {
-                        if (DispEditEntityPanel != null)
-                        {
-                            // figure out the current business object
-                            object nextFocus = null;
-                            if (DisplayElements != null && DisplayElements.SelectedItem != null &&
-                                DisplayElements.SelectedItem != null)
-                                nextFocus = DisplayElements.SelectedItem.GetMainDataObject();
-
-                            // add to "normal" event quoue
-                            DispEditEntityPanel.AddWishForOutsideAction(
-                                new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
-                        }
-                    }
-
-                    #endregion
-                    #region Select AAS entity
-                    //=======================
-
-                    var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
-                    if (evSelectEntity != null)
-                    {
-                        var uc = new SelectAasEntityFlyout(
-                            _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
-                            evSelectEntity.filterEntities);
-                        this.StartFlyoverModal(uc);
-                        if (uc.ResultKeys != null)
-                        {
-                            // formulate return event
-                            var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
-                            retev.sourceEvent = evt;
-                            retev.resultKeys = uc.ResultKeys;
-
-                            // fire back
-                            lpi.InvokeAction("event-return", retev);
-                        }
-                    }
-
-
-                    #endregion
-                }
-                catch (Exception ex)
-                {
-                    AasxPackageExplorer.Log.Singleton.Error(
-                        ex, $"While responding to a event from plug-in {"" + lpi?.name}");
-                }
+            // check for application events from main app
+            while (_applicationEvents.Count > 0)
+            {
+                var evt = _applicationEvents[0];
+                _applicationEvents.RemoveAt(0);
+                await HandleApplicationEvent(evt, null);
             }
         }
 
-        private DateTime _lastQueuedUpdateValueEvent = DateTime.Now;
+        public class EventHandlingStatus
+        {
+            public DateTime LastQueuedEventRequest = DateTime.Now;
+            public DateTime LastReceivedEventTimeStamp = DateTime.MinValue;
+            public bool UpdateValuePending = false;
+            public bool GetEventsPending = false;
+            public int UserErrorsIndicated = 0;
+            public bool UserErrorsSuppress = false;
 
-        private bool _eventsUpdateValuePending = false;
+            public void Reset()
+            {
+                LastQueuedEventRequest = DateTime.Now;
+                UpdateValuePending = false;
+                GetEventsPending = false;
+                UserErrorsIndicated = 0;
+                UserErrorsSuppress = false;
+            }
+        }
+
+        protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
@@ -1205,10 +1318,12 @@ namespace AasxPackageExplorer
             //
 
             if (true == copts?.StayConnected
-                && !_eventsUpdateValuePending
-                && (DateTime.Now - _lastQueuedUpdateValueEvent).TotalMilliseconds > copts.UpdatePeriod)
+                && Options.Curr.StayConnectOptions.HasContent()
+                && Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
+                && !_eventHandling.UpdateValuePending
+                && (DateTime.Now - _eventHandling.LastQueuedEventRequest).TotalMilliseconds > copts.UpdatePeriod)
             {
-                _lastQueuedUpdateValueEvent = DateTime.Now;
+                _eventHandling.LastQueuedEventRequest = DateTime.Now;
 
                 try
                 {
@@ -1263,12 +1378,26 @@ namespace AasxPackageExplorer
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
                                             if (evSnd)
-                                                _eventsUpdateValuePending = true;
+                                            {
+                                                _eventHandling.UpdateValuePending = true;
+                                                _eventHandling.UserErrorsSuppress = false;
+                                                _eventHandling.UserErrorsIndicated = 0;
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
-                                            Log.Singleton.Error(ex,
-                                                "periodically triggering event for simulated update");
+                                            if (!_eventHandling.UserErrorsSuppress)
+                                            {
+                                                Log.Singleton.Error(ex,
+                                                    "periodically triggering event for simulated update (time-out)");
+                                                _eventHandling.UserErrorsIndicated++;
+
+                                                if (_eventHandling.UserErrorsIndicated > 3)
+                                                {
+                                                    Log.Singleton.Info("Too many repetitive time-outs. Disabling!");
+                                                    _eventHandling.UserErrorsSuppress = true;
+                                                }
+                                            }
                                         }
                                     });
                                 }
@@ -1280,6 +1409,51 @@ namespace AasxPackageExplorer
                 {
                     Log.Singleton.Error(ex, "periodically checking for triggering events");
                 }
+            }
+
+            // Kick off all event updates?
+            if (copts != null
+                && Options.Curr.StayConnectOptions.HasContent()
+                && Options.Curr.StayConnectOptions.ToUpper().Contains("REST-QUEUE")
+                && !_eventHandling.GetEventsPending
+                && _packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp2
+                && cntHttp2.ConnectorPrimary is PackageConnectorHttpRest connRest2
+                && (DateTime.Now - _eventHandling.LastQueuedEventRequest).TotalMilliseconds > copts.UpdatePeriod)
+            {
+                // mutex!
+                _eventHandling.GetEventsPending = true;
+                _eventHandling.LastQueuedEventRequest = DateTime.Now;
+
+                // async
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        // prepare query
+                        var qst = "/geteventmessages";
+                        if (_eventHandling.LastReceivedEventTimeStamp != DateTime.MinValue)
+                            qst += "/time/"
+                                   + AasEventMsgEnvelope.TimeToString(_eventHandling.LastReceivedEventTimeStamp);
+
+                        // execute and digest results
+                        var lastTS = await
+                            connRest2.PullEvents(qst);
+
+                        // remember for next time
+                        if (lastTS != DateTime.MinValue)
+                            _eventHandling.LastReceivedEventTimeStamp = lastTS;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex,
+                            "pulling events from REST (time-out?)");
+                    }
+                    finally
+                    {
+                        // unlock mutex
+                        _eventHandling.GetEventsPending = false;
+                    }
+                });
             }
         }
 
@@ -1316,11 +1490,12 @@ namespace AasxPackageExplorer
                         changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
 
                         // update value received
-                        _eventsUpdateValuePending = false;
+                        _eventHandling.UpdateValuePending = false;
                     }
 
                 // stupid
-                if (changedSomething)
+                if (Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
+                    && changedSomething)
                 {
                     // just for test
                     DisplayElements.RefreshAllChildsFromMainData(DisplayElements.SelectedItem);
@@ -1339,9 +1514,10 @@ namespace AasxPackageExplorer
         {
             MainTimer_HandleLogMessages();
             await MainTimer_HandleEntityPanel();
-            await MainTimer_HandlePlugins();
+            await MainTimer_HandleApplicationEvents();
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
+            DisplayElements.UpdateFromQueuedEvents();
         }
 
         private void SetProgressBar()
@@ -1414,7 +1590,7 @@ namespace AasxPackageExplorer
                     }
 
                     // remember some further supplementary search information
-                    var sri = this.DisplayElements.StripSupplementaryReferenceInformation(hi.ReferableReference);
+                    var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
                     AdminShell.Referable bo = null;
@@ -1759,7 +1935,6 @@ namespace AasxPackageExplorer
             }
         }
 
-        #endregion
         #region Modal Flyovers
         //====================
 
@@ -1855,19 +2030,27 @@ namespace AasxPackageExplorer
             CloseFlyover();
         }
 
-        public void CloseFlyover()
+        public void CloseFlyover(bool threadSafe = false)
         {
-            // blur the normal grid
-            this.InnerGrid.Opacity = 1.0;
-            this.InnerGrid.Effect = null;
-            this.InnerGrid.IsEnabled = true;
+            Action lambda = () =>
+            {
+                // blur the normal grid
+                this.InnerGrid.Opacity = 1.0;
+                this.InnerGrid.Effect = null;
+                this.InnerGrid.IsEnabled = true;
 
-            // un-populate the flyover grid
-            this.GridFlyover.Children.Clear();
-            this.GridFlyover.Visibility = Visibility.Hidden;
+                // un-populate the flyover grid
+                this.GridFlyover.Children.Clear();
+                this.GridFlyover.Visibility = Visibility.Hidden;
 
-            // unregister
-            currentFlyoutControl = null;
+                // unregister
+                currentFlyoutControl = null;
+            };
+
+            if (!threadSafe)
+                lambda.Invoke();
+            else
+                Dispatcher.BeginInvoke(lambda);
         }
 
         public void StartFlyoverModal(UserControl uc, Action closingAction = null)

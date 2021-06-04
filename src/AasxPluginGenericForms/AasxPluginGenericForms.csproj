@@ -27,6 +27,9 @@
     <None Update="AasxPluginGenericForms_SG2_TechnicalData_v11.add-options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="AasxPluginGenericForms_ZVEI_DigitalNameplate.add-options.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />

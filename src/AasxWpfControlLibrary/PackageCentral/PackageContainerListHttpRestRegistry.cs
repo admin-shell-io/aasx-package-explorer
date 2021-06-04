@@ -28,7 +28,7 @@ namespace AasxWpfControlLibrary.PackageCentral
     /// Just a deriative from <c>PackageContainerListBase</c>. Only small additions.
     /// </summary>
     // Resharper disable once ClassNeverInstantiated.Global
-    public class PackageContainerListHttpRestRegistry : PackageContainerListBase
+    public class PackageContainerListHttpRestRegistry : PackageContainerListHttpRestBase
     {
     }
 }

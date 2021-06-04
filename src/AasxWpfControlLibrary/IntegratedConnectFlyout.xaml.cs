@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -160,11 +161,16 @@ namespace AasxPackageExplorer
             }
         }
 
+        private string _lastTextMessage = "";
+
         public void LogMessage(StoredPrint sp)
         {
             // access
             if (sp == null || sp.msg == null)
                 return;
+
+            // remember
+            _lastTextMessage = "" + sp.msg;
 
             // add to rich text box
             AasxWpfBaseUtils.StoredPrintToRichTextBox(
@@ -183,9 +189,17 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
+            // execute in any case (will lead to properly close the the Flyout)
             this.Result = false;
             this.ResultContainer = null;
             ControlClosed?.Invoke();
+
+            // special case
+            if (_dispatcherFrame != null)
+            {
+                _dispatcherFrame.Continue = false;
+                _dialogResult = System.Windows.Forms.DialogResult.Abort;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -233,14 +247,51 @@ namespace AasxPackageExplorer
             {
                 DoneOnPageSummary();
             }
+
+            System.Windows.Forms.DialogResult tmpRes = System.Windows.Forms.DialogResult.None;
+            if (sender == ButtonMessageBoxOK)
+                tmpRes = System.Windows.Forms.DialogResult.OK;
+            if (sender == ButtonMessageBoxCancel)
+                tmpRes = System.Windows.Forms.DialogResult.Cancel;
+            if (sender == ButtonMessageBoxYes)
+                tmpRes = System.Windows.Forms.DialogResult.Yes;
+            if (sender == ButtonMessageBoxNo)
+                tmpRes = System.Windows.Forms.DialogResult.No;
+            if (tmpRes != System.Windows.Forms.DialogResult.None)
+            {
+                if (_dispatcherFrame != null)
+                    _dispatcherFrame.Continue = false;
+                _dialogResult = tmpRes;
+            }
+
+            if (sender == ButtonMsgCopyLast)
+            {
+                System.Windows.Clipboard.SetText("" + _lastTextMessage);
+            }
+
+            if (sender == ButtonMsgCopyAll)
+            {
+                var tr = new TextRange(TextBoxMessages.Document.ContentStart, TextBoxMessages.Document.ContentEnd);
+                System.Windows.Clipboard.SetText("" + tr.Text);
+            }
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Escape)
             {
-                this.Result = false;
-                ControlClosed?.Invoke();
+                if (_dispatcherFrame != null)
+                {
+                    // message box
+                    _dialogResult = _presetNoCancel;
+                    _dispatcherFrame.Continue = false;
+                }
+                else
+                {
+                    // normal mode
+                    this.Result = false;
+                    ControlClosed?.Invoke();
+                }
             }
 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Return)
@@ -256,6 +307,30 @@ namespace AasxPackageExplorer
 
                 if (TabControlMain.SelectedItem == TabItemSummary)
                     DoneOnPageSummary();
+
+                if (TabControlMain.SelectedItem == TabItemMessageBox && _dispatcherFrame != null)
+                {
+                    // message box
+                    _dialogResult = _presetOkYes;
+                    _dispatcherFrame.Continue = false;
+                }
+            }
+
+            if (TabControlMain.SelectedItem == TabItemMessageBox && _dispatcherFrame != null
+                && _presetOkYes == System.Windows.Forms.DialogResult.Yes)
+            {
+                // has a Yes/No message box
+                if (e.Key == Key.Y)
+                {
+                    _dialogResult = _presetOkYes;
+                    _dispatcherFrame.Continue = false;
+                }
+
+                if (e.Key == Key.N)
+                {
+                    _dialogResult = System.Windows.Forms.DialogResult.No;
+                    _dispatcherFrame.Continue = false;
+                }
             }
 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key >= Key.D1 && e.Key <= Key.D9)
@@ -523,6 +598,87 @@ namespace AasxPackageExplorer
         {
             if (Result && ResultContainer != null)
                 ControlClosed?.Invoke();
+        }
+
+        //
+        // MessageBox
+        //
+
+        private DispatcherFrame _dispatcherFrame = null;
+        private System.Windows.Forms.DialogResult _dialogResult = System.Windows.Forms.DialogResult.None;
+
+        private System.Windows.Forms.DialogResult _presetOkYes = System.Windows.Forms.DialogResult.None;
+        private System.Windows.Forms.DialogResult _presetNoCancel = System.Windows.Forms.DialogResult.None;
+
+        /// <summary>
+        /// Assumes, that the flyout is open and BLOCKS the message loop until a result button
+        /// is being pressed!
+        /// </summary>
+        public System.Windows.Forms.DialogResult MessageBoxShow(
+            string content, string text, string caption,
+            System.Windows.Forms.MessageBoxButtons buttons)
+        {
+            // show tab page
+            TabControlMain.SelectedItem = TabItemMessageBox;
+
+            // set text portions
+            TextBlockMessageBoxCaption.Text = "" + caption;
+            TextBlockMessageBoxText.Text = "" + text;
+            if (caption.HasContent())
+                LogMessage(new StoredPrint(StoredPrint.Color.Yellow, "" + caption));
+            if (text.HasContent())
+                LogMessage(new StoredPrint("" + text));
+            if (content.HasContent())
+                LogMessage(new StoredPrint("" + content));
+
+            // set respective buttons
+            _presetOkYes = System.Windows.Forms.DialogResult.None;
+            _presetNoCancel = System.Windows.Forms.DialogResult.None;
+
+            ButtonMessageBoxOK.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxCancel.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxYes.Visibility = Visibility.Collapsed;
+            ButtonMessageBoxNo.Visibility = Visibility.Collapsed;
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.OK)
+            {
+                ButtonMessageBoxOK.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.OK;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.OKCancel)
+            {
+                ButtonMessageBoxOK.Visibility = Visibility.Visible;
+                ButtonMessageBoxCancel.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.OK;
+                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNo)
+            {
+                ButtonMessageBoxYes.Visibility = Visibility.Visible;
+                ButtonMessageBoxNo.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
+                _presetNoCancel = System.Windows.Forms.DialogResult.No;
+            }
+
+            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
+            {
+                ButtonMessageBoxCancel.Visibility = Visibility.Visible;
+                ButtonMessageBoxYes.Visibility = Visibility.Visible;
+                ButtonMessageBoxNo.Visibility = Visibility.Visible;
+                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
+                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+            }
+
+            // modified from StartFlyoverModal()
+            // This will "block" execution of the current dispatcher frame
+            // and run our frame until the dialog is closed.
+            _dialogResult = System.Windows.Forms.DialogResult.None;
+            _dispatcherFrame = new DispatcherFrame();
+            Dispatcher.PushFrame(_dispatcherFrame);
+
+            return _dialogResult;
         }
     }
 }

@@ -1292,30 +1292,57 @@ namespace AasxPackageExplorer
 
                 helper.AddAction(
                     stack, "Submodel & -elements:",
-                    new[] { "Turn to kind Template", "Turn to kind Instance" },
+                    new[] { "Turn to kind Template", "Turn to kind Instance", "Remove qualifiers" },
                     repo,
                     (buttonNdx) =>
                     {
-                        if (helper.flyoutProvider != null &&
-                            MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
-                                "This operation will affect all Kind attributes of " +
-                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
-                                "Setting Kind",
-                                MessageBoxButton.YesNo, MessageBoxImage.Warning))
-                            return new ModifyRepo.LambdaActionNone();
-
-                        submodel.kind = (buttonNdx == 0)
-                            ? AdminShell.ModelingKind.CreateAsTemplate()
-                            : AdminShell.ModelingKind.CreateAsInstance();
-
-                        submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                        if (buttonNdx == 0 || buttonNdx == 1)
                         {
-                            sme.kind = (buttonNdx == 0)
+                            if (helper.flyoutProvider != null &&
+                                MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "This operation will affect all Kind attributes of " +
+                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Setting Kind",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                return new ModifyRepo.LambdaActionNone();
+
+                            submodel.kind = (buttonNdx == 0)
                                 ? AdminShell.ModelingKind.CreateAsTemplate()
                                 : AdminShell.ModelingKind.CreateAsInstance();
-                        });
 
-                        return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                            {
+                                sme.kind = (buttonNdx == 0)
+                                    ? AdminShell.ModelingKind.CreateAsTemplate()
+                                    : AdminShell.ModelingKind.CreateAsInstance();
+                            });
+
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        if (buttonNdx == 2)
+                        {
+                            if (helper.flyoutProvider != null &&
+                                MessageBoxResult.Yes != helper.flyoutProvider.MessageBoxFlyoutShow(
+                                    "This operation will affect all Qualifers of " +
+                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "Remove qualifiers",
+                                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                                return new ModifyRepo.LambdaActionNone();
+
+                            if (submodel.qualifiers != null)
+                                submodel.qualifiers.Clear();
+
+                            submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                            {
+                                if (sme.qualifiers != null)
+                                    sme.qualifiers.Clear();
+                            });
+
+                            return new ModifyRepo.LambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
+                        }
+
+                        return new ModifyRepo.LambdaActionNone();
                     });
 
             }
@@ -3154,9 +3181,21 @@ namespace AasxPackageExplorer
                             return new ModifyRepo.LambdaActionRedrawEntity();
                         }))
                 {
+                    /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
+                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
                     helper.AddKeyListKeys(
                         stack, "Asset", ent.assetRef.Keys, repo, packages, PackageCentral.Selector.MainAuxFileRepo,
-                        AdminShell.Key.AllElements);
+                        AdminShell.Key.AllElements,
+                        jumpLambda: (kl) =>
+                        {
+                            return new ModifyRepo.LambdaActionNavigateTo(
+                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        },
+                        noEditJumpLambda: (kl) =>
+                        {
+                            AddWishForOutsideAction(new ModifyRepo.LambdaActionNavigateTo(
+                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true));
+                        });
                 }
 
             }
@@ -3331,8 +3370,9 @@ namespace AasxPackageExplorer
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             VisualElementGeneric entity,
-            bool editMode, bool hintMode = false,
+            bool editMode, bool hintMode = false, bool showIriMode = false,
             IFlyoutProvider flyoutProvider = null,
+            IPushApplicationEvent appEventProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             //
@@ -3376,6 +3416,7 @@ namespace AasxPackageExplorer
             this.theEntity = entity;
             helper.packages = packages;
             helper.flyoutProvider = flyoutProvider;
+            helper.appEventsProvider = appEventProvider;
             helper.levelColors = levelColors;
             helper.highlightField = hightlightField;
 
@@ -3388,6 +3429,7 @@ namespace AasxPackageExplorer
             }
             helper.editMode = editMode;
             helper.hintMode = hintMode;
+            helper.showIriMode = showIriMode;
             helper.repo = repo;
 
             //

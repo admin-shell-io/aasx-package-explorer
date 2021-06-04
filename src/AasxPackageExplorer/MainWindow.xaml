@@ -73,8 +73,11 @@
         <RoutedUICommand x:Key="Exit" Text="Exit" />
         <RoutedUICommand x:Key="EditKey" Text="EditKey" />
         <RoutedUICommand x:Key="HintsKey" Text="HintsKey" />
+        <RoutedUICommand x:Key="ShowIriKey" Text="ShowIriKey" />
         <RoutedUICommand x:Key="EditMenu" Text="EditMenu" />
         <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
+        <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
+        <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
         <RoutedUICommand x:Key="Test" Text="Test" />
         <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
         <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
@@ -165,6 +168,7 @@
         <KeyBinding Key="F4" Modifiers="Alt" Command="{StaticResource Exit}"/>
         <KeyBinding Key="E" Modifiers="Ctrl" Command="{StaticResource EditKey}"/>
         <KeyBinding Key="H" Modifiers="Ctrl" Command="{StaticResource HintsKey}"/>
+        <KeyBinding Key="I" Modifiers="Ctrl" Command="{StaticResource ShowIriKey}"/>
         <KeyBinding Key="C" Modifiers="Ctrl+Shift" Command="{StaticResource CopyClipboardElementJson}"/>
         <KeyBinding Key="F1" Command="{StaticResource Help}"/>
         <KeyBinding Key="F12" Command="{StaticResource FileRepoQuery}"/>
@@ -226,6 +230,9 @@
         <CommandBinding Command="{StaticResource EditMenu}" Executed="CommandBinding_Executed" />
         <CommandBinding Command="{StaticResource HintsKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HintsMenu}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
@@ -279,7 +286,7 @@
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="20" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*"/>
@@ -315,7 +322,6 @@
                             <MenuItem Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
                             <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
                             <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
-                            <MenuItem x:Name="MenuItemFileRepoLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
                             <Separator/>
                             <MenuItem Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
                             <Separator/>
@@ -377,9 +383,12 @@
                             <MenuItem x:Name="MenuItemWorkspaceEventsResetLocks" Header="Reset interlocking" Command="{StaticResource EventsResetLocks}"/>
                         </MenuItem>
                     </MenuItem>
+                    <MenuItem Header="_Options"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
+                        <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
+                        <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
+                        <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                    </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
-                        <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
                     </MenuItem>
                 </Menu>
 

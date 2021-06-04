@@ -58,7 +58,123 @@ namespace AasxWpfControlLibrary.PackageCentral
         public AskForSelectFromListHandler AskForSelectFromList;
 
         public AskForCredentialsHandler AskForCredentials;
+
+        public delegate System.Windows.Forms.DialogResult ShowMessageDelegate(
+                            string content, string text, string caption,
+                            System.Windows.Forms.MessageBoxButtons buttons = 0);
+        public ShowMessageDelegate ShowMesssageBox;
     }
+
+    public enum PackCntChangeEventReason
+    {
+        /// <summary>
+        /// A "session" of multiple possible changes is started
+        /// </summary>
+        StartOfChanges,
+
+        /// <summary>
+        /// A Referable is created within the "typical" enumeration of another Referable.
+        /// </summary>
+        Create,
+
+        /// <summary>
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable
+        /// </summary>
+        StructuralUpdate,
+
+        /// <summary>
+        /// A Referable is deleted
+        /// </summary>
+        Delete,
+
+        /// <summary>
+        /// A value upatde of a single Referable (not children) is performed
+        /// </summary>
+        ValueUpdateSingle,
+
+        /// <summary>
+        /// A value upatde of a Referable including possible children is performed
+        /// </summary>
+        ValueUpdateHierarchy,
+
+        /// <summary>
+        /// An exception prevented the successful execution of the change.
+        /// The exception is detailed in the info message.
+        /// </summary>
+        Exception,
+
+        /// <summary>
+        /// A "session" of multiple possible changes is finalized
+        /// </summary>
+        EndOfChanges
+    }
+
+    /// <summary>
+    /// Simplified change event data, which is emitted by Package Container logic to the rest of the main application in
+    /// order to report on changes.. of container / AAS contents.
+    /// </summary>
+    public class PackCntChangeEventData
+    {
+        /// <summary>
+        /// Identification of the container
+        /// </summary>
+        public PackageContainerBase Container;
+
+        /// <summary>
+        /// The reason for emiting the event
+        /// </summary>
+        public PackCntChangeEventReason Reason;
+
+        /// <summary>
+        /// Changed Referable itself
+        /// </summary>
+        public AdminShell.Referable ThisRef;
+
+        /// <summary>
+        /// A Referable, which contains the changed Referable.
+        /// </summary>
+        public AdminShell.Referable ParentRef;
+
+        /// <summary>
+        /// If create, at which index; else: -1
+        /// </summary>
+        public int CreateAtIndex = -1;
+
+        /// <summary>
+        /// Human readable explanatin, help, annotation, info
+        /// </summary>
+        public string Info;
+
+        /// <summary>
+        /// Create new event data.
+        /// </summary>
+        /// <param name="container">Identification of the container</param>
+        /// <param name="reason">The reason</param>
+        /// <param name="thisRef">Changed Referable itself</param>
+        /// <param name="parentRef">A Referable, which contains the changed Referable.</param>
+        /// <param name="createAtIndex">If create, at which index; else: -1</param>
+        /// <param name="info">Human readable information</param>
+        public PackCntChangeEventData(PackageContainerBase container,
+            PackCntChangeEventReason reason,
+            AdminShell.Referable thisRef = null,
+            AdminShell.Referable parentRef = null,
+            int createAtIndex = -1,
+            string info = null)
+        {
+            Container = container;
+            Reason = reason;
+            ThisRef = thisRef;
+            ParentRef = parentRef;
+            CreateAtIndex = createAtIndex;
+            Info = info;
+        }
+    }
+
+    /// <summary>
+    /// Main application can register for a handler.
+    /// </summary>
+    /// <param name="data">Data as given by the event data structure. Might be queued by the main application.</param>
+    public delegate bool PackCntChangeEventHandler(PackCntChangeEventData data);
 
     /// <summary>
     /// The container wraps an AdminShellPackageEnv with the availability to upload, download, re-new the package env
@@ -79,16 +195,25 @@ namespace AasxWpfControlLibrary.PackageCentral
         [JsonIgnore]
         public Format IsFormat = Format.Unknown;
 
-        private PackageCentral _packageCentral;
-
+        /// <summary>
+        /// Limks to the PackageCentral. Only on init.
+        /// </summary>
         [JsonIgnore]
         public PackageCentral PackageCentral { get { return _packageCentral; } }
+        private PackageCentral _packageCentral;
 
         /// <summary>
         /// Holds the container (user) options in a base oder derived class.
         /// </summary>
         [JsonProperty(PropertyName = "Options")]
         public PackageContainerOptionsBase ContainerOptions = new PackageContainerOptionsBase();
+
+        /// <summary>
+        /// Links (optionally) to the ContainerList, which hold this Container.
+        /// To be set after adding to the list.
+        /// </summary>
+        [JsonIgnore]
+        public PackageContainerListBase ContainerList;
 
         /// <summary>
         /// If the connection shall stay alive, a appropriate connector needs to be created.

@@ -127,7 +127,7 @@ namespace AasxPredefinedConcepts.Convert
                         if (s1 != null || s2 != null)
                         {
                             var smcV11Dom = smcV11Doc.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
-                                defsV11.CD_DocumentIdDomain, addSme: true);
+                                defsV11.CD_DocumentDomainId, addSme: true);
 
                             smcV11Dom.value.CreateSMEForCD<AdminShell.Property>(
                                 defsV11.CD_DocumentDomainId, addSme: true)?.Set("string", "" + s1);
@@ -151,11 +151,11 @@ namespace AasxPredefinedConcepts.Convert
                                 defsV11.CD_DocumentClassification, addSme: true);
 
                             smcV11Cls.value.CreateSMEForCD<AdminShell.Property>(
-                                defsV11.CD_DocumentClassificationSystem, addSme: true)?.Set("string", "" + s1);
+                                defsV11.CD_ClassificationSystem, addSme: true)?.Set("string", "" + s1);
                             smcV11Cls.value.CreateSMEForCD<AdminShell.Property>(
-                                defsV11.CD_DocumentClassId, addSme: true)?.Set("string", "" + s2);
+                                defsV11.CD_ClassId, addSme: true)?.Set("string", "" + s2);
                             smcV11Cls.value.CreateSMEForCD<AdminShell.Property>(
-                                defsV11.CD_DocumentClassName, addSme: true)?.Set("string", "" + s3);
+                                defsV11.CD_ClassName, addSme: true)?.Set("string", "" + s3);
                         }
 
                         // Document Version
@@ -169,7 +169,7 @@ namespace AasxPredefinedConcepts.Convert
                                 defsV11.CD_Language, addSme: true)?.Set("string", "" + o);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
-                            defsV11.CD_DocumentVersionIdValue, addSme: true)?.
+                            defsV11.CD_DocumentVersionId, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_DocumentVersionIdValue.GetSingleKey(),
                                 AdminShellV20.Key.MatchMode.Relaxed)?.value);
@@ -196,21 +196,15 @@ namespace AasxPredefinedConcepts.Convert
                                 defsV11.CD_KeyWords, addSme: true).value = mlp1.value;
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
-                            defsV11.CD_Date, addSme: true)?.
+                            defsV11.CD_SetDate, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_Date.GetSingleKey(),
                                 AdminShellV20.Key.MatchMode.Relaxed)?.value);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
-                            defsV11.CD_LifeCycleStatusValue, addSme: true)?.
+                            defsV11.CD_StatusValue, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_StatusValue.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
-
-                        smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
-                            defsV11.CD_Role, addSme: true)?.
-                            Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                defsSg2.CD_VDI2770_Role.GetSingleKey(),
                                 AdminShellV20.Key.MatchMode.Relaxed)?.value);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(

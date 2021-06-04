@@ -174,6 +174,16 @@ namespace AdminShellNS
             return rf;
         }
 
+        public static T DeserializeFromJSON<T>(string data) where T : AdminShell.Referable
+        {
+            using (var tr = new StringReader(data))
+            {
+                var serializer = BuildDefaultAasxJsonSerializer();
+                var rf = (T)serializer.Deserialize(tr, typeof(T));
+                return rf;
+            }
+        }
+
         public static T DeserializeFromJSON<T>(JToken obj) where T : AdminShell.Referable
         {
             if (obj == null)

@@ -58,6 +58,11 @@ namespace AasxIntegrationBase
         public AdminShell.ListOfConceptDescriptions cds;
     }
 
+    public interface IPushApplicationEvent
+    {
+        void PushApplicationEvent(AasxIntegrationBase.AasxPluginResultEventBase evt);
+    }
+
     public class AasxPluginResultEventBase : AasxPluginResultBase
     {
         public string info = null;

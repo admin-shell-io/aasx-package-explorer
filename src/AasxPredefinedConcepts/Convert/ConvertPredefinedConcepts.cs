@@ -54,6 +54,7 @@ namespace AasxPredefinedConcepts.Convert
             yield return new ConvertDocumentationHsuToSg2Provider();
             yield return new ConvertTechnicalDataToFlatProvider();
             yield return new ConvertTechnicalDataV10ToV11Provider();
+            yield return new ConvertNameplateHsuToZveiV10Provider();
         }
 
         public static List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)

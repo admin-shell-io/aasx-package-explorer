@@ -239,6 +239,18 @@ namespace AasxPackageExplorer
         public bool LoadWithoutPrompt = false;
 
         /// <summary>
+        /// When activated, the UI will check if identifications and other texts are
+        /// starting with schemes like http:// and will render IRIs for them
+        /// </summary>
+        public bool ShowIdAsIri = false;
+
+        /// <summary>
+        /// When activated, the UI will show verbose information on (secure) connect procedures.
+        /// When de-activated, default answers to questions within these procedures will be given
+        /// </summary>
+        public bool VerboseConnect = false;
+
+        /// <summary>
         /// Default value for the StayConnected options of PackageContainer.
         /// That is, a loaded container will automatically try receive events, e.g. for value update.
         /// </summary>
@@ -258,6 +270,11 @@ namespace AasxPackageExplorer
         /// Preset shown in the file repo connect to AAS repository dialogue
         /// </summary>
         public string DefaultConnectRepositoryLocation = "";
+
+        /// <summary>
+        /// May contain different string-based options for stay connect, event update mechanisms
+        /// </summary>
+        public string StayConnectOptions = "";
 
         /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogue
@@ -372,6 +389,16 @@ namespace AasxPackageExplorer
                 if (arg == "-load-without-prompt")
                 {
                     optionsInformation.LoadWithoutPrompt = true;
+                    continue;
+                }
+                if (arg == "-show-id-as-iri")
+                {
+                    optionsInformation.ShowIdAsIri = true;
+                    continue;
+                }
+                if (arg == "-verbose-connect")
+                {
+                    optionsInformation.VerboseConnect = true;
                     continue;
                 }
                 if (arg == "-stay-connected")
