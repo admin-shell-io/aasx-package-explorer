@@ -23,7 +23,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxWpfControlLibrary.PackageCentral;
-using AdminShellEvents;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.AdminShellEvents;
 
 namespace AasxWpfControlLibrary.AdminShellEvents
 {

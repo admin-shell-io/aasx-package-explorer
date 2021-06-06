@@ -150,18 +150,18 @@
 
     <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT 
     <ScrollViewer> -->
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-                
+
         <DockPanel Grid.Row="0" Grid.Column="0" Height="20" Background="White" Margin="2,2,2,2">
 
             <Button x:Name="ButtonContext" DockPanel.Dock="Right" Content=" &#8942; " FontWeight="Bold" 
                     Padding="1,-2,1,0" Margin="2,2,6,2" Click="Button_Click"/>
-            
+
             <Button x:Name="ButtonQuery" DockPanel.Dock="Right" Content="Query .." Padding="1,-2,1,0" VerticalContentAlignment="Center" 
                     Margin="2" Click="Button_Click"/>
 
@@ -171,7 +171,7 @@
             <TextBox x:Name="TextBoxRepoHeader" Text="File repository" BorderThickness="0" Background="Transparent" 
                      Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold" TextChanged="TextBox_TextChanged"/>
         </DockPanel>
-        
+
         <ListView x:Name="RepoList" Grid.Row="1" Grid.Column="0" Margin="2,0,2,2" BorderThickness="0" 
                   ScrollViewer.VerticalScrollBarVisibility="Disabled" MinHeight="30"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="RepoList_MouseDoubleClick" MouseRightButtonDown="RepoList_MouseRightButtonDown" PreviewMouseUp="RepoList_PreviewMouseUp">
@@ -197,7 +197,7 @@
             </ListView.Resources>
             <ListView.View>
                 <GridView>
-                    
+
                     <!-- <GridViewColumn Header="Icon" CellTemplate="{StaticResource Template}"/> -->
                     <GridViewColumn Header="Icon">
                         <GridViewColumn.CellTemplate>
@@ -213,7 +213,7 @@
                                             BorderThickness="0" Background="LightGray" 
                                             CornerRadius="0" Margin="0,0,2,0" Visibility="Visible">
                                     </Border>
-                                    
+
                                     <Border Grid.Row="0" Grid.Column="0"
                                             BorderThickness="0" Background="#303060" 
                                             CornerRadius="0" Margin="0,0,2,0" Visibility="{Binding Path=VisualIsEdited}">
@@ -249,7 +249,7 @@
                     </GridViewColumn>
 
                     <GridViewColumn Header="Location" DisplayMemberBinding="{Binding Path=InfoLocation}" Width="999"/>
-                
+
                 </GridView>
             </ListView.View>
             <!--

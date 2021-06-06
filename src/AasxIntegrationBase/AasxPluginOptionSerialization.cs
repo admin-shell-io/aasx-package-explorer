@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -125,6 +124,10 @@ namespace AasxIntegrationBase
             return settings;
         }
 
+        // TODO (MIHO, 2021-06-06): move code to AasForms source file
+
+#if _outdated
+
         public static void Test123()
         {
             var ttt = new AasForms.FormDescProperty("t", AasForms.FormMultiplicity.One, null, "xdscdsds");
@@ -157,6 +160,7 @@ namespace AasxIntegrationBase
 
             Newtonsoft.Json.JsonConvert.SerializeObject(test2, settings2);
         }
+#endif
 
     }
 }

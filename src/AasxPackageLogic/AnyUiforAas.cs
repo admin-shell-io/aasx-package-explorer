@@ -36,11 +36,13 @@ namespace AasxPackageLogic
     public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase
     {
         public AnyUiLambdaActionNavigateTo() { }
-        public AnyUiLambdaActionNavigateTo(AdminShell.Reference targetReference)
+        public AnyUiLambdaActionNavigateTo(AdminShell.Reference targetReference, bool translateAssetToAAS = false)
         {
             this.targetReference = targetReference;
+            this.translateAssetToAAS = translateAssetToAAS;
         }
         public AdminShell.Reference targetReference;
+        public bool translateAssetToAAS;
     }
 
     //

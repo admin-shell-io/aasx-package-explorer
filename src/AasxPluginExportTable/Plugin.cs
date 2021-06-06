@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using AasxPluginExportTable;
 using AdminShellNS;
+using AnyUi;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase

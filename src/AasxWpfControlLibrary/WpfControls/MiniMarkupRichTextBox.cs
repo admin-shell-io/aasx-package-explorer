@@ -20,6 +20,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xml;
 using AasxPackageExplorer;
+using AasxPackageLogic;
 using AasxWpfControlLibrary.MiniMarkup;
 
 namespace AasxWpfControlLibrary.WpfControls

@@ -20,12 +20,12 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using AdminShellNS;
 using AasxIntegrationBase;
 using AasxPackageLogic;
-using AasxWpfControlLibrary;
 using AasxPackageLogic.PackageCentral;
-using AdminShellEvents;
-using AdminShellNS;
+using AasxPackageLogic.AdminShellEvents;
+using AasxWpfControlLibrary;
 using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 using AasxWpfControlLibrary.PackageCentral;
@@ -213,22 +213,22 @@ namespace AasxPackageExplorer
                     {
                         // give specific default answers
                         if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
-                            return System.Windows.Forms.DialogResult.Yes;
+                            return AnyUiMessageBoxResult.Yes;
 
                         // default answer
-                        return System.Windows.Forms.DialogResult.OK;
+                        return AnyUiMessageBoxResult.OK;
                     }
 
                     // make sure the correct flyout is loaded
                     if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
-                        return System.Windows.Forms.DialogResult.Cancel;
+                        return AnyUiMessageBoxResult.Cancel;
                     if (currentFlyoutControl == null)
                         StartFlyover(new IntegratedConnectFlyout(_packageCentral, "Connecting .."));
 
                     // ok -- perform dialogue in dedicated function / frame
                     var ucic = currentFlyoutControl as IntegratedConnectFlyout;
                     if (ucic == null)
-                        return System.Windows.Forms.DialogResult.Abort;
+                        return AnyUiMessageBoxResult.Cancel;
                     else
                         return ucic.MessageBoxShow(content, text, title, buttons);
                 }

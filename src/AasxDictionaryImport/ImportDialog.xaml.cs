@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+using AasxPackageLogic;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -256,7 +257,7 @@ namespace AasxDictionaryImport
             }
             catch (Model.ImportException ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex,
+                Log.Singleton.Error(ex,
                         $"Could not fetch data from {dialog.DataProvider} using the query {dialog.Query}.");
                 MessageBox.Show(
                         "Could not fetch the requested data.\n" +

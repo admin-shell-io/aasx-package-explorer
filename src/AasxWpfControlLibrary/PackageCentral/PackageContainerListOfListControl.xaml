@@ -22,7 +22,7 @@
 
     <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT -->
     <ScrollViewer x:Name="ScrollViewerRepoList" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-    
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

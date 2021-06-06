@@ -130,6 +130,7 @@ namespace AasxPackageLogic
         private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "cn", "kr", "jp" };
 
         public PackageCentral.PackageCentral packages = null;
+        public IPushApplicationEvent appEventsProvider = null;
 
         public DispLevelColors levelColors = null;
 
@@ -137,6 +138,7 @@ namespace AasxPackageLogic
 
         public bool editMode = false;
         public bool hintMode = false;
+        public bool showIriMode = false;
 
         public ModifyRepo repo = null;
 
@@ -1207,7 +1209,8 @@ namespace AasxPackageLogic
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
-            AnyUiLambdaActionBase takeOverLambdaAction = null)
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
+            Action<AdminShell.KeyList> noEditJumpLambda = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1449,6 +1452,26 @@ namespace AasxPackageLogic
                             g, 0 + i + rowOfs, 4,
                             padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "" + keys[i].value);
+
+                        // jump
+                        /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
+                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
+                        if (noEditJumpLambda != null && i == 0)
+                        {
+                            var jmpBtn = AddSmallButtonTo(
+                                g, 0 + +rowOfs, 5,
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                padding: new AnyUiThickness(5, 0, 5, 0),
+                                content: "Jump");
+
+                            // TODO-ANYUI: add
+                            /*
+                            jmpBtn.Click += (s, e) =>
+                            {
+                                noEditJumpLambda.Invoke(keys);
+                            };
+                            */
+                        }
                     }
 
                     else

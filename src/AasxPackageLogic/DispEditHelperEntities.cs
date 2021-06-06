@@ -3109,8 +3109,10 @@ namespace AasxPackageLogic
                         },
                         noEditJumpLambda: (kl) =>
                         {
-                            AddWishForOutsideAction(new AnyUiLambdaActionNavigateTo(
-                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true));
+                            // TODO-ANYUI: add
+                            //AddWishForOutsideAction(new AnyUiLambdaActionNavigateTo(
+                            //    AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true));
+                            throw new NotImplementedException("AnyUI: missing");
                         });
                 }
 

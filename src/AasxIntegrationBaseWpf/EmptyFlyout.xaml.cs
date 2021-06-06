@@ -71,10 +71,6 @@ namespace AasxIntegrationBase
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             ControlClosed?.Invoke();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
+        }        
     }
 }

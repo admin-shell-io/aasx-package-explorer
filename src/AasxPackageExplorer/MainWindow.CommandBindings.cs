@@ -367,7 +367,7 @@ namespace AasxPackageExplorer
                             {
                                 System.Windows.MessageBox.Show(
                                     this, "Can not encrypt with " + dlg2.FileName, "Decrypt .AASX2",
-                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             }
                         }
                     }
@@ -423,7 +423,7 @@ namespace AasxPackageExplorer
                             {
                                 System.Windows.MessageBox.Show(
                                     this, "Can not decrypt with " + dlg2.FileName, "Decrypt .AASX2",
-                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             }
                         }
                     }
@@ -2529,7 +2529,7 @@ namespace AasxPackageExplorer
             else
             {
                 System.Windows.MessageBox.Show(
-                    "Mapping Types could not be found.", "Error", AnyUiMessageBoxButton.OK);
+                    "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
         }
 
