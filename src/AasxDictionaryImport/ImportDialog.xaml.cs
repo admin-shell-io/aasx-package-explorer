@@ -203,7 +203,7 @@ namespace AasxDictionaryImport
                 }
                 catch (Model.ImportException ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, "Could not load the selected data source.");
+                    Log.Singleton.Error(ex, "Could not load the selected data source.");
                     MessageBox.Show(
                      "Could not load the selected data source.\n" +
                      "Details: " + ex.Message,

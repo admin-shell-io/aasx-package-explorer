@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -24,7 +24,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -33,28 +35,33 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public enum SelectMode { General, IRDI, ConceptDescription }
+        public AnyUiDialogueDataSelectEclassEntity DiaData = new AnyUiDialogueDataSelectEclassEntity();
 
-        private string eclassFullPath = null;
-        private SelectMode selectMode = SelectMode.General;
+        private string eclassFullPath;
 
-        public string ResultIRDI = null;
-        public AdminShell.ConceptDescription ResultCD = null;
-
-        public SelectEclassEntityFlyout(string eclassFullPath = null, SelectMode selectMode = SelectMode.General)
+        public SelectEclassEntityFlyout()
         {
             InitializeComponent();
-            this.eclassFullPath = eclassFullPath;
 
+            // members
+            this.eclassFullPath = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
             // initial window state
             this.CheckBoxTwoPass.IsChecked = Options.Curr.EclassTwoPass;
 
             // any complex
-            if (selectMode == SelectMode.IRDI)
+            if (DiaData.Mode == AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI)
             {
                 this.CheckBoxTwoPass.IsChecked = false;
                 this.CheckBoxTwoPass.IsEnabled = false;
             }
+
+            // setup workers
+            worker.DoWork += worker_DoWork;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
         }
 
         //
@@ -71,21 +78,14 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.ResultIRDI = null;
-            this.ResultCD = null;
+            DiaData.ResultIRDI = null;
+            DiaData.ResultCD = null;
             ControlClosed?.Invoke();
         }
 
         //
         // Mechanics
-        //
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // setup workers
-            worker.DoWork += worker_DoWork;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-        }
+        //        
 
         private readonly BackgroundWorker worker = new BackgroundWorker();
 
@@ -211,11 +211,11 @@ namespace AasxPackageExplorer
 
                 // own function
                 var resIrdi = a.jobData.searchIRDIs[0].ToUpper();
-                this.ResultCD = EclassUtils.GenerateConceptDescription(a.jobData.items, resIrdi);
-                this.ResultIRDI = resIrdi;
+                DiaData.ResultCD = EclassUtils.GenerateConceptDescription(a.jobData.items, resIrdi);
+                DiaData.ResultIRDI = resIrdi;
 
                 // success -> auto close
-                if (this.ResultCD != null)
+                if (DiaData.ResultCD != null)
                     ControlClosed?.Invoke();
             }
         }
@@ -253,21 +253,21 @@ namespace AasxPackageExplorer
                 return false;
 
             // simply put the IRDI
-            this.ResultIRDI = si.IRDI;
+            DiaData.ResultIRDI = si.IRDI;
 
             // special case: unit .. try correct from unit id to unitCodeValue for IRDI
             if (si.Entity == "unit")
             {
                 var x = EclassUtils.GetIrdiForUnitSearchItem(si);
                 if (x != null)
-                    this.ResultIRDI = x;
+                    DiaData.ResultIRDI = x;
             }
 
             // one or two passes?
             if (!twoPass)
             {
                 // special case: property selected
-                if (si.Entity == "prop" && selectMode != SelectMode.IRDI)
+                if (si.Entity == "prop" && DiaData.Mode != AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI)
                 {
                     var input = new List<EclassUtils.SearchItem>();
                     input.Add(si);
@@ -276,7 +276,7 @@ namespace AasxPackageExplorer
                             input.Add(di);
 
                     // own function
-                    this.ResultCD = EclassUtils.GenerateConceptDescription(input, si.IRDI);
+                    DiaData.ResultCD = EclassUtils.GenerateConceptDescription(input, si.IRDI);
                 }
             }
             else

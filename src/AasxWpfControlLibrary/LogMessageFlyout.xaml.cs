@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {
@@ -126,7 +127,7 @@ namespace AasxPackageExplorer
 
             // get url
             var uri = link.NavigateUri.ToString();
-            AasxPackageExplorer.Log.Singleton.Info($"Displaying {uri} remotely in external viewer ..");
+            Log.Singleton.Info($"Displaying {uri} remotely in external viewer ..");
             System.Diagnostics.Process.Start(uri);
         }
 

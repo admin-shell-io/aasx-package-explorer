@@ -25,7 +25,8 @@ using System.Windows.Navigation;
 using AasxIntegrationBase;
 using AasxIntegrationBaseWpf;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.PackageCentral;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -230,13 +231,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                         // execute (is data binded)
                         try
                         {
-                            AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}",
+                            Log.Singleton.Info("Make AASX file names relative to {0}",
                                 Path.GetFullPath(Path.GetDirectoryName("" + frl.Filename)));
                             frl.MakeFilenamesRelative();
                         }
                         catch (Exception ex)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 ex, $"When making AASX file names in repository relative.");
                         }
                     }

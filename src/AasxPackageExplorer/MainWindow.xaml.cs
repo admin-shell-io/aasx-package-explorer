@@ -21,12 +21,14 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
+using AasxPackageLogic.PackageCentral;
 using AdminShellEvents;
 using AdminShellNS;
-
+using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
+using AasxWpfControlLibrary.PackageCentral;
 
 namespace AasxPackageExplorer
 {
@@ -288,7 +290,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When displaying element tree of {info}, an error occurred");
                 return;
             }
@@ -296,12 +298,13 @@ namespace AasxPackageExplorer
             // further actions
             try
             {
-                if (!doNotNavigateAfterLoaded)
-                    UiCheckIfActivateLoadedNavTo();
+                // TODO-ANYUI MIHO
+                //if (!doNotNavigateAfterLoaded)
+                // 
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When performing actions after load of {info}, an error occurred");
                 return;
             }
@@ -315,20 +318,20 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When managing LRU files");
                 return;
             }
 
             // done
-            AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
+            Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
         public PackageContainerListBase UiLoadFileRepository(string fn)
         {
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info(
+                Log.Singleton.Info(
                     $"Loading aasx file repository {fn} ..");
 
                 var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
@@ -336,12 +339,12 @@ namespace AasxPackageExplorer
                 if (fr != null)
                     return fr;
                 else
-                    AasxPackageExplorer.Log.Singleton.Info(
+                    Log.Singleton.Info(
                         $"File not found when loading aasx file repository {fn}");
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
 
@@ -698,10 +701,10 @@ namespace AasxPackageExplorer
                 if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
                     // ask double question
-                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                             "Load file from AASX file repository?",
                             "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                         return;
                 }
 
@@ -716,7 +719,7 @@ namespace AasxPackageExplorer
                 // try load ..
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
+                    Log.Singleton.Info($"Auto-load file from repository {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         _packageCentral,
@@ -742,7 +745,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             };
 
@@ -801,7 +804,7 @@ namespace AasxPackageExplorer
             };
 
             // nearly last task here ..
-            AasxPackageExplorer.Log.Singleton.Info("Application started ..");
+            Log.Singleton.Info("Application started ..");
 
             // start with a new file
             _packageCentral.MainItem.New();
@@ -813,7 +816,7 @@ namespace AasxPackageExplorer
                 var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file at application start " +
+                    Log.Singleton.Info($"Auto-load file at application start " +
                         $"from {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
@@ -834,7 +837,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             }
 
@@ -852,13 +855,13 @@ namespace AasxPackageExplorer
                 this.MessageBoxFlyoutShow(
                     "The application needs to be in edit mode to show found entities correctly. Aborting.",
                     "Find and Replace",
-                    MessageBoxButton.OK, MessageBoxImage.Hand);
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
                 return;
             }
 
             // add to "normal" event quoue
             DispEditEntityPanel.AddWishForOutsideAction(
-                new ModifyRepo.LambdaActionRedrawAllElements(
+                new AnyUiLambdaActionRedrawAllElements(
                     nextFocus: resultItem.businessObject,
                     highlightField: new DispEditHighlight.HighlightFieldInfo(
                         resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
@@ -872,7 +875,7 @@ namespace AasxPackageExplorer
 
             // check for Stored Prints in Log
             StoredPrint sp;
-            while ((sp = AasxPackageExplorer.Log.Singleton.PopLastShortTermPrint()) != null)
+            while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
             {
                 // pop
                 Message.Content = "" + sp.msg;
@@ -914,7 +917,7 @@ namespace AasxPackageExplorer
             }
 
             // always tell the errors
-            var ne = AasxPackageExplorer.Log.Singleton.NumberErrors;
+            var ne = Log.Singleton.NumberErrors;
             if (ne > 0)
             {
                 LabelNumberErrors.Content = "Errors: " + ne;
@@ -940,7 +943,7 @@ namespace AasxPackageExplorer
                         DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
                         // what to do?
-                        if (temp is ModifyRepo.LambdaActionRedrawAllElements wish)
+                        if (temp is AnyUiLambdaActionRedrawAllElements wish)
                         {
                             // edit mode affects the total element view
                             if (!wish.OnlyReFocus)
@@ -956,19 +959,19 @@ namespace AasxPackageExplorer
                             ContentTakeOver.IsEnabled = false;
                         }
 
-                        if (temp is ModifyRepo.LambdaActionContentsChanged)
+                        if (temp is AnyUiLambdaActionContentsChanged)
                         {
                             // enable button
                             ContentTakeOver.IsEnabled = true;
                         }
 
-                        if (temp is ModifyRepo.LambdaActionContentsTakeOver)
+                        if (temp is AnyUiLambdaActionContentsTakeOver)
                         {
                             // rework list
                             ContentTakeOver_Click(null, null);
                         }
 
-                        if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
+                        if (temp is AnyUiLambdaActionNavigateTo tempNavTo)
                         {
                             // do some more adoptions
                             var rf = new AdminShell.Reference(tempNavTo.targetReference);
@@ -1001,7 +1004,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While responding to a user interaction");
+                Log.Singleton.Error(ex, "While responding to a user interaction");
             }
         }
 
@@ -1054,10 +1057,10 @@ namespace AasxPackageExplorer
                     if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                     {
                         // ask double question
-                        if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                                 "Load file from AASX file repository?",
                                 "AASX File Repository",
-                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                                AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                             return null;
                     }
 
@@ -1141,7 +1144,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
+                Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
             }
 
             // if successful, try to display it
@@ -1167,7 +1170,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested for navigate to");
+                Log.Singleton.Error(ex, "While displaying element requested for navigate to");
             }
         }
 
@@ -1198,7 +1201,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                     }
 
@@ -1217,7 +1220,7 @@ namespace AasxPackageExplorer
 
                         // add to "normal" event quoue
                         DispEditEntityPanel.AddWishForOutsideAction(
-                            new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
+                            new AnyUiLambdaActionRedrawAllElements(nextFocus));
                     }
                 }
 
@@ -1231,12 +1234,12 @@ namespace AasxPackageExplorer
                         _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
                         evSelectEntity.filterEntities);
                     this.StartFlyoverModal(uc);
-                    if (uc.ResultKeys != null)
+                    if (uc.DiaData.ResultKeys != null)
                     {
                         // formulate return event
                         var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
                         retev.sourceEvent = evt;
-                        retev.resultKeys = uc.ResultKeys;
+                        retev.resultKeys = uc.DiaData.ResultKeys;
 
                         // fire back
                         pluginInstance?.InvokeAction("event-return", retev);
@@ -1247,7 +1250,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
             }
         }
@@ -1547,7 +1550,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying home element");
+                Log.Singleton.Error(ex, "While displaying home element");
             }
         }
 
@@ -1584,7 +1587,7 @@ namespace AasxPackageExplorer
                     var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
                         return;
                     }
@@ -1600,7 +1603,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
                     }
 
@@ -1612,7 +1615,7 @@ namespace AasxPackageExplorer
                             alsoDereferenceObjects: true, sri: sri);
                         if (veFocus == null)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 $"Cannot lookup requested element within loaded file from repository.");
                             return;
                         }
@@ -1632,14 +1635,14 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, "While displaying element requested by back button.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested by plug-in");
+                Log.Singleton.Error(ex, "While displaying element requested by plug-in");
             }
         }
 
@@ -1647,7 +1650,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ButtonClear)
             {
-                AasxPackageExplorer.Log.Singleton.ClearNumberErrors();
+                Log.Singleton.ClearNumberErrors();
                 Message.Content = "";
                 Message.Background = Brushes.White;
                 Message.Foreground = Brushes.Black;
@@ -1702,7 +1705,7 @@ namespace AasxPackageExplorer
                 // Collect all the stored log prints
                 IEnumerable<StoredPrint> Prints()
                 {
-                    var prints = AasxPackageExplorer.Log.Singleton.GetStoredLongTermPrints();
+                    var prints = Log.Singleton.GetStoredLongTermPrints();
                     if (prints != null)
                     {
                         yield return new StoredPrint(head);
@@ -1783,10 +1786,10 @@ namespace AasxPackageExplorer
 
             var positiveQuestion =
                 Options.Curr.UseFlyovers &&
-                MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to proceed closing the application? Make sure, that you have saved your data before.",
                     "Exit application?",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question);
 
             if (!positiveQuestion)
             {
@@ -1794,7 +1797,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            AasxPackageExplorer.Log.Singleton.Info("Closing main package ..");
+            Log.Singleton.Info("Closing main package ..");
             try
             {
                 _packageCentral?.MainItem?.Close();
@@ -1809,7 +1812,7 @@ namespace AasxPackageExplorer
                 var lru = _packageCentral?.Repositories?.FindLRU();
                 if (lru != null)
                 {
-                    AasxPackageExplorer.Log.Singleton.Info("Saving LRU ..");
+                    Log.Singleton.Info("Saving LRU ..");
                     var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
                     lru.SaveAsLocalFile(lruFn);
                 }
@@ -1838,7 +1841,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ShowContent && this.showContentPackageUri != null && _packageCentral.MainAvailable)
             {
-                AasxPackageExplorer.Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
+                Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
                 try
                 {
                     var contentUri = this.showContentPackageUri;
@@ -1856,11 +1859,11 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(
+                    Log.Singleton.Error(
                         ex, $"When displaying content {this.showContentPackageUri}, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
+                Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
             }
         }
 
@@ -2105,12 +2108,12 @@ namespace AasxPackageExplorer
             currentFlyoutControl = null;
         }
 
-        public MessageBoxResult MessageBoxFlyoutShow(
-            string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        public AnyUiMessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
             if (!Options.Curr.UseFlyovers)
             {
-                return MessageBox.Show(this, message, caption, buttons, image);
+                return AnyUiMessageBoxResult.Cancel;
             }
 
             var uc = new MessageBoxFlyout(message, caption, buttons, image);
@@ -2155,7 +2158,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(ex, $"while receiving file drop to window");
+                        Log.Singleton.Error(ex, $"while receiving file drop to window");
                     }
                 }
             }
@@ -2198,7 +2201,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"When dragging content {this.showContentPackageUri}, an error occurred");
                         return;
                     }

@@ -23,7 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.PackageCentral;
+using AasxPackageLogic.PackageCentral;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {

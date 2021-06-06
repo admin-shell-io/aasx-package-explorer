@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -23,8 +23,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
-using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -34,22 +35,44 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        PackageCentral packages = null;
-        PackageCentral.Selector selector;
-        private string theFilter = null;
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataSelectAasEntity DiaData = new AnyUiDialogueDataSelectAasEntity();
 
-        public AdminShell.KeyList ResultKeys = null;
-        public VisualElementGeneric ResultVisualElement = null;
+        PackageCentral packages = null;
 
         public SelectAasEntityFlyout(
             PackageCentral packages,
-            PackageCentral.Selector selector,
+            PackageCentral.Selector? selector = null,
             string filter = null)
         {
             InitializeComponent();
             this.packages = packages;
-            this.selector = selector;
-            theFilter = filter;
+            if (selector.HasValue)
+                DiaData.Selector = selector.Value;
+            if (filter != null)
+                DiaData.Filter = filter;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            DisplayElements.Background = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+
+            // fill combo box
+            ComboBoxFilter.Items.Add("All");
+            foreach (var x in AdminShell.Key.KeyElements)
+                ComboBoxFilter.Items.Add(x);
+
+            // select an item
+            if (DiaData.Filter != null)
+                foreach (var x in ComboBoxFilter.Items)
+                    if (x.ToString().Trim().ToLower() == DiaData.Filter.Trim().ToLower())
+                    {
+                        ComboBoxFilter.SelectedItem = x;
+                        break;
+                    }
+
+            // fill contents
+            FilterFor(DiaData.Filter);
         }
 
         //
@@ -68,37 +91,15 @@ namespace AasxPackageExplorer
         // Mechanics
         //
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            DisplayElements.Background = new SolidColorBrush(Color.FromRgb(40, 40, 40));
-
-            // fill combo box
-            ComboBoxFilter.Items.Add("All");
-            foreach (var x in AdminShell.Key.KeyElements)
-                ComboBoxFilter.Items.Add(x);
-
-            // select an item
-            if (theFilter != null)
-                foreach (var x in ComboBoxFilter.Items)
-                    if (x.ToString().Trim().ToLower() == theFilter.Trim().ToLower())
-                    {
-                        ComboBoxFilter.SelectedItem = x;
-                        break;
-                    }
-
-            // fill contents
-            FilterFor(theFilter);
-        }
-
         private void ComboBoxFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender == ComboBoxFilter)
             {
-                theFilter = ComboBoxFilter.SelectedItem.ToString();
-                if (theFilter == "All")
-                    theFilter = null;
+                DiaData.Filter = ComboBoxFilter.SelectedItem.ToString();
+                if (DiaData.Filter == "All")
+                    DiaData.Filter = null;
                 // fill contents
-                FilterFor(theFilter);
+                FilterFor(DiaData.Filter);
             }
         }
 
@@ -111,7 +112,7 @@ namespace AasxPackageExplorer
             var siMdo = si.GetMainDataObject();
 
             // already one result
-            this.ResultVisualElement = si;
+            DiaData.ResultVisualElement = si;
 
             //
             // Referable
@@ -120,12 +121,12 @@ namespace AasxPackageExplorer
             {
                 // check if a valuable item was selected
                 var elemname = dataRef.GetElementName();
-                var fullFilter = ApplyFullFilterString(theFilter);
+                var fullFilter = ApplyFullFilterString(DiaData.Filter);
                 if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
                     return false;
 
                 // ok, prepare list of keys
-                this.ResultKeys = si.BuildKeyListToTop();
+                DiaData.ResultKeys = si.BuildKeyListToTop();
                 return true;
             }
 
@@ -133,12 +134,12 @@ namespace AasxPackageExplorer
             // other special cases
             //
             if (siMdo is AdminShell.SubmodelRef smref &&
-                    (theFilter == null ||
-                        ApplyFullFilterString(theFilter)
+                    (DiaData.Filter == null ||
+                        ApplyFullFilterString(DiaData.Filter)
                             .ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0))
             {
-                this.ResultKeys = new AdminShell.KeyList();
-                this.ResultKeys.AddRange(smref.Keys);
+                DiaData.ResultKeys = new AdminShell.KeyList();
+                DiaData.ResultKeys.AddRange(smref.Keys);
                 return true;
             }
 
@@ -150,10 +151,10 @@ namespace AasxPackageExplorer
                 {
                     // safe to return a list for the parent ..
                     // (include AAS, as this is important to plug-ins)
-                    this.ResultKeys = si.BuildKeyListToTop(includeAas: true);
+                    DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
-                    this.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
+                    DiaData.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
                         AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag));
 
                     // ok
@@ -168,7 +169,10 @@ namespace AasxPackageExplorer
         private void ButtonSelect_Click(object sender, RoutedEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
 
         private string ApplyFullFilterString(string filter)
@@ -185,18 +189,21 @@ namespace AasxPackageExplorer
         private void FilterFor(string filter)
         {
             filter = ApplyFullFilterString(filter);
-            DisplayElements.RebuildAasxElements(packages, selector, true, filter);
+            DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.ResultKeys = null;
+            DiaData.Result = false;
             ControlClosed?.Invoke();
         }
     }

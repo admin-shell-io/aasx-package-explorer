@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using AasxIntegrationBase;
+using AasxPackageLogic;
 
 namespace AasxPackageExplorer
 {

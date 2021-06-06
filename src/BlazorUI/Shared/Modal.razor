@@ -1,0 +1,56 @@
+﻿@inject IJSRuntime JSRuntime
+
+<dialog @ref="_element">@ChildContent</dialog>
+
+@code {
+    private DotNetObjectReference<Modal> _this;
+    private ElementReference _element;
+
+    // Content of the dialog
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Open { get; set; }
+
+    // This parameter allows to use @bind-Open=... as explained in the previous post
+    // https://www.meziantou.net/two-way-binding-in-blazor.htm
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Close { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Initialize the dialog events the first time th ecomponent is rendered
+        if (firstRender)
+        {
+            _this = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("blazorInitializeModal", _element, _this);
+        }
+
+        if (Open)
+        {
+            await JSRuntime.InvokeVoidAsync("blazorOpenModal", _element);
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("blazorCloseModal", _element);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable]
+    public async Task OnClose(string returnValue)
+    {
+        if (Open == true)
+        {
+            Open = false;
+            await OpenChanged.InvokeAsync(Open);
+        }
+
+        await Close.InvokeAsync(returnValue);
+    }
+}

@@ -18,7 +18,9 @@
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
@@ -41,11 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Remove="Dictionary1.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="PackageCentral\PackageContainerListOfListControl.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

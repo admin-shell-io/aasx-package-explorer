@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxDictionaryImport
@@ -51,8 +52,7 @@ namespace AasxDictionaryImport
             {
                 identification = new AdminShellV20.Identification(
                     AdminShellV20.Identification.IRI,
-                    AasxPackageExplorer.Options.Curr.GenerateIdAccordingTemplate(
-                        AasxPackageExplorer.Options.Curr.TemplateIdSubmodelInstance)),
+                    Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
                 idShort = data.IdShort,
                 kind = AdminShellV20.ModelingKind.CreateAsInstance(),
             };

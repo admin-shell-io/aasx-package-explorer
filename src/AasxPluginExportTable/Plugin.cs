@@ -211,7 +211,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         if (!success)
                             fop?.MessageBoxFlyoutShow(
                                 "Some error occured while exporting the table. Please refer to the log messages.",
-                                "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                     }
                 }
                 catch (Exception ex)

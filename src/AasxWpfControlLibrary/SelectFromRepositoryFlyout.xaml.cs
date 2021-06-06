@@ -25,6 +25,8 @@ using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxWpfControlLibrary.PackageCentral;
 using Newtonsoft.Json;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 
 namespace AasxPackageExplorer
 {

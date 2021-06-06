@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -23,8 +23,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPackageLogic;
+using AnyUi;
 using Newtonsoft.Json;
-using static AasxPackageExplorer.Plugins;
+using static AasxPackageLogic.Plugins;
 
 namespace AasxPackageExplorer
 {
@@ -32,21 +34,19 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlClosed ControlClosed;
 
-        public bool Result = false;
+        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        public AnyUiDialogueDataTextEditor DiaData = new AnyUiDialogueDataTextEditor();
 
         private PluginInstance pluginInstance = null;
-
         private Control textControl = null;
 
-        private string bufferedText = "";
-
         public TextEditorFlyout(
-            string caption)
+            string caption = null)
         {
             InitializeComponent();
 
-            // texts
-            this.TextBlockCaption.Text = caption;
+            // set initial data
+            DiaData = new AnyUiDialogueDataTextEditor(caption);
 
             // find plugin?
             var res = TrySetTextControl();
@@ -75,6 +75,28 @@ namespace AasxPackageExplorer
                 Grid.SetRow(tb, 1);
                 Grid.SetColumn(tb, 1);
                 OuterGrid.Children.Add(tb);
+            }
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // texts
+            this.TextBlockCaption.Text = DiaData.Caption;
+
+            // dialogue width
+            if (DiaData.MaxWidth.HasValue && DiaData.MaxWidth.Value > 200)
+                OuterGrid.MaxWidth = DiaData.MaxWidth.Value;
+
+            // text to edit
+            SetMimeTypeAndText();
+
+            // focus
+            if (this.textControl != null)
+            {
+                this.textControl.Focus();
+                if (this.pluginInstance == null && textControl is TextBox tb)
+                    tb.Select(0, 0);
+                FocusManager.SetFocusedElement(this, this.textControl);
             }
         }
 
@@ -117,21 +139,19 @@ namespace AasxPackageExplorer
         // Mechanics
         //
 
-        public void SetMimeTypeAndText(string mimeType, string text)
+        private void SetMimeTypeAndText()
         {
-            this.bufferedText = text;
-
             if (this.pluginInstance == null && textControl is TextBox tb)
-                tb.Text = text;
+                tb.Text = DiaData.Text;
             if (this.pluginInstance != null && this.pluginInstance.HasAction("set-content"))
-                this.pluginInstance.InvokeAction("set-content", mimeType, text);
+                this.pluginInstance.InvokeAction("set-content", DiaData.MimeType, DiaData.Text);
         }
 
         public string Text
         {
             get
             {
-                return this.bufferedText;
+                return DiaData.Text;
             }
         }
 
@@ -139,38 +159,26 @@ namespace AasxPackageExplorer
         {
             // move text back to buffered text
             if (this.pluginInstance == null && textControl is TextBox tb)
-                this.bufferedText = tb.Text;
+                DiaData.Text = tb.Text;
             if (this.pluginInstance != null && this.pluginInstance.HasAction("get-content"))
             {
                 var res = this.pluginInstance.InvokeAction("get-content");
                 if (res is AasxPluginResultBaseObject rbo)
-                    this.bufferedText = rbo.obj as string;
+                    DiaData.Text = rbo.obj as string;
             }
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Result = false;
+            DiaData.Result = false;
             ControlClosed?.Invoke();
         }
 
         private void ButtonOk_Click(object sender, RoutedEventArgs e)
         {
             PrepareResult();
-            this.Result = true;
+            DiaData.Result = true;
             ControlClosed?.Invoke();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // focus
-            if (this.textControl != null)
-            {
-                this.textControl.Focus();
-                if (this.pluginInstance == null && textControl is TextBox tb)
-                    tb.Select(0, 0);
-                FocusManager.SetFocusedElement(this, this.textControl);
-            }
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
