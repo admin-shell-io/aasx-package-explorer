@@ -930,7 +930,6 @@ namespace AasxPackageLogic
                 checkForIri: true);
 
             // use some asset reference
-
             var asset = env.FindAsset(aas.assetRef);
 
             // derivedFrom
@@ -960,9 +959,17 @@ namespace AasxPackageLogic
                 }))
             {
                 this.AddGroup(stack, "Derived From", this.levelColors.SubSection);
+
+                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                {
+                    return new AnyUiLambdaActionNavigateTo(
+                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                };
+
                 this.AddKeyListKeys(
                     stack, "derivedFrom", aas.derivedFrom.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell");
+                    packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell",
+                    jumpLambda: lambda, noEditJumpLambda: lambda);
             }
 
             // assetRef
@@ -984,8 +991,16 @@ namespace AasxPackageLogic
                 }))
             {
                 this.AddGroup(stack, "Asset Reference", this.levelColors.SubSection);
+
+                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                {
+                    return new AnyUiLambdaActionNavigateTo(
+                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: false);
+                };
+
                 this.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.Main, "Asset");
+                    packages, PackageCentral.PackageCentral.Selector.Main, "Asset",
+                    jumpLambda: lambda, noEditJumpLambda: lambda);
             }
 
             //
@@ -2932,14 +2947,16 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
+                    Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                    {
+                        return new AnyUiLambdaActionNavigateTo(
+                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                    };
                     this.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) =>
-                        {
-                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
-                        });
+                        jumpLambda: lambda, noEditJumpLambda: lambda);
                 }
             }
             else
@@ -2950,6 +2967,13 @@ namespace AasxPackageLogic
 
                 // group
                 this.AddGroup(stack, "" + sme.GetElementName(), this.levelColors.MainSection);
+
+                // re-use lambda
+                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                {
+                    return new AnyUiLambdaActionNavigateTo(
+                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                };
 
                 // members
                 this.AddHintBubble(
@@ -2976,10 +3000,7 @@ namespace AasxPackageLogic
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) =>
-                        {
-                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
-                        });
+                        jumpLambda: lambda, noEditJumpLambda: lambda);
                 }
 
                 this.AddHintBubble(
@@ -3006,10 +3027,7 @@ namespace AasxPackageLogic
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: (kl) =>
-                        {
-                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
-                        });
+                        jumpLambda: lambda, noEditJumpLambda: lambda);
                 }
 
                 // specifically for annotated relationship?
@@ -3096,24 +3114,20 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
+                    Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                    {
+                        return new AnyUiLambdaActionNavigateTo(
+                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                    };
                     this.AddKeyListKeys(
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
                            It shall be replaced (after intergrating AnyUI) by a better repo handling */
+                        /* Update: already better! */
                         stack, "Asset", ent.assetRef.Keys, repo, packages, 
                         PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.AllElements,
-                        jumpLambda: (kl) =>
-                        {
-                            return new AnyUiLambdaActionNavigateTo(
-                                AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
-                        },
-                        noEditJumpLambda: (kl) =>
-                        {
-                            // TODO-ANYUI: add
-                            //AddWishForOutsideAction(new AnyUiLambdaActionNavigateTo(
-                            //    AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true));
-                            throw new NotImplementedException("AnyUI: missing");
-                        });
+                        jumpLambda: lambda,
+                        noEditJumpLambda: lambda);
                 }
 
             }

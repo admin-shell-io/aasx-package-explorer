@@ -405,6 +405,46 @@ namespace AnyUi
                    }
                 }),
 
+                new RenderRec(typeof(AnyUiSelectableTextBlock), typeof(SelectableTextBlock), (a, b) =>
+                {
+                   if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf)
+                   {
+                       if (cntl.Background != null)
+                           wpf.Background = GetWpfBrush(cntl.Background);
+                       if (cntl.Foreground != null)
+                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                       if (cntl.FontWeight.HasValue)
+                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                       if (cntl.Padding != null)
+                           wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.TextWrapping.HasValue)
+                            wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
+                        if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+
+                        if (cntl.TextAsHyperlink)
+                        {
+                            var hl = new System.Windows.Documents.Hyperlink()
+                            {
+                                NavigateUri = new Uri(cntl.Text),
+                            };
+                            hl.Inlines.Add(cntl.Text);
+                            hl.RequestNavigate += (sender, e) =>
+                            {
+                                // normal procedure
+                                var action = cntl.setValueLambda?.Invoke(cntl);
+                                EmitOutsideAction(action);                                
+                            };
+                            wpf.Inlines.Clear();
+                            wpf.Inlines.Add(hl);
+                        }
+                        else
+                        {
+                            wpf.Text = cntl.Text;
+                        }
+                   }
+                }),
+
                 new RenderRec(typeof(AnyUiHintBubble), typeof(HintBubble), (a, b) =>
                 {
                    if (a is AnyUiHintBubble cntl && b is HintBubble wpf)

@@ -45,6 +45,22 @@ namespace AasxPackageLogic
         public bool translateAssetToAAS;
     }
 
+    public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
+    {
+        public AnyUiLambdaActionDisplayContentFile() { }
+        public AnyUiLambdaActionDisplayContentFile(
+            string fn, string mimeType = null, bool preferInternalDisplay = false)
+        {
+            this.fn = fn;
+            this.mimeType = mimeType;
+            this.preferInternalDisplay = preferInternalDisplay;
+        }
+
+        public string fn = null;
+        public string mimeType = null;
+        public bool preferInternalDisplay = false;
+    }
+
     //
     // Dialogues (Flyovers) involving specific AAS entities
     //

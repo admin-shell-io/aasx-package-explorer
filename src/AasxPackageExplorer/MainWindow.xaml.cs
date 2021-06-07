@@ -999,6 +999,20 @@ namespace AasxPackageExplorer
                             // handle it by UI
                             await UiHandleNavigateTo(rf);
                         }
+
+                        if (temp is AnyUiLambdaActionDisplayContentFile tempDispCont)
+                        {
+                            try
+                            {
+                                BrowserDisplayLocalFile(tempDispCont.fn, tempDispCont.mimeType,
+                                    preferInternal: tempDispCont.preferInternalDisplay);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"While displaying content file {tempDispCont.fn} requested by lambda");
+                            }
+                        }
                     }
                 }
             }

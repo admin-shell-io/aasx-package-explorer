@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using Microsoft.AspNetCore;
@@ -133,16 +134,18 @@ namespace BlazorUI
             Array.Sort(aasxFiles);
             loadAasx(aasxFiles[0]);
         }
+        
         public static void Main(string[] args)
         {
-            // env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
+            //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
 
             loadAasxFiles();
 #if __test__PackageLogic
 #else
 
             packages = new PackageCentral();
-            packages.Main = env;
+            // TODO (MIHO, 2021-06-07): how to initialize?
+            //// packages.Main = env;
 
             helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);

@@ -443,6 +443,18 @@ namespace AnyUi
         public string Text = null;
     }
 
+    public class AnyUiSelectableTextBlock : AnyUiFrameworkElement
+    {
+        public AnyUiBrush Background;
+        public AnyUiBrush Foreground;
+        public AnyUiThickness Padding;
+        public AnyUiTextWrapping? TextWrapping;
+        public AnyUiFontWeight? FontWeight;
+        public double? FontSize;
+        public string Text = null;
+        public bool TextAsHyperlink = false;
+    }
+
     public class AnyUiHintBubble : AnyUiTextBox
     {
     }

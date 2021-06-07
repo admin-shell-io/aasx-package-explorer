@@ -517,11 +517,11 @@ namespace AasxPackageLogic
             }
         }
 
-        public AnyUiTextBlock AddSmallLabelTo(
+        public AnyUiSelectableTextBlock AddSmallLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false)
         {
-            var lab = new AnyUiTextBlock();
+            var lab = new AnyUiSelectableTextBlock();
 
             lab.Margin = margin;
             lab.Padding = padding;
@@ -532,6 +532,23 @@ namespace AasxPackageLogic
             if (setBold)
                 lab.FontWeight = AnyUiFontWeight.Bold;
             lab.Text = content;
+
+            // check, which content
+            if (this.showIriMode
+                && content.HasContent()
+                && (content.Trim().ToLower().StartsWith("http://")
+                 || content.Trim().ToLower().StartsWith("https://")))
+            {
+                // mark as hyperlink
+                lab.TextAsHyperlink = true;
+
+                // directly assign lambda
+                lab.setValueLambda = (o) =>
+                {
+                    return new AnyUiLambdaActionDisplayContentFile(content, preferInternalDisplay: true);
+                };
+            }
+
             AnyUiGrid.SetRow(lab, row);
             AnyUiGrid.SetColumn(lab, col);
             g.Children.Add(lab);
@@ -1210,7 +1227,7 @@ namespace AasxPackageLogic
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Action<AdminShell.KeyList> noEditJumpLambda = null)
+            Func<AdminShell.KeyList, AnyUiLambdaActionBase> noEditJumpLambda = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1464,11 +1481,10 @@ namespace AasxPackageLogic
                                     margin: new AnyUiThickness(2, 2, 2, 2),
                                     padding: new AnyUiThickness(5, 0, 5, 0),
                                     content: "Jump"),
-                                    (o) => {
-                                        // TODO-ANYUI: check
-                                        noEditJumpLambda.Invoke(keys);
-                                        return new AnyUiLambdaActionNone();
-                                    }) ;
+                                    (o) =>
+                                    {
+                                        return noEditJumpLambda(keys);
+                                    });
                         }
                     }
 
