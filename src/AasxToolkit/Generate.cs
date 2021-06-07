@@ -254,8 +254,8 @@ namespace AasxToolkit
                 shortName: "FileFormat",
                 unit: "",
                 definition: new[] {
-                    "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im eCl@ss Standard.",
-                    "en", "Unambigous ID of format of embedded CAD file in eCl@ss standard." }
+                    "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
+                    "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
             );
 
             // SUB MODEL
@@ -774,13 +774,13 @@ namespace AasxToolkit
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
                 "DocuName",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
-                id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei eCl@ss
+                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
+                id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei ECLASS
                         "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
                     shortName: "DocuName",                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -800,13 +800,13 @@ namespace AasxToolkit
             // CONCEPT: Range
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
                 "VoltageRange",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für eCl@ss
-                id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei eCl@ss
+                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
+                id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei eCl@ss
+                        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei ECLASS
                         "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
                     shortName: "VoltageRange",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
@@ -826,13 +826,13 @@ namespace AasxToolkit
             // CONCEPT: AnnotatedRelationship
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
                 "VerConn",
-                idType: AdminShellV20.Identification.IRDI,  // immer IRDI für eCl@ss
-                id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei eCl@ss
+                idType: AdminShellV20.Identification.IRDI,  // immer IRDI für ECLASS
+                id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "de", "Verbindung",    // wechseln Sie die Sprache bei eCl@ss 
+                        "de", "Verbindung",    // wechseln Sie die Sprache bei ECLASS 
                         "en", "Connection" },   // um die Sprach-Texte aufzufinden
                     shortName: "VerConn",                                // kurzer, sprechender Name
                     unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
@@ -876,15 +876,15 @@ namespace AasxToolkit
             AdminShellV20.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,        // immer IRDI für eCl@ss
+                idType: AdminShellV20.Identification.IRDI,        // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ993#001",
-                idShort: "E-CAD"))                             // die ID des Merkmales bei eCl@ss
+                idShort: "E-CAD"))                             // die ID des Merkmales bei ECLASS
             {
                 cdRelEPlan = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "en", "Electrical plan",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Electrical plan",    // wechseln Sie die Sprache bei ECLASS
                         "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -895,15 +895,15 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für eCl@ss
+                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ982#001",
-                idShort: "single pole connection"))                             // die ID des Merkmales bei eCl@ss
+                idShort: "single pole connection"))                             // die ID des Merkmales bei ECLASS
             {
                 cdRelElCon = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei ECLASS
                         "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -914,15 +914,15 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,    // immer IRDI für eCl@ss
+                idType: AdminShellV20.Identification.IRDI,    // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ994#001",
-                idShort: "1"))                             // die ID des Merkmales bei eCl@ss
+                idShort: "1"))                             // die ID des Merkmales bei ECLASS
             {
                 cdContact1 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "en", "Contact point 1",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Contact point 1",    // wechseln Sie die Sprache bei ECLASS
                         "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -933,15 +933,15 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                // immer IRDI für eCl@ss
+                idType: AdminShellV20.Identification.IRDI,                // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ995#001",
-                idShort: "2"))                             // die ID des Merkmales bei eCl@ss
+                idShort: "2"))                             // die ID des Merkmales bei ECLASS
             {
                 cdContact2 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "en", "Contact point 2",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Contact point 2",    // wechseln Sie die Sprache bei ECLASS
                         "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern
@@ -1026,15 +1026,15 @@ namespace AasxToolkit
             AdminShellV20.ConceptDescription cdIsPartOf;
 
             using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für eCl@ss
+                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ998#002",
-                idShort: "isPartOf"))                             // die ID des Merkmales bei eCl@ss
+                idShort: "isPartOf"))                             // die ID des Merkmales bei ECLASS
             {
                 cdIsPartOf = cd;
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
                     preferredNames: new[] {
-                        "en", "Is part of",    // wechseln Sie die Sprache bei eCl@ss
+                        "en", "Is part of",    // wechseln Sie die Sprache bei ECLASS
                         "de", "Teil von" },   // um die Sprach-Texte aufzufinden
                     shortName: cd.idShort,                                // kurzer, sprechender Name
                     unit: null,                                          // Gewicht als SI Einheit ohne Klammern

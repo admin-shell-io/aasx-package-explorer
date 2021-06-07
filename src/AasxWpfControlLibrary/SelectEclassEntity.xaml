@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AasxPackageExplorer"
         mc:Ignorable="d"
-        Title="Select eCl@ss entity .." Height="300" Width="700" Loaded="Window_Loaded">
+        Title="Select ECLASS entity .." Height="300" Width="700" Loaded="Window_Loaded">
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister

@@ -18,7 +18,7 @@ Each package provides:
 ## AasxPackageExplorer
 
 * contains the "pure" files for the main application only
-* .\eclass\ would contain eCl@ss data files
+* .\eclass\ would contain ECLASS data files
 * .\plugins\ would contain plugins (see above)
 * AasxPackageExplorer.options.json contains the default options, whenever AasxPackageExplorer.exe is being loaded
   (exception: command line arguments provided)

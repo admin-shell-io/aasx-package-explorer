@@ -1339,7 +1339,7 @@ namespace AasxPackageExplorer
             else
             if (keys != null)
             {
-                // populate [+], [Select], [eCl@ss], [Copy] buttons
+                // populate [+], [Select], [ECLASS], [Copy] buttons
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
@@ -1381,7 +1381,7 @@ namespace AasxPackageExplorer
                             g2, 0, 2,
                             margin: new Thickness(2, 2, 2, 2),
                             padding: new Thickness(5, 0, 5, 0),
-                            content: "Add eCl@ss IRDI"),
+                            content: "Add ECLASS IRDI"),
                         (o) =>
                         {
                             string resIRDI = null;
@@ -1869,7 +1869,7 @@ namespace AasxPackageExplorer
         }
 
         //
-        // Identify eCl@ss properties to be imported
+        // Identify ECLASS properties to be imported
         //
 
         public void IdentifyTargetsForEclassImportOfCDs(
@@ -1889,7 +1889,7 @@ namespace AasxPackageExplorer
                     // already in CDs?
                     var x = env.FindConceptDescription(elem.semanticId[0]);
                     if (x == null)
-                        // this one has the potential to get imported eCl@ss CD
+                        // this one has the potential to get imported ECLASS CD
                         targets.Add(elem);
                 }
 
@@ -1920,7 +1920,7 @@ namespace AasxPackageExplorer
             if (this.flyoutProvider == null || env == null || targets == null)
                 return false;
 
-            // use eCl@ss utilities
+            // use ECLASS utilities
             var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
             var jobData = new EclassUtils.SearchJobData(fullfn);
             foreach (var t in targets)
@@ -1932,7 +1932,7 @@ namespace AasxPackageExplorer
 
             // make a progress flyout
             var uc = new ProgressBarFlyout(
-                "Import ConceptDescriptions from eCl@ss", "Preparing ...", MessageBoxImage.Information);
+                "Import ConceptDescriptions from ECLASS", "Preparing ...", MessageBoxImage.Information);
             uc.Progress = 0.0;
             // show this
             this.flyoutProvider.StartFlyover(uc);
@@ -1944,7 +1944,7 @@ namespace AasxPackageExplorer
                 // job data
 
                 // longrunnig task for searching IRDIs ..
-                uc.Info = "Collecting eCl@ss Data ..";
+                uc.Info = "Collecting ECLASS Data ..";
                 EclassUtils.SearchForIRDIinEclassFiles(jobData, (frac) =>
                 {
                     uc.Progress = frac;

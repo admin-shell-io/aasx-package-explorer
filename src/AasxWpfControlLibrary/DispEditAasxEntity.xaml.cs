@@ -1256,7 +1256,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
 
-                // create ConceptDescriptions for eCl@ss
+                // create ConceptDescriptions for ECLASS
                 var targets = new List<AdminShell.SubmodelElement>();
                 helper.IdentifyTargetsForEclassImportOfCDs(
                     env, AdminShell.SubmodelElementWrapper.ListOfWrappersToListOfElems(submodel.submodelElements),
@@ -1270,11 +1270,11 @@ namespace AasxPackageExplorer
                                 return submodel.submodelElements != null && submodel.submodelElements.Count > 0  &&
                                     targets.Count > 0;
                             },
-                            "Consider importing ConceptDescriptions from eCl@ss for existing SubmodelElements.",
+                            "Consider importing ConceptDescriptions from ECLASS for existing SubmodelElements.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 helper.AddAction(
-                    stack, "ConceptDescriptions from eCl@ss:",
+                    stack, "ConceptDescriptions from ECLASS:",
                     new[] { "Import missing" },
                     repo,
                     (buttonNdx) =>
@@ -1889,7 +1889,7 @@ namespace AasxPackageExplorer
                     });
                 helper.AddAction(
                     stack, "Concept Description:",
-                    new[] { "Assign to existing CD", "Create empty and assign", "Create and assign from eCl@ss" },
+                    new[] { "Assign to existing CD", "Create empty and assign", "Create and assign from ECLASS" },
                     repo,
                     (buttonNdx) =>
                     {
@@ -1955,9 +1955,9 @@ namespace AasxPackageExplorer
                                 // eclass dir?
                                 if (helper.flyoutProvider != null)
                                     helper.flyoutProvider.MessageBoxFlyoutShow(
-                                        "The AASX Package Explore can take over eCl@ss definition. " +
+                                        "The AASX Package Explore can take over ECLASS definition. " +
                                         "In order to do so, the commandine parameter -eclass has" +
-                                        "to refer to a folder withe eCl@ss XML files.", "Information",
+                                        "to refer to a folder withe ECLASS XML files.", "Information",
                                         MessageBoxButton.OK, MessageBoxImage.Information);
                                 return new ModifyRepo.LambdaActionNone();
                             }
@@ -2003,7 +2003,7 @@ namespace AasxPackageExplorer
                         return new ModifyRepo.LambdaActionNone();
                     });
 
-                // create ConceptDescriptions for eCl@ss
+                // create ConceptDescriptions for ECLASS
                 var targets = new List<AdminShell.SubmodelElement>();
                 helper.IdentifyTargetsForEclassImportOfCDs(
                     env, new List<AdminShell.SubmodelElement>(new[] { sme }), ref targets);
@@ -2011,11 +2011,11 @@ namespace AasxPackageExplorer
                     stack, hintMode,
                     new[] {
                         new HintCheck( () => { return targets.Count > 0;  },
-                        "Consider importing a ConceptDescription from eCl@ss for the existing SubmodelElement.",
+                        "Consider importing a ConceptDescription from ECLASS for the existing SubmodelElement.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
                 helper.AddAction(
-                    stack, "ConceptDescriptions from eCl@ss:", new[] { "Import missing" }, repo,
+                    stack, "ConceptDescriptions from ECLASS:", new[] { "Import missing" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
@@ -2379,7 +2379,7 @@ namespace AasxPackageExplorer
                                 "to the application of the SubmodelElement. \r\n" +
                                 "CONSTANT => A constant property is a property with a value that " +
                                 "does not change over time. " +
-                                "In eCl@ss this kind of category has the category 'Coded Value'. \r\n" +
+                                "In ECLASS this kind of category has the category 'Coded Value'. \r\n" +
                                 "PARAMETER => A parameter property is a property that is once set and " +
                                 "then typically does not change over time. " +
                                 "This is for example the case for configuration parameters. \r\n" +
@@ -2400,7 +2400,7 @@ namespace AasxPackageExplorer
                     "understand the meaning of the SubmodelElements and, for example, " +
                     "its unit or logical datatype. " +
                     "The semanticId shall reference to a ConceptDescription within the AAS environment " +
-                    "or an external repository, such as IEC CDD or eCl@ss or " +
+                    "or an external repository, such as IEC CDD or ECLASS or " +
                     "a company / consortia repository.",
                     checkForCD: true,
                     addExistingEntities: AdminShell.Key.ConceptDescription,

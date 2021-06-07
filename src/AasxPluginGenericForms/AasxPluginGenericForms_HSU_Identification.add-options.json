@@ -267,7 +267,7 @@
           {
             "$type": "FormProperty",
             "FormTitle": "TypClass",
-            "FormInfo": "Classification of the product/ asset in an external classification system, e.g. eCl@ss.",
+            "FormInfo": "Classification of the product/ asset in an external classification system, e.g. ECLASS.",
             "PresetIdShort": "TypClass",
             "PresetCategory": "PARAMETER",
             "KeySemanticId": {

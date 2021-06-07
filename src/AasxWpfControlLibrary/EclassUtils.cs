@@ -20,7 +20,7 @@ namespace AasxPackageExplorer
 {
     public static class EclassUtils
     {
-        // Determine eCl@ss files types
+        // Determine ECLASS files types
         //
         //
 
@@ -56,7 +56,7 @@ namespace AasxPackageExplorer
             return res;
         }
 
-        // Searching for text in eCl@ss files
+        // Searching for text in ECLASS files
         //
         //
 
