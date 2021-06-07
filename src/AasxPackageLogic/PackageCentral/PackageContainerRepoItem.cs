@@ -281,8 +281,6 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-#if NOT_NEEDED
-
         /// <summary>
         /// True, if the actual editor window is editing exactly this one repo item.
         /// </summary>
@@ -295,14 +293,13 @@ namespace AasxPackageLogic.PackageCentral
         private bool _isEdited = false;
 
         [JsonIgnore]
-        public System.Windows.Visibility VisualIsEdited
+        public AnyUiVisibility VisualIsEdited
         {
             get
             {
-                return _isEdited ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+                return _isEdited ? AnyUiVisibility.Visible : AnyUiVisibility.Hidden;
             }
         }
-#endif
 
         /// <summary>
         /// True, if <c>Env</c> is loaded with contents, e.g. due to "LoadResident".
@@ -328,14 +325,12 @@ namespace AasxPackageLogic.PackageCentral
         }
         // Resharper enable ValueParameterNotUsed
 
-#if NOT_NEEDED
-
         [JsonIgnore]
-        public System.Windows.Visibility VisualIsLoaded
+        public AnyUiVisibility VisualIsLoaded
         {
             get
             {
-                return _isLoaded ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+                return _isLoaded ? AnyUiVisibility.Visible : AnyUiVisibility.Hidden;
             }
         }
 
@@ -344,7 +339,6 @@ namespace AasxPackageLogic.PackageCentral
             base.Close();
             OnPropertyChanged("VisualIsLoaded");
         }
-#endif
 
         //
         // Constructors

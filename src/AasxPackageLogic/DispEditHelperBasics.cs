@@ -1458,19 +1458,17 @@ namespace AasxPackageLogic
                            It shall be replaced (after intergrating AnyUI) by a better repo handling */
                         if (noEditJumpLambda != null && i == 0)
                         {
-                            var jmpBtn = AddSmallButtonTo(
-                                g, 0 + +rowOfs, 5,
-                                margin: new AnyUiThickness(2, 2, 2, 2),
-                                padding: new AnyUiThickness(5, 0, 5, 0),
-                                content: "Jump");
-
-                            // TODO-ANYUI: add
-                            /*
-                            jmpBtn.Click += (s, e) =>
-                            {
-                                noEditJumpLambda.Invoke(keys);
-                            };
-                            */
+                            AnyUiUIElement.RegisterControl(
+                                AddSmallButtonTo(
+                                    g, 0 + +rowOfs, 5,
+                                    margin: new AnyUiThickness(2, 2, 2, 2),
+                                    padding: new AnyUiThickness(5, 0, 5, 0),
+                                    content: "Jump"),
+                                    (o) => {
+                                        // TODO-ANYUI: check
+                                        noEditJumpLambda.Invoke(keys);
+                                        return new AnyUiLambdaActionNone();
+                                    }) ;
                         }
                     }
 

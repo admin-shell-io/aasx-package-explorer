@@ -211,6 +211,13 @@ namespace AnyUi
         }
     }
 
+    public enum AnyUiVisibility : byte
+    {
+        Visible = 0,
+        Hidden = 1,
+        Collapsed = 2
+    }
+
     //
     // bridge objects between AnyUI base classes and implementations
     //
@@ -323,7 +330,7 @@ namespace AnyUi
         public AnyUiLambdaActionBase takeOverLambda = null;
 
         /// <summary>
-        /// This function attaches the above lambdas accordingly to a give user control.
+        /// This function attaches the above lambdas accordingly to a given user control.
         /// It is to be used, when an abstract AnyUi... is being created and the according WPF element
         /// will be activated later.
         /// Note: use of this is for legacy reasons; basically the class members can be used directly

@@ -171,14 +171,22 @@ namespace AasxPackageLogic.PackageCentral
             return null;
         }
 
+        protected JsonSerializerSettings GetSerializerSettings()
+        {
+            // need special settings (to handle different typs of child classes of PackageContainer)
+            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                new[] { typeof(PackageContainerListBase), typeof(PackageContainerLocalFile),
+                    typeof(PackageContainerNetworkHttpFile) });
+            return settings;
+        }
+
         public void SaveAsLocalFile(string fn)
         {
             using (var s = new StreamWriter(fn))
             {
-                var json = JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Auto
-                });
+                var settings = GetSerializerSettings();
+                settings.TypeNameHandling = TypeNameHandling.Auto;
+                var json = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
                 s.WriteLine(json);
             }
         }
@@ -299,9 +307,7 @@ namespace AasxPackageLogic.PackageCentral
                 return false;
 
             // need special settings (to handle different typs of child classes of PackageContainer)
-            var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                new[] { typeof(PackageContainerListBase), typeof(PackageContainerLocalFile),
-                    typeof(PackageContainerNetworkHttpFile) });
+            var settings = GetSerializerSettings();
 
             var init = File.ReadAllText(fn);
             JsonConvert.PopulateObject(init, this, settings);

@@ -476,9 +476,7 @@ namespace AasxPackageExplorer
 
             // return render hints
             return renderHints;
-        }
-
-        static int count = 0;
+        }        
 
         #endregion
     }

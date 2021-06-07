@@ -21,6 +21,7 @@ namespace AasxPackageLogic.PackageCentral
     /// <summary>
     /// This container represents a file, which is locally accessible via the computer's file system.
     /// </summary>
+    [DisplayName("LocalFile")]
     public class PackageContainerLocalFile : PackageContainerBuffered
     {
         /// <summary>

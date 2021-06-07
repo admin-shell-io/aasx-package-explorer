@@ -28,6 +28,7 @@ namespace AasxPackageLogic.PackageCentral
     /// This container represents a file, which is retrieved by an network/ HTTP commands and
     /// buffered locally.
     /// </summary>
+    [DisplayName("NetworkHttpFile")]
     public class PackageContainerNetworkHttpFile : PackageContainerBuffered
     {
         /// <summary>

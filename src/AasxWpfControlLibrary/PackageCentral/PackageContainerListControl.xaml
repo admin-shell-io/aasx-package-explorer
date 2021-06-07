@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AasxWpfControlLibrary"
+             xmlns:anyui="clr-namespace:AnyUi"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300"
              Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave"
@@ -152,6 +153,9 @@
     <ScrollViewer> -->
 
     <Grid>
+        <Grid.Resources>
+            <anyui:AnyUiVisibilityToWpfVisibilityConverter x:Key="AnyUiVisibilityToWpfVisibilityConverter" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -216,7 +220,8 @@
 
                                     <Border Grid.Row="0" Grid.Column="0"
                                             BorderThickness="0" Background="#303060" 
-                                            CornerRadius="0" Margin="0,0,2,0" Visibility="{Binding Path=VisualIsEdited}">
+                                            CornerRadius="0" Margin="0,0,2,0" 
+                                            Visibility="{Binding VisualIsEdited, Converter={StaticResource AnyUiVisibilityToWpfVisibilityConverter}}">
                                         <TextBlock Text="E" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
 
@@ -231,7 +236,8 @@
                                     <Border Grid.Row="0" Grid.Column="1"
                                             BorderThickness="0" Background="#303030" 
                                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            CornerRadius="3" Margin="2" Width="20" Height="20" Visibility="{Binding Path=VisualIsLoaded}">
+                                            CornerRadius="3" Margin="2" Width="20" Height="20" 
+                                            Visibility="{Binding VisualIsLoaded, Converter={StaticResource AnyUiVisibilityToWpfVisibilityConverter}}">
                                         <TextBlock Text="Ld" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
                                 </Grid>

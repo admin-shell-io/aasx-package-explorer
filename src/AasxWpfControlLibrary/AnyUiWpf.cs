@@ -1006,4 +1006,33 @@ namespace AnyUi
             return AnyUiBrushes.Default;
         }
     }
+
+    public class AnyUiVisibilityToWpfVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is AnyUiVisibility vis)
+            {
+                if (vis == AnyUiVisibility.Visible)
+                    return System.Windows.Visibility.Visible;
+                if (vis == AnyUiVisibility.Collapsed)
+                    return System.Windows.Visibility.Collapsed;
+            }
+            return System.Windows.Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (value is System.Windows.Visibility vis)
+            {
+                if (vis == Visibility.Visible)
+                    return AnyUiVisibility.Visible;
+                if (vis == Visibility.Collapsed)
+                    return AnyUiVisibility.Collapsed;
+            }
+            return AnyUiVisibility.Hidden;
+        }
+    }
 }
