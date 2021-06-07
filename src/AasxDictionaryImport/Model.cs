@@ -22,7 +22,7 @@ namespace AasxDictionaryImport.Model
     /// submodels in the AAS.  These elements are stored in a data context (IDataContext) that can be retrieved using a
     /// data source (IDataSource), for example a directory with export files.  A data provider (IDataProvider) can be
     /// used to open data sources.  There should be one IDataProvider implementation per data repository (e. g. IEC CDD
-    /// or eCl@ss), but there could be multiple IDataSource implementations -- for example one for accessing paths on
+    /// or ECLASS), but there could be multiple IDataSource implementations -- for example one for accessing paths on
     /// the file system and one for retrieving data from the network.
     /// </summary>
     // ReSharper disable once UnusedType.Global
@@ -31,7 +31,7 @@ namespace AasxDictionaryImport.Model
     }
 
     /// <summary>
-    /// Provides access to a data repository, for example IEC CDD or eCl@ss.  Implementations of this interface can be
+    /// Provides access to a data repository, for example IEC CDD or ECLASS.  Implementations of this interface can be
     /// used to access IDataSource instances that store the actual data structures.
     /// </summary>
     public interface IDataProvider

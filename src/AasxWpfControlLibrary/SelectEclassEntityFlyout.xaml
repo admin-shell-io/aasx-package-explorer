@@ -38,7 +38,7 @@
             <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
         </Viewbox>
 
-        <TextBlock Grid.Row="1" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Select eCl@ss entity .."/></TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Select ECLASS entity .."/></TextBlock>
 
         <Grid Grid.Row="2" Grid.Column="1">
 

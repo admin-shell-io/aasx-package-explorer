@@ -132,7 +132,7 @@ namespace AasxPackageLogic
         public string TemplateIdConceptDescription = "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
         /// <summary>
-        /// Path to eCl@ss files
+        /// Path to ECLASS files
         /// </summary>
         public string EclassDir = null;
 

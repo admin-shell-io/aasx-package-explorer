@@ -108,7 +108,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Row="0" Grid.Column="0" Text="eCl@ss" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0"/>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="ECLASS" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0"/>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="v9.1" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0" HorizontalAlignment="Right"/>
                     <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="27-03-02-04" FontFamily="Arial" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" BorderThickness="0"/>
                 </Grid>
@@ -126,7 +126,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Row="0" Grid.Column="0" Text="eCl@ss" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0"/>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="ECLASS" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0"/>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="v9.1" FontFamily="Arial" FontSize="16" FontWeight="Bold" BorderThickness="0" HorizontalAlignment="Right"/>
                     <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="27-03-02-04" FontFamily="Arial" FontSize="30" FontWeight="Bold" HorizontalAlignment="Center" BorderThickness="0"/>
                 </Grid>

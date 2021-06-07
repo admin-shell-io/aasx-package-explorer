@@ -32,10 +32,10 @@ namespace AasxDictionaryImport
     /// ElementDetailsDialog)</description>
     /// </item>
     /// <item>
-    /// <description>adding support for eCl@ss Advanced</description>
+    /// <description>adding support for ECLASS Advanced</description>
     /// </item>
     /// <item>
-    /// <description>fetching data from the network (IEC CDD HTML web service, eCl@ss REST API)</description>
+    /// <description>fetching data from the network (IEC CDD HTML web service, ECLASS REST API)</description>
     /// </item>
     /// <item>
     /// <description>supporting import of concept descriptions for existing elements</description>

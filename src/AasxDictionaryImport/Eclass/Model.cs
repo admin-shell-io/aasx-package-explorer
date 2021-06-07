@@ -30,18 +30,18 @@ using AdminShellNS;
 namespace AasxDictionaryImport.Eclass
 {
     /// <summary>
-    /// Data provider for eCl@ss Basic data.  The data is read from XML files using the OntoML scheme, see
-    /// <see cref="Context"/> for more information.  The complete eCl@ss exports use one file per language and domain.
+    /// Data provider for ECLASS Basic data.  The data is read from XML files using the OntoML scheme, see
+    /// <see cref="Context"/> for more information.  The complete ECLASS exports use one file per language and domain.
     /// In this implementation, a data source is always backed by an English export file.  If present, export files in
     /// other languages and unit files are loaded additionally.
     /// <para>
-    /// This data provider assumes that the eCl@ss XML files follow this naming convention:
+    /// This data provider assumes that the ECLASS XML files follow this naming convention:
     /// <list type="bullet">
     /// <item><description><code>&lt;Prefix&gt;_&lt;Version&gt;_&lt;Lang&gt;_*.xml</code> for class
     /// exports, and</description></item>
     /// <item><description><code>&lt;Prefix&gt;_UnitsML_*.xml</code> for unit data,</description></item>
     /// </list>
-    /// where <code>&lt;Prefix&gt;</code> is a constant prefix per eCl@ss release, <code>&lt;Version&gt;</code> is
+    /// where <code>&lt;Prefix&gt;</code> is a constant prefix per ECLASS release, <code>&lt;Version&gt;</code> is
     /// either <code>BASIC</code> or <code>ADVANCED</code> and <code>&lt;Lang&gt;</code> is an uppercase two-character
     /// language code (e. g. <code>EN</code> for the English export).
     /// </para>
@@ -59,14 +59,14 @@ namespace AasxDictionaryImport.Eclass
         public override string FetchPrompt => "IRDI / Code";
 
         /// <summary>
-        /// Checks whether the given path contains valid eCl@ss data that can be read by this data provider.  If this
+        /// Checks whether the given path contains valid ECLASS data that can be read by this data provider.  If this
         /// method returns true, the data source at the given path can be opened using the <see cref="OpenPath"/>
         /// method.
         /// <para>
         /// This function performs the following checks:
         /// <list>
         /// <item><description>The path must be a valid XML file.</description></item>
-        /// <item><description>The XML file must be an eCl@ss dictionary.</description></item>
+        /// <item><description>The XML file must be an ECLASS dictionary.</description></item>
         /// <item><description>The language of the XML file must be English (see class comment).</description>
         /// </item>
         /// </list>
@@ -128,12 +128,12 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <summary>
-        /// Fetch the XML data for the eCl@ss element with the given IRDI using the eCl@ss web service, write it to a
+        /// Fetch the XML data for the ECLASS element with the given IRDI using the ECLASS web service, write it to a
         /// file and return the path to the file.  The file name of the created file should identify the fetched
         /// element as it is shown as the name of the data source in the user interface.
         /// </summary>
-        /// <param name="irdi">The IRDI of the eCl@ss element to fetch from the web service</param>
-        /// <returns>The path of the XML file containing the data for the eCl@ss element with the given IRDI</returns>
+        /// <param name="irdi">The IRDI of the ECLASS element to fetch from the web service</param>
+        /// <returns>The path of the XML file containing the data for the ECLASS element with the given IRDI</returns>
         /// <exception cref="Model.ImportException">If the element could not be fetched from the web API</exception>
         private string FetchXmlFile(string irdi)
         {
@@ -223,8 +223,8 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// Data source for eCl@ss data.  The eCl@ss data is read from XML files, and a data source represents one English
-    /// eCl@ss XML file, optionally with additional XML files in other languages.  For more information on the XML
+    /// Data source for ECLASS data.  The ECLASS data is read from XML files, and a data source represents one English
+    /// ECLASS XML file, optionally with additional XML files in other languages.  For more information on the XML
     /// parser, see the <see cref="Context"/> and <see cref="Element"/> classes.
     /// </summary>
     public class DataSource : Model.FileSystemDataSource
@@ -233,7 +233,7 @@ namespace AasxDictionaryImport.Eclass
         /// Creates a new DataSource object with the given data.
         /// </summary>
         /// <param name="dataProvider">The data provider for this data source</param>
-        /// <param name="path">The path of the eCl@ss XML file</param>
+        /// <param name="path">The path of the ECLASS XML file</param>
         /// <param name="type">The type of the data source</param>
         public DataSource(Model.IDataProvider dataProvider, string path, Model.DataSourceType type)
            : base(dataProvider, path, type)
@@ -250,7 +250,7 @@ namespace AasxDictionaryImport.Eclass
                 var units = FindUnits();
 
                 if (units == null)
-                    Log.Singleton.Info("Could not find units for eCl@ss import.");
+                    Log.Singleton.Info("Could not find units for ECLASS import.");
 
                 return new Context(this, xml, additionalXml, units);
             }
@@ -287,8 +287,8 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// Data context for eCl@ss data.  The context loads the classes and properties from an XML document.  It
-    /// removes all deprecated elements because they are no longer part of the eCl@ss release.  It also computes a
+    /// Data context for ECLASS data.  The context loads the classes and properties from an XML document.  It
+    /// removes all deprecated elements because they are no longer part of the ECLASS release.  It also computes a
     /// mapping from classification classes to application classes.  For more information on the class types, see
     /// <see cref="Class"/>.
     /// <para>
@@ -316,13 +316,13 @@ namespace AasxDictionaryImport.Eclass
         public ICollection<Model.UnknownReference> UnknownReferences { get; } = new List<Model.UnknownReference>();
 
         /// <summary>
-        /// Creates a new eCl@ss Context and loads the data from the given XML document.
+        /// Creates a new ECLASS Context and loads the data from the given XML document.
         /// </summary>
         /// <param name="dataSource">The data source for this context</param>
         /// <param name="document">The XML document to read the data from</param>
         /// <param name="additionalDocuments">Additional XML documents with translations for the data stored in
         /// <paramref name="document"/></param>
-        /// <param name="units">A UnitsML XML document with information about the units used in the eCl@ss data, if
+        /// <param name="units">A UnitsML XML document with information about the units used in the ECLASS data, if
         /// available</param>
         public Context(DataSource dataSource, XDocument document, ICollection<XDocument> additionalDocuments,
             XDocument? units)
@@ -473,7 +473,7 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// An element in the eCl@ss data set, backed by an XML element from the exported XML document.  Currently, we
+    /// An element in the ECLASS data set, backed by an XML element from the exported XML document.  Currently, we
     /// support <see cref="Class"/> and <see cref="Property"/> elements.
     /// </summary>
     public abstract class Element : Model.LazyElementBase
@@ -515,7 +515,7 @@ namespace AasxDictionaryImport.Eclass
 
         /// <summary>
         /// Whether this element is deprecated.  If this property is true, this element
-        /// should be ignored as it is no longer part of the official eCl@ss release.
+        /// should be ignored as it is no longer part of the official ECLASS release.
         /// </summary>
         public bool IsDeprecated => XElement.Elements("is_deprecated").FirstValue() == "true";
 
@@ -572,7 +572,7 @@ namespace AasxDictionaryImport.Eclass
         /// <inheritdoc/>
         protected override bool Match(string query)
         {
-            // The eCl@ss hierarchical position is typically displayed as groups of two digits, separated by a hyphen,
+            // The ECLASS hierarchical position is typically displayed as groups of two digits, separated by a hyphen,
             // but is stored without hyphens in the XML file.  Therefore we remove the hyphens from the query string.
             // To keep the hierarchical character of the field, we only search at the beginning of the string.
             return base.Match(query) || HierarchicalPosition.StartsWith(query.Replace("-", ""));
@@ -593,15 +593,15 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// An eCl@ss class.  eCl@ss has two types of classes:  application classes and classification classes.
+    /// An ECLASS class.  ECLASS has two types of classes:  application classes and classification classes.
     /// Classification classes are part of the classification hierarchy while an application class defines the
     /// properties for a classification class.  Unfortunately, the classification classes do not store references to
     /// their application classes.  Therefore we manually compute this mapping in <see cref="Context"/> when loading
     /// the data from the XML file.
     /// <para>
-    /// In eCl@ss Basic, there is a 1:1 relation between classification and application classes.  In eCl@ss Advanced,
+    /// In ECLASS Basic, there is a 1:1 relation between classification and application classes.  In ECLASS Advanced,
     /// there may be several application classes per classification class (typically one for the basic attributes and
-    /// one for the advanced attributes).  As this implementation only supports eCl@ss Basic, we assume that there is
+    /// one for the advanced attributes).  As this implementation only supports ECLASS Basic, we assume that there is
     /// at most one application class per classification class and just transfer the application class's properties to
     /// the classification class.
     /// </para>
@@ -733,7 +733,7 @@ namespace AasxDictionaryImport.Eclass
     }
 
     /// <summary>
-    /// An eCl@ss property.  eCl@ss properties are assigned to application classes, see <see cref="Class"/>.
+    /// An ECLASS property.  ECLASS properties are assigned to application classes, see <see cref="Class"/>.
     /// </summary>
     public class Property : Element
     {

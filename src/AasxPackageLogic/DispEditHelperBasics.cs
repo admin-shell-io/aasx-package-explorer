@@ -1300,7 +1300,7 @@ namespace AasxPackageLogic
             else
             if (keys != null)
             {
-                // populate [+], [Select], [eCl@ss], [Copy] buttons
+                // populate [+], [Select], [ECLASS], [Copy] buttons
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
@@ -1832,7 +1832,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // Identify eCl@ss properties to be imported
+        // Identify ECLASS properties to be imported
         //
 
         public void IdentifyTargetsForEclassImportOfCDs(
@@ -1852,7 +1852,7 @@ namespace AasxPackageLogic
                     // already in CDs?
                     var x = env.FindConceptDescription(elem.semanticId[0]);
                     if (x == null)
-                        // this one has the potential to get imported eCl@ss CD
+                        // this one has the potential to get imported ECLASS CD
                         targets.Add(elem);
                 }
 
@@ -1873,7 +1873,7 @@ namespace AasxPackageLogic
             if (env == null || targets == null)
                 return false;
 
-            // use eCl@ss utilities
+            // use ECLASS utilities
             var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
             var jobData = new EclassUtils.SearchJobData(fullfn);
             foreach (var t in targets)
@@ -1885,7 +1885,7 @@ namespace AasxPackageLogic
 
             // make a progress flyout
             var uc = new AnyUiDialogueDataProgress(
-                "Import ConceptDescriptions from eCl@ss",
+                "Import ConceptDescriptions from ECLASS",
                 info: "Preparing ...", symbol: AnyUiMessageBoxImage.Information);
             uc.Progress = 0.0;
             // show this
@@ -1899,7 +1899,7 @@ namespace AasxPackageLogic
                 System.Threading.Thread.Sleep(10);
 
                 // longrunnig task for searching IRDIs ..
-                uc.Info = "Collecting eCl@ss Data ..";
+                uc.Info = "Collecting ECLASS Data ..";
                 EclassUtils.SearchForIRDIinEclassFiles(jobData, (frac) =>
                 {
                     uc.Progress = frac;
