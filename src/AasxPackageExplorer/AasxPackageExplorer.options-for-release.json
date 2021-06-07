@@ -28,7 +28,7 @@
   "LoadWithoutPrompt": false,
   "ShowIdAsIri": false,
   "VerboseConnect": true,
-  "DefaultStayConnected": true,
+  "DefaultStayConnected": false,
   "DefaultUpdatePeriod": 1000,
   "StayConnectOptions": "REST-QUEUE", // SIM
   "Remarks": [
