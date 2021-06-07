@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using AasxOpenIdClient;
 using AdminShellNS;
 using Newtonsoft.Json;
+using IdentityModel.Client;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -159,9 +160,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (oidc.token != "")
                 {
                     runtimeOptions?.Log?.Info($"  using existing bearer token.");
-                    // ANYUI-TODO Andreas
-                    // client.SetBearerToken(oidc.token);
-                    throw new NotImplementedException("AnyUi: .net standard missing SetBearerToken!");
+                    client.SetBearerToken(oidc.token);
                 }
             }
 
@@ -203,9 +202,7 @@ namespace AasxPackageLogic.PackageCentral
                     var response2 = await oidc.RequestTokenAsync(null,
                         GenerateUiLambdaSet(runtimeOptions));
                     oidc.token = response2.AccessToken;
-                    // ANYUI-TODO Andreas
-                    // client.SetBearerToken(oidc.token);
-                    throw new NotImplementedException("AnyUi: .net standard missing SetBearerToken!");
+                    client.SetBearerToken(oidc.token);
 
                     repeat = true;
                     continue;
@@ -369,9 +366,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (oidc.token != "")
                 {
                     runtimeOptions?.Log?.Info($"  using existing bearer token.");
-                    // ANYUI-TODO Andreas
-                    // client.SetBearerToken(oidc.token);
-                    throw new NotImplementedException("AnyUi: .net standard missing SetBearerToken!");
+                    client.SetBearerToken(oidc.token);
                 }
             }
 
