@@ -33,6 +33,16 @@ namespace AasxPackageLogic
         }
     }
 
+    public class AnyUiLambdaActionPackCntChange : AnyUiLambdaActionBase
+    {
+        public AnyUiLambdaActionPackCntChange() { }
+        public AnyUiLambdaActionPackCntChange(PackCntChangeEventData change) 
+        {
+            this.Change = change;
+        }
+        public PackCntChangeEventData Change;
+    }
+
     public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase
     {
         public AnyUiLambdaActionNavigateTo() { }

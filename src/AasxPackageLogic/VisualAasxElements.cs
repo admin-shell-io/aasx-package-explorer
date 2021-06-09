@@ -40,6 +40,12 @@ namespace AasxPackageLogic
         public VisualElementGeneric Parent = null;
         public ObservableCollection<VisualElementGeneric> Members { get; set; }
 
+        /// <summary>
+        /// Number of of memebers at the top of the list, whcih are virtual (e.g. by plug-ins)
+        /// and not represented by the AAS-element's children.
+        /// </summary>
+        public int VirtualMembersAtTop = 0;
+
         // cache for expanded states
         public TreeViewLineCache Cache = null;
 
@@ -1112,6 +1118,7 @@ namespace AasxPackageLogic
                             var tiExt = new VisualElementPluginExtension(
                                 tiSm, cache, package, sm, lpi, ext);
                             tiSm.Members.Add(tiExt);
+                            tiSm.VirtualMembersAtTop++;
                         }
                     }
                     catch (Exception ex)
@@ -1483,6 +1490,8 @@ namespace AasxPackageLogic
         // Implementation of event queue
         //
 
+
+#if _relaize_in_DisplayVisualAasxElements
         private List<PackCntChangeEventData> _eventQueue = new List<PackCntChangeEventData>();
 
         public void PushEvent(PackCntChangeEventData data)
@@ -1502,6 +1511,43 @@ namespace AasxPackageLogic
                 _eventQueue.Clear();
             }
         }
+#endif
+
+        private int UpdateByEventTryMoveGenericVE(PackCntChangeEventData data)
+        {
+            // count moves
+            int res = 0;
+
+            // find the correct parent(s)
+            foreach (var parentVE in FindAllVisualElementOnMainDataObject(
+                data.ParentElem, alsoDereferenceObjects: true))
+            {
+                // trivial
+                var ni = parentVE.VirtualMembersAtTop + data.NewIndex;
+                if (parentVE?.Members == null || ni < 0 || ni >= parentVE.Members.Count)
+                    continue;
+
+                // now, below these find direct childs matching the SME (only these can be removed)
+                VisualElementGeneric childVE = null;
+                foreach (var x in parentVE.Members)
+                    if (x.GetMainDataObject() == data.ThisElem)
+                        childVE = x;
+                if (childVE == null)
+                    continue;
+
+                // remove child
+                parentVE.Members.Remove(childVE);
+
+                // insert child
+                parentVE.Members.Insert(ni, childVE);
+
+                // moved
+                res++;
+            }
+
+            // ok
+            return res;
+        }
 
         public bool UpdateByEvent(
             PackCntChangeEventData data,
@@ -1514,13 +1560,13 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.Create)
             {
-                if (data.ParentRef is AdminShell.AdministrationShell parentAas
-                    && data.ThisRef is AdminShell.Submodel thisSm)
+                if (data.ParentElem is AdminShell.AdministrationShell parentAas
+                    && data.ThisElem is AdminShell.Submodel thisSm)
                 {
                     // try find according visual elements by business objects == Referables
                     // presumably, this is only one AAS Element
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementAdminShell>(
-                        data.ParentRef, alsoDereferenceObjects: false))
+                        data.ParentElem, alsoDereferenceObjects: false))
                     {
                         if (parentVE == null)
                             continue;
@@ -1555,8 +1601,8 @@ namespace AasxPackageLogic
                     return true;
                 }
                 else
-                if (data.ParentRef is AdminShell.Submodel parentSm
-                    && data.ThisRef is AdminShell.SubmodelElement thisSme)
+                if (data.ParentElem is AdminShell.Submodel parentSm
+                    && data.ThisElem is AdminShell.SubmodelElement thisSme)
                 {
                     // try specifically SubmodelRef visual elements by Submodel business object,
                     // as these are the carriers of child information
@@ -1573,20 +1619,21 @@ namespace AasxPackageLogic
 
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                            cache, data.Container?.Env?.AasEnv, parentVE, 
+                            data.ParentElem as AdminShell.Referable, foundSmw);
                     }
 
                     // just good
                     return true;
                 }
                 else
-                if (data.ParentRef is AdminShell.IManageSubmodelElements parentMgr
-                    && data.ParentRef is AdminShell.IEnumerateChildren parentEnum
-                    && data.ThisRef is AdminShell.SubmodelElement thisSme2)
+                if (data.ParentElem is AdminShell.IManageSubmodelElements parentMgr
+                    && data.ParentElem is AdminShell.IEnumerateChildren parentEnum
+                    && data.ThisElem is AdminShell.SubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject(
-                        data.ParentRef, alsoDereferenceObjects: false))
+                        data.ParentElem, alsoDereferenceObjects: false))
                     {
                         if (parentVE == null)
                             continue;
@@ -1605,7 +1652,8 @@ namespace AasxPackageLogic
 
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, parentVE, data.ParentRef, foundSmw);
+                            cache, data.Container?.Env?.AasEnv, parentVE, 
+                            data.ParentElem as AdminShell.Referable, foundSmw);
                     }
 
                     // just good
@@ -1619,12 +1667,12 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.Delete)
             {
-                if (data.ParentRef is AdminShell.IManageSubmodelElements parentMgr
-                    && data.ThisRef is AdminShell.SubmodelElement sme)
+                if (data.ParentElem is AdminShell.IManageSubmodelElements parentMgr
+                    && data.ThisElem is AdminShell.SubmodelElement sme)
                 {
                     // find the correct parent(s)
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject(
-                        data.ParentRef, alsoDereferenceObjects: true))
+                        data.ParentElem, alsoDereferenceObjects: true))
                     {
                         // trivial
                         if (parentVE?.Members == null)
@@ -1633,7 +1681,7 @@ namespace AasxPackageLogic
                         // now, below these find direct childs matching the SME (only these can be removed)
                         var childsToDel = new List<VisualElementGeneric>();
                         foreach (var x in parentVE.Members)
-                            if (x.GetMainDataObject() == data.ThisRef)
+                            if (x.GetMainDataObject() == data.ThisElem)
                                 childsToDel.Add(x);
 
                         // AFTER iterating, do the removal
@@ -1647,16 +1695,35 @@ namespace AasxPackageLogic
             }
 
             //
+            // MoveToIndex
+            //
+
+            if (data.Reason == PackCntChangeEventReason.MoveToIndex)
+            {
+                if (data.ParentElem is AdminShell.IManageSubmodelElements parentMgr
+                    && data.ThisElem is AdminShell.SubmodelElement sme)
+                {
+                    return 0 < UpdateByEventTryMoveGenericVE(data);
+                }
+
+                if (data.ParentElem is AdminShell.AdministrationShell aas
+                    && data.ThisElem is AdminShell.SubmodelRef smref)
+                {
+                    return 0 < UpdateByEventTryMoveGenericVE(data);
+                }
+            }
+
+            //
             // Update
             //
 
             if (data.Reason == PackCntChangeEventReason.ValueUpdateSingle)
             {
-                if (data.ThisRef is AdminShell.SubmodelElement sme)
+                if (data.ThisElem is AdminShell.SubmodelElement sme)
                 {
                     // find the correct parent(s)
                     foreach (var ve in FindAllVisualElementOnMainDataObject(
-                        data.ThisRef, alsoDereferenceObjects: false))
+                        data.ThisElem, alsoDereferenceObjects: false))
                     {
                         // trivial
                         if (ve == null)
@@ -1669,7 +1736,7 @@ namespace AasxPackageLogic
             }
 
             return false;
-        }
+        }        
     }
 
 }

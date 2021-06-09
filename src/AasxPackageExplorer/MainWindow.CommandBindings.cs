@@ -460,6 +460,12 @@ namespace AasxPackageExplorer
                 ShowHelp();
             }
 
+            if (cmd == "faqgithub")
+            {
+                BrowserDisplayLocalFile(
+                    @"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
+            }
+
             if (cmd == "editkey")
                 MenuItemWorkspaceEdit.IsChecked = !MenuItemWorkspaceEdit.IsChecked;
 

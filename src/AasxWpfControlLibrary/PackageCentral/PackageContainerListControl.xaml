@@ -22,8 +22,11 @@
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 
     <UserControl.Resources>
-
         <ResourceDictionary>
+
+            <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
+            <anyui:AnyUiBrushToWpfBrushConverter x:Key="AnyUiBrushToWpfBrushConverter" />
+
             <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp" />
 
             <ContextMenu x:Key="ContextMenuFileItem">
@@ -229,7 +232,9 @@
                                            Source="{StaticResource Icon_AASX}" Width="40" Height="40"/>
 
                                     <Border Grid.Row="0" Grid.Column="1"
-                                            BorderBrush="{Binding Path=VisualLabelBackground}" Background="{Binding Path=VisualLabelBackground}" CornerRadius="4" Margin="4">
+                                            BorderBrush="{Binding VisualLabelBackground, Converter={StaticResource AnyUiBrushToWpfBrushConverter}}" 
+                                            Background="{Binding VisualLabelBackground, Converter={StaticResource AnyUiBrushToWpfBrushConverter}}" 
+                                            CornerRadius="4" Margin="4">
                                         <TextBlock Text="{Binding Path=VisualLabelText}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
 

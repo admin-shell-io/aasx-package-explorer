@@ -15,5 +15,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
+    <!-- see: https://wpf.2000things.com/2012/06/26/588-if-you-handle-previewkeydown-event-keydown-wont-fire/ --> 
+    
     <DockPanel x:Name="theMasterPanel" />
 </UserControl>

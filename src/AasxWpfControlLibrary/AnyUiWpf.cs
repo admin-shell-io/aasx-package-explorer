@@ -161,6 +161,10 @@ namespace AnyUi
             WishForOutsideAction.Add(action);
         }
 
+        //
+        // Render records: mapping AnyUi-Widgets to WPF widgets
+        //
+
         private class RenderRec
         {
             public Type CntlType;
@@ -433,7 +437,7 @@ namespace AnyUi
                             {
                                 // normal procedure
                                 var action = cntl.setValueLambda?.Invoke(cntl);
-                                EmitOutsideAction(action);                                
+                                EmitOutsideAction(action);
                             };
                             wpf.Inlines.Clear();
                             wpf.Inlines.Add(hl);
@@ -743,6 +747,91 @@ namespace AnyUi
             // result
             return dd.WpfElement;
         }
+
+        //
+        // Tag information
+        //
+
+        protected List<AnyUiUIElement> _namedElements = new List<AnyUiUIElement>();
+
+        public int PrepareNameList(AnyUiUIElement root)
+        {
+            _namedElements = new List<AnyUiUIElement>();
+            if (root == null)
+                return 0;
+            _namedElements = root.FindAllNamed().ToList();
+            return _namedElements.Count;
+        }
+
+        public AnyUiUIElement FindFirstNamedElement(string name)
+        {
+            if (_namedElements == null || name == null)
+                return null;
+            foreach (var el in _namedElements)
+                if (el.Name?.Trim()?.ToLower() == name.Trim().ToLower())
+                    return el;
+            return null;
+        }
+
+        //
+        // Shortcut handling
+        //
+
+        public class KeyShortcutRecord
+        {
+            public AnyUiUIElement Element;
+            public System.Windows.Input.ModifierKeys Modifiers;
+            public System.Windows.Input.Key Key;
+            public string Info;
+        }
+
+        private List<KeyShortcutRecord> _keyShortcuts = new List<KeyShortcutRecord>();
+
+        public List<KeyShortcutRecord> KeyShortcuts { get { return _keyShortcuts;  } }
+
+        public bool RegisterKeyShortcut(
+            string name,
+            System.Windows.Input.ModifierKeys modifiers,
+            System.Windows.Input.Key key,
+            string info)
+        {
+            var el = FindFirstNamedElement(name);
+            if (el == null)
+                return false;
+            _keyShortcuts.Add(new KeyShortcutRecord()
+            {
+                Element = el,
+                Modifiers = modifiers,
+                Key = key,
+                Info = info
+            });
+            return true;
+        }
+
+        public int TriggerKeyShortcut(
+            System.Windows.Input.Key key,
+            System.Windows.Input.ModifierKeys modifiers)
+        {
+            var res = 0;
+            if (_keyShortcuts == null)
+                return res;
+            foreach (var sc in _keyShortcuts)
+                if (key == sc.Key && modifiers == sc.Modifiers)
+                {
+                    // found, any lambdas appicable?
+                    if (sc.Element is AnyUiButton btn)
+                    {
+                        var action = btn.setValueLambda?.Invoke(btn);
+                        EmitOutsideAction(action);
+                        res++;
+                    }
+                }
+            return res;
+        }
+
+        //
+        // Utilities
+        //
 
         /// <summary>
         /// Graphically highlights/ marks an element to be "selected", e.g for seacg/ replace

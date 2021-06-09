@@ -24,7 +24,8 @@
             <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
         </Grid.Resources>
         <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" SelectedItemChanged="TreeViewInner_SelectedItemChanged" 
-                  RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp">
+                  RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">
                     <Grid  Margin="2" Width="2000" Height="24">
@@ -50,10 +51,15 @@
             </TreeView.ItemTemplate>
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
+                    <!-- TEST MIHO
                     <EventSetter Event="RequestBringIntoView" Handler="TreeViewElem_RequestBringIntoView"/>
+                    -->
+                    <EventSetter Event="RequestBringIntoView" Handler="TreeViewElem_RequestBringIntoView"/>
+                    <EventSetter Event="Selected" Handler="TreeViewElem_OnSelected"/>
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <!-- MIHO1 -->
+                    
+                    <!-- allow double click -->
                     <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick" />
                 </Style>
             </TreeView.ItemContainerStyle>

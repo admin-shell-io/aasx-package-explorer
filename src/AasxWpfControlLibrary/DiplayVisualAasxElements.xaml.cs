@@ -135,21 +135,63 @@ namespace AasxPackageExplorer
             InitializeComponent();
         }
 
+        //
+        // see: https://stackoverflow.com/questions/3225940/prevent-automatic-horizontal-scroll-in-treeview
+        //
+
+        private bool mSuppressRequestBringIntoView;
+
         private void TreeViewElem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
+            // Alternative (1): not working completely properly
+#if __not_working_completely_properly
+            Alternative 1
             base.BringIntoView();
-
             var scrollViewer = treeViewInner.Template.FindName("_tv_scrollviewer_", treeViewInner) as ScrollViewer;
             if (scrollViewer != null)
                 Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Loaded,
                     (Action)(() => scrollViewer.ScrollToLeftEnd()));
+            */
+#endif
+
+            // Alternative (2): seems working fine
+
+            // Ignore re-entrant calls
+            if (mSuppressRequestBringIntoView)
+                return;
+
+            // Cancel the current scroll attempt
+            e.Handled = true;
+
+            // Call BringIntoView using a rectangle that extends into "negative space" to the left of our
+            // actual control. This allows the vertical scrolling behaviour to operate without adversely
+            // affecting the current horizontal scroll position.
+            mSuppressRequestBringIntoView = true;
+
+            TreeViewItem tvi = sender as TreeViewItem;
+            if (tvi != null)
+            {
+                Rect newTargetRect = new Rect(-1000, 0, tvi.ActualWidth + 1000, tvi.ActualHeight);
+                tvi.BringIntoView(newTargetRect);
+            }
+
+            mSuppressRequestBringIntoView = false;
         }
 
-        /// <summary>
-        /// As the SelectedItemChanged event is also fired due to internal operations,
-        /// it is suppressed from time to time.
-        /// </summary>
+        // Correctly handle programmatically selected items
+        private void TreeViewElem_OnSelected(object sender, RoutedEventArgs e)
+        {
+            ((TreeViewItem)sender).BringIntoView();
+            e.Handled = true;
+        }
+
+        //
+        // fix: SelectedItemChanged
+        // As the SelectedItemChanged event is also fired due to internal operations,
+        // it is suppressed from time to time.
+        //
+
         private bool preventSelectedItemChanged = false;
 
         public void DisableSelectedItemChanged()
@@ -173,6 +215,10 @@ namespace AasxPackageExplorer
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this, e);
         }
+
+        //
+        // further functions
+        //
 
         public void Refresh()
         {
@@ -205,17 +251,38 @@ namespace AasxPackageExplorer
         // Event queuing
         //
 
+        private List<PackCntChangeEventData> _eventQueue = new List<PackCntChangeEventData>();
+
         public void PushEvent(PackCntChangeEventData data)
         {
-            if (displayedTreeViewLines != null)
-                displayedTreeViewLines.PushEvent(data);
+            lock (_eventQueue)
+            {
+                _eventQueue.Add(data);
+            }
         }
 
         public void UpdateFromQueuedEvents()
         {
-            if (displayedTreeViewLines != null)
-                displayedTreeViewLines.UpdateFromQueuedEvents(treeViewLineCache, _lastEditMode);
-        }
+            if (displayedTreeViewLines == null)
+                return;
+
+            lock (_eventQueue)
+            {
+                foreach (var e in _eventQueue)
+                {
+                    // for speed reasons?
+                    if (e.DisableSelectedTreeItemChange)
+                        DisableSelectedItemChanged();
+                    
+                    displayedTreeViewLines.UpdateByEvent(e, treeViewLineCache, _lastEditMode);
+
+                    if (e.DisableSelectedTreeItemChange)
+                        EnableSelectedItemChanged();
+                }
+                
+                _eventQueue.Clear();
+            }
+        }        
 
         //
         // Element management
@@ -441,7 +508,7 @@ namespace AasxPackageExplorer
                 displayedTreeViewLines[0].IsSelected = true;
         }
 
-        #endregion
+#endregion
 
         // MIHO1
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)

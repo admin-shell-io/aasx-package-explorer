@@ -301,6 +301,11 @@ namespace AnyUi
         public int? GridRow, GridRowSpan, GridColumn, GridColumnSpan;
 
         /// <summary>
+        /// Serves as alpha-numeric name to later bind specific implementations to it
+        /// </summary>
+        public string Name = null;
+
+        /// <summary>
         /// This onjects builds the bridge to the specific implementation, e.g., WPF.
         /// The specific implementation overloads AnyUiDisplayDataBase to be able to store specific data
         /// per UI element, such as the WPF UIElement.
@@ -335,7 +340,7 @@ namespace AnyUi
         /// will be activated later.
         /// Note: use of this is for legacy reasons; basically the class members can be used directly
         /// </summary>
-        /// <param name="fe">User control</param>
+        /// <param name="cntl">User control (passed thru)</param>
         /// <param name="setValue">Lambda called, whenever the value is changed</param>
         /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
@@ -352,6 +357,38 @@ namespace AnyUi
             cntl.takeOverLambda = takeOverLambda;
 
             return cntl;
+        }
+
+        /// <summary>
+        /// Allows setting the name for a control.
+        /// </summary>
+        /// <param name="cntl"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static AnyUiUIElement NameControl(
+            AnyUiUIElement cntl, string name)
+        {
+            // access
+            if (cntl == null)
+                return null;
+
+            // set
+            cntl.Name = name;
+            return cntl;
+        }
+
+        /// <summary>
+        /// Find all children in the (deep) hierarchy, which feature a Name != null.
+        /// </summary>
+        public IEnumerable<AnyUiUIElement> FindAllNamed()
+        {
+            if (this.Name != null)
+                yield return this;
+
+            if (this is IEnumerateChildren en)
+                foreach (var child in en.GetChildren())
+                    foreach (var x in child.FindAllNamed())
+                        yield return x;
         }
     }
 
@@ -386,10 +423,22 @@ namespace AnyUi
         public virtual AnyUiUIElement Child { get; set; }
     }
 
-    public class AnyUiPanel : AnyUiFrameworkElement
+    public interface IEnumerateChildren
+    {
+        IEnumerable<AnyUiUIElement> GetChildren();
+    }
+
+    public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren
     {
         public AnyUiBrush Background;
         public List<AnyUiUIElement> Children = new List<AnyUiUIElement>();
+
+        public IEnumerable<AnyUiUIElement> GetChildren()
+        {
+            if (Children != null)
+                foreach (var child in Children)
+                    yield return child;
+        }
     }
 
     public class AnyUiGrid : AnyUiPanel

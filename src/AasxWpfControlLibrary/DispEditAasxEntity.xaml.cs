@@ -30,11 +30,11 @@ namespace AasxPackageExplorer
     public partial class DispEditAasxEntity : UserControl
     {
 
-        private PackageCentral packages = null;
-        private VisualElementGeneric theEntity = null;
-        private DispEditHelperEntities helper = new DispEditHelperEntities();
-        private AnyUiUIElement lastRenderedRootElement = null;
-        private AnyUiDisplayContextWpf displayContext = null;
+        private PackageCentral _packages = null;
+        private VisualElementGeneric _theEntity = null;
+        private DispEditHelperEntities _helper = new DispEditHelperEntities();
+        private AnyUiUIElement _lastRenderedRootElement = null;
+        private AnyUiDisplayContextWpf _displayContext = null;
 
         #region Public events and properties
         //
@@ -59,7 +59,7 @@ namespace AasxPackageExplorer
         {
             // check for wishes from the modify repo
 
-            if (helper?.context is AnyUiDisplayContextWpf dcwpf && dcwpf.WishForOutsideAction != null)
+            if (_helper?.context is AnyUiDisplayContextWpf dcwpf && dcwpf.WishForOutsideAction != null)
             {
                 while (dcwpf.WishForOutsideAction.Count > 0)
                 {
@@ -74,9 +74,9 @@ namespace AasxPackageExplorer
                     if (temp is AnyUiLambdaActionRedrawEntity)
                     {
                         // redraw ourselves?
-                        if (packages != null && theEntity != null)
+                        if (_packages != null && _theEntity != null)
                             DisplayOrEditVisualAasxElement(
-                                packages, theEntity, helper.editMode, helper.hintMode);
+                                _packages, _theEntity, _helper.editMode, _helper.hintMode);
                     }
 
                     // all other elements refer to superior functionality
@@ -96,9 +96,9 @@ namespace AasxPackageExplorer
         {
             try
             {
-                var changes = true == displayContext?.CallUndoChanges(lastRenderedRootElement);
+                var changes = true == _displayContext?.CallUndoChanges(_lastRenderedRootElement);
                 if (changes)
-                    displayContext.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                    _displayContext.EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
 
             }
             catch (Exception ex)
@@ -133,14 +133,14 @@ namespace AasxPackageExplorer
             var spwpf = new Label(); // sp.GetOrCreateWpfElement();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
-            lastRenderedRootElement = null;
+            _lastRenderedRootElement = null;
             return sp;
         }
 
         public void ClearHighlight()
         {
-            if (this.helper != null)
-                this.helper.ClearHighlights();
+            if (this._helper != null)
+                this._helper.ClearHighlights();
         }
 
         public class DisplayRenderHints
@@ -197,11 +197,11 @@ namespace AasxPackageExplorer
             hintMode = hintMode && editMode;
 
             // remember objects for UI thread / redrawing
-            this.packages = packages;
-            this.theEntity = entity;
-            helper.packages = packages;
-            helper.highlightField = hightlightField;
-            helper.appEventsProvider = appEventProvider;
+            this._packages = packages;
+            this._theEntity = entity;
+            _helper.packages = packages;
+            _helper.highlightField = hightlightField;
+            _helper.appEventsProvider = appEventProvider;
 
             var renderHints = new DisplayRenderHints();
 
@@ -218,9 +218,9 @@ namespace AasxPackageExplorer
 #endif
 
             // create display context for WPF
-            displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
+            _displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
 
-            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
+            _helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
 
             // modify repository
             ModifyRepo repo = null;
@@ -229,11 +229,11 @@ namespace AasxPackageExplorer
                 // some functionality still uses repo != null to detect editMode!!
                 repo = new ModifyRepo();
             }
-            helper.editMode = editMode;
-            helper.hintMode = hintMode;
-            helper.repo = repo;
-            helper.showIriMode = showIriMode;
-            helper.context = displayContext;
+            _helper.editMode = editMode;
+            _helper.hintMode = hintMode;
+            _helper.repo = repo;
+            _helper.showIriMode = showIriMode;
+            _helper.context = _displayContext;
 
             //
             // Test for Blazor
@@ -279,19 +279,19 @@ namespace AasxPackageExplorer
             if (entity is VisualElementEnvironmentItem)
             {
                 var x = entity as VisualElementEnvironmentItem;
-                helper.DisplayOrEditAasEntityAasEnv(
+                _helper.DisplayOrEditAasEntityAasEnv(
                     packages, x.theEnv, x.theItemType, editMode, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAdminShell)
             {
                 var x = entity as VisualElementAdminShell;
-                helper.DisplayOrEditAasEntityAas(
+                _helper.DisplayOrEditAasEntityAas(
                     packages, x.theEnv, x.theAas, editMode, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementAsset)
             {
                 var x = entity as VisualElementAsset;
-                helper.DisplayOrEditAasEntityAsset(
+                _helper.DisplayOrEditAasEntityAsset(
                     packages, x.theEnv, x.theAsset, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelRef)
@@ -300,62 +300,62 @@ namespace AasxPackageExplorer
                 AdminShell.AdministrationShell aas = null;
                 if (x.Parent is VisualElementAdminShell xpaas)
                     aas = xpaas.theAas;
-                helper.DisplayOrEditAasEntitySubmodelOrRef(
+                _helper.DisplayOrEditAasEntitySubmodelOrRef(
                     packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, stack,
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodel)
             {
                 var x = entity as VisualElementSubmodel;
-                helper.DisplayOrEditAasEntitySubmodelOrRef(
+                _helper.DisplayOrEditAasEntitySubmodelOrRef(
                     packages, x.theEnv, null, null, x.theSubmodel, editMode, stack,
                     hintMode: hintMode);
             }
             else if (entity is VisualElementSubmodelElement)
             {
                 var x = entity as VisualElementSubmodelElement;
-                helper.DisplayOrEditAasEntitySubmodelElement(
+                _helper.DisplayOrEditAasEntitySubmodelElement(
                     packages, x.theEnv, x.theContainer, x.theWrapper, x.theWrapper.submodelElement, editMode,
                     repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementOperationVariable)
             {
                 var x = entity as VisualElementOperationVariable;
-                helper.DisplayOrEditAasEntityOperationVariable(
+                _helper.DisplayOrEditAasEntityOperationVariable(
                     packages, x.theEnv, x.theContainer, x.theOpVar, editMode,
                     stack, hintMode: hintMode);
             }
             else if (entity is VisualElementConceptDescription)
             {
                 var x = entity as VisualElementConceptDescription;
-                helper.DisplayOrEditAasEntityConceptDescription(
+                _helper.DisplayOrEditAasEntityConceptDescription(
                     packages, x.theEnv, null, x.theCD, editMode, repo, stack, hintMode: hintMode);
             }
             else if (entity is VisualElementView)
             {
                 var x = entity as VisualElementView;
                 if (x.Parent != null && x.Parent is VisualElementAdminShell xpaas)
-                    helper.DisplayOrEditAasEntityView(
+                    _helper.DisplayOrEditAasEntityView(
                         packages, x.theEnv, xpaas.theAas, x.theView, editMode, stack,
                         hintMode: hintMode);
                 else
-                    helper.AddGroup(stack, "View is corrupted!", helper.levelColors.MainSection);
+                    _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
             }
             else if (entity is VisualElementReference)
             {
                 var x = entity as VisualElementReference;
                 if (x.Parent != null && x.Parent is VisualElementView xpev)
-                    helper.DisplayOrEditAasEntityViewReference(
+                    _helper.DisplayOrEditAasEntityViewReference(
                         packages, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
                         editMode, stack);
                 else
-                    helper.AddGroup(stack, "Reference is corrupted!", helper.levelColors.MainSection);
+                    _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
             }
             else
             if (entity is VisualElementSupplementalFile)
             {
                 var x = entity as VisualElementSupplementalFile;
-                helper.DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, stack);
+                _helper.DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, stack);
             }
             else if (entity is VisualElementPluginExtension)
             {
@@ -389,8 +389,8 @@ namespace AasxPackageExplorer
 #endif
 
                     // helping message
-                    helper.AddGroup(
-                        stack, "Entity from Plugin cannot be rendered!", helper.levelColors.MainSection);
+                    _helper.AddGroup(
+                        stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
                 }
                 else
                 {
@@ -404,7 +404,7 @@ namespace AasxPackageExplorer
 
             }
             else
-                helper.AddGroup(stack, "Entity is unknown!", helper.levelColors.MainSection);
+                _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
 
             // now render master stack
 #if __export_BLAZOR
@@ -463,21 +463,151 @@ namespace AasxPackageExplorer
             // render Any UI to WPF?
             if (!inhibitRenderStackToPanel)
             {
+                // rendering
                 theMasterPanel.Children.Clear();
-                var spwpf = displayContext.GetOrCreateWpfElement(stack);
-                helper.ShowLastHighlights();
+                var spwpf = _displayContext.GetOrCreateWpfElement(stack);
+                _helper.ShowLastHighlights();
                 DockPanel.SetDock(spwpf, Dock.Top);
                 theMasterPanel.Children.Add(spwpf);
+
+                // register key shortcuts
+                var num = _displayContext.PrepareNameList(stack);
+                if (num > 0)
+                {
+                    _displayContext.RegisterKeyShortcut(
+                        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, Key.Up,
+                        "Move current AAS element up by one position.");
+
+                    _displayContext.RegisterKeyShortcut(
+                        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, Key.Down,
+                        "Move current AAS element down by one position.");
+                }
             }
 
             // keep the stack
-            lastRenderedRootElement = stack;
+            _lastRenderedRootElement = stack;
 #endif
 
             // return render hints
             return renderHints;
-        }        
+        }
 
         #endregion
+
+        public void HandleGlobalKeyDown(KeyEventArgs e)
+        {
+            if (e == null)
+                return;
+            var num = _displayContext?.TriggerKeyShortcut(e.Key, Keyboard.Modifiers);
+            if (num > 0)
+                e.Handled = true;
+        }
+
+        public string CreateTempFileForKeyboardShortcuts()
+        {
+            try
+            {
+                // create a temp HTML file
+                var tmpfn = System.IO.Path.GetTempFileName();
+
+                // rename to html file
+                var htmlfn = tmpfn.Replace(".tmp", ".html");
+                File.Move(tmpfn, htmlfn);
+
+                // create html content as string
+                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<!doctype html>
+                    <html lang=en>
+                    <head>
+                    <style>
+                    body {
+                      background-color: #FFFFE0;
+                      font-size: small;
+                      font-family: Arial, Helvetica, sans-serif;
+                    }
+
+                    table {
+                      font-family: arial, sans-serif;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+
+                    td, th {
+                      border: 1px solid #dddddd;
+                      text-align: left;
+                      padding: 8px;
+                    }
+
+                    tr:nth-child(even) {
+                      background-color: #fffff0;
+                    }
+                    </style>
+                    <meta charset=utf-8>
+                    <title>blah</title>
+                    </head>
+                    <body>");
+
+                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</body>
+                    </html>");
+
+                var html = "";
+
+                html += "<h3>Keyboard shortcuts</h3>" + Environment.NewLine;
+
+                html += AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Modifiers & Keys</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    </tr>");
+
+                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr>
+                    <td>{0}</th>
+                    <td>{1}</th>
+                    <td>{2}</th>
+                    </tr>");
+
+                if (_displayContext?.KeyShortcuts != null)
+                    foreach (var sc in _displayContext.KeyShortcuts)
+                    {
+                        // Keys
+                        var keys = "";
+                        if (sc.Modifiers.HasFlag(ModifierKeys.Shift))
+                            keys += "[Shift] ";
+                        if (sc.Modifiers.HasFlag(ModifierKeys.Control))
+                            keys += "[Control] ";
+                        if (sc.Modifiers.HasFlag(ModifierKeys.Alt))
+                            keys += "[Alt] ";
+
+                        keys += "[" + sc.Key.ToString() + "]";
+
+                        // Function
+                        var fnct = "";
+                        if (sc.Element is AnyUiButton btn)
+                            fnct = "" + btn.Content;
+
+                        // fill
+                        html += String.Format(rowfmt,
+                            "" + keys,
+                            "" + fnct,
+                            "" + sc.Info);
+                    }
+
+                html += AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</table>");
+
+                // write
+                System.IO.File.WriteAllText(htmlfn, htmlHeader + html + htmlFooter);
+                return htmlfn;
+            }
+            catch (Exception ex)
+            { 
+                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
+            }
+            return null;
+        }
     }
 }

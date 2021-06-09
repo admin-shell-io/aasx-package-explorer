@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 //using System.Windows.Input;
 //using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 
@@ -58,6 +59,7 @@ namespace AasxPackageLogic
             // Up/ down/ del
             if (editMode && !embedded)
             {
+                // execute
                 this.EntityListUpDownDeleteHelper<AdminShell.Asset>(stack, repo, env.Assets, asset, env, "Asset:");
             }
 
@@ -1040,8 +1042,16 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
+                // the event template will help speed up visual updates of the tree
+                var evTemplate = new PackCntChangeEventData()
+                {
+                    Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == env).FirstOrDefault(),
+                    ThisElem = smref,
+                    ParentElem = aas
+                };
+
                 this.EntityListUpDownDeleteHelper<AdminShell.SubmodelRef>(
-                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:");
+                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:", sendUpdateEvent: evTemplate);
             }
 
             // entities other
@@ -1374,8 +1384,16 @@ namespace AasxPackageLogic
             // Up/ down/ del
             if (editMode && !embedded)
             {
+                // the event template will help speed up visual updates of the tree
+                var evTemplate = new PackCntChangeEventData()
+                {
+                    Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == env).FirstOrDefault(),
+                    ThisElem = cd,
+                    ParentElem = env.ConceptDescriptions
+                };
+
                 this.EntityListUpDownDeleteHelper<AdminShell.ConceptDescription>(
-                    stack, repo, env.ConceptDescriptions, cd, env, "CD:");
+                    stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate);
             }
 
             // Cut, copy, paste within list of CDs
@@ -1730,24 +1748,32 @@ namespace AasxPackageLogic
                 horizStack.Orientation = AnyUiOrientation.Horizontal;
                 stack.Children.Add(horizStack);
 
+                // the event template will help speed up visual updates of the tree
+                var evTemplate = new PackCntChangeEventData()
+                {
+                    Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == env).FirstOrDefault(),
+                    ThisElem = sme,
+                    ParentElem = parentContainer
+                };
+
                 // entities helper
                 if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
-                        "SubmodelElement:", nextFocus: wrapper.submodelElement);
+                        "SubmodelElement:", nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
                 if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper.submodelElement);
+                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
                 if (parentContainer != null && parentContainer is AdminShell.Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Entity).statements,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper.submodelElement);
+                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
                 // refactor?
                 if (parentContainer != null && parentContainer is AdminShell.IManageSubmodelElements)

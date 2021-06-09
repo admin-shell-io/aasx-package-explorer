@@ -288,6 +288,17 @@ namespace AasxPackageLogic.PackageCentral
                 yield return _main?.Container;
             if (_aux?.Container != null)
                 yield return _aux?.Container;
+            if (_repositories != null)
+                foreach (var repo in _repositories)
+                    foreach (var ri in repo.EnumerateItems())
+                        yield return ri;
+        }
+
+        public IEnumerable<PackageContainerBase> GetAllContainer(Func<PackageContainerBase, bool> lambda)
+        {
+            foreach (var cnr in GetAllContainer())
+                if (lambda == null || lambda.Invoke(cnr))
+                    yield return cnr;
         }
 
         public IEnumerable<AdminShellPackageEnv> GetAllPackageEnv()

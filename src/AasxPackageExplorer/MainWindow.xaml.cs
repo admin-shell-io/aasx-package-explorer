@@ -1013,6 +1013,11 @@ namespace AasxPackageExplorer
                                     ex, $"While displaying content file {tempDispCont.fn} requested by lambda");
                             }
                         }
+
+                        if (temp is AnyUiLambdaActionPackCntChange tempChange)
+                        {
+                            DisplayElements.PushEvent(tempChange.Change);
+                        }
                     }
                 }
             }
@@ -1938,18 +1943,24 @@ namespace AasxPackageExplorer
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel += 0.25;
+                e.Handled = true;
+                return;
             }
 
             if ((e.Key == Key.OemMinus || e.Key == Key.Subtract) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel -= 0.25;
+                e.Handled = true;
+                return;
             }
 
             if (this.IsInFlyout() && currentFlyoutControl != null)
             {
                 currentFlyoutControl.ControlPreviewKeyDown(e);
             }
+
+            DispEditEntityPanel.HandleGlobalKeyDown(e);
         }
 
         #region Modal Flyovers
@@ -2241,6 +2252,13 @@ namespace AasxPackageExplorer
                 if (DispEditEntityPanel != null)
                     DispEditEntityPanel.ClearHighlight();
             }
+        }
+
+        private void ButtonKeyboard_Click(object sender, RoutedEventArgs e)
+        {
+            var htmlfn = DispEditEntityPanel.CreateTempFileForKeyboardShortcuts();
+            BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
+                                    preferInternal: true);
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 //using System.Windows.Controls;
 //using System.Windows.Media;
 using AasxIntegrationBase;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 
@@ -896,7 +897,8 @@ namespace AasxPackageLogic
         }
 
         public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
-                Func<int, AnyUiLambdaActionBase> action = null)
+                Func<int, AnyUiLambdaActionBase> action = null,
+                string[] actionTags = null)
         {
             // access 
             if (repo == null || action == null || actionStr == null)
@@ -945,6 +947,9 @@ namespace AasxPackageLogic
                     {
                         return action(currentI); // button # as argument!
                     });
+
+                if (actionTags != null && i < actionTags.Length)
+                    AnyUiUIElement.NameControl(b, actionTags[i]);
             }
 
             // in total
@@ -1640,26 +1645,30 @@ namespace AasxPackageLogic
         // List manipulations
         //
 
-        public void MoveElementInListUpwards<T>(List<T> list, T entity)
+        public int MoveElementInListUpwards<T>(List<T> list, T entity)
         {
             if (list == null || list.Count < 2 || entity == null)
-                return;
+                return -1;
             int ndx = list.IndexOf(entity);
             if (ndx < 1)
-                return;
+                return -1;
             list.RemoveAt(ndx);
-            list.Insert(Math.Max(ndx - 1, 0), entity);
+            var newndx = Math.Max(ndx - 1, 0);
+            list.Insert(newndx, entity);
+            return newndx;
         }
 
-        public void MoveElementInListDownwards<T>(List<T> list, T entity)
+        public int MoveElementInListDownwards<T>(List<T> list, T entity)
         {
             if (list == null || list.Count < 2 || entity == null)
-                return;
+                return -1;
             int ndx = list.IndexOf(entity);
             if (ndx < 0 || ndx >= list.Count - 1)
-                return;
+                return -1;
             list.RemoveAt(ndx);
-            list.Insert(Math.Min(ndx + 1, list.Count), entity);
+            var newndx = Math.Min(ndx + 1, list.Count);
+            list.Insert(newndx, entity);
+            return newndx;
         }
 
         public object DeleteElementInList<T>(List<T> list, T entity, object alternativeReturn)
@@ -1697,24 +1706,53 @@ namespace AasxPackageLogic
 
         public void EntityListUpDownDeleteHelper<T>(
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
-            object nextFocus = null)
+            object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null)
         {
             if (nextFocus == null)
                 nextFocus = entity;
             AddAction(
-                stack, label, new[] { "Move up", "Move down", "Delete" }, repo,
-                (buttonNdx) =>
+                stack, label, 
+                new[] { "Move up", "Move down", "Delete" }, 
+                actionTags : new[] { "aas-elem-move-up", "aas-elem-move-down", "aas-elem-delete" },
+                repo: repo,
+                action: (buttonNdx) =>
                 {
                     if (buttonNdx == 0)
                     {
-                        MoveElementInListUpwards<T>(list, entity);
-                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        var newndx = MoveElementInListUpwards<T>(list, entity);
+                        if (newndx >= 0)
+                        {
+                            if (sendUpdateEvent != null)
+                            {
+                                sendUpdateEvent.Reason = PackCntChangeEventReason.MoveToIndex;
+                                sendUpdateEvent.NewIndex = newndx;
+                                sendUpdateEvent.DisableSelectedTreeItemChange = true;
+                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent);
+                            }
+                            else
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        }
+                        else
+                            return new AnyUiLambdaActionNone();
                     }
 
                     if (buttonNdx == 1)
                     {
-                        MoveElementInListDownwards<T>(list, entity);
-                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                        var newndx = MoveElementInListDownwards<T>(list, entity);
+                        if (newndx >= 0)
+                        {
+                            if (sendUpdateEvent != null)
+                            {
+                                sendUpdateEvent.Reason = PackCntChangeEventReason.MoveToIndex;
+                                sendUpdateEvent.NewIndex = newndx;
+                                sendUpdateEvent.DisableSelectedTreeItemChange = true;
+                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent);
+                            }
+                            else
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
+                            }
+                        else
+                            return new AnyUiLambdaActionNone();
                     }
 
                     if (buttonNdx == 2)
@@ -1723,7 +1761,13 @@ namespace AasxPackageLogic
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
+                            if (sendUpdateEvent != null)
+                            {
+                                sendUpdateEvent.Reason = PackCntChangeEventReason.Delete;
+                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent);
+                            }
+                            else
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: ret, isExpanded: null);
                         }
 
                     return new AnyUiLambdaActionNone();

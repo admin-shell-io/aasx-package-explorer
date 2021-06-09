@@ -78,6 +78,12 @@ namespace AasxPackageLogic.PackageCentral
         Create,
 
         /// <summary>
+        /// An existing referable was moved from its current position to the new indxed position
+        /// denoted by <c>NewIndex</c>
+        /// </summary>
+        MoveToIndex,
+
+        /// <summary>
         /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable
         /// </summary>
         StructuralUpdate,
@@ -126,24 +132,33 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventReason Reason;
 
         /// <summary>
-        /// Changed Referable itself
+        /// Changed AAS element itself (typically a Referable, but could also be a SubmodelRef)
         /// </summary>
-        public AdminShell.Referable ThisRef;
+        public AdminShell.IAasElement ThisElem;
 
         /// <summary>
-        /// A Referable, which contains the changed Referable.
+        /// Parent object/ structure of the changed AAS element. Often a Referable, but could also be a SubmodelRef.
+        /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
+        /// for Assets, ConceptDescriptions, ..)
         /// </summary>
-        public AdminShell.Referable ParentRef;
+        public AdminShell.IAasElement ParentElem;
 
         /// <summary>
         /// If create, at which index; else: -1
         /// </summary>
-        public int CreateAtIndex = -1;
+        public int NewIndex = -1;
 
         /// <summary>
-        /// Human readable explanatin, help, annotation, info
+        /// Human readable explanation, help, annotation, info
         /// </summary>
         public string Info;
+
+        /// <summary>
+        /// Disables the re-display of the selected AAS element, e.g. for speed reasons
+        /// </summary>
+        public bool DisableSelectedTreeItemChange;
+
+        public PackCntChangeEventData() { }
 
         /// <summary>
         /// Create new event data.
@@ -163,9 +178,9 @@ namespace AasxPackageLogic.PackageCentral
         {
             Container = container;
             Reason = reason;
-            ThisRef = thisRef;
-            ParentRef = parentRef;
-            CreateAtIndex = createAtIndex;
+            ThisElem = thisRef;
+            ParentElem = parentRef;
+            NewIndex = createAtIndex;
             Info = info;
         }
     }

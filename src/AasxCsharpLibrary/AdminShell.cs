@@ -38,7 +38,6 @@ namespace AdminShellNS
     /// </summary>
     public class AdminShellV20
     {
-
         public class Identification
         {
 
@@ -685,6 +684,9 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// Extends understanding of Referable to further elements, which can be related to
+        /// </summary>
         public interface IAasElement
         {
             AasElementSelfDescription GetSelfDescription();
@@ -3618,7 +3620,7 @@ namespace AdminShellNS
             }
         }
 
-        public class ListOfConceptDescriptions : List<ConceptDescription>
+        public class ListOfConceptDescriptions : List<ConceptDescription>, IAasElement
         {
 
             // finding
@@ -3670,6 +3672,18 @@ namespace AdminShellNS
 
                 this.Add(cd);
                 return cd;
+            }
+
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("ConceptDescriptions", "CDS");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
             }
 
             // sorting
@@ -5987,6 +6001,7 @@ namespace AdminShellNS
         public interface IManageSubmodelElements
         {
             void Add(SubmodelElement sme);
+            void Insert(int index, SubmodelElement sme);
             void Remove(SubmodelElement sme);
         }
 
@@ -6180,6 +6195,8 @@ namespace AdminShellNS
                 var sew = new SubmodelElementWrapper();
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
+                if (index < 0 || index >= submodelElements.Count)
+                    return;
                 submodelElements.Insert(index, sew);
             }
 
@@ -7090,6 +7107,17 @@ namespace AdminShellNS
                 annotations.Add(sew);
             }
 
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (annotations == null)
+                    annotations = new DataElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                if (index < 0 || index >= annotations.Count)
+                    return;
+                annotations.Insert(index, sew);
+            }
+
             public void Remove(SubmodelElement sme)
             {
                 if (annotations != null)
@@ -7247,6 +7275,8 @@ namespace AdminShellNS
                 var sew = new SubmodelElementWrapper();
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
+                if (index < 0 || index >= value.Count)
+                    return;
                 value.Insert(index, sew);
             }
 
@@ -7628,6 +7658,18 @@ namespace AdminShellNS
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
                 statements.Add(sew);
+            }
+
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (statements == null)
+                    statements = new SubmodelElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                sew.submodelElement = sme;
+                if (index < 0 || index >= statements.Count)
+                    return;
+                statements.Insert(index,sew);
             }
 
             public void Remove(SubmodelElement sme)
