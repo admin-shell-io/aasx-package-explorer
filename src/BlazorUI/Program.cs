@@ -181,7 +181,7 @@ namespace BlazorUI
             loadAasxFiles();
             loadAasx(contentFn);
         }
-
+        
         public static void Main(string[] args)
         {
             //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
