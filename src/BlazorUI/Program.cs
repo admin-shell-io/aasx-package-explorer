@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -144,6 +146,42 @@ namespace BlazorUI
             loadAasx(aasxFiles[0]);
         }
 
+        public static async Task getAasxAsync(string input)
+        {
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            //// handler.AllowAutoRedirect = false;
+
+            string dataServer = new Uri(input).GetLeftPart(UriPartial.Authority);
+
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(dataServer)
+            };
+            input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
+            client.DefaultRequestHeaders.Add("Accept", "application/aas");
+            var response = await client.GetAsync(input);
+
+            var contentLength = response.Content.Headers.ContentLength;
+            var contentFn = response.Content.Headers.ContentDisposition?.FileName;
+
+            // ReSharper disable PossibleNullReferenceException
+            var contentStream = await response?.Content?.ReadAsStreamAsync();
+            if (contentStream == null)
+                return;
+            // ReSharper enable PossibleNullReferenceException
+
+            string outputDir = ".";
+            Console.WriteLine("Writing file: " + outputDir + "\\" + contentFn);
+            using (var file = new FileStream(outputDir + "\\" + contentFn,
+                FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await contentStream.CopyToAsync(file);
+            }
+            loadAasxFiles();
+            loadAasx(contentFn);
+        }
+        
         public static void Main(string[] args)
         {
             //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
