@@ -297,6 +297,11 @@
                                                         <td><span>@tb.Text</span></td>
                                                     }
 
+                                                    if (ch is AnyUiSelectableTextBlock stb)
+                                                    {
+                                                        <td><span>@stb.Text</span></td>
+                                                    }
+
                                                     if (ch is AnyUiTextBox chtb)
                                                     {
                                                         if (ch is AnyUiHintBubble hb)
@@ -314,7 +319,7 @@
                                                             <td>
                                                                 <span style="@style">
                                                                     <input size="@w" value="@chtb.Text"
-                                                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
                                                                 </span>
                                                             </td>
                                                             @code {
@@ -352,7 +357,7 @@
                                                     {
                                                         <td>
                                                             <input type="checkbox" value="@cb.IsChecked"
-                                                                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                                                    @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
                                                             @cb.Content
                                                         </td>
                                                         @code {

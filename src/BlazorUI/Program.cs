@@ -181,7 +181,7 @@ namespace BlazorUI
             loadAasxFiles();
             loadAasx(contentFn);
         }
-        
+
         public static void Main(string[] args)
         {
             //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
@@ -192,7 +192,7 @@ namespace BlazorUI
 
             packages = new PackageCentral();
             // TODO (MIHO, 2021-06-07): how to initialize?
-            //// packages.Main = env;
+            packages.MainItem.TakeOver(env);
 
             helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
