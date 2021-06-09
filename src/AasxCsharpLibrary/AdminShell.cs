@@ -1671,10 +1671,18 @@ namespace AdminShellNS
 
         }
 
+        /// <summary>
+        /// This class allows to describe further data (in derived classes) when enumerating Children.
+        /// </summary>
+        public class EnumerationPlacmentBase
+        {
+        }
+
         public interface IEnumerateChildren
         {
             IEnumerable<SubmodelElementWrapper> EnumerateChildren();
-            void AddChild(SubmodelElementWrapper smw);
+            EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child);
+            object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null);
         }
 
         public interface IValidateEntity
@@ -6168,13 +6176,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.submodelElements == null)
                     this.submodelElements = new SubmodelElementWrapperCollection();
                 this.submodelElements.Add(smw);
+                return smw;
             }
 
             // from IManageSubmodelElements
@@ -6374,7 +6388,7 @@ namespace AdminShellNS
                 // now, give back
                 foreach (var r in temp)
                     yield return r;
-            }
+            }            
         }
 
         //
@@ -7087,13 +7101,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null || !(smw.submodelElement is DataElement))
-                    return;
+                    return null ;
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();
                 this.annotations.Add(smw);
+                return smw;
             }
 
             // from IManageSubmodelElements
@@ -7136,6 +7156,8 @@ namespace AdminShellNS
             {
                 return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
             }
+
+            
         }
 
         public class Capability : SubmodelElement
@@ -7207,13 +7229,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.value == null)
                     this.value = new SubmodelElementWrapperCollection();
                 this.value.Add(smw);
+                return smw;
             }
 
             // constructors
@@ -7320,6 +7348,7 @@ namespace AdminShellNS
             {
                 return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
             }
+            
         }
 
         public class OperationVariable : IAasElement
@@ -7454,14 +7483,23 @@ namespace AdminShellNS
             {
                 get
                 {
-                    return (dir == 0) ? inputVariable : outputVariable;
+                    if (dir == 0)
+                        return inputVariable;
+                    else
+                    if (dir == 1)
+                        return outputVariable;
+                    else
+                        return inoutputVariable;
                 }
                 set
                 {
                     if (dir == 0)
                         inputVariable = value;
                     else
+                    if (dir == 1)
                         outputVariable = value;
+                    else
+                        inoutputVariable = value;
                 }
             }
 
@@ -7490,9 +7528,88 @@ namespace AdminShellNS
                         yield return smw?.value;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public class EnumerationPlacmentOperationVariable : EnumerationPlacmentBase
             {
-                // not enough information to select list of children
+                public OperationVariable.Direction Direction;
+                public OperationVariable OperationVariable;
+            }
+
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                // trivial
+                if (child == null)
+                    return null;
+
+                // search
+                OperationVariable.Direction? dir = null;
+                OperationVariable opvar = null;
+                if (this.inputVariable != null)
+                    foreach (var ov in this.inputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        {
+                            dir = OperationVariable.Direction.In;
+                            opvar = ov;
+                        }
+
+                if (this.outputVariable != null)
+                    foreach (var ov in this.outputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        { 
+                            dir = OperationVariable.Direction.Out;
+                            opvar = ov;
+                        }
+
+                if (this.inoutputVariable != null)
+                    foreach (var ov in this.inoutputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        { 
+                            dir = OperationVariable.Direction.InOut;
+                            opvar = ov;
+                        }
+
+                // found
+                if (!dir.HasValue)
+                    return null;
+                return new EnumerationPlacmentOperationVariable()
+                {
+                    Direction = dir.Value,
+                    OperationVariable = opvar
+                };
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
+            {
+                // not enough information to select list of children?
+                var pl = placement as EnumerationPlacmentOperationVariable;
+                if (smw == null || pl == null)
+                    return null;
+
+                // ok, use information
+                var ov = new OperationVariable();
+                ov.value = smw;
+
+                if (pl.Direction == OperationVariable.Direction.In)
+                {
+                    if (inputVariable == null)
+                        inputVariable = new List<OperationVariable>();
+                    inputVariable.Add(ov);
+                }
+
+                if (pl.Direction == OperationVariable.Direction.Out)
+                {
+                    if (outputVariable == null)
+                        outputVariable = new List<OperationVariable>();
+                    outputVariable.Add(ov);
+                }
+
+                if (pl.Direction == OperationVariable.Direction.InOut)
+                {
+                    if (inoutputVariable == null)
+                        inoutputVariable = new List<OperationVariable>();
+                    inoutputVariable.Add(ov);
+                }
+
+                return ov;
             }
 
             // constructors
@@ -7533,7 +7650,7 @@ namespace AdminShellNS
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Operation", "Opr");
-            }
+            }            
         }
 
         public class Entity : SubmodelElement, IManageSubmodelElements, IEnumerateChildren
@@ -7599,13 +7716,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.statements == null)
                     this.statements = new SubmodelElementWrapperCollection();
                 this.statements.Add(smw);
+                return smw;
             }
 
             // constructors
@@ -7708,7 +7831,7 @@ namespace AdminShellNS
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Entity", "Ent");
-            }
+            }            
         }
 
         public class BasicEvent : SubmodelElement

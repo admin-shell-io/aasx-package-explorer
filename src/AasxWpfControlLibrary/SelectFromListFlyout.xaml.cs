@@ -124,7 +124,10 @@ namespace AasxPackageExplorer
         private void ListBoxPresets_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (PrepareResult())
+            {
+                DiaData.Result = true;
                 ControlClosed?.Invoke();
+            }
         }
     }
 }

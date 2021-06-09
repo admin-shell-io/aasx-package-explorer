@@ -481,6 +481,14 @@ namespace AasxPackageExplorer
                     _displayContext.RegisterKeyShortcut(
                         "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, Key.Down,
                         "Move current AAS element down by one position.");
+
+                    _displayContext.RegisterKeyShortcut(
+                        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, Key.Home,
+                        "Move current AAS element to the first position of the respective list.");
+
+                    _displayContext.RegisterKeyShortcut(
+                        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, Key.End,
+                        "Move current AAS element to the last position of the respective list.");
                 }
             }
 

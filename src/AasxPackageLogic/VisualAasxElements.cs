@@ -354,11 +354,13 @@ namespace AasxPackageLogic
         public AdminShellPackageEnv thePackage = null;
         public AdminShell.AdministrationShellEnv theEnv = null;
         public ItemType theItemType = ItemType.Env;
+        private AdminShell.IAasElement _mainDataObject;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
             AdminShell.AdministrationShellEnv env, ItemType itemType,
-            string packageSourceFn = null)
+            string packageSourceFn = null,
+            AdminShell.IAasElement mainDataObject = null)
         : base()
         {
             this.Parent = parent;
@@ -367,6 +369,8 @@ namespace AasxPackageLogic
             this.theEnv = env;
             this.theItemType = itemType;
             this.thePackageSourceFn = packageSourceFn;
+            if (mainDataObject != null)
+                _mainDataObject = mainDataObject;
 
             this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
             this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
@@ -393,14 +397,18 @@ namespace AasxPackageLogic
             RestoreFromCache();
         }
 
-        public static object GiveDataObject(ItemType t)
+        public static object GiveAliasDataObject(ItemType t)
         {
             return ItemTypeNames[(int)t];
         }
 
+        public AdminShell.IAasElement MainDataObject { set { _mainDataObject = value; } }
+
         public override object GetMainDataObject()
         {
-            return GiveDataObject(theItemType);
+            if (_mainDataObject != null)
+                return _mainDataObject;
+            return GiveAliasDataObject(theItemType);
         }
 
         public override void RefreshFromMainData()
@@ -1236,7 +1244,8 @@ namespace AasxPackageLogic
 
                     // concept descriptions
                     tiCDs = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions);
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
+                        mainDataObject: env.ConceptDescriptions);
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiCDs);
                 }
@@ -1708,6 +1717,12 @@ namespace AasxPackageLogic
 
                 if (data.ParentElem is AdminShell.AdministrationShell aas
                     && data.ThisElem is AdminShell.SubmodelRef smref)
+                {
+                    return 0 < UpdateByEventTryMoveGenericVE(data);
+                }
+
+                if (data.ParentElem is AdminShell.ListOfConceptDescriptions cds
+                    && data.ThisElem is AdminShell.ConceptDescription cd)
                 {
                     return 0 < UpdateByEventTryMoveGenericVE(data);
                 }

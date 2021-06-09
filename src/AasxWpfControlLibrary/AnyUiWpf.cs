@@ -950,6 +950,13 @@ namespace AnyUi
                 res = uc;
             }
 
+            if (dialogueData is AnyUiDialogueDataSelectFromList ddsl)
+            {
+                var uc = new SelectFromListFlyout();
+                uc.DiaData = ddsl;
+                res = uc;
+            }
+
             if (dialogueData is AnyUiDialogueDataSelectAasEntity ddsa)
             {
                 var uc = new SelectAasEntityFlyout(Packages);

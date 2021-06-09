@@ -1671,6 +1671,32 @@ namespace AasxPackageLogic
             return newndx;
         }
 
+        public int MoveElementToTopOfList<T>(List<T> list, T entity)
+        {
+            if (list == null || list.Count < 2 || entity == null)
+                return -1;
+            int ndx = list.IndexOf(entity);
+            if (ndx < 1)
+                return -1;
+            list.RemoveAt(ndx);
+            var newndx = 0;
+            list.Insert(newndx, entity);
+            return newndx;
+        }
+
+        public int MoveElementToBottomOfList<T>(List<T> list, T entity)
+        {
+            if (list == null || list.Count < 2 || entity == null)
+                return -1;
+            int ndx = list.IndexOf(entity);
+            if (ndx < 0)
+                return -1;
+            list.RemoveAt(ndx);
+            var newndx = list.Count;
+            list.Insert(newndx, entity);
+            return newndx;
+        }
+
         public object DeleteElementInList<T>(List<T> list, T entity, object alternativeReturn)
         {
             if (list == null || entity == null)
@@ -1712,14 +1738,19 @@ namespace AasxPackageLogic
                 nextFocus = entity;
             AddAction(
                 stack, label, 
-                new[] { "Move up", "Move down", "Delete" }, 
-                actionTags : new[] { "aas-elem-move-up", "aas-elem-move-down", "aas-elem-delete" },
+                new[] { "Move up", "Move down", "Move top", "Move end", "Delete" }, 
+                actionTags : new[] { "aas-elem-move-up", "aas-elem-move-down", 
+                    "aas-elem-move-top", "aas-elem-move-end", "aas-elem-delete" },
                 repo: repo,
                 action: (buttonNdx) =>
                 {
-                    if (buttonNdx == 0)
+                    if (buttonNdx >= 0 && buttonNdx <= 3)
                     {
-                        var newndx = MoveElementInListUpwards<T>(list, entity);
+                        var newndx = -1;
+                        if (buttonNdx == 0) newndx = MoveElementInListUpwards<T>(list, entity);
+                        if (buttonNdx == 1) newndx = MoveElementInListDownwards<T>(list, entity);
+                        if (buttonNdx == 2) newndx = MoveElementToTopOfList<T>(list, entity);
+                        if (buttonNdx == 3) newndx = MoveElementToBottomOfList<T>(list, entity);
                         if (newndx >= 0)
                         {
                             if (sendUpdateEvent != null)
@@ -1736,26 +1767,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                     }
 
-                    if (buttonNdx == 1)
-                    {
-                        var newndx = MoveElementInListDownwards<T>(list, entity);
-                        if (newndx >= 0)
-                        {
-                            if (sendUpdateEvent != null)
-                            {
-                                sendUpdateEvent.Reason = PackCntChangeEventReason.MoveToIndex;
-                                sendUpdateEvent.NewIndex = newndx;
-                                sendUpdateEvent.DisableSelectedTreeItemChange = true;
-                                return new AnyUiLambdaActionPackCntChange(sendUpdateEvent);
-                            }
-                            else
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: nextFocus, isExpanded: null);
-                            }
-                        else
-                            return new AnyUiLambdaActionNone();
-                    }
-
-                    if (buttonNdx == 2)
+                    if (buttonNdx == 4)
                         if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entity? This operation can not be reverted!", "AASX",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))

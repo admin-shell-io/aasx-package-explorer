@@ -621,7 +621,7 @@ namespace AasxPackageLogic
                         PackageSourcePath = "";
                         PackageTargetFn = "";
                         return new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: VisualElementEnvironmentItem.GiveDataObject(
+                            nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
                                 VisualElementEnvironmentItem.ItemType.Package));
                     });
                 stack.Children.Add(g);
@@ -705,7 +705,7 @@ namespace AasxPackageLogic
                                 Log.Singleton.Error(ex, "Deleting file in package");
                             }
                             return new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: VisualElementEnvironmentItem.GiveDataObject(
+                            nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
                                 VisualElementEnvironmentItem.ItemType.Package));
                         }
 
@@ -1568,10 +1568,13 @@ namespace AasxPackageLogic
                     // hope is OK to refer to two lists!
                     for (int i = 0; i < 3; i++)
                         if ((parentContainer as AdminShell.Operation)[i].Contains(ov))
+                        {
                             this.EntityListUpDownDeleteHelper<AdminShell.OperationVariable>(
                                 stack, repo,
                                 (parentContainer as AdminShell.Operation)[i],
                                 ov, env, "OperationVariable:");
+                            break;
+                        }
 
             }
 
@@ -2127,7 +2130,7 @@ namespace AasxPackageLogic
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                     this.AddAction(
-                        substack, "OperationVariable:", new[] { "Add" }, repo,
+                        substack, "OperationVariable:", new[] { "Add", "Paste into" }, repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
@@ -2140,6 +2143,25 @@ namespace AasxPackageLogic
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                             }
+
+                            if (buttonNdx == 1 
+                                && this.theCopyPaste?.Valid == true
+                                && this.theCopyPaste.Item is CopyPasteItemSME item
+                                && item.sme != null)
+                            {
+                                var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
+                                object businessObj = null;
+
+                                if (smo is AdminShell.IEnumerateChildren smeec)
+                                    businessObj = smeec.AddChild(smw2, 
+                                        new AdminShell.Operation.EnumerationPlacmentOperationVariable() { 
+                                            Direction = dir 
+                                    });
+
+                                // redraw
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: businessObj);
+                            }
+
                             return new AnyUiLambdaActionNone();
                         });
 

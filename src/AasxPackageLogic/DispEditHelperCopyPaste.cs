@@ -93,15 +93,16 @@ namespace AasxPackageLogic
 
         public class CopyPasteBuffer
         {
-            public bool valid = true;
-            public bool duplicate = false;
-            public CopyPasteItemBase item;
+            public bool Valid = true;
+            public bool Duplicate = false;
+            public AdminShell.EnumerationPlacmentBase Placement = null;
+            public CopyPasteItemBase Item;
 
             public void Clear()
             {
-                this.valid = false;
-                this.duplicate = false;
-                this.item = null;
+                this.Valid = false;
+                this.Duplicate = false;
+                this.Item = null;
             }
 
             public static Tuple<string[], AdminShell.KeyList[]> PreparePresetsForListKeys(
@@ -109,17 +110,17 @@ namespace AasxPackageLogic
             {
                 // add from Copy Buffer
                 AdminShell.KeyList bufferKey = null;
-                if (cpb != null && cpb.valid)
+                if (cpb != null && cpb.Valid)
                 {
-                    if (cpb.item is CopyPasteItemIdentifiable cpbi && cpbi.entity?.identification != null)
+                    if (cpb.Item is CopyPasteItemIdentifiable cpbi && cpbi.entity?.identification != null)
                         bufferKey = AdminShell.KeyList.CreateNew(
                             new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
                                     cpbi.entity.identification.idType, cpbi.entity.identification.id));
 
-                    if (cpb.item is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
+                    if (cpb.Item is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
                         bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetSemanticKey());
 
-                    if (cpb.item is CopyPasteItemSME cpbsme && cpbsme.sme != null
+                    if (cpb.Item is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
                     {
                         // index parents for ALL Submodels -> parent for our SME shall be set by this ..
@@ -167,16 +168,20 @@ namespace AasxPackageLogic
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
-                        cpb.valid = true;
-                        cpb.duplicate = buttonNdx == 1;
-                        cpb.item = new CopyPasteItemSME(env, parentContainer, wrapper, sme);
+                        cpb.Valid = true;
+                        cpb.Duplicate = buttonNdx == 1;
+                        if (parentContainer is AdminShell.IEnumerateChildren enc)
+                            cpb.Placement = enc.GetChildrenPlacement(sme);
+                        cpb.Item = new CopyPasteItemSME(env, parentContainer, wrapper, sme);
+
+                        // special case?
 
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.idShort,
                             "" + sme?.GetElementName(),
-                            cpb.duplicate
+                            cpb.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
                     }
@@ -184,8 +189,8 @@ namespace AasxPackageLogic
                     if (buttonNdx == 2 || buttonNdx == 3 || buttonNdx == 4)
                     {
                         // present
-                        var item = cpb?.item as CopyPasteItemSME;
-                        if (!cpb.valid || item?.sme == null || item?.wrapper == null ||
+                        var item = cpb?.Item as CopyPasteItemSME;
+                        if (!cpb.Valid || item?.sme == null || item?.wrapper == null ||
                             item?.parentContainer == null)
                         {
                             this.context?.MessageBoxFlyoutShow(
@@ -202,6 +207,7 @@ namespace AasxPackageLogic
 
                         // apply info
                         var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
+                        object nextBusObj = smw2.submodelElement;
 
                         // insertation depends on parent container
                         if (buttonNdx == 2)
@@ -225,8 +231,22 @@ namespace AasxPackageLogic
                                 this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                     pcarel.annotations, smw2, wrapper);
 
-                            // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
+                            // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
+                            if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
+                            {
+                                var place = pcop.GetChildrenPlacement(wrapper.submodelElement) as 
+                                    AdminShell.Operation.EnumerationPlacmentOperationVariable;
+                                if (place?.OperationVariable != null)
+                                {
+                                    var op = new AdminShell.OperationVariable();
+                                    op.value = smw2;
+                                    this.AddElementInListBefore<AdminShell.OperationVariable>(
+                                        pcop[place.Direction], op, place.OperationVariable);
+                                    nextBusObj = op;
+                                }
+                            }
                         }
+                        
                         if (buttonNdx == 3)
                         {
                             if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
@@ -247,16 +267,30 @@ namespace AasxPackageLogic
                                 this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                     pcarel.annotations, smw2, wrapper);
 
-                            // TODO (Michael Hoffmeister, 2020-08-01): Operation mssing here?
+                            // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
+                            if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
+                            {
+                                var place = pcop.GetChildrenPlacement(wrapper.submodelElement) as
+                                    AdminShell.Operation.EnumerationPlacmentOperationVariable;
+                                if (place?.OperationVariable != null)
+                                {
+                                    var op = new AdminShell.OperationVariable();
+                                    op.value = smw2;
+                                    this.AddElementInListAfter<AdminShell.OperationVariable>(
+                                        pcop[place.Direction], op, place.OperationVariable);
+                                    nextBusObj = op;
+                                }
+                            }
                         }
+
                         if (buttonNdx == 4)
                         {
                             if (sme is AdminShell.IEnumerateChildren smeec)
-                                smeec.AddChild(smw2);
+                                smeec.AddChild(smw2, cpb.Placement);
                         }
 
                         // may delete original
-                        if (!cpb.duplicate)
+                        if (!cpb.Duplicate)
                         {
                             if (item.parentContainer is AdminShell.Submodel pcsm && item.wrapper != null)
                                 this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
@@ -273,7 +307,7 @@ namespace AasxPackageLogic
 
                         // try to focus
                         return new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: smw2.submodelElement, isExpanded: true);
+                            nextFocus: nextBusObj, isExpanded: true);
                     }
 
                     return new AnyUiLambdaActionNone();
@@ -310,15 +344,15 @@ namespace AasxPackageLogic
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
-                        cpb.valid = true;
-                        cpb.duplicate = buttonNdx == 1;
-                        cpb.item = new CopyPasteItemSubmodel(parentContainer, entity, smref, sm);
+                        cpb.Valid = true;
+                        cpb.Duplicate = buttonNdx == 1;
+                        cpb.Item = new CopyPasteItemSubmodel(parentContainer, entity, smref, sm);
 
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
                             "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.idShort,
-                            cpb.duplicate
+                            cpb.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
                     }
@@ -326,10 +360,10 @@ namespace AasxPackageLogic
                     if (buttonNdx == 2 || buttonNdx == 3)
                     {
                         // what type?
-                        if (cpb?.item is CopyPasteItemSubmodel item)
+                        if (cpb?.Item is CopyPasteItemSubmodel item)
                         {
                             // for pasting into, buffer item(s) need to be SME
-                            if (!cpb.valid || item?.sm == null
+                            if (!cpb.Valid || item?.sm == null
                                 || item?.parentContainer == null)
                             {
                                 this.context?.MessageBoxFlyoutShow(
@@ -353,7 +387,7 @@ namespace AasxPackageLogic
                                 this.AddElementInListAfter<T>(parentContainer, (T)entity2, entity);
 
                             // may delete original
-                            if (!cpb.duplicate)
+                            if (!cpb.Duplicate)
                             {
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)item.entity, null);
@@ -378,7 +412,7 @@ namespace AasxPackageLogic
                     if (buttonNdx == 4)
                     {
                         // what type?
-                        if (cpb?.item is CopyPasteItemSME item)
+                        if (cpb?.Item is CopyPasteItemSME item)
                         {
                             // for pasting into, buffer item(s) need to be SME
                             if (item?.sme == null || item?.wrapper == null ||
@@ -403,7 +437,7 @@ namespace AasxPackageLogic
                                 smeec.AddChild(smw2);
 
                             // may delete original
-                            if (!cpb.duplicate)
+                            if (!cpb.Duplicate)
                             {
                                 if (item.parentContainer is AdminShell.Submodel pcsm && item.wrapper != null)
                                     this.DeleteElementInList<AdminShell.SubmodelElementWrapper>(
@@ -457,9 +491,9 @@ namespace AasxPackageLogic
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
-                        cpb.valid = true;
-                        cpb.duplicate = buttonNdx == 1;
-                        cpb.item = new CopyPasteItemIdentifiable(parentContainer, entity);
+                        cpb.Valid = true;
+                        cpb.Duplicate = buttonNdx == 1;
+                        cpb.Item = new CopyPasteItemIdentifiable(parentContainer, entity);
 
                         // user feedback
                         Log.Singleton.Info(
@@ -467,7 +501,7 @@ namespace AasxPackageLogic
                             "Stored {0} '{1}' to internal buffer.{1}",
                             "" + entity.GetElementName(),
                             "" + entity.idShort,
-                            cpb.duplicate
+                            cpb.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
                     }
@@ -475,10 +509,10 @@ namespace AasxPackageLogic
                     if (buttonNdx == 2 || buttonNdx == 3)
                     {
                         // what type?
-                        if (cpb?.item is CopyPasteItemIdentifiable item)
+                        if (cpb?.Item is CopyPasteItemIdentifiable item)
                         {
                             // for pasting into, buffer item(s) need to be SME
-                            if (!cpb.valid || item?.entity == null
+                            if (!cpb.Valid || item?.entity == null
                                 || item?.parentContainer == null)
                             {
                                 this.context?.MessageBoxFlyoutShow(
@@ -503,7 +537,7 @@ namespace AasxPackageLogic
                                 this.AddElementInListAfter<T>(parentContainer, (T)entity2, entity);
 
                             // may delete original
-                            if (!cpb.duplicate)
+                            if (!cpb.Duplicate)
                             {
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)item.entity, null);

@@ -201,7 +201,7 @@ namespace AasxPackageExplorer
 
         public void EnableSelectedItemChanged()
         {
-            preventSelectedItemChanged = true;
+            preventSelectedItemChanged = false;
         }
 
         private void TreeViewInner_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
