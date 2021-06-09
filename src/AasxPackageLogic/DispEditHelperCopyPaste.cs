@@ -163,7 +163,9 @@ namespace AasxPackageLogic
             this.AddAction(
                 stack, label,
                 new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                (buttonNdx) =>
+                actionTags: new[] { "aas-elem-cut", "aas-elem-copy", "aas-elem-paste-above", 
+                    "aas-elem-paste-below", "aas-elem-paste-into" },
+                action: (buttonNdx) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
