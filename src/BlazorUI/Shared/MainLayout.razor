@@ -9,74 +9,35 @@
     <div class="top-row px-4">
         <div class="col-12 row">
             <div class="col-6" style="text-align:left">
-                @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                *@
-                <span style="font-weight:bold">Upload:</span>
-                <InputFile OnChange="HandleFileSelected" />
-
-                @code {
-                    IFileListEntry file;
-
-                    async Task HandleFileSelected(IFileListEntry[] files)
-                    {
-                        var file = files.FirstOrDefault();
-                        if (file != null)
-                        {
-                            var fileStream = System.IO.File.Create(file.Name);
-                            await file.Data.CopyToAsync(fileStream);
-                            fileStream.Close();
-                        }
-                        Program.loadAasxFiles();
-                        StateHasChanged();
-                    }
-                }
-            </div>
-            <div class="col-6">
                 <div class="row">
-                    @{
-                        <span>&nbsp&nbsp&nbsp</span>
-                        string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-                        <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
-                                @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                            @foreach (var item in Program.aasxFiles)
-                            {
-                                <option value="@item">@item</option>
-                            }
-                        </select>
-                        @code {
-                            private void MyAasxSelect(string value)
-                            {
-                                InvokeAsync(() => Program.loadAasx(value));
-                            }
-                        }
-                    }
-                    <span>&nbsp&nbsp&nbsp</span>
-                    <button @onclick="toggleEditMode">
-                        @{
-                            if (Program.editMode)
-                            {
-                                <span>EditMode is ON</span>
-                            }
-                            else
-                            {
-                                <span>EditMode is OFF</span>
-                            }
-                        }
-                    </button>
+                    @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                    *@
+                    <span style="font-weight:bold">Upload:</span>
+                    <InputFile OnChange="HandleFileSelected" />
+
                     @code {
-                        private void toggleEditMode()
+                        IFileListEntry file;
+
+                        async Task HandleFileSelected(IFileListEntry[] files)
                         {
-                            Program.editMode = !Program.editMode;
+                            var file = files.FirstOrDefault();
+                            if (file != null)
+                            {
+                                var fileStream = System.IO.File.Create(file.Name);
+                                await file.Data.CopyToAsync(fileStream);
+                                fileStream.Close();
+                            }
+                            await InvokeAsync(() => Program.loadAasxFiles(false));
+                            await InvokeAsync(() => Program.loadAasx(file.Name));
                             this.StateHasChanged();
                         }
                     }
-                    <span>&nbsp&nbsp&nbsp</span>
                 </div>
                 <div class="row">
-                    <span>&nbsp&nbsp&nbsp</span>
+                    <span>&nbsp&nbsp&nbsp&nbsp</span>
                     <table>
                         <tr>
-                            <td>GET:</td>
+                            <td><span style="font-weight:bold">GET:</span></td>
                             <td>
                                 @{
                                     string text = "";
@@ -96,6 +57,51 @@
                                 InvokeAsync(() => Program.getAasxAsync(value));
                                 this.StateHasChanged();
                             }
+                        }
+                    }
+                    <span>&nbsp&nbsp&nbsp</span>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    @{
+                        <span>&nbsp&nbsp&nbsp</span>
+                        // string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                        string w = "70%";
+                        <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
+                                @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
+                            @foreach (var item in Program.aasxFiles)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                        @code {
+                            private async void MyAasxSelect(string value)
+                            {
+                                await InvokeAsync(() => Program.loadAasx(value));
+                                this.StateHasChanged();
+                            }
+                        }
+                    }
+                    <span>&nbsp&nbsp&nbsp</span>
+                    <button @onclick="toggleEditMode">
+                        @{
+                            if (Program.editMode)
+                            {
+                                <span>EditMode is ON</span>
+                            }
+                            else
+                            {
+                                <span>EditMode is OFF</span>
+                            }
+                            Program.signalNewData(0);
+                        }
+                    </button>
+                    @code {
+                        private void toggleEditMode()
+                        {
+                            Program.editMode = !Program.editMode;
+                            this.StateHasChanged();
                         }
                     }
                     <span>&nbsp&nbsp&nbsp</span>
