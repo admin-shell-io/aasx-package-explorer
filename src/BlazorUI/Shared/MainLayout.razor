@@ -71,21 +71,30 @@
                         }
                     }
                     <span>&nbsp&nbsp&nbsp</span>
-                    GET:
-                    @{
-                        string text = "";
-                        int ww = 50;
-                        <input size="@ww" value="@text"
-                               @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
-                    }
+                </div>
+                <div class="row">
+                    <span>&nbsp&nbsp&nbsp</span>
+                    <table>
+                        <tr>
+                            <td>GET:</td>
+                            <td>
+                                @{
+                                    string text = "";
+                                    int ww = 80;
+                                    <input size="@ww" value="@text"
+                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
+                                }
+                            </td>
+                        </tr>
+                    </table>
                     @code {
                         private void MyTextInput(string value)
                         {
                             value = value.ToLower();
                             if (value != "" && (value.Contains("http://") || value.Contains("https://")))
                             {
-                                Program.getAasxAsync(value);
-                                StateHasChanged();
+                                InvokeAsync(() => Program.getAasxAsync(value));
+                                this.StateHasChanged();
                             }
                         }
                     }
