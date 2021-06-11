@@ -38,6 +38,7 @@ function Main
         # This list projects that are to be build for the release
         $projects = @(
         "AasxPackageExplorer"
+        "AasxPluginAdvancedTextEditor",
         "AasxPluginBomStructure",
         "AasxPluginDocumentShelf",
         "AasxPluginExportTable",
@@ -45,6 +46,7 @@ function Main
         "AasxPluginImageMap",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
+        "AasxPluginSmdExporter",
         "AasxPluginTechnicalData",
         "AasxPluginUaNetClient",
         "AasxPluginUaNetServer",
