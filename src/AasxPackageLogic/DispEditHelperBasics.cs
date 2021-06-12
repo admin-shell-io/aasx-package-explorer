@@ -1732,20 +1732,29 @@ namespace AasxPackageLogic
 
         public void EntityListUpDownDeleteHelper<T>(
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
-            object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null)
+            object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false)
         {
             if (nextFocus == null)
                 nextFocus = entity;
             AddAction(
-                stack, label, 
-                new[] { "Move up", "Move down", "Move top", "Move end", "Delete" }, 
-                actionTags : new[] { "aas-elem-move-up", "aas-elem-move-down", 
+                stack, label,
+                new[] { "Move up", "Move down", "Move top", "Move end", "Delete" },
+                actionTags: new[] { "aas-elem-move-up", "aas-elem-move-down",
                     "aas-elem-move-top", "aas-elem-move-end", "aas-elem-delete" },
                 repo: repo,
                 action: (buttonNdx) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)
                     {
+                        if (preventMove)
+                        {
+                            this.context.MessageBoxFlyoutShow(
+                                "Moving within list is not possible, as list of ConceptDescription has dynamic " +
+                                "sort order.",
+                                "ConceptDescriptions", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                            return new AnyUiLambdaActionNone();
+                        }
+
                         var newndx = -1;
                         if (buttonNdx == 0) newndx = MoveElementInListUpwards<T>(list, entity);
                         if (buttonNdx == 1) newndx = MoveElementInListDownwards<T>(list, entity);

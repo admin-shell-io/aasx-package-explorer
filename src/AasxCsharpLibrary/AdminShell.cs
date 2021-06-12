@@ -3630,7 +3630,6 @@ namespace AdminShellNS
 
         public class ListOfConceptDescriptions : List<ConceptDescription>, IAasElement
         {
-
             // finding
 
             public ConceptDescription Find(ConceptDescriptionRef cdr)

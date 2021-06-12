@@ -429,10 +429,13 @@ namespace AasxPackageExplorer
             AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
-            // make UI visible settings ..
+            // determine some flags
+            var tiCds = DisplayElements.SearchVisualElementOnMainDataObject(package?.AasEnv?.ConceptDescriptions) as
+                VisualElementEnvironmentItem;            
+
             // update element view
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, entity, editMode, hintMode, showIriMode,
+                _packageCentral, entity, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                 flyoutProvider: this,
                 appEventProvider: this,
                 hightlightField: hightlightField);

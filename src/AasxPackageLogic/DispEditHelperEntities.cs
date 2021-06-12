@@ -184,7 +184,7 @@ namespace AasxPackageLogic
 
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
-            VisualElementEnvironmentItem.ItemType envItemType, bool editMode, AnyUiStackPanel stack,
+            VisualElementEnvironmentItem ve, bool editMode, AnyUiStackPanel stack,
             bool hintMode = false)
         {
             this.AddGroup(stack, "Environment of Asset Administration Shells", this.levelColors.MainSection);
@@ -200,10 +200,10 @@ namespace AasxPackageLogic
                 env.Submodels = new List<AdminShell.Submodel>();
 
             if (editMode &&
-                (envItemType == VisualElementEnvironmentItem.ItemType.Env ||
-                    envItemType == VisualElementEnvironmentItem.ItemType.Shells ||
-                    envItemType == VisualElementEnvironmentItem.ItemType.Assets ||
-                    envItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
+                (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env ||
+                    ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells ||
+                    ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets ||
+                    ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
             {
                 // some hints
                 this.AddHintBubble(stack, hintMode, new[] {
@@ -267,7 +267,7 @@ namespace AasxPackageLogic
                     });
 
                 // Copy AAS
-                if (envItemType == VisualElementEnvironmentItem.ItemType.Shells)
+                if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells)
                 {
                     this.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
@@ -450,8 +450,11 @@ namespace AasxPackageLogic
                 //
                 // Concept Descriptions
                 //
-                if (envItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
+                
+                if (ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
+                    this.AddGroup(stack, "Import of ConceptDescriptions", this.levelColors.MainSection);
+
                     // Copy
                     this.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
@@ -487,7 +490,47 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         });
 
-                    // Sort
+                    //
+                    // Dynamic rendering
+                    //
+
+                    this.AddGroup(stack, "Dynamic rendering of ConceptDescriptions", this.levelColors.MainSection);
+
+                    var g1 = this.AddSubGrid(stack, "Dynamic order:", 1, 2, new[] { "#", "#" });
+                    AnyUiComboBox cb1 = null;
+                    cb1 = AnyUiUIElement.RegisterControl(
+                        this.AddSmallComboBoxTo(g1, 0, 0,
+                            margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
+                            minWidth: 250,
+                            items: new[] {
+                            "List index", "idShort", "Identification", "By Submodel", 
+                            "By SubmodelElements"
+                        }),
+                        (o) =>
+                        {
+                            if (cb1?.SelectedIndex.HasValue == true)
+                            {
+                                ve.CdSortOrder = (VisualElementEnvironmentItem.ConceptDescSortOrder)
+                                    cb1.SelectedIndex.Value;                                
+                            }
+                            else
+                            {
+                                Log.Singleton.Error("ComboxBox Dynamic rendering of entities has no value");                                
+                            }
+                            return new AnyUiLambdaActionNone();
+                        },
+                        takeOverLambda: new AnyUiLambdaActionRedrawAllElements(
+                            nextFocus: env?.ConceptDescriptions)) as AnyUiComboBox;
+
+                    // set currently selected value
+                    cb1.SelectedIndex = (int)ve.CdSortOrder;
+
+                    //
+                    // Static order 
+                    //
+
+                    this.AddGroup(stack, "Static order of ConceptDescriptions", this.levelColors.MainSection);
+
                     this.AddHintBubble(stack, hintMode, new[] {
                         new HintCheck(
                             () => { return true;  },
@@ -495,35 +538,30 @@ namespace AasxPackageLogic
                             "environment. It cannot be reverted!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                    var g = this.AddSubGrid(stack, "Sort entities by:", 1, 2, new[] { "#", "#" });
-                    var cb = this.AddSmallComboBoxTo(g, 0, 0,
-                        margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
-                        minWidth: 150,
-                        items: new[] {
-                        "idShort", "Id", "Usage in Submodels"
-                    });
-                    cb.SelectedIndex = 0;
+
+                    var g2 = this.AddSubGrid(stack, "Entities:", 1, 1, new[] { "#" });
                     AnyUiUIElement.RegisterControl(
-                        this.AddSmallButtonTo(g, 0, 1, content: "Sort!",
+                        this.AddSmallButtonTo(g2, 0, 0, content: "Sort according above order",
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0)),
                         (o) =>
                         {
                             if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                               "Perform sort operation? This operation can not be reverted!", "ConceptDescriptions",
+                               "Perform sort operation? This operation can not be reverted!", 
+                               "ConceptDescriptions",
                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                             {
                                 var success = false;
-                                if (cb.SelectedIndex == 0)
+                                if (ve.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.IdShort)
                                 {
                                     env.ConceptDescriptions.Sort(new AdminShell.Referable.ComparerIdShort());
                                     success = true;
                                 }
-                                if (cb.SelectedIndex == 1)
+                                if (ve.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Id)
                                 {
                                     env.ConceptDescriptions.Sort(new AdminShell.Identifiable.ComparerIdentification());
                                     success = true;
                                 }
-                                if (cb.SelectedIndex == 2)
+                                if (ve.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
                                 {
                                     var cmp = env.CreateIndexedComparerCdsForSmUsage();
                                     env.ConceptDescriptions.Sort(cmp);
@@ -531,14 +569,22 @@ namespace AasxPackageLogic
                                 }
 
                                 if (success)
-                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: null);
+                                {
+                                    ve.CdSortOrder = VisualElementEnvironmentItem.ConceptDescSortOrder.None;
+                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: env?.ConceptDescriptions);
+                                }
+                                else
+                                    this.context.MessageBoxFlyoutShow(
+                                       "Cannot apply selected sort order!",
+                                       "ConceptDescriptions",
+                                       AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
                             }
 
                             return new AnyUiLambdaActionNone();
                         });
                 }
             }
-            else if (envItemType == VisualElementEnvironmentItem.ItemType.SupplFiles && packages.MainStorable)
+            else if (ve.theItemType == VisualElementEnvironmentItem.ItemType.SupplFiles && packages.MainStorable)
             {
                 // Files
 
@@ -1377,7 +1423,7 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.ConceptDescription cd, bool editMode,
             ModifyRepo repo,
-            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
+            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false, bool preventMove = false)
         {
             this.AddGroup(stack, "ConceptDescription", this.levelColors.MainSection);
 
@@ -1393,7 +1439,8 @@ namespace AasxPackageLogic
                 };
 
                 this.EntityListUpDownDeleteHelper<AdminShell.ConceptDescription>(
-                    stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate);
+                    stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate, 
+                    preventMove: preventMove);
             }
 
             // Cut, copy, paste within list of CDs
@@ -1721,7 +1768,7 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
             AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            bool hintMode = false)
+            bool hintMode = false, bool nestedCds = false)
         {
             //
             // Submodel Element GENERAL
@@ -2392,7 +2439,7 @@ namespace AasxPackageLogic
                 // ConceptDescription <- via semantic ID ?!
                 //
 
-                if (sme.semanticId != null && sme.semanticId.Count > 0)
+                if (sme.semanticId != null && sme.semanticId.Count > 0 && !nestedCds)
                 {
                     var cd = env.FindConceptDescription(sme.semanticId.Keys);
                     if (cd == null)

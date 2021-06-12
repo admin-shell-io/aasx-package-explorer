@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -346,15 +347,19 @@ namespace AasxPackageLogic
             Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
             EmptySet
         };
+        
         public static string[] ItemTypeNames = new string[] {
             "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty" };
+
+        public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
 
         public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
         public AdminShell.AdministrationShellEnv theEnv = null;
         public ItemType theItemType = ItemType.Env;
         private AdminShell.IAasElement _mainDataObject;
+        private static ConceptDescSortOrder _cdSortOrder = ConceptDescSortOrder.None;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
@@ -415,6 +420,17 @@ namespace AasxPackageLogic
         {
         }
 
+        public ConceptDescSortOrder CdSortOrder
+        {
+            get
+            {
+                return VisualElementEnvironmentItem._cdSortOrder;
+            }
+            set
+            {
+                VisualElementEnvironmentItem._cdSortOrder = value;
+            }
+        }
     }
 
     public class VisualElementAdminShell : VisualElementGeneric
@@ -689,7 +705,9 @@ namespace AasxPackageLogic
         public AdminShell.Referable theContainer = null;
         public AdminShell.SubmodelElementWrapper theWrapper = null;
 
-        private AdminShell.ConceptDescription cachedCD = null;
+        private AdminShell.ConceptDescription _cachedCD = null;
+
+        public AdminShell.ConceptDescription CachedCD { get { return _cachedCD; } }
 
         public VisualElementSubmodelElement(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
@@ -773,9 +791,9 @@ namespace AasxPackageLogic
                     // cache ConceptDescription?
                     if (sme.semanticId != null && sme.semanticId.Keys != null)
                     {
-                        if (this.cachedCD == null)
-                            this.cachedCD = this.theEnv.FindConceptDescription(sme.semanticId.Keys);
-                        var iecprop = this.cachedCD?.GetIEC61360();
+                        if (this._cachedCD == null)
+                            this._cachedCD = this.theEnv.FindConceptDescription(sme.semanticId.Keys);
+                        var iecprop = this._cachedCD?.GetIEC61360();
                         if (iecprop != null)
                         {
                             if (iecprop.unit != null && iecprop.unit != "")
@@ -906,6 +924,135 @@ namespace AasxPackageLogic
             }
         }
 
+        // sorting
+
+        public class ComparerIdShort : IComparer<VisualElementGeneric>
+        {
+            public int Compare(VisualElementGeneric a, VisualElementGeneric b)
+            {
+                var id1 = (a as VisualElementConceptDescription)?.theCD?.idShort;
+                var id2 = (b as VisualElementConceptDescription)?.theCD?.idShort;
+                return String.Compare(id1, id2,
+                    CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
+            }
+        }
+
+        public class ComparerIdentification : IComparer<VisualElementGeneric>
+        {
+            public int Compare(VisualElementGeneric a, VisualElementGeneric b)
+            {
+                var id1 = (a as VisualElementConceptDescription)?.theCD?.identification;
+                var id2 = (b as VisualElementConceptDescription)?.theCD?.identification;
+
+                if (id1 == null)
+                    return -1;
+                if (id2 == null)
+                    return +1;
+
+                var vc = String.Compare(id1.idType, id2.idType,
+                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
+                if (vc != 0)
+                    return vc;
+
+                return String.Compare(id1.id, id2.id,
+                    CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
+            }
+        }
+
+        public class ComparerUsedSubmodel : IComparer<VisualElementGeneric>
+        {
+            private MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel> _cdToSm;
+
+            public ComparerUsedSubmodel(MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel> 
+                cdToSm)
+            {
+                _cdToSm = cdToSm;
+            }
+
+            public int Compare(VisualElementGeneric a, VisualElementGeneric b)
+            {
+                var cd1 = (a as VisualElementConceptDescription)?.theCD;
+                var cd2 = (b as VisualElementConceptDescription)?.theCD;
+
+                AdminShell.Identification id1 = null, id2 = null;
+                if (cd1 != null && _cdToSm != null && _cdToSm.ContainsKey(cd1))
+                    id1 = _cdToSm[cd1].FirstOrDefault()?.identification;
+                if (cd2 != null && _cdToSm != null && _cdToSm.ContainsKey(cd2))
+                    id2 = _cdToSm[cd2].FirstOrDefault()?.identification;
+
+                if (id1 == null)
+                    return +1;
+                if (id2 == null)
+                    return +1;
+
+                var vc = String.Compare(id1.idType, id2.idType,
+                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
+                if (vc != 0)
+                    return vc;
+
+                return String.Compare(id1.id, id2.id,
+                    CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
+            }
+        }
+
+        //public class ComparerIndexed : IComparer<VisualElementGeneric>
+        //{
+        //    public int NullIndex = int.MaxValue;
+
+        //    public Dictionary<VisualElementGeneric, int> IndexVe = new Dictionary<VisualElementGeneric, int>();
+        //    public Dictionary<AdminShell.ConceptDescription, int> 
+        //        IndexCd = new Dictionary<AdminShell.ConceptDescription, int>();
+
+        //    public int Compare(VisualElementGeneric a, VisualElementGeneric b)
+        //    {
+        //        var ca = Index.ContainsKey(a);
+        //        var cb = Index.ContainsKey(b);
+
+        //        if (!ca && !cb)
+        //            return 0;
+        //        // make CDs without usage to appear at end of list
+        //        if (!ca)
+        //            return +1;
+        //        if (!cb)
+        //            return -1;
+
+        //        var ia = Index[a];
+        //        var ib = Index[b];
+
+        //        if (ia == ib)
+        //            return 0;
+        //        if (ia < ib)
+        //            return -1;
+        //        return +1;
+        //    }
+        //}
+
+        //public VisualElementConceptDescription.ComparerIndexed CreateIndexedComparerCdsForSmUsage(
+        //    AdminShell.AdministrationShellEnv env)
+        //{
+        //    // trivial
+        //    if (env == null)
+        //        return null;
+
+        //    // pass1
+        //    var cmp = new VisualElementConceptDescription.ComparerIndexed();
+        //    int nr = 0;
+        //    foreach (var sm in env.FindAllSubmodelGroupedByAAS())
+        //        foreach (var sme in sm.FindDeep<AdminShell.SubmodelElement>())
+        //        {
+        //            if (sme.semanticId == null)
+        //                continue;
+        //            var cd = env.FindConceptDescription(sme.semanticId);
+        //            if (cd == null)
+        //                continue;
+        //            if (cmp.IndexCd.ContainsKey(cd))
+        //                continue;
+        //            cmp.IndexCd[cd] = nr++;
+        //        }
+
+        //    return cmp;
+        //}
+
     }
 
     public class VisualElementSupplementalFile : VisualElementGeneric
@@ -1029,6 +1176,17 @@ namespace AasxPackageLogic
     {
         private List<Plugins.PluginInstance> _pluginsToCheck = new List<Plugins.PluginInstance>();
 
+        // need some attach points, which are determined by initial rendering and
+        // kept in the class
+        private VisualElementEnvironmentItem
+            tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
+
+        private MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric> _cdReferred = 
+            new MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric>();
+
+        private MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel> _cdToSm =
+            new MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel>();
+
         public ListOfVisualElement()
         {
             // interested plug-ins
@@ -1052,22 +1210,39 @@ namespace AasxPackageLogic
         }
 
         private void GenerateVisualElementsFromShellEnvAddElements(
-            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, VisualElementGeneric parent,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, 
+            AdminShell.Submodel sm, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
+            // add itself
             var ti = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
             parent.Members.Add(ti);
+
+            // bookkeeping
+            if (ti.CachedCD != null)
+            {
+                _cdReferred.Add(ti.CachedCD, ti);
+                _cdToSm.Add(ti.CachedCD, sm);
+            }
+
+            // nested cd?
+            if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme 
+                && ti.CachedCD != null)
+            {
+                var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
+                ti.Members.Add(tiCD);
+            }
 
             // Recurse: SMC
             if (el.submodelElement is AdminShell.SubmodelElementCollection elc && elc.value != null)
                 foreach (var elcc in elc.value)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, elc, elcc);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, elc, elcc);
 
             // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
             if (el.submodelElement is AdminShell.Entity ele && ele.statements != null)
                 foreach (var eles in ele.statements)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ele, eles);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 
             // Recurse: Operation
@@ -1094,7 +1269,7 @@ namespace AasxPackageLogic
             // Recurse: AnnotatedRelationshipElement
             if (el.submodelElement is AdminShell.AnnotatedRelationshipElement ela && ela.annotations != null)
                 foreach (var elaa in ela.annotations)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, ti, ela, elaa);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);
         }
 
         private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
@@ -1138,7 +1313,7 @@ namespace AasxPackageLogic
             // recursively into the submodel elements
             if (sm.submodelElements != null)
                 foreach (var sme in sm.submodelElements)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, tiSm, sm, sme);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, tiSm, sm, sme);
 
             // ok
             return tiSm;
@@ -1196,6 +1371,18 @@ namespace AasxPackageLogic
             return tiAas;
         }
 
+        // see: https://stackoverflow.com/questions/19112922/sort-observablecollectionstring-through-c-sharp
+        private static void ObservableCollectionSort<T>(ObservableCollection<T> collection, IComparer<T> comparison)
+        {
+            var sortableList = new List<T>(collection);
+            sortableList.Sort(comparison);
+
+            for (int i = 0; i < sortableList.Count; i++)
+            {
+                collection.Move(collection.IndexOf(sortableList[i]), i);
+            }
+        }
+
         public void AddVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
             string packageSourceFn = null,
@@ -1207,10 +1394,6 @@ namespace AasxPackageLogic
             // valid?
             if (env == null)
                 return;
-
-            // need some attach points
-            VisualElementEnvironmentItem
-                tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
 
             // many operations -> make it bulletproof
             try
@@ -1274,7 +1457,9 @@ namespace AasxPackageLogic
                 // if edit mode, then display further ..
                 if (editMode)
                 {
+                    //
                     // over all assets
+                    //
                     foreach (var asset in env.Assets)
                     {
                         // item
@@ -1282,30 +1467,87 @@ namespace AasxPackageLogic
                         tiAssets.Members.Add(tiAsset);
                     }
 
+                    //
+                    // over all Submodels (not the refs)
+                    //
+                    var tiAllSubmodels = new VisualElementEnvironmentItem(
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
+                    tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
+                    tiEnv.Members.Add(tiAllSubmodels);
+
+                    // show all Submodels
+                    foreach (var sm in env.Submodels)
+                    {
+                        // Submodel
+                        var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, env, sm);
+                        tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
+                        tiAllSubmodels.Members.Add(tiSm);
+
+                        // render ConceptDescriptions?
+                        if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
+                        {
+                            foreach (var cd in env.ConceptDescriptions)
+                            {
+                                var found = false;
+                                if (_cdToSm.ContainsKey(cd))
+                                    foreach (var x in _cdToSm[cd])
+                                        if (x == sm)
+                                        {
+                                            found = true;
+                                            break;
+                                        }
+
+                                if (found)
+                                {
+                                    // item
+                                    var tiCD = new VisualElementConceptDescription(tiSm, cache, env, cd);
+                                    tiSm.Members.Add(tiCD);
+                                }
+                            }
+                        }
+                    }
+
+                    //
                     // over all concept descriptions
+                    //
                     foreach (var cd in env.ConceptDescriptions)
                     {
                         // item
                         var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
+
+                        // stop criteria for adding?
+                        if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
+                            && _cdReferred.ContainsKey(cd))
+                            continue;
+
+                        if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel
+                            && _cdToSm.ContainsKey(cd))
+                            continue;
+    
+                        // add
                         tiCDs.Members.Add(tiCD);
                     }
 
-                    // alternative code deleted
+                    // sort CDs?
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.IdShort)
                     {
-                        // head
-                        var tiAllSubmodels = new VisualElementEnvironmentItem(
-                            tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
-                        tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
-                        tiEnv.Members.Add(tiAllSubmodels);
-
-                        // show all Submodels
-                        foreach (var sm in env.Submodels)
-                        {
-                            var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, env, sm);
-                            tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
-                            tiAllSubmodels.Members.Add(tiSm);
-                        }
+                        ObservableCollectionSort<VisualElementGeneric>(
+                            tiCDs.Members, new VisualElementConceptDescription.ComparerIdShort());
                     }
+
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Id)
+                    {
+                        ObservableCollectionSort<VisualElementGeneric>(
+                            tiCDs.Members, new VisualElementConceptDescription.ComparerIdentification());
+                    }
+
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
+                    {
+                        ObservableCollectionSort<VisualElementGeneric>(
+                            tiCDs.Members, new VisualElementConceptDescription.ComparerUsedSubmodel(_cdToSm));
+                    }
+
+                    
                 }
 
                 // package as well?
@@ -1628,7 +1870,7 @@ namespace AasxPackageLogic
 
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, parentVE, 
+                            cache, data.Container?.Env?.AasEnv, parentSm, parentVE, 
                             data.ParentElem as AdminShell.Referable, foundSmw);
                     }
 
@@ -1660,8 +1902,9 @@ namespace AasxPackageLogic
                             continue;
 
                         // add to parent
+                        // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
                         GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, parentVE, 
+                            cache, data.Container?.Env?.AasEnv, null, parentVE, 
                             data.ParentElem as AdminShell.Referable, foundSmw);
                     }
 
@@ -1698,6 +1941,31 @@ namespace AasxPackageLogic
                             parentVE.Members.Remove(ctd);
                     }
 
+                    // just good
+                    return true;
+                }
+
+                if (data.ParentElem is AdminShell.ListOfConceptDescriptions
+                    && data.ThisElem is AdminShell.ConceptDescription cd)
+                {
+                    // as the CD might be rendered below mayn different elements (SME, SM, LoCD, ..)
+                    // brutally delete all occurences
+                    var childsToDel = new List<VisualElementGeneric>();
+                    foreach (var ve in FindAllVisualElementOnMainDataObject(
+                       cd, alsoDereferenceObjects: true))
+                    {
+                        // valid
+                        if (!(ve.Parent != null))
+                            continue;
+
+                        // remember
+                        childsToDel.Add(ve);
+                    }
+
+                    // AFTER iterating, do the removal
+                    foreach (var ctd in childsToDel)
+                        ctd?.Parent?.Members.Remove(ctd);
+                    
                     // just good
                     return true;
                 }
@@ -1751,7 +2019,9 @@ namespace AasxPackageLogic
             }
 
             return false;
-        }        
+        }
+
+        
     }
 
 }

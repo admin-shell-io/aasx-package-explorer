@@ -184,7 +184,8 @@ namespace AasxPackageExplorer
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             VisualElementGeneric entity,
-            bool editMode, bool hintMode = false, bool showIriMode = false,
+            bool editMode, bool hintMode = false, bool showIriMode = false, 
+            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
@@ -219,7 +220,6 @@ namespace AasxPackageExplorer
 
             // create display context for WPF
             _displayContext = new AnyUiDisplayContextWpf(flyoutProvider, packages);
-
             _helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
 
             // modify repository
@@ -276,92 +276,83 @@ namespace AasxPackageExplorer
 
             var inhibitRenderStackToPanel = false;
 
-            if (entity is VisualElementEnvironmentItem)
+            if (entity is VisualElementEnvironmentItem veei)
             {
-                var x = entity as VisualElementEnvironmentItem;
                 _helper.DisplayOrEditAasEntityAasEnv(
-                    packages, x.theEnv, x.theItemType, editMode, stack, hintMode: hintMode);
+                    packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
             }
-            else if (entity is VisualElementAdminShell)
+            else if (entity is VisualElementAdminShell veaas)
             {
-                var x = entity as VisualElementAdminShell;
                 _helper.DisplayOrEditAasEntityAas(
-                    packages, x.theEnv, x.theAas, editMode, stack, hintMode: hintMode);
+                    packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
             }
-            else if (entity is VisualElementAsset)
+            else if (entity is VisualElementAsset veas)
             {
-                var x = entity as VisualElementAsset;
                 _helper.DisplayOrEditAasEntityAsset(
-                    packages, x.theEnv, x.theAsset, editMode, repo, stack, hintMode: hintMode);
+                    packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
             }
-            else if (entity is VisualElementSubmodelRef)
+            else if (entity is VisualElementSubmodelRef vesmref)
             {
-                var x = entity as VisualElementSubmodelRef;
                 AdminShell.AdministrationShell aas = null;
-                if (x.Parent is VisualElementAdminShell xpaas)
+                if (vesmref.Parent is VisualElementAdminShell xpaas)
                     aas = xpaas.theAas;
                 _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, aas, x.theSubmodelRef, x.theSubmodel, editMode, stack,
+                    packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
                     hintMode: hintMode);
             }
-            else if (entity is VisualElementSubmodel)
+            else if (entity is VisualElementSubmodel vesm)
             {
-                var x = entity as VisualElementSubmodel;
                 _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, x.theEnv, null, null, x.theSubmodel, editMode, stack,
+                    packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
                     hintMode: hintMode);
             }
-            else if (entity is VisualElementSubmodelElement)
+            else if (entity is VisualElementSubmodelElement vesme)
             {
-                var x = entity as VisualElementSubmodelElement;
                 _helper.DisplayOrEditAasEntitySubmodelElement(
-                    packages, x.theEnv, x.theContainer, x.theWrapper, x.theWrapper.submodelElement, editMode,
-                    repo, stack, hintMode: hintMode);
+                    packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement, 
+                    editMode,
+                    repo, stack, hintMode: hintMode, 
+                    nestedCds: cdSortOrder.HasValue && 
+                        cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
             }
-            else if (entity is VisualElementOperationVariable)
+            else if (entity is VisualElementOperationVariable vepv)
             {
-                var x = entity as VisualElementOperationVariable;
                 _helper.DisplayOrEditAasEntityOperationVariable(
-                    packages, x.theEnv, x.theContainer, x.theOpVar, editMode,
+                    packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
                     stack, hintMode: hintMode);
             }
-            else if (entity is VisualElementConceptDescription)
+            else if (entity is VisualElementConceptDescription vecd)
             {
-                var x = entity as VisualElementConceptDescription;
                 _helper.DisplayOrEditAasEntityConceptDescription(
-                    packages, x.theEnv, null, x.theCD, editMode, repo, stack, hintMode: hintMode);
+                    packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
+                    preventMove: cdSortOrder.HasValue &&
+                        cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
             }
-            else if (entity is VisualElementView)
+            else if (entity is VisualElementView vevw)
             {
-                var x = entity as VisualElementView;
-                if (x.Parent != null && x.Parent is VisualElementAdminShell xpaas)
+                if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
                     _helper.DisplayOrEditAasEntityView(
-                        packages, x.theEnv, xpaas.theAas, x.theView, editMode, stack,
+                        packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
                         hintMode: hintMode);
                 else
                     _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
             }
-            else if (entity is VisualElementReference)
+            else if (entity is VisualElementReference verf)
             {
-                var x = entity as VisualElementReference;
-                if (x.Parent != null && x.Parent is VisualElementView xpev)
+                if (verf.Parent != null && verf.Parent is VisualElementView xpev)
                     _helper.DisplayOrEditAasEntityViewReference(
-                        packages, x.theEnv, xpev.theView, (AdminShell.ContainedElementRef)x.theReference,
+                        packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
                         editMode, stack);
                 else
                     _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
             }
             else
-            if (entity is VisualElementSupplementalFile)
+            if (entity is VisualElementSupplementalFile vesf)
             {
-                var x = entity as VisualElementSupplementalFile;
-                _helper.DisplayOrEditAasEntitySupplementaryFile(packages, x.theFile, editMode, stack);
+                _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf.theFile, editMode, stack);
             }
-            else if (entity is VisualElementPluginExtension)
+            else if (entity is VisualElementPluginExtension vepe)
             {
-                // get data
-                var x = entity as VisualElementPluginExtension;
-
                 // create controls
                 object result = null;
 
@@ -369,9 +360,9 @@ namespace AasxPackageExplorer
                 {
                     // replace at top level
                     theMasterPanel.Children.Clear();
-                    if (x.thePlugin != null)
-                        result = x.thePlugin.InvokeAction(
-                            "fill-panel-visual-extension", x.thePackage, x.theReferable, theMasterPanel);
+                    if (vepe.thePlugin != null)
+                        result = vepe.thePlugin.InvokeAction(
+                            "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
                 }
                 catch (Exception ex)
                 {
