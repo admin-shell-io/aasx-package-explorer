@@ -70,6 +70,18 @@ namespace AasxPackageLogic
             set { _info = value; this.OnPropertyChanged("Info"); }
         }
 
+        private bool _animateUpdate;
+        public bool AnimateUpdate {
+            get { return _animateUpdate; }
+            set { _animateUpdate = value; this.OnPropertyChanged("AnimateUpdate"); }
+        }
+
+        public void TriggerAnimateUpdate()
+        {
+            AnimateUpdate = !AnimateUpdate; this.OnPropertyChanged("AnimateUpdate");
+            AnimateUpdate = !AnimateUpdate; this.OnPropertyChanged("AnimateUpdate");
+        }
+
         public string Value { get; set; }
         public string ValueInfo { get; set; }
         public AnyUiColor Background { get; set; }
@@ -959,6 +971,7 @@ namespace AasxPackageLogic
             }
         }
 
+#if _not_required
         public class ComparerUsedSubmodel : IComparer<VisualElementGeneric>
         {
             private MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel> _cdToSm;
@@ -994,6 +1007,7 @@ namespace AasxPackageLogic
                     CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
             }
         }
+#endif
 
         //public class ComparerIndexed : IComparer<VisualElementGeneric>
         //{
@@ -1209,7 +1223,7 @@ namespace AasxPackageLogic
                 }
         }
 
-        private void GenerateVisualElementsFromShellEnvAddElements(
+        private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, 
             AdminShell.Submodel sm, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
@@ -1270,6 +1284,9 @@ namespace AasxPackageLogic
             if (el.submodelElement is AdminShell.AnnotatedRelationshipElement ela && ela.annotations != null)
                 foreach (var elaa in ela.annotations)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);
+
+            // return topmost
+            return ti;
         }
 
         private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
@@ -1426,11 +1443,11 @@ namespace AasxPackageLogic
                     tiEnv.Members.Add(tiAssets);
 
                     // concept descriptions
+                    // note: will be added later to the overall tree
                     tiCDs = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
                         mainDataObject: env.ConceptDescriptions);
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
-                    tiEnv.Members.Add(tiCDs);
                 }
 
                 // over all Admin shells
@@ -1510,6 +1527,7 @@ namespace AasxPackageLogic
                     //
                     // over all concept descriptions
                     //
+                    tiEnv.Members.Add(tiCDs);
                     foreach (var cd in env.ConceptDescriptions)
                     {
                         // item
@@ -1531,23 +1549,28 @@ namespace AasxPackageLogic
                     // sort CDs?
                     if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.IdShort)
                     {
+                        tiCDs.Info = "(dynamically sorted: idShort)";
                         ObservableCollectionSort<VisualElementGeneric>(
                             tiCDs.Members, new VisualElementConceptDescription.ComparerIdShort());
                     }
 
                     if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Id)
                     {
+                        tiCDs.Info = "(dynamically sorted: Identification)";
                         ObservableCollectionSort<VisualElementGeneric>(
                             tiCDs.Members, new VisualElementConceptDescription.ComparerIdentification());
                     }
 
-                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
                     {
-                        ObservableCollectionSort<VisualElementGeneric>(
-                            tiCDs.Members, new VisualElementConceptDescription.ComparerUsedSubmodel(_cdToSm));
+                        tiCDs.Info = "(only CD not referenced by any SubmodelElement)";
                     }
 
-                    
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
+                    {
+                        tiCDs.Info = "(only CD not referenced by any Submodel)";
+                    }
+
                 }
 
                 // package as well?
@@ -1903,9 +1926,18 @@ namespace AasxPackageLogic
 
                         // add to parent
                         // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
-                        GenerateVisualElementsFromShellEnvAddElements(
+                        var ti = GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, null, parentVE, 
                             data.ParentElem as AdminShell.Referable, foundSmw);
+
+                        // animate
+                        // ti?.TriggerAnimateUpdate();
+                        if (ti != null)
+                        {
+                            // do not TriggerAnimateUpdate(), but set to true in order to animate
+                            // when realized
+                            ti.AnimateUpdate = true;
+                        }
                     }
 
                     // just good
@@ -2014,6 +2046,7 @@ namespace AasxPackageLogic
 
                         // trigger update, SME value is supposed to be actual
                         ve.RefreshFromMainData();
+                        ve.TriggerAnimateUpdate();
                     }
                 }
             }

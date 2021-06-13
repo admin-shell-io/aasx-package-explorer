@@ -100,5 +100,20 @@ namespace AnyUi
         public virtual void PrintSingleAssetCodeSheet(
             string assetId, string description, string title = "Single asset code sheet")
         { }
+
+        /// <summary>
+        /// Set by the implementation technology (derived class of this), if Shift is pressed
+        /// </summary>
+        public bool ActualShiftState = false;
+
+        /// <summary>
+        /// Set by the implementation technology (derived class of this), if Cntrl is pressed
+        /// </summary>
+        public bool ActualControlState = false;
+
+        /// <summary>
+        /// Set by the implementation technology (derived class of this), if Akt is pressed
+        /// </summary>
+        public bool ActualAltState = false;
     }
 }

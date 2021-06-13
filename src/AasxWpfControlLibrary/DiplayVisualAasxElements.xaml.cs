@@ -732,6 +732,15 @@ namespace AasxPackageExplorer
 
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
+        }        
+
+        public void Test2()
+        {
+            foreach (var it in displayedTreeViewLines)
+            {
+                // it.MyProperty = !it.MyProperty;
+                it.TriggerAnimateUpdate();
+            }
         }
     }
 }

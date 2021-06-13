@@ -46,13 +46,18 @@ namespace AasxPackageLogic
     public class AnyUiLambdaActionNavigateTo : AnyUiLambdaActionBase
     {
         public AnyUiLambdaActionNavigateTo() { }
-        public AnyUiLambdaActionNavigateTo(AdminShell.Reference targetReference, bool translateAssetToAAS = false)
+        public AnyUiLambdaActionNavigateTo(
+            AdminShell.Reference targetReference, 
+            bool translateAssetToAAS = false, 
+            bool alsoDereferenceObjects = true)
         {
             this.targetReference = targetReference;
             this.translateAssetToAAS = translateAssetToAAS;
+            this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
         public AdminShell.Reference targetReference;
-        public bool translateAssetToAAS;
+        public bool translateAssetToAAS = false;
+        public bool alsoDereferenceObjects = true;
     }
 
     public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase

@@ -1077,10 +1077,18 @@ namespace AasxPackageLogic
             if (smref != null)
             {
                 this.AddGroup(stack, "SubmodelReference", this.levelColors.MainSection);
+
+                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
+                 {
+                    return new AnyUiLambdaActionNavigateTo(
+                        AdminShell.Reference.CreateNew(kl), alsoDereferenceObjects: false);
+                };
+
                 this.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
                     packages, PackageCentral.PackageCentral.Selector.Main, "SubmodelRef Submodel ",
-                    takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref));
+                    takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref),
+                    jumpLambda: lambda);
             }
 
             // entities when under AAS (smref)

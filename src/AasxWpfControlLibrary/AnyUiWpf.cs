@@ -783,6 +783,7 @@ namespace AnyUi
             public AnyUiUIElement Element;
             public System.Windows.Input.ModifierKeys Modifiers;
             public System.Windows.Input.Key Key;
+            public bool Preview = true;
             public string Info;
         }
 
@@ -811,13 +812,14 @@ namespace AnyUi
 
         public int TriggerKeyShortcut(
             System.Windows.Input.Key key,
-            System.Windows.Input.ModifierKeys modifiers)
+            System.Windows.Input.ModifierKeys modifiers,
+            bool preview)
         {
             var res = 0;
             if (_keyShortcuts == null)
                 return res;
             foreach (var sc in _keyShortcuts)
-                if (key == sc.Key && modifiers == sc.Modifiers)
+                if (key == sc.Key && modifiers == sc.Modifiers && preview == sc.Preview)
                 {
                     // found, any lambdas appicable?
                     if (sc.Element is AnyUiButton btn)
@@ -1172,4 +1174,21 @@ namespace AnyUi
             return AnyUiVisibility.Hidden;
         }
     }
+
+#if _not_needed
+    public class AlwaysTrueValueConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            return true;
+        }
+    }
+#endif
 }

@@ -1777,7 +1777,9 @@ namespace AasxPackageLogic
                     }
 
                     if (buttonNdx == 4)
-                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+
+                        if (this.context.ActualShiftState 
+                            || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entity? This operation can not be reverted!", "AASX",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {

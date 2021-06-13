@@ -483,7 +483,7 @@ namespace AasxPackageExplorer
 
                     _displayContext.RegisterKeyShortcut(
                         "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, Key.Delete,
-                        "Delete current AAS element in the respective list.");
+                        "Delete current AAS element in the respective list. Shift key skips dialogue.");
 
                     _displayContext.RegisterKeyShortcut(
                         "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, Key.X,
@@ -518,11 +518,21 @@ namespace AasxPackageExplorer
 
         #endregion
 
-        public void HandleGlobalKeyDown(KeyEventArgs e)
+        public void HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {
+            // access
+            if (_displayContext == null)
+                return;
+
+            // save keyboad states for AnyUI
+            _displayContext.ActualShiftState = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+            _displayContext.ActualControlState = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+            _displayContext.ActualAltState = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+
+            // investigate event itself
             if (e == null)
                 return;
-            var num = _displayContext?.TriggerKeyShortcut(e.Key, Keyboard.Modifiers);
+            var num = _displayContext?.TriggerKeyShortcut(e.Key, Keyboard.Modifiers, preview);
             if (num > 0)
                 e.Handled = true;
         }

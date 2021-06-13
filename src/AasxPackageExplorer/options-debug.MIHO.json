@@ -45,8 +45,9 @@
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
   "StayConnectOptions": "REST-QUEUE", // SIM
-  "DefaultConnectRepositoryLocation": "http://localhost:51310",
+  /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
   /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
+  "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711",
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],

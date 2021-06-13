@@ -29,6 +29,7 @@ using AasxWpfControlLibrary;
 using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 using AasxWpfControlLibrary.PackageCentral;
+using System.Linq;
 
 namespace AasxPackageExplorer
 {
@@ -1000,7 +1001,7 @@ namespace AasxPackageExplorer
                             }
 
                             // handle it by UI
-                            await UiHandleNavigateTo(rf);
+                            await UiHandleNavigateTo(rf, alsoDereferenceObjects: tempNavTo.alsoDereferenceObjects);
                         }
 
                         if (temp is AnyUiLambdaActionDisplayContentFile tempDispCont)
@@ -1103,7 +1104,9 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        private async Task UiHandleNavigateTo(AdminShell.Reference targetReference)
+        private async Task UiHandleNavigateTo(
+            AdminShell.Reference targetReference,
+            bool alsoDereferenceObjects = true)
         {
             // access
             if (targetReference == null || targetReference.Count < 1)
@@ -1151,7 +1154,7 @@ namespace AasxPackageExplorer
                         if (this.DisplayElements != null)
                         {
                             var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                                alsoDereferenceObjects: true, sri: sri);
+                                alsoDereferenceObjects: alsoDereferenceObjects, sri: sri);
                             if (ve != null)
                             {
                                 veFound = ve;
@@ -1963,7 +1966,17 @@ namespace AasxPackageExplorer
                 currentFlyoutControl.ControlPreviewKeyDown(e);
             }
 
-            DispEditEntityPanel.HandleGlobalKeyDown(e);
+            DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
+
+            if (e.Key == Key.T
+                && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                var ve = DisplayElements?.FindAllVisualElement()?.FirstOrDefault();
+                if (ve != null)
+                {
+                    DisplayElements.Test2();
+                }
+            }
         }
 
         #region Modal Flyovers
