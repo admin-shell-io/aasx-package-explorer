@@ -274,7 +274,7 @@ namespace AasxPackageExplorer
                     if (e.DisableSelectedTreeItemChange)
                         DisableSelectedItemChanged();
                     
-                    displayedTreeViewLines.UpdateByEvent(e, treeViewLineCache, _lastEditMode);
+                    displayedTreeViewLines.UpdateByEvent(e, treeViewLineCache);
 
                     if (e.DisableSelectedTreeItemChange)
                         EnableSelectedItemChanged();
@@ -445,7 +445,8 @@ namespace AasxPackageExplorer
         public void RebuildAasxElements(
             PackageCentral packages,
             PackageCentral.Selector selector,
-            bool editMode = false, string filterElementName = null)
+            bool editMode = false, string filterElementName = null,
+            bool lazyLoadingFirst = false)
         {
             // clear tree
             displayedTreeViewLines.Clear();
@@ -458,16 +459,16 @@ namespace AasxPackageExplorer
                 // generate lines, add
                 displayedTreeViewLines.AddVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
-                    packages.MainItem?.Filename, editMode, expandMode: 1);
+                    packages.MainItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
 
                 // more?
                 if (packages.AuxAvailable &&
                     (selector == PackageCentral.Selector.MainAux
-                     || selector == PackageCentral.Selector.MainAuxFileRepo))
+                        || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
-                        packages.AuxItem?.Filename, editMode, expandMode: 1);
+                        packages.AuxItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // more?
@@ -478,7 +479,8 @@ namespace AasxPackageExplorer
                         fr.PopulateFakePackage(pkg);
 
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
-                        treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
+                        treeViewLineCache, pkg?.AasEnv, pkg, 
+                        null, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // may be filter
@@ -741,6 +743,27 @@ namespace AasxPackageExplorer
                 // it.MyProperty = !it.MyProperty;
                 it.TriggerAnimateUpdate();
             }
+        }
+
+        private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
+        {
+            // access and check
+            var tvi = e?.OriginalSource as TreeViewItem;
+            var ve = tvi?.Header as VisualElementGeneric;
+            if (ve == null || !ve.NeedsLazyLoading)
+                return;
+
+            // try execute, may take some time
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
+                displayedTreeViewLines?.ExecuteLazyLoading(ve);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
+
         }
     }
 }

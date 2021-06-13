@@ -28,6 +28,7 @@
         <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" SelectedItemChanged="TreeViewInner_SelectedItemChanged" 
                   RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  TreeViewItem.Expanded="TreeViewInner_Expanded"
                   Padding="0,2,4,2">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">

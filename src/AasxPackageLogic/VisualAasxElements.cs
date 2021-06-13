@@ -350,6 +350,22 @@ namespace AasxPackageLogic
 
             return res;
         }
+
+        //
+        // Lazy loading
+        //
+
+        public bool NeedsLazyLoading
+        {
+            get
+            {
+                if (this.Members != null && this.Members.Count == 1
+                    && this.Members[0] is VisualElementEnvironmentItem veei
+                    && veei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
+                    return true;
+                return false;
+            }
+        }
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
@@ -357,12 +373,12 @@ namespace AasxPackageLogic
         public enum ItemType
         {
             Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
-            EmptySet
+            EmptySet, DummyNode
         };
         
         public static string[] ItemTypeNames = new string[] {
             "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
-            "All Submodels", "Supplementary files", "Empty" };
+            "All Submodels", "Supplementary files", "Empty", "Dummy" };
 
         public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
 
@@ -535,17 +551,20 @@ namespace AasxPackageLogic
     public class VisualElementSubmodelRef : VisualElementGeneric
     {
         public AdminShell.AdministrationShellEnv theEnv = null;
+        public AdminShellPackageEnv thePackage = null;
         public AdminShell.SubmodelRef theSubmodelRef = null;
         public AdminShell.Submodel theSubmodel = null;
 
         public VisualElementSubmodelRef(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShellPackageEnv package,
             AdminShell.SubmodelRef smr, AdminShell.Submodel sm)
             : base()
         {
             this.Parent = parent;
             this.Cache = cache;
             this.theEnv = env;
+            this.thePackage = package;
             this.theSubmodelRef = smr;
             this.theSubmodel = sm;
 
@@ -1188,6 +1207,9 @@ namespace AasxPackageLogic
 
     public class ListOfVisualElement : ObservableCollection<VisualElementGeneric>
     {
+        public bool OptionLazyLoadingFirst = false;
+        public int OptionExpandMode = 0;
+
         private List<Plugins.PluginInstance> _pluginsToCheck = new List<Plugins.PluginInstance>();
 
         // need some attach points, which are determined by initial rendering and
@@ -1289,20 +1311,14 @@ namespace AasxPackageLogic
             return ti;
         }
 
-        private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
+        private void GenerateInnerElementsForSubmodelRef(
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package,
             AdminShell.Submodel sm,
-            AdminShell.SubmodelRef smr,
-            VisualElementGeneric parent,
-            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
-            bool editMode = false, int expandMode = 0)
+            VisualElementSubmodelRef tiSm)
         {
-            // trivial
-            if (smr == null || sm == null)
-                return null;
-
-            // item (even if sm is null)
-            var tiSm = new VisualElementSubmodelRef(parent, cache, env, smr, sm);
-            tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
+            // access
+            if (sm == null || tiSm == null)
+                return;
 
             // check for visual extensions
             if (_pluginsToCheck != null)
@@ -1331,6 +1347,32 @@ namespace AasxPackageLogic
             if (sm.submodelElements != null)
                 foreach (var sme in sm.submodelElements)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, tiSm, sm, sme);
+        }
+
+        private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
+            AdminShell.Submodel sm,
+            AdminShell.SubmodelRef smr,
+            VisualElementGeneric parent,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null)
+        {
+            // trivial
+            if (smr == null || sm == null)
+                return null;
+
+            // item (even if sm is null)
+            var tiSm = new VisualElementSubmodelRef(parent, cache, env, package, smr, sm);
+            tiSm.SetIsExpandedIfNotTouched(OptionExpandMode > 1);
+
+            if (OptionLazyLoadingFirst)
+            {
+                // set lazy loading first
+                SetElementToLazyLoading(cache, env, package, tiSm);
+            }
+            else
+            {
+                // inner items directly
+                GenerateInnerElementsForSubmodelRef(cache, env, package, sm, tiSm);
+            }
 
             // ok
             return tiSm;
@@ -1339,7 +1381,7 @@ namespace AasxPackageLogic
         private VisualElementAdminShell GenerateVisuElemForAAS(
             AdminShell.AdministrationShell aas,
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
-            bool editMode = false, int expandMode = 0)
+            bool editMode = false)
         {
             // trivial
             if (aas == null)
@@ -1347,7 +1389,7 @@ namespace AasxPackageLogic
 
             // item
             var tiAas = new VisualElementAdminShell(null, cache, package, env, aas);
-            tiAas.SetIsExpandedIfNotTouched(expandMode > 0);
+            tiAas.SetIsExpandedIfNotTouched(OptionExpandMode > 0);
 
             // have submodels?
             if (aas.submodelRefs != null)
@@ -1359,7 +1401,7 @@ namespace AasxPackageLogic
 
                     // generate
                     var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
-                        sm, smr, tiAas, cache, env, package, editMode, expandMode);
+                        sm, smr, tiAas, cache, env, package);
 
                     // add
                     if (tiSm != null)
@@ -1372,7 +1414,8 @@ namespace AasxPackageLogic
                 {
                     // item
                     var tiVw = new VisualElementView(tiAas, cache, env, vw);
-                    tiVw.SetIsExpandedIfNotTouched(expandMode > 1);
+                    tiVw.SetIsExpandedIfNotTouched(OptionExpandMode > 1);
+                    
                     // recursion -> submodel elements
                     if (vw.containedElements != null && vw.containedElements.reference != null)
                         foreach (var ce in vw.containedElements.reference)
@@ -1400,10 +1443,34 @@ namespace AasxPackageLogic
             }
         }
 
+        private void GenerateInnerElementsForConceptDescriptions(
+            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env,
+            VisualElementEnvironmentItem tiCDs,
+            VisualElementGeneric root)
+        {
+            foreach (var cd in env.ConceptDescriptions)
+            {
+                // item
+                var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
+
+                // stop criteria for adding?
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
+                    && _cdReferred.ContainsKey(cd))
+                    continue;
+
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel
+                    && _cdToSm.ContainsKey(cd))
+                    continue;
+
+                // add
+                root.Members.Add(tiCD);
+            }
+        }
+
         public void AddVisualElementsFromShellEnv(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package = null,
             string packageSourceFn = null,
-            bool editMode = false, int expandMode = 0)
+            bool editMode = false, int expandMode = 0, bool lazyLoadingFirst = false)
         {
             // temporary tree
             var res = new ListOfVisualElement();
@@ -1411,6 +1478,10 @@ namespace AasxPackageLogic
             // valid?
             if (env == null)
                 return;
+
+            // remember options
+            OptionExpandMode = expandMode;
+            OptionLazyLoadingFirst = lazyLoadingFirst;
 
             // many operations -> make it bulletproof
             try
@@ -1430,6 +1501,20 @@ namespace AasxPackageLogic
                     tiEnv.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiPackage.Members.Add(tiEnv);
 
+                    // concept descriptions
+                    // note: will be added later to the overall tree
+                    tiCDs = new VisualElementEnvironmentItem(
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
+                        mainDataObject: env.ConceptDescriptions);
+                    tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
+
+                    // the selected sort order may cause disabling of lazy loading for this class!
+                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel
+                        || tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
+                    {
+                        OptionLazyLoadingFirst = false;
+                    }
+
                     // shells
                     tiShells = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Shells);
@@ -1441,20 +1526,13 @@ namespace AasxPackageLogic
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Assets);
                     tiAssets.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAssets);
-
-                    // concept descriptions
-                    // note: will be added later to the overall tree
-                    tiCDs = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
-                        mainDataObject: env.ConceptDescriptions);
-                    tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
                 }
 
                 // over all Admin shells
                 foreach (var aas in env.AdministrationShells)
                 {
                     // item
-                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode, expandMode);
+                    var tiAas = GenerateVisuElemForAAS(aas, cache, env, package, editMode);
 
                     // add item
                     if (tiAas != null)
@@ -1528,22 +1606,15 @@ namespace AasxPackageLogic
                     // over all concept descriptions
                     //
                     tiEnv.Members.Add(tiCDs);
-                    foreach (var cd in env.ConceptDescriptions)
+
+                    if (OptionLazyLoadingFirst)
                     {
-                        // item
-                        var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
-
-                        // stop criteria for adding?
-                        if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
-                            && _cdReferred.ContainsKey(cd))
-                            continue;
-
-                        if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel
-                            && _cdToSm.ContainsKey(cd))
-                            continue;
-    
-                        // add
-                        tiCDs.Members.Add(tiCD);
+                        // set lazy loading first
+                        SetElementToLazyLoading(cache, env, package, tiCDs);
+                    }
+                    else
+                    {
+                        GenerateInnerElementsForConceptDescriptions(cache, env, tiCDs, tiCDs);
                     }
 
                     // sort CDs?
@@ -1583,10 +1654,18 @@ namespace AasxPackageLogic
                     tiFiles.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiPackage.Members.Add(tiFiles);
 
-                    // single files
-                    var files = package.GetListOfSupplementaryFiles();
-                    foreach (var fi in files)
-                        tiFiles.Members.Add(new VisualElementSupplementalFile(tiFiles, cache, package, fi));
+                    if (OptionLazyLoadingFirst)
+                    {
+                        // set lazy loading first
+                        SetElementToLazyLoading(cache, env, package, tiFiles);
+                    }
+                    else
+                    {
+                        // single files
+                        var files = package.GetListOfSupplementaryFiles();
+                        foreach (var fi in files)
+                            tiFiles.Members.Add(new VisualElementSupplementalFile(tiFiles, cache, package, fi));
+                    }
                 }
 
             }
@@ -1598,6 +1677,56 @@ namespace AasxPackageLogic
             // end
             foreach (var r in res)
                 this.Add(r);
+        }
+
+        private void SetElementToLazyLoading(
+            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env, AdminShellPackageEnv package, 
+            VisualElementGeneric parent)
+        {
+            var tiDummy = new VisualElementEnvironmentItem(parent, cache, package, env,
+                                        VisualElementEnvironmentItem.ItemType.DummyNode);
+            parent.Members.Add(tiDummy);
+            parent.IsExpanded = false;
+        }
+
+        public void ExecuteLazyLoading(VisualElementGeneric ve)
+        {
+            // access
+            if (ve == null || !ve.NeedsLazyLoading)
+                return;
+
+            // try trigger loading
+            if (ve is VisualElementEnvironmentItem veei
+                && veei.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
+            {
+                ve.Members.Clear();
+                GenerateInnerElementsForConceptDescriptions(veei.Cache, veei.theEnv, veei, ve);
+                ve.IsExpanded = true;
+            }
+
+            if (ve is VisualElementEnvironmentItem vesf
+                && vesf.theItemType == VisualElementEnvironmentItem.ItemType.SupplFiles)
+            {
+                ve.Members.Clear();
+
+                // single files
+                if (vesf.thePackage != null)
+                {
+                    var files = vesf.thePackage.GetListOfSupplementaryFiles();
+                    foreach (var fi in files)
+                        ve.Members.Add(new VisualElementSupplementalFile(ve, vesf.Cache, vesf.thePackage, fi));
+                }
+
+                ve.IsExpanded = true;
+            }
+
+            if (ve is VisualElementSubmodelRef vesmr)
+            {
+                ve.Members.Clear();
+                GenerateInnerElementsForSubmodelRef(vesmr.Cache, vesmr.theEnv, vesmr.thePackage, vesmr.theSubmodel, 
+                    vesmr);
+                ve.IsExpanded = true;
+            }
         }
 
         //
@@ -1825,8 +1954,7 @@ namespace AasxPackageLogic
 
         public bool UpdateByEvent(
             PackCntChangeEventData data,
-            TreeViewLineCache cache,
-            bool editMode = false)
+            TreeViewLineCache cache)
         {
             //
             // Create
@@ -1853,7 +1981,7 @@ namespace AasxPackageLogic
                         // generate
                         var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
                             thisSm, smr, parentVE, cache,
-                            data.Container?.Env?.AasEnv, data.Container?.Env, editMode, expandMode: 0);
+                            data.Container?.Env?.AasEnv, data.Container?.Env);
 
                         // add
                         if (tiSm != null)

@@ -189,7 +189,8 @@ namespace AasxPackageExplorer
         private void FilterFor(string filter)
         {
             filter = ApplyFullFilterString(filter);
-            DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter);
+            DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter,
+                lazyLoadingFirst: true);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)

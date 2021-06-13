@@ -140,15 +140,19 @@ namespace AasxPackageExplorer
                 t += " (auxiliary AASX: " + _packageCentral.AuxItem.ToString() + ")";
             this.Title = t;
 
+            Log.Singleton.Info("Time 10 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
+
             // clear the right section, first (might be rebuild by callback from below)
             DispEditEntityPanel.ClearDisplayDefautlStack();
             ContentTakeOver.IsEnabled = false;
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked);
+                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
+                lazyLoadingFirst: true);
             DisplayElements.Refresh();
 
+            Log.Singleton.Info("Time 90 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
         }
 
         private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
