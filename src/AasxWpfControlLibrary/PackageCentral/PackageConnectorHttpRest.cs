@@ -835,7 +835,8 @@ namespace AasxWpfControlLibrary.PackageCentral
             DateTime lastTS = DateTime.MinValue;
 
             // do the query
-            var response = await _client.GetAsync(qst);
+
+            var response = await _client.GetAsync(_endPointSegments + qst);
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::PullEvents() " +
                     $"Server did not respond correctly on query {qst} !");
