@@ -31,8 +31,8 @@ namespace AasxPackageExplorer
     {
 
         private PackageCentral _packages = null;
-        private VisualElementGeneric _theEntity = null;
-        private DispEditHelperEntities _helper = new DispEditHelperEntities();
+        private ListOfVisualElementBasic _theEntities = null;
+        private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
         private AnyUiUIElement _lastRenderedRootElement = null;
         private AnyUiDisplayContextWpf _displayContext = null;
 
@@ -74,9 +74,9 @@ namespace AasxPackageExplorer
                     if (temp is AnyUiLambdaActionRedrawEntity)
                     {
                         // redraw ourselves?
-                        if (_packages != null && _theEntity != null)
+                        if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _theEntity, _helper.editMode, _helper.hintMode);
+                                _packages, _theEntities, _helper.editMode, _helper.hintMode);
                     }
 
                     // all other elements refer to superior functionality
@@ -143,6 +143,12 @@ namespace AasxPackageExplorer
                 this._helper.ClearHighlights();
         }
 
+        public void ClearPasteBuffer()
+        {
+            if (this._helper.theCopyPaste != null)
+                this._helper.theCopyPaste.Clear();
+        }
+
         public class DisplayRenderHints
         {
             public bool scrollingPanel = true;
@@ -181,9 +187,54 @@ namespace AasxPackageExplorer
             return res;
         }
 
+#if _not_needed
+        public DisplayRenderHints DisplayMessage(string message)
+        {
+            // reset
+            _packages = null;
+            _theEntity = null;
+            _displayContext = null;
+            _lastRenderedRootElement = null;
+
+            // Grid to fill full page
+            var g = new Grid();
+            g.Background = Brushes.DarkGray;
+            g.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1.0) }) ;
+            g.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            g.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1.0) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1.0) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1.0) });
+
+            // textblock
+            var tb = new TextBlock();
+            tb.Foreground = Brushes.White;
+            tb.FontSize = 18.0;
+            tb.Text = "" + message;
+            tb.FontWeight = FontWeights.Bold;
+            tb.HorizontalAlignment = HorizontalAlignment.Center;
+            tb.VerticalAlignment = VerticalAlignment.Center;
+            g.Children.Add(tb);
+            Grid.SetRow(tb, 1);
+            Grid.SetColumn(tb, 1);
+
+            // manually render
+            theMasterPanel.Children.Clear();
+            theMasterPanel.Children.Add(g);
+
+            // render hints
+            var rh = new DisplayRenderHints()
+            {
+                scrollingPanel = false,
+                showDataPanel = false
+            };
+            return rh;
+        }
+#endif
+
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
-            VisualElementGeneric entity,
+            ListOfVisualElementBasic entities,
             bool editMode, bool hintMode = false, bool showIriMode = false, 
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
@@ -199,14 +250,14 @@ namespace AasxPackageExplorer
 
             // remember objects for UI thread / redrawing
             this._packages = packages;
-            this._theEntity = entity;
+            this._theEntities = entities;
             _helper.packages = packages;
             _helper.highlightField = hightlightField;
             _helper.appEventsProvider = appEventProvider;
 
+            // primary access
             var renderHints = new DisplayRenderHints();
-
-            if (theMasterPanel == null || entity == null)
+            if (theMasterPanel == null || entities == null || entities.Count < 1)
             {
                 renderHints.showDataPanel = false;
                 return renderHints;
@@ -270,132 +321,143 @@ namespace AasxPackageExplorer
             }
 #endif
 
-            //
-            // Dispatch
-            //
-
             var inhibitRenderStackToPanel = false;
 
-            if (entity is VisualElementEnvironmentItem veei)
+            if (entities.ExactlyOne)
             {
-                _helper.DisplayOrEditAasEntityAasEnv(
-                    packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
-            }
-            else if (entity is VisualElementAdminShell veaas)
-            {
-                _helper.DisplayOrEditAasEntityAas(
-                    packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
-            }
-            else if (entity is VisualElementAsset veas)
-            {
-                _helper.DisplayOrEditAasEntityAsset(
-                    packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
-            }
-            else if (entity is VisualElementSubmodelRef vesmref)
-            {
-                AdminShell.AdministrationShell aas = null;
-                if (vesmref.Parent is VisualElementAdminShell xpaas)
-                    aas = xpaas.theAas;
-                _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
-                    hintMode: hintMode);
-            }
-            else if (entity is VisualElementSubmodel vesm)
-            {
-                _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                    packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
-                    hintMode: hintMode);
-            }
-            else if (entity is VisualElementSubmodelElement vesme)
-            {
-                _helper.DisplayOrEditAasEntitySubmodelElement(
-                    packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement, 
-                    editMode,
-                    repo, stack, hintMode: hintMode, 
-                    nestedCds: cdSortOrder.HasValue && 
-                        cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
-            }
-            else if (entity is VisualElementOperationVariable vepv)
-            {
-                _helper.DisplayOrEditAasEntityOperationVariable(
-                    packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
-                    stack, hintMode: hintMode);
-            }
-            else if (entity is VisualElementConceptDescription vecd)
-            {
-                _helper.DisplayOrEditAasEntityConceptDescription(
-                    packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
-                    preventMove: cdSortOrder.HasValue &&
-                        cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
-            }
-            else if (entity is VisualElementView vevw)
-            {
-                if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
-                    _helper.DisplayOrEditAasEntityView(
-                        packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
+                //
+                // Dispatch: ONE item
+                //
+                var entity = entities.First();                
+
+                if (entity is VisualElementEnvironmentItem veei)
+                {
+                    _helper.DisplayOrEditAasEntityAasEnv(
+                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
+                }
+                else if (entity is VisualElementAdminShell veaas)
+                {
+                    _helper.DisplayOrEditAasEntityAas(
+                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
+                }
+                else if (entity is VisualElementAsset veas)
+                {
+                    _helper.DisplayOrEditAasEntityAsset(
+                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
+                }
+                else if (entity is VisualElementSubmodelRef vesmref)
+                {
+                    AdminShell.AdministrationShell aas = null;
+                    if (vesmref.Parent is VisualElementAdminShell xpaas)
+                        aas = xpaas.theAas;
+                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
+                        packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
                         hintMode: hintMode);
-                else
-                    _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
-            }
-            else if (entity is VisualElementReference verf)
-            {
-                if (verf.Parent != null && verf.Parent is VisualElementView xpev)
-                    _helper.DisplayOrEditAasEntityViewReference(
-                        packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
-                        editMode, stack);
-                else
-                    _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
-            }
-            else
-            if (entity is VisualElementSupplementalFile vesf)
-            {
-                _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf.theFile, editMode, stack);
-            }
-            else if (entity is VisualElementPluginExtension vepe)
-            {
-                // create controls
-                object result = null;
-
-                try
-                {
-                    // replace at top level
-                    theMasterPanel.Children.Clear();
-                    if (vepe.thePlugin != null)
-                        result = vepe.thePlugin.InvokeAction(
-                            "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
                 }
-                catch (Exception ex)
+                else if (entity is VisualElementSubmodel vesm)
                 {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
+                        packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
+                        hintMode: hintMode);
                 }
-
-                // add?
-                if (result == null)
+                else if (entity is VisualElementSubmodelElement vesme)
                 {
-                    // re-init display!
+                    _helper.DisplayOrEditAasEntitySubmodelElement(
+                        packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement,
+                        editMode,
+                        repo, stack, hintMode: hintMode,
+                        nestedCds: cdSortOrder.HasValue &&
+                            cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
+                }
+                else if (entity is VisualElementOperationVariable vepv)
+                {
+                    _helper.DisplayOrEditAasEntityOperationVariable(
+                        packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
+                        stack, hintMode: hintMode);
+                }
+                else if (entity is VisualElementConceptDescription vecd)
+                {
+                    _helper.DisplayOrEditAasEntityConceptDescription(
+                        packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
+                        preventMove: cdSortOrder.HasValue &&
+                            cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
+                }
+                else if (entity is VisualElementView vevw)
+                {
+                    if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
+                        _helper.DisplayOrEditAasEntityView(
+                            packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
+                            hintMode: hintMode);
+                    else
+                        _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
+                }
+                else if (entity is VisualElementReference verf)
+                {
+                    if (verf.Parent != null && verf.Parent is VisualElementView xpev)
+                        _helper.DisplayOrEditAasEntityViewReference(
+                            packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
+                            editMode, stack);
+                    else
+                        _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
+                }
+                else
+                if (entity is VisualElementSupplementalFile vesf)
+                {
+                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf.theFile, editMode, stack);
+                }
+                else if (entity is VisualElementPluginExtension vepe)
+                {
+                    // create controls
+                    object result = null;
+
+                    try
+                    {
+                        // replace at top level
+                        theMasterPanel.Children.Clear();
+                        if (vepe.thePlugin != null)
+                            result = vepe.thePlugin.InvokeAction(
+                                "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+
+                    // add?
+                    if (result == null)
+                    {
+                        // re-init display!
 #if MONOUI
                     stack = ClearDisplayDefautlStack();
 #else
-                    stack = new AnyUiStackPanel();
+                        stack = new AnyUiStackPanel();
 #endif
 
-                    // helping message
-                    _helper.AddGroup(
-                        stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                        // helping message
+                        _helper.AddGroup(
+                            stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                    }
+                    else
+                    {
+                        // this is natively done; do NOT render Any UI to WPF
+                        inhibitRenderStackToPanel = true;
+                    }
+
+                    // show no panel nor scroll
+                    renderHints.scrollingPanel = false;
+                    renderHints.showDataPanel = false;
+
                 }
                 else
-                {
-                    // this is natively done; do NOT render Any UI to WPF
-                    inhibitRenderStackToPanel = true;
-                }
-
-                // show no panel nor scroll
-                renderHints.scrollingPanel = false;
-                renderHints.showDataPanel = false;
-
+                    _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
             }
             else
-                _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
+            {
+                //
+                // Dispatch: MULTIPLE items
+                //
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder);
+            }
 
             // now render master stack
 #if __export_BLAZOR
@@ -516,7 +578,7 @@ namespace AasxPackageExplorer
             return renderHints;
         }
 
-        #endregion
+#endregion
 
         public void HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {

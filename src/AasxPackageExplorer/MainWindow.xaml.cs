@@ -431,19 +431,19 @@ namespace AasxPackageExplorer
         }
 
         public void PrepareDispEditEntity(
-            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, bool showIriMode,
+            AdminShellPackageEnv package, ListOfVisualElementBasic entities, bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // determine some flags
             var tiCds = DisplayElements.SearchVisualElementOnMainDataObject(package?.AasEnv?.ConceptDescriptions) as
                 VisualElementEnvironmentItem;            
 
-            // update element view
+            // update element view?
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, entity, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
-                flyoutProvider: this,
-                appEventProvider: this,
-                hightlightField: hightlightField);
+                    _packageCentral, entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
+                    flyoutProvider: this,
+                    appEventProvider: this,
+                    hightlightField: hightlightField);
 
             // panels
             var panelHeight = 48;
@@ -485,11 +485,12 @@ namespace AasxPackageExplorer
             this.showContentPackageUri = null;
 
             // show it
-            Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
+            if (ElementTabControl.SelectedIndex != 0)
+                Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
 
             // some entities require special handling
-            if (entity is VisualElementSubmodelElement &&
-                (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File file)
+            if (entities?.ExactlyOne == true && entities.First() is VisualElementSubmodelElement sme &&
+                sme?.theWrapper?.submodelElement is AdminShell.File file)
             {
                 ShowContent.IsEnabled = true;
                 this.showContentPackageUri = file.value;
@@ -497,11 +498,12 @@ namespace AasxPackageExplorer
                 DragSource.Foreground = Brushes.Black;
             }
 
-            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+            if (entities?.ExactlyOne == true 
+                && this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
                 this.theOnlineConnection.IsConnected())
             {
                 UpdateContent.IsEnabled = true;
-                this.currentEntityForUpdate = entity;
+                this.currentEntityForUpdate = entities.First();
             }
         }
 
@@ -600,7 +602,7 @@ namespace AasxPackageExplorer
             // for all, prepare the display
             PrepareDispEditEntity(
                 _packageCentral.Main,
-                DisplayElements.SelectedItem,
+                DisplayElements.SelectedItems,
                 MenuItemWorkspaceEdit.IsChecked,
                 MenuItemWorkspaceHints.IsChecked,
                 MenuItemOptionsShowIri.IsChecked,
@@ -807,7 +809,7 @@ namespace AasxPackageExplorer
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
                     Log.Singleton.Info("PackageCentral events: " + data.Info);
-                DisplayElements.PushEvent(data);
+                DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange() { Change = data });
                 return false;
             };
 
@@ -938,6 +940,101 @@ namespace AasxPackageExplorer
             }
         }
 
+        private async Task MainTimer_HandleLambdaAction(AnyUiLambdaActionBase lab)
+        {
+            // nothing
+            if (lab == null)
+                return;
+
+            // recurse??
+            if (lab is AnyUiLambdaActionList list && list.Actions != null)
+                foreach (var ac in list.Actions)
+                    await MainTimer_HandleLambdaAction(ac);
+
+            // what to do?
+            if (lab is AnyUiLambdaActionRedrawAllElements wish)
+            {
+                // edit mode affects the total element view
+                if (!wish.OnlyReFocus)
+                    RedrawAllAasxElements();
+                // the selection will be shifted ..
+                if (wish.NextFocus != null)
+                {
+                    // for later search in visual elements, expand them all in order to be absolutely 
+                    // sure to find business object
+                    this.DisplayElements.ExpandAllItems();
+
+                    // now: search
+                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
+                }
+                // fake selection
+                RedrawElementView(hightlightField: wish.HighlightField);
+                DisplayElements.Refresh();
+                ContentTakeOver.IsEnabled = false;
+            }
+
+            if (lab is AnyUiLambdaActionContentsChanged)
+            {
+                // enable button
+                ContentTakeOver.IsEnabled = true;
+            }
+
+            if (lab is AnyUiLambdaActionContentsTakeOver)
+            {
+                // rework list
+                ContentTakeOver_Click(null, null);
+            }
+
+            if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
+            {
+                // do some more adoptions
+                var rf = new AdminShell.Reference(tempNavTo.targetReference);
+
+                if (tempNavTo.translateAssetToAAS
+                    && rf.Count == 1
+                    && rf.First.IsType(AdminShell.Key.Asset))
+                {
+                    // try to find possible environments containg the asset and try making
+                    // replacement
+                    foreach (var pe in _packageCentral.GetAllPackageEnv())
+                    {
+                        if (pe?.AasEnv?.AdministrationShells == null)
+                            continue;
+
+                        foreach (var aas in pe.AasEnv.AdministrationShells)
+                            if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                            {
+                                rf = aas.GetReference();
+                                break;
+                            }
+                    }
+                }
+
+                // handle it by UI
+                await UiHandleNavigateTo(rf, alsoDereferenceObjects: tempNavTo.alsoDereferenceObjects);
+            }
+
+            if (lab is AnyUiLambdaActionDisplayContentFile tempDispCont)
+            {
+                try
+                {
+                    BrowserDisplayLocalFile(tempDispCont.fn, tempDispCont.mimeType,
+                        preferInternal: tempDispCont.preferInternalDisplay);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"While displaying content file {tempDispCont.fn} requested by lambda");
+                }
+            }
+
+            if (lab is AnyUiLambdaActionPackCntChange 
+                || lab is AnyUiLambdaActionSelectMainObjects)
+            {
+                DisplayElements.PushEvent(lab);
+            }
+        }
+
         private async Task MainTimer_HandleEntityPanel()
         {
             // check if Display/ Edit Control has some work to do ..
@@ -950,82 +1047,7 @@ namespace AasxPackageExplorer
                         var temp = DispEditEntityPanel.WishForOutsideAction[0];
                         DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
-                        // what to do?
-                        if (temp is AnyUiLambdaActionRedrawAllElements wish)
-                        {
-                            // edit mode affects the total element view
-                            if (!wish.OnlyReFocus)
-                                RedrawAllAasxElements();
-                            // the selection will be shifted ..
-                            if (wish.NextFocus != null)
-                            {
-                                DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
-                            }
-                            // fake selection
-                            RedrawElementView(hightlightField: wish.HighlightField);
-                            DisplayElements.Refresh();
-                            ContentTakeOver.IsEnabled = false;
-                        }
-
-                        if (temp is AnyUiLambdaActionContentsChanged)
-                        {
-                            // enable button
-                            ContentTakeOver.IsEnabled = true;
-                        }
-
-                        if (temp is AnyUiLambdaActionContentsTakeOver)
-                        {
-                            // rework list
-                            ContentTakeOver_Click(null, null);
-                        }
-
-                        if (temp is AnyUiLambdaActionNavigateTo tempNavTo)
-                        {
-                            // do some more adoptions
-                            var rf = new AdminShell.Reference(tempNavTo.targetReference);
-
-                            if (tempNavTo.translateAssetToAAS
-                                && rf.Count == 1
-                                && rf.First.IsType(AdminShell.Key.Asset))
-                            {
-                                // try to find possible environments containg the asset and try making
-                                // replacement
-                                foreach (var pe in _packageCentral.GetAllPackageEnv())
-                                {
-                                    if (pe?.AasEnv?.AdministrationShells == null)
-                                        continue;
-
-                                    foreach (var aas in pe.AasEnv.AdministrationShells)
-                                        if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
-                                        {
-                                            rf = aas.GetReference();
-                                            break;
-                                        }
-                                }
-                            }
-
-                            // handle it by UI
-                            await UiHandleNavigateTo(rf, alsoDereferenceObjects: tempNavTo.alsoDereferenceObjects);
-                        }
-
-                        if (temp is AnyUiLambdaActionDisplayContentFile tempDispCont)
-                        {
-                            try
-                            {
-                                BrowserDisplayLocalFile(tempDispCont.fn, tempDispCont.mimeType,
-                                    preferInternal: tempDispCont.preferInternalDisplay);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(
-                                    ex, $"While displaying content file {tempDispCont.fn} requested by lambda");
-                            }
-                        }
-
-                        if (temp is AnyUiLambdaActionPackCntChange tempChange)
-                        {
-                            DisplayElements.PushEvent(tempChange.Change);
-                        }
+                        await MainTimer_HandleLambdaAction(temp);
                     }
                 }
             }
@@ -1125,6 +1147,10 @@ namespace AasxPackageExplorer
                 // remember some further supplementary search information
                 var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
+
+                // for later search in visual elements, expand them all in order to be absolutely 
+                // sure to find business object
+                this.DisplayElements.ExpandAllItems();
 
                 // incrementally make it unprecise
                 while (work.Count > 0)
@@ -1335,11 +1361,6 @@ namespace AasxPackageExplorer
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
-            // first check, if the selected page points to something
-            var veSelected = DisplayElements.SelectedItem;
-            if (veSelected == null)
-                return;
-
             // some container options are required
             var copts = _packageCentral?.MainItem?.Container?.ContainerOptions;
 
@@ -1348,8 +1369,10 @@ namespace AasxPackageExplorer
             // Note: for the time being, Events will be only valid, if Event and observed entity are 
             // within the SAME Submodel
             //
+            var veSelected = DisplayElements.SelectedItem;
 
-            if (true == copts?.StayConnected
+            if (veSelected != null
+                && true == copts?.StayConnected
                 && Options.Curr.StayConnectOptions.HasContent()
                 && Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
                 && !_eventHandling.UpdateValuePending

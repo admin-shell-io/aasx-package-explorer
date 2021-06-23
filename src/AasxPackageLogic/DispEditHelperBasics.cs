@@ -1424,7 +1424,7 @@ namespace AasxPackageLogic
                     (o) =>
                     {
                         var st = keys.ToString(format: 1, delimiter: "\r\n");
-                        this.context?.ClipboardSetText(st);
+                        this.context?.ClipboardSet(new AnyUiClipboardData(st));
                         Log.Singleton.Info("Keys written to clipboard.");
                         return new AnyUiLambdaActionNone();
                     });
@@ -1642,7 +1642,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // List manipulations
+        // List manipulations (single entities)
         //
 
         public int MoveElementInListUpwards<T>(List<T> list, T entity)
@@ -1730,6 +1730,49 @@ namespace AasxPackageLogic
             list.Insert(ndx + 1, entity);
         }
 
+        //
+        // List manipulations (multiple entities)
+        //
+
+        public int MoveElementsToStartingIndex<T>(List<T> list, List<T> entities, int startingIndex)
+        {
+            // check
+            if (list == null || list.Count < 1 || entities == null)
+                return -1;
+            if (startingIndex < 0)
+                return -1;
+            // remove all from list
+            foreach (var e in entities)
+                if (list.Contains(e))
+                    list.Remove(e);
+            // now, insert sequentially starting from index
+            var si2 = startingIndex;
+            if (si2 > list.Count)
+                si2 = list.Count;
+            var ndx = si2;
+            foreach (var e in entities)
+                list.Insert(ndx++, e);
+            // return something
+            return si2;
+        }
+
+        public int DeleteElementsInList<T>(List<T> list, List<T> entities)
+        {
+            // check
+            if (list == null || list.Count < 1 || entities == null)
+                return -1;
+            // remove all from list
+            foreach (var e in entities)
+                if (list.Contains(e))
+                    list.Remove(e);
+            // return something
+            return 0;
+        }
+
+        //
+        // Helper
+        //
+
         public void EntityListUpDownDeleteHelper<T>(
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
             object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false)
@@ -1749,9 +1792,9 @@ namespace AasxPackageLogic
                         if (preventMove)
                         {
                             this.context.MessageBoxFlyoutShow(
-                                "Moving within list is not possible, as list of ConceptDescription has dynamic " +
+                                "Moving within list is not possible, as list of entities has dynamic " +
                                 "sort order.",
-                                "ConceptDescriptions", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                                "Move entities", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
                             return new AnyUiLambdaActionNone();
                         }
 
@@ -1796,7 +1839,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 });
         }
-
+       
         public void QualifierHelper(AnyUiStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
             if (editMode)

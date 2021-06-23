@@ -5,6 +5,31 @@ using System.Text;
 namespace AnyUi
 {
     /// <summary>
+    /// This interface marks items which stand for selected items in the tree of AAS elements. 
+    /// </summary>
+    public interface IAnyUiSelectedItem { }
+
+    public class AnyUiClipboardData
+    {
+        /// <summary>
+        /// If a special watermark is found in the system clipboard, this is returned.
+        /// Else <c>null</c>.
+        /// </summary>
+        public string Watermark;
+
+        /// <summary>
+        /// If text content is present in the clipboard.
+        /// </summary>
+        public string Text;
+
+        public AnyUiClipboardData(string text = null, string watermark = null) 
+        {
+            Watermark = watermark;
+            Text = text;
+        }
+    }
+
+    /// <summary>
     /// Holds the overall context; for the specific implementations, will contain much more funtionality.
     /// Provides also hooks for the dialogues.
     /// </summary>
@@ -33,9 +58,17 @@ namespace AnyUi
         /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
         /// of the main application computer.
         /// </summary>
-        /// <param name="txt"></param>
-        public virtual void ClipboardSetText(string txt)
+        public virtual void ClipboardSet(AnyUiClipboardData cb)
         {
+        }
+
+        /// <summary>
+        /// If supported by implementation technology, will get Clipboard (copy/ paste buffer)
+        /// of the main application computer.
+        /// </summary>
+        public virtual AnyUiClipboardData ClipboardGet()
+        {
+            return null;
         }
 
         /// <summary>
@@ -112,8 +145,19 @@ namespace AnyUi
         public bool ActualControlState = false;
 
         /// <summary>
-        /// Set by the implementation technology (derived class of this), if Akt is pressed
+        /// Set by the implementation technology (derived class of this), if Alt is pressed
         /// </summary>
         public bool ActualAltState = false;
+
+        /// <summary>
+        /// Returns the selected items in the tree, which are provided by the implementation technology
+        /// (derived class of this).
+        /// Note: these would be of type <c>VisualElementGeneric</c>, but is in other assembly.
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<IAnyUiSelectedItem> GetSelectedItems()
+        {
+            return null;
+        }
     }
 }

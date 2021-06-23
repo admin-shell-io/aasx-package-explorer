@@ -894,10 +894,45 @@ namespace AnyUi
         /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
         /// of the main application computer.
         /// </summary>
-        /// <param name="txt"></param>
-        public override void ClipboardSetText(string txt)
+        public override void ClipboardSet(AnyUiClipboardData cb)
         {
-            Clipboard.SetText(txt);
+            if (cb == null)
+                return;
+
+            if (cb.Watermark != null)
+                Clipboard.SetData("AASXPE", cb.Watermark);
+
+            if (cb.Text != null)
+                Clipboard.SetText(cb.Text);
+        }
+
+        /// <summary>
+        /// If supported by implementation technology, will get Clipboard (copy/ paste buffer)
+        /// of the main application computer.
+        /// </summary>
+        public override AnyUiClipboardData ClipboardGet()
+        {
+            var res = new AnyUiClipboardData();
+
+            // get watermark?
+            res.Watermark = (string)Clipboard.GetData("AASXPE");
+
+            // get text?
+            res.Text = Clipboard.GetText();
+
+            // ok
+            return res;
+        }
+
+        /// <summary>
+        /// Returns the selected items in the tree, which are provided by the implementation technology
+        /// (derived class of this).
+        /// Note: these would be of type <c>VisualElementGeneric</c>, but is in other assembly.
+        /// </summary>
+        /// <returns></returns>
+        public override List<IAnyUiSelectedItem> GetSelectedItems()
+        {
+            return null;
         }
 
         /// <summary>

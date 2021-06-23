@@ -34,7 +34,7 @@ namespace AasxPackageLogic
         static string PackageTargetDir = "/aasx";
         static bool PackageEmbedAsThumbnail = false;
 
-        private DispEditHelperCopyPaste.CopyPasteBuffer theCopyPaste = new DispEditHelperCopyPaste.CopyPasteBuffer();
+        public DispEditHelperCopyPaste.CopyPasteBuffer theCopyPaste = new DispEditHelperCopyPaste.CopyPasteBuffer();
 
         public class UploadAssistance
         {
@@ -191,9 +191,9 @@ namespace AasxPackageLogic
 
             // automatically and silently fix errors
             if (env.AdministrationShells == null)
-                env.AdministrationShells = new List<AdminShell.AdministrationShell>();
+                env.AdministrationShells = new AdminShell.ListOfAdministrationShells();
             if (env.Assets == null)
-                env.Assets = new List<AdminShell.Asset>();
+                env.Assets = new AdminShell.ListOfAssets();
             if (env.ConceptDescriptions == null)
                 env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
             if (env.Submodels == null)
@@ -445,6 +445,71 @@ namespace AasxPackageLogic
 
                             return new AnyUiLambdaActionNone();
                         });
+                }
+
+                if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
+                {
+                    // Cut, copy, paste within list of Assets
+                    if (editMode && env != null)
+                    {
+                        // cut/ copy / paste
+                        this.DispPlainListOfIdentifiablePasteHelper<AdminShell.Identifiable>(
+                            stack, repo, this.theCopyPaste,                            
+                            label: "Buffer:",
+                            lambdaPasteInto: (cpi, del) =>
+                            {
+                                // access
+                                var item = cpi as CopyPasteItemIdentifiable;
+                                if (item?.entity == null || (del && item?.parentContainer == null))
+                                    return null;
+
+                                // divert
+                                object res = null;
+                                if (item.entity is AdminShell.AdministrationShell itaas)
+                                {
+                                    // new 
+                                    var aas = new AdminShell.AdministrationShell(itaas);
+                                    env.AdministrationShells.Add(aas);
+                                    res = aas;
+
+                                    // delete
+                                    if (del && item.parentContainer is List<AdminShell.AdministrationShell> aasold
+                                        && aasold.Contains(aas))
+                                        aasold.Remove(aas);
+                                }
+                                else
+                                if (item.entity is AdminShell.Asset itasset)
+                                {
+                                    // new 
+                                    var asset = new AdminShell.Asset(itasset);
+                                    env.Assets.Add(asset);
+                                    res = asset;
+
+                                    // delete
+                                    if (del && item.parentContainer is List<AdminShell.Asset> assetold
+                                        && assetold.Contains(asset))
+                                        assetold.Remove(asset);
+                                }
+                                else
+                                if (item.entity is AdminShell.ConceptDescription itcd)
+                                {
+                                    // new 
+                                    var cd = new AdminShell.ConceptDescription(itcd);
+                                    env.ConceptDescriptions.Add(cd);
+                                    res = cd;
+
+                                    // delete
+                                    if (del && item.parentContainer is List<AdminShell.ConceptDescription> cdold
+                                        && cdold.Contains(cd))
+                                        cdold.Remove(cd);
+                                }
+
+                                // ok
+                                return res;
+                            });
+                    }
                 }
 
                 //
@@ -773,7 +838,7 @@ namespace AasxPackageLogic
             this.AddGroup(stack, "Asset Administration Shell", this.levelColors.MainSection);
 
             // Entities
-            if (editMode)
+            if (editMode && aas?.submodelRefs != null)
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
@@ -781,11 +846,39 @@ namespace AasxPackageLogic
                 this.EntityListUpDownDeleteHelper<AdminShell.AdministrationShell>(
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
 
+                // paste into
+                var allowPasteInto = this.theCopyPaste?.Items?.AllOfElementType<CopyPasteItemSubmodel>() == true;
+
                 // Cut, copy, paste within list of AASes
                 this.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
                     stack, repo, this.theCopyPaste,
                     env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
-                    label: "Buffer:");
+                    label: "Buffer:",
+                    allowPasteInto,
+                    (cpi, del) =>
+                    {
+                        // access
+                        var item = cpi as CopyPasteItemSubmodel;
+                        if (item?.smref == null)
+                            return null;
+
+                        // duplicate
+                        foreach (var x in aas.submodelRefs)
+                            if (x?.Matches(item.smref, AdminShellV20.Key.MatchMode.Identification) == true)
+                                return null;
+
+                        // add 
+                        var newsmr = new AdminShell.SubmodelRef(item.smref);
+                        aas.submodelRefs.Add(newsmr);
+
+                        // delete
+                        if (del && item.parentContainer is AdminShell.AdministrationShell aasold
+                            && aasold.submodelRefs.Contains(item.smref))
+                            aasold.submodelRefs.Remove(item.smref);
+
+                        // ok
+                        return newsmr;
+                    });
 
                 // Submodels
                 this.AddHintBubble(
@@ -1139,7 +1232,13 @@ namespace AasxPackageLogic
                 this.DispSubmodelCutCopyPasteHelper<AdminShell.SubmodelRef>(stack, repo, this.theCopyPaste,
                     aas.submodelRefs, smref, (sr) => { return new AdminShell.SubmodelRef(sr); },
                     smref, submodel,
-                    label: "Buffer:");
+                    label: "Buffer:",
+                    checkEquality: (r1,r2) =>
+                    {
+                        if (r1 != null && r2 != null)
+                            return (r1.Matches(r2, AdminShellV20.Key.MatchMode.Identification));
+                        return false;
+                    });
             }
             else
             // Cut, copy, paste within the Submodels
@@ -2201,17 +2300,35 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 1 
                                 && this.theCopyPaste?.Valid == true
-                                && this.theCopyPaste.Item is CopyPasteItemSME item
-                                && item.sme != null)
+                                && this.theCopyPaste.Items != null 
+                                && this.theCopyPaste.Items.AllOfElementType<CopyPasteItemSME>())
                             {
-                                var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
                                 object businessObj = null;
+                                foreach (var it in this.theCopyPaste.Items)
+                                {
+                                    // access
+                                    var item = it as CopyPasteItemSME;
+                                    if (item?.sme == null)
+                                    {
+                                        Log.Singleton.Error("When pasting SME, an element was invalid.");
+                                        continue;
+                                    }
 
-                                if (smo is AdminShell.IEnumerateChildren smeec)
-                                    businessObj = smeec.AddChild(smw2, 
-                                        new AdminShell.Operation.EnumerationPlacmentOperationVariable() { 
-                                            Direction = dir 
-                                    });
+                                    var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);                                    
+
+                                    if (smo is AdminShell.IEnumerateChildren smeec)
+                                        businessObj = smeec.AddChild(smw2,
+                                            new AdminShell.Operation.EnumerationPlacmentOperationVariable()
+                                            {
+                                                Direction = dir
+                                            });
+
+                                    // may delete original
+                                    if (!this.theCopyPaste.Duplicate)
+                                    {
+                                        this.DispDeleteCopyPasteItem(item);
+                                    }
+                                }
 
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: businessObj);
@@ -3373,6 +3490,6 @@ namespace AasxPackageLogic
             // normal reference
             this.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
                 packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements);
-        }
+        }        
     }
 }

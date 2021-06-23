@@ -13,6 +13,28 @@ namespace AasxPackageLogic
     // Lambda Actions for the editing of an AAS
     //
 
+    public class AnyUiLambdaActionList : AnyUiLambdaActionBase
+    {
+        public List<AnyUiLambdaActionBase> Actions = new List<AnyUiLambdaActionBase>();
+
+        public AnyUiLambdaActionList() { }
+        public AnyUiLambdaActionList(List<AnyUiLambdaActionBase> actions)
+        {
+            if (actions != null)
+                Actions = actions;
+        }
+        public AnyUiLambdaActionList(IEnumerable<AnyUiLambdaActionBase> actions)
+        {
+            if (actions != null)
+                Actions = new List<AnyUiLambdaActionBase>(actions);
+        }
+        public AnyUiLambdaActionList(params AnyUiLambdaActionBase[] actions)
+        {
+            if (actions != null)
+                Actions = new List<AnyUiLambdaActionBase>(actions);
+        }
+    }
+
     public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
     public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionBase
     {
@@ -30,6 +52,16 @@ namespace AasxPackageLogic
             this.IsExpanded = isExpanded;
             this.HighlightField = highlightField;
             this.OnlyReFocus = onlyReFocus;
+        }
+    }
+
+    public class AnyUiLambdaActionSelectMainObjects : AnyUiLambdaActionBase
+    {
+        public object[] MainObjects = null;
+
+        public AnyUiLambdaActionSelectMainObjects() { }
+        public AnyUiLambdaActionSelectMainObjects(IEnumerable<object> mainObjects) {
+            MainObjects = mainObjects.ToArray();
         }
     }
 

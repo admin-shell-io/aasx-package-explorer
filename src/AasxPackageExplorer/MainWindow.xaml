@@ -83,6 +83,7 @@
                     <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
                     <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
                     <RoutedUICommand x:Key="Test" Text="Test" />
+                    <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
                     <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
                     <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
                     <RoutedUICommand x:Key="ToolsFindBackward" Text="ToolsFindbackward" />
@@ -242,6 +243,7 @@
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource BufferClear}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindBackward}" Executed="CommandBinding_Executed"/>
@@ -386,6 +388,10 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem x:Name="MenuItemWorkspacConvertElement" Header="Convert .." Command="{StaticResource ConvertElement}"/>
+                        <Separator/>
+                        <MenuItem Header="Buffer ..">
+                            <MenuItem x:Name="MenuItemWorkspaceBufferClear" Header="Clear internal paste buffer" Command="{StaticResource BufferClear}"/>
+                        </MenuItem>
                         <Separator/>
                         <MenuItem Header="Events ..">
                             <MenuItem x:Name="MenuItemWorkspaceEventsShowLog" Header="_Event log" InputGestureText="Ctrl+L" IsCheckable="True" Command="{StaticResource EventsShowLogMenu}"/>
@@ -539,7 +545,8 @@
                                 <RowDefinition x:Name="RowContentPanels" Height="48"/>
                             </Grid.RowDefinitions>
 
-                            <ScrollViewer x:Name="ScrollViewerElement" Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer x:Name="ScrollViewerElement" Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                                          Padding="1,1,5,1">
                                 <local:DispEditAasxEntity x:Name="DispEditEntityPanel">
                                 </local:DispEditAasxEntity>
                             </ScrollViewer>

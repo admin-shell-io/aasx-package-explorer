@@ -35,7 +35,7 @@ namespace AasxPackageLogic
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
     }
 
-    public class VisualElementGeneric : INotifyPropertyChanged /* TODO , ITreeViewSelectable */
+    public class VisualElementGeneric : INotifyPropertyChanged, IAnyUiSelectedItem /* TODO , ITreeViewSelectable */
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
@@ -115,6 +115,19 @@ namespace AasxPackageLogic
         }
 
         /// <summary>
+        /// Returns the state of the IsExpanded from the cache.
+        /// The cache associates with the MainDataObject and therefore survives,
+        /// even if the the TreeViewLines are completely rebuilt.
+        /// </summary>
+        public bool GetExpandedStateFromCache()
+        {
+            var o = this.GetMainDataObject();
+            if (o != null && Cache != null && Cache.IsExpanded.ContainsKey(o))
+                return Cache.IsExpanded[o];
+            return false;
+        }
+
+        /// <summary>
         /// Restores the state of the IsExpanded from an cache.
         /// The cache associates with the MainDataObject and therefore survives,
         /// even if the the TreeViewLines are completely rebuilt.
@@ -181,6 +194,7 @@ namespace AasxPackageLogic
                 //// if (value != _isSelected)
                 //// {
                 _isSelected = value;
+                this.OnPropertyChanged("IsSelected");
                 //// }
 
                 // TODO (MIHO, 2020-07-31): check if commented out because of non-working multi-select?
@@ -365,6 +379,100 @@ namespace AasxPackageLogic
                     return true;
                 return false;
             }
+        }
+    }
+
+    /// <summary>
+    /// Maintains together multiple visual elements and provided.
+    /// Note: there is some overlapping with <c>ListOfVisualElement</c>, which is indeed a
+    /// observable collection.
+    /// </summary>
+    public class ListOfVisualElementBasic : List<VisualElementGeneric>
+    {
+        public bool ExactlyOne { get { return this.Count == 1; } }
+
+        /// <summary>
+        /// Check that, if any, all elements share the same parent element.
+        /// </summary>
+        /// <returns></returns>
+        public bool AllWithSameParent()
+        {
+            VisualElementGeneric theParent = null;
+            foreach (var ve in this)
+                if (ve?.Parent != null)
+                    if (theParent == null)
+                        theParent = ve.Parent;
+                    else
+                        if (theParent != ve.Parent)
+                        return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Check, if elements are present and all of same type.
+        /// </summary>
+        /// <typeparam name="T">Desired subclass of <c>VisualElementGeneric</c></typeparam>
+        public bool AllOfElementType<T>() where T : VisualElementGeneric
+        {
+            if (this.Count < 1)
+                return false;
+            foreach (var ve in this)
+                if (!(ve is T))
+                    return false;
+            return true;
+        }
+
+        public class IndexInfo 
+        {
+            public VisualElementGeneric SharedParent;
+            public int MinIndex, MaxIndex;
+        }
+
+        public IndexInfo GetIndexedParentInfo()
+        {
+            // make sure this is possible
+            if (this.Count == 0 || !AllWithSameParent())
+                return null;
+
+            // subsequently, the parent is obvious
+            var parent = this.First()?.Parent;
+            if (parent == null)
+                // makes no sense
+                return null;
+
+            // ok, evaluate indices
+            int mini = int.MaxValue, maxi = int.MinValue;
+            foreach (var ve in this)
+            {
+                // emergency exit
+                if (ve.Parent != parent || ve.Parent.Members == null || !ve.Parent.Members.Contains(ve))
+                    return null;
+
+                // index?
+                int ndx = ve.Parent.Members.IndexOf(ve);
+                if (ndx < mini)
+                    mini = ndx;
+                if (ndx > maxi)
+                    maxi = ndx;
+            }
+
+            // ok result valid?
+            if (mini == int.MaxValue || maxi < 0)
+                return null;
+
+            return new IndexInfo() { SharedParent = parent, MinIndex = mini, MaxIndex = maxi };
+        }
+
+        public List<T> GetListOfBusinessObjects<T>(bool alsoDereferenceObjects = false)
+        {
+            var res = new List<T>();
+            foreach (var x in this)
+            {
+                var bo = (alsoDereferenceObjects) ? x?.GetDereferencedMainDataObject() : x?.GetMainDataObject();
+                if (bo is T bot)
+                    res.Add(bot);
+            }
+            return res;
         }
     }
 
@@ -1363,7 +1471,7 @@ namespace AasxPackageLogic
             var tiSm = new VisualElementSubmodelRef(parent, cache, env, package, smr, sm);
             tiSm.SetIsExpandedIfNotTouched(OptionExpandMode > 1);
 
-            if (OptionLazyLoadingFirst)
+            if (OptionLazyLoadingFirst && !tiSm.GetExpandedStateFromCache())
             {
                 // set lazy loading first
                 SetElementToLazyLoading(cache, env, package, tiSm);
@@ -1446,8 +1554,17 @@ namespace AasxPackageLogic
         private void GenerateInnerElementsForConceptDescriptions(
             TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env,
             VisualElementEnvironmentItem tiCDs,
-            VisualElementGeneric root)
+            VisualElementGeneric root,
+            bool doSort = true)
         {
+            // access
+            if (env == null || tiCDs == null || root == null)
+                return;
+
+            //
+            // create 
+            //
+
             foreach (var cd in env.ConceptDescriptions)
             {
                 // item
@@ -1464,6 +1581,38 @@ namespace AasxPackageLogic
 
                 // add
                 root.Members.Add(tiCD);
+            }
+
+            //
+            // sort
+            //
+
+            if (doSort)
+            {
+                // sort CDs?
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.IdShort)
+                {
+                    tiCDs.Info = "(dynamically sorted: idShort)";
+                    ObservableCollectionSort<VisualElementGeneric>(
+                        tiCDs.Members, new VisualElementConceptDescription.ComparerIdShort());
+                }
+
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Id)
+                {
+                    tiCDs.Info = "(dynamically sorted: Identification)";
+                    ObservableCollectionSort<VisualElementGeneric>(
+                        tiCDs.Members, new VisualElementConceptDescription.ComparerIdentification());
+                }
+
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
+                {
+                    tiCDs.Info = "(only CD not referenced by any SubmodelElement)";
+                }
+
+                if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
+                {
+                    tiCDs.Info = "(only CD not referenced by any Submodel)";
+                }
             }
         }
 
@@ -1616,32 +1765,7 @@ namespace AasxPackageLogic
                     {
                         GenerateInnerElementsForConceptDescriptions(cache, env, tiCDs, tiCDs);
                     }
-
-                    // sort CDs?
-                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.IdShort)
-                    {
-                        tiCDs.Info = "(dynamically sorted: idShort)";
-                        ObservableCollectionSort<VisualElementGeneric>(
-                            tiCDs.Members, new VisualElementConceptDescription.ComparerIdShort());
-                    }
-
-                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.Id)
-                    {
-                        tiCDs.Info = "(dynamically sorted: Identification)";
-                        ObservableCollectionSort<VisualElementGeneric>(
-                            tiCDs.Members, new VisualElementConceptDescription.ComparerIdentification());
-                    }
-
-                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
-                    {
-                        tiCDs.Info = "(only CD not referenced by any SubmodelElement)";
-                    }
-
-                    if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
-                    {
-                        tiCDs.Info = "(only CD not referenced by any Submodel)";
-                    }
-
+                   
                 }
 
                 // package as well?
@@ -1689,7 +1813,7 @@ namespace AasxPackageLogic
             parent.IsExpanded = false;
         }
 
-        public void ExecuteLazyLoading(VisualElementGeneric ve)
+        public void ExecuteLazyLoading(VisualElementGeneric ve, bool forceExpanded = false)
         {
             // access
             if (ve == null || !ve.NeedsLazyLoading)
@@ -1701,7 +1825,10 @@ namespace AasxPackageLogic
             {
                 ve.Members.Clear();
                 GenerateInnerElementsForConceptDescriptions(veei.Cache, veei.theEnv, veei, ve);
-                ve.IsExpanded = true;
+                
+                ve.RestoreFromCache();
+                if (forceExpanded)
+                    ve.IsExpanded = true;
             }
 
             if (ve is VisualElementEnvironmentItem vesf
@@ -1717,7 +1844,9 @@ namespace AasxPackageLogic
                         ve.Members.Add(new VisualElementSupplementalFile(ve, vesf.Cache, vesf.thePackage, fi));
                 }
 
-                ve.IsExpanded = true;
+                ve.RestoreFromCache();
+                if (forceExpanded)
+                    ve.IsExpanded = true;
             }
 
             if (ve is VisualElementSubmodelRef vesmr)
@@ -1725,7 +1854,10 @@ namespace AasxPackageLogic
                 ve.Members.Clear();
                 GenerateInnerElementsForSubmodelRef(vesmr.Cache, vesmr.theEnv, vesmr.thePackage, vesmr.theSubmodel, 
                     vesmr);
-                ve.IsExpanded = true;
+
+                ve.RestoreFromCache();
+                if (forceExpanded)
+                    ve.IsExpanded = true;
             }
         }
 
@@ -1769,7 +1901,8 @@ namespace AasxPackageLogic
         }
 
         private IEnumerable<VisualElementGeneric> FindAllInListOfVisualElements(
-            VisualElementGeneric tvl, object dataObject, bool alsoDereferenceObjects = false)
+            VisualElementGeneric tvl, object dataObject, bool alsoDereferenceObjects = false,
+            int recursionDepth = int.MaxValue)
         {
             if (tvl == null || dataObject == null)
                 yield break;
@@ -1792,11 +1925,13 @@ namespace AasxPackageLogic
                 yield return tvl;
 
             // recursion
-            foreach (var mem in tvl.Members)
-            {
-                foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects))
-                    if (x != null)
-                        yield return x;
+            if (recursionDepth > 0)
+                foreach (var mem in tvl.Members)
+                {
+                    foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects, 
+                                        recursionDepth - 1))
+                        if (x != null)
+                            yield return x;
             }
         }
 
@@ -1952,6 +2087,38 @@ namespace AasxPackageLogic
             return res;
         }
 
+        private int UpdateByEventTryDeleteGenericVE(PackCntChangeEventData data)
+        {
+            // count moves
+            int res = 0;
+
+            // find the correct parent(s)
+            foreach (var parentVE in FindAllVisualElementOnMainDataObject(
+                data.ParentElem, alsoDereferenceObjects: true))
+            {
+                // trivial
+                if (parentVE?.Members == null)
+                    continue;
+
+                // now, below these find direct childs matching the SME (only these can be removed)
+                var childsToDel = new List<VisualElementGeneric>();
+                foreach (var x in parentVE.Members)
+                    if (x.GetMainDataObject() == data.ThisElem)
+                        childsToDel.Add(x);
+
+                // AFTER iterating, do the removal
+                foreach (var ctd in childsToDel)
+                {
+                    parentVE.Members.Remove(ctd);
+                    // moved
+                    res++;
+                }
+            }
+
+            // ok
+            return res;
+        }
+
         public bool UpdateByEvent(
             PackCntChangeEventData data,
             TreeViewLineCache cache)
@@ -2082,27 +2249,13 @@ namespace AasxPackageLogic
                 if (data.ParentElem is AdminShell.IManageSubmodelElements parentMgr
                     && data.ThisElem is AdminShell.SubmodelElement sme)
                 {
-                    // find the correct parent(s)
-                    foreach (var parentVE in FindAllVisualElementOnMainDataObject(
-                        data.ParentElem, alsoDereferenceObjects: true))
-                    {
-                        // trivial
-                        if (parentVE?.Members == null)
-                            continue;
+                    return 0 < UpdateByEventTryDeleteGenericVE(data);
+                }
 
-                        // now, below these find direct childs matching the SME (only these can be removed)
-                        var childsToDel = new List<VisualElementGeneric>();
-                        foreach (var x in parentVE.Members)
-                            if (x.GetMainDataObject() == data.ThisElem)
-                                childsToDel.Add(x);
-
-                        // AFTER iterating, do the removal
-                        foreach (var ctd in childsToDel)
-                            parentVE.Members.Remove(ctd);
-                    }
-
-                    // just good
-                    return true;
+                if (data.ParentElem is AdminShell.AdministrationShell aas
+                    && data.ThisElem is AdminShell.SubmodelRef smr)
+                {
+                    return 0 < UpdateByEventTryDeleteGenericVE(data);
                 }
 
                 if (data.ParentElem is AdminShell.ListOfConceptDescriptions
@@ -2129,6 +2282,7 @@ namespace AasxPackageLogic
                     // just good
                     return true;
                 }
+
             }
 
             //
@@ -2179,10 +2333,32 @@ namespace AasxPackageLogic
                 }
             }
 
-            return false;
-        }
+            //
+            // StructuralUpdate
+            //
 
-        
+            if (data.Reason == PackCntChangeEventReason.StructuralUpdate)
+            {
+                if (data.ThisElem is AdminShell.ListOfConceptDescriptions lcds)
+                {
+                    // find the correct parent(s)
+                    foreach (var ve in FindAllVisualElementOnMainDataObject(
+                        data.ThisElem, alsoDereferenceObjects: false))
+                        if (ve is VisualElementEnvironmentItem veit
+                            && veit.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions
+                            && veit.theEnv != null)
+                            {
+                                // rebuild
+                                veit.Members.Clear();
+                                GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
+                            }
+                }
+            }
+
+
+            return false;
+        }        
+
     }
 
 }

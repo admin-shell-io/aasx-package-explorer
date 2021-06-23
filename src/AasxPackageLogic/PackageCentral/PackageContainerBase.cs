@@ -84,7 +84,8 @@ namespace AasxPackageLogic.PackageCentral
         MoveToIndex,
 
         /// <summary>
-        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable.
+        /// The Referable is completely rebuild.
         /// </summary>
         StructuralUpdate,
 

@@ -2446,6 +2446,22 @@ namespace AdminShellNS
             }
         }
 
+        public class ListOfAdministrationShells : List<AdministrationShell>, IAasElement
+        {
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("AssetAdministrationShells", "AASs");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+
+        }
+
         public class Asset : Identifiable, IGetReference
         {
             // for JSON only
@@ -2568,6 +2584,22 @@ namespace AdminShellNS
                 if (this.billOfMaterialRef != null)
                     yield return this.billOfMaterialRef;
             }
+        }
+
+        public class ListOfAssets : List<Asset>, IAasElement
+        {
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Assets", "Assets");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+
         }
 
         public class View : Referable
@@ -3754,9 +3786,9 @@ namespace AdminShellNS
                 "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
 
             [XmlIgnore] // will be ignored, anyway
-            private List<AdministrationShell> administrationShells = new List<AdministrationShell>();
+            private ListOfAdministrationShells administrationShells = new ListOfAdministrationShells();
             [XmlIgnore] // will be ignored, anyway
-            private List<Asset> assets = new List<Asset>();
+            private ListOfAssets assets = new ListOfAssets();
             [XmlIgnore] // will be ignored, anyway
             private List<Submodel> submodels = new List<Submodel>();
             [XmlIgnore] // will be ignored, anyway
@@ -3767,7 +3799,7 @@ namespace AdminShellNS
             [XmlArray("assetAdministrationShells")]
             [XmlArrayItem("assetAdministrationShell")]
             [JsonProperty(PropertyName = "assetAdministrationShells")]
-            public List<AdministrationShell> AdministrationShells
+            public ListOfAdministrationShells AdministrationShells
             {
                 get { return administrationShells; }
                 set { administrationShells = value; }
@@ -3776,7 +3808,7 @@ namespace AdminShellNS
             [XmlArray("assets")]
             [XmlArrayItem("asset")]
             [JsonProperty(PropertyName = "assets")]
-            public List<Asset> Assets
+            public ListOfAssets Assets
             {
                 get { return assets; }
                 set { assets = value; }

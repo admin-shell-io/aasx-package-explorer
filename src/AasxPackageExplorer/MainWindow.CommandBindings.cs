@@ -490,12 +490,21 @@ namespace AasxPackageExplorer
                 RedrawElementView();
                 // select last object
                 if (currMdo != null)
+                {
                     DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
+                }
             }
 
             if (cmd == "test")
             {
                 DisplayElements.Test();
+            }
+
+            if (cmd == "bufferclear")
+            {
+                DispEditEntityPanel.ClearPasteBuffer();
+                Log.Singleton.Info("Internatl copy/ paste buffer cleared. Pasting of external JSON elements " +
+                    "enabled.");
             }
 
             if (cmd == "exportsmd")

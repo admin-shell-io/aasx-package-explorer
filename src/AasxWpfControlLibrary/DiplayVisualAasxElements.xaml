@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:AasxPackageExplorer"
              xmlns:anyui="clr-namespace:AnyUi"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="600" Loaded="UserControl_Loaded">
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -25,10 +25,14 @@
             <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
         </Grid.Resources>
 
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" SelectedItemChanged="TreeViewInner_SelectedItemChanged" 
-                  RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp"
+        <!-- Other methdo:
+             SelectedItemChanged="TreeViewInner_SelectedItemChanged" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp" -->
+        
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" 
+                  RequestBringIntoView="TreeViewElem_RequestBringIntoView"                   
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   TreeViewItem.Expanded="TreeViewInner_Expanded"
+                  SelectedItemChanged="TreeViewMutiSelect_SelectedItemChanged"
                   Padding="0,2,4,2">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">
