@@ -112,7 +112,7 @@ namespace AasxPackageLogic
         public class CopyPasteItemSubmodel : CopyPasteItemBase
         {
             public object parentContainer = null;
-            public object entity = null;
+            // public object entity = null;
             public AdminShell.SubmodelRef smref = null;
             public AdminShell.Submodel sm = null;
 
@@ -127,9 +127,18 @@ namespace AasxPackageLogic
                 AdminShell.Submodel sm)
             {
                 this.parentContainer = parentContainer;
-                this.entity = entity;
                 this.smref = smref;
                 this.sm = sm;
+                TryFixSmRefIfNull();
+            }
+
+            public void TryFixSmRefIfNull()
+            {
+                if (smref == null && sm?.identification != null)
+                {
+                    smref = new AdminShell.SubmodelRef(new AdminShell.Reference(new AdminShell.Key(
+                    AdminShell.Key.Submodel, true, sm.identification.idType, sm.identification.id)));
+                }
             }
 
             public static CopyPasteItemSubmodel ConvertFrom(AdminShell.Referable rf)
@@ -139,17 +148,14 @@ namespace AasxPackageLogic
                 if (sm == null || sm.identification == null)
                     return null;
 
-                // fake smref
-                var smref = new AdminShell.SubmodelRef(new AdminShell.Reference(new AdminShell.Key(
-                    AdminShell.Key.Submodel, false, sm.identification.idType, sm.identification.id)));
-
                 // create
-                return new CopyPasteItemSubmodel()
-                {
-                    sm = sm,
-                    smref = smref,
-                    entity = smref
-                };
+                var res = new CopyPasteItemSubmodel() { sm = sm };
+
+                // fake smref
+                res.TryFixSmRefIfNull();
+
+                // ok
+                return res;
             }
         }
 
@@ -528,7 +534,8 @@ namespace AasxPackageLogic
                         {
                             // access
                             var item = it as CopyPasteItemSME;
-                            if (item?.sme == null || item.wrapper == null || item?.parentContainer == null)
+                            if (item?.sme == null || item.wrapper == null 
+                                || (!cpb.Duplicate && item?.parentContainer == null))
                             {
                                 Log.Singleton.Error("When pasting SME, an element was invalid.");
                                 continue;
@@ -728,9 +735,20 @@ namespace AasxPackageLogic
                                 continue;
                             }
 
+                            // determine, what to clone
+                            object src = item.sm;
+                            if (typeof(T) == typeof(AdminShell.SubmodelRef))
+                                src = item.smref;
+
+                            if (src == null)
+                            {
+                                Log.Singleton.Error("When pasting AAS elements, an element was not determined.");
+                                continue;
+                            }
+
                             // check for equality
                             bool foundEqual = false;
-                            if (checkEquality != null && item.entity is T x)
+                            if (checkEquality != null && src is T x)
                                 foreach (var p in parentContainer)
                                     if (checkEquality(p, x))
                                         foundEqual = true;
@@ -742,7 +760,7 @@ namespace AasxPackageLogic
                             }
 
                             // apply
-                            object entity2 = cloneEntity((T)item.entity);
+                            object entity2 = cloneEntity((T)src);
                             nextBusObj = entity2;
 
                             // different cases
@@ -755,7 +773,7 @@ namespace AasxPackageLogic
                             if (!cpb.Duplicate)
                             {
                                 this.DeleteElementInList<T>(
-                                        item.parentContainer as List<T>, (T)item.entity, null);
+                                        item.parentContainer as List<T>, (T)src, null);
 
                             }
                         }
@@ -803,7 +821,8 @@ namespace AasxPackageLogic
                         {
                             // access
                             var item = it as CopyPasteItemSME;
-                            if (item?.sme == null || item?.wrapper == null || item?.parentContainer == null)
+                            if (item?.sme == null || item?.wrapper == null 
+                                || (!cpb.Duplicate && item?.parentContainer == null))
                             {
                                 Log.Singleton.Error("When pasting SubmodelElements, an element was invalid.");
                                 continue;
@@ -843,21 +862,17 @@ namespace AasxPackageLogic
             T entity,
             Func<T, T> cloneEntity,
             string label = "Buffer:",            
-            bool allowPasteInto = false,
-            Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null) 
+            Func<CopyPasteBuffer, bool> checkPasteInfo = null,
+            Func<CopyPasteItemBase, bool, object> doPasteInto = null) 
                 where T : AdminShell.Identifiable, new()
         {
             // access
             if (parentContainer == null || cpbInternal == null || entity == null || cloneEntity == null)
                 return;
 
-            if (lambdaPasteInto == null)
-                allowPasteInto = false;
-
             // use an action
             this.AddAction(
                 stack, label,
-                !allowPasteInto ? new[] { "Cut", "Copy", "Paste above", "Paste below" } :
                 new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
                 (buttonNdx) =>
                 {
@@ -948,7 +963,7 @@ namespace AasxPackageLogic
                             nextFocus: nextBusObj, isExpanded: true);
                     }
 
-                    if (allowPasteInto && buttonNdx == 4)
+                    if (buttonNdx == 4)
                     {
                         // which buffer?
                         var cbdata = context?.ClipboardGet();
@@ -962,6 +977,16 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         }
 
+                        // pasting above/ below means: Submodels
+                        if (checkPasteInfo != null && !checkPasteInfo(cpb))
+                        {
+                            this.context?.MessageBoxFlyoutShow(
+                                    "No (valid) information for Identifiables in copy/paste buffer.",
+                                    "Copy & Paste",
+                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
+                            return new AnyUiLambdaActionNone();
+                        }
+
                         // user feedback
                         Log.Singleton.Info($"Pasting {cpb.Items.Count} AAS elements from paste buffer");
 
@@ -970,7 +995,7 @@ namespace AasxPackageLogic
                         foreach (var it in cpb.Items)
                         {
                             // try
-                            var obj = lambdaPasteInto(it, !cpb.Duplicate);
+                            var obj = doPasteInto(it, !cpb.Duplicate);
                             if (obj == null)
                             {
                                 Log.Singleton.Error("When pasting AAS elements, an element was invalid.");

@@ -200,10 +200,11 @@ namespace AasxPackageLogic
                 env.Submodels = new List<AdminShell.Submodel>();
 
             if (editMode &&
-                (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env ||
-                    ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells ||
-                    ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets ||
-                    ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
+                (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
             {
                 // some hints
                 this.AddHintBubble(stack, hintMode, new[] {
@@ -449,6 +450,7 @@ namespace AasxPackageLogic
 
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
+                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
                     // Cut, copy, paste within list of Assets
@@ -461,53 +463,84 @@ namespace AasxPackageLogic
                             lambdaPasteInto: (cpi, del) =>
                             {
                                 // access
-                                var item = cpi as CopyPasteItemIdentifiable;
-                                if (item?.entity == null || (del && item?.parentContainer == null))
-                                    return null;
-
-                                // divert
-                                object res = null;
-                                if (item.entity is AdminShell.AdministrationShell itaas)
+                                if (cpi is CopyPasteItemIdentifiable cpiid)
                                 {
-                                    // new 
-                                    var aas = new AdminShell.AdministrationShell(itaas);
-                                    env.AdministrationShells.Add(aas);
-                                    res = aas;
+                                    // some pre-conditions not met?
+                                    if (cpiid?.entity == null || (del && cpiid?.parentContainer == null))
+                                        return null;
 
-                                    // delete
-                                    if (del && item.parentContainer is List<AdminShell.AdministrationShell> aasold
-                                        && aasold.Contains(aas))
-                                        aasold.Remove(aas);
+                                    // divert
+                                    object res = null;
+                                    if (cpiid.entity is AdminShell.AdministrationShell itaas)
+                                    {
+                                        // new 
+                                        var aas = new AdminShell.AdministrationShell(itaas);
+                                        env.AdministrationShells.Add(aas);
+                                        res = aas;
+
+                                        // delete
+                                        if (del && cpiid.parentContainer is List<AdminShell.AdministrationShell> aasold
+                                            && aasold.Contains(itaas))
+                                            aasold.Remove(itaas);
+                                    }
+                                    else
+                                    if (cpiid.entity is AdminShell.Asset itasset)
+                                    {
+                                        // new 
+                                        var asset = new AdminShell.Asset(itasset);
+                                        env.Assets.Add(asset);
+                                        res = asset;
+
+                                        // delete
+                                        if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
+                                            && assetold.Contains(itasset))
+                                            assetold.Remove(itasset);
+                                    }
+                                    else
+                                    if (cpiid.entity is AdminShell.ConceptDescription itcd)
+                                    {
+                                        // new 
+                                        var cd = new AdminShell.ConceptDescription(itcd);
+                                        env.ConceptDescriptions.Add(cd);
+                                        res = cd;
+
+                                        // delete
+                                        if (del && cpiid.parentContainer is List<AdminShell.ConceptDescription> cdold
+                                            && cdold.Contains(itcd))
+                                            cdold.Remove(itcd);
+                                    }
+
+                                    // ok
+                                    return res;
                                 }
-                                else
-                                if (item.entity is AdminShell.Asset itasset)
+
+                                if (cpi is CopyPasteItemSubmodel cpism)
                                 {
-                                    // new 
-                                    var asset = new AdminShell.Asset(itasset);
-                                    env.Assets.Add(asset);
-                                    res = asset;
+                                    // some pre-conditions not met?
+                                    if (cpism?.sm == null || (del && cpism?.parentContainer == null))
+                                        return null;
 
-                                    // delete
-                                    if (del && item.parentContainer is List<AdminShell.Asset> assetold
-                                        && assetold.Contains(asset))
-                                        assetold.Remove(asset);
+                                    // divert
+                                    object res = null;
+                                    if (cpism.sm is AdminShell.Submodel itsm)
+                                    {
+                                        // new 
+                                        var asset = new AdminShell.Submodel(itsm);
+                                        env.Submodels.Add(itsm);
+                                        res = asset;
+
+                                        // delete
+                                        if (del && cpism.parentContainer is List<AdminShell.Submodel> smold
+                                            && smold.Contains(itsm))
+                                            smold.Remove(itsm);
+                                    }
+
+                                    // ok
+                                    return res;
                                 }
-                                else
-                                if (item.entity is AdminShell.ConceptDescription itcd)
-                                {
-                                    // new 
-                                    var cd = new AdminShell.ConceptDescription(itcd);
-                                    env.ConceptDescriptions.Add(cd);
-                                    res = cd;
 
-                                    // delete
-                                    if (del && item.parentContainer is List<AdminShell.ConceptDescription> cdold
-                                        && cdold.Contains(cd))
-                                        cdold.Remove(cd);
-                                }
-
-                                // ok
-                                return res;
+                                // nok
+                                return null;
                             });
                     }
                 }
@@ -854,8 +887,8 @@ namespace AasxPackageLogic
                     stack, repo, this.theCopyPaste,
                     env.AdministrationShells, aas, (o) => { return new AdminShell.AdministrationShell(o); },
                     label: "Buffer:",
-                    allowPasteInto,
-                    (cpi, del) =>
+                    checkPasteInfo: (cpb) => cpb?.Items?.AllOfElementType<CopyPasteItemSubmodel>() == true,
+                    doPasteInto: (cpi, del) =>
                     {
                         // access
                         var item = cpi as CopyPasteItemSubmodel;
