@@ -73,6 +73,20 @@ namespace AasxPackageExplorer
             }
         }
 
+        public VisualElementGeneric TrySynchronizeToInternalTreeState()
+        {
+            var x = this.SelectedItem;
+            if (x == null && treeViewInner.SelectedItem != null)
+            {
+                x = treeViewInner.SelectedItem as VisualElementGeneric;
+
+                SuppressSelectionChangeNotification(() => {
+                    SetSelectedState(x, true);
+                });
+            }
+            return x;
+        }
+
         public VisualElementGeneric GetSelectedItem()
         {
             return this.SelectedItem;

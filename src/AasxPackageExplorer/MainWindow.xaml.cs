@@ -140,7 +140,9 @@ namespace AasxPackageExplorer
                 t += " (auxiliary AASX: " + _packageCentral.AuxItem.ToString() + ")";
             this.Title = t;
 
+#if _log_times
             Log.Singleton.Info("Time 10 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
+#endif
 
             // clear the right section, first (might be rebuild by callback from below)
             DispEditEntityPanel.ClearDisplayDefautlStack();
@@ -152,7 +154,9 @@ namespace AasxPackageExplorer
                 lazyLoadingFirst: true);
             DisplayElements.Refresh();
 
+#if _log_times
             Log.Singleton.Info("Time 90 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
+#endif
         }
 
         private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
@@ -610,8 +614,8 @@ namespace AasxPackageExplorer
 
         }
 
-        #endregion
-        #region Callbacks
+#endregion
+#region Callbacks
         //===============
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -1301,7 +1305,7 @@ namespace AasxPackageExplorer
                     }
                 }
 
-                #endregion
+#endregion
             }
             catch (Exception ex)
             {
@@ -1961,6 +1965,12 @@ namespace AasxPackageExplorer
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
             var x = DisplayElements.SelectedItem;
+            if (x == null)
+            {
+                // TODO (MIHO, 2021-06-08): find the root cause instead of doing a quick-fix
+                // some copy/paste operation seems to leave the DisplayElements-sate in the wrong state
+                x = DisplayElements.TrySynchronizeToInternalTreeState();
+            }
             x?.RefreshFromMainData();
             DisplayElements.Refresh();
             ContentTakeOver.IsEnabled = false;
@@ -2006,7 +2016,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        #region Modal Flyovers
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -2194,8 +2204,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2285,7 +2295,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
