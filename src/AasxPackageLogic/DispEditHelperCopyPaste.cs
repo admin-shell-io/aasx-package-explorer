@@ -647,7 +647,8 @@ namespace AasxPackageLogic
             AdminShell.SubmodelRef smref,
             AdminShell.Submodel sm,
             string label = "Buffer:",
-            Func<T, T, bool> checkEquality = null) where T : new()
+            Func<T, T, bool> checkEquality = null,
+            Action<CopyPasteItemBase> extraAction = null) where T : new()
         {
             // access
             if (parentContainer == null || cpbInternal == null || sm == null || cloneEntity == null)
@@ -761,6 +762,9 @@ namespace AasxPackageLogic
                                 this.AddElementInListBefore<T>(parentContainer, (T)entity2, entity);
                             if (buttonNdx == 3)
                                 this.AddElementInListAfter<T>(parentContainer, (T)entity2, entity);
+
+                            // extra action
+                            extraAction?.Invoke(it);
 
                             // may delete original
                             if (!cpb.Duplicate)
