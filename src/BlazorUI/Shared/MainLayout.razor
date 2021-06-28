@@ -49,12 +49,12 @@
                         </tr>
                     </table>
                     @code {
-                        private void MyTextInput(string value)
+                        private async void MyTextInput(string value)
                         {
                             value = value.ToLower();
                             if (value != "" && (value.Contains("http://") || value.Contains("https://")))
                             {
-                                InvokeAsync(() => Program.getAasxAsync(value));
+                                await InvokeAsync(async () => await Program.getAasxAsync(value));
                                 this.StateHasChanged();
                             }
                         }
