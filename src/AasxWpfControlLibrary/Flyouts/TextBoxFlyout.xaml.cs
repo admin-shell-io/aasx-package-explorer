@@ -23,8 +23,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
-using Newtonsoft.Json;
 using AnyUi;
+using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
@@ -68,10 +68,12 @@ namespace AasxPackageExplorer
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
             if (DiaData.Symbol == AnyUiMessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_question.png",
+                            UriKind.RelativeOrAbsolute));
             if (DiaData.Symbol == AnyUiMessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
-                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
+                    new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_warning.png",
+                            UriKind.RelativeOrAbsolute));
 
             // text to edit
             this.TextBoxText.Text = DiaData.Text;

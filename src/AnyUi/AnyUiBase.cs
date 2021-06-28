@@ -7,21 +7,20 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-//using AasxIntegrationBase;
-//using AasxWpfControlLibrary;
-//using AdminShellNS;
+using Newtonsoft.Json;
 
-/// <summary>
-/// This namespace implements an UI approach which can be implemented by any UI system, hence the name.
-/// For better PascalCasing, the 'i' is lowercase by intention. In written text, it shall be: "Any UI"
-/// </summary>
+// Quite declarative approach for the future
+// resharper disable UnassignedField.Global
+// resharper disable ClassNeverInstantiated.Global
+
+// This namespace implements an UI approach which can be implemented by any UI system, hence the name.
+// For better PascalCasing, the 'i' is lowercase by intention. In written text, it shall be: "Any UI"
 namespace AnyUi
 {
     //
@@ -154,11 +153,6 @@ namespace AnyUi
             solidColorBrush = c;
         }
 
-        //public AnyUiBrush(SolidColorBrush b)
-        //{
-        //    solidColorBrush = b.Color;
-        //}
-
         public AnyUiBrush(UInt32 c)
         {
             solidColorBrush = new AnyUiColor(c);
@@ -231,7 +225,7 @@ namespace AnyUi
     //
 
     /// <summary>
-    /// Any UI defines a lot of lambda (Action<>) functions for handling events.
+    /// Any UI defines a lot of lambda functions for handling events.
     /// These lambdas can return results (commands) to the calling application,
     /// which might be given back to higher levels of the applications to trigger
     /// events, such as re-displaying pages or such.
@@ -474,8 +468,6 @@ namespace AnyUi
 
     public class AnyUiLabel : AnyUiContentControl
     {
-        // public AnyUiBrush Background;
-        // public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiFontWeight? FontWeight;
         public string Content = null;
@@ -510,8 +502,6 @@ namespace AnyUi
 
     public class AnyUiTextBox : AnyUiControl
     {
-        // public AnyUiBrush Background = null;
-        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public AnyUiScrollBarVisibility VerticalScrollBarVisibility;
@@ -524,8 +514,6 @@ namespace AnyUi
 
     public class AnyUiComboBox : AnyUiControl
     {
-        // public AnyUiBrush Background = null;
-        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public bool? IsEditable;
@@ -538,8 +526,6 @@ namespace AnyUi
 
     public class AnyUiCheckBox : AnyUiContentControl
     {
-        // public AnyUiBrush Background = null;
-        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;
@@ -549,8 +535,6 @@ namespace AnyUi
 
     public class AnyUiButton : AnyUiContentControl
     {
-        // public AnyUiBrush Background = null;
-        // public AnyUiBrush Foreground = null;
         public AnyUiThickness Padding;
 
         public string Content = null;

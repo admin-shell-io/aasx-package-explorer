@@ -71,6 +71,6 @@ namespace AasxIntegrationBase
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             ControlClosed?.Invoke();
-        }        
+        }
     }
 }

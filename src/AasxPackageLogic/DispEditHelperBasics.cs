@@ -13,9 +13,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-//using System.Windows;
-//using System.Windows.Controls;
-//using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -1109,7 +1106,7 @@ namespace AasxPackageLogic
         }
 
         public List<AdminShell.Key> SmartSelectAasEntityKeys(
-            PackageCentral.PackageCentral packages, 
+            PackageCentral.PackageCentral packages,
             PackageCentral.PackageCentral.Selector selector, string filter = null)
         {
             var uc = new AnyUiDialogueDataSelectAasEntity(
@@ -1774,7 +1771,8 @@ namespace AasxPackageLogic
         //
 
         public void EntityListUpDownDeleteHelper<T>(
-            AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity, object alternativeFocus, string label = "Entities:",
+            AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity,
+            object alternativeFocus, string label = "Entities:",
             object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false)
         {
             if (nextFocus == null)
@@ -1821,7 +1819,7 @@ namespace AasxPackageLogic
 
                     if (buttonNdx == 4)
 
-                        if (this.context.ActualShiftState 
+                        if (this.context.ActualShiftState
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entity? This operation can not be reverted!", "AASX",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
@@ -1839,7 +1837,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 });
         }
-       
+
         public void QualifierHelper(AnyUiStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
         {
             if (editMode)

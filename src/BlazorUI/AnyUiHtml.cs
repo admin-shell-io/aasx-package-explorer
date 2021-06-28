@@ -1,19 +1,34 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+// resharper disable EmptyEmbeddedStatement
+// resharper disable FunctionNeverReturns
+// resharper disable UnusedVariable
+// resharper disable TooWideLocalVariableScope
+// resharper disable EmptyConstructor
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows;
-using AasxIntegrationBase;
-using AdminShellNS;
-using System.Windows.Input;
-using Newtonsoft.Json;
-using AasxPackageLogic;
-using BlazorUI;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using AasxIntegrationBase;
+using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AdminShellNS;
+using BlazorUI;
+using Newtonsoft.Json;
 
 namespace AnyUi
 {
@@ -47,7 +62,7 @@ namespace AnyUi
             bool newData = false;
             while (true)
             {
-                lock(htmlDotnetLock)
+                lock (htmlDotnetLock)
                 {
                     if (htmlDotnetEventIn)
                     {
@@ -61,14 +76,15 @@ namespace AnyUi
                                 break;
                             case "contextMenu":
                                 el = (AnyUiUIElement)htmlDotnetEventInputs[0];
-                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)htmlDotnetEventInputs[1];
+                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
+                                    htmlDotnetEventInputs[1];
                                 htmlEventType = "contextMenu";
                                 htmlEventInputs.Add(el);
                                 htmlEventInputs.Add(cntlcm);
                                 htmlEventIn = true;
                                 Program.signalNewData(1); // same tree, but structure may change
 
-                                while (!htmlEventOut);
+                                while (!htmlEventOut) ;
                                 int bufferedI = 0;
                                 if (htmlEventOutputs.Count == 1)
                                 {
@@ -81,10 +97,10 @@ namespace AnyUi
                                 htmlDotnetEventIn = false;
 
                                 htmlDotnetEventInputs.Clear();
-                                // AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
                                 break;
                         }
-                        while (htmlDotnetEventOut);
+                        while (htmlDotnetEventOut) ;
                         htmlDotnetEventIn = false;
                         newData = true;
                     }
@@ -102,7 +118,7 @@ namespace AnyUi
         {
             lock (htmlDotnetLock)
             {
-                while (htmlDotnetEventIn);
+                while (htmlDotnetEventIn) ;
                 htmlDotnetEventType = "setValueLambda";
                 htmlDotnetEventInputs.Add(el);
                 htmlDotnetEventInputs.Add(o);
@@ -114,7 +130,7 @@ namespace AnyUi
         {
             lock (htmlDotnetLock)
             {
-                while (htmlDotnetEventIn);
+                while (htmlDotnetEventIn) ;
                 htmlDotnetEventType = "contextMenu";
                 htmlDotnetEventInputs.Add(el);
                 htmlDotnetEventInputs.Add(cntlcm);
@@ -140,7 +156,7 @@ namespace AnyUi
             htmlEventIn = true;
             Program.signalNewData(2); // build new tree
 
-            while (!htmlEventOut);
+            while (!htmlEventOut) ;
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
             if (htmlEventOutputs.Count == 1)
                 r = (AnyUiMessageBoxResult)htmlEventOutputs[0];

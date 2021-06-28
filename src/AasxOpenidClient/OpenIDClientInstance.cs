@@ -14,6 +14,7 @@ using System.Web.Helpers;
 using System.Windows;
 using System.Windows.Forms;
 using AasxOpenIdClient;
+using AnyUi;
 using IdentityModel;
 using IdentityModel.Client;
 using Jose;
@@ -21,7 +22,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using AnyUi;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -475,7 +475,7 @@ namespace AasxOpenIdClient
                 Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate", 
+            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate",
                 AnyUiMessageBoxButton.OK);
 
             credential = new X509SigningCredentials(certificate);

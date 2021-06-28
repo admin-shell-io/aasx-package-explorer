@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,13 +25,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxPackageLogic;
-using AasxWpfControlLibrary;
 using AasxPackageLogic.PackageCentral;
+using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
-using JetBrains.Annotations;
-using System.Reflection;
 using AnyUi;
+using JetBrains.Annotations;
 
 namespace AasxPackageExplorer
 {
@@ -68,7 +68,7 @@ namespace AasxPackageExplorer
                 // ok, only return definitve results
                 if (_selectedItems.Count == 1)
                     return _selectedItems[0];
-                    
+
                 return null;
             }
         }
@@ -80,7 +80,8 @@ namespace AasxPackageExplorer
             {
                 x = treeViewInner.SelectedItem as VisualElementGeneric;
 
-                SuppressSelectionChangeNotification(() => {
+                SuppressSelectionChangeNotification(() =>
+                {
                     SetSelectedState(x, true);
                 });
             }
@@ -119,9 +120,15 @@ namespace AasxPackageExplorer
                 {
                     tvi.BringIntoView();
                     tvi.IsSelected = true;
+                    // resharper disable SuspiciousTypeConversion.Global
+                    // resharper disable ConditionIsAlwaysTrueOrFalse
+                    // resharper disable HeuristicUnreachableCode
                     if ((object)tvi is VisualElementGeneric ve)
                         if (!(_selectedItems.Contains(ve)))
                             _selectedItems.Add(ve);
+                    // resharper enable SuspiciousTypeConversion.Global
+                    // resharper enable ConditionIsAlwaysTrueOrFalse
+                    // resharper enable HeuristicUnreachableCode
                     tvi.Focus();
                     return;
                 }
@@ -333,10 +340,10 @@ namespace AasxPackageExplorer
                         this.TrySelectMainDataObjects(labsmo.MainObjects);
                     }
                 }
-                
+
                 _eventQueue.Clear();
             }
-        }        
+        }
 
         //
         // Element management
@@ -545,7 +552,7 @@ namespace AasxPackageExplorer
                         fr.PopulateFakePackage(pkg);
 
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
-                        treeViewLineCache, pkg?.AasEnv, pkg, 
+                        treeViewLineCache, pkg?.AasEnv, pkg,
                         null, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
@@ -576,7 +583,7 @@ namespace AasxPackageExplorer
                 displayedTreeViewLines[0].IsSelected = true;
         }
 
-#endregion
+        #endregion
 
         // MIHO1
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -800,13 +807,12 @@ namespace AasxPackageExplorer
 
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
-        }        
+        }
 
         public void Test2()
         {
             foreach (var it in displayedTreeViewLines)
             {
-                // it.MyProperty = !it.MyProperty;
                 it.TriggerAnimateUpdate();
             }
         }
@@ -907,7 +913,7 @@ namespace AasxPackageExplorer
             );
         }
 
-        private void SetSelectedState (VisualElementGeneric ve, bool newState)
+        private void SetSelectedState(VisualElementGeneric ve, bool newState)
         {
             // ok?
             if (ve == null)
@@ -943,7 +949,8 @@ namespace AasxPackageExplorer
             // when control key is pressed
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                SuppressSelectionChangeNotification(() => {
+                SuppressSelectionChangeNotification(() =>
+                {
                     _selectedItems.ForEach(item => item.IsSelected = true);
                 });
             }
@@ -951,7 +958,8 @@ namespace AasxPackageExplorer
             // when shift key is pressed
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
-                SuppressSelectionChangeNotification(() => {
+                SuppressSelectionChangeNotification(() =>
+                {
 
                     // make sure active treeViewItem item is in
                     SetSelectedState(treeViewItem, true);

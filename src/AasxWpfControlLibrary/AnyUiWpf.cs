@@ -15,16 +15,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
-using AdminShellNS;
-using AasxWpfControlLibrary;
-using System.Windows.Input;
-using Newtonsoft.Json;
 using AasxPackageLogic;
-using System.Windows.Data;
 using AasxPackageLogic.PackageCentral;
+using AasxWpfControlLibrary;
+using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AnyUi
 {
@@ -81,8 +81,6 @@ namespace AnyUi
 
         public static AnyUiColor GetAnyUiColor(Color c)
         {
-            if (c == null)
-                return AnyUiColors.Transparent;
             return AnyUiColor.FromArgb(c.A, c.R, c.G, c.B);
         }
 
@@ -241,14 +239,14 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiContentControl), typeof(ContentControl), (a, b) =>
                 {
-                   if (a is AnyUiContentControl cntl && b is ContentControl wpf)
+                   if (a is AnyUiContentControl && b is ContentControl)
                    {
                    }
                 }),
 
                 new RenderRec(typeof(AnyUiDecorator), typeof(Decorator), (a, b) =>
                 {
-                   if (a is AnyUiDecorator cntl && b is Decorator wpf)
+                   if (a is AnyUiDecorator && b is Decorator)
                    {
                    }
                 }),
@@ -353,7 +351,7 @@ namespace AnyUi
                                     // Assuming you have one file that you care about, pass it off to whatever
                                     // handling code you have defined.
                                     if (files != null && files.Length > 0
-                                        && sender4 is FrameworkElement fe2)
+                                        && sender4 is FrameworkElement)
                                     {
                                         // update UI
                                         if (wpf.Child is TextBlock tb2)
@@ -393,19 +391,19 @@ namespace AnyUi
                 {
                    if (a is AnyUiTextBlock cntl && b is TextBlock wpf)
                    {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.FontWeight.HasValue)
-                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
                         if (cntl.TextWrapping.HasValue)
                             wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
                         if (cntl.FontWeight.HasValue)
                             wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                       wpf.Text = cntl.Text;
+                        wpf.Text = cntl.Text;
                    }
                 }),
 
@@ -413,14 +411,14 @@ namespace AnyUi
                 {
                    if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf)
                    {
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
-                       if (cntl.Foreground != null)
-                           wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                       if (cntl.FontWeight.HasValue)
-                           wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                       if (cntl.Padding != null)
-                           wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.Background != null)
+                            wpf.Background = GetWpfBrush(cntl.Background);
+                        if (cntl.Foreground != null)
+                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                        if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                        if (cntl.Padding != null)
+                            wpf.Padding = GetWpfTickness(cntl.Padding);
                         if (cntl.TextWrapping.HasValue)
                             wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
                         if (cntl.FontWeight.HasValue)
@@ -496,7 +494,7 @@ namespace AnyUi
                         };
                     }
                 }, highlightLambda: (a,b,highlighted) => {
-                    if (a is AnyUiTextBox cntl && b is TextBox tb)
+                    if (a is AnyUiTextBox && b is TextBox tb)
                     {
                         if (highlighted)
                         {
@@ -529,7 +527,6 @@ namespace AnyUi
 
                         if (cntl.Items != null)
                         {
-                            // wpf.Items.Clear();
                             foreach (var i in cntl.Items)
                                 wpf.Items.Add(i);
                         }
@@ -570,7 +567,7 @@ namespace AnyUi
                         }
                     }
                 }, highlightLambda: (a,b,highlighted) => {
-                    if (a is AnyUiComboBox cntl && b is ComboBox cb)
+                    if (a is AnyUiComboBox && b is ComboBox cb)
                     {
                         if (highlighted)
                         {
@@ -789,7 +786,7 @@ namespace AnyUi
 
         private List<KeyShortcutRecord> _keyShortcuts = new List<KeyShortcutRecord>();
 
-        public List<KeyShortcutRecord> KeyShortcuts { get { return _keyShortcuts;  } }
+        public List<KeyShortcutRecord> KeyShortcuts { get { return _keyShortcuts; } }
 
         public bool RegisterKeyShortcut(
             string name,

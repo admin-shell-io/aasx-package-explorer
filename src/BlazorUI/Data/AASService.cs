@@ -1,11 +1,23 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+// resharper disable UnusedType.Global
+// resharper disable PossibleNullReferenceException
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AdminShellNS;
-using static BlazorUI.Pages.Index;
-using static AdminShellNS.AdminShellV20;
 using BlazorUI;
+using static AdminShellNS.AdminShellV20;
+using static BlazorUI.Pages.Index;
 
 namespace BlazorUI.Data
 {
@@ -19,12 +31,8 @@ namespace BlazorUI.Data
 
         public AASService()
         {
-            // buildTree();
-            // NewDataAvailable?.Invoke(this, EventArgs.Empty);
-
             Program.NewDataAvailable += (s, a) =>
             {
-                // buildTree();
                 NewDataAvailable?.Invoke(this, EventArgs.Empty);
             };
         }
@@ -35,7 +43,6 @@ namespace BlazorUI.Data
 
         public List<Item> GetTree(Item selectedNode, IList<Item> ExpandedNodes)
         {
-            // buildTree();
             Item.updateVisibleTree(viewItems, selectedNode, ExpandedNodes);
             return viewItems;
         }
@@ -77,31 +84,31 @@ namespace BlazorUI.Data
                                 childs.Add(smItem);
                                 List<Item> smChilds = new List<Item>();
                                 if (sm.submodelElements != null)
-                                foreach (var sme in sm.submodelElements)
-                                {
-                                    var smeItem = new Item();
-                                    smeItem.envIndex = i;
-                                    smeItem.Text = sme.submodelElement.idShort;
-                                    smeItem.Tag = sme.submodelElement;
-                                    smeItem.ParentContainer = sm;
-                                    smeItem.Wrapper = sme;
-                                    smChilds.Add(smeItem);
-                                    if (sme.submodelElement is SubmodelElementCollection)
+                                    foreach (var sme in sm.submodelElements)
                                     {
-                                        var smec = sme.submodelElement as SubmodelElementCollection;
-                                        createSMECItems(smeItem, smec, i);
+                                        var smeItem = new Item();
+                                        smeItem.envIndex = i;
+                                        smeItem.Text = sme.submodelElement.idShort;
+                                        smeItem.Tag = sme.submodelElement;
+                                        smeItem.ParentContainer = sm;
+                                        smeItem.Wrapper = sme;
+                                        smChilds.Add(smeItem);
+                                        if (sme.submodelElement is SubmodelElementCollection)
+                                        {
+                                            var smec = sme.submodelElement as SubmodelElementCollection;
+                                            createSMECItems(smeItem, smec, i);
+                                        }
+                                        if (sme.submodelElement is Operation)
+                                        {
+                                            var o = sme.submodelElement as Operation;
+                                            createOperationItems(smeItem, o, i);
+                                        }
+                                        if (sme.submodelElement is Entity)
+                                        {
+                                            var e = sme.submodelElement as Entity;
+                                            createEntityItems(smeItem, e, i);
+                                        }
                                     }
-                                    if (sme.submodelElement is Operation)
-                                    {
-                                        var o = sme.submodelElement as Operation;
-                                        createOperationItems(smeItem, o, i);
-                                    }
-                                    if (sme.submodelElement is Entity)
-                                    {
-                                        var e = sme.submodelElement as Entity;
-                                        createEntityItems(smeItem, e, i);
-                                    }
-                                }
                                 smItem.Childs = smChilds;
                                 foreach (var c in smChilds)
                                     c.parent = smItem;

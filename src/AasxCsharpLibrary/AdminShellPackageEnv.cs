@@ -196,7 +196,7 @@ namespace AdminShellNS
         /// <summary>
         /// Use this, if <c>DeserializeFromJSON</c> is too tight.
         /// </summary>
-        public static T DeserializePureObjectFromJSON<T>(string data) 
+        public static T DeserializePureObjectFromJSON<T>(string data)
         {
             using (var tr = new StringReader(data))
             {

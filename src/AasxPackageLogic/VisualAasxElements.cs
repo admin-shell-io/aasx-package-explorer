@@ -71,7 +71,8 @@ namespace AasxPackageLogic
         }
 
         private bool _animateUpdate;
-        public bool AnimateUpdate {
+        public bool AnimateUpdate
+        {
             get { return _animateUpdate; }
             set { _animateUpdate = value; this.OnPropertyChanged("AnimateUpdate"); }
         }
@@ -422,7 +423,7 @@ namespace AasxPackageLogic
             return true;
         }
 
-        public class IndexInfo 
+        public class IndexInfo
         {
             public VisualElementGeneric SharedParent;
             public int MinIndex, MaxIndex;
@@ -483,7 +484,7 @@ namespace AasxPackageLogic
             Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
             EmptySet, DummyNode
         };
-        
+
         public static string[] ItemTypeNames = new string[] {
             "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty", "Dummy" };
@@ -1135,65 +1136,6 @@ namespace AasxPackageLogic
             }
         }
 #endif
-
-        //public class ComparerIndexed : IComparer<VisualElementGeneric>
-        //{
-        //    public int NullIndex = int.MaxValue;
-
-        //    public Dictionary<VisualElementGeneric, int> IndexVe = new Dictionary<VisualElementGeneric, int>();
-        //    public Dictionary<AdminShell.ConceptDescription, int> 
-        //        IndexCd = new Dictionary<AdminShell.ConceptDescription, int>();
-
-        //    public int Compare(VisualElementGeneric a, VisualElementGeneric b)
-        //    {
-        //        var ca = Index.ContainsKey(a);
-        //        var cb = Index.ContainsKey(b);
-
-        //        if (!ca && !cb)
-        //            return 0;
-        //        // make CDs without usage to appear at end of list
-        //        if (!ca)
-        //            return +1;
-        //        if (!cb)
-        //            return -1;
-
-        //        var ia = Index[a];
-        //        var ib = Index[b];
-
-        //        if (ia == ib)
-        //            return 0;
-        //        if (ia < ib)
-        //            return -1;
-        //        return +1;
-        //    }
-        //}
-
-        //public VisualElementConceptDescription.ComparerIndexed CreateIndexedComparerCdsForSmUsage(
-        //    AdminShell.AdministrationShellEnv env)
-        //{
-        //    // trivial
-        //    if (env == null)
-        //        return null;
-
-        //    // pass1
-        //    var cmp = new VisualElementConceptDescription.ComparerIndexed();
-        //    int nr = 0;
-        //    foreach (var sm in env.FindAllSubmodelGroupedByAAS())
-        //        foreach (var sme in sm.FindDeep<AdminShell.SubmodelElement>())
-        //        {
-        //            if (sme.semanticId == null)
-        //                continue;
-        //            var cd = env.FindConceptDescription(sme.semanticId);
-        //            if (cd == null)
-        //                continue;
-        //            if (cmp.IndexCd.ContainsKey(cd))
-        //                continue;
-        //            cmp.IndexCd[cd] = nr++;
-        //        }
-
-        //    return cmp;
-        //}
-
     }
 
     public class VisualElementSupplementalFile : VisualElementGeneric
@@ -1325,7 +1267,7 @@ namespace AasxPackageLogic
         private VisualElementEnvironmentItem
             tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
 
-        private MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric> _cdReferred = 
+        private MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric> _cdReferred =
             new MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric>();
 
         private MultiValueDictionary<AdminShell.ConceptDescription, AdminShell.Submodel> _cdToSm =
@@ -1354,7 +1296,7 @@ namespace AasxPackageLogic
         }
 
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
-            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, 
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
             AdminShell.Submodel sm, VisualElementGeneric parent,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper el)
         {
@@ -1370,7 +1312,7 @@ namespace AasxPackageLogic
             }
 
             // nested cd?
-            if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme 
+            if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
                 && ti.CachedCD != null)
             {
                 var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
@@ -1523,7 +1465,7 @@ namespace AasxPackageLogic
                     // item
                     var tiVw = new VisualElementView(tiAas, cache, env, vw);
                     tiVw.SetIsExpandedIfNotTouched(OptionExpandMode > 1);
-                    
+
                     // recursion -> submodel elements
                     if (vw.containedElements != null && vw.containedElements.reference != null)
                         foreach (var ce in vw.containedElements.reference)
@@ -1765,7 +1707,7 @@ namespace AasxPackageLogic
                     {
                         GenerateInnerElementsForConceptDescriptions(cache, env, tiCDs, tiCDs);
                     }
-                   
+
                 }
 
                 // package as well?
@@ -1804,7 +1746,7 @@ namespace AasxPackageLogic
         }
 
         private void SetElementToLazyLoading(
-            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env, AdminShellPackageEnv package, 
+            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env, AdminShellPackageEnv package,
             VisualElementGeneric parent)
         {
             var tiDummy = new VisualElementEnvironmentItem(parent, cache, package, env,
@@ -1825,7 +1767,7 @@ namespace AasxPackageLogic
             {
                 ve.Members.Clear();
                 GenerateInnerElementsForConceptDescriptions(veei.Cache, veei.theEnv, veei, ve);
-                
+
                 ve.RestoreFromCache();
                 if (forceExpanded)
                     ve.IsExpanded = true;
@@ -1852,7 +1794,7 @@ namespace AasxPackageLogic
             if (ve is VisualElementSubmodelRef vesmr)
             {
                 ve.Members.Clear();
-                GenerateInnerElementsForSubmodelRef(vesmr.Cache, vesmr.theEnv, vesmr.thePackage, vesmr.theSubmodel, 
+                GenerateInnerElementsForSubmodelRef(vesmr.Cache, vesmr.theEnv, vesmr.thePackage, vesmr.theSubmodel,
                     vesmr);
 
                 ve.RestoreFromCache();
@@ -1928,11 +1870,11 @@ namespace AasxPackageLogic
             if (recursionDepth > 0)
                 foreach (var mem in tvl.Members)
                 {
-                    foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects, 
+                    foreach (var x in FindAllInListOfVisualElements(mem, dataObject, alsoDereferenceObjects,
                                         recursionDepth - 1))
                         if (x != null)
                             yield return x;
-            }
+                }
         }
 
         private IEnumerable<VisualElementGeneric> InternalFindAllVisualElementOnMainDataObject(object dataObject,
@@ -2188,7 +2130,7 @@ namespace AasxPackageLogic
 
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, parentSm, parentVE, 
+                            cache, data.Container?.Env?.AasEnv, parentSm, parentVE,
                             data.ParentElem as AdminShell.Referable, foundSmw);
                     }
 
@@ -2222,11 +2164,10 @@ namespace AasxPackageLogic
                         // add to parent
                         // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
                         var ti = GenerateVisualElementsFromShellEnvAddElements(
-                            cache, data.Container?.Env?.AasEnv, null, parentVE, 
+                            cache, data.Container?.Env?.AasEnv, null, parentVE,
                             data.ParentElem as AdminShell.Referable, foundSmw);
 
                         // animate
-                        // ti?.TriggerAnimateUpdate();
                         if (ti != null)
                         {
                             // do not TriggerAnimateUpdate(), but set to true in order to animate
@@ -2268,7 +2209,7 @@ namespace AasxPackageLogic
                        cd, alsoDereferenceObjects: true))
                     {
                         // valid
-                        if (!(ve.Parent != null))
+                        if (ve.Parent == null)
                             continue;
 
                         // remember
@@ -2278,7 +2219,7 @@ namespace AasxPackageLogic
                     // AFTER iterating, do the removal
                     foreach (var ctd in childsToDel)
                         ctd?.Parent?.Members.Remove(ctd);
-                    
+
                     // just good
                     return true;
                 }
@@ -2347,17 +2288,17 @@ namespace AasxPackageLogic
                         if (ve is VisualElementEnvironmentItem veit
                             && veit.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions
                             && veit.theEnv != null)
-                            {
-                                // rebuild
-                                veit.Members.Clear();
-                                GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
-                            }
+                        {
+                            // rebuild
+                            veit.Members.Clear();
+                            GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
+                        }
                 }
             }
 
 
             return false;
-        }        
+        }
 
     }
 

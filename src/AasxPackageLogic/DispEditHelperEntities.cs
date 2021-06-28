@@ -16,10 +16,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-//using System.Windows;
-//using System.Windows.Controls;
-//using System.Windows.Input;
-//using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -188,6 +184,8 @@ namespace AasxPackageLogic
             bool hintMode = false)
         {
             this.AddGroup(stack, "Environment of Asset Administration Shells", this.levelColors.MainSection);
+            if (env == null)
+                return;
 
             // automatically and silently fix errors
             if (env.AdministrationShells == null)
@@ -454,101 +452,97 @@ namespace AasxPackageLogic
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
                     // Cut, copy, paste within list of Assets
-                    if (editMode && env != null)
-                    {
-                        // cut/ copy / paste
-                        this.DispPlainListOfIdentifiablePasteHelper<AdminShell.Identifiable>(
-                            stack, repo, this.theCopyPaste,                            
-                            label: "Buffer:",
-                            lambdaPasteInto: (cpi, del) =>
+                    this.DispPlainListOfIdentifiablePasteHelper<AdminShell.Identifiable>(
+                        stack, repo, this.theCopyPaste,
+                        label: "Buffer:",
+                        lambdaPasteInto: (cpi, del) =>
+                        {
+                            // access
+                            if (cpi is CopyPasteItemIdentifiable cpiid)
                             {
-                                // access
-                                if (cpi is CopyPasteItemIdentifiable cpiid)
+                                // some pre-conditions not met?
+                                if (cpiid?.entity == null || (del && cpiid?.parentContainer == null))
+                                    return null;
+
+                                // divert
+                                object res = null;
+                                if (cpiid.entity is AdminShell.AdministrationShell itaas)
                                 {
-                                    // some pre-conditions not met?
-                                    if (cpiid?.entity == null || (del && cpiid?.parentContainer == null))
-                                        return null;
+                                    // new 
+                                    var aas = new AdminShell.AdministrationShell(itaas);
+                                    env.AdministrationShells.Add(aas);
+                                    res = aas;
 
-                                    // divert
-                                    object res = null;
-                                    if (cpiid.entity is AdminShell.AdministrationShell itaas)
-                                    {
-                                        // new 
-                                        var aas = new AdminShell.AdministrationShell(itaas);
-                                        env.AdministrationShells.Add(aas);
-                                        res = aas;
+                                    // delete
+                                    if (del && cpiid.parentContainer is List<AdminShell.AdministrationShell> aasold
+                                        && aasold.Contains(itaas))
+                                        aasold.Remove(itaas);
+                                }
+                                else
+                                if (cpiid.entity is AdminShell.Asset itasset)
+                                {
+                                    // new 
+                                    var asset = new AdminShell.Asset(itasset);
+                                    env.Assets.Add(asset);
+                                    res = asset;
 
-                                        // delete
-                                        if (del && cpiid.parentContainer is List<AdminShell.AdministrationShell> aasold
-                                            && aasold.Contains(itaas))
-                                            aasold.Remove(itaas);
-                                    }
-                                    else
-                                    if (cpiid.entity is AdminShell.Asset itasset)
-                                    {
-                                        // new 
-                                        var asset = new AdminShell.Asset(itasset);
-                                        env.Assets.Add(asset);
-                                        res = asset;
+                                    // delete
+                                    if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
+                                        && assetold.Contains(itasset))
+                                        assetold.Remove(itasset);
+                                }
+                                else
+                                if (cpiid.entity is AdminShell.ConceptDescription itcd)
+                                {
+                                    // new 
+                                    var cd = new AdminShell.ConceptDescription(itcd);
+                                    env.ConceptDescriptions.Add(cd);
+                                    res = cd;
 
-                                        // delete
-                                        if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
-                                            && assetold.Contains(itasset))
-                                            assetold.Remove(itasset);
-                                    }
-                                    else
-                                    if (cpiid.entity is AdminShell.ConceptDescription itcd)
-                                    {
-                                        // new 
-                                        var cd = new AdminShell.ConceptDescription(itcd);
-                                        env.ConceptDescriptions.Add(cd);
-                                        res = cd;
-
-                                        // delete
-                                        if (del && cpiid.parentContainer is List<AdminShell.ConceptDescription> cdold
-                                            && cdold.Contains(itcd))
-                                            cdold.Remove(itcd);
-                                    }
-
-                                    // ok
-                                    return res;
+                                    // delete
+                                    if (del && cpiid.parentContainer is List<AdminShell.ConceptDescription> cdold
+                                        && cdold.Contains(itcd))
+                                        cdold.Remove(itcd);
                                 }
 
-                                if (cpi is CopyPasteItemSubmodel cpism)
+                                // ok
+                                return res;
+                            }
+
+                            if (cpi is CopyPasteItemSubmodel cpism)
+                            {
+                                // some pre-conditions not met?
+                                if (cpism?.sm == null || (del && cpism?.parentContainer == null))
+                                    return null;
+
+                                // divert
+                                object res = null;
+                                if (cpism.sm is AdminShell.Submodel itsm)
                                 {
-                                    // some pre-conditions not met?
-                                    if (cpism?.sm == null || (del && cpism?.parentContainer == null))
-                                        return null;
+                                    // new 
+                                    var asset = new AdminShell.Submodel(itsm);
+                                    env.Submodels.Add(itsm);
+                                    res = asset;
 
-                                    // divert
-                                    object res = null;
-                                    if (cpism.sm is AdminShell.Submodel itsm)
-                                    {
-                                        // new 
-                                        var asset = new AdminShell.Submodel(itsm);
-                                        env.Submodels.Add(itsm);
-                                        res = asset;
-
-                                        // delete
-                                        if (del && cpism.parentContainer is List<AdminShell.Submodel> smold
-                                            && smold.Contains(itsm))
-                                            smold.Remove(itsm);
-                                    }
-
-                                    // ok
-                                    return res;
+                                    // delete
+                                    if (del && cpism.parentContainer is List<AdminShell.Submodel> smold
+                                        && smold.Contains(itsm))
+                                        smold.Remove(itsm);
                                 }
 
-                                // nok
-                                return null;
-                            });
-                    }
+                                // ok
+                                return res;
+                            }
+
+                            // nok
+                            return null;
+                        });
                 }
 
                 //
                 // Concept Descriptions
                 //
-                
+
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
                     this.AddGroup(stack, "Import of ConceptDescriptions", this.levelColors.MainSection);
@@ -601,27 +595,30 @@ namespace AasxPackageLogic
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                             minWidth: 250,
                             items: new[] {
-                            "List index", "idShort", "Identification", "By Submodel", 
+                            "List index", "idShort", "Identification", "By Submodel",
                             "By SubmodelElements"
                         }),
                         (o) =>
                         {
+                            // resharper disable AccessToModifiedClosure
                             if (cb1?.SelectedIndex.HasValue == true)
                             {
                                 ve.CdSortOrder = (VisualElementEnvironmentItem.ConceptDescSortOrder)
-                                    cb1.SelectedIndex.Value;                                
+                                    cb1.SelectedIndex.Value;
                             }
                             else
                             {
-                                Log.Singleton.Error("ComboxBox Dynamic rendering of entities has no value");                                
+                                Log.Singleton.Error("ComboxBox Dynamic rendering of entities has no value");
                             }
+                            // resharper enable AccessToModifiedClosure
                             return new AnyUiLambdaActionNone();
                         },
                         takeOverLambda: new AnyUiLambdaActionRedrawAllElements(
                             nextFocus: env?.ConceptDescriptions)) as AnyUiComboBox;
 
                     // set currently selected value
-                    cb1.SelectedIndex = (int)ve.CdSortOrder;
+                    if (cb1 != null)
+                        cb1.SelectedIndex = (int)ve.CdSortOrder;
 
                     //
                     // Static order 
@@ -644,7 +641,7 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                               "Perform sort operation? This operation can not be reverted!", 
+                               "Perform sort operation? This operation can not be reverted!",
                                "ConceptDescriptions",
                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                             {
@@ -865,10 +862,13 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAas(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
+            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell aas,
             bool editMode, AnyUiStackPanel stack, bool hintMode = false)
         {
             this.AddGroup(stack, "Asset Administration Shell", this.levelColors.MainSection);
+            if (aas == null)
+                return;
 
             // Entities
             if (editMode && aas?.submodelRefs != null)
@@ -878,9 +878,6 @@ namespace AasxPackageLogic
                 // Up/ down/ del
                 this.EntityListUpDownDeleteHelper<AdminShell.AdministrationShell>(
                     stack, repo, env.AdministrationShells, aas, env, "AAS:");
-
-                // paste into
-                var allowPasteInto = this.theCopyPaste?.Items?.AllOfElementType<CopyPasteItemSubmodel>() == true;
 
                 // Cut, copy, paste within list of AASes
                 this.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.AdministrationShell>(
@@ -948,7 +945,7 @@ namespace AasxPackageLogic
                                 return new AnyUiLambdaActionNone();
 
                             // select existing Submodel
-                            var ks = this.SmartSelectAasEntityKeys(packages, 
+                            var ks = this.SmartSelectAasEntityKeys(packages,
                                         PackageCentral.PackageCentral.Selector.Main,
                                         "Submodel");
                             if (ks != null)
@@ -1195,7 +1192,8 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntitySubmodelOrRef(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
+            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode,
             AnyUiStackPanel stack, bool hintMode = false)
         {
@@ -1206,9 +1204,9 @@ namespace AasxPackageLogic
 
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                  {
-                    return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), alsoDereferenceObjects: false);
-                };
+                     return new AnyUiLambdaActionNavigateTo(
+                         AdminShell.Reference.CreateNew(kl), alsoDereferenceObjects: false);
+                 };
 
                 this.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
@@ -1266,7 +1264,7 @@ namespace AasxPackageLogic
                     aas.submodelRefs, smref, (sr) => { return new AdminShell.SubmodelRef(sr); },
                     smref, submodel,
                     label: "Buffer:",
-                    checkEquality: (r1,r2) =>
+                    checkEquality: (r1, r2) =>
                     {
                         if (r1 != null && r2 != null)
                             return (r1.Matches(r2, AdminShellV20.Key.MatchMode.Identification));
@@ -1579,7 +1577,7 @@ namespace AasxPackageLogic
                 };
 
                 this.EntityListUpDownDeleteHelper<AdminShell.ConceptDescription>(
-                    stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate, 
+                    stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate,
                     preventMove: preventMove);
             }
 
@@ -1927,8 +1925,6 @@ namespace AasxPackageLogic
                 return;
 
             // edit SubmodelElements's attributes
-            var editSmeAttr = true;
-
             if (editMode)
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
@@ -1991,20 +1987,18 @@ namespace AasxPackageLogic
                             }
                             return new AnyUiLambdaActionNone();
                         });
-            }
 
-            // cut/ copy / paste
-            if (parentContainer != null)
-            {
-                if (editMode && editSmeAttr)
+                // cut/ copy / paste
+                if (parentContainer != null)
                 {
                     this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
                         label: "Buffer:");
                 }
             }
 
+
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if (editMode && editSmeAttr)
+            if (editMode)
             // ReSharper enable ConditionIsAlwaysTrueOrFalse
             {
                 // guess kind or instances
@@ -2331,9 +2325,9 @@ namespace AasxPackageLogic
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                             }
 
-                            if (buttonNdx == 1 
+                            if (buttonNdx == 1
                                 && this.theCopyPaste?.Valid == true
-                                && this.theCopyPaste.Items != null 
+                                && this.theCopyPaste.Items != null
                                 && this.theCopyPaste.Items.AllOfElementType<CopyPasteItemSME>())
                             {
                                 object businessObj = null;
@@ -2347,7 +2341,7 @@ namespace AasxPackageLogic
                                         continue;
                                     }
 
-                                    var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);                                    
+                                    var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
 
                                     if (smo is AdminShell.IEnumerateChildren smeec)
                                         businessObj = smeec.AddChild(smw2,
@@ -2511,7 +2505,6 @@ namespace AasxPackageLogic
 
             }
 
-            if (editSmeAttr)
             {
 
                 this.AddGroup(
@@ -2704,7 +2697,8 @@ namespace AasxPackageLogic
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
                     this.AddKeyListKeys(
                         stack, "valueId", p.valueId.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.GlobalReference);
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        AdminShell.Key.GlobalReference);
                 }
             }
             else if (sme is AdminShell.MultiLanguageProperty)
@@ -2744,7 +2738,7 @@ namespace AasxPackageLogic
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
                     this.AddKeyListKeys(
                         stack, "valueId", mlp.valueId.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference);
                 }
             }
@@ -3376,7 +3370,7 @@ namespace AasxPackageLogic
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
                            It shall be replaced (after intergrating AnyUI) by a better repo handling */
                         /* Update: already better! */
-                        stack, "Asset", ent.assetRef.Keys, repo, packages, 
+                        stack, "Asset", ent.assetRef.Keys, repo, packages,
                         PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.AllElements,
                         jumpLambda: lambda,
@@ -3433,7 +3427,7 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityView(
-            PackageCentral.PackageCentral packages, 
+            PackageCentral.PackageCentral packages,
             AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
             AdminShell.View view, bool editMode, AnyUiStackPanel stack,
             bool hintMode = false)
@@ -3523,6 +3517,6 @@ namespace AasxPackageLogic
             // normal reference
             this.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
                 packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements);
-        }        
+        }
     }
 }

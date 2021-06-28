@@ -6437,7 +6437,7 @@ namespace AdminShellNS
                 // now, give back
                 foreach (var r in temp)
                     yield return r;
-            }            
+            }
         }
 
         //
@@ -7165,7 +7165,7 @@ namespace AdminShellNS
             public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null || !(smw.submodelElement is DataElement))
-                    return null ;
+                    return null;
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();
                 this.annotations.Add(smw);
@@ -7213,7 +7213,7 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
             }
 
-            
+
         }
 
         public class Capability : SubmodelElement
@@ -7404,7 +7404,7 @@ namespace AdminShellNS
             {
                 return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
             }
-            
+
         }
 
         public class OperationVariable : IAasElement
@@ -7610,7 +7610,7 @@ namespace AdminShellNS
                 if (this.outputVariable != null)
                     foreach (var ov in this.outputVariable)
                         if (ov?.value?.submodelElement == child)
-                        { 
+                        {
                             dir = OperationVariable.Direction.Out;
                             opvar = ov;
                         }
@@ -7618,7 +7618,7 @@ namespace AdminShellNS
                 if (this.inoutputVariable != null)
                     foreach (var ov in this.inoutputVariable)
                         if (ov?.value?.submodelElement == child)
-                        { 
+                        {
                             dir = OperationVariable.Direction.InOut;
                             opvar = ov;
                         }
@@ -7706,7 +7706,7 @@ namespace AdminShellNS
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Operation", "Opr");
-            }            
+            }
         }
 
         public class Entity : SubmodelElement, IManageSubmodelElements, IEnumerateChildren
@@ -7848,7 +7848,7 @@ namespace AdminShellNS
                 sew.submodelElement = sme;
                 if (index < 0 || index >= statements.Count)
                     return;
-                statements.Insert(index,sew);
+                statements.Insert(index, sew);
             }
 
             public void Remove(SubmodelElement sme)
@@ -7887,7 +7887,7 @@ namespace AdminShellNS
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Entity", "Ent");
-            }            
+            }
         }
 
         public class BasicEvent : SubmodelElement

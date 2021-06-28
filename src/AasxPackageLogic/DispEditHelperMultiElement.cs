@@ -15,10 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-//using System.Windows;
-//using System.Windows.Controls;
-//using System.Windows.Input;
-//using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -58,7 +54,7 @@ namespace AasxPackageLogic
                         cpb.Clear();
                         cpb.Valid = true;
                         cpb.Duplicate = buttonNdx == 1;
-                        
+
                         cpb.Items = new ListOfCopyPasteItem();
                         foreach (var el in entities)
                         {
@@ -70,7 +66,7 @@ namespace AasxPackageLogic
                                 if (parentContainer is AdminShell.IEnumerateChildren enc)
                                     placement = enc.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
-                                    vesme.theWrapper, sme));
+                                    vesme.theWrapper, sme, placement));
                             }
 
                             if (el is VisualElementSubmodelRef vesmr)
@@ -116,7 +112,7 @@ namespace AasxPackageLogic
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");
                     }
-                   
+
                     return new AnyUiLambdaActionNone();
                 });
         }
@@ -126,9 +122,9 @@ namespace AasxPackageLogic
         /// It is separate from <c>EntityListUpDownDeleteHelper</c> in order to minimize cross effecrs
         /// </summary>
         public void EntityListMultipleUpDownDeleteHelper<T>(
-            AnyUiPanel stack, ModifyRepo repo, 
+            AnyUiPanel stack, ModifyRepo repo,
             List<T> list, List<T> entities, ListOfVisualElementBasic.IndexInfo indexInfo,
-            object alternativeFocus = null, string label = "Entities:", 
+            object alternativeFocus = null, string label = "Entities:",
             PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false, bool reFocus = false)
         {
             // access
@@ -159,7 +155,7 @@ namespace AasxPackageLogic
                         // get more informations
 
                         var newndx = -1;
-                        if (buttonNdx == 0) 
+                        if (buttonNdx == 0)
                             newndx = MoveElementsToStartingIndex<T>(list, entities, indexInfo.MinIndex - 1);
 
                         if (buttonNdx == 1)
@@ -184,7 +180,7 @@ namespace AasxPackageLogic
                             else
                             {
                                 object fo = null;
-                                if (reFocus && newndx >= 0 && newndx < list.Count)
+                                if (reFocus && newndx < list.Count)
                                     fo = list[newndx];
                                 if (alternativeFocus != null)
                                     fo = alternativeFocus;
@@ -202,7 +198,7 @@ namespace AasxPackageLogic
                                 "Delete selected entities? This operation can not be reverted!", "AASX",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
-                            var ret = DeleteElementsInList<T>(list, entities);
+                            DeleteElementsInList<T>(list, entities);
                             if (sendUpdateEvent != null)
                             {
                                 sendUpdateEvent.Reason = PackCntChangeEventReason.StructuralUpdate;
@@ -257,7 +253,7 @@ namespace AasxPackageLogic
 
                 // only with input
                 if (input.Length > 0)
-                {                   
+                {
                     if (p0 == '?')
                     {
                         metaChar = true;
@@ -287,13 +283,13 @@ namespace AasxPackageLogic
             return res;
         }
 
-        public void ChangeElementAttributes (AdminShell.IAasElement el, AnyUiDialogueDataChangeElementAttributes dia)
+        public void ChangeElementAttributes(AdminShell.IAasElement el, AnyUiDialogueDataChangeElementAttributes dia)
         {
             // access
             if (el == null || dia == null)
                 return;
 
-            if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.IdShort && 
+            if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.IdShort &&
                 el is AdminShell.Referable rf1)
             {
                 rf1.idShort = PerformWildcardReplace(rf1.idShort, dia.Pattern);
@@ -372,7 +368,7 @@ namespace AasxPackageLogic
 
                 // which type?
                 var first = entities.First();
-                AdminShell.Referable parent = indexInfo.SharedParent.GetDereferencedMainDataObject() 
+                AdminShell.Referable parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
                                                 as AdminShell.Referable;
 
                 // TODO: env? parent?
@@ -403,7 +399,7 @@ namespace AasxPackageLogic
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         vecd.theEnv?.ConceptDescriptions, bos, indexInfo,
-                        preventMove: cdSortOrder.HasValue 
+                        preventMove: cdSortOrder.HasValue
                             && cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None,
                         sendUpdateEvent: new PackCntChangeEventData()
                         {
@@ -413,7 +409,7 @@ namespace AasxPackageLogic
                         }); ;
 
                     // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions, 
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions,
                         this.theCopyPaste, entities);
                 }
 

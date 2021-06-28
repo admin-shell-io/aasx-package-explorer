@@ -9,8 +9,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-//using System.Windows;
-//using System.Windows.Controls;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
@@ -32,7 +30,7 @@ namespace AasxPackageLogic
         public class CopyPasteItemBase
         {
             // members for all
-            
+
             public virtual object GetMainDataObject() { return null; }
 
             // Factory
@@ -72,7 +70,7 @@ namespace AasxPackageLogic
                     if (!(ve is T))
                         return false;
                 return true;
-            }            
+            }
         }
 
         public class CopyPasteItemIdentifiable : CopyPasteItemBase
@@ -97,7 +95,7 @@ namespace AasxPackageLogic
                 // access
                 var idf = rf as AdminShell.Identifiable;
                 if (idf == null
-                    || !(idf is AdminShell.AdministrationShell 
+                    || !(idf is AdminShell.AdministrationShell
                          || idf is AdminShell.Asset || idf is AdminShell.ConceptDescription))
                     return null;
 
@@ -112,7 +110,6 @@ namespace AasxPackageLogic
         public class CopyPasteItemSubmodel : CopyPasteItemBase
         {
             public object parentContainer = null;
-            // public object entity = null;
             public AdminShell.SubmodelRef smref = null;
             public AdminShell.Submodel sm = null;
 
@@ -293,7 +290,6 @@ namespace AasxPackageLogic
                 // make JSON
                 var settings = AasxIntegrationBase.AasxPluginOptionSerialization.GetDefaultJsonSettings(
                     new[] { typeof(AdminShellEvents.AasEventMsgEnvelope) });
-                // settings.TypeNameHandling = TypeNameHandling.Auto;
                 settings.TypeNameHandling = TypeNameHandling.None;
                 settings.Formatting = Formatting.Indented;
                 var json = JsonConvert.SerializeObject(objToSerialize, settings);
@@ -333,12 +329,9 @@ namespace AasxPackageLogic
                 // quite likely to crash
                 try
                 {
-
                     // be very straight for allowed formats
                     var isSingleObject = cps.StartsWith("{");
                     var isArrayObject = cps.StartsWith("[");
-                    if (!isSingleObject && !isArrayObject)
-                        return null;
 
                     // try simple way
                     if (isSingleObject)
@@ -387,7 +380,7 @@ namespace AasxPackageLogic
                                 return cpb;
                         }
                     }
-                } 
+                }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "when trying to decode clipboad text");
@@ -445,7 +438,7 @@ namespace AasxPackageLogic
 
             if (item.parentContainer is AdminShell.Operation pcop && item.wrapper != null)
             {
-                var placement = pcop.GetChildrenPlacement(item.sme) as 
+                var placement = pcop.GetChildrenPlacement(item.sme) as
                     AdminShell.Operation.EnumerationPlacmentOperationVariable;
                 if (placement != null)
                     pcop[placement.Direction].Remove(placement.OperationVariable);
@@ -470,7 +463,7 @@ namespace AasxPackageLogic
             this.AddAction(
                 stack, label,
                 new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                actionTags: new[] { "aas-elem-cut", "aas-elem-copy", "aas-elem-paste-above", 
+                actionTags: new[] { "aas-elem-cut", "aas-elem-copy", "aas-elem-paste-above",
                     "aas-elem-paste-below", "aas-elem-paste-into" },
                 action: (buttonNdx) =>
                 {
@@ -506,7 +499,7 @@ namespace AasxPackageLogic
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
 
                         // content?
-                        if (!cpb.ContentAvailable == true)
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -534,7 +527,7 @@ namespace AasxPackageLogic
                         {
                             // access
                             var item = it as CopyPasteItemSME;
-                            if (item?.sme == null || item.wrapper == null 
+                            if (item?.sme == null || item.wrapper == null
                                 || (!cpb.Duplicate && item?.parentContainer == null))
                             {
                                 Log.Singleton.Error("When pasting SME, an element was invalid.");
@@ -698,7 +691,7 @@ namespace AasxPackageLogic
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
 
                         // content?
-                        if (!cpb.ContentAvailable == true)
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -793,7 +786,7 @@ namespace AasxPackageLogic
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
 
                         // content?
-                        if (!cpb.ContentAvailable == true)
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -821,7 +814,7 @@ namespace AasxPackageLogic
                         {
                             // access
                             var item = it as CopyPasteItemSME;
-                            if (item?.sme == null || item?.wrapper == null 
+                            if (item?.sme == null || item?.wrapper == null
                                 || (!cpb.Duplicate && item?.parentContainer == null))
                             {
                                 Log.Singleton.Error("When pasting SubmodelElements, an element was invalid.");
@@ -861,9 +854,9 @@ namespace AasxPackageLogic
             List<T> parentContainer,
             T entity,
             Func<T, T> cloneEntity,
-            string label = "Buffer:",            
+            string label = "Buffer:",
             Func<CopyPasteBuffer, bool> checkPasteInfo = null,
-            Func<CopyPasteItemBase, bool, object> doPasteInto = null) 
+            Func<CopyPasteItemBase, bool, object> doPasteInto = null)
                 where T : AdminShell.Identifiable, new()
         {
             // access
@@ -902,7 +895,7 @@ namespace AasxPackageLogic
                         // which buffer?
                         var cbdata = context?.ClipboardGet();
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
-                        if (!cpb.ContentAvailable == true)
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -968,7 +961,13 @@ namespace AasxPackageLogic
                         // which buffer?
                         var cbdata = context?.ClipboardGet();
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
-                        if (!cpb.ContentAvailable == true)
+                        if (cpb == null)
+                        {
+                            Log.Singleton.Error("Internal error in CheckIfUseExternalCopyPasteBuffer()");
+                            return new AnyUiLambdaActionNone();
+                        }
+
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -995,11 +994,10 @@ namespace AasxPackageLogic
                         foreach (var it in cpb.Items)
                         {
                             // try
-                            var obj = doPasteInto(it, !cpb.Duplicate);
+                            var obj = doPasteInto?.Invoke(it, !cpb.Duplicate);
                             if (obj == null)
                             {
                                 Log.Singleton.Error("When pasting AAS elements, an element was invalid.");
-                                continue;
                             }
                             else
                                 nextBusObj = obj;
@@ -1017,6 +1015,7 @@ namespace AasxPackageLogic
                 });
         }
 
+        // resharper disable once UnusedTypeParameter
         public void DispPlainListOfIdentifiablePasteHelper<T>(
             AnyUiPanel stack,
             ModifyRepo repo,
@@ -1040,7 +1039,7 @@ namespace AasxPackageLogic
                         // which buffer
                         var cbdata = context?.ClipboardGet();
                         var cpb = cpbInternal.CheckIfUseExternalCopyPasteBuffer(cbdata);
-                        if (!cpb.ContentAvailable == true)
+                        if (!cpb.ContentAvailable)
                         {
                             this.context?.MessageBoxFlyoutShow(
                                 "No sufficient infomation in internal paste buffer or external clipboard.",
@@ -1062,7 +1061,6 @@ namespace AasxPackageLogic
                             if (obj == null)
                             {
                                 Log.Singleton.Error("When pasting AAS elements, an element was invalid.");
-                                continue;
                             }
                             else
                                 nextBusObj = obj;

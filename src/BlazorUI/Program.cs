@@ -1,3 +1,12 @@
+/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -134,7 +143,7 @@ namespace BlazorUI
             Array.Sort(aasxFiles);
             loadAasx(aasxFiles[0]);
         }
-        
+
         public static void Main(string[] args)
         {
             //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
@@ -170,13 +179,14 @@ namespace BlazorUI
             // Test for Blazor
             //
 
-            // stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
+#if _not_enabled
+             stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
+             var d = new JavaScriptSerializer();
+             stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
+             var parent = (Dictionary<string, object>)results["Parent"];
+#endif
 
-            // var d = new JavaScriptSerializer();
-            // stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
-            // var parent = (Dictionary<string, object>)results["Parent"];
-
-            if (false)
+#if _not_enabled
             {
                 string s = File.ReadAllText(@"c:\development\file.json");
                 var jsonSerializerSettings = new JsonSerializerSettings()
@@ -185,6 +195,7 @@ namespace BlazorUI
                 };
                 stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
             }
+#endif
 
             if (true)
             {
@@ -219,11 +230,6 @@ namespace BlazorUI
                     tb.Foreground = AnyUiBrushes.Black;
                     tb.Text = "Initial";
                     stck2.Children.Add(tb);
-                    //repo.RegisterControl(tb, (o) =>
-                    //{
-                    //    Log.Singleton.Info($"Text changed to .. {"" + o}");
-                    //    return new AnyUiLambdaActionNone();
-                    //});
 
                     var btn = new AnyUiButton();
                     btn.Content = "Click me!";
@@ -233,11 +239,6 @@ namespace BlazorUI
                             Program.LogLine = "Hallo, Match zwischen Button und callback!";
                     });
                     stck3.Children.Add(btn);
-                    //repo.RegisterControl(btn, (o) =>
-                    //{
-                    //    Log.Singleton.Error("Button clicked!");
-                    //    return new AnyUiLambdaActionRedrawAllElements(null);
-                    //});
                 }
             }
 

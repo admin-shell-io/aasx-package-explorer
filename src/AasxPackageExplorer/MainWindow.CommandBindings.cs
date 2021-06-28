@@ -26,12 +26,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml.Serialization;
 using AasxIntegrationBase;
-using AasxSignature;
-using AasxUANodesetImExport;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AnyUi;
+using AasxSignature;
+using AasxUANodesetImExport;
 using AdminShellNS;
+using AnyUi;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -771,7 +771,7 @@ namespace AasxPackageExplorer
             if (cmd == "filerepoconnectrepository")
             {
                 // read server address
-                var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):", 
+                var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
                             AnyUiMessageBoxImage.Question);
                 uc.Text = "" + Options.Curr.DefaultConnectRepositoryLocation;
                 this.StartFlyoverModal(uc);
@@ -1413,7 +1413,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Submodel Write", 
+                    "No valid SubModel selected.", "Submodel Write",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
@@ -1450,7 +1450,8 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Submodel Read", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    "No valid SubModel selected.", "Submodel Read",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
             var obj = ve1.theSubmodel;
@@ -1487,7 +1488,8 @@ namespace AasxPackageExplorer
                 catch (Exception)
                 {
                     MessageBoxFlyoutShow(
-                        "Can not read SubModel.", "Submodel Read", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                        "Can not read SubModel.", "Submodel Read",
+                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                     return;
                 }
 
@@ -1542,7 +1544,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "PUT Submodel", 
+                    "No valid SubModel selected.", "PUT Submodel",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                 return;
             }
@@ -1563,7 +1565,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "PUT Submodel", 
+                    "No valid SubModel selected.", "PUT Submodel",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
@@ -1593,7 +1595,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "GET Submodel", 
+                    "No valid SubModel selected.", "GET Submodel",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
                 return;
             }
@@ -1638,7 +1640,7 @@ namespace AasxPackageExplorer
                 catch (Exception)
                 {
                     MessageBoxFlyoutShow(
-                        "Can not read SubModel.", "Submodel Read", 
+                        "Can not read SubModel.", "Submodel Read",
                         AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                     return;
                 }
@@ -2062,7 +2064,7 @@ namespace AasxPackageExplorer
             if (!_packageCentral.MainStorable)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error", 
+                    "An AASX package needs to be open", "Error",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                 return;
             }
@@ -2117,7 +2119,7 @@ namespace AasxPackageExplorer
             if (!_packageCentral.MainAvailable)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error", 
+                    "An AASX package needs to be open", "Error",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                 return;
             }
@@ -2241,7 +2243,7 @@ namespace AasxPackageExplorer
             if (!_packageCentral.MainAvailable)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error", 
+                    "An AASX package needs to be open", "Error",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                 return;
             }
@@ -2554,7 +2556,8 @@ namespace AasxPackageExplorer
             if (!_packageCentral.MainStorable)
             {
                 MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    "An AASX package needs to be open", "Error",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
                 return;
             }
             // check, if required plugin can be found

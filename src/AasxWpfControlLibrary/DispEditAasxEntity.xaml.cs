@@ -19,11 +19,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
-using AasxPackageLogic.PackageCentral;
 
 namespace AasxPackageExplorer
 {
@@ -80,7 +80,7 @@ namespace AasxPackageExplorer
                     }
 
                     // all other elements refer to superior functionality
-                    this.WishForOutsideAction.Add(temp as AnyUiLambdaActionBase);
+                    this.WishForOutsideAction.Add(temp);
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace AasxPackageExplorer
             theMasterPanel.Children.Clear();
             var sp = new AnyUiStackPanel();
             // TODO MIHO
-            var spwpf = new Label(); // sp.GetOrCreateWpfElement();
+            var spwpf = new Label();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
             _lastRenderedRootElement = null;
@@ -235,7 +235,7 @@ namespace AasxPackageExplorer
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
             ListOfVisualElementBasic entities,
-            bool editMode, bool hintMode = false, bool showIriMode = false, 
+            bool editMode, bool hintMode = false, bool showIriMode = false,
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
@@ -328,7 +328,7 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: ONE item
                 //
-                var entity = entities.First();                
+                var entity = entities.First();
 
                 if (entity is VisualElementEnvironmentItem veei)
                 {
@@ -481,7 +481,8 @@ namespace AasxPackageExplorer
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         // SerializationBinder = new DisplayNameSerializationBinder(
-                        //    new[] { typeof(AasxIntegrationBase.AasForms.FormDescListOfElement), typeof(AasxIntegrationBase.AasForms.FormDescProperty) }),
+                        //    new[] { typeof(AasxIntegrationBase.AasForms.FormDescListOfElement), 
+                        //      typeof(AasxIntegrationBase.AasForms.FormDescProperty) }),
                         // SerializationBinder = new DisplayNameSerializationBinder(
                         //     new[] { typeof(AnyUiStackPanel), typeof(AnyUiUIElement) }),
                         // NullValueHandling = NullValueHandling.Ignore,
@@ -578,7 +579,7 @@ namespace AasxPackageExplorer
             return renderHints;
         }
 
-#endregion
+        #endregion
 
         public void HandleGlobalKeyDown(KeyEventArgs e, bool preview)
         {
@@ -700,7 +701,7 @@ namespace AasxPackageExplorer
                 return htmlfn;
             }
             catch (Exception ex)
-            { 
+            {
                 Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
             }
             return null;

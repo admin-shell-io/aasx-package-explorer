@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,16 +21,15 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using AdminShellNS;
 using AasxIntegrationBase;
 using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.AdminShellEvents;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
+using AasxWpfControlLibrary.PackageCentral;
+using AdminShellNS;
 using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
-using AasxWpfControlLibrary.PackageCentral;
-using System.Linq;
 
 namespace AasxPackageExplorer
 {
@@ -308,8 +308,8 @@ namespace AasxPackageExplorer
             try
             {
                 // TODO-ANYUI MIHO
-                //if (!doNotNavigateAfterLoaded)
-                // 
+                ////if (!doNotNavigateAfterLoaded)
+                //// 
             }
             catch (Exception ex)
             {
@@ -435,12 +435,13 @@ namespace AasxPackageExplorer
         }
 
         public void PrepareDispEditEntity(
-            AdminShellPackageEnv package, ListOfVisualElementBasic entities, bool editMode, bool hintMode, bool showIriMode,
+            AdminShellPackageEnv package, ListOfVisualElementBasic entities,
+            bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
             // determine some flags
             var tiCds = DisplayElements.SearchVisualElementOnMainDataObject(package?.AasEnv?.ConceptDescriptions) as
-                VisualElementEnvironmentItem;            
+                VisualElementEnvironmentItem;
 
             // update element view?
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
@@ -502,7 +503,7 @@ namespace AasxPackageExplorer
                 DragSource.Foreground = Brushes.Black;
             }
 
-            if (entities?.ExactlyOne == true 
+            if (entities?.ExactlyOne == true
                 && this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
                 this.theOnlineConnection.IsConnected())
             {
@@ -614,8 +615,8 @@ namespace AasxPackageExplorer
 
         }
 
-#endregion
-#region Callbacks
+        #endregion
+        #region Callbacks
         //===============
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -1032,7 +1033,7 @@ namespace AasxPackageExplorer
                 }
             }
 
-            if (lab is AnyUiLambdaActionPackCntChange 
+            if (lab is AnyUiLambdaActionPackCntChange
                 || lab is AnyUiLambdaActionSelectMainObjects)
             {
                 DisplayElements.PushEvent(lab);
@@ -1305,7 +1306,7 @@ namespace AasxPackageExplorer
                     }
                 }
 
-#endregion
+                #endregion
             }
             catch (Exception ex)
             {
@@ -2016,7 +2017,7 @@ namespace AasxPackageExplorer
             }
         }
 
-#region Modal Flyovers
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -2204,8 +2205,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2295,7 +2296,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {

@@ -119,10 +119,6 @@
                     
                     <!-- allow double click -->
                     <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick" />
-
-                    <Style.Triggers>
-                        
-                    </Style.Triggers>
                 </Style>
                 
             </TreeView.ItemContainerStyle>
