@@ -974,6 +974,13 @@ namespace AnyUi
                 res = uc;
             }
 
+            if (dialogueData is AnyUiDialogueDataChangeElementAttributes ddcea)
+            {
+                var uc = new ChangeElementAttributesFlyout();
+                uc.DiaData = ddcea;
+                res = uc;
+            }
+
             if (dialogueData is AnyUiDialogueDataSelectEclassEntity ddec)
             {
                 var uc = new SelectEclassEntityFlyout();

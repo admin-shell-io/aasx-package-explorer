@@ -20,7 +20,7 @@
     <!-- ReSharper disable Xaml.MissingGridIndex -->
 
     <UserControl.Resources>
-        <ResourceDictionary Source="Themes/Generic.xaml"/>
+        <ResourceDictionary Source="/Themes/Generic.xaml"/>
     </UserControl.Resources>
 
     <Grid Margin="10">

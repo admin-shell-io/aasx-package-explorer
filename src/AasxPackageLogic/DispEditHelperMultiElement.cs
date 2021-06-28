@@ -217,6 +217,110 @@ namespace AasxPackageLogic
                 });
         }
 
+        public string PerformWildcardReplace(string input, string pattern)
+        {
+            // access
+            if (input == null || pattern == null)
+                return input;
+
+            // pop stack principle
+            var res = "";
+            while (pattern.Length > 0)
+            {
+                // pop
+                var p0 = pattern[0];
+                pattern = pattern.Remove(0, 1);
+
+                // special case
+                var metaChar = false;
+
+                if (p0 == '*')
+                {
+                    metaChar = true;
+                    res += input;
+                    input = "";
+                }
+
+                if (p0 == '^')
+                {
+                    metaChar = true;
+                    res += input.ToUpper();
+                    input = "";
+                }
+
+                if (p0 == '§')
+                {
+                    metaChar = true;
+                    res += input.ToLower();
+                    input = "";
+                }
+
+                // only with input
+                if (input.Length > 0)
+                {                   
+                    if (p0 == '?')
+                    {
+                        metaChar = true;
+                        res += input[0];
+                        input = input.Remove(0, 1);
+                    }
+
+                    if (p0 == '~')
+                    {
+                        metaChar = true;
+                        input = input.Remove(0, 1);
+                    }
+
+                    if (p0 == '<')
+                    {
+                        metaChar = true;
+                        input = input.Reverse().ToString();
+                    }
+                }
+
+                // ordinary?
+                if (!metaChar)
+                    res += p0;
+            }
+
+            // ok
+            return res;
+        }
+
+        public void ChangeElementAttributes (AdminShell.IAasElement el, AnyUiDialogueDataChangeElementAttributes dia)
+        {
+            // access
+            if (el == null || dia == null)
+                return;
+
+            if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.IdShort && 
+                el is AdminShell.Referable rf1)
+            {
+                rf1.idShort = PerformWildcardReplace(rf1.idShort, dia.Pattern);
+            }
+
+            if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.Description &&
+                el is AdminShell.Referable rf2)
+            {
+                var input = (rf2.description?.langString == null) ? "" : rf2.description.langString[dia.AttributeLang];
+                var nd = PerformWildcardReplace(input, dia.Pattern);
+                if (nd != null)
+                {
+                    if (rf2.description?.langString == null)
+                        rf2.description = new AdminShell.Description();
+                    rf2.description.langString[dia.AttributeLang] = nd;
+                }
+            }
+
+            if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.ValueText &&
+                el is AdminShell.SubmodelElement sme)
+            {
+                var nd = PerformWildcardReplace(sme.ValueAsText(dia.AttributeLang), dia.Pattern);
+                if (nd != null)
+                    sme.ValueFromText(nd);
+            }
+        }
+
         public void DisplayOrEditAasEntityMultipleElements(
             PackageCentral.PackageCentral packages,
             ListOfVisualElementBasic entities,
@@ -272,8 +376,6 @@ namespace AasxPackageLogic
                                                 as AdminShell.Referable;
 
                 // TODO: env? parent?
-
-
                 if (first is VisualElementSubmodel sm)
                 {
                     DispMultiElementCutCopyPasteHelper(stack, repo, sm.theEnv, parent, this.theCopyPaste, entities);
@@ -352,6 +454,27 @@ namespace AasxPackageLogic
                     DispMultiElementCutCopyPasteHelper(stack, repo, veaas.theEnv, veaas.theEnv?.AdministrationShells,
                         this.theCopyPaste, entities);
                 }
+
+                // change element attributes?
+                this.AddAction(stack, "Actions:", new[] { "Change attribute .." }, repo, (buttonNdx) =>
+                {
+                    if (buttonNdx == 0)
+                    {
+                        var uc = new AnyUiDialogueDataChangeElementAttributes();
+                        if (this.context.StartFlyoverModal(uc))
+                        {
+                            var bos = entities.GetListOfBusinessObjects<AdminShell.Referable>();
+                            object nf = null;
+                            foreach (var bo in bos)
+                            {
+                                ChangeElementAttributes(bo, uc);
+                                nf = bo;
+                            }
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
+                        }
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
 
             }
 

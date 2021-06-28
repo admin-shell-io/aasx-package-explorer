@@ -1392,6 +1392,24 @@ namespace AdminShellNS
                         this.Add(ls);
             }
 
+            public string this[string lang]
+            {
+                get
+                {
+                    return GetDefaultStr(lang);
+                }
+                set
+                {
+                    foreach (var ls in this)
+                        if (ls.lang.Trim().ToLower() == lang?.Trim().ToLower())
+                        {
+                            ls.str = value;
+                            return;
+                        }
+                    this.Add(new LangStr(lang, value));
+                }
+            }
+
             public string GetDefaultStr(string defaultLang = null)
             {
                 // start
@@ -5161,7 +5179,7 @@ namespace AdminShellNS
                 return null;
             }
 
-            public virtual void ValueFromText(string text)
+            public virtual void ValueFromText(string text, string defaultLang = null)
             {
             }
 
@@ -6572,7 +6590,7 @@ namespace AdminShellNS
                 return "" + value;
             }
 
-            public override void ValueFromText(string text)
+            public override void ValueFromText(string text, string defaultLang = null)
             {
                 value = "" + text;
             }
@@ -6670,9 +6688,11 @@ namespace AdminShellNS
 
             public MultiLanguageProperty Set(LangStr ls)
             {
-                if (this.value == null)
+                if (ls == null)
+                    return this;
+                if (this.value?.langString == null)
                     this.value = new LangStringSet();
-                this.value.Add(ls);
+                this.value.langString[ls.lang] = ls.str;
                 return this;
             }
 
@@ -6684,6 +6704,11 @@ namespace AdminShellNS
             public override string ValueAsText(string defaultLang = null)
             {
                 return "" + value?.GetDefaultStr(defaultLang);
+            }
+
+            public override void ValueFromText(string text, string defaultLang = null)
+            {
+                Set(defaultLang, text);
             }
 
         }

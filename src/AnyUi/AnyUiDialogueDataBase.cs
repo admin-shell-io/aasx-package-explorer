@@ -110,6 +110,35 @@ namespace AnyUi
         }
     }
 
+    public class AnyUiDialogueDataChangeElementAttributes : AnyUiDialogueDataBase
+    {
+        public enum AttributeEnum : int { IdShort = 0, Description, ValueText }
+        public static string[] AttributeNames = { "idShort", "description", "value as text" };
+
+        public AttributeEnum AttributeToChange;
+        public string AttributeLang = "en";
+
+        public static string[] PatternPresets = new[]
+        {
+            "*",
+            "^",
+            "§",
+            "ABC_*",
+            "*_XYZ",
+            "__???__*",
+            "__??__<*"
+        };
+
+        public string Pattern = "*";
+
+        public AnyUiDialogueDataChangeElementAttributes(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth)
+        {
+        }
+    }
+
     public class AnyUiDialogueDataTextEditor : AnyUiDialogueDataBase
     {
         public string MimeType = "application/text";
