@@ -893,6 +893,28 @@ namespace AasxPackageExplorer
             );
         }
 
+        private void SetSelectedState (VisualElementGeneric ve, bool newState)
+        {
+            // ok?
+            if (ve == null)
+                return;
+
+            // new state?
+            if (newState)
+            {
+                ve.IsSelected = true;
+                if (!_selectedItems.Contains(ve))
+                    _selectedItems.Add(ve);
+            }
+            else
+            {
+                ve.IsSelected = false;
+                if (_selectedItems.Contains(ve))
+                    _selectedItems.Remove(ve);
+
+            }
+        }
+
         private void TreeViewMutiSelect_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var treeViewItem = treeViewInner.SelectedItem as VisualElementGeneric;
@@ -903,11 +925,32 @@ namespace AasxPackageExplorer
                 return;
 
             // allow multiple selection
+            var toogleActiveItem = true;
             // when control key is pressed
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 SuppressSelectionChangeNotification(() => {
                     _selectedItems.ForEach(item => item.IsSelected = true);
+                });
+            }
+            else
+            // when shift key is pressed
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                SuppressSelectionChangeNotification(() => {
+
+                    // make sure active treeViewItem item is in
+                    SetSelectedState(treeViewItem, true);
+
+                    // try check if this gives a homogenous pictur
+                    var nx = _selectedItems.GetIndexedParentInfo();
+                    if (nx != null && nx.SharedParent?.Members != null)
+                    {
+                        for (int i = nx.MinIndex; i <= nx.MaxIndex; i++)
+                            SetSelectedState(nx.SharedParent.Members[i], true);
+                    }
+
+                    toogleActiveItem = false;
                 });
             }
             else
@@ -917,15 +960,19 @@ namespace AasxPackageExplorer
                 _selectedItems.Clear();
             }
 
-            if (!_selectedItems.Contains(treeViewItem))
+            // still toggle active?
+            if (toogleActiveItem)
             {
-                _selectedItems.Add(treeViewItem);
-            }
-            else
-            {
-                // deselect if already selected
-                treeViewItem.IsSelected = false;
-                _selectedItems.Remove(treeViewItem);
+                if (!_selectedItems.Contains(treeViewItem))
+                {
+                    _selectedItems.Add(treeViewItem);
+                }
+                else
+                {
+                    // deselect if already selected
+                    treeViewItem.IsSelected = false;
+                    _selectedItems.Remove(treeViewItem);
+                }
             }
 
             // fire event
