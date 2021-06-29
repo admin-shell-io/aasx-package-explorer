@@ -298,6 +298,12 @@ namespace AasxPackageLogic
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
 
         /// <summary>
+        /// Point to a set of options for MQTT publish
+        /// </summary>
+        [JetBrains.Annotations.UsedImplicitly]
+        public Newtonsoft.Json.Linq.JToken MqttPublisherOptions;
+
+        /// <summary>
         /// Point to a list of SecureConnectPresets for the respective dialogue
         /// </summary>
         [JetBrains.Annotations.UsedImplicitly]

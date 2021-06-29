@@ -35,6 +35,7 @@ namespace AasxMqttClient
             var options = new MqttClientOptionsBuilder()
                 .WithClientId("AASXPackageXplorer MQTT Client")
                 .WithTcpServer("localhost", 1883)
+                // .WithTcpServer("192.168.178.103", 1883)
                 .Build();
 
             //create MQTT Client and Connect using options above

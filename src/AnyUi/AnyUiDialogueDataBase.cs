@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AnyUi
 {
@@ -145,6 +146,51 @@ namespace AnyUi
             double? maxWidth = null)
             : base(caption, maxWidth)
         {
+        }
+    }
+
+    public class AnyUiDialogueDataMqttPublisher : AnyUiDialogueDataBase
+    {
+        [JsonIgnore]
+        public static string HelpString =
+            "{aas} = AAS.idShort, {aas-id} = AAS.identification" + Environment.NewLine +
+            "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + Environment.NewLine;
+
+        public string BrokerUrl = "localhost:1883";
+
+        public bool EnableFirstPublish = true;
+        public string FirstPublishTopic = "/aas/{aas}/";
+
+        public bool EnableEventPublish = false;
+        public string EventPublishTopic = "/aas/{aas}/";
+
+        public AnyUiDialogueDataMqttPublisher(
+            string caption = "",
+            double? maxWidth = null)
+            : base(caption, maxWidth)
+        {
+        }
+
+        public static AnyUiDialogueDataMqttPublisher CreateWithOptions(
+            string caption = "",
+            double? maxWidth = null,
+            Newtonsoft.Json.Linq.JToken jtoken = null)
+        {
+            // access
+            if (jtoken == null)
+                return new AnyUiDialogueDataMqttPublisher(caption, maxWidth);
+
+            try
+            {
+                var res = jtoken.ToObject<AnyUiDialogueDataMqttPublisher>();
+                if (res != null)
+                    // found something
+                    return res;
+            }
+            catch { }
+
+            // .. no, default!
+            return new AnyUiDialogueDataMqttPublisher(caption, maxWidth);
         }
     }
 
