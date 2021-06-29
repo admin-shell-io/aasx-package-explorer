@@ -1046,11 +1046,19 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_MQTTPub()
         {
+            // ask for preferences
+            var diaData = AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
+                        jtoken: Options.Curr.MqttPublisherOptions);
+            var uc1 = new MqttPublisherFlyout(diaData);
+            this.StartFlyoverModal(uc1);
+            if (!uc1.Result)
+                return;
+
             // make a logger
             var logger = new AasxMqttClient.GrapevineLoggerToListOfStrings();
 
             // make listing flyout
-            var uc = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>
+            var uc2 = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>
             {
                 var st = logger.Pop();
                 return (st == null) ? null : new StoredPrint(st);
@@ -1072,7 +1080,7 @@ namespace AasxPackageExplorer
             worker.RunWorkerAsync();
 
             // modal dialogue
-            this.StartFlyoverModal(uc, closingAction: () => { });
+            this.StartFlyoverModal(uc2, closingAction: () => { });
         }
 
         static string lastConnectInput = "";
