@@ -901,6 +901,14 @@ namespace AasxPackageLogic
                         var newsmr = new AdminShell.SubmodelRef(item.smref);
                         aas.submodelRefs.Add(newsmr);
 
+                        // special case: Submodel does not exist, as pasting was from external
+                        if (env?.Submodels != null && item.sm != null)
+                        {
+                            var smtest = env.FindSubmodel(newsmr);
+                            if (smtest == null)
+                                env.Submodels.Add(item.sm);
+                        }
+
                         // delete
                         if (del && item.parentContainer is AdminShell.AdministrationShell aasold
                             && aasold.submodelRefs.Contains(item.smref))
@@ -1269,6 +1277,19 @@ namespace AasxPackageLogic
                         if (r1 != null && r2 != null)
                             return (r1.Matches(r2, AdminShellV20.Key.MatchMode.Identification));
                         return false;
+                    },
+                    extraAction: (cpi) =>
+                    {
+                        if (cpi is CopyPasteItemSubmodel item)
+                        {
+                            // special case: Submodel does not exist, as pasting was from external
+                            if (env?.Submodels != null && item.smref != null && item.sm != null)
+                            {
+                                var smtest = env.FindSubmodel(item.smref);
+                                if (smtest == null)
+                                    env.Submodels.Add(item.sm);
+                            }
+                        }
                     });
             }
             else

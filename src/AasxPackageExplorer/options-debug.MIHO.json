@@ -48,6 +48,13 @@
   /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
   /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
   "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711",
+  "MqttPublisherOptions": {
+    "BrokerUrl": "192.168.178.103:1883",
+    "EnableFirstPublish": true,
+    "FirstPublishTopic": "/m1/",
+    "EnableEventPublish": true,
+    "EventPublishTopic" :  "/m2"
+  },
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
