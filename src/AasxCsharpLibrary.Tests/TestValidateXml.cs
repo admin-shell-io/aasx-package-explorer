@@ -38,19 +38,17 @@ namespace AdminShellNS.Tests
 
             foreach (string path in paths)
             {
-                using (var fileStream = System.IO.File.OpenRead(path))
+                using var fileStream = System.IO.File.OpenRead(path);
+                var records = new AasValidationRecordList();
+                validator.Validate(records, fileStream);
+                if (records.Count != 0)
                 {
-                    var records = new AasValidationRecordList();
-                    validator.Validate(records, fileStream);
-                    if (records.Count != 0)
+                    var parts = new List<string>
                     {
-                        var parts = new List<string>
-                        {
-                            $"Failed to validate XML file {path}:"
-                        };
-                        parts.AddRange(records.Select((r) => r.Message));
-                        throw new AssertionException(string.Join(Environment.NewLine, parts));
-                    }
+                        $"Failed to validate XML file {path}:"
+                    };
+                    parts.AddRange(records.Select((r) => r.Message));
+                    throw new AssertionException(string.Join(Environment.NewLine, parts));
                 }
             }
         }
