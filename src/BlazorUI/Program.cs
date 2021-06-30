@@ -42,6 +42,7 @@ namespace BlazorUI
 
         public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
         {
+            // resharper disable once NotAccessedVariable.Compiler
             int i = 0;
         }
     }
@@ -52,14 +53,12 @@ namespace BlazorUI
         {
             public AnyUiPanel panel;
             public int iChild;
-            public AnyUiPanelEntry() { }
         }
 
         public class AnyUiPanelEntryStack
         {
             AnyUiPanelEntry[] recursionStack = new AnyUiPanelEntry[10];
             public int iRecursionStack = 0;
-            public AnyUiPanelEntryStack() { }
             public int getIndex() { return iRecursionStack; }
             public void Pop(out AnyUiPanel panel, out int iChild)
             {

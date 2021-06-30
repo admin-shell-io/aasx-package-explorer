@@ -7,8 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-// resharper disable UnusedType.Global
-// resharper disable PossibleNullReferenceException
+// resharper disable all
 
 using System;
 using System.Collections.Generic;
@@ -75,7 +74,7 @@ namespace BlazorUI.Data
                         List<Item> childs = new List<Item>();
                         foreach (var sm in Program.env.AasEnv.Submodels)
                         {
-                            if (sm != null && sm.idShort != null)
+                            if (sm?.idShort != null)
                             {
                                 var smItem = new Item();
                                 smItem.envIndex = i;
@@ -129,7 +128,7 @@ namespace BlazorUI.Data
             List<Item> smChilds = new List<Item>();
             foreach (var sme in smec.value)
             {
-                if (sme != null && sme.submodelElement != null)
+                if (sme?.submodelElement != null)
                 {
                     var smeItem = new Item();
                     smeItem.envIndex = i;
@@ -200,7 +199,7 @@ namespace BlazorUI.Data
             List<Item> smChilds = new List<Item>();
             foreach (var s in e.statements)
             {
-                if (s != null && s.submodelElement != null)
+                if (s?.submodelElement != null)
                 {
                     var smeItem = new Item();
                     smeItem.envIndex = i;

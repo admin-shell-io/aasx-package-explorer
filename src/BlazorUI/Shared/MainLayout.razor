@@ -1,8 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
 
-    
-    @*@<div class="sidebar">
+@{
+// resharper disable all
+}
+
+@*@<div class="sidebar">
         <NavMenu />
     </div>*@
 <div class="main">
@@ -15,8 +18,9 @@
                     <span style="font-weight:bold">Upload:</span>
                     <InputFile OnChange="HandleFileSelected" />
 
-                    @code {
-                        IFileListEntry file;
+                @code {
+                    // resharper disable once UnusedField.Compiler
+                    IFileListEntry file;
 
                         async Task HandleFileSelected(IFileListEntry[] files)
                         {
