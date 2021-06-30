@@ -4,9 +4,13 @@
 @*using BlazorUI*@
 @using AnyUi
 @using BlazorUI.Shared
-@using System
-@using System.Net;
+@*using System*@
+@*using System.Net;*@
 @inject BlazorUI.Data.AASService SubmodelService
+
+@{
+// resharper disable all
+}
 
 <div class="col-12 row">
     <br />
@@ -43,14 +47,14 @@
                                     }
                                     break;
                                 case "contextMenu":
-                                    AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
                                     AnyUiSpecialActionContextMenu cntlcm =
                                         (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
                                     var nmi = cntlcm.MenuItemHeaders.Length / 2;
                                     int i = 0;
-                                    string icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
-                                    string header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
-                                    string v = i + ": " + icon + " " + header;
+                                    string icon = "" + cntlcm.MenuItemHeaders[0];
+                                    string header = "" + cntlcm.MenuItemHeaders[1];
+                                    // string v = i + ": " + icon + " " + header;
                                     <select class="form-control selectpicker" size="@nmi"
                                             @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
                                         @for (i = 0; i < nmi; i++)
@@ -331,6 +335,7 @@
                                                     {
                                                         if (chbt.Content == "Delete")
                                                         {
+                                                            // resharper disable once NotAccessedVariable.Compiler
                                                             int i = 0;
                                                         }
                                                         <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
@@ -414,6 +419,8 @@
 
 
 @code {
+
+    // resharper disable all
 
     /*
     public class Item
@@ -724,7 +731,7 @@
         {
             ret += "Opr";
         }
-        if (o is File)
+        if (o is AdminShellV20.File)
         {
             ret += "File";
         }
@@ -792,9 +799,9 @@
                 ret += "<T> ";
             ret += sme.idShort;
         }
-        if (o is File)
+        if (o is AdminShellV20.File)
         {
-            var f = o as File;
+            var f = o as AdminShellV20.File;
             ret = "";
             if (f.kind != null && f.kind.IsTemplate)
                 ret += "<T> ";
@@ -875,9 +882,9 @@
                     ret += " @QUALIFIERS";
                 }
             }
-            if (o is File)
+            if (o is AdminShellV20.File)
             {
-                var f = o as File;
+                var f = o as AdminShellV20.File;
                 ret = " = " + f.value;
                 if (f.qualifiers != null && f.qualifiers.Count > 0)
                 {
