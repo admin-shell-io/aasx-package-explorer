@@ -5,13 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\_content\**" />
-    <Content Remove="wwwroot\_content\**" />
-    <EmbeddedResource Remove="wwwroot\_content\**" />
-    <None Remove="wwwroot\_content\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="LICENSE.txt" />
   </ItemGroup>
 
