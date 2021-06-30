@@ -104,11 +104,10 @@ namespace AdminShellNS.Tests
         {
             List<string> aasxPaths = SamplesAasxDir.ListAasxPaths();
 
-            using (var tmpDir = new TemporaryDirectory())
+            using var tmpDir = new TemporaryDirectory();
+            foreach (string aasxPath in aasxPaths)
             {
-                foreach (string aasxPath in aasxPaths)
-                {
-                    /*
+                /*
                      * The chain is as follows:
                      * - First load from AASX (package A)
                      * - Convert package 1 to `extension` format and save as path 1
@@ -117,20 +116,15 @@ namespace AdminShellNS.Tests
                      *
                      * We expect the content of the two files (path 1 and path 2, respectively) to be equal.
                      */
-                    using (var packageA = new AdminShellPackageEnv(aasxPath))
-                    {
-                        string path1 = System.IO.Path.Combine(tmpDir.Path, $"first{extension}");
-                        string path2 = System.IO.Path.Combine(tmpDir.Path, $"second{extension}");
+                using var packageA = new AdminShellPackageEnv(aasxPath);
+                string path1 = System.IO.Path.Combine(tmpDir.Path, $"first{extension}");
+                string path2 = System.IO.Path.Combine(tmpDir.Path, $"second{extension}");
 
-                        packageA.SaveAs(path1, writeFreshly: true);
+                packageA.SaveAs(path1, writeFreshly: true);
 
-                        using (var packageB = new AdminShellPackageEnv(path1))
-                        {
-                            packageB.SaveAs(path2, writeFreshly: true);
-                            AssertFilesEqual(path1, path2, aasxPath);
-                        }
-                    }
-                }
+                using var packageB = new AdminShellPackageEnv(path1);
+                packageB.SaveAs(path2, writeFreshly: true);
+                AssertFilesEqual(path1, path2, aasxPath);
             }
         }
 
@@ -152,48 +146,42 @@ namespace AdminShellNS.Tests
 
             List<string> aasxPaths = SamplesAasxDir.ListAasxPaths();
 
-            using (var tmpDir = new TemporaryDirectory())
+            using var tmpDir = new TemporaryDirectory();
+            string tmpDirPath = tmpDir.Path;
+
+            foreach (string aasxPath in aasxPaths)
             {
-                string tmpDirPath = tmpDir.Path;
+                using var package = new AdminShellPackageEnv(aasxPath);
+                /*
+                      TODO (mristin, 2020-09-17): Remove autofix once XSD and Aasx library in sync
 
-                foreach (string aasxPath in aasxPaths)
+                      Package has been loaded, now we need to do an automatic check & fix.
+
+                      This is necessary as Aasx library is still not conform with the XSD AASX schema and breaks
+                      certain constraints (*e.g.*, the cardinality of langString = 1..*).
+                    */
+                var recs = package.AasEnv.ValidateAll();
+                if (recs != null)
                 {
-                    using (var package = new AdminShellPackageEnv(aasxPath))
+                    package.AasEnv.AutoFix(recs);
+                }
+
+                // Save as XML
+                string name = Path.GetFileName(aasxPath);
+                string outPath = System.IO.Path.Combine(tmpDirPath, $"{name}.converted.xml");
+                package.SaveAs(outPath, writeFreshly: true);
+
+                using var fileStream = System.IO.File.OpenRead(outPath);
+                var records = new AasValidationRecordList();
+                validator.Validate(records, fileStream);
+                if (records.Count != 0)
+                {
+                    var parts = new List<string>
                     {
-                        /*
-                          TODO (mristin, 2020-09-17): Remove autofix once XSD and Aasx library in sync
-
-                          Package has been loaded, now we need to do an automatic check & fix.
-
-                          This is necessary as Aasx library is still not conform with the XSD AASX schema and breaks
-                          certain constraints (*e.g.*, the cardinality of langString = 1..*).
-                        */
-                        var recs = package.AasEnv.ValidateAll();
-                        if (recs != null)
-                        {
-                            package.AasEnv.AutoFix(recs);
-                        }
-
-                        // Save as XML
-                        string name = Path.GetFileName(aasxPath);
-                        string outPath = System.IO.Path.Combine(tmpDirPath, $"{name}.converted.xml");
-                        package.SaveAs(outPath, writeFreshly: true);
-
-                        using (var fileStream = System.IO.File.OpenRead(outPath))
-                        {
-                            var records = new AasValidationRecordList();
-                            validator.Validate(records, fileStream);
-                            if (records.Count != 0)
-                            {
-                                var parts = new List<string>
-                                {
-                                    $"Failed to validate XML file exported from {aasxPath} to {outPath}:"
-                                };
-                                parts.AddRange(records.Select((r) => r.Message));
-                                throw new AssertionException(string.Join(Environment.NewLine, parts));
-                            }
-                        }
-                    }
+                        $"Failed to validate XML file exported from {aasxPath} to {outPath}:"
+                    };
+                    parts.AddRange(records.Select((r) => r.Message));
+                    throw new AssertionException(string.Join(Environment.NewLine, parts));
                 }
             }
         }
