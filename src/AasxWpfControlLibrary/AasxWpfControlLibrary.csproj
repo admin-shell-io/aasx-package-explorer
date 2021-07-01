@@ -43,11 +43,6 @@
   <ItemGroup>
     <Page Remove="Dictionary1.xaml" />
   </ItemGroup>
-  <ItemGroup>
-    <Page Update="Flyouts\MqttPublisherFlyout.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="echo %25date%25 &gt; &quot;$(ProjectDir)\Resources\BuildDate.txt&quot;" />

@@ -1047,7 +1047,7 @@ namespace AasxPackageExplorer
         public void CommandBinding_MQTTPub()
         {
             // ask for preferences
-            var diaData = AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
+            var diaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
                         jtoken: Options.Curr.MqttPublisherOptions);
             var uc1 = new MqttPublisherFlyout(diaData);
             this.StartFlyoverModal(uc1);

@@ -122,6 +122,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="Flyout\MqttPublisherFlyout.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <PropertyGroup />
   <ProjectExtensions />
 </Project>
