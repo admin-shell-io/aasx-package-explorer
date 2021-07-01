@@ -1,41 +1,77 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
 
-    
-    @*@<div class="sidebar">
+@{
+// resharper disable all
+}
+
+@*@<div class="sidebar">
         <NavMenu />
     </div>*@
 <div class="main">
     <div class="top-row px-4">
         <div class="col-12 row">
             <div class="col-6" style="text-align:left">
-                @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                *@
-                <span style="font-weight:bold">Upload:</span>
-                <InputFile OnChange="HandleFileSelected" />
+                <div class="row">
+                    @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                    *@
+                    <span style="font-weight:bold">Upload:</span>
+                    <InputFile OnChange="HandleFileSelected" />
 
                 @code {
+                    // resharper disable once UnusedField.Compiler
                     IFileListEntry file;
 
-                    async Task HandleFileSelected(IFileListEntry[] files)
-                    {
-                        var file = files.FirstOrDefault();
-                        if (file != null)
+                        async Task HandleFileSelected(IFileListEntry[] files)
                         {
-                            var fileStream = System.IO.File.Create(file.Name);
-                            await file.Data.CopyToAsync(fileStream);
-                            fileStream.Close();
+                            var file = files.FirstOrDefault();
+                            if (file != null)
+                            {
+                                var fileStream = System.IO.File.Create(file.Name);
+                                await file.Data.CopyToAsync(fileStream);
+                                fileStream.Close();
+                            }
+                            await InvokeAsync(() => Program.loadAasxFiles(false));
+                            await InvokeAsync(() => Program.loadAasx(file.Name));
+                            this.StateHasChanged();
                         }
-                        Program.loadAasxFiles();
-                        StateHasChanged();
                     }
-                }
+                </div>
+                <div class="row">
+                    <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    <table>
+                        <tr>
+                            <td><span style="font-weight:bold">GET:</span></td>
+                            <td>
+                                @{
+                                    string text = "";
+                                    int ww = 80;
+                                    <input size="@ww" value="@text"
+                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                    @code {
+                        private async void MyTextInput(string value)
+                        {
+                            value = value.ToLower();
+                            if (value != "" && (value.Contains("http://") || value.Contains("https://")))
+                            {
+                                await InvokeAsync(async () => await Program.getAasxAsync(value));
+                                this.StateHasChanged();
+                            }
+                        }
+                    }
+                    <span>&nbsp&nbsp&nbsp</span>
+                </div>
             </div>
             <div class="col-6">
                 <div class="row">
                     @{
                         <span>&nbsp&nbsp&nbsp</span>
-                        string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                        // string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                        string w = "70%";
                         <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
                                 @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
                             @foreach (var item in Program.aasxFiles)
@@ -44,9 +80,10 @@
                             }
                         </select>
                         @code {
-                            private void MyAasxSelect(string value)
+                            private async void MyAasxSelect(string value)
                             {
-                                InvokeAsync(() => Program.loadAasx(value));
+                                await InvokeAsync(() => Program.loadAasx(value));
+                                this.StateHasChanged();
                             }
                         }
                     }
@@ -61,6 +98,7 @@
                             {
                                 <span>EditMode is OFF</span>
                             }
+                            Program.signalNewData(0);
                         }
                     </button>
                     @code {
@@ -74,9 +112,9 @@
                 </div>
             </div>
         </div>
-        </div>
-
-        <div class="content px-4">
-            @Body
-        </div>
     </div>
+
+    <div class="content px-4">
+        @Body
+    </div>
+</div>

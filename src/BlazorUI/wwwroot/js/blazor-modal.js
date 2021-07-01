@@ -1,3 +1,5 @@
+// resharper disable all
+
 function blazorInitializeModal(dialog, reference) {
     dialog.addEventListener("close", async e => {
         await reference.invokeMethodAsync("OnClose", dialog.returnValue);

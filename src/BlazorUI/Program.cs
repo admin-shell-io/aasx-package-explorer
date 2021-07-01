@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -40,6 +42,7 @@ namespace BlazorUI
 
         public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
         {
+            // resharper disable once NotAccessedVariable.Compiler
             int i = 0;
         }
     }
@@ -50,14 +53,12 @@ namespace BlazorUI
         {
             public AnyUiPanel panel;
             public int iChild;
-            public AnyUiPanelEntry() { }
         }
 
         public class AnyUiPanelEntryStack
         {
             AnyUiPanelEntry[] recursionStack = new AnyUiPanelEntry[10];
             public int iRecursionStack = 0;
-            public AnyUiPanelEntryStack() { }
             public int getIndex() { return iRecursionStack; }
             public void Pop(out AnyUiPanel panel, out int iChild)
             {
@@ -137,11 +138,47 @@ namespace BlazorUI
             return (mode);
         }
 
-        public static void loadAasxFiles()
+        public static void loadAasxFiles(bool load = true)
         {
             aasxFiles = Directory.GetFiles(".", "*.aasx");
             Array.Sort(aasxFiles);
-            loadAasx(aasxFiles[0]);
+            if (load)
+                loadAasx(aasxFiles[0]);
+        }
+
+        public static async Task getAasxAsync(string input)
+        {
+            var handler = new HttpClientHandler();
+            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+            //// handler.AllowAutoRedirect = false;
+
+            string dataServer = new Uri(input).GetLeftPart(UriPartial.Authority);
+
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(dataServer)
+            };
+            input = input.Substring(dataServer.Length, input.Length - dataServer.Length);
+            client.DefaultRequestHeaders.Add("Accept", "application/aas");
+            var response = await client.GetAsync(input);
+
+            // var contentLength = response.Content.Headers.ContentLength;
+            var contentFn = response.Content.Headers.ContentDisposition?.FileName;
+
+            // ReSharper disable PossibleNullReferenceException
+            var contentStream = await response?.Content?.ReadAsStreamAsync();
+            if (contentStream == null)
+                return;
+            // ReSharper enable PossibleNullReferenceException
+
+            Console.WriteLine("Writing file: " + contentFn);
+            await using (var file = new FileStream(contentFn,
+                FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await contentStream.CopyToAsync(file);
+            }
+            loadAasxFiles(false);
+            loadAasx(contentFn);
         }
 
         public static void Main(string[] args)
@@ -154,7 +191,7 @@ namespace BlazorUI
 
             packages = new PackageCentral();
             // TODO (MIHO, 2021-06-07): how to initialize?
-            //// packages.Main = env;
+            packages.MainItem.TakeOver(env);
 
             helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
