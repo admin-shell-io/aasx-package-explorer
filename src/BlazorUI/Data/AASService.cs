@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using AdminShellNS;
 using BlazorUI;
 using static AdminShellNS.AdminShellV20;
-using static BlazorUI.Pages.Index;
+// using static BlazorUI.Pages.Index;
 
 namespace BlazorUI.Data
 {

@@ -171,9 +171,8 @@ namespace BlazorUI
                 return;
             // ReSharper enable PossibleNullReferenceException
 
-            string outputDir = ".";
-            Console.WriteLine("Writing file: " + outputDir + "\\" + contentFn);
-            await using (var file = new FileStream(outputDir + "\\" + contentFn,
+            Console.WriteLine("Writing file: " + contentFn);
+            await using (var file = new FileStream(contentFn,
                 FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 await contentStream.CopyToAsync(file);
