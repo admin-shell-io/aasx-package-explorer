@@ -289,7 +289,7 @@ namespace AasxPackageLogic
 
                 // make JSON
                 var settings = AasxIntegrationBase.AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                    new[] { typeof(AdminShellEvents.AasEventMsgEnvelope) });
+                    new[] { typeof(AasxIntegrationBase.AdminShellEvents.AasEventMsgEnvelope) });
                 settings.TypeNameHandling = TypeNameHandling.None;
                 settings.Formatting = Formatting.Indented;
                 var json = JsonConvert.SerializeObject(objToSerialize, settings);

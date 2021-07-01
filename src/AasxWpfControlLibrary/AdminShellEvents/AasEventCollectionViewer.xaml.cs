@@ -23,7 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxPackageLogic;
-using AasxPackageLogic.AdminShellEvents;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary.PackageCentral;
 

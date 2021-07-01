@@ -1065,12 +1065,13 @@ namespace AasxPackageExplorer
             });
 
             // start MQTT Client as a worker (will start in the background)
+            var client = new AasxMqttClient.MqttClient();
             var worker = new BackgroundWorker();
             worker.DoWork += async (s1, e1) =>
             {
                 try
-                {
-                    await AasxMqttClient.MqttClient.StartAsync(_packageCentral.Main, logger);
+                {                    
+                    await client.StartAsync(_packageCentral.Main, diaData, logger);
                 }
                 catch (Exception e)
                 {
@@ -1078,6 +1079,12 @@ namespace AasxPackageExplorer
                 }
             };
             worker.RunWorkerAsync();
+
+            // wire events
+            uc2.EventTriggered += (ev) =>
+            {
+                ;
+            };
 
             // modal dialogue
             this.StartFlyoverModal(uc2, closingAction: () => { });

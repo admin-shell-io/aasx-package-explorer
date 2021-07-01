@@ -15,11 +15,13 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
+using AnyUi;
 
 namespace AasxPackageExplorer
 {
-    public partial class LogMessageFlyout : UserControl, IFlyoutControl
+    public partial class LogMessageFlyout : UserControl, IFlyoutAgent
     {
         // constants
 
@@ -179,8 +181,14 @@ namespace AasxPackageExplorer
         {
             if (this.timer != null)
                 this.timer.Stop();
-            if (this.ControlClosed != null)
-                this.ControlClosed();
+            this.ControlClosed?.Invoke();
+        }
+
+        public event IFlyoutAgentPushAasEvent EventTriggered;
+
+        public void PushEvent(AasEventMsgEnvelope ev)
+        {
+            EventTriggered?.Invoke(ev);
         }
 
         //

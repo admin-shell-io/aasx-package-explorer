@@ -53,8 +53,9 @@ namespace AasxPackageExplorer
             this.LabelCaption.Text = DiaData.Caption;
             this.TextBoxHelp.Text = AnyUiDialogueDataMqttPublisher.HelpString;
             this.TextBoxMqttBroker.Text = DiaData.BrokerUrl;
-            this.TextBoxFirstPublishTopic.Text = DiaData.FirstPublishTopic;
-            this.TextBoxEventPublishTopic.Text = DiaData.EventPublishTopic;
+            this.TextBoxFirstTopicAAS.Text = DiaData.FirstTopicAAS;
+            this.TextBoxFirstTopicSubmodel.Text = DiaData.FirstTopicSubmodel;
+            this.TextBoxEventPublishTopic.Text = DiaData.EventTopic;
 
             // check box
             this.CheckBoxFirstPublish.IsChecked = DiaData.EnableFirstPublish;
@@ -83,8 +84,9 @@ namespace AasxPackageExplorer
         private void ReadDataBack()
         {
             DiaData.BrokerUrl = this.TextBoxMqttBroker.Text;
-            DiaData.FirstPublishTopic = this.TextBoxFirstPublishTopic.Text;
-            DiaData.EventPublishTopic = this.TextBoxEventPublishTopic.Text;
+            DiaData.FirstTopicAAS = this.TextBoxFirstTopicAAS.Text;
+            DiaData.FirstTopicSubmodel = this.TextBoxFirstTopicSubmodel.Text;
+            DiaData.EventTopic = this.TextBoxEventPublishTopic.Text;
 
             DiaData.EnableFirstPublish = this.CheckBoxFirstPublish.IsChecked == true;
             DiaData.EnableEventPublish = this.CheckBoxEventPublish.IsChecked == true;

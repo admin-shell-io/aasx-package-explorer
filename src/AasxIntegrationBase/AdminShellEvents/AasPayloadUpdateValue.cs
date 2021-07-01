@@ -17,13 +17,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.MiniMarkup;
+using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace AasxPackageLogic.AdminShellEvents
+namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
     /// Single item of a update value payload.

@@ -23,7 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
 using AasxPackageLogic;
-using AasxPackageLogic.AdminShellEvents;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
@@ -1534,6 +1534,10 @@ namespace AasxPackageExplorer
 
                 // log viewer
                 UserContrlEventCollection.PushEvent(ev);
+
+                // inform Flyovers
+                if (currentFlyoutControl is IFlyoutAgent fosc)
+                    fosc.PushEvent(ev);                    
 
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);

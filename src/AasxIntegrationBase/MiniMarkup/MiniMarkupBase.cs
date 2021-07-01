@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AasxWpfControlLibrary.MiniMarkup
+namespace AasxIntegrationBase.MiniMarkup
 {
     public class MiniMarkupBase
     {

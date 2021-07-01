@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />

@@ -19,7 +19,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxPackageLogic.AdminShellEvents;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using Newtonsoft.Json;
 

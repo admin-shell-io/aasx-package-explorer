@@ -47,7 +47,7 @@
         <Grid Grid.Row="2" Grid.Column="2" Margin="4">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" MinWidth="150" MaxWidth="120"/>
+                <ColumnDefinition Width="1*" MinWidth="190" MaxWidth="230"/>
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="2"/>
@@ -57,6 +57,7 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="1*"/>
@@ -72,22 +73,30 @@
                      VerticalContentAlignment="Center">localhost:1883</TextBox>
             
 
-            <Label Grid.Row="3" Grid.Column="0" Foreground="White" FontSize="16">First publish topic:</Label>
-            <TextBox Grid.Row="3" Grid.Column="1" x:Name="TextBoxFirstPublishTopic" Margin="2" FontSize="16" 
-                     VerticalContentAlignment="Center"></TextBox>
-            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="CheckBoxFirstPublish" Foreground="White" 
+            <Label Grid.Row="3" Grid.Column="0" Foreground="White" FontSize="16">First time publish:</Label>
+            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="CheckBoxFirstPublish" Foreground="White" 
                       FontSize="16" VerticalContentAlignment="Center"
-                      Content="Enable" />
+                      Content="Enable publishing" />
 
-            <Label Grid.Row="6" Grid.Column="0" Foreground="White" FontSize="16">Event publish topic:</Label>
-            <TextBox Grid.Row="6" Grid.Column="1" x:Name="TextBoxEventPublishTopic" Margin="2" FontSize="16" 
+            <Label Grid.Row="4" Grid.Column="0" Foreground="White" FontSize="16" 
+                   HorizontalContentAlignment="Right" Margin="0,0,2,0">Topic AAS:</Label>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="TextBoxFirstTopicAAS" Margin="2" FontSize="16" 
                      VerticalContentAlignment="Center"></TextBox>
+
+            <Label Grid.Row="5" Grid.Column="0" Foreground="White" FontSize="16" 
+                   HorizontalContentAlignment="Right" Margin="0,0,2,0">Topic Submodel:</Label>
+            <TextBox Grid.Row="5" Grid.Column="1" x:Name="TextBoxFirstTopicSubmodel" Margin="2" FontSize="16" 
+                     VerticalContentAlignment="Center"></TextBox>
+
+            <Label Grid.Row="7" Grid.Column="0" Foreground="White" FontSize="16">Continous event publish:</Label>
             <CheckBox Grid.Row="7" Grid.Column="1" x:Name="CheckBoxEventPublish" Foreground="White" 
                       FontSize="16" VerticalContentAlignment="Center"
-                      Content="Enable" />
+                      Content="Enable publishing" />
+            <TextBox Grid.Row="8" Grid.Column="1" x:Name="TextBoxEventPublishTopic" Margin="2" FontSize="16" 
+                     VerticalContentAlignment="Center"></TextBox>
 
-            <Label Grid.Row="9" Grid.Column="0" Foreground="White" FontSize="16">Help:</Label>
-            <TextBlock x:Name="TextBoxHelp" Grid.Row="9" Grid.Column="1" Foreground="Gray" Margin="2,4,2,0"
+            <Label Grid.Row="10" Grid.Column="0" Foreground="White" FontSize="16">Help:</Label>
+            <TextBlock x:Name="TextBoxHelp" Grid.Row="10" Grid.Column="1" Foreground="Gray" Margin="2,4,2,0"
                        Background="Transparent" TextWrapping="Wrap" FontSize="14">
                 to be set by application
             </TextBlock>

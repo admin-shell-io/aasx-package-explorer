@@ -42,10 +42,11 @@ namespace AasxMqttClient
         public string BrokerUrl = "localhost:1883";
 
         public bool EnableFirstPublish = true;
-        public string FirstPublishTopic = "/aas/{aas}/";
+        public string FirstTopicAAS = "AAS";
+        public string FirstTopicSubmodel = "Submodel_{sm}";
 
         public bool EnableEventPublish = false;
-        public string EventPublishTopic = "/aas/{aas}/";
+        public string EventTopic = "Events";
 
         public AnyUiDialogueDataMqttPublisher(
             string caption = "",
@@ -176,7 +177,7 @@ namespace AasxMqttClient
                     logger?.Info("Publish AAS");
                     var message = new MqttApplicationMessageBuilder()
                                    .WithTopic(GenerateTopic(
-                                        _diaData.FirstPublishTopic, defaultIfNull: "AAS",
+                                        _diaData.FirstTopicAAS, defaultIfNull: "AAS",
                                         aasIdShort: aas.idShort, aasId: aas.identification))
                                    .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(aas))
                                    .WithExactlyOnceQoS()
@@ -192,7 +193,7 @@ namespace AasxMqttClient
 
                         var message2 = new MqttApplicationMessageBuilder()
                                         .WithTopic(GenerateTopic(
-                                            _diaData.FirstPublishTopic, defaultIfNull: "Submodel_" + sm.idShort,
+                                            _diaData.FirstTopicSubmodel, defaultIfNull: "Submodel_" + sm.idShort,
                                             aasIdShort: aas.idShort, aasId: aas.identification,
                                             smIdShort: sm.idShort, smId: sm.identification))
                                        .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(sm))

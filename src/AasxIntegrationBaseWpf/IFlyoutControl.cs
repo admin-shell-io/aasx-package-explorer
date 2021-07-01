@@ -18,6 +18,9 @@ namespace AasxIntegrationBase
 {
     public delegate void IFlyoutControlClosed();
 
+    /// <summary>
+    /// Marks an user control, which is superimposed on top of the application
+    /// </summary>
     public interface IFlyoutControl
     {
         /// <summary>
@@ -35,5 +38,6 @@ namespace AasxIntegrationBase
         /// </summary>
         /// <param name="e"></param>
         void ControlPreviewKeyDown(KeyEventArgs e);
-    }
+        
+    }    
 }

@@ -32,7 +32,6 @@ namespace AasxIntegrationBase
     {
         public event IFlyoutControlClosed ControlClosed;
 
-
         // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
         public AnyUiDialogueDataEmpty DiaData = new AnyUiDialogueDataEmpty();
 

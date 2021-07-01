@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxPackageLogic.AdminShellEvents;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 
 namespace AasxPackageLogic.PackageCentral

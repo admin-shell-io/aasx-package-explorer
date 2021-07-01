@@ -17,10 +17,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.MiniMarkup;
+using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
 
-namespace AasxPackageLogic.AdminShellEvents
+namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
     /// Outer class for any AAS event. AAS events shall interoperably exchage asynchronous information between

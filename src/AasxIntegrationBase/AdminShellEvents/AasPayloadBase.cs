@@ -15,10 +15,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxWpfControlLibrary.MiniMarkup;
+using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
 
-namespace AasxPackageLogic.AdminShellEvents
+namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
     /// Base class for any AAS event payload. 
