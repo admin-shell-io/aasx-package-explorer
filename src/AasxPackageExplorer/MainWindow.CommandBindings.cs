@@ -1083,7 +1083,30 @@ namespace AasxPackageExplorer
             // wire events
             uc2.EventTriggered += (ev) =>
             {
-                ;
+                // trivial
+                if (ev == null)
+                    return;
+
+                // safe
+                try
+                {
+                    // potentially expensive .. get more context for the event source
+                    AdminShell.ReferableRootInfo foundRI = null;
+                    if (_packageCentral != null && ev.Source?.Keys != null)
+                        foreach (var pck in _packageCentral.GetAllPackageEnv())
+                        {
+                            var ri = new AdminShell.ReferableRootInfo();
+                            var res = pck?.AasEnv?.FindReferableByReference(ev.Source.Keys, rootInfo: ri);
+                            if (res != null && ri.IsValid)
+                                foundRI = ri;
+                        }
+
+                    // publish
+                    client?.PublishEvent(ev, foundRI);
+                } catch (Exception e)
+                {
+                    logger.Error(e);
+                }
             };
 
             // modal dialogue

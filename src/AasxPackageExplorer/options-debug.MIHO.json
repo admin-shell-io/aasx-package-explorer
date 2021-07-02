@@ -55,7 +55,9 @@
     "FirstTopicAAS": "AAS",
     "FirstTopicSubmodel": "Submodel_{sm}",
     "EnableEventPublish": true,
-    "EventPublishTopic": "Events"
+    "EventTopic": "Events/aas/{aas}/sm/{sm}/{source}",
+    "SingleValuePublish": true,
+    "SingleValueTopic": "Values"
   },
   "Remarks": [
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."

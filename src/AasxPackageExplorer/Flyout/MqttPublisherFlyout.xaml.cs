@@ -56,10 +56,12 @@ namespace AasxPackageExplorer
             this.TextBoxFirstTopicAAS.Text = DiaData.FirstTopicAAS;
             this.TextBoxFirstTopicSubmodel.Text = DiaData.FirstTopicSubmodel;
             this.TextBoxEventPublishTopic.Text = DiaData.EventTopic;
+            this.TextBoxSingleValueTopic.Text = DiaData.SingleValueTopic;
 
             // check box
             this.CheckBoxFirstPublish.IsChecked = DiaData.EnableFirstPublish;
             this.CheckBoxEventPublish.IsChecked = DiaData.EnableEventPublish;
+            this.CheckBoxSingleValuePublish.IsChecked = DiaData.SingleValuePublish;
 
             // focus
             this.TextBoxMqttBroker.Focus();

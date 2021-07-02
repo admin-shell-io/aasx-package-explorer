@@ -668,6 +668,41 @@ namespace AdminShellNS
                 // ok!
                 return true;
             }
+
+            public IEnumerable<Key> SubList(int startPos, int count = int.MaxValue)
+            {
+                if (startPos >= this.Count)
+                    yield break;
+                int nr = 0;
+                for (int i=startPos; i < this.Count && nr < count; i++)
+                {
+                    nr++;
+                    yield return this[i];
+                }
+            }
+
+            /// <summary>
+            /// Take only idShort, ignore all other key-types and create a '/'-separated list
+            /// </summary>
+            /// <returns>Empty string or list of idShorts</returns>
+            public string BuildIdShortPath(int startPos, int count = int.MaxValue)
+            {
+                if (startPos >= this.Count)
+                    return "";
+                int nr = 0;
+                var res = "";
+                for (int i = startPos; i < this.Count && nr < count; i++)
+                {
+                    nr++;
+                    if (this[i].idType.Trim().ToLower() == Key.IdShort.Trim().ToLower())
+                    {
+                        if (res != "")
+                            res += "/";
+                        res += this[i].value;
+                    }
+                }
+                return res;
+            }
         }
 
         public class AasElementSelfDescription
@@ -1761,6 +1796,26 @@ namespace AdminShellNS
         [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
         public class TextSearchable : System.Attribute
         {
+        }
+
+        /// <summary>
+        /// Result of FindReferable in Environment
+        /// </summary>
+        public class ReferableRootInfo
+        {
+            public AdministrationShell AAS = null;
+            public Asset Asset = null;
+            public Submodel Submodel = null;
+
+            public int NrOfRootKeys = 0;
+
+            public bool IsValid
+            {
+                get
+                {
+                    return NrOfRootKeys > 0 && (AAS != null || Submodel != null || Asset != null) ;
+                }
+            }
         }
 
         public class Referable : IValidateEntity, IAasElement
@@ -4101,9 +4156,10 @@ namespace AdminShellNS
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
                 return FindReferableByReference(rf?.Keys);
-            }
+            }            
 
-            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false)
+            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false,
+                ReferableRootInfo rootInfo = null)
             {
                 // first index needs to exist ..
                 if (kl == null || keyIndex >= kl.Count)
@@ -4122,6 +4178,13 @@ namespace AdminShellNS
                     // not found or already at end with our search?
                     if (aas == null || keyIndex >= kl.Count - 1)
                         return aas;
+
+                    // side info?
+                    if (rootInfo != null)
+                    {
+                        rootInfo.AAS = aas;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+                    }
 
                     // follow up
                     aasToFollow = aas;
@@ -4144,6 +4207,13 @@ namespace AdminShellNS
                     if (aas == null)
                         return exactMatch ? null : asset;
 
+                    // side info?
+                    if (rootInfo != null)
+                    {
+                        rootInfo.Asset = asset;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+                    }
+
                     // follow up
                     aasToFollow = aas;
                 }
@@ -4165,6 +4235,14 @@ namespace AdminShellNS
                         if (sm == null)
                             return exactMatch ? null : aasToFollow;
 
+                        // side info
+                        // side info?
+                        if (rootInfo != null)
+                        {
+                            rootInfo.Submodel = sm;
+                            rootInfo.NrOfRootKeys = 2 + keyIndex;
+                        }
+
                         // at our end?
                         if (keyIndex >= kl.Count - 2)
                             return sm;
@@ -4183,6 +4261,27 @@ namespace AdminShellNS
                     var sm = this.FindSubmodel(new Identification(kl[keyIndex].idType, kl[keyIndex].value));
                     if (sm == null)
                         return null;
+
+                    // notice in side info
+                    if (rootInfo != null)
+                    {
+                        rootInfo.Submodel = sm;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+
+                        // add even more info
+                        if (rootInfo.AAS == null)
+                        {
+                            foreach (var aas2 in this.AdministrationShells)
+                            {
+                                var smref2 = aas2.FindSubmodelRef(sm.identification);
+                                if (smref2 != null)
+                                {
+                                    rootInfo.AAS = aas2;
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     // at our end?
                     if (keyIndex >= kl.Count - 1)

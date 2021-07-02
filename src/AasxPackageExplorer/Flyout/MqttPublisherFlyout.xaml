@@ -65,6 +65,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
@@ -95,8 +98,15 @@
             <TextBox Grid.Row="8" Grid.Column="1" x:Name="TextBoxEventPublishTopic" Margin="2" FontSize="16" 
                      VerticalContentAlignment="Center"></TextBox>
 
-            <Label Grid.Row="10" Grid.Column="0" Foreground="White" FontSize="16">Help:</Label>
-            <TextBlock x:Name="TextBoxHelp" Grid.Row="10" Grid.Column="1" Foreground="Gray" Margin="2,4,2,0"
+            <Label Grid.Row="10" Grid.Column="0" Foreground="White" FontSize="16">Single value publish:</Label>
+            <CheckBox Grid.Row="10" Grid.Column="1" x:Name="CheckBoxSingleValuePublish" Foreground="White" 
+                      FontSize="16" VerticalContentAlignment="Center"
+                      Content="Enable publishing" />
+            <TextBox Grid.Row="11" Grid.Column="1" x:Name="TextBoxSingleValueTopic" Margin="2" FontSize="16" 
+                     VerticalContentAlignment="Center"></TextBox>
+
+            <Label Grid.Row="13" Grid.Column="0" Foreground="White" FontSize="16">Help:</Label>
+            <TextBlock x:Name="TextBoxHelp" Grid.Row="13" Grid.Column="1" Foreground="Gray" Margin="2,4,2,0"
                        Background="Transparent" TextWrapping="Wrap" FontSize="14">
                 to be set by application
             </TextBlock>

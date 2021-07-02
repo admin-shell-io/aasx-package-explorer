@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using MQTTnet;
@@ -37,7 +38,8 @@ namespace AasxMqttClient
         [JsonIgnore]
         public static string HelpString =
             "{aas} = AAS.idShort, {aas-id} = AAS.identification" + Environment.NewLine +
-            "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + Environment.NewLine;
+            "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + Environment.NewLine +
+            "{source} = Path of idShorts to event source below Submodel";
 
         public string BrokerUrl = "localhost:1883";
 
@@ -47,6 +49,9 @@ namespace AasxMqttClient
 
         public bool EnableEventPublish = false;
         public string EventTopic = "Events";
+
+        public bool SingleValuePublish = false;
+        public string SingleValueTopic = "Values";
 
         public AnyUiDialogueDataMqttPublisher(
             string caption = "",
@@ -81,6 +86,8 @@ namespace AasxMqttClient
     public class MqttClient
     {
         private AnyUiDialogueDataMqttPublisher _diaData = null;
+        private GrapevineLoggerSuper _logger = null;
+        private IMqttClient _mqttClient = null;
 
         /// <summary>
         /// Splits into host part and numerical port number. Format e.g. "192.168.0.27:1883" or "localhost:1884".
@@ -110,7 +117,8 @@ namespace AasxMqttClient
         private string GenerateTopic(string template, 
             string defaultIfNull = null,
             string aasIdShort = null, AdminShell.Identification aasId = null,
-            string smIdShort = null, AdminShell.Identification smId = null)
+            string smIdShort = null, AdminShell.Identification smId = null,
+            string source = null)
         {
             var res = template;
 
@@ -129,6 +137,12 @@ namespace AasxMqttClient
             if (smId?.id != null)
                 res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId.id));
 
+            if (source != null)
+                res = res.Replace("{source}", source);
+
+            // make sure that topic are not starting / ending with '/'
+            res = res.Trim(' ', '/');
+
             return res;
         }
 
@@ -139,6 +153,7 @@ namespace AasxMqttClient
         {
             // first options
             _diaData = diaData;
+            _logger = logger;
             if (_diaData == null)
             {
                 logger?.Error("Error: no options available.");
@@ -149,10 +164,10 @@ namespace AasxMqttClient
             var hp = SplitBrokerUrl(_diaData.BrokerUrl);
             if (hp == null)
             {
-                logger?.Error("Error: no broker URL available.");
+                _logger?.Error("Error: no broker URL available.");
                 return;
             }
-            logger?.Info($"Conneting broker {hp.Item1}:{hp.Item2} ..");
+            _logger?.Info($"Conneting broker {hp.Item1}:{hp.Item2} ..");
 
             // Create TCP based options using the builder.
             
@@ -163,10 +178,10 @@ namespace AasxMqttClient
 
             //create MQTT Client and Connect using options above
             
-            IMqttClient mqttClient = new MqttFactory().CreateMqttClient();
-            await mqttClient.ConnectAsync(options);
-            if (mqttClient.IsConnected)
-                logger?.Info("### CONNECTED WITH SERVER ###");
+            _mqttClient = new MqttFactory().CreateMqttClient();
+            await _mqttClient.ConnectAsync(options);
+            if (_mqttClient.IsConnected)
+                _logger?.Info("### CONNECTED WITH SERVER ###");
 
             //publish AAS to AAS Topic
 
@@ -174,7 +189,7 @@ namespace AasxMqttClient
             {
                 foreach (AdminShell.AdministrationShell aas in package.AasEnv.AdministrationShells)
                 {
-                    logger?.Info("Publish AAS");
+                    _logger?.Info("Publish AAS");
                     var message = new MqttApplicationMessageBuilder()
                                    .WithTopic(GenerateTopic(
                                         _diaData.FirstTopicAAS, defaultIfNull: "AAS",
@@ -184,12 +199,12 @@ namespace AasxMqttClient
                                    .WithRetainFlag()
                                    .Build();
 
-                    await mqttClient.PublishAsync(message);
+                    await _mqttClient.PublishAsync(message);
 
                     //publish submodels
                     foreach (var sm in package.AasEnv.Submodels)
                     {
-                        logger?.Info("Publish " + "Submodel_" + sm.idShort);
+                        _logger?.Info("Publish " + "Submodel_" + sm.idShort);
 
                         var message2 = new MqttApplicationMessageBuilder()
                                         .WithTopic(GenerateTopic(
@@ -201,10 +216,48 @@ namespace AasxMqttClient
                                        .WithRetainFlag()
                                        .Build();
 
-                        await mqttClient.PublishAsync(message2);
+                        await _mqttClient.PublishAsync(message2);
                     }
                 }
             }
+        }
+
+        public void PublishEvent(AasEventMsgEnvelope ev,
+            AdminShell.ReferableRootInfo ri = null)
+        {
+            // access
+            if (ev == null)
+                return;
+
+            // serialize the event
+            var settings = AasxIntegrationBase.AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                    new[] { typeof(AasEventMsgEnvelope) });
+            settings.TypeNameHandling = TypeNameHandling.Auto;
+            settings.Formatting = Formatting.Indented;
+            var json = JsonConvert.SerializeObject(ev, settings);
+
+            // aas / sm already available in rootInfo, prepare idShortPath
+            var sourcePath = "";
+            if (ev.Source?.Keys != null && ri != null && ev.Source.Keys.Count > ri.NrOfRootKeys)
+            {
+                sourcePath = ev.Source?.Keys.BuildIdShortPath(ri.NrOfRootKeys);
+            }
+
+            // publish the full event
+            _logger?.Info("Publish Event");
+            var message = new MqttApplicationMessageBuilder()
+                           .WithTopic(GenerateTopic(
+                                _diaData.EventTopic, defaultIfNull: "Event",
+                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
+                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                source: sourcePath))
+                           .WithPayload(json)
+                           .WithExactlyOnceQoS()
+                           .WithRetainFlag()
+                           .Build();
+
+            // convert to synchronous behaviour
+            _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
         }
     }
 }

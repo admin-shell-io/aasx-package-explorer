@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
+using Newtonsoft.Json;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -85,6 +86,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 
         // see: https://stackoverflow.com/questions/1820915/how-can-i-format-datetime-to-web-utc-format
+        [JsonIgnore]
         public string DisplayTimestamp
         {
             get
@@ -93,12 +95,16 @@ namespace AasxIntegrationBase.AdminShellEvents
             }
         }
 
+        [JsonIgnore]
         public string DisplaySource { get { return "" + Source?.Keys?.MostSignificantInfo(); } }
 
+        [JsonIgnore]
         public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.value; } }
 
+        [JsonIgnore]
         public string DisplayObservable { get { return "" + ObservableReference?.Keys?.MostSignificantInfo(); } }
 
+        [JsonIgnore]
         public string DisplayInfo
         {
             get
