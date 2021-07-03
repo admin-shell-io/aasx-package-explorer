@@ -39,7 +39,7 @@ namespace AasxMqttClient
         public static string HelpString =
             "{aas} = AAS.idShort, {aas-id} = AAS.identification" + Environment.NewLine +
             "{sm} = Submodel.idShort, {sm-id} = Submodel.identification" + Environment.NewLine +
-            "{source} = Path of idShorts to event source below Submodel";
+            "{path} = Path of idShorts";
 
         public string BrokerUrl = "localhost:1883";
 
@@ -52,6 +52,8 @@ namespace AasxMqttClient
 
         public bool SingleValuePublish = false;
         public string SingleValueTopic = "Values";
+
+        public bool LogDebug = false;
 
         public AnyUiDialogueDataMqttPublisher(
             string caption = "",
@@ -118,7 +120,7 @@ namespace AasxMqttClient
             string defaultIfNull = null,
             string aasIdShort = null, AdminShell.Identification aasId = null,
             string smIdShort = null, AdminShell.Identification smId = null,
-            string source = null)
+            string path = null)
         {
             var res = template;
 
@@ -137,8 +139,8 @@ namespace AasxMqttClient
             if (smId?.id != null)
                 res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId.id));
 
-            if (source != null)
-                res = res.Replace("{source}", source);
+            if (path != null)
+                res = res.Replace("{path}", path);
 
             // make sure that topic are not starting / ending with '/'
             res = res.Trim(' ', '/');
@@ -189,7 +191,7 @@ namespace AasxMqttClient
             {
                 foreach (AdminShell.AdministrationShell aas in package.AasEnv.AdministrationShells)
                 {
-                    _logger?.Info("Publish AAS");
+                    _logger?.Info("Publish first AAS");
                     var message = new MqttApplicationMessageBuilder()
                                    .WithTopic(GenerateTopic(
                                         _diaData.FirstTopicAAS, defaultIfNull: "AAS",
@@ -204,7 +206,7 @@ namespace AasxMqttClient
                     //publish submodels
                     foreach (var sm in package.AasEnv.Submodels)
                     {
-                        _logger?.Info("Publish " + "Submodel_" + sm.idShort);
+                        _logger?.Info("Publish first " + "Submodel_" + sm.idShort);
 
                         var message2 = new MqttApplicationMessageBuilder()
                                         .WithTopic(GenerateTopic(
@@ -220,9 +222,109 @@ namespace AasxMqttClient
                     }
                 }
             }
+
+            _logger?.Info("Publish full events: " + _diaData.EnableEventPublish);
+            _logger?.Info("Publish single values: " + _diaData.SingleValuePublish);
         }
 
-        public void PublishEvent(AasEventMsgEnvelope ev,
+        private void PublishSingleValues_ChangeItem(
+            AasEventMsgEnvelope ev, 
+            AdminShell.ReferableRootInfo ri,            
+            AdminShell.KeyList startPath,
+            AasPayloadStructuralChangeItem ci)
+        {
+            // trivial
+            if (ev == null || ci == null || startPath == null)
+                return;
+
+            // only specific reasons
+            if (!(ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create
+                  || ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Modify))
+                return;
+
+            // need a payload
+            if (ci.Path == null || ci.Data == null)
+                return;
+
+            var dataRef = ci.GetDataAsReferable();
+
+            // give this to (recursive) function
+            var messages = new List<MqttApplicationMessage>();
+            if (dataRef is AdminShell.SubmodelElement dataSme)
+            {
+                var smwc = new AdminShell.SubmodelElementWrapperCollection(dataSme);
+                smwc.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+                {
+                    // assumption is, the sme is now "leaf" of a SME-hierarchy
+                    if (sme is AdminShell.IEnumerateChildren)
+                        return;
+
+                    // value of the leaf
+                    var valStr = sme.ValueAsText();
+
+                    // build a complete path of keys
+                    var path = startPath + ci.Path + parents.ToKeyList() + sme?.ToKey();
+                    var pathStr = path.BuildIdShortPath();
+
+                    // publish
+                    if (_diaData.LogDebug)
+                        _logger?.Info("Publish single value (create/ update)");
+                    messages.Add(
+                        new MqttApplicationMessageBuilder()
+                            .WithTopic(GenerateTopic(
+                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
+                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                path: pathStr))
+                            .WithPayload(valStr)
+                            .WithExactlyOnceQoS()
+                            .WithRetainFlag()
+                            .Build());                  
+                });
+            }
+
+            // publish these
+            // convert to synchronous behaviour
+            foreach (var msg in messages)
+                _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
+        }
+
+        private void PublishSingleValues_UpdateItem(
+            AasEventMsgEnvelope ev,
+            AdminShell.ReferableRootInfo ri,
+            AdminShell.KeyList startPath,
+            AasPayloadUpdateValueItem ui)
+        {
+            // trivial
+            if (ev == null || ui == null || startPath == null || ui.Path == null)
+                return;
+
+            // value of the leaf
+            var valStr = "" + ui.Value;
+
+            // build a complete path of keys
+            var path = startPath + ui.Path;
+            var pathStr = path.BuildIdShortPath();
+
+            // publish
+            if (_diaData.LogDebug)
+                _logger?.Info("Publish single value (update value)");
+            var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(GenerateTopic(
+                        _diaData.EventTopic, defaultIfNull: "SingleValue",
+                        aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
+                        smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                        path: pathStr))
+                    .WithPayload(valStr)
+                    .WithExactlyOnceQoS()
+                    .WithRetainFlag()
+                    .Build();
+
+            // publish
+            _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
+        }
+
+        public void PublishEventAsync(AasEventMsgEnvelope ev,
             AdminShell.ReferableRootInfo ri = null)
         {
             // access
@@ -237,27 +339,67 @@ namespace AasxMqttClient
             var json = JsonConvert.SerializeObject(ev, settings);
 
             // aas / sm already available in rootInfo, prepare idShortPath
-            var sourcePath = "";
+            var sourcePathStr = "";
+            var sourcePath = new AdminShell.KeyList();
             if (ev.Source?.Keys != null && ri != null && ev.Source.Keys.Count > ri.NrOfRootKeys)
             {
-                sourcePath = ev.Source?.Keys.BuildIdShortPath(ri.NrOfRootKeys);
+                sourcePath = ev.Source.Keys.SubList(ri.NrOfRootKeys);
+                sourcePathStr = sourcePath.BuildIdShortPath();
             }
 
-            // publish the full event
-            _logger?.Info("Publish Event");
-            var message = new MqttApplicationMessageBuilder()
-                           .WithTopic(GenerateTopic(
-                                _diaData.EventTopic, defaultIfNull: "Event",
-                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
-                                source: sourcePath))
-                           .WithPayload(json)
-                           .WithExactlyOnceQoS()
-                           .WithRetainFlag()
-                           .Build();
+            var observablePathStr = "";
+            var observablePath = new AdminShell.KeyList();
+            if (ev.ObservableReference?.Keys != null && ri != null 
+                && ev.ObservableReference.Keys.Count > ri.NrOfRootKeys)
+            {
+                observablePath = ev.ObservableReference.Keys.SubList(ri.NrOfRootKeys);
+                observablePathStr = observablePath.BuildIdShortPath();
+            }
 
-            // convert to synchronous behaviour
-            _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
+            // publish the full event?
+            if (_diaData.EnableEventPublish)
+            {
+                if (_diaData.LogDebug)
+                    _logger?.Info("Publish Event");
+                var message = new MqttApplicationMessageBuilder()
+                               .WithTopic(GenerateTopic(
+                                    _diaData.EventTopic, defaultIfNull: "Event",
+                                    aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
+                                    smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                    path: sourcePathStr))
+                               .WithPayload(json)
+                               .WithExactlyOnceQoS()
+                               .WithRetainFlag()
+                               .Build();
+
+                // convert to synchronous behaviour
+                _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
+            }
+
+            // deconstruct the event into single units?
+            if (_diaData.SingleValuePublish)
+            {
+                if (_diaData.LogDebug)
+                    _logger?.Info("Publish single values ..");
+
+                if (ev.Payloads != null)
+                    foreach (var epl in ev.Payloads)
+                    {
+                        if (epl is AasPayloadStructuralChange apsc && apsc.Changes != null)
+                            foreach (var ci in apsc.Changes)
+                                PublishSingleValues_ChangeItem(ev, ri, observablePath, ci);
+
+                        if (epl is AasPayloadUpdateValue apuv && apuv.Values != null)
+                            foreach (var ui in apuv.Values)
+                                PublishSingleValues_UpdateItem(ev, ri, observablePath, ui);
+                    }
+            }
+        }
+
+        public void PublishEvent(AasEventMsgEnvelope ev,
+            AdminShell.ReferableRootInfo ri = null)
+        {
+            PublishEventAsync(ev, ri);
         }
     }
 }

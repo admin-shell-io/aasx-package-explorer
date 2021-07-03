@@ -669,23 +669,45 @@ namespace AdminShellNS
                 return true;
             }
 
-            public IEnumerable<Key> SubList(int startPos, int count = int.MaxValue)
+            // arithmetics
+
+            public static KeyList operator +(KeyList a, Key b)
             {
+                var res = new KeyList(a);
+                if (b != null)
+                    res.Add(b);
+                return res;
+            }
+
+            public static KeyList operator +(KeyList a, KeyList b)
+            {
+                var res = new KeyList(a);
+                if (b != null)
+                    res.AddRange(b);
+                return res;
+            }
+
+            public KeyList SubList(int startPos, int count = int.MaxValue)
+            {
+                var res = new KeyList();
                 if (startPos >= this.Count)
-                    yield break;
+                    return res;
                 int nr = 0;
                 for (int i=startPos; i < this.Count && nr < count; i++)
                 {
                     nr++;
-                    yield return this[i];
+                    res.Add(this[i]);
                 }
+                return res;
             }
+
+            // other
 
             /// <summary>
             /// Take only idShort, ignore all other key-types and create a '/'-separated list
             /// </summary>
             /// <returns>Empty string or list of idShorts</returns>
-            public string BuildIdShortPath(int startPos, int count = int.MaxValue)
+            public string BuildIdShortPath(int startPos = 0, int count = int.MaxValue)
             {
                 if (startPos >= this.Count)
                     return "";
@@ -4134,7 +4156,7 @@ namespace AdminShellNS
                             yield return sm;
 
                             // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
-                            var allsme = new List<SubmodelElement>();
+                            var allsme = new ListOfSubmodelElement();
                             sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
                             {
                                 allsme.Add(sme);
@@ -5027,6 +5049,19 @@ namespace AdminShellNS
             // ReSharper enable RedundantArgumentDefaultValue
         }
 
+        public class ListOfSubmodelElement : List<SubmodelElement>
+        {
+            // conversion to other list
+
+            public KeyList ToKeyList()
+            {
+                var res = new KeyList();
+                foreach (var sme in this)
+                    res.Add(sme.ToKey());
+                return res;
+            }
+        }
+
         public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
         {
             // constants
@@ -5268,6 +5303,11 @@ namespace AdminShellNS
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
             }
 
+            public Key ToKey()
+            {
+                return new Key(GetElementName(), true, Key.IdShort, idShort);
+            }
+
             public virtual string ValueAsText(string defaultLang = null)
             {
                 return "";
@@ -5504,9 +5544,9 @@ namespace AdminShellNS
                 return dsc.ElementAbbreviation;
             }
 
-            public static List<SubmodelElement> ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
+            public static ListOfSubmodelElement ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
             {
-                var res = new List<SubmodelElement>();
+                var res = new ListOfSubmodelElement();
                 if (wrappers == null)
                     return res;
                 foreach (var w in wrappers)
@@ -5585,10 +5625,11 @@ namespace AdminShellNS
         {
             public SubmodelElementWrapperCollection() : base() { }
 
-            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
-                : base(other)
-            {
-            }
+            public SubmodelElementWrapperCollection(SubmodelElementWrapper smw) : base(smw) { }
+
+            public SubmodelElementWrapperCollection(SubmodelElement sme) : base(sme) { }
+
+            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other) : base(other) { }
         }
 
         public class DataElementWrapperCollection : BaseSubmodelElementWrapperCollection<DataElement>
@@ -5631,6 +5672,20 @@ namespace AdminShellNS
 
                 foreach (var smw in other)
                     this.Add(new SubmodelElementWrapper(smw.submodelElement));
+            }
+
+            public BaseSubmodelElementWrapperCollection(SubmodelElementWrapper smw)
+                : base()
+            {
+                if (smw != null)
+                    this.Add(smw);
+            }
+
+            public BaseSubmodelElementWrapperCollection(SubmodelElement sme)
+                : base()
+            {
+                if (sme != null)
+                    this.Add(new SubmodelElementWrapper(sme));
             }
 
             // better find functions
@@ -5788,14 +5843,14 @@ namespace AdminShellNS
             // recursion
 
             public void RecurseOnSubmodelElements(
-                object state, List<SubmodelElement> parents,
-                Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+                object state, ListOfSubmodelElement parents,
+                Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
             {
                 // trivial
                 if (lambda == null)
                     return;
                 if (parents == null)
-                    parents = new List<SubmodelElement>();
+                    parents = new ListOfSubmodelElement();
 
                 // over all elements
                 foreach (var smw in this)
@@ -6223,7 +6278,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (submodelElements != null)
                         foreach (var smew in submodelElements)
                             res.Add(smew.submodelElement);
@@ -6450,7 +6505,7 @@ namespace AdminShellNS
             // Recursing
 
             public void RecurseOnSubmodelElements(
-                object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+                object state, Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
             {
                 this.submodelElements?.RecurseOnSubmodelElements(state, null, lambda);
             }
@@ -7351,7 +7406,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (value != null)
                         foreach (var smew in value)
                             res.Add(smew.submodelElement);
@@ -7834,7 +7889,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (statements != null)
                         foreach (var smew in statements)
                             res.Add(smew.submodelElement);
