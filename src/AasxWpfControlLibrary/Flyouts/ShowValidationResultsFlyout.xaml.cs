@@ -34,7 +34,7 @@ namespace AasxPackageExplorer
     /// </summary>
     public partial class ShowValidationResultsFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public IEnumerable ValidationItems = null;
 

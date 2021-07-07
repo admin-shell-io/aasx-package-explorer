@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
 {
     public partial class IntegratedConnectFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         private PackageCentral _packageCentral;
         private string _caption;

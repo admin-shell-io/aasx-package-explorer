@@ -37,7 +37,7 @@ namespace AasxPluginSmdExporter.View
 
         public string Result;
 
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {

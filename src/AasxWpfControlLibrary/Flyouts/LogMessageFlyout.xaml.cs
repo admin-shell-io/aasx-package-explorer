@@ -28,11 +28,11 @@ namespace AasxPackageExplorer
 
         // Members
 
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public int ControlCloseWarnTime = -1;
         private int timeToCloseControl = -1;
-        public event IFlyoutControlClosed ControlWillBeClosed;
+        public event IFlyoutControlAction ControlWillBeClosed;
 
         public bool Result = false;
 
@@ -184,34 +184,40 @@ namespace AasxPackageExplorer
             this.ControlClosed?.Invoke();
         }
 
-        public event IFlyoutAgentPushAasEvent EventTriggered;
+        public event IFlyoutControlAction ControlMinimize;
 
-        public void PushEvent(AasEventMsgEnvelope ev)
-        {
-            EventTriggered?.Invoke(ev);
-        }
+        public FlyoutAgentBase Agent = null;
+
+        public FlyoutAgentBase GetAgent() { return Agent; }
 
         //
         // Mechanics
         //
 
-        private void ButtonClose_Click(object sender, RoutedEventArgs e)
+        private void ButtonCloseMinimize_Click(object sender, RoutedEventArgs e)
         {
-            if (ControlCloseWarnTime < 0)
+            if (sender == ButtonClose)
             {
-                // simply close
-                this.Result = false;
-                if (this.timer != null)
-                    this.timer.Stop();
-                ControlClosed?.Invoke();
-            }
-            else
-            {
-                if (ControlWillBeClosed != null)
-                    ControlWillBeClosed();
-                timeToCloseControl = ControlCloseWarnTime;
+                if (ControlCloseWarnTime < 0)
+                {
+                    // simply close
+                    this.Result = false;
+                    if (this.timer != null)
+                        this.timer.Stop();
+                    ControlClosed?.Invoke();
+                }
+                else
+                {
+                    if (ControlWillBeClosed != null)
+                        ControlWillBeClosed();
+                    timeToCloseControl = ControlCloseWarnTime;
+                }
             }
 
+            if (sender == ButtonMinimize)
+            {
+                ControlMinimize?.Invoke();
+            }
         }
 
         private void TextBoxMessages_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)

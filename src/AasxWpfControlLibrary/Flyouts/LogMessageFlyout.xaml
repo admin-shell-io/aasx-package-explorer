@@ -15,7 +15,7 @@
     -->
 
     <UserControl.Resources>
-        <ResourceDictionary Source="Themes/Generic.xaml"/>
+        <ResourceDictionary Source="/Themes/Generic.xaml"/>
     </UserControl.Resources>
 
     <Grid x:Name="OuterGrid" MaxHeight="800" MaxWidth="1400">
@@ -35,9 +35,14 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <Viewbox Grid.Row="0" Grid.Column="2" Margin="8,8,8,8" HorizontalAlignment="Right" VerticalAlignment="Top" MaxHeight="26">
-            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
-        </Viewbox>
+        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8,8,8,8"  MaxHeight="26">
+            <Viewbox Margin="0,0,6,0">
+                <Button x:Name="ButtonMinimize" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonCloseMinimize_Click">&#x25bc;</Button>
+            </Viewbox>
+            <Viewbox>
+                <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonCloseMinimize_Click">X</Button>
+            </Viewbox>
+        </StackPanel>
 
         <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TextBoxCaption" Background="#40404040" Foreground="{DynamicResource LightAccentColor}" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20">Test</TextBlock>
 

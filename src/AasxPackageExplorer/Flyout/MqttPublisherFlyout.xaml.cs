@@ -31,7 +31,7 @@ namespace AasxPackageExplorer
 {
     public partial class MqttPublisherFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
         public AnyUiDialogueDataMqttPublisher DiaData = new AnyUiDialogueDataMqttPublisher();
@@ -59,9 +59,11 @@ namespace AasxPackageExplorer
             this.TextBoxSingleValueTopic.Text = DiaData.SingleValueTopic;
 
             // check box
+            this.CheckBoxMqttRetain.IsChecked = DiaData.MqttRetain;
             this.CheckBoxFirstPublish.IsChecked = DiaData.EnableFirstPublish;
             this.CheckBoxEventPublish.IsChecked = DiaData.EnableEventPublish;
             this.CheckBoxSingleValuePublish.IsChecked = DiaData.SingleValuePublish;
+            this.CheckBoxSingleValueFirstTime.IsChecked = DiaData.SingleValueFirstTime;
 
             // focus
             this.TextBoxMqttBroker.Focus();
@@ -90,8 +92,11 @@ namespace AasxPackageExplorer
             DiaData.FirstTopicSubmodel = this.TextBoxFirstTopicSubmodel.Text;
             DiaData.EventTopic = this.TextBoxEventPublishTopic.Text;
 
+            DiaData.MqttRetain = this.CheckBoxMqttRetain.IsChecked == true;
             DiaData.EnableFirstPublish = this.CheckBoxFirstPublish.IsChecked == true;
             DiaData.EnableEventPublish = this.CheckBoxEventPublish.IsChecked == true;
+            DiaData.SingleValuePublish = this.CheckBoxSingleValuePublish.IsChecked == true;
+            DiaData.SingleValueFirstTime = this.CheckBoxSingleValueFirstTime.IsChecked == true;
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)

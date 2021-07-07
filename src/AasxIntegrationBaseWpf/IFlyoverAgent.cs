@@ -15,13 +15,53 @@ namespace AasxIntegrationBase
     public interface IFlyoutAgent : IFlyoutControl
     {
         /// <summary>
-        /// The FlyoutStrady can decide to handle events from the outside
+        /// Event emitted by the Flyout in order to minimize the dialogue.
         /// </summary>
-        void PushEvent(AdminShellEvents.AasEventMsgEnvelope ev);
+        event IFlyoutControlAction ControlMinimize;
 
+        /// <summary>
+        /// The the (independent) model for the selfstanding functionality
+        /// </summary>
+        FlyoutAgentBase GetAgent();
+    }
+
+    /// <summary>
+    /// Marks a user control which is a visual of the minimized agent
+    /// </summary>
+    public interface IFlyoutMini
+    {
+        /// <summary>
+        /// The the (independent) model for the selfstanding functionality
+        /// </summary>
+        FlyoutAgentBase GetAgent();
+    }
+
+    public class FlyoutAgentBase
+    {
         /// <summary>
         /// Event emitted by the Flyout in order to transmit an AAS event.
         /// </summary>
-        event IFlyoutAgentPushAasEvent EventTriggered;
+        public event IFlyoutAgentPushAasEvent EventTriggered;
+
+        /// <summary>
+        /// The Flyout can decide to handle events from the outside
+        /// </summary>
+        public virtual void PushEvent(AdminShellEvents.AasEventMsgEnvelope ev) 
+        {
+            // default behavior: trigger event
+            EventTriggered?.Invoke(ev);
+        }
+
+        /// <summary>
+        /// If the Flyout is executed as Agent, minimized and then closed, the closing
+        /// action needs to be retained.
+        /// </summary>
+        public Action ClosingAction;
+
+        /// <summary>
+        /// If minimize button is triggered, this function will generate a <c>FlyoutMini</c>,
+        /// which is visual for the selfstanding agent-
+        /// </summary>
+        public Func<IFlyoutMini> GenerateFlyoutMini;
     }
 }

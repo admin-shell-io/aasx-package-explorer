@@ -33,7 +33,7 @@ namespace AasxPackageExplorer
 {
     public partial class SelectEclassEntityFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public AnyUiDialogueDataSelectEclassEntity DiaData = new AnyUiDialogueDataSelectEclassEntity();
 

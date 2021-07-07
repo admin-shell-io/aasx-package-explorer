@@ -36,7 +36,7 @@ namespace AasxPackageExplorer
 
     public partial class SelectQualifierPresetFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
         public AnyUiDialogueDataSelectQualifierPreset DiaData = new AnyUiDialogueDataSelectQualifierPreset();

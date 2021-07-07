@@ -50,6 +50,7 @@ namespace AasxPackageExplorer
         private string showContentPackageMime = null;
         private VisualElementGeneric currentEntityForUpdate = null;
         private IFlyoutControl currentFlyoutControl = null;
+        // private List<IFlyoutAgent> _flyoutAgents = new List<IFlyoutAgent>();
 
         private BrowserContainer theContentBrowser = new BrowserContainer();
 
@@ -1535,9 +1536,13 @@ namespace AasxPackageExplorer
                 // log viewer
                 UserContrlEventCollection.PushEvent(ev);
 
-                // inform Flyovers
+                // inform current Flyover?
                 if (currentFlyoutControl is IFlyoutAgent fosc)
-                    fosc.PushEvent(ev);                    
+                    fosc.GetAgent()?.PushEvent(ev);                    
+
+                // inform agents?
+                foreach (var fa in UserControlAgentsView.Children)
+                    fa.GetAgent()?.PushEvent(ev);
 
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
@@ -2139,6 +2144,25 @@ namespace AasxPackageExplorer
                 Dispatcher.BeginInvoke(lambda);
         }
 
+        //public void PushFlyoutAgent(IFlyoutAgent ucag, IFlyoutMini mini)
+        //{
+        //    // trivial
+        //    if (ucag == null || mini == null || !(mini is UserControl))
+        //        return;
+
+        //    if (_flyoutAgents == null)
+        //        _flyoutAgents = new List<IFlyoutAgent>();
+
+        //    // push
+        //    lock (_flyoutAgents)
+        //    {
+        //        _flyoutAgents.Add(ucag);
+        //    }
+
+        //    // modify view
+        //    UserControlAgentsView.Add(mini as UserControl);
+        //}
+
         public void StartFlyoverModal(UserControl uc, Action closingAction = null)
         {
             // uc needs to implement IFlyoverControl
@@ -2158,14 +2182,52 @@ namespace AasxPackageExplorer
             this.GridFlyover.Children.Clear();
             this.GridFlyover.Children.Add(uc);
 
-            // register the event
+            // register the frame
             var frame = new DispatcherFrame();
             ucfoc.ControlClosed += () =>
             {
                 frame.Continue = false; // stops the frame
             };
 
+            // main application needs to know
             currentFlyoutControl = ucfoc;
+
+            // agent behaviour
+            var preventClosingAction = false;
+            if (uc is IFlyoutAgent ucag)
+            {
+                // register for minimize
+                ucag.ControlMinimize += () =>
+                {
+                    // only execute if preconditions are well
+                    if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
+                    {
+                        // remember closing action
+                        if (ucag.GetAgent() != null)
+                            ucag.GetAgent().ClosingAction = closingAction;
+
+                        // do not execute directly
+                        preventClosingAction = true;
+
+                        // make a mini
+                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
+
+                        // bew careful
+                        if (mini is UserControl miniUc)
+                        {
+                            // push the agent
+                            // PushFlyoutAgent(ucag, mini);
+                            UserControlAgentsView.Add(miniUc);
+
+                            // show the panel
+                            PanelConcurrentSetVisibleIfRequired(true);
+
+                            // remove the flyover
+                            frame.Continue = false; // stops the frame
+                        }
+                    }
+                };
+            }
 
             // start (focus)
             ucfoc.ControlStart();
@@ -2175,7 +2237,7 @@ namespace AasxPackageExplorer
             Dispatcher.PushFrame(frame);
 
             // call the closing action (before releasing!)
-            if (closingAction != null)
+            if (closingAction != null && !preventClosingAction)
                 closingAction();
 
             // blur the normal grid

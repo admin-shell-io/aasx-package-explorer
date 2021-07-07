@@ -625,16 +625,32 @@ namespace AasxPackageExplorer
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
-                var targetState = MenuItemWorkspaceEventsShowLog.IsChecked;
+                PanelConcurrentSetVisibleIfRequired(!PanelConcurrentCheckIsVisible());
+            }
+        }
 
-                if (!targetState)
-                {
-                    RowDefinitionConcurrent.Height = new GridLength(0);
-                }
-                else
-                {
+        public bool PanelConcurrentCheckIsVisible()
+        {
+            return MenuItemWorkspaceEventsShowLog.IsChecked;
+        }
+
+        public void PanelConcurrentSetVisibleIfRequired(
+            bool targetState, bool targetAgents = false, bool targetEvents = false)
+        {
+            if (!targetState)
+            {
+                RowDefinitionConcurrent.Height = new GridLength(0);
+            }
+            else
+            {
+                if (!PanelConcurrentCheckIsVisible())
                     RowDefinitionConcurrent.Height = new GridLength(140);
-                }
+
+                if (targetEvents)
+                    TabControlConcurrent.SelectedItem = TabItemConcurrentEvents;
+
+                if (targetAgents)
+                    TabControlConcurrent.SelectedItem = TabItemConcurrentAgents;
             }
         }
 
@@ -1044,44 +1060,56 @@ namespace AasxPackageExplorer
             });
         }
 
+        public class FlyoutAgentMqttPublisher : FlyoutAgentBase
+        {
+            public AasxMqttClient.AnyUiDialogueDataMqttPublisher DiaData;
+            public AasxMqttClient.GrapevineLoggerToListOfStrings Logger;
+            public AasxMqttClient.MqttClient Client;
+            public BackgroundWorker Worker;
+        }
+
         public void CommandBinding_MQTTPub()
         {
+            // make an agent
+            var agent = new FlyoutAgentMqttPublisher();
+
             // ask for preferences
-            var diaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
+            agent.DiaData = AasxMqttClient.AnyUiDialogueDataMqttPublisher.CreateWithOptions("AASQ MQTT publisher ..",
                         jtoken: Options.Curr.MqttPublisherOptions);
-            var uc1 = new MqttPublisherFlyout(diaData);
+            var uc1 = new MqttPublisherFlyout(agent.DiaData);
             this.StartFlyoverModal(uc1);
             if (!uc1.Result)
                 return;
 
             // make a logger
-            var logger = new AasxMqttClient.GrapevineLoggerToListOfStrings();
+            agent.Logger = new AasxMqttClient.GrapevineLoggerToListOfStrings();
 
             // make listing flyout
             var uc2 = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>
             {
-                var st = logger.Pop();
+                var st = agent.Logger.Pop();
                 return (st == null) ? null : new StoredPrint(st);
             });
+            uc2.Agent = agent;
 
             // start MQTT Client as a worker (will start in the background)
-            var client = new AasxMqttClient.MqttClient();
-            var worker = new BackgroundWorker();
-            worker.DoWork += async (s1, e1) =>
+            agent.Client = new AasxMqttClient.MqttClient();
+            agent.Worker = new BackgroundWorker();
+            agent.Worker.DoWork += async (s1, e1) =>
             {
                 try
                 {                    
-                    await client.StartAsync(_packageCentral.Main, diaData, logger);
+                    await agent.Client.StartAsync(_packageCentral.Main, agent.DiaData, agent.Logger);
                 }
                 catch (Exception e)
                 {
-                    logger.Error(e);
+                    agent.Logger.Error(e);
                 }
             };
-            worker.RunWorkerAsync();
+            agent.Worker.RunWorkerAsync();
 
             // wire events
-            uc2.EventTriggered += (ev) =>
+            agent.EventTriggered += (ev) =>
             {
                 // trivial
                 if (ev == null)
@@ -1102,11 +1130,17 @@ namespace AasxPackageExplorer
                         }
 
                     // publish
-                    client?.PublishEvent(ev, foundRI);
+                    agent.Client?.PublishEvent(ev, foundRI);
                 } catch (Exception e)
                 {
-                    logger.Error(e);
+                    agent.Logger.Error(e);
                 }
+            };
+
+            agent.GenerateFlyoutMini = () =>
+            {
+                var mini = new LogMessageMiniFlyout();
+                return mini;
             };
 
             // modal dialogue

@@ -32,7 +32,7 @@ namespace AasxPackageExplorer
 {
     public partial class SelectFromRepositoryFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public PackageContainerRepoItem ResultItem = null;
 

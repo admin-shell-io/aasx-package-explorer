@@ -16,7 +16,7 @@ using System.Windows.Input;
 
 namespace AasxIntegrationBase
 {
-    public delegate void IFlyoutControlClosed();
+    public delegate void IFlyoutControlAction();
 
     /// <summary>
     /// Marks an user control, which is superimposed on top of the application
@@ -26,7 +26,7 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Event emitted by the Flyout in order to end the dialogue.
         /// </summary>
-        event IFlyoutControlClosed ControlClosed;
+        event IFlyoutControlAction ControlClosed;
 
         /// <summary>
         /// ´Called by the main window immediately after start

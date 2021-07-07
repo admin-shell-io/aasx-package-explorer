@@ -72,9 +72,17 @@
             </Grid.RowDefinitions>
 
             <Label Grid.Row="1" Grid.Column="0" Foreground="White" FontSize="16">MQTT broker:</Label>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxMqttBroker" Margin="2" FontSize="16" 
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Row="0" Grid.Column="0" x:Name="TextBoxMqttBroker" Margin="2" FontSize="16" 
                      VerticalContentAlignment="Center">localhost:1883</TextBox>
-            
+                <CheckBox Grid.Row="0" Grid.Column="1" x:Name="CheckBoxMqttRetain" Foreground="White" 
+                          FontSize="16" VerticalContentAlignment="Center" Margin="10,0,0,0"
+                          Content="Retain" />
+            </Grid>
 
             <Label Grid.Row="3" Grid.Column="0" Foreground="White" FontSize="16">First time publish:</Label>
             <CheckBox Grid.Row="3" Grid.Column="1" x:Name="CheckBoxFirstPublish" Foreground="White" 
@@ -99,9 +107,14 @@
                      VerticalContentAlignment="Center"></TextBox>
 
             <Label Grid.Row="10" Grid.Column="0" Foreground="White" FontSize="16">Single value publish:</Label>
-            <CheckBox Grid.Row="10" Grid.Column="1" x:Name="CheckBoxSingleValuePublish" Foreground="White" 
-                      FontSize="16" VerticalContentAlignment="Center"
-                      Content="Enable publishing" />
+            <StackPanel Grid.Row="10" Grid.Column="1" Orientation="Horizontal">
+                <CheckBox x:Name="CheckBoxSingleValuePublish" Foreground="White" 
+                          FontSize="16" VerticalContentAlignment="Center"
+                          Content="Enable publishing" />
+                <CheckBox x:Name="CheckBoxSingleValueFirstTime" Foreground="White" 
+                          FontSize="16" VerticalContentAlignment="Center" Margin="10,0,0,0"
+                          Content="First time" />
+            </StackPanel>
             <TextBox Grid.Row="11" Grid.Column="1" x:Name="TextBoxSingleValueTopic" Margin="2" FontSize="16" 
                      VerticalContentAlignment="Center"></TextBox>
 

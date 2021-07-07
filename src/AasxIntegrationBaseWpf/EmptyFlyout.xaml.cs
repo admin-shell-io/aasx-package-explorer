@@ -30,7 +30,7 @@ namespace AasxIntegrationBase
 {
     public partial class EmptyFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
         public AnyUiDialogueDataEmpty DiaData = new AnyUiDialogueDataEmpty();

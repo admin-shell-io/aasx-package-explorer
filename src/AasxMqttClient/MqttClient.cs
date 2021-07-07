@@ -42,6 +42,7 @@ namespace AasxMqttClient
             "{path} = Path of idShorts";
 
         public string BrokerUrl = "localhost:1883";
+        public bool MqttRetain = false;
 
         public bool EnableFirstPublish = true;
         public string FirstTopicAAS = "AAS";
@@ -51,6 +52,7 @@ namespace AasxMqttClient
         public string EventTopic = "Events";
 
         public bool SingleValuePublish = false;
+        public bool SingleValueFirstTime = false;
         public string SingleValueTopic = "Values";
 
         public bool LogDebug = false;
@@ -198,7 +200,7 @@ namespace AasxMqttClient
                                         aasIdShort: aas.idShort, aasId: aas.identification))
                                    .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(aas))
                                    .WithExactlyOnceQoS()
-                                   .WithRetainFlag()
+                                   .WithRetainFlag(_diaData.MqttRetain)
                                    .Build();
 
                     await _mqttClient.PublishAsync(message);
@@ -206,6 +208,7 @@ namespace AasxMqttClient
                     //publish submodels
                     foreach (var sm in package.AasEnv.Submodels)
                     {
+                        // whole structure
                         _logger?.Info("Publish first " + "Submodel_" + sm.idShort);
 
                         var message2 = new MqttApplicationMessageBuilder()
@@ -215,16 +218,61 @@ namespace AasxMqttClient
                                             smIdShort: sm.idShort, smId: sm.identification))
                                        .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(sm))
                                        .WithExactlyOnceQoS()
-                                       .WithRetainFlag()
+                                       .WithRetainFlag(_diaData.MqttRetain)
                                        .Build();
 
                         await _mqttClient.PublishAsync(message2);
+
+                        // single values as well? 
+                        if (_diaData.SingleValueFirstTime)
+                            PublishSingleValues_FirstTimeSubmodel(aas, sm, sm.GetReference()?.Keys);
                     }
                 }
             }
 
             _logger?.Info("Publish full events: " + _diaData.EnableEventPublish);
             _logger?.Info("Publish single values: " + _diaData.SingleValuePublish);
+        }
+
+        private void PublishSingleValues_FirstTimeSubmodel(
+            AdminShell.AdministrationShell aas,
+            AdminShell.Submodel sm,
+            AdminShell.KeyList startPath)
+        {
+            // trivial
+            if (aas == null || sm == null)
+                return;
+
+            // give this to (recursive) function
+            sm.submodelElements?.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+            {
+                // assumption is, the sme is now "leaf" of a SME-hierarchy
+                if (sme is AdminShell.IEnumerateChildren)
+                    return;
+
+                // value of the leaf
+                var valStr = sme.ValueAsText();
+
+                // build a complete path of keys
+                var path = startPath + parents.ToKeyList() + sme?.ToKey();
+                var pathStr = path.BuildIdShortPath();
+
+                // publish
+                if (_diaData.LogDebug)
+                    _logger?.Info("Publish single value (first time)");
+                
+                var msg = new MqttApplicationMessageBuilder()
+                            .WithTopic(GenerateTopic(
+                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                aasIdShort: aas.idShort, aasId: aas.identification,
+                                smIdShort: sm.idShort, smId: sm.identification,
+                                path: pathStr))
+                            .WithPayload(valStr)
+                            .WithExactlyOnceQoS()
+                            .WithRetainFlag(_diaData.MqttRetain)
+                            .Build();
+                _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
+            });                
         }
 
         private void PublishSingleValues_ChangeItem(
@@ -278,7 +326,7 @@ namespace AasxMqttClient
                                 path: pathStr))
                             .WithPayload(valStr)
                             .WithExactlyOnceQoS()
-                            .WithRetainFlag()
+                            .WithRetainFlag(_diaData.MqttRetain)
                             .Build());                  
                 });
             }
@@ -317,7 +365,7 @@ namespace AasxMqttClient
                         path: pathStr))
                     .WithPayload(valStr)
                     .WithExactlyOnceQoS()
-                    .WithRetainFlag()
+                    .WithRetainFlag(_diaData.MqttRetain)
                     .Build();
 
             // publish
@@ -328,7 +376,7 @@ namespace AasxMqttClient
             AdminShell.ReferableRootInfo ri = null)
         {
             // access
-            if (ev == null)
+            if (ev == null || _mqttClient == null || !_mqttClient.IsConnected)
                 return;
 
             // serialize the event
@@ -369,7 +417,7 @@ namespace AasxMqttClient
                                     path: sourcePathStr))
                                .WithPayload(json)
                                .WithExactlyOnceQoS()
-                               .WithRetainFlag()
+                               .WithRetainFlag(_diaData.MqttRetain)
                                .Build();
 
                 // convert to synchronous behaviour

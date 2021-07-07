@@ -66,7 +66,7 @@ namespace AasxPackageExplorer
         // Members / events
         //
 
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public SecureConnectPresetList Presets = new SecureConnectPresetList();
 

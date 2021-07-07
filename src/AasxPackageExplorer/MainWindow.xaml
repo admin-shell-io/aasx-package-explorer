@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:AasxPackageExplorer;assembly=AasxWpfControlLibrary"
+        xmlns:main="clr-namespace:AasxPackageExplorer"
         xmlns:events="clr-namespace:AasxWpfControlLibrary.AdminShellEvents;assembly=AasxWpfControlLibrary"
         xmlns:repo="clr-namespace:AasxWpfControlLibrary.PackageCentral;assembly=AasxWpfControlLibrary"
         mc:Ignorable="d"
@@ -283,7 +284,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <!-- Initially, the concurrent activities (events, plugins) are initially hidden -->
-                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" />
+                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" /> <!-- Set to 150 to see events in XAML -->
                 <RowDefinition Height="28" />
             </Grid.RowDefinitions>
 
@@ -646,10 +647,11 @@
                 </Grid.ColumnDefinitions>
                 
                 <TabControl x:Name="TabControlConcurrent" TabStripPlacement="Left">
-                    <TabItem Header="Events">
+                    <TabItem Header="Events" x:Name="TabItemConcurrentEvents">
                         <events:AasEventCollectionViewer x:Name="UserContrlEventCollection" />
                     </TabItem>
-                    <TabItem Header="Plugins">
+                    <TabItem Header="Agents" x:Name="TabItemConcurrentAgents">
+                        <main:MainWindowAgentsView x:Name="UserControlAgentsView" Background="#c0000020"/>
                     </TabItem>
                 </TabControl>
             </Grid>

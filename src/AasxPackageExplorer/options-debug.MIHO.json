@@ -51,12 +51,14 @@
   "DefaultConnectRepositoryLocation": "https://admin-shell-io.com/51711",
   "MqttPublisherOptions": {
     "BrokerUrl": "192.168.178.97:1883",
+    "MqttRetain": false,
     "EnableFirstPublish": true,
     "FirstTopicAAS": "AAS",
     "FirstTopicSubmodel": "{aas}/Submodel_{sm}",
     "EnableEventPublish": true,
     "EventTopic": "Events/aas/{aas}/sm/{sm}/{path}",
     "SingleValuePublish": true,
+    "SingleValueFirstTime": true,
     "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
   },
   "Remarks": [

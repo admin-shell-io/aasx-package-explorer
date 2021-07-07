@@ -30,7 +30,7 @@ namespace AasxIntegrationBase
 {
     public partial class MessageBoxFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public AnyUiMessageBoxResult Result = AnyUiMessageBoxResult.None;
 

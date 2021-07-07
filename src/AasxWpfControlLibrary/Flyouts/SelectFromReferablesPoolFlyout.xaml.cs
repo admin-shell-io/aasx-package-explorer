@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
     /// </summary>
     public partial class SelectFromReferablesPoolFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public AasxPredefinedConcepts.DefinitionsPool DataSourcePools = null;
 
