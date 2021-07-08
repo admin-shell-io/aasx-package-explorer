@@ -22,8 +22,8 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
-using AasxPackageLogic;
 using AasxIntegrationBase.AdminShellEvents;
+using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
@@ -50,7 +50,6 @@ namespace AasxPackageExplorer
         private string showContentPackageMime = null;
         private VisualElementGeneric currentEntityForUpdate = null;
         private IFlyoutControl currentFlyoutControl = null;
-        // private List<IFlyoutAgent> _flyoutAgents = new List<IFlyoutAgent>();
 
         private BrowserContainer theContentBrowser = new BrowserContainer();
 
@@ -308,7 +307,7 @@ namespace AasxPackageExplorer
             // further actions
             try
             {
-                // TODO-ANYUI MIHO
+                // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
                 ////if (!doNotNavigateAfterLoaded)
                 //// 
             }
@@ -1538,7 +1537,7 @@ namespace AasxPackageExplorer
 
                 // inform current Flyover?
                 if (currentFlyoutControl is IFlyoutAgent fosc)
-                    fosc.GetAgent()?.PushEvent(ev);                    
+                    fosc.GetAgent()?.PushEvent(ev);
 
                 // inform agents?
                 foreach (var fa in UserControlAgentsView.Children)
@@ -2144,25 +2143,6 @@ namespace AasxPackageExplorer
                 Dispatcher.BeginInvoke(lambda);
         }
 
-        //public void PushFlyoutAgent(IFlyoutAgent ucag, IFlyoutMini mini)
-        //{
-        //    // trivial
-        //    if (ucag == null || mini == null || !(mini is UserControl))
-        //        return;
-
-        //    if (_flyoutAgents == null)
-        //        _flyoutAgents = new List<IFlyoutAgent>();
-
-        //    // push
-        //    lock (_flyoutAgents)
-        //    {
-        //        _flyoutAgents.Add(ucag);
-        //    }
-
-        //    // modify view
-        //    UserControlAgentsView.Add(mini as UserControl);
-        //}
-
         public void StartFlyoverModal(UserControl uc, Action closingAction = null)
         {
             // uc needs to implement IFlyoverControl
@@ -2201,18 +2181,17 @@ namespace AasxPackageExplorer
                 {
                     // only execute if preconditions are well
                     if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
-                    {                        
+                    {
                         // do not execute directly
                         preventClosingAction = true;
 
                         // make a mini
-                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();                        
+                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
 
                         // be careful
                         if (mini is UserControl miniUc)
                         {
                             // push the agent
-                            // PushFlyoutAgent(ucag, mini);
                             UserControlAgentsView.Add(miniUc);
 
                             // wrap provided closing action in own closing action

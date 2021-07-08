@@ -129,7 +129,6 @@ namespace AasxPackageExplorer
         {
             theMasterPanel.Children.Clear();
             var sp = new AnyUiStackPanel();
-            // TODO MIHO
             var spwpf = new Label();
             DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);

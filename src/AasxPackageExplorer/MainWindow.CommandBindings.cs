@@ -1098,7 +1098,7 @@ namespace AasxPackageExplorer
             agent.Worker.DoWork += async (s1, e1) =>
             {
                 try
-                {                    
+                {
                     await agent.Client.StartAsync(_packageCentral.Main, agent.DiaData, agent.Logger);
                 }
                 catch (Exception e)
@@ -1131,7 +1131,8 @@ namespace AasxPackageExplorer
 
                     // publish
                     agent.Client?.PublishEvent(ev, foundRI);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     agent.Logger.Error(e);
                 }

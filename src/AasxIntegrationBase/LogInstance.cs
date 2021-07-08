@@ -27,7 +27,7 @@ namespace AasxIntegrationBase
             /// Text describing the status item; giving it a 'name'
             /// </summary>
             public string Name;
-            
+
             /// <summary>
             /// Short name for compressed screen space; if <c>null</c>, <c>Name</c> will be taken.
             /// </summary>
@@ -83,6 +83,8 @@ namespace AasxIntegrationBase
         /// <param name="linkUri">Link URI to be navigated to</param>
         /// <param name="isError">Represents an error, e.g. will be counted</param>
         /// <param name="stackTrace">string serialized stack trace information</param>
+        /// <param name="messageType">Message type, such as <c>Log</c>, <c>Error</c> but also <c>Status</c></param>
+        /// <param name="statusItems">In caase of <c>Status</c> array of status items</param>
         public StoredPrint(
             Color color, string msg, string linkTxt = null, string linkUri = null, bool isError = false,
             string stackTrace = null, MessageTypeEnum messageType = MessageTypeEnum.Log,

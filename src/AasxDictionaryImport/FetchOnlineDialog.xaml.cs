@@ -8,6 +8,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 #nullable enable
 
+// ReSharper disable MergeIntoPattern
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

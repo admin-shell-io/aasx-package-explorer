@@ -693,7 +693,7 @@ namespace AdminShellNS
                 if (startPos >= this.Count)
                     return res;
                 int nr = 0;
-                for (int i=startPos; i < this.Count && nr < count; i++)
+                for (int i = startPos; i < this.Count && nr < count; i++)
                 {
                     nr++;
                     res.Add(this[i]);
@@ -1835,7 +1835,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    return NrOfRootKeys > 0 && (AAS != null || Submodel != null || Asset != null) ;
+                    return NrOfRootKeys > 0 && (AAS != null || Submodel != null || Asset != null);
                 }
             }
         }
@@ -4178,7 +4178,7 @@ namespace AdminShellNS
             public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
             {
                 return FindReferableByReference(rf?.Keys);
-            }            
+            }
 
             public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false,
                 ReferableRootInfo rootInfo = null)
@@ -5292,6 +5292,8 @@ namespace AdminShellNS
             {
                 var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
+                // TODO (MIHO, 2021-07-08): obvious error .. info should receive semanticId .. but would change 
+                // display presentation .. therefore to be checked again
                 if (semanticId != null)
                     AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
                 return Tuple.Create(caption, info);

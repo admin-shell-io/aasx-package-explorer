@@ -74,6 +74,7 @@ namespace AasxMqttClient
             if (jtoken == null)
                 return new AnyUiDialogueDataMqttPublisher(caption, maxWidth);
 
+            // ReSharper disable EmptyGeneralCatchClause
             try
             {
                 var res = jtoken.ToObject<AnyUiDialogueDataMqttPublisher>();
@@ -82,11 +83,12 @@ namespace AasxMqttClient
                     return res;
             }
             catch { }
+            // ReSharper enable EmptyGeneralCatchClause
 
             // .. no, default!
             return new AnyUiDialogueDataMqttPublisher(caption, maxWidth);
         }
-    }    
+    }
 
     public class MqttClient
     {
@@ -104,7 +106,7 @@ namespace AasxMqttClient
 
             if (_logger != null)
                 _logger.Append(new StoredPrint(
-                    StoredPrint.Color.Black, "", 
+                    StoredPrint.Color.Black, "",
                     messageType: StoredPrint.MessageTypeEnum.Status,
                     statusItems: new[] {
                         new StoredPrint.StatusItem("# of AAS Element", "# element", "" + _countElement),
@@ -138,7 +140,7 @@ namespace AasxMqttClient
             return new Tuple<string, int>(host, AnyUiDialogueDataMqttPublisher.MqttDefaultPort);
         }
 
-        private string GenerateTopic(string template, 
+        private string GenerateTopic(string template,
             string defaultIfNull = null,
             string aasIdShort = null, AdminShell.Identification aasId = null,
             string smIdShort = null, AdminShell.Identification smId = null,
@@ -194,14 +196,14 @@ namespace AasxMqttClient
             _logger?.Info($"Conneting broker {hp.Item1}:{hp.Item2} ..");
 
             // Create TCP based options using the builder.
-            
+
             var options = new MqttClientOptionsBuilder()
                 .WithClientId("AASXPackageXplorer MQTT Client")
                 .WithTcpServer(hp.Item1, hp.Item2)
                 .Build();
 
             //create MQTT Client and Connect using options above
-            
+
             _mqttClient = new MqttFactory().CreateMqttClient();
             await _mqttClient.ConnectAsync(options);
             if (_mqttClient.IsConnected)
@@ -282,7 +284,7 @@ namespace AasxMqttClient
                 // publish
                 if (_diaData.LogDebug)
                     _logger?.Info("Publish single value (first time)");
-                
+
                 var msg = new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
                                 _diaData.EventTopic, defaultIfNull: "SingleValue",
@@ -295,12 +297,12 @@ namespace AasxMqttClient
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
                 LogStatus(incSingleValue: 1);
-            });                
+            });
         }
 
         private void PublishSingleValues_ChangeItem(
-            AasEventMsgEnvelope ev, 
-            AdminShell.ReferableRootInfo ri,            
+            AasEventMsgEnvelope ev,
+            AdminShell.ReferableRootInfo ri,
             AdminShell.KeyList startPath,
             AasPayloadStructuralChangeItem ci)
         {
@@ -350,7 +352,7 @@ namespace AasxMqttClient
                             .WithPayload(valStr)
                             .WithExactlyOnceQoS()
                             .WithRetainFlag(_diaData.MqttRetain)
-                            .Build());                  
+                            .Build());
                 });
             }
 
@@ -424,13 +426,11 @@ namespace AasxMqttClient
                 sourcePathStr = sourcePath.BuildIdShortPath();
             }
 
-            var observablePathStr = "";
             var observablePath = new AdminShell.KeyList();
-            if (ev.ObservableReference?.Keys != null && ri != null 
+            if (ev.ObservableReference?.Keys != null && ri != null
                 && ev.ObservableReference.Keys.Count > ri.NrOfRootKeys)
             {
                 observablePath = ev.ObservableReference.Keys.SubList(ri.NrOfRootKeys);
-                observablePathStr = observablePath.BuildIdShortPath();
             }
 
             // publish the full event?

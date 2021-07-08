@@ -162,7 +162,7 @@ namespace BlazorUI
             client.DefaultRequestHeaders.Add("Accept", "application/aas");
             var response = await client.GetAsync(input);
 
-            // var contentLength = response.Content.Headers.ContentLength;
+            //// var contentLength = response.Content.Headers.ContentLength;
             var contentFn = response.Content.Headers.ContentDisposition?.FileName;
 
             // ReSharper disable PossibleNullReferenceException

@@ -98,7 +98,7 @@ namespace AasxPackageExplorer
             // Log?
             if (sp.MessageType == StoredPrint.MessageTypeEnum.Error
                 || sp.MessageType == StoredPrint.MessageTypeEnum.Log)
-            { 
+            {
                 // count
                 this.counterMessage++;
 

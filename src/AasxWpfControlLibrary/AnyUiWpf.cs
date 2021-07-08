@@ -681,7 +681,6 @@ namespace AnyUi
                                         EmitOutsideAction(action2);
                                     };
                                 }
-                                // TODO MIHO
                                 cm.PlacementTarget = wpf;
                                 cm.IsOpen = true;
                             }

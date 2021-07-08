@@ -38,6 +38,6 @@ namespace AasxIntegrationBase
         /// </summary>
         /// <param name="e"></param>
         void ControlPreviewKeyDown(KeyEventArgs e);
-        
-    }    
+
+    }
 }

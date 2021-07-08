@@ -38,7 +38,7 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlAction ControlClosed;
 
-        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        // TODO (MIHO, 2020-12-21): make DiaData non-Nullable
         public AnyUiDialogueDataSelectQualifierPreset DiaData = new AnyUiDialogueDataSelectQualifierPreset();
 
         private List<QualifierPreset> thePresets = new List<QualifierPreset>();

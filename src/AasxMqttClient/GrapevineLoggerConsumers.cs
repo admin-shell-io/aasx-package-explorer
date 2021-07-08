@@ -151,7 +151,7 @@ namespace AasxMqttClient
                 return;
 
             lock (list)
-            {                
+            {
                 list.Add(sp);
             }
         }

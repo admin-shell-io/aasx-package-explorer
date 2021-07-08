@@ -149,7 +149,7 @@ namespace AnyUi
         }
     }
 
-    
+
 
     public class AnyUiDialogueDataTextEditor : AnyUiDialogueDataBase
     {

@@ -31,7 +31,7 @@ namespace AasxPackageExplorer
         }
 
         public LogMessageMiniFlyout(
-            string caption, string initialMessage, 
+            string caption, string initialMessage,
             Func<StoredPrint> checkForStoredPrint = null)
         {
             InitializeComponent();
@@ -81,7 +81,7 @@ namespace AasxPackageExplorer
                     {
                         if (_statusCollected.HasContent())
                             _statusCollected += "; ";
-                        _statusCollected += 
+                        _statusCollected +=
                             $"{"" + ((si.NameShort != null) ? si.NameShort : si.Name)} = {"" + si.Value}";
                     }
                 TextBoxContent.Text = _statusCollected;

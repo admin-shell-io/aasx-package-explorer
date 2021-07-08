@@ -199,8 +199,9 @@ namespace WpfMtpControl
             this.VisuOptions?.Prepare();
 
             // for some tests, we need randomness
+#if _only_testing
             var rnd = new Random();
-
+#endif
             // first, set up the canvas
             if (true)
             {
@@ -346,7 +347,7 @@ namespace WpfMtpControl
                                 );
 
                                 // disturb it?
-                                if (false)
+#if _only_testing
 #pragma warning disable 162
                                 // ReSharper disable once HeuristicUnreachableCode
                                 {
@@ -357,7 +358,7 @@ namespace WpfMtpControl
                                     start.OfsY += -5.0 + 10.0 * rnd.NextDouble();
                                 }
 #pragma warning restore 162
-
+#endif
                                 // improve it
                                 var better = UIElementHelper.FindBestFitForFieldOfPoints(
                                                 symbol.NozzlePos, npArr, start, 0.3, 30.0, 10.0, 10, 3);

@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
     {
         public event IFlyoutControlAction ControlClosed;
 
-        // TODO (MIHO, 21-12-2020): make DiaData non-Nullable
+        // TODO (MIHO, 2020-12-21): make DiaData non-Nullable
         public AnyUiDialogueDataSelectAasEntity DiaData = new AnyUiDialogueDataSelectAasEntity();
 
         PackageCentral packages = null;

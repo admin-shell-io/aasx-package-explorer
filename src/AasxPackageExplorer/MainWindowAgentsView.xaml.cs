@@ -1,4 +1,12 @@
-﻿using AasxIntegrationBase;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase;
 
 namespace AasxPackageExplorer
 {
@@ -30,8 +39,6 @@ namespace AasxPackageExplorer
         {
             get
             {
-                if (GridContent.Children == null)
-                    yield break;
                 foreach (var ch in GridContent.Children)
                     if (ch is IFlyoutMini mini)
                         yield return mini;
@@ -55,7 +62,8 @@ namespace AasxPackageExplorer
             var gc = GridContent;
             var ndx = gc.ColumnDefinitions.Count;
 
-            gc.ColumnDefinitions.Add(new ColumnDefinition() { 
+            gc.ColumnDefinitions.Add(new ColumnDefinition()
+            {
                 Width = new GridLength(1.0, GridUnitType.Star),
                 MaxWidth = 300
             });

@@ -371,7 +371,7 @@ namespace AasxPackageLogic
                 AdminShell.Referable parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
                                                 as AdminShell.Referable;
 
-                // TODO: env? parent?
+                // TODO (MIHO, 2021-07-08): check for completeness
                 if (first is VisualElementSubmodel sm)
                 {
                     DispMultiElementCutCopyPasteHelper(stack, repo, sm.theEnv, parent, this.theCopyPaste, entities);

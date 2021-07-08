@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -35,7 +36,7 @@ namespace AasxPackageLogic
         public Dictionary<object, bool> IsExpanded = new Dictionary<object, bool>();
     }
 
-    public class VisualElementGeneric : INotifyPropertyChanged, IAnyUiSelectedItem /* TODO , ITreeViewSelectable */
+    public class VisualElementGeneric : INotifyPropertyChanged, IAnyUiSelectedItem
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
@@ -876,54 +877,69 @@ namespace AasxPackageLogic
             return theWrapper.submodelElement;
         }
 
+        public static void EnrichInfoString(AdminShell.SubmodelElement sme, ref string info, ref bool showCDinfo)
+        {
+            // access
+            if (sme == null || info == null)
+                return;
+
+            // case specific
+            switch (sme)
+            {
+                case AdminShell.Property smep:
+                    if (smep.value != null && smep.value != "")
+                        info += "= " + smep.value;
+                    else if (smep.valueId != null && !smep.valueId.IsEmpty)
+                        info += "<= " + smep.valueId.ToString();
+                    showCDinfo = true;
+                    break;
+
+                case AdminShell.Range rng:
+                    var txtMin = rng.min == null ? "{}" : rng.min.ToString();
+                    var txtMax = rng.max == null ? "{}" : rng.max.ToString();
+                    info += $"= {txtMin} .. {txtMax}";
+                    showCDinfo = true;
+                    break;
+
+                case AdminShell.MultiLanguageProperty mlp:
+                    if (mlp.value != null)
+                        info += "-> " + mlp.value.GetDefaultStr();
+                    break;
+
+                case AdminShell.File smef:
+                    if (smef.value != null && smef.value != "")
+                        info += "-> " + smef.value;
+                    break;
+
+                case AdminShell.ReferenceElement smere:
+                    if (smere.value != null && !smere.value.IsEmpty)
+                        info += "~> " + smere.value.ToString();
+                    break;
+
+                case AdminShell.SubmodelElementCollection smc:
+                    if (smc.value != null)
+                        info += "(" + smc.value.Count + " elements)";
+                    break;
+            }
+
+        }
+
         public override void RefreshFromMainData()
         {
             if (theWrapper != null)
             {
+                // start
                 var sme = theWrapper.submodelElement;
                 var ci = sme.ToCaptionInfo();
-                this.Caption = ((sme.kind != null && sme.kind.IsTemplate) ? "<T> " : "") + ci.Item1;
-                this.Info = ci.Item2;
-
+                var ciinfo = ci.Item2;
                 var showCDinfo = false;
 
-                switch (sme)
-                {
-                    case AdminShell.Property smep:
-                        if (smep.value != null && smep.value != "")
-                            this.Info += "= " + smep.value;
-                        else if (smep.valueId != null && !smep.valueId.IsEmpty)
-                            this.Info += "<= " + smep.valueId.ToString();
-                        showCDinfo = true;
-                        break;
+                // extra function
+                EnrichInfoString(sme, ref ciinfo, ref showCDinfo);
 
-                    case AdminShell.Range rng:
-                        var txtMin = rng.min == null ? "{}" : rng.min.ToString();
-                        var txtMax = rng.max == null ? "{}" : rng.max.ToString();
-                        this.Info += $"= {txtMin} .. {txtMax}";
-                        showCDinfo = true;
-                        break;
-
-                    case AdminShell.MultiLanguageProperty mlp:
-                        if (mlp.value != null)
-                            this.Info += "-> " + mlp.value.GetDefaultStr();
-                        break;
-
-                    case AdminShell.File smef:
-                        if (smef.value != null && smef.value != "")
-                            this.Info += "-> " + smef.value;
-                        break;
-
-                    case AdminShell.ReferenceElement smere:
-                        if (smere.value != null && !smere.value.IsEmpty)
-                            this.Info += "~> " + smere.value.ToString();
-                        break;
-
-                    case AdminShell.SubmodelElementCollection smc:
-                        if (smc.value != null)
-                            this.Info += "(" + smc.value.Count + " elements)";
-                        break;
-                }
+                // decode
+                this.Caption = ((sme.kind != null && sme.kind.IsTemplate) ? "<T> " : "") + ci.Item1;
+                this.Info = ciinfo;
 
                 // Show CD / unikts ..
                 if (showCDinfo)
@@ -1009,9 +1025,19 @@ namespace AasxPackageLogic
             {
                 if (theOpVar.value != null && theOpVar.value.submodelElement != null)
                 {
+                    // normal stuff
                     var ci2 = theOpVar.value.submodelElement.ToCaptionInfo();
+                    var ci2info = ci2.Item2;
+
+                    // add values
+                    var showCDinfo = false;
+                    VisualElementSubmodelElement.EnrichInfoString(
+                        theOpVar.value.submodelElement, ref ci2info, ref showCDinfo);
+
+                    // decode
                     this.Caption = "" + ci2.Item1;
-                    this.Info = ci2.Item2;
+                    this.Info = ci2info;
+
                 }
                 else
                 {
