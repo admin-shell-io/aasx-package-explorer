@@ -23,11 +23,42 @@ namespace AasxPackageExplorer
 {
     public partial class LogMessageMiniFlyout : UserControl, IFlyoutMini
     {
-        // constants
+        private System.Windows.Threading.DispatcherTimer _timer = null;
 
         public LogMessageMiniFlyout()
         {
             InitializeComponent();
+        }
+
+        public LogMessageMiniFlyout(
+            string caption, string initialMessage, 
+            Func<StoredPrint> checkForStoredPrint = null)
+        {
+            InitializeComponent();
+
+            // texts
+            this.TextBoxCaption.Content = caption;
+            this.TextBoxContent.Text = initialMessage;
+
+            // timer
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            _timer.Start();
+            _timer.Tick += (object sender, EventArgs e) =>
+            {
+                if (checkForStoredPrint != null)
+                {
+                    var msg = checkForStoredPrint();
+                    while (msg != null)
+                    {
+                        // log
+                        this.LogMessage(msg);
+
+                        // again
+                        msg = checkForStoredPrint();
+                    }
+                }
+            };
         }
 
         public FlyoutAgentBase Agent = null;
@@ -41,6 +72,20 @@ namespace AasxPackageExplorer
 
         public void LogMessage(StoredPrint sp)
         {
+            // only display update status (remembered)
+            if (sp.MessageType == StoredPrint.MessageTypeEnum.Status)
+            {
+                var _statusCollected = "";
+                if (sp.StatusItems != null)
+                    foreach (var si in sp.StatusItems)
+                    {
+                        if (_statusCollected.HasContent())
+                            _statusCollected += "; ";
+                        _statusCollected += 
+                            $"{"" + ((si.NameShort != null) ? si.NameShort : si.Name)} = {"" + si.Value}";
+                    }
+                TextBoxContent.Text = _statusCollected;
+            }
         }
 
         //
@@ -51,6 +96,10 @@ namespace AasxPackageExplorer
         {
             if (sender == ButtonClose)
             {
+                // simply close
+                if (this._timer != null)
+                    this._timer.Stop();
+                GetAgent()?.ClosingAction?.Invoke();
             }
         }
 

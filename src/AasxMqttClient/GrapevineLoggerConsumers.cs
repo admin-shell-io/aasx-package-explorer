@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using Grapevine.Interfaces.Shared;
 using JetBrains.Annotations;
 
@@ -114,6 +115,48 @@ namespace AasxMqttClient
         }
 
         public string Pop()
+        {
+            if (list == null)
+                return null;
+            lock (list)
+            {
+                if (list.Count < 1)
+                    return null;
+                var res = list[0];
+                list.RemoveAt(0);
+                return res;
+            }
+        }
+    }
+
+    [UsedImplicitlyAttribute] // for eventual use
+    public class GrapevineLoggerToStoredPrints : GrapevineLoggerSuper
+    {
+        private List<StoredPrint> list = new List<StoredPrint>();
+
+        public override void Append(string msg, params object[] args)
+        {
+            lock (list)
+            {
+                var str = msg;
+                if (args != null && args.Length > 0)
+                    str = string.Format(msg, args);
+                list.Add(new StoredPrint(str));
+            }
+        }
+
+        public void Append(StoredPrint sp)
+        {
+            if (sp == null)
+                return;
+
+            lock (list)
+            {                
+                list.Add(sp);
+            }
+        }
+
+        public StoredPrint Pop()
         {
             if (list == null)
                 return null;

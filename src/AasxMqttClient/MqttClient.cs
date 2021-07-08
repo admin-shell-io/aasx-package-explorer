@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
@@ -90,8 +91,27 @@ namespace AasxMqttClient
     public class MqttClient
     {
         private AnyUiDialogueDataMqttPublisher _diaData = null;
-        private GrapevineLoggerSuper _logger = null;
+        private GrapevineLoggerToStoredPrints _logger = null;
         private IMqttClient _mqttClient = null;
+
+        private int _countElement, _countEvent, _countSingleValue;
+
+        protected void LogStatus(int incElement = 0, int incEvent = 0, int incSingleValue = 0)
+        {
+            _countElement += incElement;
+            _countEvent += incEvent;
+            _countSingleValue += incSingleValue;
+
+            if (_logger != null)
+                _logger.Append(new StoredPrint(
+                    StoredPrint.Color.Black, "", 
+                    messageType: StoredPrint.MessageTypeEnum.Status,
+                    statusItems: new[] {
+                        new StoredPrint.StatusItem("# of AAS Element", "# element", "" + _countElement),
+                        new StoredPrint.StatusItem("# of event", "# event", "" + _countEvent),
+                        new StoredPrint.StatusItem("# of single value", "# value", "" + _countSingleValue)
+                    }));
+        }
 
         /// <summary>
         /// Splits into host part and numerical port number. Format e.g. "192.168.0.27:1883" or "localhost:1884".
@@ -153,7 +173,7 @@ namespace AasxMqttClient
         public async Task StartAsync(
             AdminShellPackageEnv package,
             AnyUiDialogueDataMqttPublisher diaData,
-            GrapevineLoggerSuper logger = null)
+            GrapevineLoggerToStoredPrints logger = null)
         {
             // first options
             _diaData = diaData;
@@ -204,6 +224,7 @@ namespace AasxMqttClient
                                    .Build();
 
                     await _mqttClient.PublishAsync(message);
+                    LogStatus(incElement: 1);
 
                     //publish submodels
                     foreach (var sm in package.AasEnv.Submodels)
@@ -222,6 +243,7 @@ namespace AasxMqttClient
                                        .Build();
 
                         await _mqttClient.PublishAsync(message2);
+                        LogStatus(incElement: 1);
 
                         // single values as well? 
                         if (_diaData.SingleValueFirstTime)
@@ -272,6 +294,7 @@ namespace AasxMqttClient
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
+                LogStatus(incSingleValue: 1);
             });                
         }
 
@@ -333,8 +356,13 @@ namespace AasxMqttClient
 
             // publish these
             // convert to synchronous behaviour
+            int count = 0;
             foreach (var msg in messages)
+            {
+                count++;
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
+            }
+            LogStatus(incSingleValue: count);
         }
 
         private void PublishSingleValues_UpdateItem(
@@ -370,6 +398,7 @@ namespace AasxMqttClient
 
             // publish
             _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
+            LogStatus(incSingleValue: 1);
         }
 
         public void PublishEventAsync(AasEventMsgEnvelope ev,
@@ -422,6 +451,7 @@ namespace AasxMqttClient
 
                 // convert to synchronous behaviour
                 _mqttClient.PublishAsync(message).GetAwaiter().GetResult();
+                LogStatus(incEvent: 1);
             }
 
             // deconstruct the event into single units?

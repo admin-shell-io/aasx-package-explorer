@@ -21,6 +21,31 @@ namespace AasxIntegrationBase
     /// </summary>
     public class StoredPrint
     {
+        public class StatusItem
+        {
+            /// <summary>
+            /// Text describing the status item; giving it a 'name'
+            /// </summary>
+            public string Name;
+            
+            /// <summary>
+            /// Short name for compressed screen space; if <c>null</c>, <c>Name</c> will be taken.
+            /// </summary>
+            public string NameShort;
+
+            /// <summary>
+            /// Value of the item in human-readable representation
+            /// </summary>
+            public string Value;
+
+            public StatusItem(string name = "", string nameShort = null, string value = "")
+            {
+                Name = name;
+                NameShort = nameShort;
+                Value = value;
+            }
+        }
+
         public enum Color
         {
             Black = 0,
@@ -29,12 +54,21 @@ namespace AasxIntegrationBase
             Yellow = 3
         }
 
+        public enum MessageTypeEnum
+        {
+            Log = 0,
+            Error,
+            Status
+        }
+
+        public MessageTypeEnum MessageType;
         public Color color = Color.Black;
         public bool isError = false;
         public string msg = "";
         public string linkTxt = null;
         public string linkUri = null;
         public string stackTrace = null;
+        public StatusItem[] StatusItems = null;
 
         /// <param name="msg">The complete message; can contain %LINK% as substitute position for link text</param>
         public StoredPrint(string msg)
@@ -51,14 +85,21 @@ namespace AasxIntegrationBase
         /// <param name="stackTrace">string serialized stack trace information</param>
         public StoredPrint(
             Color color, string msg, string linkTxt = null, string linkUri = null, bool isError = false,
-            string stackTrace = null)
+            string stackTrace = null, MessageTypeEnum messageType = MessageTypeEnum.Log,
+            StatusItem[] statusItems = null)
         {
+            this.MessageType = messageType;
+            if (isError)
+                this.MessageType = MessageTypeEnum.Error;
+            this.isError = isError;
+
             this.color = color;
             this.msg = msg;
             this.linkTxt = linkTxt;
             this.linkUri = linkUri;
-            this.isError = isError;
             this.stackTrace = stackTrace;
+
+            this.StatusItems = statusItems;
         }
 
         public new string ToString()

@@ -625,7 +625,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
-                PanelConcurrentSetVisibleIfRequired(!PanelConcurrentCheckIsVisible());
+                PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
         }
 
@@ -643,7 +643,7 @@ namespace AasxPackageExplorer
             }
             else
             {
-                if (!PanelConcurrentCheckIsVisible())
+                if (RowDefinitionConcurrent.Height.Value < 1.0)
                     RowDefinitionConcurrent.Height = new GridLength(140);
 
                 if (targetEvents)
@@ -1063,7 +1063,7 @@ namespace AasxPackageExplorer
         public class FlyoutAgentMqttPublisher : FlyoutAgentBase
         {
             public AasxMqttClient.AnyUiDialogueDataMqttPublisher DiaData;
-            public AasxMqttClient.GrapevineLoggerToListOfStrings Logger;
+            public AasxMqttClient.GrapevineLoggerToStoredPrints Logger;
             public AasxMqttClient.MqttClient Client;
             public BackgroundWorker Worker;
         }
@@ -1082,13 +1082,13 @@ namespace AasxPackageExplorer
                 return;
 
             // make a logger
-            agent.Logger = new AasxMqttClient.GrapevineLoggerToListOfStrings();
+            agent.Logger = new AasxMqttClient.GrapevineLoggerToStoredPrints();
 
             // make listing flyout
             var uc2 = new LogMessageFlyout("AASX MQTT Publisher", "Starting MQTT Client ..", () =>
             {
-                var st = agent.Logger.Pop();
-                return (st == null) ? null : new StoredPrint(st);
+                var sp = agent.Logger.Pop();
+                return sp;
             });
             uc2.Agent = agent;
 
@@ -1139,7 +1139,13 @@ namespace AasxPackageExplorer
 
             agent.GenerateFlyoutMini = () =>
             {
-                var mini = new LogMessageMiniFlyout();
+                var storedAgent = agent;
+                var mini = new LogMessageMiniFlyout("AASX MQTT Publisher", "Executing minimized ..", () =>
+                {
+                    var sp = storedAgent.Logger.Pop();
+                    return sp;
+                });
+                mini.Agent = agent;
                 return mini;
             };
 

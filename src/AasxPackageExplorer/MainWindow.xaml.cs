@@ -2201,26 +2201,33 @@ namespace AasxPackageExplorer
                 {
                     // only execute if preconditions are well
                     if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
-                    {
-                        // remember closing action
-                        if (ucag.GetAgent() != null)
-                            ucag.GetAgent().ClosingAction = closingAction;
-
+                    {                        
                         // do not execute directly
                         preventClosingAction = true;
 
                         // make a mini
-                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
+                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();                        
 
-                        // bew careful
+                        // be careful
                         if (mini is UserControl miniUc)
                         {
                             // push the agent
                             // PushFlyoutAgent(ucag, mini);
                             UserControlAgentsView.Add(miniUc);
 
+                            // wrap provided closing action in own closing action
+                            if (ucag.GetAgent() != null)
+                                ucag.GetAgent().ClosingAction = () =>
+                                {
+                                    // 1st delete agent
+                                    UserControlAgentsView.Remove(miniUc);
+
+                                    // finally, call user provided closing action
+                                    closingAction?.Invoke();
+                                };
+
                             // show the panel
-                            PanelConcurrentSetVisibleIfRequired(true);
+                            PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
 
                             // remove the flyover
                             frame.Continue = false; // stops the frame

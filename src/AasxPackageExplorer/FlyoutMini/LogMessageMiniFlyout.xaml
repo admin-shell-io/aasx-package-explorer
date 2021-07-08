@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="200" 
-             MinWidth="100" MaxWidth="400"
-             MinHeight="80" MaxHeight="200" Loaded="UserControl_Loaded">
+             MinWidth="100"
+             MinHeight="80" Loaded="UserControl_Loaded">
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -43,13 +43,14 @@
                 </Viewbox>
             </StackPanel>
 
-            <Label Grid.Row="1" Grid.Column="1" x:Name="TextBoxheader"
+            <Label Grid.Row="1" Grid.Column="1" x:Name="TextBoxCaption"
                 Foreground="{DynamicResource LightAccentColor}" FontSize="11" FontWeight="Bold"
                 HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
                 Margin="10,0,0,0">Header</Label>
 
             <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="TextBoxContent" Background="#40404040" 
                        Foreground="{DynamicResource LightAccentColor}" FontSize="10" FontWeight="Bold"
+                       TextWrapping="Wrap"
                        HorizontalAlignment="Stretch" TextAlignment="Left" Margin="0,0,0,0">Test</TextBlock>
 
         </Grid>

@@ -41,6 +41,8 @@ namespace AasxPackageExplorer
 
         private System.Windows.Threading.DispatcherTimer timer = null;
 
+        private string _statusCollected = "";
+
         public LogMessageFlyout(string caption, string initialMessage, Func<StoredPrint> checkForStoredPrint = null)
         {
             InitializeComponent();
@@ -93,31 +95,55 @@ namespace AasxPackageExplorer
             if (sp == null || sp.msg == null)
                 return;
 
-            // count
-            this.counterMessage++;
+            // Log?
+            if (sp.MessageType == StoredPrint.MessageTypeEnum.Error
+                || sp.MessageType == StoredPrint.MessageTypeEnum.Log)
+            { 
+                // count
+                this.counterMessage++;
 
-            // check for error
-            var isError = false;
-            foreach (var pattern in patternError)
-                if (pattern.IsMatch(sp.msg))
-                    isError = true;
+                // check for error
+                var isError = false;
+                foreach (var pattern in patternError)
+                    if (pattern.IsMatch(sp.msg))
+                        isError = true;
 
-            if (isError || sp.isError)
-                counterError++;
+                var sumError = false;
+                if (isError || sp.isError || sp.MessageType == StoredPrint.MessageTypeEnum.Error)
+                {
+                    counterError++;
+                    sumError = true;
+                }
 
-            // add to rich text box
-            AasxWpfBaseUtils.StoredPrintToRichTextBox(
-                this.TextBoxMessages, sp, AasxWpfBaseUtils.BrightPrintColors, isError, link_Click);
+                // add to rich text box
+                AasxWpfBaseUtils.StoredPrintToRichTextBox(
+                    this.TextBoxMessages, sp, AasxWpfBaseUtils.BrightPrintColors, sumError, link_Click);
 
-            // move scroll
-            if (this.CheckBoxAutoScroll.IsChecked == true)
-                this.TextBoxMessages.ScrollToEnd();
+                // move scroll
+                if (this.CheckBoxAutoScroll.IsChecked == true)
+                    this.TextBoxMessages.ScrollToEnd();
+            }
 
-            // update status
+            // update status (remembered)
+            if (sp.MessageType == StoredPrint.MessageTypeEnum.Status)
+            {
+                _statusCollected = "";
+                if (sp.StatusItems != null)
+                    foreach (var si in sp.StatusItems)
+                    {
+                        if (_statusCollected.HasContent())
+                            _statusCollected += "; ";
+                        _statusCollected += $"{"" + si.Name} = {"" + si.Value}";
+                    }
+            }
+
+            // display status
             var status = $"Messages: {this.counterMessage}";
             if (this.counterError > 0)
                 status += $" and Errors: {this.counterError}";
             this.TextBoxSummary.Text = status;
+            if (_statusCollected.HasContent())
+                this.TextBoxSummary.Text += "; " + _statusCollected;
         }
 
         protected void link_Click(object sender, RoutedEventArgs e)
@@ -216,6 +242,9 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonMinimize)
             {
+                // minimize will immediately stop log popping!
+                if (this.timer != null)
+                    this.timer.Stop();
                 ControlMinimize?.Invoke();
             }
         }

@@ -53,7 +53,13 @@ namespace AasxPackageExplorer
                 return false;
 
             var gc = GridContent;
-            gc.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1.0, GridUnitType.Star) });
+            var ndx = gc.ColumnDefinitions.Count;
+
+            gc.ColumnDefinitions.Add(new ColumnDefinition() { 
+                Width = new GridLength(1.0, GridUnitType.Star),
+                MaxWidth = 300
+            });
+            Grid.SetColumn(mini, ndx);
             gc.Children.Add(mini);
 
             return true;
@@ -70,6 +76,21 @@ namespace AasxPackageExplorer
             gc.ColumnDefinitions.RemoveAt(gc.ColumnDefinitions.Count - 1);
 
             return true;
+        }
+
+        private bool _alreadyLoaded = false;
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // UserControl.Loaded could be fired multiple time, when rendered below a TabPanel!
+            if (_alreadyLoaded)
+                return;
+            _alreadyLoaded = true;
+
+            // on loading, clear contest
+            var gc = GridContent;
+            gc.Children.Clear();
+            gc.ColumnDefinitions.Clear();
         }
     }
 }
