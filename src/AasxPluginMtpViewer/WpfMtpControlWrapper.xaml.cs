@@ -274,7 +274,7 @@ namespace AasxPluginMtpViewer
                 return false;
 
             // find file, remember Submodel element for it, find filename
-            // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
+            // (ConceptDescription)(no-local)[IRI]https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/ModuleTypePackage
             this.activeMtpFileElem = mtpTypeSm.submodelElements?
                 .FindFirstSemanticIdAs<AdminShell.File>(this.defsMtp.CD_MtpFile.GetReference(),
                     AdminShell.Key.MatchMode.Relaxed);

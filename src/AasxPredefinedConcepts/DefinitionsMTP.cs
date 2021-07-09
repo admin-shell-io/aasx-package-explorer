@@ -55,62 +55,62 @@ namespace AasxPredefinedConcepts
                         type: "Submodel",
                         local: false,
                         idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/submodel"));
+                        value: "https://admin-shell.io/vdi/2658/1/0/mtpSubmodel"));
 
                 SEM_MtpInstanceSubmodel = new AdminShell.SemanticId(
                     AdminShell.Key.CreateNew(
                         type: "Submodel",
                         local: false,
                         idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel"));
+                        value: "https://admin-shell.io/vdi/2658/1/0/peaSubmodel"));
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",
-                    "http://www.admin-shell.io/mtp/v1/New/MtpTypeSubmodel",
+                    "https://admin-shell.io/vdi/2658/1/0/New/MtpTypeSubmodel",
                     @"Direct Reference to MTP Type Submodel.");
 
                 CD_SourceList = CreateSparseConceptDescription("en", "IRI",
                     "SourceList",
-                    "http://www.admin-shell.io/mtp/v1/MTPSUCLib/CommunicationSet/SourceList",
+                    "https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/CommunicationSet/SourceList",
                     @"Collects source of process data for MTP.");
 
                 CD_SourceOpcUaServer = CreateSparseConceptDescription("en", "IRI",
                     "SourceOpcUaServer",
-                    "http://www.admin-shell.io/mtp/v1/MTPCommunicationSUCLib/ServerAssembly/OPCUAServer",
+                    "https://admin-shell.io/vdi/2658/1/0/MTPCommunicationSUCLib/ServerAssembly/OPCUAServer",
                     "Holds infomation on a single data source, which is an OPC UA server.");
 
                 CD_Endpoint = CreateSparseConceptDescription("en", "IRI",
                     "Endpoint",
-                    "http://www.admin-shell.io/mtp/v1/MTPCommunicationSUCLib/ServerAssembly/OPCUAServer/Endpoint",
+                    "https://admin-shell.io/vdi/2658/1/0/MTPCommunicationSUCLib/ServerAssembly/OPCUAServer/Endpoint",
                     "URL of OPC UA server for data source.");
 
                 CD_MtpFile = CreateSparseConceptDescription("en", "IRI",
                     "MtpFile",
-                    "http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage",
+                    "https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/ModuleTypePackage",
                     "Specifies a File, which contains MTP information in MTP/ AutmationML format." +
                     "File may be zipped.");
 
                 CD_IdentifierRenaming = CreateSparseConceptDescription("en", "IRI",
                     "IdentifierRenaming",
-                    "http://www.admin-shell.io/mtp/v1/New/IdentifierRenaming",
+                    "https://admin-shell.io/vdi/2658/1/0/New/IdentifierRenaming",
                     "Specifies a renaming of OPC UA identifiers for nodes. Designates a SubmodelElementCollection " +
                     "containing two Properties for OldText and NewText for string replacement.");
 
                 CD_NamespaceRenaming = CreateSparseConceptDescription("en", "IRI",
                     "NamespaceRenaming",
-                    "http://www.admin-shell.io/mtp/v1/New/NamespaceRenaming",
+                    "https://admin-shell.io/vdi/2658/1/0/New/NamespaceRenaming",
                     "Specifies a renaming of OPC UA namespaces for nodes. Designates a SubmodelElementCollection " +
                     "containing two Properties for OldText and NewText for string replacement.");
 
                 CD_RenamingOldText = CreateSparseConceptDescription("en", "IRI",
                     "OldText",
-                    "http://www.admin-shell.io/mtp/v1/New/RenamingOldText",
+                    "https://admin-shell.io/vdi/2658/1/0/New/RenamingOldText",
                     "Within a renaming of OPC UA identifiers or namespaces, designates the text which shall be " +
                     "replaced.");
 
                 CD_RenamingNewText = CreateSparseConceptDescription("en", "IRI",
                     "NewText",
-                    "http://www.admin-shell.io/mtp/v1/New/RenamingNewText",
+                    "https://admin-shell.io/vdi/2658/1/0/New/RenamingNewText",
                     "Within a renaming of OPC UA identifiers or namespaces, designates the new text, which shall be " +
                     "substituted.");
 
