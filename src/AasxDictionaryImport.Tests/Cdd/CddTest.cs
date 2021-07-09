@@ -9,6 +9,7 @@
 #nullable enable
 
 using System.IO;
+using AasxPackageLogic;
 using AdminShellNS;
 using NUnit.Framework;
 
@@ -83,8 +84,7 @@ namespace AasxDictionaryImport.Cdd.Tests
             {
                 identification = new AdminShellV20.Identification(
                         AdminShellV20.Identification.IRI,
-                        AasxPackageExplorer.Options.Curr.GenerateIdAccordingTemplate(
-                            AasxPackageExplorer.Options.Curr.TemplateIdAas)),
+                        Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas)),
             };
             env.AdministrationShells.Add(adminShell);
             return adminShell;

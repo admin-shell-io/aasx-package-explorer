@@ -180,8 +180,7 @@ namespace AasOpcUaServer
                     //// builder.RootDataSpecifications = builder.CreateAddObject(
                     //// builder.RootAAS, "DataSpecifications");
 
-                    if (false)
-                    // ReSharper disable once HeuristicUnreachableCode
+#if _not_used
 #pragma warning disable 162
                     {
                         // Folders for Concept Descriptions
@@ -196,7 +195,7 @@ namespace AasOpcUaServer
                             builder.RootAAS, "DictionaryEntries");
                     }
 #pragma warning restore 162
-                    else
+#else
                     {
                         // create folder(s) under root
                         var topOfDict = builder.CreateAddObject(null,
@@ -227,6 +226,7 @@ namespace AasOpcUaServer
                     // start process
                     builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
                 }
+#endif
 
                 // Try: ensure the reverse refernces exist.
                 //// AddReverseReferences(externalReferences);

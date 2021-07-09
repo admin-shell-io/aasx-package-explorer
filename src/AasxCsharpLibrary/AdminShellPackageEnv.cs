@@ -193,6 +193,18 @@ namespace AdminShellNS
             return rf;
         }
 
+        /// <summary>
+        /// Use this, if <c>DeserializeFromJSON</c> is too tight.
+        /// </summary>
+        public static T DeserializePureObjectFromJSON<T>(string data)
+        {
+            using (var tr = new StringReader(data))
+            {
+                var serializer = BuildDefaultAasxJsonSerializer();
+                var rf = (T)serializer.Deserialize(tr, typeof(T));
+                return rf;
+            }
+        }
     }
 
     /// <summary>

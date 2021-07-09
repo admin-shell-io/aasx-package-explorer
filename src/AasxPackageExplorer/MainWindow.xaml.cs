@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,11 +22,13 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
-using AdminShellEvents;
 using AdminShellNS;
-
+using AnyUi;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
@@ -137,15 +140,23 @@ namespace AasxPackageExplorer
                 t += " (auxiliary AASX: " + _packageCentral.AuxItem.ToString() + ")";
             this.Title = t;
 
+#if _log_times
+            Log.Singleton.Info("Time 10 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
+#endif
+
             // clear the right section, first (might be rebuild by callback from below)
             DispEditEntityPanel.ClearDisplayDefautlStack();
             ContentTakeOver.IsEnabled = false;
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked);
+                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
+                lazyLoadingFirst: true);
             DisplayElements.Refresh();
 
+#if _log_times
+            Log.Singleton.Info("Time 90 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
+#endif
         }
 
         private void RestartUIafterNewPackage(bool onlyAuxiliary = false)
@@ -211,22 +222,22 @@ namespace AasxPackageExplorer
                     {
                         // give specific default answers
                         if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
-                            return System.Windows.Forms.DialogResult.Yes;
+                            return AnyUiMessageBoxResult.Yes;
 
                         // default answer
-                        return System.Windows.Forms.DialogResult.OK;
+                        return AnyUiMessageBoxResult.OK;
                     }
 
                     // make sure the correct flyout is loaded
                     if (currentFlyoutControl != null && !(currentFlyoutControl is IntegratedConnectFlyout))
-                        return System.Windows.Forms.DialogResult.Cancel;
+                        return AnyUiMessageBoxResult.Cancel;
                     if (currentFlyoutControl == null)
                         StartFlyover(new IntegratedConnectFlyout(_packageCentral, "Connecting .."));
 
                     // ok -- perform dialogue in dedicated function / frame
                     var ucic = currentFlyoutControl as IntegratedConnectFlyout;
                     if (ucic == null)
-                        return System.Windows.Forms.DialogResult.Abort;
+                        return AnyUiMessageBoxResult.Cancel;
                     else
                         return ucic.MessageBoxShow(content, text, title, buttons);
                 }
@@ -288,7 +299,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When displaying element tree of {info}, an error occurred");
                 return;
             }
@@ -296,12 +307,13 @@ namespace AasxPackageExplorer
             // further actions
             try
             {
-                if (!doNotNavigateAfterLoaded)
-                    UiCheckIfActivateLoadedNavTo();
+                // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
+                ////if (!doNotNavigateAfterLoaded)
+                //// 
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When performing actions after load of {info}, an error occurred");
                 return;
             }
@@ -315,20 +327,20 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When managing LRU files");
                 return;
             }
 
             // done
-            AasxPackageExplorer.Log.Singleton.Info("AASX {0} loaded.", info);
+            Log.Singleton.Info("AASX {0} loaded.", info);
         }
 
         public PackageContainerListBase UiLoadFileRepository(string fn)
         {
             try
             {
-                AasxPackageExplorer.Log.Singleton.Info(
+                Log.Singleton.Info(
                     $"Loading aasx file repository {fn} ..");
 
                 var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
@@ -336,12 +348,12 @@ namespace AasxPackageExplorer
                 if (fr != null)
                     return fr;
                 else
-                    AasxPackageExplorer.Log.Singleton.Info(
+                    Log.Singleton.Info(
                         $"File not found when loading aasx file repository {fn}");
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"When loading aasx file repository {Options.Curr.AasxRepositoryFn}");
             }
 
@@ -423,16 +435,20 @@ namespace AasxPackageExplorer
         }
 
         public void PrepareDispEditEntity(
-            AdminShellPackageEnv package, VisualElementGeneric entity, bool editMode, bool hintMode, bool showIriMode,
+            AdminShellPackageEnv package, ListOfVisualElementBasic entities,
+            bool editMode, bool hintMode, bool showIriMode,
             DispEditHighlight.HighlightFieldInfo hightlightField = null)
         {
-            // make UI visible settings ..
-            // update element view
+            // determine some flags
+            var tiCds = DisplayElements.SearchVisualElementOnMainDataObject(package?.AasEnv?.ConceptDescriptions) as
+                VisualElementEnvironmentItem;
+
+            // update element view?
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
-                _packageCentral, entity, editMode, hintMode, showIriMode,
-                flyoutProvider: this,
-                appEventProvider: this,
-                hightlightField: hightlightField);
+                    _packageCentral, entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
+                    flyoutProvider: this,
+                    appEventProvider: this,
+                    hightlightField: hightlightField);
 
             // panels
             var panelHeight = 48;
@@ -474,11 +490,12 @@ namespace AasxPackageExplorer
             this.showContentPackageUri = null;
 
             // show it
-            Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
+            if (ElementTabControl.SelectedIndex != 0)
+                Dispatcher.BeginInvoke((Action)(() => ElementTabControl.SelectedIndex = 0));
 
             // some entities require special handling
-            if (entity is VisualElementSubmodelElement &&
-                (entity as VisualElementSubmodelElement).theWrapper.submodelElement is AdminShell.File file)
+            if (entities?.ExactlyOne == true && entities.First() is VisualElementSubmodelElement sme &&
+                sme?.theWrapper?.submodelElement is AdminShell.File file)
             {
                 ShowContent.IsEnabled = true;
                 this.showContentPackageUri = file.value;
@@ -486,11 +503,12 @@ namespace AasxPackageExplorer
                 DragSource.Foreground = Brushes.Black;
             }
 
-            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+            if (entities?.ExactlyOne == true
+                && this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
                 this.theOnlineConnection.IsConnected())
             {
                 UpdateContent.IsEnabled = true;
-                this.currentEntityForUpdate = entity;
+                this.currentEntityForUpdate = entities.First();
             }
         }
 
@@ -589,7 +607,7 @@ namespace AasxPackageExplorer
             // for all, prepare the display
             PrepareDispEditEntity(
                 _packageCentral.Main,
-                DisplayElements.SelectedItem,
+                DisplayElements.SelectedItems,
                 MenuItemWorkspaceEdit.IsChecked,
                 MenuItemWorkspaceHints.IsChecked,
                 MenuItemOptionsShowIri.IsChecked,
@@ -698,10 +716,10 @@ namespace AasxPackageExplorer
                 if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
                     // ask double question
-                    if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                             "Load file from AASX file repository?",
                             "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                         return;
                 }
 
@@ -716,7 +734,7 @@ namespace AasxPackageExplorer
                 // try load ..
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file from repository {location} into container");
+                    Log.Singleton.Info($"Auto-load file from repository {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
                         _packageCentral,
@@ -742,7 +760,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             };
 
@@ -796,12 +814,12 @@ namespace AasxPackageExplorer
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
                     Log.Singleton.Info("PackageCentral events: " + data.Info);
-                DisplayElements.PushEvent(data);
+                DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange() { Change = data });
                 return false;
             };
 
             // nearly last task here ..
-            AasxPackageExplorer.Log.Singleton.Info("Application started ..");
+            Log.Singleton.Info("Application started ..");
 
             // start with a new file
             _packageCentral.MainItem.New();
@@ -813,7 +831,7 @@ namespace AasxPackageExplorer
                 var location = Options.Curr.AasxToLoad;
                 try
                 {
-                    AasxPackageExplorer.Log.Singleton.Info($"Auto-load file at application start " +
+                    Log.Singleton.Info($"Auto-load file at application start " +
                         $"from {location} into container");
 
                     var container = await PackageContainerFactory.GuessAndCreateForAsync(
@@ -834,7 +852,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    Log.Singleton.Error(ex, $"When auto-loading {location}");
                 }
             }
 
@@ -852,13 +870,13 @@ namespace AasxPackageExplorer
                 this.MessageBoxFlyoutShow(
                     "The application needs to be in edit mode to show found entities correctly. Aborting.",
                     "Find and Replace",
-                    MessageBoxButton.OK, MessageBoxImage.Hand);
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
                 return;
             }
 
             // add to "normal" event quoue
             DispEditEntityPanel.AddWishForOutsideAction(
-                new ModifyRepo.LambdaActionRedrawAllElements(
+                new AnyUiLambdaActionRedrawAllElements(
                     nextFocus: resultItem.businessObject,
                     highlightField: new DispEditHighlight.HighlightFieldInfo(
                         resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
@@ -872,7 +890,7 @@ namespace AasxPackageExplorer
 
             // check for Stored Prints in Log
             StoredPrint sp;
-            while ((sp = AasxPackageExplorer.Log.Singleton.PopLastShortTermPrint()) != null)
+            while ((sp = Log.Singleton.PopLastShortTermPrint()) != null)
             {
                 // pop
                 Message.Content = "" + sp.msg;
@@ -914,7 +932,7 @@ namespace AasxPackageExplorer
             }
 
             // always tell the errors
-            var ne = AasxPackageExplorer.Log.Singleton.NumberErrors;
+            var ne = Log.Singleton.NumberErrors;
             if (ne > 0)
             {
                 LabelNumberErrors.Content = "Errors: " + ne;
@@ -924,6 +942,101 @@ namespace AasxPackageExplorer
             {
                 LabelNumberErrors.Content = "No errors";
                 LabelNumberErrors.Background = Brushes.White;
+            }
+        }
+
+        private async Task MainTimer_HandleLambdaAction(AnyUiLambdaActionBase lab)
+        {
+            // nothing
+            if (lab == null)
+                return;
+
+            // recurse??
+            if (lab is AnyUiLambdaActionList list && list.Actions != null)
+                foreach (var ac in list.Actions)
+                    await MainTimer_HandleLambdaAction(ac);
+
+            // what to do?
+            if (lab is AnyUiLambdaActionRedrawAllElements wish)
+            {
+                // edit mode affects the total element view
+                if (!wish.OnlyReFocus)
+                    RedrawAllAasxElements();
+                // the selection will be shifted ..
+                if (wish.NextFocus != null)
+                {
+                    // for later search in visual elements, expand them all in order to be absolutely 
+                    // sure to find business object
+                    this.DisplayElements.ExpandAllItems();
+
+                    // now: search
+                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
+                }
+                // fake selection
+                RedrawElementView(hightlightField: wish.HighlightField);
+                DisplayElements.Refresh();
+                ContentTakeOver.IsEnabled = false;
+            }
+
+            if (lab is AnyUiLambdaActionContentsChanged)
+            {
+                // enable button
+                ContentTakeOver.IsEnabled = true;
+            }
+
+            if (lab is AnyUiLambdaActionContentsTakeOver)
+            {
+                // rework list
+                ContentTakeOver_Click(null, null);
+            }
+
+            if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
+            {
+                // do some more adoptions
+                var rf = new AdminShell.Reference(tempNavTo.targetReference);
+
+                if (tempNavTo.translateAssetToAAS
+                    && rf.Count == 1
+                    && rf.First.IsType(AdminShell.Key.Asset))
+                {
+                    // try to find possible environments containg the asset and try making
+                    // replacement
+                    foreach (var pe in _packageCentral.GetAllPackageEnv())
+                    {
+                        if (pe?.AasEnv?.AdministrationShells == null)
+                            continue;
+
+                        foreach (var aas in pe.AasEnv.AdministrationShells)
+                            if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                            {
+                                rf = aas.GetReference();
+                                break;
+                            }
+                    }
+                }
+
+                // handle it by UI
+                await UiHandleNavigateTo(rf, alsoDereferenceObjects: tempNavTo.alsoDereferenceObjects);
+            }
+
+            if (lab is AnyUiLambdaActionDisplayContentFile tempDispCont)
+            {
+                try
+                {
+                    BrowserDisplayLocalFile(tempDispCont.fn, tempDispCont.mimeType,
+                        preferInternal: tempDispCont.preferInternalDisplay);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, $"While displaying content file {tempDispCont.fn} requested by lambda");
+                }
+            }
+
+            if (lab is AnyUiLambdaActionPackCntChange
+                || lab is AnyUiLambdaActionSelectMainObjects)
+            {
+                DisplayElements.PushEvent(lab);
             }
         }
 
@@ -939,69 +1052,13 @@ namespace AasxPackageExplorer
                         var temp = DispEditEntityPanel.WishForOutsideAction[0];
                         DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
-                        // what to do?
-                        if (temp is ModifyRepo.LambdaActionRedrawAllElements wish)
-                        {
-                            // edit mode affects the total element view
-                            if (!wish.OnlyReFocus)
-                                RedrawAllAasxElements();
-                            // the selection will be shifted ..
-                            if (wish.NextFocus != null)
-                            {
-                                DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
-                            }
-                            // fake selection
-                            RedrawElementView(hightlightField: wish.HighlightField);
-                            DisplayElements.Refresh();
-                            ContentTakeOver.IsEnabled = false;
-                        }
-
-                        if (temp is ModifyRepo.LambdaActionContentsChanged)
-                        {
-                            // enable button
-                            ContentTakeOver.IsEnabled = true;
-                        }
-
-                        if (temp is ModifyRepo.LambdaActionContentsTakeOver)
-                        {
-                            // rework list
-                            ContentTakeOver_Click(null, null);
-                        }
-
-                        if (temp is ModifyRepo.LambdaActionNavigateTo tempNavTo)
-                        {
-                            // do some more adoptions
-                            var rf = new AdminShell.Reference(tempNavTo.targetReference);
-
-                            if (tempNavTo.translateAssetToAAS
-                                && rf.Count == 1
-                                && rf.First.IsType(AdminShell.Key.Asset))
-                            {
-                                // try to find possible environments containg the asset and try making
-                                // replacement
-                                foreach (var pe in _packageCentral.GetAllPackageEnv())
-                                {
-                                    if (pe?.AasEnv?.AdministrationShells == null)
-                                        continue;
-
-                                    foreach (var aas in pe.AasEnv.AdministrationShells)
-                                        if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
-                                        {
-                                            rf = aas.GetReference();
-                                            break;
-                                        }
-                                }
-                            }
-
-                            // handle it by UI
-                            await UiHandleNavigateTo(rf);
-                        }
+                        await MainTimer_HandleLambdaAction(temp);
                     }
                 }
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While responding to a user interaction");
+                Log.Singleton.Error(ex, "While responding to a user interaction");
             }
         }
 
@@ -1054,10 +1111,10 @@ namespace AasxPackageExplorer
                     if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                     {
                         // ask double question
-                        if (MessageBoxResult.OK != MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                                 "Load file from AASX file repository?",
                                 "AASX File Repository",
-                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                                AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                             return null;
                     }
 
@@ -1078,7 +1135,9 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        private async Task UiHandleNavigateTo(AdminShell.Reference targetReference)
+        private async Task UiHandleNavigateTo(
+            AdminShell.Reference targetReference,
+            bool alsoDereferenceObjects = true)
         {
             // access
             if (targetReference == null || targetReference.Count < 1)
@@ -1093,6 +1152,10 @@ namespace AasxPackageExplorer
                 // remember some further supplementary search information
                 var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(work);
                 work = sri.CleanReference;
+
+                // for later search in visual elements, expand them all in order to be absolutely 
+                // sure to find business object
+                this.DisplayElements.ExpandAllItems();
 
                 // incrementally make it unprecise
                 while (work.Count > 0)
@@ -1126,7 +1189,7 @@ namespace AasxPackageExplorer
                         if (this.DisplayElements != null)
                         {
                             var ve = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
-                                alsoDereferenceObjects: true, sri: sri);
+                                alsoDereferenceObjects: alsoDereferenceObjects, sri: sri);
                             if (ve != null)
                             {
                                 veFound = ve;
@@ -1141,7 +1204,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
+                Log.Singleton.Error(ex, "While retrieving element requested for navigate to");
             }
 
             // if successful, try to display it
@@ -1167,7 +1230,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested for navigate to");
+                Log.Singleton.Error(ex, "While displaying element requested for navigate to");
             }
         }
 
@@ -1198,7 +1261,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"While displaying content file {evtDispCont.fn} requested by plug-in");
                     }
 
@@ -1217,7 +1280,7 @@ namespace AasxPackageExplorer
 
                         // add to "normal" event quoue
                         DispEditEntityPanel.AddWishForOutsideAction(
-                            new ModifyRepo.LambdaActionRedrawAllElements(nextFocus));
+                            new AnyUiLambdaActionRedrawAllElements(nextFocus));
                     }
                 }
 
@@ -1231,12 +1294,12 @@ namespace AasxPackageExplorer
                         _packageCentral, PackageCentral.Selector.MainAuxFileRepo,
                         evSelectEntity.filterEntities);
                     this.StartFlyoverModal(uc);
-                    if (uc.ResultKeys != null)
+                    if (uc.DiaData.ResultKeys != null)
                     {
                         // formulate return event
                         var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity();
                         retev.sourceEvent = evt;
-                        retev.resultKeys = uc.ResultKeys;
+                        retev.resultKeys = uc.DiaData.ResultKeys;
 
                         // fire back
                         pluginInstance?.InvokeAction("event-return", retev);
@@ -1247,7 +1310,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(
+                Log.Singleton.Error(
                     ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
             }
         }
@@ -1303,11 +1366,6 @@ namespace AasxPackageExplorer
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
         {
-            // first check, if the selected page points to something
-            var veSelected = DisplayElements.SelectedItem;
-            if (veSelected == null)
-                return;
-
             // some container options are required
             var copts = _packageCentral?.MainItem?.Container?.ContainerOptions;
 
@@ -1316,8 +1374,10 @@ namespace AasxPackageExplorer
             // Note: for the time being, Events will be only valid, if Event and observed entity are 
             // within the SAME Submodel
             //
+            var veSelected = DisplayElements.SelectedItem;
 
-            if (true == copts?.StayConnected
+            if (veSelected != null
+                && true == copts?.StayConnected
                 && Options.Curr.StayConnectOptions.HasContent()
                 && Options.Curr.StayConnectOptions.ToUpper().Contains("SIM")
                 && !_eventHandling.UpdateValuePending
@@ -1475,6 +1535,14 @@ namespace AasxPackageExplorer
                 // log viewer
                 UserContrlEventCollection.PushEvent(ev);
 
+                // inform current Flyover?
+                if (currentFlyoutControl is IFlyoutAgent fosc)
+                    fosc.GetAgent()?.PushEvent(ev);
+
+                // inform agents?
+                foreach (var fa in UserControlAgentsView.Children)
+                    fa.GetAgent()?.PushEvent(ev);
+
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
                 if (foundObservable == null)
@@ -1547,7 +1615,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying home element");
+                Log.Singleton.Error(ex, "While displaying home element");
             }
         }
 
@@ -1584,7 +1652,7 @@ namespace AasxPackageExplorer
                     var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
                     if (fi == null)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
                         return;
                     }
@@ -1600,7 +1668,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
                     }
 
@@ -1612,7 +1680,7 @@ namespace AasxPackageExplorer
                             alsoDereferenceObjects: true, sri: sri);
                         if (veFocus == null)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 $"Cannot lookup requested element within loaded file from repository.");
                             return;
                         }
@@ -1632,14 +1700,14 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, "While displaying element requested by back button.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "While displaying element requested by plug-in");
+                Log.Singleton.Error(ex, "While displaying element requested by plug-in");
             }
         }
 
@@ -1647,7 +1715,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ButtonClear)
             {
-                AasxPackageExplorer.Log.Singleton.ClearNumberErrors();
+                Log.Singleton.ClearNumberErrors();
                 Message.Content = "";
                 Message.Background = Brushes.White;
                 Message.Foreground = Brushes.Black;
@@ -1702,7 +1770,7 @@ namespace AasxPackageExplorer
                 // Collect all the stored log prints
                 IEnumerable<StoredPrint> Prints()
                 {
-                    var prints = AasxPackageExplorer.Log.Singleton.GetStoredLongTermPrints();
+                    var prints = Log.Singleton.GetStoredLongTermPrints();
                     if (prints != null)
                     {
                         yield return new StoredPrint(head);
@@ -1783,10 +1851,10 @@ namespace AasxPackageExplorer
 
             var positiveQuestion =
                 Options.Curr.UseFlyovers &&
-                MessageBoxResult.Yes == MessageBoxFlyoutShow(
+                AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                     "Do you want to proceed closing the application? Make sure, that you have saved your data before.",
                     "Exit application?",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question);
 
             if (!positiveQuestion)
             {
@@ -1794,7 +1862,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            AasxPackageExplorer.Log.Singleton.Info("Closing main package ..");
+            Log.Singleton.Info("Closing main package ..");
             try
             {
                 _packageCentral?.MainItem?.Close();
@@ -1809,7 +1877,7 @@ namespace AasxPackageExplorer
                 var lru = _packageCentral?.Repositories?.FindLRU();
                 if (lru != null)
                 {
-                    AasxPackageExplorer.Log.Singleton.Info("Saving LRU ..");
+                    Log.Singleton.Info("Saving LRU ..");
                     var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
                     lru.SaveAsLocalFile(lruFn);
                 }
@@ -1838,7 +1906,7 @@ namespace AasxPackageExplorer
         {
             if (sender == ShowContent && this.showContentPackageUri != null && _packageCentral.MainAvailable)
             {
-                AasxPackageExplorer.Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
+                Log.Singleton.Info("Trying display content {0} ..", this.showContentPackageUri);
                 try
                 {
                     var contentUri = this.showContentPackageUri;
@@ -1856,11 +1924,11 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(
+                    Log.Singleton.Error(
                         ex, $"When displaying content {this.showContentPackageUri}, an error occurred");
                     return;
                 }
-                AasxPackageExplorer.Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
+                Log.Singleton.Info("Content {0} displayed.", this.showContentPackageUri);
             }
         }
 
@@ -1906,6 +1974,12 @@ namespace AasxPackageExplorer
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
             var x = DisplayElements.SelectedItem;
+            if (x == null)
+            {
+                // TODO (MIHO, 2021-06-08): find the root cause instead of doing a quick-fix
+                // some copy/paste operation seems to leave the DisplayElements-sate in the wrong state
+                x = DisplayElements.TrySynchronizeToInternalTreeState();
+            }
             x?.RefreshFromMainData();
             DisplayElements.Refresh();
             ContentTakeOver.IsEnabled = false;
@@ -1921,17 +1995,33 @@ namespace AasxPackageExplorer
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel += 0.25;
+                e.Handled = true;
+                return;
             }
 
             if ((e.Key == Key.OemMinus || e.Key == Key.Subtract) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel -= 0.25;
+                e.Handled = true;
+                return;
             }
 
             if (this.IsInFlyout() && currentFlyoutControl != null)
             {
                 currentFlyoutControl.ControlPreviewKeyDown(e);
+            }
+
+            DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
+
+            if (e.Key == Key.T
+                && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                var ve = DisplayElements?.FindAllVisualElement()?.FirstOrDefault();
+                if (ve != null)
+                {
+                    DisplayElements.Test2();
+                }
             }
         }
 
@@ -2072,14 +2162,58 @@ namespace AasxPackageExplorer
             this.GridFlyover.Children.Clear();
             this.GridFlyover.Children.Add(uc);
 
-            // register the event
+            // register the frame
             var frame = new DispatcherFrame();
             ucfoc.ControlClosed += () =>
             {
                 frame.Continue = false; // stops the frame
             };
 
+            // main application needs to know
             currentFlyoutControl = ucfoc;
+
+            // agent behaviour
+            var preventClosingAction = false;
+            if (uc is IFlyoutAgent ucag)
+            {
+                // register for minimize
+                ucag.ControlMinimize += () =>
+                {
+                    // only execute if preconditions are well
+                    if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
+                    {
+                        // do not execute directly
+                        preventClosingAction = true;
+
+                        // make a mini
+                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
+
+                        // be careful
+                        if (mini is UserControl miniUc)
+                        {
+                            // push the agent
+                            UserControlAgentsView.Add(miniUc);
+
+                            // wrap provided closing action in own closing action
+                            if (ucag.GetAgent() != null)
+                                ucag.GetAgent().ClosingAction = () =>
+                                {
+                                    // 1st delete agent
+                                    UserControlAgentsView.Remove(miniUc);
+
+                                    // finally, call user provided closing action
+                                    closingAction?.Invoke();
+                                };
+
+                            // show the panel
+                            PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
+
+                            // remove the flyover
+                            frame.Continue = false; // stops the frame
+                        }
+                    }
+                };
+            }
 
             // start (focus)
             ucfoc.ControlStart();
@@ -2089,7 +2223,7 @@ namespace AasxPackageExplorer
             Dispatcher.PushFrame(frame);
 
             // call the closing action (before releasing!)
-            if (closingAction != null)
+            if (closingAction != null && !preventClosingAction)
                 closingAction();
 
             // blur the normal grid
@@ -2105,12 +2239,12 @@ namespace AasxPackageExplorer
             currentFlyoutControl = null;
         }
 
-        public MessageBoxResult MessageBoxFlyoutShow(
-            string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        public AnyUiMessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
             if (!Options.Curr.UseFlyovers)
             {
-                return MessageBox.Show(this, message, caption, buttons, image);
+                return AnyUiMessageBoxResult.Cancel;
             }
 
             var uc = new MessageBoxFlyout(message, caption, buttons, image);
@@ -2155,7 +2289,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(ex, $"while receiving file drop to window");
+                        Log.Singleton.Error(ex, $"while receiving file drop to window");
                     }
                 }
             }
@@ -2198,7 +2332,7 @@ namespace AasxPackageExplorer
                     }
                     catch (Exception ex)
                     {
-                        AasxPackageExplorer.Log.Singleton.Error(
+                        Log.Singleton.Error(
                             ex, $"When dragging content {this.showContentPackageUri}, an error occurred");
                         return;
                     }
@@ -2224,6 +2358,13 @@ namespace AasxPackageExplorer
                 if (DispEditEntityPanel != null)
                     DispEditEntityPanel.ClearHighlight();
             }
+        }
+
+        private void ButtonKeyboard_Click(object sender, RoutedEventArgs e)
+        {
+            var htmlfn = DispEditEntityPanel.CreateTempFileForKeyboardShortcuts();
+            BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
+                                    preferInternal: true);
         }
     }
 }

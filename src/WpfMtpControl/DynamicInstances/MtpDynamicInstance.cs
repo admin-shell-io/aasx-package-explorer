@@ -1433,6 +1433,7 @@ namespace Mtp.DynamicInstances
         public override UserControl CreateVisualObject(double mtpWidth, double mtpHeight)
         {
             UserControl c = null;
+            // ReSharper disable HeuristicUnreachableCode
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
 #pragma warning disable 162
             if (true || mtpWidth <= 50 || mtpHeight <= 40)
@@ -1446,7 +1447,7 @@ namespace Mtp.DynamicInstances
                 bvt.ButtonGo.Click += ButtonGo_Click;
             }
             else
-            // ReSharper disable once HeuristicUnreachableCode
+
 #pragma warning disable 162
             {
                 // ReSharper disable once HeuristicUnreachableCode
@@ -1459,6 +1460,7 @@ namespace Mtp.DynamicInstances
             }
 #pragma warning restore 162
             Demo(2);
+            // ReSharper enable HeuristicUnreachableCode
             return c;
         }
 

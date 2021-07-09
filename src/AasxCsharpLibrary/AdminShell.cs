@@ -38,7 +38,6 @@ namespace AdminShellNS
     /// </summary>
     public class AdminShellV20
     {
-
         public class Identification
         {
 
@@ -669,6 +668,63 @@ namespace AdminShellNS
                 // ok!
                 return true;
             }
+
+            // arithmetics
+
+            public static KeyList operator +(KeyList a, Key b)
+            {
+                var res = new KeyList(a);
+                if (b != null)
+                    res.Add(b);
+                return res;
+            }
+
+            public static KeyList operator +(KeyList a, KeyList b)
+            {
+                var res = new KeyList(a);
+                if (b != null)
+                    res.AddRange(b);
+                return res;
+            }
+
+            public KeyList SubList(int startPos, int count = int.MaxValue)
+            {
+                var res = new KeyList();
+                if (startPos >= this.Count)
+                    return res;
+                int nr = 0;
+                for (int i = startPos; i < this.Count && nr < count; i++)
+                {
+                    nr++;
+                    res.Add(this[i]);
+                }
+                return res;
+            }
+
+            // other
+
+            /// <summary>
+            /// Take only idShort, ignore all other key-types and create a '/'-separated list
+            /// </summary>
+            /// <returns>Empty string or list of idShorts</returns>
+            public string BuildIdShortPath(int startPos = 0, int count = int.MaxValue)
+            {
+                if (startPos >= this.Count)
+                    return "";
+                int nr = 0;
+                var res = "";
+                for (int i = startPos; i < this.Count && nr < count; i++)
+                {
+                    nr++;
+                    if (this[i].idType.Trim().ToLower() == Key.IdShort.Trim().ToLower())
+                    {
+                        if (res != "")
+                            res += "/";
+                        res += this[i].value;
+                    }
+                }
+                return res;
+            }
         }
 
         public class AasElementSelfDescription
@@ -685,6 +741,9 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// Extends understanding of Referable to further elements, which can be related to
+        /// </summary>
         public interface IAasElement
         {
             AasElementSelfDescription GetSelfDescription();
@@ -1390,6 +1449,24 @@ namespace AdminShellNS
                         this.Add(ls);
             }
 
+            public string this[string lang]
+            {
+                get
+                {
+                    return GetDefaultStr(lang);
+                }
+                set
+                {
+                    foreach (var ls in this)
+                        if (ls.lang.Trim().ToLower() == lang?.Trim().ToLower())
+                        {
+                            ls.str = value;
+                            return;
+                        }
+                    this.Add(new LangStr(lang, value));
+                }
+            }
+
             public string GetDefaultStr(string defaultLang = null)
             {
                 // start
@@ -1669,10 +1746,18 @@ namespace AdminShellNS
 
         }
 
+        /// <summary>
+        /// This class allows to describe further data (in derived classes) when enumerating Children.
+        /// </summary>
+        public class EnumerationPlacmentBase
+        {
+        }
+
         public interface IEnumerateChildren
         {
             IEnumerable<SubmodelElementWrapper> EnumerateChildren();
-            void AddChild(SubmodelElementWrapper smw);
+            EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child);
+            object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null);
         }
 
         public interface IValidateEntity
@@ -1733,6 +1818,26 @@ namespace AdminShellNS
         [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
         public class TextSearchable : System.Attribute
         {
+        }
+
+        /// <summary>
+        /// Result of FindReferable in Environment
+        /// </summary>
+        public class ReferableRootInfo
+        {
+            public AdministrationShell AAS = null;
+            public Asset Asset = null;
+            public Submodel Submodel = null;
+
+            public int NrOfRootKeys = 0;
+
+            public bool IsValid
+            {
+                get
+                {
+                    return NrOfRootKeys > 0 && (AAS != null || Submodel != null || Asset != null);
+                }
+            }
         }
 
         public class Referable : IValidateEntity, IAasElement
@@ -2436,6 +2541,22 @@ namespace AdminShellNS
             }
         }
 
+        public class ListOfAdministrationShells : List<AdministrationShell>, IAasElement
+        {
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("AssetAdministrationShells", "AASs");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+
+        }
+
         public class Asset : Identifiable, IGetReference
         {
             // for JSON only
@@ -2558,6 +2679,22 @@ namespace AdminShellNS
                 if (this.billOfMaterialRef != null)
                     yield return this.billOfMaterialRef;
             }
+        }
+
+        public class ListOfAssets : List<Asset>, IAasElement
+        {
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Assets", "Assets");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+
         }
 
         public class View : Referable
@@ -3618,9 +3755,8 @@ namespace AdminShellNS
             }
         }
 
-        public class ListOfConceptDescriptions : List<ConceptDescription>
+        public class ListOfConceptDescriptions : List<ConceptDescription>, IAasElement
         {
-
             // finding
 
             public ConceptDescription Find(ConceptDescriptionRef cdr)
@@ -3670,6 +3806,18 @@ namespace AdminShellNS
 
                 this.Add(cd);
                 return cd;
+            }
+
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("ConceptDescriptions", "CDS");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
             }
 
             // sorting
@@ -3733,9 +3881,9 @@ namespace AdminShellNS
                 "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
 
             [XmlIgnore] // will be ignored, anyway
-            private List<AdministrationShell> administrationShells = new List<AdministrationShell>();
+            private ListOfAdministrationShells administrationShells = new ListOfAdministrationShells();
             [XmlIgnore] // will be ignored, anyway
-            private List<Asset> assets = new List<Asset>();
+            private ListOfAssets assets = new ListOfAssets();
             [XmlIgnore] // will be ignored, anyway
             private List<Submodel> submodels = new List<Submodel>();
             [XmlIgnore] // will be ignored, anyway
@@ -3746,7 +3894,7 @@ namespace AdminShellNS
             [XmlArray("assetAdministrationShells")]
             [XmlArrayItem("assetAdministrationShell")]
             [JsonProperty(PropertyName = "assetAdministrationShells")]
-            public List<AdministrationShell> AdministrationShells
+            public ListOfAdministrationShells AdministrationShells
             {
                 get { return administrationShells; }
                 set { administrationShells = value; }
@@ -3755,7 +3903,7 @@ namespace AdminShellNS
             [XmlArray("assets")]
             [XmlArrayItem("asset")]
             [JsonProperty(PropertyName = "assets")]
-            public List<Asset> Assets
+            public ListOfAssets Assets
             {
                 get { return assets; }
                 set { assets = value; }
@@ -4008,7 +4156,7 @@ namespace AdminShellNS
                             yield return sm;
 
                             // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
-                            var allsme = new List<SubmodelElement>();
+                            var allsme = new ListOfSubmodelElement();
                             sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
                             {
                                 allsme.Add(sme);
@@ -4032,7 +4180,8 @@ namespace AdminShellNS
                 return FindReferableByReference(rf?.Keys);
             }
 
-            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false)
+            public Referable FindReferableByReference(KeyList kl, int keyIndex = 0, bool exactMatch = false,
+                ReferableRootInfo rootInfo = null)
             {
                 // first index needs to exist ..
                 if (kl == null || keyIndex >= kl.Count)
@@ -4051,6 +4200,13 @@ namespace AdminShellNS
                     // not found or already at end with our search?
                     if (aas == null || keyIndex >= kl.Count - 1)
                         return aas;
+
+                    // side info?
+                    if (rootInfo != null)
+                    {
+                        rootInfo.AAS = aas;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+                    }
 
                     // follow up
                     aasToFollow = aas;
@@ -4073,6 +4229,13 @@ namespace AdminShellNS
                     if (aas == null)
                         return exactMatch ? null : asset;
 
+                    // side info?
+                    if (rootInfo != null)
+                    {
+                        rootInfo.Asset = asset;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+                    }
+
                     // follow up
                     aasToFollow = aas;
                 }
@@ -4094,6 +4257,14 @@ namespace AdminShellNS
                         if (sm == null)
                             return exactMatch ? null : aasToFollow;
 
+                        // side info
+                        // side info?
+                        if (rootInfo != null)
+                        {
+                            rootInfo.Submodel = sm;
+                            rootInfo.NrOfRootKeys = 2 + keyIndex;
+                        }
+
                         // at our end?
                         if (keyIndex >= kl.Count - 2)
                             return sm;
@@ -4112,6 +4283,27 @@ namespace AdminShellNS
                     var sm = this.FindSubmodel(new Identification(kl[keyIndex].idType, kl[keyIndex].value));
                     if (sm == null)
                         return null;
+
+                    // notice in side info
+                    if (rootInfo != null)
+                    {
+                        rootInfo.Submodel = sm;
+                        rootInfo.NrOfRootKeys = 1 + keyIndex;
+
+                        // add even more info
+                        if (rootInfo.AAS == null)
+                        {
+                            foreach (var aas2 in this.AdministrationShells)
+                            {
+                                var smref2 = aas2.FindSubmodelRef(sm.identification);
+                                if (smref2 != null)
+                                {
+                                    rootInfo.AAS = aas2;
+                                    break;
+                                }
+                            }
+                        }
+                    }
 
                     // at our end?
                     if (keyIndex >= kl.Count - 1)
@@ -4857,6 +5049,19 @@ namespace AdminShellNS
             // ReSharper enable RedundantArgumentDefaultValue
         }
 
+        public class ListOfSubmodelElement : List<SubmodelElement>
+        {
+            // conversion to other list
+
+            public KeyList ToKeyList()
+            {
+                var res = new KeyList();
+                foreach (var sme in this)
+                    res.Add(sme.ToKey());
+                return res;
+            }
+        }
+
         public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
         {
             // constants
@@ -5087,6 +5292,8 @@ namespace AdminShellNS
             {
                 var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
+                // TODO (MIHO, 2021-07-08): obvious error .. info should receive semanticId .. but would change 
+                // display presentation .. therefore to be checked again
                 if (semanticId != null)
                     AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
                 return Tuple.Create(caption, info);
@@ -5096,6 +5303,11 @@ namespace AdminShellNS
             {
                 var ci = ToCaptionInfo();
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
+            }
+
+            public Key ToKey()
+            {
+                return new Key(GetElementName(), true, Key.IdShort, idShort);
             }
 
             public virtual string ValueAsText(string defaultLang = null)
@@ -5108,7 +5320,7 @@ namespace AdminShellNS
                 return null;
             }
 
-            public virtual void ValueFromText(string text)
+            public virtual void ValueFromText(string text, string defaultLang = null)
             {
             }
 
@@ -5334,9 +5546,9 @@ namespace AdminShellNS
                 return dsc.ElementAbbreviation;
             }
 
-            public static List<SubmodelElement> ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
+            public static ListOfSubmodelElement ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
             {
-                var res = new List<SubmodelElement>();
+                var res = new ListOfSubmodelElement();
                 if (wrappers == null)
                     return res;
                 foreach (var w in wrappers)
@@ -5415,10 +5627,11 @@ namespace AdminShellNS
         {
             public SubmodelElementWrapperCollection() : base() { }
 
-            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other)
-                : base(other)
-            {
-            }
+            public SubmodelElementWrapperCollection(SubmodelElementWrapper smw) : base(smw) { }
+
+            public SubmodelElementWrapperCollection(SubmodelElement sme) : base(sme) { }
+
+            public SubmodelElementWrapperCollection(SubmodelElementWrapperCollection other) : base(other) { }
         }
 
         public class DataElementWrapperCollection : BaseSubmodelElementWrapperCollection<DataElement>
@@ -5461,6 +5674,20 @@ namespace AdminShellNS
 
                 foreach (var smw in other)
                     this.Add(new SubmodelElementWrapper(smw.submodelElement));
+            }
+
+            public BaseSubmodelElementWrapperCollection(SubmodelElementWrapper smw)
+                : base()
+            {
+                if (smw != null)
+                    this.Add(smw);
+            }
+
+            public BaseSubmodelElementWrapperCollection(SubmodelElement sme)
+                : base()
+            {
+                if (sme != null)
+                    this.Add(new SubmodelElementWrapper(sme));
             }
 
             // better find functions
@@ -5618,14 +5845,14 @@ namespace AdminShellNS
             // recursion
 
             public void RecurseOnSubmodelElements(
-                object state, List<SubmodelElement> parents,
-                Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+                object state, ListOfSubmodelElement parents,
+                Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
             {
                 // trivial
                 if (lambda == null)
                     return;
                 if (parents == null)
-                    parents = new List<SubmodelElement>();
+                    parents = new ListOfSubmodelElement();
 
                 // over all elements
                 foreach (var smw in this)
@@ -5987,6 +6214,7 @@ namespace AdminShellNS
         public interface IManageSubmodelElements
         {
             void Add(SubmodelElement sme);
+            void Insert(int index, SubmodelElement sme);
             void Remove(SubmodelElement sme);
         }
 
@@ -6052,7 +6280,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (submodelElements != null)
                         foreach (var smew in submodelElements)
                             res.Add(smew.submodelElement);
@@ -6153,13 +6381,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.submodelElements == null)
                     this.submodelElements = new SubmodelElementWrapperCollection();
                 this.submodelElements.Add(smw);
+                return smw;
             }
 
             // from IManageSubmodelElements
@@ -6180,6 +6414,8 @@ namespace AdminShellNS
                 var sew = new SubmodelElementWrapper();
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
+                if (index < 0 || index >= submodelElements.Count)
+                    return;
                 submodelElements.Insert(index, sew);
             }
 
@@ -6271,7 +6507,7 @@ namespace AdminShellNS
             // Recursing
 
             public void RecurseOnSubmodelElements(
-                object state, Action<object, List<SubmodelElement>, SubmodelElement> lambda)
+                object state, Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
             {
                 this.submodelElements?.RecurseOnSubmodelElements(state, null, lambda);
             }
@@ -6510,7 +6746,7 @@ namespace AdminShellNS
                 return "" + value;
             }
 
-            public override void ValueFromText(string text)
+            public override void ValueFromText(string text, string defaultLang = null)
             {
                 value = "" + text;
             }
@@ -6608,9 +6844,11 @@ namespace AdminShellNS
 
             public MultiLanguageProperty Set(LangStr ls)
             {
-                if (this.value == null)
+                if (ls == null)
+                    return this;
+                if (this.value?.langString == null)
                     this.value = new LangStringSet();
-                this.value.Add(ls);
+                this.value.langString[ls.lang] = ls.str;
                 return this;
             }
 
@@ -6622,6 +6860,11 @@ namespace AdminShellNS
             public override string ValueAsText(string defaultLang = null)
             {
                 return "" + value?.GetDefaultStr(defaultLang);
+            }
+
+            public override void ValueFromText(string text, string defaultLang = null)
+            {
+                Set(defaultLang, text);
             }
 
         }
@@ -7070,13 +7313,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null || !(smw.submodelElement is DataElement))
-                    return;
+                    return null;
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();
                 this.annotations.Add(smw);
+                return smw;
             }
 
             // from IManageSubmodelElements
@@ -7088,6 +7337,17 @@ namespace AdminShellNS
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
                 annotations.Add(sew);
+            }
+
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (annotations == null)
+                    annotations = new DataElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                if (index < 0 || index >= annotations.Count)
+                    return;
+                annotations.Insert(index, sew);
             }
 
             public void Remove(SubmodelElement sme)
@@ -7108,6 +7368,8 @@ namespace AdminShellNS
             {
                 return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
             }
+
+
         }
 
         public class Capability : SubmodelElement
@@ -7146,7 +7408,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (value != null)
                         foreach (var smew in value)
                             res.Add(smew.submodelElement);
@@ -7179,13 +7441,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.value == null)
                     this.value = new SubmodelElementWrapperCollection();
                 this.value.Add(smw);
+                return smw;
             }
 
             // constructors
@@ -7247,6 +7515,8 @@ namespace AdminShellNS
                 var sew = new SubmodelElementWrapper();
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
+                if (index < 0 || index >= value.Count)
+                    return;
                 value.Insert(index, sew);
             }
 
@@ -7290,6 +7560,7 @@ namespace AdminShellNS
             {
                 return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
             }
+
         }
 
         public class OperationVariable : IAasElement
@@ -7424,14 +7695,23 @@ namespace AdminShellNS
             {
                 get
                 {
-                    return (dir == 0) ? inputVariable : outputVariable;
+                    if (dir == 0)
+                        return inputVariable;
+                    else
+                    if (dir == 1)
+                        return outputVariable;
+                    else
+                        return inoutputVariable;
                 }
                 set
                 {
                     if (dir == 0)
                         inputVariable = value;
                     else
+                    if (dir == 1)
                         outputVariable = value;
+                    else
+                        inoutputVariable = value;
                 }
             }
 
@@ -7460,9 +7740,88 @@ namespace AdminShellNS
                         yield return smw?.value;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public class EnumerationPlacmentOperationVariable : EnumerationPlacmentBase
             {
-                // not enough information to select list of children
+                public OperationVariable.Direction Direction;
+                public OperationVariable OperationVariable;
+            }
+
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                // trivial
+                if (child == null)
+                    return null;
+
+                // search
+                OperationVariable.Direction? dir = null;
+                OperationVariable opvar = null;
+                if (this.inputVariable != null)
+                    foreach (var ov in this.inputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        {
+                            dir = OperationVariable.Direction.In;
+                            opvar = ov;
+                        }
+
+                if (this.outputVariable != null)
+                    foreach (var ov in this.outputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        {
+                            dir = OperationVariable.Direction.Out;
+                            opvar = ov;
+                        }
+
+                if (this.inoutputVariable != null)
+                    foreach (var ov in this.inoutputVariable)
+                        if (ov?.value?.submodelElement == child)
+                        {
+                            dir = OperationVariable.Direction.InOut;
+                            opvar = ov;
+                        }
+
+                // found
+                if (!dir.HasValue)
+                    return null;
+                return new EnumerationPlacmentOperationVariable()
+                {
+                    Direction = dir.Value,
+                    OperationVariable = opvar
+                };
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
+            {
+                // not enough information to select list of children?
+                var pl = placement as EnumerationPlacmentOperationVariable;
+                if (smw == null || pl == null)
+                    return null;
+
+                // ok, use information
+                var ov = new OperationVariable();
+                ov.value = smw;
+
+                if (pl.Direction == OperationVariable.Direction.In)
+                {
+                    if (inputVariable == null)
+                        inputVariable = new List<OperationVariable>();
+                    inputVariable.Add(ov);
+                }
+
+                if (pl.Direction == OperationVariable.Direction.Out)
+                {
+                    if (outputVariable == null)
+                        outputVariable = new List<OperationVariable>();
+                    outputVariable.Add(ov);
+                }
+
+                if (pl.Direction == OperationVariable.Direction.InOut)
+                {
+                    if (inoutputVariable == null)
+                        inoutputVariable = new List<OperationVariable>();
+                    inoutputVariable.Add(ov);
+                }
+
+                return ov;
             }
 
             // constructors
@@ -7532,7 +7891,7 @@ namespace AdminShellNS
             {
                 get
                 {
-                    var res = new List<SubmodelElement>();
+                    var res = new ListOfSubmodelElement();
                     if (statements != null)
                         foreach (var smew in statements)
                             res.Add(smew.submodelElement);
@@ -7569,13 +7928,19 @@ namespace AdminShellNS
                         yield return smw;
             }
 
-            public void AddChild(SubmodelElementWrapper smw)
+            public EnumerationPlacmentBase GetChildrenPlacement(SubmodelElement child)
+            {
+                return null;
+            }
+
+            public object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null)
             {
                 if (smw == null)
-                    return;
+                    return null;
                 if (this.statements == null)
                     this.statements = new SubmodelElementWrapperCollection();
                 this.statements.Add(smw);
+                return smw;
             }
 
             // constructors
@@ -7628,6 +7993,18 @@ namespace AdminShellNS
                 sme.parent = this; // track parent here!
                 sew.submodelElement = sme;
                 statements.Add(sew);
+            }
+
+            public void Insert(int index, SubmodelElement sme)
+            {
+                if (statements == null)
+                    statements = new SubmodelElementWrapperCollection();
+                var sew = new SubmodelElementWrapper();
+                sme.parent = this; // track parent here!
+                sew.submodelElement = sme;
+                if (index < 0 || index >= statements.Count)
+                    return;
+                statements.Insert(index, sew);
             }
 
             public void Remove(SubmodelElement sme)

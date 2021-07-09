@@ -33,7 +33,7 @@ namespace AasxPluginExportTable
 {
     public partial class ExportTableFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         public List<ExportTableRecord> Presets = null;
 

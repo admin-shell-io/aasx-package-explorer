@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -81,6 +82,7 @@ namespace AdminShellNS
         Hint, Warning, SpecViolation, SchemaViolation, Serialization
     }
 
+    [UsedImplicitlyAttribute] // for eventual use
     public enum AasValidationAction
     {
         No, ToBeDeleted

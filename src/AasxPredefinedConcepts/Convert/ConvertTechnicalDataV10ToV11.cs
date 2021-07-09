@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// ReSharper disable MergeIntoPattern
+
 namespace AasxPredefinedConcepts.Convert
 {
     public class ConvertTechnicalDataV10ToV11Provider : ConvertProviderBase

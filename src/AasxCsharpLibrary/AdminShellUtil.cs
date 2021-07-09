@@ -428,6 +428,10 @@ namespace AdminShellNS
             if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
                 return;
 
+            // do not dive into enums
+            if (objType.IsEnum)
+                return;
+
             // look at fields, first
             var fields = objType.GetFields();
             foreach (var fi in fields)

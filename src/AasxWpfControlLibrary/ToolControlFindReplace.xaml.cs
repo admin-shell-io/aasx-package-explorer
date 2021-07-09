@@ -11,6 +11,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxPackageExplorer
@@ -126,7 +127,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex, "When searching for results");
+                Log.Singleton.Error(ex, "When searching for results");
             }
 
             // try to go to 1st result

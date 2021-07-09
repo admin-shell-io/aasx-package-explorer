@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using AasxPackageExplorer;
 using AasxPluginSmdExporter;
 using AasxPluginSmdExporter.View;
+using AnyUi;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -42,7 +43,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     if (fop == null) return null;
 
                     // Flyout for the name
-                    var tb = new TextBoxFlyout("Enter name:", System.Windows.MessageBoxImage.Question);
+                    var tb = new TextBoxFlyout("Enter name:", AnyUiMessageBoxImage.Question);
                     fop.StartFlyoverModal(tb);
                     if (!tb.Result) return null;
                     machineName = tb.Text;

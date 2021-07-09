@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AasxWpfControlLibrary"
+             xmlns:anyui="clr-namespace:AnyUi"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300"
              Loaded="UserControl_Loaded" MouseLeave="UserControl_MouseLeave"
@@ -21,8 +22,11 @@
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 
     <UserControl.Resources>
-
         <ResourceDictionary>
+
+            <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
+            <anyui:AnyUiBrushToWpfBrushConverter x:Key="AnyUiBrushToWpfBrushConverter" />
+
             <BitmapImage x:Key="Icon_AASX" UriSource="pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp" />
 
             <ContextMenu x:Key="ContextMenuFileItem">
@@ -150,18 +154,21 @@
 
     <!-- Note MIHO: temporary test with outside Scrollviewer works GREAT 
     <ScrollViewer> -->
-    
+
     <Grid>
+        <Grid.Resources>
+            <anyui:AnyUiVisibilityToWpfVisibilityConverter x:Key="AnyUiVisibilityToWpfVisibilityConverter" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-                
+
         <DockPanel Grid.Row="0" Grid.Column="0" Height="20" Background="White" Margin="2,2,2,2">
 
             <Button x:Name="ButtonContext" DockPanel.Dock="Right" Content=" &#8942; " FontWeight="Bold" 
                     Padding="1,-2,1,0" Margin="2,2,6,2" Click="Button_Click"/>
-            
+
             <Button x:Name="ButtonQuery" DockPanel.Dock="Right" Content="Query .." Padding="1,-2,1,0" VerticalContentAlignment="Center" 
                     Margin="2" Click="Button_Click"/>
 
@@ -171,7 +178,7 @@
             <TextBox x:Name="TextBoxRepoHeader" Text="File repository" BorderThickness="0" Background="Transparent" 
                      Foreground="#707070" VerticalContentAlignment="Center" FontWeight="Bold" TextChanged="TextBox_TextChanged"/>
         </DockPanel>
-        
+
         <ListView x:Name="RepoList" Grid.Row="1" Grid.Column="0" Margin="2,0,2,2" BorderThickness="0" 
                   ScrollViewer.VerticalScrollBarVisibility="Disabled" MinHeight="30"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" MouseDoubleClick="RepoList_MouseDoubleClick" MouseRightButtonDown="RepoList_MouseRightButtonDown" PreviewMouseUp="RepoList_PreviewMouseUp">
@@ -197,7 +204,7 @@
             </ListView.Resources>
             <ListView.View>
                 <GridView>
-                    
+
                     <!-- <GridViewColumn Header="Icon" CellTemplate="{StaticResource Template}"/> -->
                     <GridViewColumn Header="Icon">
                         <GridViewColumn.CellTemplate>
@@ -213,10 +220,11 @@
                                             BorderThickness="0" Background="LightGray" 
                                             CornerRadius="0" Margin="0,0,2,0" Visibility="Visible">
                                     </Border>
-                                    
+
                                     <Border Grid.Row="0" Grid.Column="0"
                                             BorderThickness="0" Background="#303060" 
-                                            CornerRadius="0" Margin="0,0,2,0" Visibility="{Binding Path=VisualIsEdited}">
+                                            CornerRadius="0" Margin="0,0,2,0" 
+                                            Visibility="{Binding VisualIsEdited, Converter={StaticResource AnyUiVisibilityToWpfVisibilityConverter}}">
                                         <TextBlock Text="E" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
 
@@ -224,14 +232,17 @@
                                            Source="{StaticResource Icon_AASX}" Width="40" Height="40"/>
 
                                     <Border Grid.Row="0" Grid.Column="1"
-                                            BorderBrush="{Binding Path=VisualLabelBackground}" Background="{Binding Path=VisualLabelBackground}" CornerRadius="4" Margin="4">
+                                            BorderBrush="{Binding VisualLabelBackground, Converter={StaticResource AnyUiBrushToWpfBrushConverter}}" 
+                                            Background="{Binding VisualLabelBackground, Converter={StaticResource AnyUiBrushToWpfBrushConverter}}" 
+                                            CornerRadius="4" Margin="4">
                                         <TextBlock Text="{Binding Path=VisualLabelText}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
 
                                     <Border Grid.Row="0" Grid.Column="1"
                                             BorderThickness="0" Background="#303030" 
                                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            CornerRadius="3" Margin="2" Width="20" Height="20" Visibility="{Binding Path=VisualIsLoaded}">
+                                            CornerRadius="3" Margin="2" Width="20" Height="20" 
+                                            Visibility="{Binding VisualIsLoaded, Converter={StaticResource AnyUiVisibilityToWpfVisibilityConverter}}">
                                         <TextBlock Text="Ld" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
                                     </Border>
                                 </Grid>
@@ -249,7 +260,7 @@
                     </GridViewColumn>
 
                     <GridViewColumn Header="Location" DisplayMemberBinding="{Binding Path=InfoLocation}" Width="999"/>
-                
+
                 </GridView>
             </ListView.View>
             <!--

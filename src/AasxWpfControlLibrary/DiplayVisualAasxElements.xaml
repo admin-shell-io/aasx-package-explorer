@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:AasxPackageExplorer"
+             xmlns:anyui="clr-namespace:AnyUi"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="600">
+             d:DesignHeight="300" d:DesignWidth="600" Loaded="UserControl_Loaded">
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -19,35 +21,108 @@
     <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
     
     <Grid>
-        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" SelectedItemChanged="TreeViewInner_SelectedItemChanged" 
-                  RequestBringIntoView="TreeViewElem_RequestBringIntoView" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp">
+        <Grid.Resources>
+            <anyui:AnyUiColorToWpfBrushConverter x:Key="AnyUiColorToWpfBrushConverter" />
+        </Grid.Resources>
+
+        <!-- Other methdo:
+             SelectedItemChanged="TreeViewInner_SelectedItemChanged" PreviewMouseDown="TreeViewInner_PreviewMouseDown" PreviewMouseUp="TreeViewInner_PreviewMouseUp" -->
+        
+        <TreeView Grid.Row="0" Grid.Column="0" x:Name="treeViewInner" Background="#FFE0E0E0" 
+                  RequestBringIntoView="TreeViewElem_RequestBringIntoView"                   
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  TreeViewItem.Expanded="TreeViewInner_Expanded"
+                  SelectedItemChanged="TreeViewMutiSelect_SelectedItemChanged"
+                  Padding="0,2,4,2">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Members}">
-                    <Grid  Margin="2" Width="2000" Height="24">
-                        <Rectangle Fill="{Binding Background}" Stroke="{Binding Border}" StrokeThickness="1"/>
+                    <HierarchicalDataTemplate.Resources>
+                        
+                    </HierarchicalDataTemplate.Resources>
+                    <Grid Margin="2" Width="2000" Height="24" >
+                        <Grid.Resources>
+                            <!--
+                            <sys:Double x:Name="DblValue1" >1</sys:Double>
+                            -->
+                        </Grid.Resources>
+                        <Rectangle Fill="{Binding Background, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
+                                   Stroke="{Binding Border, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
+                                   StrokeThickness="1"/>
                         <StackPanel Margin="2" VerticalAlignment="Center" Orientation="Horizontal">
-                            <Border Background="{Binding TagBg}" CornerRadius="2" Width="30" Height="18">
+                            <Border x:Name="VB27" Background="{Binding TagBg, Converter={StaticResource AnyUiColorToWpfBrushConverter}}" 
+                                    CornerRadius="2" Width="30" Height="18">
                                 <Viewbox Width="28" Stretch="Uniform">
-                                    <TextBlock TextAlignment="Center" Text="{Binding TagString}" FontWeight="Bold" Foreground="{Binding TagFg}"/>
+                                    <TextBlock TextAlignment="Center" Text="{Binding TagString}" 
+                                               FontWeight="Bold" 
+                                               Foreground="{Binding TagFg, Converter={StaticResource AnyUiColorToWpfBrushConverter}}"/>
                                 </Viewbox>
                             </Border>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Caption}" FontWeight="Bold" Foreground="Black"/>
+                            <TextBlock Text="{Binding Caption}" FontWeight="Bold">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="myAnimatedBrush1" Color="Black" />
+                                </TextBlock.Foreground>
+                            </TextBlock>
                             <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding Info}" FontWeight="Bold" Foreground="#f555"/>
+                            <TextBlock Text="{Binding Info}" FontWeight="Bold">
+                                <TextBlock.Foreground>
+                                    <SolidColorBrush x:Name="myAnimatedBrush2" Color="#ff555555" />
+                                </TextBlock.Foreground>
+                            </TextBlock>
                         </StackPanel>
                     </Grid>
+                    <HierarchicalDataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding AnimateUpdate}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <!--
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             From="0" To="1" BeginTime="00:00:00" Duration="00:00:01" FillBehavior="Stop"/>
+                                        -->
+                                        <!--
+                                        <DoubleAnimation Storyboard.TargetProperty="(Grid.Children)[1].Opacity"
+                                             From="0" To="1" BeginTime="00:00:00" Duration="00:00:01" FillBehavior="Stop"/>
+                                        -->
+                                        <DoubleAnimation Storyboard.TargetName="VB27" Storyboard.TargetProperty="Opacity"
+                                             From="0.3" To="1" BeginTime="00:00:00" Duration="00:00:00.8" FillBehavior="Stop"/>
+                                        <ColorAnimation 
+                                              Storyboard.TargetName="myAnimatedBrush1"
+                                              Storyboard.TargetProperty="Color"
+                                              From="#40000000" To="#ff000000" Duration="0:0:0.8" />
+                                        <ColorAnimation 
+                                              Storyboard.TargetName="myAnimatedBrush2"
+                                              Storyboard.TargetProperty="Color"
+                                              From="#40555555" To="#ff555555" Duration="0:0:0.8" />
+                                        <!--
+                                        <ColorAnimation 
+                                              Storyboard.TargetName="myAnimatedBrush"
+                                              Storyboard.TargetProperty="Color"
+                                              From="Red" To="Blue" Duration="0:0:7" />
+                                        -->
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                    </HierarchicalDataTemplate.Triggers>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
+                    <!-- TEST MIHO
                     <EventSetter Event="RequestBringIntoView" Handler="TreeViewElem_RequestBringIntoView"/>
+                    -->
+                    <EventSetter Event="RequestBringIntoView" Handler="TreeViewElem_RequestBringIntoView"/>
+                    <EventSetter Event="Selected" Handler="TreeViewElem_OnSelected"/>
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <!-- MIHO1 -->
+                    
+                    <!-- allow double click -->
                     <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick" />
                 </Style>
+                
             </TreeView.ItemContainerStyle>
+
             <TreeView.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                       Color="{DynamicResource FocusErrorColor}" />

@@ -18,7 +18,9 @@
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
@@ -32,7 +34,6 @@
     <Resource Include="Resources\Icon_AASX_40x40_W.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="4.3.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -41,11 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Remove="Dictionary1.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="PackageCentral\PackageContainerListOfListControl.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

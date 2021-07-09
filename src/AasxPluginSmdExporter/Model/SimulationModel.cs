@@ -252,17 +252,17 @@ namespace AasxPluginSmdExporter
                                 }
                                 else if (locToken.ToString().Equals("in"))
                                 {
-                                    JToken inputs = (JToken)submodel_ports_submodels;
+                                    JToken inputs = submodel_ports_submodels;
                                     this.setInputs(inputs);
                                 }
                                 else if (locToken.ToString().Equals("out"))
                                 {
-                                    JToken outputs = (JToken)submodel_ports_submodels;
+                                    JToken outputs = submodel_ports_submodels;
                                     this.setOutputs(outputs);
                                 }
                                 else if (locToken.ToString().Equals("physical"))
                                 {
-                                    JToken outputs = (JToken)submodel_ports_submodels;
+                                    JToken outputs = submodel_ports_submodels;
                                     this.setPhysicalPorts(outputs);
                                 }
                                 else if (locToken.ToString().Equals("mappings"))

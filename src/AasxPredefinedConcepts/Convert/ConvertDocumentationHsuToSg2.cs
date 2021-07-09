@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
 
+// ReSharper disable MergeIntoPattern
+
 namespace AasxPredefinedConcepts.Convert
 {
     public class ConvertDocumentationHsuToSg2Provider : ConvertProviderBase

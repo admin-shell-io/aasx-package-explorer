@@ -25,15 +25,17 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using AasxIntegrationBase;
-using AasxWpfControlLibrary.PackageCentral;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
 {
     public partial class IntegratedConnectFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
         private PackageCentral _packageCentral;
         private string _caption;
@@ -42,8 +44,8 @@ namespace AasxPackageExplorer
         private string _initialDirectory;
         private LogInstance _logger;
 
-        private List<SelectFromListFlyoutItem> _selectFromListItems;
-        private Action<SelectFromListFlyoutItem> _selectFromListAction;
+        private List<AnyUiDialogueListItem> _selectFromListItems;
+        private Action<AnyUiDialogueListItem> _selectFromListAction;
 
         private Action<PackageContainerCredentials> _askedUserCredentials;
 
@@ -198,7 +200,7 @@ namespace AasxPackageExplorer
             if (_dispatcherFrame != null)
             {
                 _dispatcherFrame.Continue = false;
-                _dialogResult = System.Windows.Forms.DialogResult.Abort;
+                _dialogResult = AnyUiMessageBoxResult.Cancel;
             }
         }
 
@@ -248,16 +250,16 @@ namespace AasxPackageExplorer
                 DoneOnPageSummary();
             }
 
-            System.Windows.Forms.DialogResult tmpRes = System.Windows.Forms.DialogResult.None;
+            AnyUiMessageBoxResult tmpRes = AnyUiMessageBoxResult.None;
             if (sender == ButtonMessageBoxOK)
-                tmpRes = System.Windows.Forms.DialogResult.OK;
+                tmpRes = AnyUiMessageBoxResult.OK;
             if (sender == ButtonMessageBoxCancel)
-                tmpRes = System.Windows.Forms.DialogResult.Cancel;
+                tmpRes = AnyUiMessageBoxResult.Cancel;
             if (sender == ButtonMessageBoxYes)
-                tmpRes = System.Windows.Forms.DialogResult.Yes;
+                tmpRes = AnyUiMessageBoxResult.Yes;
             if (sender == ButtonMessageBoxNo)
-                tmpRes = System.Windows.Forms.DialogResult.No;
-            if (tmpRes != System.Windows.Forms.DialogResult.None)
+                tmpRes = AnyUiMessageBoxResult.No;
+            if (tmpRes != AnyUiMessageBoxResult.None)
             {
                 if (_dispatcherFrame != null)
                     _dispatcherFrame.Continue = false;
@@ -317,7 +319,7 @@ namespace AasxPackageExplorer
             }
 
             if (TabControlMain.SelectedItem == TabItemMessageBox && _dispatcherFrame != null
-                && _presetOkYes == System.Windows.Forms.DialogResult.Yes)
+                && _presetOkYes == AnyUiMessageBoxResult.Yes)
             {
                 // has a Yes/No message box
                 if (e.Key == Key.Y)
@@ -328,7 +330,7 @@ namespace AasxPackageExplorer
 
                 if (e.Key == Key.N)
                 {
-                    _dialogResult = System.Windows.Forms.DialogResult.No;
+                    _dialogResult = AnyUiMessageBoxResult.No;
                     _dispatcherFrame.Continue = false;
                 }
             }
@@ -511,8 +513,8 @@ namespace AasxPackageExplorer
         //
 
         private void StartPageSelectFromList(string caption,
-            List<SelectFromListFlyoutItem> selectFromListItems,
-            Action<SelectFromListFlyoutItem> selectFromListAction)
+            List<AnyUiDialogueListItem> selectFromListItems,
+            Action<AnyUiDialogueListItem> selectFromListAction)
         {
             // show tab page
             TabControlMain.SelectedItem = TabItemSelectFromList;
@@ -529,7 +531,7 @@ namespace AasxPackageExplorer
             _selectFromListAction = selectFromListAction;
         }
 
-        private SelectFromListFlyoutItem GetSelectedItemFromList()
+        private AnyUiDialogueListItem GetSelectedItemFromList()
         {
             var i = ListBoxSelectFromList.SelectedIndex;
             if (_selectFromListItems != null && i >= 0 && i < _selectFromListItems.Count)
@@ -605,18 +607,18 @@ namespace AasxPackageExplorer
         //
 
         private DispatcherFrame _dispatcherFrame = null;
-        private System.Windows.Forms.DialogResult _dialogResult = System.Windows.Forms.DialogResult.None;
+        private AnyUiMessageBoxResult _dialogResult = AnyUiMessageBoxResult.None;
 
-        private System.Windows.Forms.DialogResult _presetOkYes = System.Windows.Forms.DialogResult.None;
-        private System.Windows.Forms.DialogResult _presetNoCancel = System.Windows.Forms.DialogResult.None;
+        private AnyUiMessageBoxResult _presetOkYes = AnyUiMessageBoxResult.None;
+        private AnyUiMessageBoxResult _presetNoCancel = AnyUiMessageBoxResult.None;
 
         /// <summary>
         /// Assumes, that the flyout is open and BLOCKS the message loop until a result button
         /// is being pressed!
         /// </summary>
-        public System.Windows.Forms.DialogResult MessageBoxShow(
+        public AnyUiMessageBoxResult MessageBoxShow(
             string content, string text, string caption,
-            System.Windows.Forms.MessageBoxButtons buttons)
+            AnyUiMessageBoxButton buttons)
         {
             // show tab page
             TabControlMain.SelectedItem = TabItemMessageBox;
@@ -632,49 +634,49 @@ namespace AasxPackageExplorer
                 LogMessage(new StoredPrint("" + content));
 
             // set respective buttons
-            _presetOkYes = System.Windows.Forms.DialogResult.None;
-            _presetNoCancel = System.Windows.Forms.DialogResult.None;
+            _presetOkYes = AnyUiMessageBoxResult.None;
+            _presetNoCancel = AnyUiMessageBoxResult.None;
 
             ButtonMessageBoxOK.Visibility = Visibility.Collapsed;
             ButtonMessageBoxCancel.Visibility = Visibility.Collapsed;
             ButtonMessageBoxYes.Visibility = Visibility.Collapsed;
             ButtonMessageBoxNo.Visibility = Visibility.Collapsed;
 
-            if (buttons == System.Windows.Forms.MessageBoxButtons.OK)
+            if (buttons == AnyUiMessageBoxButton.OK)
             {
                 ButtonMessageBoxOK.Visibility = Visibility.Visible;
-                _presetOkYes = System.Windows.Forms.DialogResult.OK;
+                _presetOkYes = AnyUiMessageBoxResult.OK;
             }
 
-            if (buttons == System.Windows.Forms.MessageBoxButtons.OKCancel)
+            if (buttons == AnyUiMessageBoxButton.OKCancel)
             {
                 ButtonMessageBoxOK.Visibility = Visibility.Visible;
                 ButtonMessageBoxCancel.Visibility = Visibility.Visible;
-                _presetOkYes = System.Windows.Forms.DialogResult.OK;
-                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+                _presetOkYes = AnyUiMessageBoxResult.OK;
+                _presetNoCancel = AnyUiMessageBoxResult.Cancel;
             }
 
-            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNo)
+            if (buttons == AnyUiMessageBoxButton.YesNo)
             {
                 ButtonMessageBoxYes.Visibility = Visibility.Visible;
                 ButtonMessageBoxNo.Visibility = Visibility.Visible;
-                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
-                _presetNoCancel = System.Windows.Forms.DialogResult.No;
+                _presetOkYes = AnyUiMessageBoxResult.Yes;
+                _presetNoCancel = AnyUiMessageBoxResult.No;
             }
 
-            if (buttons == System.Windows.Forms.MessageBoxButtons.YesNoCancel)
+            if (buttons == AnyUiMessageBoxButton.YesNoCancel)
             {
                 ButtonMessageBoxCancel.Visibility = Visibility.Visible;
                 ButtonMessageBoxYes.Visibility = Visibility.Visible;
                 ButtonMessageBoxNo.Visibility = Visibility.Visible;
-                _presetOkYes = System.Windows.Forms.DialogResult.Yes;
-                _presetNoCancel = System.Windows.Forms.DialogResult.Cancel;
+                _presetOkYes = AnyUiMessageBoxResult.Yes;
+                _presetNoCancel = AnyUiMessageBoxResult.Cancel;
             }
 
             // modified from StartFlyoverModal()
             // This will "block" execution of the current dispatcher frame
             // and run our frame until the dialog is closed.
-            _dialogResult = System.Windows.Forms.DialogResult.None;
+            _dialogResult = AnyUiMessageBoxResult.None;
             _dispatcherFrame = new DispatcherFrame();
             Dispatcher.PushFrame(_dispatcherFrame);
 

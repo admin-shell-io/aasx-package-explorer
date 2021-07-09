@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using AasxPackageLogic;
 
 namespace AasxDictionaryImport
 {
@@ -203,7 +204,7 @@ namespace AasxDictionaryImport
                 }
                 catch (Model.ImportException ex)
                 {
-                    AasxPackageExplorer.Log.Singleton.Error(ex, "Could not load the selected data source.");
+                    Log.Singleton.Error(ex, "Could not load the selected data source.");
                     MessageBox.Show(
                      "Could not load the selected data source.\n" +
                      "Details: " + ex.Message,
@@ -256,7 +257,7 @@ namespace AasxDictionaryImport
             }
             catch (Model.ImportException ex)
             {
-                AasxPackageExplorer.Log.Singleton.Error(ex,
+                Log.Singleton.Error(ex,
                         $"Could not fetch data from {dialog.DataProvider} using the query {dialog.Query}.");
                 MessageBox.Show(
                         "Could not fetch the requested data.\n" +

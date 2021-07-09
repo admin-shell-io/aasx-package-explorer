@@ -699,6 +699,7 @@ namespace Microsoft.Msagl.WpfGraphControl
         public static object CreateMenuItem(string title, VoidDelegate voidVoidDelegate)
         {
             var menuItem = new WMenuItem { Header = title };
+            // ReSharper disable once RedundantCast
             menuItem.Click += (WRoutedEventHandler)(delegate { voidVoidDelegate(); });
             return menuItem;
         }

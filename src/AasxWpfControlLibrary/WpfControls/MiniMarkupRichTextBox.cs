@@ -19,8 +19,9 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xml;
+using AasxIntegrationBase.MiniMarkup;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.MiniMarkup;
+using AasxPackageLogic;
 
 namespace AasxWpfControlLibrary.WpfControls
 {

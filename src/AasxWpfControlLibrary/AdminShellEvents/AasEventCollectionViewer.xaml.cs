@@ -22,8 +22,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase.AdminShellEvents;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary.PackageCentral;
-using AdminShellEvents;
 
 namespace AasxWpfControlLibrary.AdminShellEvents
 {

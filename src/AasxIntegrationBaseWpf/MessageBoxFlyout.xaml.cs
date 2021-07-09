@@ -1,5 +1,5 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Copyright (c) 2018-2019 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
@@ -23,19 +23,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase
 {
     public partial class MessageBoxFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
-        public MessageBoxResult Result = MessageBoxResult.None;
+        public AnyUiMessageBoxResult Result = AnyUiMessageBoxResult.None;
 
-        private Dictionary<Button, MessageBoxResult> buttonToResult = new Dictionary<Button, MessageBoxResult>();
+        private Dictionary<Button, AnyUiMessageBoxResult> buttonToResult =
+            new Dictionary<Button, AnyUiMessageBoxResult>();
 
-        public MessageBoxFlyout(string message, string caption, MessageBoxButton buttons, MessageBoxImage image)
+        public MessageBoxFlyout(string message, string caption,
+            AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
             InitializeComponent();
 
@@ -45,64 +48,64 @@ namespace AasxIntegrationBase
 
             // image
             this.ImageIcon.Source = null;
-            if (image == MessageBoxImage.Error)
+            if (image == AnyUiMessageBoxImage.Error)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_error.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Hand)
+            if (image == AnyUiMessageBoxImage.Hand)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_hand.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Information)
+            if (image == AnyUiMessageBoxImage.Information)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri("/AasxIntegrationBaseWpf;component/Resources/msg_info.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Question)
+            if (image == AnyUiMessageBoxImage.Question)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_question.png", UriKind.RelativeOrAbsolute));
-            if (image == MessageBoxImage.Warning)
+            if (image == AnyUiMessageBoxImage.Warning)
                 this.ImageIcon.Source = new BitmapImage(
                     new Uri(
                         "/AasxIntegrationBaseWpf;component/Resources/msg_warning.png", UriKind.RelativeOrAbsolute));
 
             // buttons
             List<string> buttonDefs = new List<string>();
-            List<MessageBoxResult> buttonResults = new List<MessageBoxResult>();
-            if (buttons == MessageBoxButton.OK)
+            List<AnyUiMessageBoxResult> buttonResults = new List<AnyUiMessageBoxResult>();
+            if (buttons == AnyUiMessageBoxButton.OK)
             {
                 buttonDefs.Add("OK");
-                buttonResults.Add(MessageBoxResult.OK);
+                buttonResults.Add(AnyUiMessageBoxResult.OK);
             }
-            if (buttons == MessageBoxButton.OKCancel)
+            if (buttons == AnyUiMessageBoxButton.OKCancel)
             {
                 buttonDefs.Add("OK");
-                buttonResults.Add(MessageBoxResult.OK);
+                buttonResults.Add(AnyUiMessageBoxResult.OK);
                 buttonDefs.Add("Cancel");
-                buttonResults.Add(MessageBoxResult.Cancel);
+                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
             }
-            if (buttons == MessageBoxButton.YesNo)
+            if (buttons == AnyUiMessageBoxButton.YesNo)
             {
                 buttonDefs.Add("Yes");
-                buttonResults.Add(MessageBoxResult.Yes);
+                buttonResults.Add(AnyUiMessageBoxResult.Yes);
                 buttonDefs.Add("No");
-                buttonResults.Add(MessageBoxResult.No);
+                buttonResults.Add(AnyUiMessageBoxResult.No);
             }
-            if (buttons == MessageBoxButton.YesNoCancel)
+            if (buttons == AnyUiMessageBoxButton.YesNoCancel)
             {
                 buttonDefs.Add("Yes");
-                buttonResults.Add(MessageBoxResult.Yes);
+                buttonResults.Add(AnyUiMessageBoxResult.Yes);
                 buttonDefs.Add("No");
-                buttonResults.Add(MessageBoxResult.No);
+                buttonResults.Add(AnyUiMessageBoxResult.No);
                 buttonDefs.Add("Cancel");
-                buttonResults.Add(MessageBoxResult.Cancel);
+                buttonResults.Add(AnyUiMessageBoxResult.Cancel);
             }
             this.StackPanelButtons.Children.Clear();
-            buttonToResult = new Dictionary<Button, MessageBoxResult>();
+            buttonToResult = new Dictionary<Button, AnyUiMessageBoxResult>();
             foreach (var bd in buttonDefs)
             {
                 var b = new Button();
                 b.Style = (Style)FindResource("TranspRoundCorner");
                 b.Content = "" + bd;
                 b.Height = 40;
-                b.Width = Math.Max(40, 10 * bd.Length);
+                b.Width = 40;
                 b.Margin = new Thickness(5, 0, 5, 0);
                 b.Foreground = Brushes.White;
                 b.Click += StackPanelButton_Click;
@@ -138,7 +141,7 @@ namespace AasxIntegrationBase
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
-            this.Result = MessageBoxResult.None;
+            this.Result = AnyUiMessageBoxResult.None;
             ControlClosed?.Invoke();
         }
 
@@ -151,24 +154,24 @@ namespace AasxIntegrationBase
             if (Keyboard.Modifiers != ModifierKeys.None && Keyboard.Modifiers != ModifierKeys.Shift)
                 return;
 
-            if (e.Key == Key.Y && buttonToResult.ContainsValue(MessageBoxResult.Yes))
+            if (e.Key == Key.Y && buttonToResult.ContainsValue(AnyUiMessageBoxResult.Yes))
             {
-                this.Result = MessageBoxResult.Yes;
+                this.Result = AnyUiMessageBoxResult.Yes;
                 ControlClosed?.Invoke();
             }
-            if ((e.Key == Key.N || e.Key == Key.Escape) && buttonToResult.ContainsValue(MessageBoxResult.No))
+            if ((e.Key == Key.N || e.Key == Key.Escape) && buttonToResult.ContainsValue(AnyUiMessageBoxResult.No))
             {
-                this.Result = MessageBoxResult.No;
+                this.Result = AnyUiMessageBoxResult.No;
                 ControlClosed?.Invoke();
             }
-            if ((e.Key == Key.O || e.Key == Key.Return) && buttonToResult.ContainsValue(MessageBoxResult.OK))
+            if ((e.Key == Key.O || e.Key == Key.Return) && buttonToResult.ContainsValue(AnyUiMessageBoxResult.OK))
             {
-                this.Result = MessageBoxResult.OK;
+                this.Result = AnyUiMessageBoxResult.OK;
                 ControlClosed?.Invoke();
             }
-            if ((e.Key == Key.C || e.Key == Key.Escape) && buttonToResult.ContainsValue(MessageBoxResult.Cancel))
+            if ((e.Key == Key.C || e.Key == Key.Escape) && buttonToResult.ContainsValue(AnyUiMessageBoxResult.Cancel))
             {
-                this.Result = MessageBoxResult.Cancel;
+                this.Result = AnyUiMessageBoxResult.Cancel;
                 ControlClosed?.Invoke();
             }
         }

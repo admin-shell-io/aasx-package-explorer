@@ -25,7 +25,9 @@ using System.Windows.Navigation;
 using AasxIntegrationBase;
 using AasxIntegrationBaseWpf;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.PackageCentral;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
+using AnyUi;
 
 namespace AasxWpfControlLibrary.PackageCentral
 {
@@ -38,7 +40,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public event Action<Control, PackageContainerListBase, PackageContainerRepoItem> FileDoubleClick;
         public event Action<Control, PackageContainerListBase, string[]> FileDrop;
 
-        private PackageCentral _packageCentral;
+        private AasxPackageLogic.PackageCentral.PackageCentral _packageCentral;
         private IFlyoutProvider _flyout;
         private IManageVisualAasxElements _manageVisuElems;
         private PackageContainerListOfList _repoList;
@@ -46,7 +48,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         /// <summary>
         /// In order to directly create new valid items, PakcageCentral shall be given
         /// </summary>
-        public PackageCentral PackageCentral { set { _packageCentral = value; } }
+        public AasxPackageLogic.PackageCentral.PackageCentral PackageCentral { set { _packageCentral = value; } }
 
         /// <summary>
         /// Window (handler) which provides flyout control for this control. Is expected to sit in the MainWindow.
@@ -107,10 +109,10 @@ namespace AasxWpfControlLibrary.PackageCentral
             {
                 if (cmd == "filerepoclose")
                 {
-                    if (MessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
+                    if (AnyUiMessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
                             "Close file repository? Pending changes might be unsaved!",
                             "AASX File Repository",
-                            MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                            AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                         return;
 
                     RepoList.Remove(fr);
@@ -214,11 +216,11 @@ namespace AasxWpfControlLibrary.PackageCentral
                     if (fr is PackageContainerListLocal frl)
                     {
                         // make sure
-                        if (MessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
+                        if (AnyUiMessageBoxResult.OK != _flyout.MessageBoxFlyoutShow(
                                 "Make filename relative to the locaton of the file repository? " +
                                 "This enables re-locating the repository.",
                                 "AASX File Repository",
-                                MessageBoxButton.OKCancel, MessageBoxImage.Hand))
+                                AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand))
                             return;
 
                         if (!frl.Filename.HasContent())
@@ -230,13 +232,13 @@ namespace AasxWpfControlLibrary.PackageCentral
                         // execute (is data binded)
                         try
                         {
-                            AasxPackageExplorer.Log.Singleton.Info("Make AASX file names relative to {0}",
+                            Log.Singleton.Info("Make AASX file names relative to {0}",
                                 Path.GetFullPath(Path.GetDirectoryName("" + frl.Filename)));
                             frl.MakeFilenamesRelative();
                         }
                         catch (Exception ex)
                         {
-                            AasxPackageExplorer.Log.Singleton.Error(
+                            Log.Singleton.Error(
                                 ex, $"When making AASX file names in repository relative.");
                         }
                     }
@@ -271,7 +273,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                         _flyout.MessageBoxFlyoutShow(
                             "No valid AAS selected. The application needs to be in edit mode. " +
                             "Aborting.", "AASX File repository",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
+                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                         return;
                     }
 
@@ -313,7 +315,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                 {
                     // read server address
                     var uc = new TextBoxFlyout("REST endpoint (without \"/server/listaas\"):",
-                        MessageBoxImage.Question);
+                        AnyUiMessageBoxImage.Question);
                     uc.Text = Options.Curr.DefaultConnectRepositoryLocation;
                     _flyout.StartFlyoverModal(uc);
                     if (!uc.Result)
