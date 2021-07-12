@@ -143,7 +143,10 @@ namespace BlazorUI
             aasxFiles = Directory.GetFiles(".", "*.aasx");
             Array.Sort(aasxFiles);
             if (load)
-                loadAasx(aasxFiles[0]);
+            {
+                if (aasxFiles.Count() > 0)
+                    loadAasx(aasxFiles[0]);
+            }
         }
 
         public static async Task getAasxAsync(string input)
@@ -206,8 +209,9 @@ namespace BlazorUI
             stack17 = new AnyUiStackPanel();
             stack17.Orientation = AnyUiOrientation.Vertical;
 
-            helper.DisplayOrEditAasEntityAas(
-                    packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+            if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
+                helper.DisplayOrEditAasEntityAas(
+                        packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
 
             AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
 #endif
