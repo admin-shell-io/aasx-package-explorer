@@ -166,5 +166,45 @@ namespace AnyUi
             htmlDotnetEventIn = false;
             return r;
         }
+
+        /// <summary>
+        /// Shows specified dialogue hardware-independent. The technology implementation will show the
+        /// dialogue based on the type of provided <c>dialogueData</c>. 
+        /// Modal dialogue: this function will block, until user ends dialogue.
+        /// </summary>
+        /// <param name="dialogueData"></param>
+        /// <returns>If the dialogue was end with "OK" or similar success.</returns>
+        public override bool StartFlyoverModal(AnyUiDialogueDataBase dialogueData)
+        {
+            // access
+            if (dialogueData == null)
+                return false;
+
+            // make sure to reset
+            dialogueData.Result = false;
+
+            htmlEventType = "StartFlyoverModal";
+            htmlEventInputs.Add(dialogueData);
+            
+            htmlEventIn = true;
+            Program.signalNewData(2); // build new tree
+
+            while (!htmlEventOut) ;
+            if (htmlEventOutputs.Count == 2)
+            {
+                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                {
+                    ddte.Text = (string)htmlEventOutputs[0];
+                    ddte.Result = (bool)htmlEventOutputs[1];
+                }
+            }
+            htmlEventOutputs.Clear();
+            htmlEventType = "";
+            htmlEventOut = false;
+            htmlDotnetEventIn = false;
+
+            // result
+            return dialogueData.Result;
+        }
     }
 }

@@ -46,6 +46,24 @@
                                         <button value="Cancel">Cancel</button>
                                     }
                                     break;
+                                case "StartFlyoverModal":
+                                    AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                    if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                                    {
+                                        string flyCaption = ddte.Caption;
+                                        // string flyText = ddte.Text;
+                                        flyText = ddte.Text;
+                                        AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                        <p><span style="font-weight:bold">@flyCaption</span></p>
+                                        // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
+                                        <textarea cols="100" rows="20"
+                                                  style="resize:both;"
+                                         >@flyText</textarea>
+                                        <br />
+                                        <button value="OK">OK</button>
+                                        <button value="Cancel">Cancel</button>
+                                    }
+                                    break;
                                 case "contextMenu":
                                     // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
                                     AnyUiSpecialActionContextMenu cntlcm =
@@ -71,7 +89,15 @@
                     </Modal>
                 }
 
-                @code{
+                @code {
+                    private void MyTextInput(string value)
+                    {
+                        flyText = value;
+                    }
+                }
+                @code {
+                    public string flyText { get; set; }
+
                     void OnClose(string value)
                     {
                         AnyUiDisplayContextHtml.htmlEventOutputs.Clear();
@@ -96,6 +122,19 @@
                                         break;
                                 }
                                 AnyUiDisplayContextHtml.htmlEventOutputs.Add(r);
+                                break;
+                            case "StartFlyoverModal":
+                                AnyUiDisplayContextHtml.htmlEventIn = false;
+                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(flyText);
+                                switch (value)
+                                {
+                                    case "OK":
+                                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(true);
+                                        break;
+                                    case "Cancel":
+                                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(false);
+                                        break;
+                                }
                                 break;
                             case "contextMenu":
                                 break;
