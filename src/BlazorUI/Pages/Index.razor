@@ -50,8 +50,7 @@
                                     AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)AnyUiDisplayContextHtml.htmlEventInputs[0];
                                     if (dialogueData is AnyUiDialogueDataTextEditor ddte)
                                     {
-                                        string flyCaption = ddte.Caption;
-                                        // string flyText = ddte.Text;
+                                        string flyCaption = ddte.Caption + " - read only";
                                         flyText = ddte.Text;
                                         AnyUiDisplayContextHtml.htmlEventInputs.Clear();
                                         <p><span style="font-weight:bold">@flyCaption</span></p>
