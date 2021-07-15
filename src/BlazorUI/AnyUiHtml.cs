@@ -119,6 +119,7 @@ namespace AnyUi
             lock (htmlDotnetLock)
             {
                 while (htmlDotnetEventIn) ;
+                htmlEventInputs.Clear();
                 htmlDotnetEventType = "setValueLambda";
                 htmlDotnetEventInputs.Add(el);
                 htmlDotnetEventInputs.Add(o);
@@ -131,6 +132,7 @@ namespace AnyUi
             lock (htmlDotnetLock)
             {
                 while (htmlDotnetEventIn) ;
+                htmlEventInputs.Clear();
                 htmlDotnetEventType = "contextMenu";
                 htmlDotnetEventInputs.Add(el);
                 htmlDotnetEventInputs.Add(cntlcm);
@@ -149,6 +151,7 @@ namespace AnyUi
         public override AnyUiMessageBoxResult MessageBoxFlyoutShow(
             string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
+            htmlEventInputs.Clear();
             htmlEventType = "MessageBoxFlyoutShow";
             htmlEventInputs.Add(message);
             htmlEventInputs.Add(caption);
@@ -160,9 +163,11 @@ namespace AnyUi
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
             if (htmlEventOutputs.Count == 1)
                 r = (AnyUiMessageBoxResult)htmlEventOutputs[0];
-            htmlEventOutputs.Clear();
+
             htmlEventType = "";
+            htmlEventOutputs.Clear();
             htmlEventOut = false;
+            htmlEventInputs.Clear();
             htmlDotnetEventIn = false;
             return r;
         }
@@ -183,6 +188,7 @@ namespace AnyUi
             // make sure to reset
             dialogueData.Result = false;
 
+            htmlEventInputs.Clear();
             htmlEventType = "StartFlyoverModal";
             htmlEventInputs.Add(dialogueData);
             
@@ -209,9 +215,10 @@ namespace AnyUi
                     ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
                 }
             }
-            htmlEventOutputs.Clear();
             htmlEventType = "";
+            htmlEventOutputs.Clear();
             htmlEventOut = false;
+            htmlEventInputs.Clear();
             htmlDotnetEventIn = false;
 
             // result

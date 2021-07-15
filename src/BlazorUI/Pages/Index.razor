@@ -21,81 +21,84 @@
                 {
                     <Modal @bind-Open="AnyUiDisplayContextHtml.htmlEventIn" Close="OnClose">
                         <form method="dialog">
-                            @switch (AnyUiDisplayContextHtml.htmlEventType)
+                            @if (AnyUiDisplayContextHtml.htmlEventInputs.Count != 0)
                             {
-                                case "MessageBoxFlyoutShow":
-                                    string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                    string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
-                                    AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
-                                    AnyUiDisplayContextHtml.htmlEventInputs.Clear();
-                                    <p><span style="font-weight:bold">@caption</span></p>
-                                    <br />
-                                    <p>@message</p>
-                                    <br />
-                                    @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
-                                    {
-                                        <button value="OK">OK</button>
-                                    }
-                                    @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
-                                    {
-                                        <button value="Yes">Yes</button>
-                                        <button value="No">No</button>
-                                    }
-                                    @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
-                                    {
-                                        <button value="Cancel">Cancel</button>
-                                    }
-                                    break;
-                                case "StartFlyoverModal":
-                                    AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                    if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-                                    {
-                                        string flyCaption = ddte.Caption + " - read only";
-                                        flyText = ddte.Text;
+                                switch (AnyUiDisplayContextHtml.htmlEventType)
+                                {
+                                    case "MessageBoxFlyoutShow":
+                                        string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                        string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                        AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
                                         AnyUiDisplayContextHtml.htmlEventInputs.Clear();
-                                        <p><span style="font-weight:bold">@flyCaption</span></p>
-                                        // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
-                                        <textarea cols="100" rows="20"
-                                                  style="resize:both;">@flyText</textarea>
+                                        <p><span style="font-weight:bold">@caption</span></p>
                                         <br />
-                                        <button value="OK">OK</button>
-                                        <button value="Cancel">Cancel</button>
-                                    }
-                                    if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
-                                    {
-                                        int sizeDdsfl = ddsfl.ListOfItems.Count;
-                                        int iDdsfl = 0;
-                                        <select class="form-control selectpicker" size="@sizeDdsfl"
-                                                @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
-                                            @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                        <p>@message</p>
+                                        <br />
+                                        @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
+                                        {
+                                            <button value="OK">OK</button>
+                                        }
+                                        @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                        {
+                                            <button value="Yes">Yes</button>
+                                            <button value="No">No</button>
+                                        }
+                                        @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                        {
+                                            <button value="Cancel">Cancel</button>
+                                        }
+                                        break;
+                                    case "StartFlyoverModal":
+                                        AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                        if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                                        {
+                                            string flyCaption = ddte.Caption + " - read only";
+                                            flyText = ddte.Text;
+                                            AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                            <p><span style="font-weight:bold">@flyCaption</span></p>
+                                            // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
+                                            <textarea cols="100" rows="20"
+                                                      style="resize:both;">@flyText</textarea>
+                                            <br />
+                                            <button value="OK">OK</button>
+                                            <button value="Cancel">Cancel</button>
+                                        }
+                                        if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                                        {
+                                            int sizeDdsfl = ddsfl.ListOfItems.Count;
+                                            int iDdsfl = 0;
+                                            <select class="form-control selectpicker" size="@sizeDdsfl"
+                                                    @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
+                                                @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                                {
+                                                    // menu item itself
+                                                    string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
+                                                    <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                                }
+                                            </select>
+                                        }
+                                        break;
+                                    case "contextMenu":
+                                        // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                        AnyUiSpecialActionContextMenu cntlcm =
+                                            (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                        var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                                        int i = 0;
+                                        string icon = "" + cntlcm.MenuItemHeaders[0];
+                                        string header = "" + cntlcm.MenuItemHeaders[1];
+                                        // string v = i + ": " + icon + " " + header;
+                                        <select class="form-control selectpicker" size="@nmi"
+                                                @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                            @for (i = 0; i < nmi; i++)
                                             {
                                                 // menu item itself
-                                                string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
-                                                <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                                icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                                header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                                <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
                                             }
                                         </select>
-                                    }
-                                    break;
-                                case "contextMenu":
-                                    // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                    AnyUiSpecialActionContextMenu cntlcm =
-                                        (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
-                                    var nmi = cntlcm.MenuItemHeaders.Length / 2;
-                                    int i = 0;
-                                    string icon = "" + cntlcm.MenuItemHeaders[0];
-                                    string header = "" + cntlcm.MenuItemHeaders[1];
-                                    // string v = i + ": " + icon + " " + header;
-                                    <select class="form-control selectpicker" size="@nmi"
-                                            @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
-                                        @for (i = 0; i < nmi; i++)
-                                        {
-                                            // menu item itself
-                                            icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
-                                            header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
-                                            <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
-                                        }
-                                    </select>
-                                    break;
+                                        break;
+                                }
                             }
                         </form>
                     </Modal>
