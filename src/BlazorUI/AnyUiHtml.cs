@@ -190,12 +190,23 @@ namespace AnyUi
             Program.signalNewData(2); // build new tree
 
             while (!htmlEventOut) ;
-            if (htmlEventOutputs.Count == 2)
+            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
             {
-                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                if (htmlEventOutputs.Count == 2)
                 {
                     ddte.Text = (string)htmlEventOutputs[0];
                     ddte.Result = (bool)htmlEventOutputs[1];
+                }
+            }
+            if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+            {
+                ddsfl.Result = false;
+                if (htmlEventOutputs.Count == 1)
+                {
+                    int iDdsfl = (int)htmlEventOutputs[0];
+                    ddsfl.Result = true;
+                    ddsfl.ResultIndex = iDdsfl;
+                    ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
                 }
             }
             htmlEventOutputs.Clear();

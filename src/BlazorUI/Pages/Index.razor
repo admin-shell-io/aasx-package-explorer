@@ -56,11 +56,24 @@
                                         <p><span style="font-weight:bold">@flyCaption</span></p>
                                         // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
                                         <textarea cols="100" rows="20"
-                                                  style="resize:both;"
-                                         >@flyText</textarea>
+                                                  style="resize:both;">@flyText</textarea>
                                         <br />
                                         <button value="OK">OK</button>
                                         <button value="Cancel">Cancel</button>
+                                    }
+                                    if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                                    {
+                                        int sizeDdsfl = ddsfl.ListOfItems.Count;
+                                        int iDdsfl = 0;
+                                        <select class="form-control selectpicker" size="@sizeDdsfl"
+                                                @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
+                                            @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                            {
+                                                // menu item itself
+                                                string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
+                                                <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                            }
+                                        </select>
                                     }
                                     break;
                                 case "contextMenu":
@@ -89,12 +102,29 @@
                 }
 
                 @code {
+                    void MyContextMenuSelect(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
+                        AnyUiDisplayContextHtml.htmlEventIn = false;
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                    }
+
+                    void MyDialogDataSelectFromList(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
+                        AnyUiDisplayContextHtml.htmlEventIn = false;
+                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                    }
+
                     private void MyTextInput(string value)
                     {
                         flyText = value;
                     }
-                }
-                @code {
+
                     public string flyText { get; set; }
 
                     void OnClose(string value)
@@ -138,15 +168,6 @@
                             case "contextMenu":
                                 break;
                         }
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
-                    }
-
-                    void MyContextMenuSelect(string value)
-                    {
-                        string[] s = value.Split(':');
-                        int i = Convert.ToInt32(s[0]);
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
-                        AnyUiDisplayContextHtml.htmlEventIn = false;
                         AnyUiDisplayContextHtml.htmlEventOut = true;
                     }
                 }
