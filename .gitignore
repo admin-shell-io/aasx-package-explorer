@@ -16,3 +16,6 @@ artefacts/
 
 # Sample AASXs
 sample-aasx/
+/.vs/slnx.sqlite
+/.vs/aasx-package-explorer_fork/v16/.suo
+/.vs
