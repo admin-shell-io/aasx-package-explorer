@@ -1,8 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
+@using AasxPackageLogic;
+@using AasxPackageLogic.PackageCentral;
 
 @{
-// resharper disable all
+    // resharper disable all
 }
 
 @*@<div class="sidebar">
@@ -18,9 +20,9 @@
                     <span style="font-weight:bold">Upload:</span>
                     <InputFile OnChange="HandleFileSelected" />
 
-                @code {
-                    // resharper disable once UnusedField.Compiler
-                    IFileListEntry file;
+                    @code {
+                        // resharper disable once UnusedField.Compiler
+                        IFileListEntry file;
 
                         async Task HandleFileSelected(IFileListEntry[] files)
                         {
@@ -30,10 +32,10 @@
                                 var fileStream = System.IO.File.Create(file.Name);
                                 await file.Data.CopyToAsync(fileStream);
                                 fileStream.Close();
+                                await InvokeAsync(() => Program.loadAasxFiles(false));
+                                await InvokeAsync(() => Program.loadAasx(file.Name));
+                                this.StateHasChanged();
                             }
-                            await InvokeAsync(() => Program.loadAasxFiles(false));
-                            await InvokeAsync(() => Program.loadAasx(file.Name));
-                            this.StateHasChanged();
                         }
                     }
                 </div>
@@ -58,7 +60,33 @@
                             value = value.ToLower();
                             if (value != "" && (value.Contains("http://") || value.Contains("https://")))
                             {
-                                await InvokeAsync(async () => await Program.getAasxAsync(value));
+                                if (value.Contains("getaasx"))
+                                {
+                                    await InvokeAsync(async () => await Program.getAasxAsync(value));
+                                }
+                                else // repo
+                                {
+                                    string fn = value;
+                                    var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+                                    // Program._packageCentral.Repositories.Add(fr);
+                                    Program.repository = fr as PackageContainerListHttpRestRepository;
+                                    var task = Task.Run(async () => await Program.repository.SyncronizeFromServerAsync());
+                                    var r = task.Result;
+                                    if (Program.repository.FileMap.Count > 0)
+                                    {
+                                        Program.aasxFiles = new string[Program.repository.FileMap.Count];
+                                        for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                        {
+                                            Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
+                                        }
+                                        var repoFile = Program.repository.FileMap[0];
+                                        var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                        Program.env = container.Env;
+                                        Program.editMode = false;
+                                        Program.thumbNail = null;
+                                        Program.signalNewData(3);
+                                    }
+                                }
                                 this.StateHasChanged();
                             }
                         }
@@ -82,7 +110,22 @@
                         @code {
                             private async void MyAasxSelect(string value)
                             {
-                                await InvokeAsync(() => Program.loadAasx(value));
+                                // await InvokeAsync(() => Program.loadAasx(value));
+                                if (Program.repository.FileMap.Count > 0)
+                                {
+                                    for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                    {
+                                        if (value == Program.repository.FileMap[i].InfoIds)
+                                        {
+                                            var repoFile = Program.repository.FileMap[i];
+                                            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                            Program.env = container.Env;
+                                            Program.editMode = false;
+                                            Program.thumbNail = null;
+                                            Program.signalNewData(3);
+                                        }
+                                    }
+                                }
                                 this.StateHasChanged();
                             }
                         }

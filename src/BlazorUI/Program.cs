@@ -82,11 +82,12 @@ namespace BlazorUI
         }
 
         public static AdminShellPackageEnv env = null;
-        public static string[] aasxFiles = null;
+        public static string[] aasxFiles = new string[1];
         public static string aasxFileSelected = "";
         public static bool editMode = false;
         public static bool hintMode = true;
         public static PackageCentral packages = null;
+        public static PackageContainerListHttpRestRepository repository = null;
         public static DispEditHelperEntities helper = null;
         public static ModifyRepo repo = null;
 
@@ -184,17 +185,33 @@ namespace BlazorUI
             loadAasx(contentFn);
         }
 
+        public static PackageCentral _packageCentral = null;
+
         public static void Main(string[] args)
         {
             //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
 
-            loadAasxFiles();
+            // loadAasxFiles();
 #if __test__PackageLogic
 #else
 
             packages = new PackageCentral();
+            _packageCentral = packages;
             // TODO (MIHO, 2021-06-07): how to initialize?
-            packages.MainItem.TakeOver(env);
+            // packages.AuxItem.New();
+            /*
+            string fn = "https://admin-shell-io.com/51411";
+            var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+            repository = fr as PackageContainerListHttpRestRepository;
+            var task = Task.Run(async () => await repository.SyncronizeFromServerAsync());
+            var r = task.Result;
+            var repoFile = repository.FileMap[6];
+            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+            env = container.Env;
+            */
+
+            env = null;
+            // packages.MainItem.TakeOver(env);
 
             helper = new DispEditHelperEntities();
             helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
