@@ -472,8 +472,26 @@ namespace AasxPackageLogic
                     DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, entities);
                 }
 
-                if (first is VisualElementOperationVariable opv)
+                if (first is VisualElementOperationVariable opv && parent is AdminShell.Operation oppa)
                 {
+                    // sanity check: same dir?
+                    var sameDir = true;
+                    foreach (var ent in entities)
+                        if (ent is VisualElementOperationVariable entopv)
+                            if (entopv.theDir != opv.theDir)
+                                sameDir = false;
+
+                    // up down delete
+                    if (sameDir)
+                    {
+                        var bos = entities.GetListOfMapResults<AdminShell.OperationVariable,
+                           VisualElementOperationVariable>((ve) => ve?.theOpVar);
+                        EntityListMultipleUpDownDeleteHelper(stack, repo,
+                            oppa[opv.theDir], bos, indexInfo, reFocus: true,
+                            alternativeFocus: oppa);
+                    }
+
+                    // cut copy
                     DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, entities);
                 }
 

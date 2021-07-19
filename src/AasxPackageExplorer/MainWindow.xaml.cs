@@ -970,7 +970,7 @@ namespace AasxPackageExplorer
                     this.DisplayElements.ExpandAllItems();
 
                     // now: search
-                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
+                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
                 }
                 // fake selection
                 RedrawElementView(hightlightField: wish.HighlightField);

@@ -388,7 +388,7 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
-        public bool TrySelectMainDataObject(object dataObject, bool wishExpanded)
+        public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?
             var ve = SearchVisualElementOnMainDataObject(dataObject);
@@ -410,7 +410,7 @@ namespace AasxPackageExplorer
                 FireSelectedItem();
         }
 
-        public bool TrySelectVisualElement(VisualElementGeneric ve, bool wishExpanded)
+        public bool TrySelectVisualElement(VisualElementGeneric ve, bool? wishExpanded)
         {
             // access?
             if (ve == null)
@@ -419,7 +419,7 @@ namespace AasxPackageExplorer
             // select (but no callback!)
             SelectSingleVisualElement(ve, preventFireItem: true);
 
-            if (wishExpanded)
+            if (wishExpanded == true)
             {
                 // go upward the tree in order to expand, as well
                 var sii = ve;
