@@ -195,7 +195,7 @@ namespace AasxPackageLogic
             if (env.ConceptDescriptions == null)
                 env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
             if (env.Submodels == null)
-                env.Submodels = new List<AdminShell.Submodel>();
+                env.Submodels = new AdminShell.ListOfSubmodels();
 
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env

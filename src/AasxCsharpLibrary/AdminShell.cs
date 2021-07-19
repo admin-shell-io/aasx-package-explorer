@@ -3885,7 +3885,7 @@ namespace AdminShellNS
             [XmlIgnore] // will be ignored, anyway
             private ListOfAssets assets = new ListOfAssets();
             [XmlIgnore] // will be ignored, anyway
-            private List<Submodel> submodels = new List<Submodel>();
+            private ListOfSubmodels submodels = new ListOfSubmodels();
             [XmlIgnore] // will be ignored, anyway
             private ListOfConceptDescriptions conceptDescriptions = new ListOfConceptDescriptions();
 
@@ -3912,7 +3912,7 @@ namespace AdminShellNS
             [XmlArray("submodels")]
             [XmlArrayItem("submodel")]
             [JsonProperty(PropertyName = "submodels")]
-            public List<Submodel> Submodels
+            public ListOfSubmodels Submodels
             {
                 get { return submodels; }
                 set { submodels = value; }
@@ -4706,7 +4706,7 @@ namespace AdminShellNS
             public static AdministrationShellEnv CreateFromExistingEnv(AdministrationShellEnv src,
                 List<AdministrationShell> filterForAas = null,
                 List<Asset> filterForAsset = null,
-                List<Submodel> filterForSubmodel = null,
+                ListOfSubmodels filterForSubmodel = null,
                 List<ConceptDescription> filterForCD = null)
             {
                 // prepare defaults
@@ -4715,7 +4715,7 @@ namespace AdminShellNS
                 if (filterForAsset == null)
                     filterForAsset = new List<Asset>();
                 if (filterForSubmodel == null)
-                    filterForSubmodel = new List<Submodel>();
+                    filterForSubmodel = new ListOfSubmodels();
                 if (filterForCD == null)
                     filterForCD = new List<ConceptDescription>();
 
@@ -6593,6 +6593,21 @@ namespace AdminShellNS
                 // now, give back
                 foreach (var r in temp)
                     yield return r;
+            }
+        }
+
+        public class ListOfSubmodels : List<Submodel>, IAasElement
+        {
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Submodels", "SMS");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
             }
         }
 

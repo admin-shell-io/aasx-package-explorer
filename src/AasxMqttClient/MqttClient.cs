@@ -287,7 +287,7 @@ namespace AasxMqttClient
 
                 var msg = new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
-                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                                 aasIdShort: aas.idShort, aasId: aas.identification,
                                 smIdShort: sm.idShort, smId: sm.identification,
                                 path: pathStr))
@@ -345,7 +345,7 @@ namespace AasxMqttClient
                     messages.Add(
                         new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
-                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                                 aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
                                 smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                                 path: pathStr))
@@ -389,7 +389,7 @@ namespace AasxMqttClient
                 _logger?.Info("Publish single value (update value)");
             var message = new MqttApplicationMessageBuilder()
                     .WithTopic(GenerateTopic(
-                        _diaData.EventTopic, defaultIfNull: "SingleValue",
+                        _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                         aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
                         smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                         path: pathStr))

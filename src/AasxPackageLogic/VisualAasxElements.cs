@@ -476,6 +476,20 @@ namespace AasxPackageLogic
             }
             return res;
         }
+
+        public List<T> GetListOfMapResults<T, S>(Func<S,T> lambda) where S : class
+        {
+            var res = new List<T>();
+            foreach (var x in this)
+            {
+                if (lambda == null || !(x is S))
+                    continue;
+                var r = lambda.Invoke(x as S);
+                if (r != null)
+                    res.Add(r);
+            }
+            return res;
+        }
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
@@ -1683,7 +1697,8 @@ namespace AasxPackageLogic
                     // over all Submodels (not the refs)
                     //
                     var tiAllSubmodels = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels,
+                        mainDataObject: env.Submodels);
                     tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAllSubmodels);
 

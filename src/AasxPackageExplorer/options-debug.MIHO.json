@@ -13,6 +13,7 @@
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
+  "AasxToLoad": "C:\\Users\\miho\\Desktop\\test.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
