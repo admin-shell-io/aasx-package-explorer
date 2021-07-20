@@ -43,7 +43,7 @@
                     <span>&nbsp&nbsp&nbsp&nbsp</span>
                     <table>
                         <tr>
-                            <td><span style="font-weight:bold">GET:</span></td>
+                            <td><span style="font-weight:bold">Enter URL or *:</span></td>
                             <td>
                                 @{
                                     string text = "";
@@ -57,37 +57,52 @@
                     @code {
                         private async void MyTextInput(string value)
                         {
-                            value = value.ToLower();
-                            if (value != "" && (value.Contains("http://") || value.Contains("https://")))
+                            try
                             {
-                                if (value.Contains("getaasx"))
+                                value = value.ToLower();
+                                if (value != "" && (value.Contains("http://") || value.Contains("https://")))
                                 {
-                                    await InvokeAsync(async () => await Program.getAasxAsync(value));
-                                }
-                                else // repo
-                                {
-                                    string fn = value;
-                                    var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
-                                    // Program._packageCentral.Repositories.Add(fr);
-                                    Program.repository = fr as PackageContainerListHttpRestRepository;
-                                    var task = Task.Run(async () => await Program.repository.SyncronizeFromServerAsync());
-                                    var r = task.Result;
-                                    if (Program.repository.FileMap.Count > 0)
+                                    if (value.Contains("getaasx"))
                                     {
-                                        Program.aasxFiles = new string[Program.repository.FileMap.Count];
-                                        for (int i = 0; i < Program.repository.FileMap.Count; i++)
-                                        {
-                                            Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
-                                        }
-                                        var repoFile = Program.repository.FileMap[0];
-                                        var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                        Program.env = container.Env;
-                                        Program.editMode = false;
-                                        Program.thumbNail = null;
-                                        Program.signalNewData(3);
+                                        await InvokeAsync(async () => await Program.getAasxAsync(value));
                                     }
+                                    else // repo
+                                    {
+                                        string fn = value;
+                                        var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+                                        // Program._packageCentral.Repositories.Add(fr);
+                                        Program.repository = fr as PackageContainerListHttpRestRepository;
+                                        var task = Task.Run(async () => await Program.repository.SyncronizeFromServerAsync());
+                                        var r = task.Result;
+                                        if (Program.repository.FileMap.Count > 0)
+                                        {
+                                            Program.aasxFiles = new string[Program.repository.FileMap.Count];
+                                            for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                            {
+                                                Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
+                                            }
+                                            var repoFile = Program.repository.FileMap[0];
+                                            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                            Program.env = container.Env;
+                                            Program.editMode = false;
+                                            Program.thumbNail = null;
+                                            Program.signalNewData(3);
+                                        }
+                                    }
+                                    this.StateHasChanged();
                                 }
-                                this.StateHasChanged();
+                                if (value == "*" || value == "*.*")
+                                {
+                                    if (Program.repository?.FileMap?.Count > 0)
+                                    {
+                                        Program.repository.FileMap.Clear();
+                                    }
+                                    await InvokeAsync(() => Program.loadAasxFiles(true));
+                                    this.StateHasChanged();
+                                }
+                            }
+                            catch
+                            {
                             }
                         }
                     }
@@ -110,24 +125,33 @@
                         @code {
                             private async void MyAasxSelect(string value)
                             {
-                                // GIT Test
-                                // await InvokeAsync(() => Program.loadAasx(value));
-                                if (Program.repository.FileMap.Count > 0)
+                                try
                                 {
-                                    for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                    if (Program.repository?.FileMap?.Count > 0)
                                     {
-                                        if (value == Program.repository.FileMap[i].InfoIds)
+                                        for (int i = 0; i < Program.repository.FileMap.Count; i++)
                                         {
-                                            var repoFile = Program.repository.FileMap[i];
-                                            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                            Program.env = container.Env;
-                                            Program.editMode = false;
-                                            Program.thumbNail = null;
-                                            Program.signalNewData(3);
+                                            if (value == Program.repository.FileMap[i].InfoIds)
+                                            {
+                                                var repoFile = Program.repository.FileMap[i];
+                                                var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                Program.env = container.Env;
+                                                Program.editMode = false;
+                                                Program.thumbNail = null;
+                                                Program.signalNewData(3);
+                                            }
                                         }
                                     }
+                                    else if (Program.aasxFiles?.Length > 0)
+                                    {
+                                        await InvokeAsync(() => Program.loadAasx(value));
+                                        this.StateHasChanged();
+                                    }
+                                    this.StateHasChanged();
                                 }
-                                this.StateHasChanged();
+                                catch
+                                {
+                                }
                             }
                         }
                     }
