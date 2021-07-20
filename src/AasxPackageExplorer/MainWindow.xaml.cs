@@ -308,8 +308,8 @@ namespace AasxPackageExplorer
             try
             {
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
-                ////if (!doNotNavigateAfterLoaded)
-                //// 
+                if (!doNotNavigateAfterLoaded)
+                    UiCheckIfActivateLoadedNavTo(); 
             }
             catch (Exception ex)
             {
@@ -387,6 +387,9 @@ namespace AasxPackageExplorer
                 var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
                 if (bo == null)
                     return false;
+
+                // make sure that Submodel is expanded
+                this.DisplayElements.ExpandAllItems();
 
                 // still proceed?
                 var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
