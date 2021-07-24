@@ -9,131 +9,54 @@
 
 @*@<div class="sidebar">
         <NavMenu />
-    </div>*@
-<div class="main">
+    </div>
     <div class="top-row px-4">
+    <tr style="max-height:100%">
+*@
+<div class="main">
+    <div class="top-row px-5">
         <div class="col-12 row">
-            <div class="col-6" style="text-align:left">
-                <div class="row">
-                    @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-                    *@
-                    <span style="font-weight:bold">Upload:</span>
-                    <InputFile OnChange="HandleFileSelected" />
-
-                    @code {
-                        // resharper disable once UnusedField.Compiler
-                        IFileListEntry file;
-
-                        async Task HandleFileSelected(IFileListEntry[] files)
-                        {
-                            var file = files.FirstOrDefault();
-                            if (file != null)
-                            {
-                                var fileStream = System.IO.File.Create(file.Name);
-                                await file.Data.CopyToAsync(fileStream);
-                                fileStream.Close();
-                                await InvokeAsync(() => Program.loadAasxFiles(false));
-                                await InvokeAsync(() => Program.loadAasx(file.Name));
-                                this.StateHasChanged();
-                            }
+            <table border="0" cellspacing="2">
+                <tr>
+                    <td nowrap>
+                        <span style="font-weight:bold">Enter URL or *:</span>
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                    <td nowrap>
+                        @{
+                            string text = "";
+                            int ww = 80;
+                            <input size="@ww" value="@text"
+                                   @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
                         }
-                    }
-                </div>
-                <div class="row">
-                    <span>&nbsp&nbsp&nbsp&nbsp</span>
-                    <table>
-                        <tr>
-                            <td><span style="font-weight:bold">Enter URL or *:</span></td>
-                            <td>
-                                @{
-                                    string text = "";
-                                    int ww = 80;
-                                    <input size="@ww" value="@text"
-                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
-                                }
-                            </td>
-                        </tr>
-                    </table>
-                    @code {
-                        private async void MyTextInput(string value)
-                        {
-                            try
-                            {
-                                value = value.ToLower();
-                                if (value != "" && (value.Contains("http://") || value.Contains("https://")))
-                                {
-                                    if (value.Contains("getaasx"))
-                                    {
-                                        await InvokeAsync(async () => await Program.getAasxAsync(value));
-                                    }
-                                    else // repo
-                                    {
-                                        string fn = value;
-                                        var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
-                                        // Program._packageCentral.Repositories.Add(fr);
-                                        Program.repository = fr as PackageContainerListHttpRestRepository;
-                                        var task = Task.Run(async () => await Program.repository.SyncronizeFromServerAsync());
-                                        var r = task.Result;
-                                        if (Program.repository.FileMap.Count > 0)
-                                        {
-                                            Program.aasxFiles = new string[Program.repository.FileMap.Count];
-                                            for (int i = 0; i < Program.repository.FileMap.Count; i++)
-                                            {
-                                                Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
-                                            }
-                                            var repoFile = Program.repository.FileMap[0];
-                                            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                            Program.env = container.Env;
-                                            Program.editMode = false;
-                                            Program.thumbNail = null;
-                                            Program.signalNewData(3);
-                                        }
-                                    }
-                                    this.StateHasChanged();
-                                }
-                                if (value == "*" || value == "*.*")
-                                {
-                                    if (Program.repository?.FileMap?.Count > 0)
-                                    {
-                                        Program.repository.FileMap.Clear();
-                                    }
-                                    await InvokeAsync(() => Program.loadAasxFiles(true));
-                                    this.StateHasChanged();
-                                }
-                            }
-                            catch
-                            {
-                            }
-                        }
-                    }
-                    <span>&nbsp&nbsp&nbsp</span>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="row">
-                    @{
-                        <span>&nbsp&nbsp&nbsp</span>
-                        // string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-                        string w = "70%";
-                        <select class="form-control selectpicker" value="@Program.aasxFileSelected" style="width:@w"
-                                @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                            @foreach (var item in Program.aasxFiles)
-                            {
-                                <option value="@item">@item</option>
-                            }
-                        </select>
                         @code {
-                            private async void MyAasxSelect(string value)
+                            private async void MyTextInput(string value)
                             {
                                 try
                                 {
-                                    if (Program.repository?.FileMap?.Count > 0)
+                                    value = value.ToLower();
+                                    if (value != "" && (value.Contains("http://") || value.Contains("https://")))
                                     {
-                                        for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                        if (value.Contains("getaasx"))
                                         {
-                                            if (value == Program.repository.FileMap[i].InfoIds)
+                                            await InvokeAsync(async () => await Program.getAasxAsync(value));
+                                        }
+                                        else // repo
+                                        {
+                                            string fn = value;
+                                            var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+                                            // Program._packageCentral.Repositories.Add(fr);
+                                            Program.repository = fr as PackageContainerListHttpRestRepository;
+                                            var task = Task.Run(async () => await Program.repository.SyncronizeFromServerAsync());
+                                            var r = task.Result;
+                                            if (Program.repository.FileMap.Count > 0)
                                             {
-                                                var repoFile = Program.repository.FileMap[i];
+                                                Program.aasxFiles = new string[Program.repository.FileMap.Count];
+                                                for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                                {
+                                                    Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
+                                                }
+                                                var repoFile = Program.repository.FileMap[0];
                                                 var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
                                                 Program.env = container.Env;
                                                 Program.editMode = false;
@@ -141,44 +64,133 @@
                                                 Program.signalNewData(3);
                                             }
                                         }
-                                    }
-                                    else if (Program.aasxFiles?.Length > 0)
-                                    {
-                                        await InvokeAsync(() => Program.loadAasx(value));
                                         this.StateHasChanged();
                                     }
-                                    this.StateHasChanged();
+                                    if (value == "*" || value == "*.*")
+                                    {
+                                        if (Program.repository?.FileMap?.Count > 0)
+                                        {
+                                            Program.repository.FileMap.Clear();
+                                        }
+                                        await InvokeAsync(() => Program.loadAasxFiles(true));
+                                        this.StateHasChanged();
+                                    }
                                 }
                                 catch
                                 {
                                 }
                             }
                         }
-                    }
-                    <span>&nbsp&nbsp&nbsp</span>
-                    <button @onclick="toggleEditMode">
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                    <td nowrap></td>
+                    <td>
+                        <button @onclick="toggleEditMode">
+                            @{
+                                if (Program.editMode)
+                                {
+                                    <span>EditMode is ON</span>
+                                }
+                                else
+                                {
+                                    <span>EditMode is OFF</span>
+                                }
+                                Program.signalNewData(0);
+                            }
+                        </button>
+                        @code {
+                            private void toggleEditMode()
+                            {
+                                Program.editMode = !Program.editMode;
+                                this.StateHasChanged();
+                            }
+                        }
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td nowrap>
+                        <span style="font-weight:bold">Select:</span>
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                    <td nowrap>
                         @{
-                            if (Program.editMode)
-                            {
-                                <span>EditMode is ON</span>
+
+                            // string w = (Program.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                            // w = "50%";
+                            // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
+                            <select style="width:100%;max-width:100%;height:30px" value="@Program.aasxFileSelected"
+                                    @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
+                                @foreach (var item in Program.aasxFiles)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                            @code {
+                                private async void MyAasxSelect(string value)
+                                {
+                                    try
+                                    {
+                                        if (Program.repository?.FileMap?.Count > 0)
+                                        {
+                                            for (int i = 0; i < Program.repository.FileMap.Count; i++)
+                                            {
+                                                if (value == Program.repository.FileMap[i].InfoIds)
+                                                {
+                                                    var repoFile = Program.repository.FileMap[i];
+                                                    var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                    Program.env = container.Env;
+                                                    Program.editMode = false;
+                                                    Program.thumbNail = null;
+                                                    Program.signalNewData(3);
+                                                }
+                                            }
+                                        }
+                                        else if (Program.aasxFiles?.Length > 0)
+                                        {
+                                            await InvokeAsync(() => Program.loadAasx(value));
+                                            this.StateHasChanged();
+                                        }
+                                        this.StateHasChanged();
+                                    }
+                                    catch
+                                    {
+                                    }
+                                }
                             }
-                            else
+                        }
+                    </td>
+                    <td nowrap>
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                        <span style="font-weight:bold">Upload:</span>
+                    </td>
+                    <td nowrap>
+                        @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                        *@
+                        <InputFile OnChange="HandleFileSelected" />
+
+                        @code {
+                            // resharper disable once UnusedField.Compiler
+                            IFileListEntry file;
+
+                            async Task HandleFileSelected(IFileListEntry[] files)
                             {
-                                <span>EditMode is OFF</span>
+                                var file = files.FirstOrDefault();
+                                if (file != null)
+                                {
+                                    var fileStream = System.IO.File.Create(file.Name);
+                                    await file.Data.CopyToAsync(fileStream);
+                                    fileStream.Close();
+                                    await InvokeAsync(() => Program.loadAasxFiles(false));
+                                    await InvokeAsync(() => Program.loadAasx(file.Name));
+                                    this.StateHasChanged();
+                                }
                             }
-                            Program.signalNewData(0);
                         }
-                    </button>
-                    @code {
-                        private void toggleEditMode()
-                        {
-                            Program.editMode = !Program.editMode;
-                            this.StateHasChanged();
-                        }
-                    }
-                    <span>&nbsp&nbsp&nbsp</span>
-                </div>
-            </div>
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 
