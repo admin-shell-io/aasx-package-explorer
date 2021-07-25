@@ -182,6 +182,13 @@
                     @updateVisibleTree(Items, selectedNode)
                     @* @if (Program.isLoading)
                         {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                    @if (Program.env == null)
+                    {
+                        <span style="color:white;background-color:blue;">
+                            Enter * to read AASX from file system<br />
+                            Enter URL of AASX Server REST API (without /server/listaas)<br />
+                        </span>
+                    }
                     <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
                           @bind-SelectedNode="SelectedNode"
                           @bind-ExpandedNodes="ExpandedNodes"
