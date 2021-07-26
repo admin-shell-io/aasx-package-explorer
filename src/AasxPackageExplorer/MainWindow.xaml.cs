@@ -812,7 +812,7 @@ namespace AasxPackageExplorer
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
 
-            // the UI application might receive events from items in th package central
+            // the UI application might receive events from items in the package central
             _packageCentral.ChangeEventHandler = (data) =>
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
