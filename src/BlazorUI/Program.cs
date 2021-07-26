@@ -90,6 +90,8 @@ namespace BlazorUI
         public static PackageContainerListHttpRestRepository repository = null;
         public static DispEditHelperEntities helper = null;
         public static ModifyRepo repo = null;
+        public static PackageCentral _packageCentral = null;
+        public static PackageContainerBase container = null;
 
         public static AnyUiStackPanel stack = new AnyUiStackPanel();
         public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
@@ -114,6 +116,7 @@ namespace BlazorUI
         public static void loadAasx(string value)
         {
             aasxFileSelected = value;
+            Program.container = null;
             if (env != null)
                 env.Dispose();
             env = new AdminShellPackageEnv(Program.aasxFileSelected);
@@ -184,8 +187,6 @@ namespace BlazorUI
             loadAasxFiles(false);
             loadAasx(contentFn);
         }
-
-        public static PackageCentral _packageCentral = null;
 
         public static void Main(string[] args)
         {

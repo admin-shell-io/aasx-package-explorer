@@ -57,28 +57,25 @@
                                                     Program.aasxFiles[i] = Program.repository.FileMap[i].InfoIds;
                                                 }
                                                 var repoFile = Program.repository.FileMap[0];
-                                                var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                Program.env = container.Env;
+                                                Program.container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                Program.env = Program.container.Env;
+                                                Program.aasxFileSelected = "";
                                                 Program.editMode = false;
                                                 Program.thumbNail = null;
                                                 Program.signalNewData(3);
                                             }
                                         }
-                                        this.StateHasChanged();
                                     }
                                     if (value == "*" || value == "*.*")
                                     {
-                                        if (Program.repository?.FileMap?.Count > 0)
-                                        {
-                                            Program.repository.FileMap.Clear();
-                                        }
+                                        Program.repository = null;
                                         await InvokeAsync(() => Program.loadAasxFiles(true));
-                                        this.StateHasChanged();
                                     }
                                 }
                                 catch
                                 {
                                 }
+                                this.StateHasChanged();
                             }
                         }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
@@ -106,6 +103,8 @@
                             }
                         }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
+                    </td>
+                    <td nowrap>
                     </td>
                 </tr>
                 <tr>
@@ -138,8 +137,9 @@
                                                 if (value == Program.repository.FileMap[i].InfoIds)
                                                 {
                                                     var repoFile = Program.repository.FileMap[i];
-                                                    var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                    Program.env = container.Env;
+                                                    Program.container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                    Program.env = Program.container.Env;
+                                                    Program.aasxFileSelected = "";
                                                     Program.editMode = false;
                                                     Program.thumbNail = null;
                                                     Program.signalNewData(3);
@@ -149,13 +149,12 @@
                                         else if (Program.aasxFiles?.Length > 0)
                                         {
                                             await InvokeAsync(() => Program.loadAasx(value));
-                                            this.StateHasChanged();
                                         }
-                                        this.StateHasChanged();
                                     }
                                     catch
                                     {
                                     }
+                                    this.StateHasChanged();
                                 }
                             }
                         }
@@ -168,7 +167,7 @@
                         @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
                         *@
                         <InputFile OnChange="HandleFileSelected" />
-
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             // resharper disable once UnusedField.Compiler
                             IFileListEntry file;
@@ -181,13 +180,65 @@
                                     var fileStream = System.IO.File.Create(file.Name);
                                     await file.Data.CopyToAsync(fileStream);
                                     fileStream.Close();
+                                    Program.repository = null;
                                     await InvokeAsync(() => Program.loadAasxFiles(false));
                                     await InvokeAsync(() => Program.loadAasx(file.Name));
                                     this.StateHasChanged();
                                 }
                             }
                         }
+                    </td>
+                    <td nowrap>
+                        <button @onclick="onSave">Save</button>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
+                        @*<button @onclick="Download">Download</button>*@
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                        @code {
+                            private async void onSave()
+                            {
+                                try
+                                {
+                                    if (Program.repository?.FileMap?.Count > 0)
+                                    {
+                                        if (Program.container != null)
+                                        {
+                                            await InvokeAsync(() => Program.container.SaveToSourceAsync());
+                                        }
+                                    }
+                                    else if (Program.aasxFiles?.Length > 0)
+                                    {
+                                        if (Program.aasxFileSelected != "")
+                                        {
+                                            Program.env.SaveAs(Program.aasxFileSelected);
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                }
+                                this.StateHasChanged();
+                            }
+                        }
+                        @code {
+                            private async void Download()
+                            {
+                                // to be done
+                                /*
+                                if (!System.IO.Directory.Exists("./temp/"))
+                                    System.IO.Directory.CreateDirectory("./temp/");
+                                string fname = "./temp/" + System.IO.Path.GetFileName(Program.env.AasEnv.AdministrationShells[0].idShort);
+                                Program.env.SaveAs(fname);
+
+                                // return as FILE
+                                System.IO.FileStream packageStream = File.OpenRead(fname);
+                                context.Response.StatusCode = HttpStatusCode.Ok;
+                                SendStreamResponse(context, packageStream,
+                                    Path.GetFileName(AasxServer.Program.envFileName[fileIndex]));
+                                packageStream.Close();
+                                */
+                                this.StateHasChanged();
+                            }
+                        }
                     </td>
                 </tr>
             </table>
