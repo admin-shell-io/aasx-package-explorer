@@ -206,7 +206,7 @@
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
-                    if (selectedNode == null || selectedNode.Tag != null)
+                    if (Program.env != null && (selectedNode == null || selectedNode.Tag != null))
                     {
                         {
                             if (Program.thumbNail == null && Program.env != null)

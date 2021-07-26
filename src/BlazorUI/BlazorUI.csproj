@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Index.cshtml.cs" />
+    <Content Remove="Pages\Component.razor" />
+    <Content Remove="Pages\FetchData.cshtml" />
+    <Content Remove="Pages\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="LICENSE.txt" />
   </ItemGroup>
 
@@ -19,6 +26,11 @@
     <EmbeddedResource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\download.cshtml.cs" />
+    <None Include="Pages\download.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

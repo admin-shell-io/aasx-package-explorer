@@ -190,8 +190,9 @@
                     </td>
                     <td nowrap>
                         <button @onclick="onSave">Save</button>
-                        <span>&nbsp&nbsp&nbsp&nbsp</span>
-                        @*<button @onclick="Download">Download</button>*@
+                        @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
+                        @*<button href="/download">Download</button>*@
+                        <a class="form-control btn btn-primary" href="/download">Download</a>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             private async void onSave()
