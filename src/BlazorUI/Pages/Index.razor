@@ -182,7 +182,7 @@
                     @updateVisibleTree(Items, selectedNode)
                     @* @if (Program.isLoading)
                         {<span style="color:white;background-color:blue;">Loading...</span>} *@
-                    @if (Program.env == null)
+                    @if (bi.env == null)
                     {
                         <span style="color:white;background-color:blue;">
                             Enter * to read AASX from file system<br />
@@ -206,15 +206,15 @@
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
-                    if (Program.env != null && (selectedNode == null || selectedNode.Tag != null))
+                    if (bi.env != null && (selectedNode == null || selectedNode.Tag != null))
                     {
                         {
-                            if (Program.thumbNail == null && Program.env != null)
+                            if (bi.thumbNail == null && bi.env != null)
                             {
                                 System.IO.Stream s = null;
                                 try
                                 {
-                                    s = Program.env.GetLocalThumbnailStream();
+                                    s = bi.env.GetLocalThumbnailStream();
                                 }
                                 catch
                                 {
@@ -225,14 +225,14 @@
                                     using (var m = new System.IO.MemoryStream())
                                     {
                                         s.CopyTo(m);
-                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                        bi.thumbNail = System.Convert.ToBase64String(m.ToArray());
                                     }
                                 }
                             }
-                            if (Program.thumbNail != null)
+                            if (bi.thumbNail != null)
                             {
                                 <br />
-                                <img src=data:image;base64,@Program.thumbNail
+                                <img src=data:image;base64,@bi.thumbNail
                                     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
                             }
                         }
@@ -247,51 +247,51 @@
                 if (selectedNode != null && selectedNode.Tag != null)
                 {
                     bool view = false;
-                    Program.helper.editMode = Program.editMode;
-                    if (Program.editMode)
+                    bi.helper.editMode = bi.editMode;
+                    if (bi.editMode)
                     {
-                        Program.helper.repo = Program.repo;
+                        bi.helper.repo = bi.repo;
                     }
                     else
                     {
-                        Program.helper.repo = null;
+                        bi.helper.repo = null;
                     }
                     var displayContext = new AnyUiDisplayContextHtml();
-                    Program.helper.context = displayContext;
+                    bi.helper.context = displayContext;
                     if (selectedNode.Tag is AdministrationShell)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntityAas(
-                                    Program.packages, Program.env.AasEnv, selectedNode.Tag as AdministrationShell, Program.editMode, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntityAas(
+                                    bi.packages, bi.env.AasEnv, selectedNode.Tag as AdministrationShell, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     if (selectedNode.Tag is Submodel)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntitySubmodelOrRef(
-                                    Program.packages, Program.env.AasEnv, Program.env.AasEnv.AdministrationShells[0],
-                                    null, selectedNode.Tag as Submodel, Program.editMode, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntitySubmodelOrRef(
+                                    bi.packages, bi.env.AasEnv, bi.env.AasEnv.AdministrationShells[0],
+                                    null, selectedNode.Tag as Submodel, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     if (selectedNode.Tag is SubmodelElement sme)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntitySubmodelElement(
-                                    Program.packages, Program.env.AasEnv, selectedNode.ParentContainer,
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntitySubmodelElement(
+                                    bi.packages, bi.env.AasEnv, selectedNode.ParentContainer,
                                     selectedNode.Wrapper,
-                                    sme, Program.editMode, Program.helper.repo, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                                    sme, bi.editMode, bi.helper.repo, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
 
                     if (view)
                     {
-                        AnyUiPanel topPanel = Program.stack17;
+                        AnyUiPanel topPanel = bi.stack17;
                         Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
 
                         foreach (AnyUiUIElement topCh in topPanel.Children)
@@ -382,7 +382,7 @@
                                                     {
                                                         if (ch is AnyUiHintBubble hb)
                                                         {
-                                                            if (Program.editMode)
+                                                            if (bi.editMode)
                                                             {
                                                                 <td><span style="@style">@hb.Text</span></td>
                                                             }
@@ -515,6 +515,8 @@
     }
     */
 
+    public static blazorIntance bi = new blazorIntance();
+
     List<Item> Items = null;
 
     IList<Item> ExpandedNodes = new List<Item>();
@@ -535,7 +537,7 @@
         //// if (hack++ == 0)
         ////    return;
 
-        SubmodelService.buildTree();
+        SubmodelService.buildTree(bi);
         Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
         // StateHasChanged();
 
@@ -589,7 +591,7 @@
                             expandedNodesPath[j] = getPath(ExpandedNodes[j]);
                         }
                     }
-                    SubmodelService.buildTree();
+                    SubmodelService.buildTree(bi);
                     Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;
@@ -609,7 +611,7 @@
                     break;
                 // 3 == build new tree, all nodes closed
                 case 3:
-                    SubmodelService.buildTree();
+                    SubmodelService.buildTree(bi);
                     Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;

@@ -46,6 +46,52 @@ namespace BlazorUI
             int i = 0;
         }
     }
+
+    public class blazorIntance
+    {
+        public AdminShellPackageEnv env = null;
+        public string[] aasxFiles = new string[1];
+        public string aasxFileSelected = "";
+        public bool editMode = false;
+        public bool hintMode = true;
+        public PackageCentral packages = null;
+        public PackageContainerListHttpRestRepository repository = null;
+        public DispEditHelperEntities helper = null;
+        public ModifyRepo repo = null;
+        public PackageCentral _packageCentral = null;
+        public PackageContainerBase container = null;
+
+        public AnyUiStackPanel stack = new AnyUiStackPanel();
+        public AnyUiStackPanel stack2 = new AnyUiStackPanel();
+        public AnyUiStackPanel stack17 = new AnyUiStackPanel();
+
+        public string thumbNail = null;
+
+        public blazorIntance()
+        {
+            packages = new PackageCentral();
+            _packageCentral = packages;
+
+            env = null;
+
+            helper = new DispEditHelperEntities();
+            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
+            // some functionality still uses repo != null to detect editMode!!
+            repo = new ModifyRepo();
+            helper.editMode = editMode;
+            helper.hintMode = hintMode;
+            helper.repo = repo;
+            helper.context = null;
+            helper.packages = packages;
+
+            stack17 = new AnyUiStackPanel();
+            stack17.Orientation = AnyUiOrientation.Vertical;
+
+            if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
+                helper.DisplayOrEditAasEntityAas(
+                        packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+        }
+    }
     public class Program
     {
         public static event EventHandler NewDataAvailable;
@@ -81,26 +127,6 @@ namespace BlazorUI
             }
         }
 
-        public static AdminShellPackageEnv env = null;
-        public static string[] aasxFiles = new string[1];
-        public static string aasxFileSelected = "";
-        public static bool editMode = false;
-        public static bool hintMode = true;
-        public static PackageCentral packages = null;
-        public static PackageContainerListHttpRestRepository repository = null;
-        public static DispEditHelperEntities helper = null;
-        public static ModifyRepo repo = null;
-        public static PackageCentral _packageCentral = null;
-        public static PackageContainerBase container = null;
-
-        public static AnyUiStackPanel stack = new AnyUiStackPanel();
-        public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
-        public static AnyUiStackPanel stack17 = new AnyUiStackPanel();
-
-        public static string LogLine = "The text of the clicked object will be shown here..";
-
-        public static string thumbNail = null;
-
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
             public Action<object> MyLambda;
@@ -113,15 +139,15 @@ namespace BlazorUI
             }
         }
 
-        public static void loadAasx(string value)
+        public static void loadAasx(blazorIntance bi, string value)
         {
-            aasxFileSelected = value;
-            Program.container = null;
-            if (env != null)
-                env.Dispose();
-            env = new AdminShellPackageEnv(Program.aasxFileSelected);
-            editMode = false;
-            thumbNail = null;
+            bi.aasxFileSelected = value;
+            bi.container = null;
+            if (bi.env != null)
+                bi.env.Dispose();
+            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected);
+            bi.editMode = false;
+            bi.thumbNail = null;
             signalNewData(3); // build new tree, all nodes closed
         }
 
@@ -142,18 +168,18 @@ namespace BlazorUI
             return (mode);
         }
 
-        public static void loadAasxFiles(bool load = true)
+        public static void loadAasxFiles(blazorIntance bi, bool load = true)
         {
-            aasxFiles = Directory.GetFiles(".", "*.aasx");
-            Array.Sort(aasxFiles);
+            bi.aasxFiles = Directory.GetFiles(".", "*.aasx");
+            Array.Sort(bi.aasxFiles);
             if (load)
             {
-                if (aasxFiles.Count() > 0)
-                    loadAasx(aasxFiles[0]);
+                if (bi.aasxFiles.Count() > 0)
+                    loadAasx(bi, bi.aasxFiles[0]);
             }
         }
 
-        public static async Task getAasxAsync(string input)
+        public static async Task getAasxAsync(blazorIntance bi, string input)
         {
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -184,8 +210,8 @@ namespace BlazorUI
             {
                 await contentStream.CopyToAsync(file);
             }
-            loadAasxFiles(false);
-            loadAasx(contentFn);
+            loadAasxFiles(bi, false);
+            loadAasx(bi, contentFn);
         }
 
         public static void Main(string[] args)
@@ -195,112 +221,12 @@ namespace BlazorUI
             // loadAasxFiles();
 #if __test__PackageLogic
 #else
-
-            packages = new PackageCentral();
-            _packageCentral = packages;
-            // TODO (MIHO, 2021-06-07): how to initialize?
-            // packages.AuxItem.New();
-            /*
-            string fn = "https://admin-shell-io.com/51411";
-            var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
-            repository = fr as PackageContainerListHttpRestRepository;
-            var task = Task.Run(async () => await repository.SyncronizeFromServerAsync());
-            var r = task.Result;
-            var repoFile = repository.FileMap[6];
-            var container = PackageContainerFactory.GuessAndCreateFor(Program._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-            env = container.Env;
-            */
-
-            env = null;
-            // packages.MainItem.TakeOver(env);
-
-            helper = new DispEditHelperEntities();
-            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            // some functionality still uses repo != null to detect editMode!!
-            repo = new ModifyRepo();
-            helper.editMode = editMode;
-            helper.hintMode = hintMode;
-            helper.repo = repo;
-            helper.context = null;
-            helper.packages = packages;
-
-            stack17 = new AnyUiStackPanel();
-            stack17.Orientation = AnyUiOrientation.Vertical;
-
-            if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
-                helper.DisplayOrEditAasEntityAas(
-                        packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
-
             AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
 #endif
 
             //
             // Test for Blazor
             //
-
-#if _not_enabled
-             stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
-             var d = new JavaScriptSerializer();
-             stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
-             var parent = (Dictionary<string, object>)results["Parent"];
-#endif
-
-#if _not_enabled
-            {
-                string s = File.ReadAllText(@"c:\development\file.json");
-                var jsonSerializerSettings = new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All
-                };
-                stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
-            }
-#endif
-
-            if (true)
-            {
-                stack.Orientation = AnyUiOrientation.Vertical;
-
-                var lab1 = new AnyUiLabel();
-                lab1.Content = "Hallo1";
-                lab1.Foreground = AnyUiBrushes.DarkBlue;
-                stack.Children.Add(lab1);
-
-                var stck2 = new AnyUiStackPanel();
-                stck2.Orientation = AnyUiOrientation.Horizontal;
-                stack.Children.Add(stck2);
-
-                var lab2 = new AnyUiLabel();
-                lab2.Content = "Hallo2";
-                lab2.Foreground = AnyUiBrushes.DarkBlue;
-                stck2.Children.Add(lab2);
-
-                var stck3 = new AnyUiStackPanel();
-                stck3.Orientation = AnyUiOrientation.Horizontal;
-                stck2.Children.Add(stck3);
-
-                var lab3 = new AnyUiLabel();
-                lab3.Content = "Hallo3";
-                lab3.Foreground = AnyUiBrushes.DarkBlue;
-                stck3.Children.Add(lab3);
-
-                if (editMode)
-                {
-                    var tb = new AnyUiTextBox();
-                    tb.Foreground = AnyUiBrushes.Black;
-                    tb.Text = "Initial";
-                    stck2.Children.Add(tb);
-
-                    var btn = new AnyUiButton();
-                    btn.Content = "Click me!";
-                    btn.DisplayData = new BlazorDisplayData(lambda: (o) =>
-                    {
-                        if (o == btn)
-                            Program.LogLine = "Hallo, Match zwischen Button und callback!";
-                    });
-                    stck3.Children.Add(btn);
-                }
-            }
-
             CreateHostBuilder(args).Build().Run();
         }
 

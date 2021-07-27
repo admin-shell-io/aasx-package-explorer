@@ -17,13 +17,13 @@ public class DownloadModel : PageModel
 
         if (!System.IO.Directory.Exists("./temp/"))
             System.IO.Directory.CreateDirectory("./temp/");
-        if (Program.env != null)
+        if (BlazorUI.Pages.Index.bi.env != null)
         {
-            string idShort = Program.env.AasEnv.AdministrationShells[0].idShort.ToUpper();
+            string idShort = BlazorUI.Pages.Index.bi.env.AasEnv.AdministrationShells[0].idShort.ToUpper();
             string fname = System.IO.Path.GetFileName(idShort + ".AASX");
-            Program.env.SaveAs("./temp/" + fname);
-            Program.env.Close();
-            Program.env = null;
+            BlazorUI.Pages.Index.bi.env.SaveAs("./temp/" + fname);
+            BlazorUI.Pages.Index.bi.env.Close();
+            BlazorUI.Pages.Index.bi.env = null;
 
             byte[] fileBytes = System.IO.File.ReadAllBytes("./temp/" + fname);
 

@@ -56,7 +56,7 @@ namespace BlazorUI.Data
                 }
             }
         }
-        public void buildTree()
+        public void buildTree(blazorIntance bi)
         {
 
             items = new List<Item>();
@@ -64,14 +64,14 @@ namespace BlazorUI.Data
             {
                 Item root = new Item();
                 root.envIndex = i;
-                if (Program.env != null)
+                if (bi.env != null)
                 {
-                    root.Text = Program.env.AasEnv.AdministrationShells[0].idShort;
-                    root.Tag = Program.env.AasEnv.AdministrationShells[0];
+                    root.Text = bi.env.AasEnv.AdministrationShells[0].idShort;
+                    root.Tag = bi.env.AasEnv.AdministrationShells[0];
                     if (true)
                     {
                         List<Item> childs = new List<Item>();
-                        foreach (var sm in Program.env.AasEnv.Submodels)
+                        foreach (var sm in bi.env.AasEnv.Submodels)
                         {
                             if (sm?.idShort != null)
                             {
@@ -213,9 +213,9 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        public List<Submodel> GetSubmodels()
+        public List<Submodel> GetSubmodels(blazorIntance bi)
         {
-            return Program.env.AasEnv.Submodels;
+            return bi.env.AasEnv.Submodels;
         }
     }
 }
