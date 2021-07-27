@@ -403,7 +403,7 @@
                                                                 private void MyTextInput(AnyUiTextBox chtb, string value)
                                                                 {
                                                                     chtb.setValueLambda?.Invoke(value);
-                                                                    Program.signalNewData(0); // same tree, only values changed
+                                                                    Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
                                                                 }
                                                             }
                                                         }
@@ -469,7 +469,7 @@
                                                             private void MyComboSelect(AnyUiComboBox comb, string value)
                                                             {
                                                                 comb.setValueLambda?.Invoke(value);
-                                                                Program.signalNewData(0); // same tree, only values changed
+                                                                Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
                                                             }
                                                         }
                                                     }
@@ -529,20 +529,24 @@
         }
     }
 
-    protected override void OnInitialized()
+    // protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
         // OnInitialized() allways called twice
         //// if (hack++ == 0)
         ////    return;
 
-        SubmodelService.buildTree(bi);
-        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
-        // StateHasChanged();
+        if (firstRender)
+        {
+            SubmodelService.buildTree(bi);
+            Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+            // StateHasChanged();
 
-        //ExpandedNodes.Add(Items.Skip(1).First());
-        //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
+            //ExpandedNodes.Add(Items.Skip(1).First());
+            //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
 
-        SubmodelService.NewDataAvailable += NewData;
+            SubmodelService.NewDataAvailable += NewData;
+        }
     }
 
     public void Dispose()
@@ -555,12 +559,19 @@
     void NewData(object source, EventArgs args)
     {
         // update = true;
-        if (newDataMode == 0)
-            newDataMode = Program.getSignalNewDataMode();
-        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+        if (args is Program.NewDataAvailableArgs ndm)
+        {
+            if (ndm.signalSessionNumber == bi.sessionNumber)
+            {
+                if (newDataMode == 0)
+                    // newDataMode = Program.getSignalNewDataMode();
+                    newDataMode = ndm.signalNewDataMode;
+                Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
 
-        InvokeAsync(() => this.StateHasChanged());
-        // this.StateHasChanged();
+                InvokeAsync(() => this.StateHasChanged());
+                // this.StateHasChanged();
+            }
+        }
     }
 
     bool update = true;

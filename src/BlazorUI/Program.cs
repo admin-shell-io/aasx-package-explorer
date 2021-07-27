@@ -49,6 +49,19 @@ namespace BlazorUI
     public class Program
     {
         public static event EventHandler NewDataAvailable;
+
+        public class NewDataAvailableArgs : EventArgs
+        {
+            public int signalNewDataMode;
+            public int signalSessionNumber;
+
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0)
+            {
+                signalNewDataMode = mode;
+                signalSessionNumber = sessionNumber;
+            }
+        }
+
         public class AnyUiPanelEntry
         {
             public AnyUiPanel panel;
@@ -102,7 +115,7 @@ namespace BlazorUI
             bi.env = new AdminShellPackageEnv(bi.aasxFileSelected);
             bi.editMode = false;
             bi.thumbNail = null;
-            signalNewData(3); // build new tree, all nodes closed
+            signalNewData(3, bi.sessionNumber); // build new tree, all nodes closed
         }
 
         // 0 == same tree, only values changed
@@ -110,10 +123,11 @@ namespace BlazorUI
         // 2 == build new tree, keep open nodes
         // 3 == build new tree, all nodes closed
         public static int signalNewDataMode = 2;
-        public static void signalNewData(int mode)
+        public static void signalNewData(int mode, int sessionNumber = 0)
         {
             signalNewDataMode = mode;
-            NewDataAvailable?.Invoke(null, EventArgs.Empty);
+            // NewDataAvailable?.Invoke(null, EventArgs.Empty);
+            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber));
         }
         public static int getSignalNewDataMode()
         {

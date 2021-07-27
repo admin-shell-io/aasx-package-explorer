@@ -31,7 +31,8 @@ namespace BlazorUI.Data
         {
             Program.NewDataAvailable += (s, a) =>
             {
-                NewDataAvailable?.Invoke(this, EventArgs.Empty);
+                // NewDataAvailable?.Invoke(this, EventArgs.Empty);
+                NewDataAvailable?.Invoke(s, a);
             };
         }
         public event EventHandler NewDataAvailable;

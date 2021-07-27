@@ -34,8 +34,13 @@ namespace BlazorUI.Data
 
         public string thumbNail = null;
 
+        public static int sessionCounter = 0;
+        public int sessionNumber = 0;
+
         public blazorSessionService()
         {
+            sessionNumber = ++sessionCounter;
+
             packages = new PackageCentral();
             _packageCentral = packages;
 

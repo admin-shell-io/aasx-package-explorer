@@ -63,7 +63,7 @@
                                                 bi.aasxFileSelected = "";
                                                 bi.editMode = false;
                                                 bi.thumbNail = null;
-                                                Program.signalNewData(3);
+                                                Program.signalNewData(3, bi.sessionNumber);
                                             }
                                         }
                                     }
@@ -93,7 +93,7 @@
                                 {
                                     <span>EditMode is OFF</span>
                                 }
-                                Program.signalNewData(0);
+                                Program.signalNewData(0, bi.sessionNumber);
                             }
                         </button>
                         @code {
@@ -143,7 +143,7 @@
                                                     bi.aasxFileSelected = "";
                                                     bi.editMode = false;
                                                     bi.thumbNail = null;
-                                                    Program.signalNewData(3);
+                                                    Program.signalNewData(3, bi.sessionNumber);
                                                 }
                                             }
                                         }
