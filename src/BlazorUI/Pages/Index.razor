@@ -7,9 +7,10 @@
 @*using System*@
 @*using System.Net;*@
 @inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
 
 @{
-// resharper disable all
+    // resharper disable all
 }
 
 <div class="col-12 row">
@@ -106,7 +107,7 @@
 
                 @code {
                     // test GITHUB 2
-                    
+
                     void MyContextMenuSelect(string value)
                     {
                         string[] s = value.Split(':');
@@ -233,7 +234,7 @@
                             {
                                 <br />
                                 <img src=data:image;base64,@bi.thumbNail
-                                    style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                                     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
                             }
                         }
                     }
@@ -395,7 +396,7 @@
                                                             <td>
                                                                 <span style="@style">
                                                                     <input size="@w" value="@chtb.Text"
-                                                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
                                                                 </span>
                                                             </td>
                                                             @code {
@@ -434,7 +435,7 @@
                                                     {
                                                         <td>
                                                             <input type="checkbox" value="@cb.IsChecked"
-                                                                    @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                                                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
                                                             @cb.Content
                                                         </td>
                                                         @code {
@@ -494,7 +495,6 @@
     </div>
 </div>
 
-
 @code {
 
     // resharper disable all
@@ -514,8 +514,6 @@
         public int envIndex { get; set; }
     }
     */
-
-    public static blazorIntance bi = new blazorIntance();
 
     List<Item> Items = null;
 
@@ -997,4 +995,3 @@
         return (ret);
     }
 }
-

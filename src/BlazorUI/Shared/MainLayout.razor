@@ -2,6 +2,7 @@
 @using AdminShellNS;
 @using AasxPackageLogic;
 @using AasxPackageLogic.PackageCentral;
+@inject BlazorUI.Data.blazorSessionService bi
 
 @{
     // resharper disable all
@@ -39,37 +40,37 @@
                                     {
                                         if (value.Contains("getaasx"))
                                         {
-                                            await InvokeAsync(async () => await Program.getAasxAsync(BlazorUI.Pages.Index.bi, value));
+                                            await InvokeAsync(async () => await Program.getAasxAsync(bi, value));
                                         }
                                         else // repo
                                         {
                                             string fn = value;
                                             var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
                                             // Program._packageCentral.Repositories.Add(fr);
-                                            BlazorUI.Pages.Index.bi.repository = fr as PackageContainerListHttpRestRepository;
-                                            var task = Task.Run(async () => await BlazorUI.Pages.Index.bi.repository.SyncronizeFromServerAsync());
+                                            bi.repository = fr as PackageContainerListHttpRestRepository;
+                                            var task = Task.Run(async () => await bi.repository.SyncronizeFromServerAsync());
                                             var r = task.Result;
-                                            if (BlazorUI.Pages.Index.bi.repository.FileMap.Count > 0)
+                                            if (bi.repository.FileMap.Count > 0)
                                             {
-                                                BlazorUI.Pages.Index.bi.aasxFiles = new string[BlazorUI.Pages.Index.bi.repository.FileMap.Count];
-                                                for (int i = 0; i < BlazorUI.Pages.Index.bi.repository.FileMap.Count; i++)
+                                                bi.aasxFiles = new string[bi.repository.FileMap.Count];
+                                                for (int i = 0; i < bi.repository.FileMap.Count; i++)
                                                 {
-                                                    BlazorUI.Pages.Index.bi.aasxFiles[i] = BlazorUI.Pages.Index.bi.repository.FileMap[i].InfoIds;
+                                                    bi.aasxFiles[i] = bi.repository.FileMap[i].InfoIds;
                                                 }
-                                                var repoFile = BlazorUI.Pages.Index.bi.repository.FileMap[0];
-                                                BlazorUI.Pages.Index.bi.container = PackageContainerFactory.GuessAndCreateFor(BlazorUI.Pages.Index.bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                BlazorUI.Pages.Index.bi.env = BlazorUI.Pages.Index.bi.container.Env;
-                                                BlazorUI.Pages.Index.bi.aasxFileSelected = "";
-                                                BlazorUI.Pages.Index.bi.editMode = false;
-                                                BlazorUI.Pages.Index.bi.thumbNail = null;
+                                                var repoFile = bi.repository.FileMap[0];
+                                                bi.container = PackageContainerFactory.GuessAndCreateFor(bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                bi.env = bi.container.Env;
+                                                bi.aasxFileSelected = "";
+                                                bi.editMode = false;
+                                                bi.thumbNail = null;
                                                 Program.signalNewData(3);
                                             }
                                         }
                                     }
                                     if (value == "*" || value == "*.*")
                                     {
-                                        BlazorUI.Pages.Index.bi.repository = null;
-                                        await InvokeAsync(() => Program.loadAasxFiles(BlazorUI.Pages.Index.bi, true));
+                                        bi.repository = null;
+                                        await InvokeAsync(() => Program.loadAasxFiles(bi, true));
                                     }
                                 }
                                 catch
@@ -84,7 +85,7 @@
                     <td>
                         <button @onclick="toggleEditMode">
                             @{
-                                if (BlazorUI.Pages.Index.bi.editMode)
+                                if (bi.editMode)
                                 {
                                     <span>EditMode is ON</span>
                                 }
@@ -98,7 +99,7 @@
                         @code {
                             private void toggleEditMode()
                             {
-                                BlazorUI.Pages.Index.bi.editMode = !BlazorUI.Pages.Index.bi.editMode;
+                                bi.editMode = !bi.editMode;
                                 this.StateHasChanged();
                             }
                         }
@@ -115,12 +116,12 @@
                     <td nowrap>
                         @{
 
-                            // string w = (BlazorUI.Pages.Index.bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                            // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
                             // w = "50%";
                             // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
-                            <select style="width:100%;max-width:100%;height:30px" value="@BlazorUI.Pages.Index.bi.aasxFileSelected"
+                            <select style="width:100%;max-width:100%;height:30px" value="@bi.aasxFileSelected"
                                     @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                                @foreach (var item in BlazorUI.Pages.Index.bi.aasxFiles)
+                                @foreach (var item in bi.aasxFiles)
                                 {
                                     <option value="@item">@item</option>
                                 }
@@ -130,25 +131,25 @@
                                 {
                                     try
                                     {
-                                        if (BlazorUI.Pages.Index.bi.repository?.FileMap?.Count > 0)
+                                        if (bi.repository?.FileMap?.Count > 0)
                                         {
-                                            for (int i = 0; i < BlazorUI.Pages.Index.bi.repository.FileMap.Count; i++)
+                                            for (int i = 0; i < bi.repository.FileMap.Count; i++)
                                             {
-                                                if (value == BlazorUI.Pages.Index.bi.repository.FileMap[i].InfoIds)
+                                                if (value == bi.repository.FileMap[i].InfoIds)
                                                 {
-                                                    var repoFile = BlazorUI.Pages.Index.bi.repository.FileMap[i];
-                                                    BlazorUI.Pages.Index.bi.container = PackageContainerFactory.GuessAndCreateFor(BlazorUI.Pages.Index.bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                    BlazorUI.Pages.Index.bi.env = BlazorUI.Pages.Index.bi.container.Env;
-                                                    BlazorUI.Pages.Index.bi.aasxFileSelected = "";
-                                                    BlazorUI.Pages.Index.bi.editMode = false;
-                                                    BlazorUI.Pages.Index.bi.thumbNail = null;
+                                                    var repoFile = bi.repository.FileMap[i];
+                                                    bi.container = PackageContainerFactory.GuessAndCreateFor(bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                    bi.env = bi.container.Env;
+                                                    bi.aasxFileSelected = "";
+                                                    bi.editMode = false;
+                                                    bi.thumbNail = null;
                                                     Program.signalNewData(3);
                                                 }
                                             }
                                         }
-                                        else if (BlazorUI.Pages.Index.bi.aasxFiles?.Length > 0)
+                                        else if (bi.aasxFiles?.Length > 0)
                                         {
-                                            await InvokeAsync(() => Program.loadAasx(BlazorUI.Pages.Index.bi, value));
+                                            await InvokeAsync(() => Program.loadAasx(bi, value));
                                         }
                                     }
                                     catch
@@ -180,9 +181,9 @@
                                     var fileStream = System.IO.File.Create(file.Name);
                                     await file.Data.CopyToAsync(fileStream);
                                     fileStream.Close();
-                                    BlazorUI.Pages.Index.bi.repository = null;
-                                    await InvokeAsync(() => Program.loadAasxFiles(BlazorUI.Pages.Index.bi, false));
-                                    await InvokeAsync(() => Program.loadAasx(BlazorUI.Pages.Index.bi, file.Name));
+                                    bi.repository = null;
+                                    await InvokeAsync(() => Program.loadAasxFiles(bi, false));
+                                    await InvokeAsync(() => Program.loadAasx(bi, file.Name));
                                     this.StateHasChanged();
                                 }
                             }
@@ -200,18 +201,18 @@
                             {
                                 try
                                 {
-                                    if (BlazorUI.Pages.Index.bi.repository?.FileMap?.Count > 0)
+                                    if (bi.repository?.FileMap?.Count > 0)
                                     {
-                                        if (BlazorUI.Pages.Index.bi.container != null)
+                                        if (bi.container != null)
                                         {
-                                            await InvokeAsync(() => BlazorUI.Pages.Index.bi.container.SaveToSourceAsync());
+                                            await InvokeAsync(() => bi.container.SaveToSourceAsync());
                                         }
                                     }
-                                    else if (BlazorUI.Pages.Index.bi.aasxFiles?.Length > 0)
+                                    else if (bi.aasxFiles?.Length > 0)
                                     {
-                                        if (BlazorUI.Pages.Index.bi.aasxFileSelected != "")
+                                        if (bi.aasxFileSelected != "")
                                         {
-                                            BlazorUI.Pages.Index.bi.env.SaveAs(BlazorUI.Pages.Index.bi.aasxFileSelected);
+                                            bi.env.SaveAs(bi.aasxFileSelected);
                                         }
                                     }
                                 }

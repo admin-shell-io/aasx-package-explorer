@@ -15,6 +15,7 @@ public class DownloadModel : PageModel
     {
         // var filePath = Path.Combine(_env.WebRootPath, "files", "file1.xlsx");
 
+        /*
         if (!System.IO.Directory.Exists("./temp/"))
             System.IO.Directory.CreateDirectory("./temp/");
         if (BlazorUI.Pages.Index.bi.env != null)
@@ -29,6 +30,8 @@ public class DownloadModel : PageModel
 
             return File(fileBytes, "application/force-download", fname);
         }
+        */
+
         return null;
     }
 }

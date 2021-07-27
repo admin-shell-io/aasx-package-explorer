@@ -56,7 +56,7 @@ namespace BlazorUI.Data
                 }
             }
         }
-        public void buildTree(blazorIntance bi)
+        public void buildTree(blazorSessionService bi)
         {
 
             items = new List<Item>();
@@ -213,7 +213,7 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        public List<Submodel> GetSubmodels(blazorIntance bi)
+        public List<Submodel> GetSubmodels(blazorSessionService bi)
         {
             return bi.env.AasEnv.Submodels;
         }

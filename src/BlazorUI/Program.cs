@@ -15,9 +15,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using BlazorUI.Data;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -44,52 +44,6 @@ namespace BlazorUI
         {
             // resharper disable once NotAccessedVariable.Compiler
             int i = 0;
-        }
-    }
-
-    public class blazorIntance
-    {
-        public AdminShellPackageEnv env = null;
-        public string[] aasxFiles = new string[1];
-        public string aasxFileSelected = "";
-        public bool editMode = false;
-        public bool hintMode = true;
-        public PackageCentral packages = null;
-        public PackageContainerListHttpRestRepository repository = null;
-        public DispEditHelperEntities helper = null;
-        public ModifyRepo repo = null;
-        public PackageCentral _packageCentral = null;
-        public PackageContainerBase container = null;
-
-        public AnyUiStackPanel stack = new AnyUiStackPanel();
-        public AnyUiStackPanel stack2 = new AnyUiStackPanel();
-        public AnyUiStackPanel stack17 = new AnyUiStackPanel();
-
-        public string thumbNail = null;
-
-        public blazorIntance()
-        {
-            packages = new PackageCentral();
-            _packageCentral = packages;
-
-            env = null;
-
-            helper = new DispEditHelperEntities();
-            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            // some functionality still uses repo != null to detect editMode!!
-            repo = new ModifyRepo();
-            helper.editMode = editMode;
-            helper.hintMode = hintMode;
-            helper.repo = repo;
-            helper.context = null;
-            helper.packages = packages;
-
-            stack17 = new AnyUiStackPanel();
-            stack17.Orientation = AnyUiOrientation.Vertical;
-
-            if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
-                helper.DisplayOrEditAasEntityAas(
-                        packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
         }
     }
     public class Program
@@ -139,7 +93,7 @@ namespace BlazorUI
             }
         }
 
-        public static void loadAasx(blazorIntance bi, string value)
+        public static void loadAasx(blazorSessionService bi, string value)
         {
             bi.aasxFileSelected = value;
             bi.container = null;
@@ -168,7 +122,7 @@ namespace BlazorUI
             return (mode);
         }
 
-        public static void loadAasxFiles(blazorIntance bi, bool load = true)
+        public static void loadAasxFiles(blazorSessionService bi, bool load = true)
         {
             bi.aasxFiles = Directory.GetFiles(".", "*.aasx");
             Array.Sort(bi.aasxFiles);
@@ -179,7 +133,7 @@ namespace BlazorUI
             }
         }
 
-        public static async Task getAasxAsync(blazorIntance bi, string input)
+        public static async Task getAasxAsync(blazorSessionService bi, string input)
         {
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
