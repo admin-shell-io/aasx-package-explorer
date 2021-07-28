@@ -539,7 +539,7 @@
         if (firstRender)
         {
             SubmodelService.buildTree(bi);
-            Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+            Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
             // StateHasChanged();
 
             //ExpandedNodes.Add(Items.Skip(1).First());
@@ -566,7 +566,7 @@
                 if (newDataMode == 0)
                     // newDataMode = Program.getSignalNewDataMode();
                     newDataMode = ndm.signalNewDataMode;
-                Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
 
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
@@ -601,7 +601,7 @@
                         }
                     }
                     SubmodelService.buildTree(bi);
-                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;
                     if (isSelected)
@@ -621,7 +621,7 @@
                 // 3 == build new tree, all nodes closed
                 case 3:
                     SubmodelService.buildTree(bi);
-                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;
                     newDataMode = 0;

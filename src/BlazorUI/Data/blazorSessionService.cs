@@ -11,10 +11,12 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using System;
+using System.Collections.Generic;
 
 namespace BlazorUI.Data
 {
-    public class blazorSessionService
+    public class blazorSessionService:IDisposable
     {
         public AdminShellPackageEnv env = null;
         public string[] aasxFiles = new string[1];
@@ -36,7 +38,7 @@ namespace BlazorUI.Data
 
         public static int sessionCounter = 0;
         public int sessionNumber = 0;
-
+        public List<Item> items = null;
         public blazorSessionService()
         {
             sessionNumber = ++sessionCounter;
@@ -62,6 +64,12 @@ namespace BlazorUI.Data
             if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(
                         packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+        }
+        public void Dispose()
+        {
+            if (env != null)
+                env.Close();
+            // throw new NotImplementedException();
         }
     }
 }

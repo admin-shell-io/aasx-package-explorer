@@ -37,13 +37,13 @@ namespace BlazorUI.Data
         }
         public event EventHandler NewDataAvailable;
 
-        public static List<Item> items = null;
-        public static List<Item> viewItems = null;
+        // public static List<Item> items = null;
+        // public static List<Item> viewItems = null;
 
-        public List<Item> GetTree(Item selectedNode, IList<Item> ExpandedNodes)
+        public List<Item> GetTree(blazorSessionService bi, Item selectedNode, IList<Item> ExpandedNodes)
         {
-            Item.updateVisibleTree(viewItems, selectedNode, ExpandedNodes);
-            return viewItems;
+            Item.updateVisibleTree(bi.items, selectedNode, ExpandedNodes);
+            return bi.items;
         }
 
         public void syncSubTree(Item item)
@@ -60,7 +60,7 @@ namespace BlazorUI.Data
         public void buildTree(blazorSessionService bi)
         {
 
-            items = new List<Item>();
+            bi.items = new List<Item>();
             for (int i = 0; i < 1; i++)
             {
                 Item root = new Item();
@@ -116,11 +116,10 @@ namespace BlazorUI.Data
                         root.Childs = childs;
                         foreach (var c in childs)
                             c.parent = root;
-                        items.Add(root);
+                        bi.items.Add(root);
                     }
                 }
             }
-            viewItems = items;
         }
 
         void createSMECItems(Item smeRootItem, SubmodelElementCollection smec, int i)
