@@ -70,7 +70,7 @@ namespace AasxUANodesetImExport
             AdminShell.AdministrationShellEnv env = thePackageEnv.AasEnv;
             var aas = new AdminShell.AdministrationShell();
             aas.views = new Views();
-            aas.views.views = new List<View>();
+            aas.views.views = new ListOfITimeStamped<View>();
             env.AdministrationShells.Add(aas);
 
             //search for the root Node

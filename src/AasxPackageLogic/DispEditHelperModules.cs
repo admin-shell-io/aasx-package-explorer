@@ -110,7 +110,7 @@ namespace AasxPackageLogic
                         "starting mandatory with a letter..")
             });
             this.AddKeyValueRef(
-                stack, "idShort", referable, ref referable.idShort, null, repo,
+                stack, "idShort", referable, referable.idShort, null, repo,
                 v => { referable.idShort = v as string; return new AnyUiLambdaActionNone(); },
                 auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
@@ -125,7 +125,7 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
             this.AddKeyValueRef(
-                stack, "category", referable, ref referable.category, null, repo,
+                stack, "category", referable, referable.category, null, repo,
                 v => { referable.category = v as string; return new AnyUiLambdaActionNone(); },
                 comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
@@ -210,7 +210,7 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
+                    stack, "idType", identifiable, identifiable.identification.idType, null, repo,
                     v =>
                     {
                         identifiable.identification.idType = v as string;
@@ -219,7 +219,7 @@ namespace AasxPackageLogic
                     comboBoxItems: AdminShell.Key.IdentifierTypeNames);
 
                 this.AddKeyValueRef(
-                    stack, "id", identifiable, ref identifiable.identification.id, null, repo,
+                    stack, "id", identifiable, identifiable.identification.id, null, repo,
                     v => { identifiable.identification.id = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: DispEditInjectAction.GetTitles(new[] { "Generate" }, injectToId),
                     auxButtonLambda: (i) =>
@@ -265,7 +265,7 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "version", identifiable.administration, ref identifiable.administration.version,
+                    stack, "version", identifiable.administration, identifiable.administration.version,
                     null, repo,
                     v =>
                     {
@@ -274,7 +274,7 @@ namespace AasxPackageLogic
                     });
 
                 this.AddKeyValueRef(
-                    stack, "revision", identifiable.administration, ref identifiable.administration.revision,
+                    stack, "revision", identifiable.administration, identifiable.administration.revision,
                     null, repo,
                     v =>
                     {
@@ -443,7 +443,7 @@ namespace AasxPackageLogic
                     }
                     ))
                 this.AddKeyValueRef(
-                    stack, "kind", kind, ref kind.kind, null, repo,
+                    stack, "kind", kind, kind.kind, null, repo,
                     v => { kind.kind = v as string; return new AnyUiLambdaActionNone(); },
                     new[] { "Template", "Instance" });
         }
@@ -480,7 +480,7 @@ namespace AasxPackageLogic
                     }
                     ))
                 this.AddKeyValueRef(
-                    stack, "kind", kind, ref kind.kind, null, repo,
+                    stack, "kind", kind, kind.kind, null, repo,
                     v => { kind.kind = v as string; return new AnyUiLambdaActionNone(); },
                     new[] { "Template", "Instance" });
         }
@@ -647,7 +647,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
             });
             this.AddKeyValueRef(
-                stack, "unit", dsiec, ref dsiec.unit, null, repo,
+                stack, "unit", dsiec, dsiec.unit, null, repo,
                 v => { dsiec.unit = v as string; return new AnyUiLambdaActionNone(); });
 
             this.AddHintBubble(
@@ -678,7 +678,7 @@ namespace AasxPackageLogic
             }
 
             this.AddKeyValueRef(
-                stack, "valueFormat", dsiec, ref dsiec.valueFormat, null, repo,
+                stack, "valueFormat", dsiec, dsiec.valueFormat, null, repo,
                 v => { dsiec.valueFormat = v as string; return new AnyUiLambdaActionNone(); });
 
             this.AddHintBubble(
@@ -694,7 +694,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
             this.AddKeyValueRef(
-                stack, "sourceOfDef.", dsiec, ref dsiec.sourceOfDefinition, null, repo,
+                stack, "sourceOfDef.", dsiec, dsiec.sourceOfDefinition, null, repo,
                 v =>
                 {
                     dsiec.sourceOfDefinition = v as string;
@@ -710,7 +710,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
             this.AddKeyValueRef(
-                stack, "symbol", dsiec, ref dsiec.symbol, null, repo,
+                stack, "symbol", dsiec, dsiec.symbol, null, repo,
                 v => { dsiec.symbol = v as string; return new AnyUiLambdaActionNone(); });
 
             this.AddHintBubble(
@@ -722,7 +722,7 @@ namespace AasxPackageLogic
                                 "Data types are provided by the IEC 61360.")
                 });
             this.AddKeyValueRef(
-                stack, "dataType", dsiec, ref dsiec.dataType, null, repo,
+                stack, "dataType", dsiec, dsiec.dataType, null, repo,
                 v => { dsiec.dataType = v as string; return new AnyUiLambdaActionNone(); },
                 comboBoxIsEditable: true,
                 comboBoxItems: AdminShell.DataSpecificationIEC61360.DataTypeNames);

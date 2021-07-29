@@ -332,7 +332,7 @@ namespace AasxPackageLogic
                                             env.AdministrationShells.Add(destAAS);
 
                                             // clear, copy Submodels?
-                                            destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
+                                            destAAS.submodelRefs = new AdminShell.ListOfSubmodelRefs();
                                             if (copyRecursively && sourceAAS.submodelRefs != null)
                                             {
                                                 foreach (var smr in sourceAAS.submodelRefs)
@@ -1036,7 +1036,7 @@ namespace AasxPackageLogic
                                         if (clone == null)
                                             return new AnyUiLambdaActionNone();
                                         if (aas.submodelRefs == null)
-                                            aas.submodelRefs = new List<AdminShell.SubmodelRef>();
+                                            aas.submodelRefs = new AdminShell.ListOfSubmodelRefs();
                                         aas.submodelRefs.Add(clone);
                                         return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: clone, isExpanded: true);
@@ -1068,7 +1068,7 @@ namespace AasxPackageLogic
                                         // formally add this to active environment and AAS
                                         env.Submodels.Add(dstSub);
                                         if (aas.submodelRefs == null)
-                                            aas.submodelRefs = new List<AdminShell.SubmodelRef>();
+                                            aas.submodelRefs = new AdminShell.ListOfSubmodelRefs();
                                         aas.submodelRefs.Add(dstRef);
                                         return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: dstRef, isExpanded: true);
@@ -2649,7 +2649,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddKeyValueRef(
-                    stack, "valueType", p, ref p.valueType, null, repo,
+                    stack, "valueType", p, p.valueType, null, repo,
                     v => { p.valueType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: editMode,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
@@ -2672,7 +2672,7 @@ namespace AasxPackageLogic
 
                     });
                 this.AddKeyValueRef(
-                    stack, "value", p, ref p.value, null, repo,
+                    stack, "value", p, p.value, null, repo,
                     v => { p.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
@@ -2778,7 +2778,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddKeyValueRef(
-                    stack, "valueType", rng, ref rng.valueType, null, repo,
+                    stack, "valueType", rng, rng.valueType, null, repo,
                     v => { rng.valueType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
@@ -2803,7 +2803,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddKeyValueRef(
-                    stack, "min", rng, ref rng.min, null, repo,
+                    stack, "min", rng, rng.min, null, repo,
                     v => { rng.min = v as string; return new AnyUiLambdaActionNone(); });
 
                 this.AddHintBubble(
@@ -2818,7 +2818,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddKeyValueRef(
-                    stack, "max", rng, ref rng.max, null, repo,
+                    stack, "max", rng, rng.max, null, repo,
                     v => { rng.max = v as string; return new AnyUiLambdaActionNone(); });
             }
             else if (sme is AdminShell.File fl)
@@ -2837,7 +2837,7 @@ namespace AasxPackageLogic
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 this.AddKeyValueRef(
-                    stack, "mimeType", fl, ref fl.mimeType, null, repo,
+                    stack, "mimeType", fl, fl.mimeType, null, repo,
                     v => { fl.mimeType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
@@ -2857,7 +2857,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddKeyValueRef(
-                    stack, "value", fl, ref fl.value, null, repo,
+                    stack, "value", fl, fl.value, null, repo,
                     v => { fl.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "Choose supplementary file", },
                     auxButtonToolTips: new[] { "Select existing supplementary files" },
@@ -3067,7 +3067,7 @@ namespace AasxPackageLogic
                     this.AddGroup(stack, "Supplementary file assistance", this.levelColors.SubSection);
 
                     this.AddKeyValueRef(
-                        stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
+                        stack, "Target path", this.uploadAssistance, this.uploadAssistance.TargetPath, null, repo,
                         v =>
                         {
                             this.uploadAssistance.TargetPath = v as string;
@@ -3161,13 +3161,13 @@ namespace AasxPackageLogic
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
                 this.AddKeyValueRef(
-                    stack, "mimeType", blb, ref blb.mimeType, null, repo,
+                    stack, "mimeType", blb, blb.mimeType, null, repo,
                     v => { blb.mimeType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 this.AddKeyValueRef(
-                    stack, "value", blb, ref blb.value, null, repo,
+                    stack, "value", blb, blb.value, null, repo,
                     v => { blb.value = v as string; return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
@@ -3357,7 +3357,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.High)
                     });
                 this.AddKeyValueRef(
-                    stack, "entityType", ent, ref ent.entityType, null, repo,
+                    stack, "entityType", ent, ent.entityType, null, repo,
                     v => { ent.entityType = v as string; return new AnyUiLambdaActionNone(); },
                     comboBoxItems: AdminShell.Entity.EntityTypeNames,
                     comboBoxIsEditable: true);

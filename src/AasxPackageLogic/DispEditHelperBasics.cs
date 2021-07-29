@@ -588,7 +588,7 @@ namespace AasxPackageLogic
         }
 
         public void AddKeyValueRef(
-            AnyUiStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
+            AnyUiStackPanel view, string key, object containingObject, string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, AnyUiLambdaActionBase> setValue = null,
             string[] comboBoxItems = null, bool comboBoxIsEditable = false,
             string auxButtonTitle = null, Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
@@ -1916,11 +1916,11 @@ namespace AasxPackageLogic
                 }
 
                 AddKeyValueRef(
-                    substack, "type", qual, ref qual.type, null, repo,
+                    substack, "type", qual, qual.type, null, repo,
                     v => { qual.type = v as string; return new AnyUiLambdaActionNone(); });
 
                 AddKeyValueRef(
-                    substack, "value", qual, ref qual.value, null, repo,
+                    substack, "value", qual, qual.value, null, repo,
                     v => { qual.value = v as string; return new AnyUiLambdaActionNone(); });
 
                 if (SafeguardAccess(

@@ -38,18 +38,48 @@ namespace AdminShellNS
     /// </summary>
     public class AdminShellV20
     {
-        public class Identification
+        public class Identification : ITimeStamped
         {
+            // time stamping interface
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStampCreate { get; set; }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStamp { get; set; }
+
+            public void MarkTimeStampNow()
+            {
+                TimeStamp = DateTime.UtcNow;
+            }
 
             // members
 
-            [XmlAttribute]
+            [XmlIgnore]
+            [JsonIgnore]
             [CountForHash]
-            public string idType = "";
+            private string _idType = "";
+
+            [XmlAttribute]
+            public string idType
+            {
+                get { return _idType; }
+                set { MarkTimeStampNow(); _idType = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [CountForHash]
+            private string _id = "";
 
             [XmlText]
-            [CountForHash]
-            public string id = "";
+            public string id
+            {
+                get { return _idType; }
+                set { MarkTimeStampNow(); _idType = value; }
+            }
 
             // some constants
 
@@ -117,20 +147,50 @@ namespace AdminShellNS
             }
         }
 
-        public class Administration
+        public class Administration : ITimeStamped
         {
+            // time stamping interface
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStampCreate { get; set; }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStamp { get; set; }
+
+            public void MarkTimeStampNow()
+            {
+                TimeStamp = DateTime.UtcNow;
+            }
 
             // members
 
+            [XmlIgnore]
+            [JsonIgnore]
             [MetaModelName("Administration.version")]
             [TextSearchable]
             [CountForHash]
-            public string version = "";
+            private string _version = "";
 
+            public string version
+            {
+                get { return _version; }
+                set { MarkTimeStampNow();  _version = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
             [MetaModelName("Administration.revision")]
             [TextSearchable]
             [CountForHash]
-            public string revision = "";
+            private string _revision = "";
+
+            public string revision
+            {
+                get { return _version; }
+                set { MarkTimeStampNow(); _version = value; }
+            }
 
             // constructors
 
@@ -1089,6 +1149,10 @@ namespace AdminShellNS
             }
         }
 
+        public class ListOfSubmodelRefs : ListOfITimeStamped<SubmodelRef>
+        {
+        }
+
         [XmlType(TypeName = "conceptDescriptionRef")]
         public class ConceptDescriptionRef : Reference
         {
@@ -1840,25 +1904,55 @@ namespace AdminShellNS
             }
         }
 
-        public class Referable : IValidateEntity, IAasElement
+        public interface ITimeStamped
+        {
+            DateTime TimeStampCreate { get; }
+            DateTime TimeStamp { get; }
+        }
+
+        public class Referable : IValidateEntity, IAasElement, ITimeStamped
         {
 
             // members
 
+            [XmlIgnore]
+            [JsonIgnore]
+            [CountForHash]
             [MetaModelName("Referable.IdShort")]
             [TextSearchable]
-            [CountForHash]
-            public string idShort = "";
+            private string _idShort = "";
 
+            public string idShort
+            {
+                get { return _idShort; }
+                set { MarkTimeStampNow(); _idShort = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
             [MetaModelName("Referable.category")]
             [TextSearchable]
             [CountForHash]
-            public string category = null;
+            private string _category = null;
+
+            public string category
+            {
+                get { return _category; }
+                set { MarkTimeStampNow(); _category = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [CountForHash]
+            private Description _description = null;
 
             [XmlElement(ElementName = "description")]
             [JsonIgnore]
-            [CountForHash]
-            public Description description = null;
+            public Description description
+            {
+                get { return _description; }
+                set { MarkTimeStampNow(); _description = value; }
+            }
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "descriptions")]
@@ -1882,11 +1976,55 @@ namespace AdminShellNS
                 }
             }
 
+            // non persistent properties
+
             [XmlIgnore]
             [JsonIgnore]
             [SkipForHash] // important to skip, as recursion elsewise will go in cycles!
             [SkipForReflection] // important to skip, as recursion elsewise will go in cycles!
             public Referable parent = null;
+
+            [XmlIgnore]
+            [JsonIgnore]
+            private DateTime _timeStampCreate, _timeStamp;
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStampCreate
+            {
+                get { return _timeStampCreate; }
+                set { _timeStampCreate = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStamp
+            {
+                get { return _timeStamp; }
+                set { SetTimeStamp(value); }
+            }
+
+            public void SetTimeStamp(DateTime timeStamp)
+            {
+                Referable r = this;
+
+                do
+                {
+                    r.TimeStamp = timeStamp;
+                    if (r != r.parent)
+                        r = r.parent;
+                    else
+                        r = null;
+                }
+                while (r != null);
+            }
+
+            public void MarkTimeStampNow()
+            {
+                TimeStamp = DateTime.UtcNow;
+            }
+
+            // constants
 
             public static string CONSTANT = "CONSTANT";
             public static string Category_PARAMETER = "PARAMETER";
@@ -2215,6 +2353,22 @@ namespace AdminShellNS
                             this.description = null;
                         }));
             }
+
+            // extended time stampe handling
+
+            /// <summary>
+            /// Gives back the earliest time stamp
+            /// </summary>
+            public DateTime IntegrateTimeStamps(params Nullable<DateTime>[] tsall)
+            {
+                DateTime res = DateTime.UtcNow;
+                if (tsall == null)
+                    return res;
+                foreach (var ts in tsall)
+                    if (ts.HasValue && ts.Value < res)
+                        res = ts.Value;
+                return res;
+            }
         }
 
         public class Identifiable : Referable
@@ -2222,8 +2376,42 @@ namespace AdminShellNS
 
             // members
 
-            public Identification identification = new Identification();
-            public Administration administration = null;
+            [XmlIgnore]
+            [JsonIgnore]
+            private Identification _identification = new Identification();
+
+            [XmlIgnore]
+            [JsonIgnore]
+            private Administration _administration = null;
+
+            public Identification identification
+            {
+                get { return _identification; }
+                set { MarkTimeStampNow(); _identification = value; }
+            }
+
+            public Administration administration
+            {
+                get { return _administration; }
+                set { MarkTimeStampNow(); _administration = value; }
+            }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public override DateTime TimeStamp
+            {
+                set
+                {
+                    base.TimeStamp = value;
+                }
+
+                get
+                {
+                    return IntegrateTimeStamps(base.TimeStamp,
+                        _identification?.TimeStamp,
+                        _administration?.TimeStamp);
+                }
+            }
 
             // constructors
 
@@ -2330,20 +2518,55 @@ namespace AdminShellNS
             [JsonProperty(PropertyName = "modelType")]
             public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
 
-            // from hasDataSpecification:
+            // from hasDataSpecification
+            [XmlIgnore]
+            [JsonIgnore]
+            private HasDataSpecification _hasDataSpecification = null;
+
             [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+            public HasDataSpecification hasDataSpecification
+            {
+                get { return _hasDataSpecification; }
+                set { MarkTimeStampNow(); _hasDataSpecification = value; }
+            }
 
             // from this very class
-            public AssetAdministrationShellRef derivedFrom = null;
+            [XmlIgnore]
+            [JsonIgnore]
+            private AssetAdministrationShellRef _derivedFrom = null;
+
+            public AssetAdministrationShellRef derivedFrom
+            {
+                get { return _derivedFrom; }
+                set { MarkTimeStampNow(); _derivedFrom = value; }
+            }
+
+            // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private AssetRef _assetRef = new AssetRef();
 
             [JsonProperty(PropertyName = "asset")]
-            public AssetRef assetRef = new AssetRef();
+            public AssetRef assetRef
+            {
+                get { return _assetRef; }
+                set { MarkTimeStampNow(); _assetRef = value; }
+            }
+
+            // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private ListOfSubmodelRefs _submodelRefs = new ListOfSubmodelRefs();
 
             [JsonProperty(PropertyName = "submodels")]
             [SkipForSearch]
-            public List<SubmodelRef> submodelRefs = new List<SubmodelRef>();
+            public ListOfSubmodelRefs submodelRefs
+            {
+                get { return _submodelRefs; }
+                set { MarkTimeStampNow(); _submodelRefs = value; }
+            }
 
+            // from this very class
             [JsonIgnore]
             public Views views = null;
             [XmlIgnore]
@@ -2351,11 +2574,38 @@ namespace AdminShellNS
             public View[] JsonViews
             {
                 get { return views?.views.ToArray(); }
-                set { views = Views.CreateOrSetInnerViews(views, value); }
+                set { MarkTimeStampNow(); views = Views.CreateOrSetInnerViews(views, value); }
             }
 
+            // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private ListOfITimeStamped<ConceptDictionary> _conceptDictionaries = null;
+
             [JsonProperty(PropertyName = "conceptDictionaries")]
-            public List<ConceptDictionary> conceptDictionaries = null;
+            public ListOfITimeStamped<ConceptDictionary> conceptDictionaries
+            {
+                get { return _conceptDictionaries; }
+                set { MarkTimeStampNow(); _conceptDictionaries = value; }
+            }
+
+            // this entities features more complex timestamp handling
+            [XmlIgnore]
+            [JsonIgnore]
+            public override DateTime TimeStamp {
+                set
+                {
+                    base.TimeStamp = value;
+                }
+
+                get
+                {
+                    return IntegrateTimeStamps(base.TimeStamp,
+                        conceptDictionaries?.TimeStamp,
+                        views?.views?.TimeStamp,
+                        submodelRefs?.TimeStamp);
+                }
+            }            
 
             // constructors
 
@@ -2386,7 +2636,7 @@ namespace AdminShellNS
 
                     if (src.conceptDictionaries != null)
                     {
-                        this.conceptDictionaries = new List<ConceptDictionary>();
+                        this.conceptDictionaries = new ListOfITimeStamped<ConceptDictionary>();
                         foreach (var cdd in src.conceptDictionaries)
                             this.conceptDictionaries.Add(new ConceptDictionary(cdd));
                     }
@@ -2415,7 +2665,7 @@ namespace AdminShellNS
 
                 if (src.conceptDictionaries != null)
                 {
-                    this.conceptDictionaries = new List<ConceptDictionary>();
+                    this.conceptDictionaries = new ListOfITimeStamped<ConceptDictionary>();
                     foreach (var cdd in src.conceptDictionaries)
                         this.conceptDictionaries.Add(new ConceptDictionary(cdd));
                 }
@@ -2446,7 +2696,7 @@ namespace AdminShellNS
             public void AddConceptDictionary(ConceptDictionary d)
             {
                 if (conceptDictionaries == null)
-                    conceptDictionaries = new List<ConceptDictionary>();
+                    conceptDictionaries = new ListOfITimeStamped<ConceptDictionary>();
                 conceptDictionaries.Add(d);
             }
 
@@ -2517,7 +2767,7 @@ namespace AdminShellNS
             public void AddSubmodelRef(SubmodelRef newref)
             {
                 if (this.submodelRefs == null)
-                    this.submodelRefs = new List<SubmodelRef>();
+                    this.submodelRefs = new AdminShell.ListOfSubmodelRefs();
                 this.submodelRefs.Add(newref);
             }
 
@@ -2564,21 +2814,55 @@ namespace AdminShellNS
             [JsonProperty(PropertyName = "modelType")]
             public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
 
-            // from hasDataSpecification:
+            // from hasDataSpecification
+            [XmlIgnore]
+            [JsonIgnore]
+            private HasDataSpecification _hasDataSpecification = null;
+
             [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+            public HasDataSpecification hasDataSpecification
+            {
+                get { return _hasDataSpecification; }
+                set { MarkTimeStampNow(); _hasDataSpecification = value; }
+            }
 
             // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private SubmodelRef _assetIdentificationModelRef = null;
+
             [XmlElement(ElementName = "assetIdentificationModelRef")]
-            public SubmodelRef assetIdentificationModelRef = null;
+            public SubmodelRef assetIdentificationModelRef
+            {
+                get { return _assetIdentificationModelRef; }
+                set { MarkTimeStampNow(); _assetIdentificationModelRef = value; }
+            }
+
+            // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private SubmodelRef _billOfMaterialRef = null;
 
             [XmlElement(ElementName = "billOfMaterialRef")]
-            public SubmodelRef billOfMaterialRef = null;
+            public SubmodelRef billOfMaterialRef
+            {
+                get { return _billOfMaterialRef; }
+                set { MarkTimeStampNow(); _billOfMaterialRef = value; }
+            }
 
             // from HasKind
+            [XmlIgnore]
+            [JsonIgnore]
+            private AssetKind _kind = new AssetKind();
+
             [XmlElement(ElementName = "kind")]
             [JsonIgnore]
-            public AssetKind kind = new AssetKind();
+            public AssetKind kind
+            {
+                get { return _kind; }
+                set { MarkTimeStampNow(); _kind = value; }
+            }
+
             [XmlIgnore]
             [JsonProperty(PropertyName = "kind")]
             public string JsonKind
@@ -2681,8 +2965,123 @@ namespace AdminShellNS
             }
         }
 
-        public class ListOfAssets : List<Asset>, IAasElement
+        public class ListOfITimeStamped<T> : List<T>, ITimeStamped
         {
+            // time stamping interface
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStampCreate { get; set; }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public virtual DateTime TimeStamp { get; set; }
+
+            public void MarkTimeStampNow()
+            {
+                TimeStamp = DateTime.UtcNow;
+            }
+
+            // maintaining these (automatically)
+
+            public ListOfITimeStamped() : base() { }
+            public ListOfITimeStamped(IEnumerable<T> collection) : base(collection) { }
+            public ListOfITimeStamped(int capacity) : base(capacity) { }
+
+            public new void Clear()
+            {
+                MarkTimeStampNow();
+                base.Clear();
+            }
+
+            public new void Add(T item)
+            {
+                MarkTimeStampNow();
+                base.Add(item);
+            }
+            
+            public new void AddRange(IEnumerable<T> collection)
+            {
+                MarkTimeStampNow();
+                base.AddRange(collection);
+            }
+
+            public new void Insert(int index, T item)
+            {
+                MarkTimeStampNow();
+                base.Insert(index, item);
+            }
+
+            public new void InsertRange(int index, IEnumerable<T> collection)
+            {
+                MarkTimeStampNow();
+                base.InsertRange(index, collection);
+            }
+
+            public new bool Remove(T item)
+            {
+                MarkTimeStampNow();
+                return base.Remove(item);
+            }
+
+            public new int RemoveAll(Predicate<T> match)
+            {
+                MarkTimeStampNow();
+                return base.RemoveAll(match);
+            }
+
+            public new void RemoveAt(int index)
+            {
+                MarkTimeStampNow();
+                base.RemoveAt(index);
+            }
+
+            public new void RemoveRange(int index, int count)
+            {
+                MarkTimeStampNow();
+                base.RemoveRange(index, count);
+            }
+
+            public new void Reverse(int index, int count)
+            {
+                MarkTimeStampNow();
+                base.Reverse(index, count);
+            }
+
+            public new void Reverse()
+            {
+                MarkTimeStampNow();
+                base.Reverse();
+            }
+
+            public new void Sort(Comparison<T> comparison)
+            {
+                MarkTimeStampNow();
+                base.Sort(comparison);
+            }
+
+            public new void Sort(int index, int count, IComparer<T> comparer)
+            {
+                MarkTimeStampNow();
+                base.Sort(index, count, comparer);
+            }
+
+            public new void Sort()
+            {
+                MarkTimeStampNow();
+                base.Sort();
+            }
+
+            public new void Sort(IComparer<T> comparer)
+            {
+                MarkTimeStampNow();
+                base.Sort(comparer);
+            }
+        }
+
+        public class ListOfAssets : ListOfITimeStamped<Asset>, IAasElement
+        {            
+
             // self decscription
 
             public AasElementSelfDescription GetSelfDescription()
@@ -2706,18 +3105,43 @@ namespace AdminShellNS
 
             // members
 
-            // from hasSemanticId:
+            // from hasSemanticId
+            [XmlIgnore]
+            [JsonIgnore]
+            private SemanticId _semanticId = null;
+
             [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = null;
+            public SemanticId semanticId
+            {
+                get { return _semanticId; }
+                set { MarkTimeStampNow(); _semanticId = value; }
+            }
 
             // from hasDataSpecification
+            [XmlIgnore]
+            [JsonIgnore]
+            private HasDataSpecification _hasDataSpecification = null;
+
             [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+            public HasDataSpecification hasDataSpecification
+            {
+                get { return _hasDataSpecification; }
+                set { MarkTimeStampNow(); _hasDataSpecification = value; }
+            }
 
             // from this very class
+            [XmlIgnore]
+            [JsonIgnore]
+            private ContainedElements _containedElements = null;
+
             [JsonIgnore]
             [SkipForSearch]
-            public ContainedElements containedElements = null;
+            public ContainedElements containedElements
+            {
+                get { return _containedElements; }
+                set { MarkTimeStampNow(); _containedElements = value; }
+            }
+
             [XmlIgnore]
             [SkipForSearch]
             [JsonProperty(PropertyName = "containedElements")]
@@ -2859,7 +3283,7 @@ namespace AdminShellNS
         {
             [XmlElement(ElementName = "view")]
             [JsonIgnore]
-            public List<View> views = new List<View>();
+            public ListOfITimeStamped<View> views = new ListOfITimeStamped<View>();
 
             // constructors
 
@@ -2891,7 +3315,7 @@ namespace AdminShellNS
                     res.views = null;
                     return res;
                 }
-                res.views = new List<View>(inner);
+                res.views = new ListOfITimeStamped<View>(inner);
                 return res;
             }
         }
