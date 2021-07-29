@@ -44,6 +44,7 @@ namespace BlazorUI.Data
         {
             sessionNumber = ++sessionCounter;
             sessionTotal++;
+            AnyUiDisplayContextHtml.addSession(sessionNumber);
 
             packages = new PackageCentral();
             _packageCentral = packages;
@@ -69,6 +70,7 @@ namespace BlazorUI.Data
         }
         public void Dispose()
         {
+            AnyUiDisplayContextHtml.deleteSession(sessionNumber);
             sessionTotal--;
             if (env != null)
                 env.Close();

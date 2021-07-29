@@ -32,6 +32,22 @@ using Newtonsoft.Json;
 
 namespace AnyUi
 {
+    public class AnyUiHtmlEventSession
+    {
+        public int sessionNumber = 0;
+        public bool htmlDotnetEventIn = false;
+        public bool htmlDotnetEventOut = false;
+        public string htmlDotnetEventType = "";
+        public List<object> htmlDotnetEventInputs = new List<object>();
+        public List<object> htmlDotnetEventOutputs = new List<object>();
+
+        public bool htmlEventIn = false;
+        public bool htmlEventOut = false;
+        public string htmlEventType = "";
+        public List<object> htmlEventInputs = new List<object>();
+        public List<object> htmlEventOutputs = new List<object>();
+    }
+
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {
         [JsonIgnore]
@@ -43,100 +59,137 @@ namespace AnyUi
 
         public static Thread htmlDotnetThread = new Thread(htmlDotnetLoop);
         static object htmlDotnetLock = new object();
-        public static bool htmlDotnetEventIn = false;
-        public static bool htmlDotnetEventOut = false;
-        public static string htmlDotnetEventType = "";
-        public static List<object> htmlDotnetEventInputs = new List<object>();
-        public static List<object> htmlDotnetEventOutputs = new List<object>();
+        public static List<AnyUiHtmlEventSession> sessions = new List<AnyUiHtmlEventSession>();
 
-        public static bool htmlEventIn = false;
-        public static bool htmlEventOut = false;
-        public static string htmlEventType = "";
-        public static List<object> htmlEventInputs = new List<object>();
-        public static List<object> htmlEventOutputs = new List<object>();
+        public static void addSession(int sessionNumber)
+        {
+            lock (htmlDotnetLock)
+            {
+                var s = new AnyUiHtmlEventSession();
+                s.sessionNumber = sessionNumber;
+                sessions.Add(s);
+            }
+        }
+        public static void deleteSession(int sessionNumber)
+        {
+            lock (htmlDotnetLock)
+            {
+                AnyUiHtmlEventSession found = null;
+                foreach (var s in sessions)
+                {
+                    if (s.sessionNumber == sessionNumber)
+                    {
+                        found = s;
+                        break;
+                    }
+                }
+                if (found != null)
+                    sessions.Remove(found);
+            }
+        }
+        public static AnyUiHtmlEventSession findSession(int sessionNumber)
+        {
+            AnyUiHtmlEventSession found = null;
+            lock (htmlDotnetLock)
+            {
+                foreach (var s in sessions)
+                {
+                    if (s.sessionNumber == sessionNumber)
+                    {
+                        found = s;
+                        break;
+                    }
+                }
+            }
+            return found;
+        }
 
         private static void htmlDotnetLoop()
         {
             AnyUiUIElement el;
 
-            bool newData = false;
             while (true)
             {
                 lock (htmlDotnetLock)
                 {
-                    if (htmlDotnetEventIn)
+                    foreach (var s in sessions)
                     {
-                        switch (htmlDotnetEventType)
+                        if (s.htmlDotnetEventIn)
                         {
-                            case "setValueLambda":
-                                el = (AnyUiUIElement)htmlDotnetEventInputs[0];
-                                object o = htmlDotnetEventInputs[1];
-                                htmlDotnetEventInputs.Clear();
-                                AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                break;
-                            case "contextMenu":
-                                el = (AnyUiUIElement)htmlDotnetEventInputs[0];
-                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
-                                    htmlDotnetEventInputs[1];
-                                htmlEventType = "contextMenu";
-                                htmlEventInputs.Add(el);
-                                htmlEventInputs.Add(cntlcm);
-                                htmlEventIn = true;
-                                Program.signalNewData(1); // same tree, but structure may change
+                            switch (s.htmlDotnetEventType)
+                            {
+                                case "setValueLambda":
+                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                    object o = s.htmlDotnetEventInputs[1];
+                                    s.htmlDotnetEventInputs.Clear();
+                                    AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                    break;
+                                case "contextMenu":
+                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                    AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
+                                        s.htmlDotnetEventInputs[1];
+                                    s.htmlEventType = "contextMenu";
+                                    s.htmlEventInputs.Add(el);
+                                    s.htmlEventInputs.Add(cntlcm);
+                                    s.htmlEventIn = true;
+                                    Program.signalNewData(1, s.sessionNumber); // same tree, but structure may change
 
-                                while (!htmlEventOut) ;
-                                int bufferedI = 0;
-                                if (htmlEventOutputs.Count == 1)
-                                {
-                                    bufferedI = (int)htmlEventOutputs[0];
-                                    var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
-                                }
-                                htmlEventOutputs.Clear();
-                                htmlEventType = "";
-                                htmlEventOut = false;
-                                htmlDotnetEventIn = false;
-
-                                htmlDotnetEventInputs.Clear();
-                                //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                break;
+                                    while (!s.htmlEventOut) ;
+                                    int bufferedI = 0;
+                                    if (s.htmlEventOutputs.Count == 1)
+                                    {
+                                        bufferedI = (int)s.htmlEventOutputs[0];
+                                        var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                    }
+                                    s.htmlEventOutputs.Clear();
+                                    s.htmlEventType = "";
+                                    s.htmlEventOut = false;
+                                    s.htmlDotnetEventIn = false;
+                                    s.htmlDotnetEventInputs.Clear();
+                                    //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                    break;
+                            }
+                            while (s.htmlDotnetEventOut) ;
+                            s.htmlDotnetEventIn = false;
+                            Program.signalNewData(2, s.sessionNumber); // build new tree
                         }
-                        while (htmlDotnetEventOut) ;
-                        htmlDotnetEventIn = false;
-                        newData = true;
                     }
-                }
-                if (newData)
-                {
-                    newData = false;
-                    Program.signalNewData(2); // build new tree
                 }
                 Thread.Sleep(100);
             }
         }
 
-        public static void setValueLambdaHtml(AnyUiUIElement el, object o)
+        public static void setValueLambdaHtml(int sessionNummber, AnyUiUIElement el, object o)
         {
-            lock (htmlDotnetLock)
+            var found = findSession(sessionNummber);
+            if (found != null)
             {
-                while (htmlDotnetEventIn) ;
-                htmlEventInputs.Clear();
-                htmlDotnetEventType = "setValueLambda";
-                htmlDotnetEventInputs.Add(el);
-                htmlDotnetEventInputs.Add(o);
-                htmlDotnetEventIn = true;
+                lock (htmlDotnetLock)
+                {
+                    while (found.htmlDotnetEventIn) ;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventType = "setValueLambda";
+                    found.htmlDotnetEventInputs.Add(el);
+                    found.htmlDotnetEventInputs.Add(o);
+                    found.htmlDotnetEventIn = true;
+                }
             }
         }
 
-        public static void specialActionContextMenuHtml(AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
+        public static void specialActionContextMenuHtml(int sessionNummber, AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
         {
-            lock (htmlDotnetLock)
+            var found = findSession(sessionNummber);
+            if (found != null)
             {
-                while (htmlDotnetEventIn) ;
-                htmlEventInputs.Clear();
-                htmlDotnetEventType = "contextMenu";
-                htmlDotnetEventInputs.Add(el);
-                htmlDotnetEventInputs.Add(cntlcm);
-                htmlDotnetEventIn = true;
+                lock (htmlDotnetLock)
+                {
+                    while (found.htmlDotnetEventIn) ;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventType = "contextMenu";
+                    found.htmlDotnetEventInputs.Add(el);
+                    found.htmlDotnetEventInputs.Add(cntlcm);
+                    found.htmlDotnetEventIn = true;
+                }
             }
         }
 
@@ -151,24 +204,38 @@ namespace AnyUi
         public override AnyUiMessageBoxResult MessageBoxFlyoutShow(
             string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
         {
-            htmlEventInputs.Clear();
-            htmlEventType = "MessageBoxFlyoutShow";
-            htmlEventInputs.Add(message);
-            htmlEventInputs.Add(caption);
-            htmlEventInputs.Add(buttons);
-            htmlEventIn = true;
-            Program.signalNewData(2); // build new tree
+            AnyUiHtmlEventSession found = null;
+            lock (htmlDotnetLock)
+            {
+                foreach (var s in sessions)
+                {
+                    found = s;
+                    break;
+                }
+            }
 
-            while (!htmlEventOut) ;
             AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
-            if (htmlEventOutputs.Count == 1)
-                r = (AnyUiMessageBoxResult)htmlEventOutputs[0];
+            if (found != null)
+            {
+                found.htmlEventInputs.Clear();
+                found.htmlEventType = "MessageBoxFlyoutShow";
+                found.htmlEventInputs.Add(message);
+                found.htmlEventInputs.Add(caption);
+                found.htmlEventInputs.Add(buttons);
+                found.htmlEventIn = true;
+                Program.signalNewData(2, found.sessionNumber); // build new tree
 
-            htmlEventType = "";
-            htmlEventOutputs.Clear();
-            htmlEventOut = false;
-            htmlEventInputs.Clear();
-            htmlDotnetEventIn = false;
+                while (!found.htmlEventOut) ;
+                if (found.htmlEventOutputs.Count == 1)
+                    r = (AnyUiMessageBoxResult)found.htmlEventOutputs[0];
+
+                found.htmlEventType = "";
+                found.htmlEventOutputs.Clear();
+                found.htmlEventOut = false;
+                found.htmlEventInputs.Clear();
+                found.htmlDotnetEventIn = false;
+            }
+
             return r;
         }
 
@@ -188,39 +255,51 @@ namespace AnyUi
             // make sure to reset
             dialogueData.Result = false;
 
-            htmlEventInputs.Clear();
-            htmlEventType = "StartFlyoverModal";
-            htmlEventInputs.Add(dialogueData);
-            
-            htmlEventIn = true;
-            Program.signalNewData(2); // build new tree
-
-            while (!htmlEventOut) ;
-            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+            AnyUiHtmlEventSession found = null;
+            lock (htmlDotnetLock)
             {
-                if (htmlEventOutputs.Count == 2)
+                foreach (var s in sessions)
                 {
-                    ddte.Text = (string)htmlEventOutputs[0];
-                    ddte.Result = (bool)htmlEventOutputs[1];
+                    found = s;
+                    break;
                 }
             }
-            if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
-            {
-                ddsfl.Result = false;
-                if (htmlEventOutputs.Count == 1)
-                {
-                    int iDdsfl = (int)htmlEventOutputs[0];
-                    ddsfl.Result = true;
-                    ddsfl.ResultIndex = iDdsfl;
-                    ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
-                }
-            }
-            htmlEventType = "";
-            htmlEventOutputs.Clear();
-            htmlEventOut = false;
-            htmlEventInputs.Clear();
-            htmlDotnetEventIn = false;
 
+            if (found != null)
+            {
+                found.htmlEventInputs.Clear();
+                found.htmlEventType = "StartFlyoverModal";
+                found.htmlEventInputs.Add(dialogueData);
+
+                found.htmlEventIn = true;
+                Program.signalNewData(2, found.sessionNumber); // build new tree
+
+                while (!found.htmlEventOut) ;
+                if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                {
+                    if (found.htmlEventOutputs.Count == 2)
+                    {
+                        ddte.Text = (string)found.htmlEventOutputs[0];
+                        ddte.Result = (bool)found.htmlEventOutputs[1];
+                    }
+                }
+                if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                {
+                    ddsfl.Result = false;
+                    if (found.htmlEventOutputs.Count == 1)
+                    {
+                        int iDdsfl = (int)found.htmlEventOutputs[0];
+                        ddsfl.Result = true;
+                        ddsfl.ResultIndex = iDdsfl;
+                        ddsfl.ResultItem = ddsfl.ListOfItems[iDdsfl];
+                    }
+                }
+                found.htmlEventType = "";
+                found.htmlEventOutputs.Clear();
+                found.htmlEventOut = false;
+                found.htmlEventInputs.Clear();
+                found.htmlDotnetEventIn = false;
+            }
             // result
             return dialogueData.Result;
         }

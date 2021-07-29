@@ -11,7 +11,7 @@
 @inject BlazorUI.Data.blazorSessionService bi
 
 @{
-    // resharper disable all
+// resharper disable all
 }
 
 <div class="col-12 row">
@@ -19,19 +19,23 @@
     <div class="col-4">
         <div class="row-12">
             <div class="row">
-                @if (AnyUiDisplayContextHtml.htmlEventIn)
+                @{
+                    session = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
+                    sessionHtmlEventIn = session.htmlEventIn;
+                }
+                @if (session != null && sessionHtmlEventIn)
                 {
-                    <Modal @bind-Open="AnyUiDisplayContextHtml.htmlEventIn" Close="OnClose">
+                    <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
                         <form method="dialog">
-                            @if (AnyUiDisplayContextHtml.htmlEventInputs.Count != 0)
+                            @if (session.htmlEventInputs.Count != 0)
                             {
-                                switch (AnyUiDisplayContextHtml.htmlEventType)
+                                switch (session.htmlEventType)
                                 {
                                     case "MessageBoxFlyoutShow":
-                                        string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                        string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
-                                        AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
-                                        AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                        string message = (string)session.htmlEventInputs[0];
+                                        string caption = (string)session.htmlEventInputs[1];
+                                        AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)session.htmlEventInputs[2];
+                                        session.htmlEventInputs.Clear();
                                         <p><span style="font-weight:bold">@caption</span></p>
                                         <br />
                                         <p>@message</p>
@@ -51,12 +55,12 @@
                                         }
                                         break;
                                     case "StartFlyoverModal":
-                                        AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                        AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)session.htmlEventInputs[0];
                                         if (dialogueData is AnyUiDialogueDataTextEditor ddte)
                                         {
                                             string flyCaption = ddte.Caption + " - read only";
                                             flyText = ddte.Text;
-                                            AnyUiDisplayContextHtml.htmlEventInputs.Clear();
+                                            session.htmlEventInputs.Clear();
                                             <p><span style="font-weight:bold">@flyCaption</span></p>
                                             // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
                                             <textarea cols="100" rows="20"
@@ -83,11 +87,12 @@
                                     case "contextMenu":
                                         // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
                                         AnyUiSpecialActionContextMenu cntlcm =
-                                            (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
+                                            (AnyUiSpecialActionContextMenu)session.htmlEventInputs[1];
                                         var nmi = cntlcm.MenuItemHeaders.Length / 2;
                                         int i = 0;
                                         string icon = "" + cntlcm.MenuItemHeaders[0];
                                         string header = "" + cntlcm.MenuItemHeaders[1];
+                                        session.htmlEventInputs.Clear();
                                         // string v = i + ": " + icon + " " + header;
                                         <select class="form-control selectpicker" size="@nmi"
                                                 @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
@@ -107,24 +112,27 @@
                 }
 
                 @code {
-                    // test GITHUB 2
+                    private AnyUiHtmlEventSession session { get; set; }
+                    private bool sessionHtmlEventIn { get; set; }
 
                     void MyContextMenuSelect(string value)
                     {
                         string[] s = value.Split(':');
                         int i = Convert.ToInt32(s[0]);
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
-                        AnyUiDisplayContextHtml.htmlEventIn = false;
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                        session.htmlEventOutputs.Add(i);
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
+                        session.htmlEventOut = true;
                     }
 
                     void MyDialogDataSelectFromList(string value)
                     {
                         string[] s = value.Split(':');
                         int i = Convert.ToInt32(s[0]);
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
-                        AnyUiDisplayContextHtml.htmlEventIn = false;
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                        session.htmlEventOutputs.Add(i);
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
+                        session.htmlEventOut = true;
                     }
 
                     private void MyTextInput(string value)
@@ -136,11 +144,12 @@
 
                     void OnClose(string value)
                     {
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Clear();
-                        switch (AnyUiDisplayContextHtml.htmlEventType)
+                        session.htmlEventOutputs.Clear();
+                        switch (session.htmlEventType)
                         {
                             case "MessageBoxFlyoutShow":
-                                AnyUiDisplayContextHtml.htmlEventIn = false;
+                                session.htmlEventIn = false;
+                                session.htmlEventInputs.Clear();
                                 AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
                                 switch (value)
                                 {
@@ -157,25 +166,26 @@
                                         r = AnyUiMessageBoxResult.No;
                                         break;
                                 }
-                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(r);
+                                session.htmlEventOutputs.Add(r);
                                 break;
                             case "StartFlyoverModal":
-                                AnyUiDisplayContextHtml.htmlEventIn = false;
-                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(flyText);
+                                session.htmlEventIn = false;
+                                session.htmlEventInputs.Clear();
+                                session.htmlEventOutputs.Add(flyText);
                                 switch (value)
                                 {
                                     case "OK":
-                                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(true);
+                                        session.htmlEventOutputs.Add(true);
                                         break;
                                     case "Cancel":
-                                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(false);
+                                        session.htmlEventOutputs.Add(false);
                                         break;
                                 }
                                 break;
                             case "contextMenu":
                                 break;
                         }
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                        session.htmlEventOut = true;
                     }
                 }
             </div>
@@ -423,11 +433,11 @@
                                                             {
                                                                 if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
                                                                 {
-                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(bi.sessionNumber, chbt, cntlcm);
                                                                     return;
                                                                 }
                                                                 // chbt.setValueLambda?.Invoke(chbt.Content);
-                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
+                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(bi.sessionNumber, chbt, chbt.Content);
                                                             }
                                                         }
                                                     }
@@ -558,7 +568,7 @@
         SubmodelService.NewDataAvailable -= NewData;
     }
 
-    static int newDataMode = 0;
+    int newDataMode = 0;
 
     void NewData(object source, EventArgs args)
     {
@@ -582,7 +592,7 @@
 
     string updateVisibleTree(List<Item> viewItems, Item selectedNode)
     {
-        if (update && !AnyUiDisplayContextHtml.htmlEventIn && !AnyUiDisplayContextHtml.htmlEventOut)
+        if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
         {
             switch (newDataMode)
             {
