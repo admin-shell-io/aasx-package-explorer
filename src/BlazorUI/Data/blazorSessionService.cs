@@ -38,10 +38,12 @@ namespace BlazorUI.Data
 
         public static int sessionCounter = 0;
         public int sessionNumber = 0;
+        public static int sessionTotal = 0;
         public List<Item> items = null;
         public blazorSessionService()
         {
             sessionNumber = ++sessionCounter;
+            sessionTotal++;
 
             packages = new PackageCentral();
             _packageCentral = packages;
@@ -67,6 +69,7 @@ namespace BlazorUI.Data
         }
         public void Dispose()
         {
+            sessionTotal--;
             if (env != null)
                 env.Close();
             // throw new NotImplementedException();
