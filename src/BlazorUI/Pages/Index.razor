@@ -6,6 +6,7 @@
 @using BlazorUI.Shared
 @*using System*@
 @*using System.Net;*@
+@inject DownloadModel dm
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
 
@@ -538,6 +539,8 @@
 
         if (firstRender)
         {
+            dm.setBi(bi);
+
             SubmodelService.buildTree(bi);
             Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
             // StateHasChanged();
@@ -546,6 +549,7 @@
             //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
 
             SubmodelService.NewDataAvailable += NewData;
+            
         }
     }
 

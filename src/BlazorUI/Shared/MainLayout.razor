@@ -2,7 +2,9 @@
 @using AdminShellNS;
 @using AasxPackageLogic;
 @using AasxPackageLogic.PackageCentral;
+@inject IJSRuntime JSRuntime
 @inject BlazorUI.Data.blazorSessionService bi
+@inject DownloadModel dm
 
 @{
     // resharper disable all
@@ -201,7 +203,7 @@
                         @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
                         @*<button href="/download">Download</button>*@
                         @*<a class="form-control btn btn-primary" href="/download" style="color:black;background-color:transparent;">Download</a>*@
-                        <a class="button" href="/download">Download</a>
+                        @*<a class="button" href="/download">Download</a>*@
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             private async void onSave()
@@ -226,26 +228,6 @@
                                 catch
                                 {
                                 }
-                                this.StateHasChanged();
-                            }
-                        }
-                        @code {
-                            private async void Download()
-                            {
-                                // to be done
-                                /*
-                                if (!System.IO.Directory.Exists("./temp/"))
-                                    System.IO.Directory.CreateDirectory("./temp/");
-                                string fname = "./temp/" + System.IO.Path.GetFileName(Program.env.AasEnv.AdministrationShells[0].idShort);
-                                Program.env.SaveAs(fname);
-
-                                // return as FILE
-                                System.IO.FileStream packageStream = File.OpenRead(fname);
-                                context.Response.StatusCode = HttpStatusCode.Ok;
-                                SendStreamResponse(context, packageStream,
-                                    Path.GetFileName(AasxServer.Program.envFileName[fileIndex]));
-                                packageStream.Close();
-                                */
                                 this.StateHasChanged();
                             }
                         }

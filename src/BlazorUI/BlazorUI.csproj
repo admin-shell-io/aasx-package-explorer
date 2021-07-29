@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <None Include="Pages\download.cshtml.cs" />
-    <None Include="Pages\download.cshtml" />
+    <None Include="Pages\Download.razor" />
   </ItemGroup>
 
   <ItemGroup>
