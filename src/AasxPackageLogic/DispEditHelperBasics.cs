@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -2134,6 +2135,59 @@ namespace AasxPackageLogic
         public HintCheck[] ConcatHintChecks(IEnumerable<HintCheck> a, IEnumerable<HintCheck> b)
         {
             return ConcatArrays<HintCheck>(a, b);
+        }
+
+        //
+        // Intermediate layer to handle modifications, event generation, marking of time stamps
+        //
+
+        /// <summary>
+        /// Base class for all modifications, which shall be expressed to elements of tha AAS
+        /// </summary>
+        public class MarkModiBase
+        {
+            public AdminShell.IAasElement Element;
+        }
+
+        /// <summary>
+        /// Structural change of that AAS element
+        /// </summary>
+        public class MarkModiStructChange : MarkModiBase {
+            public AasPayloadStructuralChangeItem.ChangeReason Reason;
+            public int CreateAtIndex = -1;
+
+            public MarkModiStructChange() { }
+            
+            public MarkModiStructChange(
+                AdminShell.IAasElement element,
+                AasPayloadStructuralChangeItem.ChangeReason reason,
+                int createAtIndex = -1)
+            {
+                Element = element;
+                Reason = reason;
+                CreateAtIndex = createAtIndex;
+            }
+        }
+
+        /// <summary>
+        /// Update value of that AAS element
+        /// </summary>
+        public class MarkModiUpdateValue : MarkModiBase
+        {
+
+            public MarkModiUpdateValue() { }
+
+            public MarkModiUpdateValue(AdminShell.IAasElement element)
+            {
+                Element = element;
+            }
+        }
+
+        /// <summary>
+        /// Takes that modifications and correctly translate this to transaction of the AAS and its elements
+        /// </summary>
+        public void MarkModification(MarkModiBase mod)
+        {
         }
     }
 }

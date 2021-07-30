@@ -1840,8 +1840,87 @@ namespace AdminShellNS
             }
         }
 
-        public class Referable : IValidateEntity, IAasElement
+        /// <summary>
+        /// Base class for diary entries, which are recorded with respect to a AAS element
+        /// Diary entries contain a minimal set of information to later produce AAS events or such.
+        /// </summary>
+        public class DiaryEntryBase
         {
+            public DateTime Timestamp;
+        }
+
+        /// <summary>
+        /// Structural change of that AAS element
+        /// </summary>
+        public class MarkModiStructChange : DiaryEntryBase
+        {
+            public enum ChangeReason { Create, Modify, Delete }
+
+            public ChangeReason Reason;
+            public int CreateAtIndex = -1;
+
+            public MarkModiStructChange() { }
+
+            public MarkModiStructChange(
+                DateTime timestamp,
+                ChangeReason reason,
+                int createAtIndex = -1)
+            {
+                Timestamp = timestamp;
+                Reason = reason;
+                CreateAtIndex = createAtIndex;
+            }
+        }
+
+        /// <summary>
+        /// Update value of that AAS element
+        /// </summary>
+        public class MarkModiUpdateValue : DiaryEntryBase
+        {
+
+            public MarkModiUpdateValue() { }
+
+            public MarkModiUpdateValue(DateTime timestamp) { Timestamp = timestamp; }
+        }
+
+        public class DiaryDataDef
+        {
+            [XmlIgnore]
+            [JsonIgnore]
+            public DateTime TimeStampCreate { get; set; }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public DateTime TimeStampUpdate { get; set; }
+
+            /// <summary>
+            /// List of entries, timewise one after each other (entries are timestamped).
+            /// Note: Default is <c>Entries = null</c>, as handling of many many AAS elements does not
+            /// create additional overhead of creating empty lists. An empty list shall be avoided.
+            /// </summary>
+            public List<DiaryEntryBase> Entries = null;
+        }
+
+        public interface IDiaryData
+        {
+            DiaryDataDef DiaryData { get; }
+        }
+
+        public class Referable : IValidateEntity, IAasElement, IDiaryData
+        {
+
+            // diary
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [SkipForHash]
+            [SkipForReflection]
+            private DiaryDataDef _diaryData = new DiaryDataDef();
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [SkipForReflection]
+            public DiaryDataDef DiaryData { get { return _diaryData; } }
 
             // members
 
