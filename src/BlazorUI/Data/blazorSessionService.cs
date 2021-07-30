@@ -13,6 +13,7 @@ using AdminShellNS;
 using AnyUi;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace BlazorUI.Data
 {
@@ -40,6 +41,8 @@ namespace BlazorUI.Data
         public int sessionNumber = 0;
         public static int sessionTotal = 0;
         public List<Item> items = null;
+        public Thread htmlDotnetThread = null;
+
         public blazorSessionService()
         {
             sessionNumber = ++sessionCounter;
@@ -67,8 +70,11 @@ namespace BlazorUI.Data
             if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(
                         packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+
+            htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
+            htmlDotnetThread.Start();
         }
-        public void Dispose()
+    public void Dispose()
         {
             AnyUiDisplayContextHtml.deleteSession(sessionNumber);
             sessionTotal--;

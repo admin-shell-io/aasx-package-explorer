@@ -144,12 +144,13 @@
 
                     void OnClose(string value)
                     {
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
                         session.htmlEventOutputs.Clear();
                         switch (session.htmlEventType)
                         {
                             case "MessageBoxFlyoutShow":
-                                session.htmlEventIn = false;
-                                session.htmlEventInputs.Clear();
+
                                 AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
                                 switch (value)
                                 {
@@ -169,8 +170,6 @@
                                 session.htmlEventOutputs.Add(r);
                                 break;
                             case "StartFlyoverModal":
-                                session.htmlEventIn = false;
-                                session.htmlEventInputs.Clear();
                                 session.htmlEventOutputs.Add(flyText);
                                 switch (value)
                                 {
@@ -268,7 +267,8 @@
                     {
                         bi.helper.repo = null;
                     }
-                    var displayContext = new AnyUiDisplayContextHtml();
+                    var displayContext = new AnyUiDisplayContextHtml(bi);
+                    var displayData = new AnyUiDisplayDataHtml(displayContext);
                     bi.helper.context = displayContext;
                     if (selectedNode.Tag is AdministrationShell)
                     {
@@ -377,21 +377,25 @@
 
                                                     if (ch is AnyUiLabel chlb)
                                                     {
+                                                        chlb.DisplayData = displayData;
                                                         <td><span style="@style">@chlb.Content</span></td>
                                                     }
 
                                                     if (ch is AnyUiTextBlock tb)
                                                     {
+                                                        tb.DisplayData = displayData;
                                                         <td><span>@tb.Text</span></td>
                                                     }
 
                                                     if (ch is AnyUiSelectableTextBlock stb)
                                                     {
+                                                        stb.DisplayData = displayData;
                                                         <td><span>@stb.Text</span></td>
                                                     }
 
                                                     if (ch is AnyUiTextBox chtb)
                                                     {
+                                                        chtb.DisplayData = displayData;
                                                         if (ch is AnyUiHintBubble hb)
                                                         {
                                                             if (bi.editMode)
@@ -422,6 +426,7 @@
 
                                                     if (ch is AnyUiButton chbt)
                                                     {
+                                                        chbt.DisplayData = displayData;
                                                         if (chbt.Content == "Delete")
                                                         {
                                                             // resharper disable once NotAccessedVariable.Compiler
@@ -433,17 +438,18 @@
                                                             {
                                                                 if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
                                                                 {
-                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(bi.sessionNumber, chbt, cntlcm);
+                                                                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
                                                                     return;
                                                                 }
                                                                 // chbt.setValueLambda?.Invoke(chbt.Content);
-                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(bi.sessionNumber, chbt, chbt.Content);
+                                                                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
                                                             }
                                                         }
                                                     }
 
                                                     if (ch is AnyUiCheckBox cb)
                                                     {
+                                                        cb.DisplayData = displayData;
                                                         <td>
                                                             <input type="checkbox" value="@cb.IsChecked"
                                                                    @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
@@ -459,6 +465,7 @@
 
                                                     if (ch is AnyUiComboBox comb)
                                                     {
+                                                        comb.DisplayData = displayData;
                                                         if (prevCh is AnyUiButton)
                                                         {
                                                             newTab = true;

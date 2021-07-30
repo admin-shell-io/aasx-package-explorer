@@ -189,7 +189,7 @@ namespace BlazorUI
             // loadAasxFiles();
 #if __test__PackageLogic
 #else
-            AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
+            // AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
 #endif
 
             //

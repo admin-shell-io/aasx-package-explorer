@@ -47,23 +47,35 @@ namespace AnyUi
         public List<object> htmlEventInputs = new List<object>();
         public List<object> htmlEventOutputs = new List<object>();
     }
+    public class AnyUiDisplayDataHtml : AnyUiDisplayDataBase
+    {
+        [JsonIgnore]
+        public AnyUiDisplayContextHtml _context;
 
+        public AnyUiDisplayDataHtml(AnyUiDisplayContextHtml context)
+        {
+            _context = context;
+        }
+    }
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {
         [JsonIgnore]
         public PackageCentral Packages;
 
-        public AnyUiDisplayContextHtml()
+        [JsonIgnore]
+        public BlazorUI.Data.blazorSessionService _bi;
+        public AnyUiDisplayContextHtml(BlazorUI.Data.blazorSessionService bi)
         {
+            _bi = bi;
         }
 
-        public static Thread htmlDotnetThread = new Thread(htmlDotnetLoop);
-        static object htmlDotnetLock = new object();
+        object htmlDotnetLock = new object();
+        static object staticHtmlDotnetLock = new object();
         public static List<AnyUiHtmlEventSession> sessions = new List<AnyUiHtmlEventSession>();
 
         public static void addSession(int sessionNumber)
         {
-            lock (htmlDotnetLock)
+            lock (staticHtmlDotnetLock)
             {
                 var s = new AnyUiHtmlEventSession();
                 s.sessionNumber = sessionNumber;
@@ -72,7 +84,7 @@ namespace AnyUi
         }
         public static void deleteSession(int sessionNumber)
         {
-            lock (htmlDotnetLock)
+            lock (staticHtmlDotnetLock)
             {
                 AnyUiHtmlEventSession found = null;
                 foreach (var s in sessions)
@@ -90,7 +102,7 @@ namespace AnyUi
         public static AnyUiHtmlEventSession findSession(int sessionNumber)
         {
             AnyUiHtmlEventSession found = null;
-            lock (htmlDotnetLock)
+            lock (staticHtmlDotnetLock)
             {
                 foreach (var s in sessions)
                 {
@@ -104,16 +116,18 @@ namespace AnyUi
             return found;
         }
 
-        private static void htmlDotnetLoop()
+        public static void htmlDotnetLoop()
         {
             AnyUiUIElement el;
 
             while (true)
             {
-                lock (htmlDotnetLock)
+                // lock (htmlDotnetLock)
                 {
-                    foreach (var s in sessions)
+                    int i = 0;
+                    while (i < sessions.Count)
                     {
+                        var s = sessions[i];
                         if (s.htmlDotnetEventIn)
                         {
                             switch (s.htmlDotnetEventType)
@@ -121,6 +135,7 @@ namespace AnyUi
                                 case "setValueLambda":
                                     el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
                                     object o = s.htmlDotnetEventInputs[1];
+                                    s.htmlDotnetEventIn = false;
                                     s.htmlDotnetEventInputs.Clear();
                                     AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
                                     break;
@@ -131,6 +146,8 @@ namespace AnyUi
                                     s.htmlEventType = "contextMenu";
                                     s.htmlEventInputs.Add(el);
                                     s.htmlEventInputs.Add(cntlcm);
+                                    s.htmlDotnetEventIn = false;
+                                    s.htmlDotnetEventInputs.Clear();
                                     s.htmlEventIn = true;
                                     Program.signalNewData(1, s.sessionNumber); // same tree, but structure may change
 
@@ -144,27 +161,27 @@ namespace AnyUi
                                     s.htmlEventOutputs.Clear();
                                     s.htmlEventType = "";
                                     s.htmlEventOut = false;
-                                    s.htmlDotnetEventIn = false;
-                                    s.htmlDotnetEventInputs.Clear();
                                     //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
                                     break;
                             }
                             while (s.htmlDotnetEventOut) ;
-                            s.htmlDotnetEventIn = false;
                             Program.signalNewData(2, s.sessionNumber); // build new tree
                         }
+                        i++;
                     }
                 }
                 Thread.Sleep(100);
             }
         }
 
-        public static void setValueLambdaHtml(int sessionNummber, AnyUiUIElement el, object o)
+        public static void setValueLambdaHtml(AnyUiUIElement el, object o)
         {
-            var found = findSession(sessionNummber);
+            var dc = (el.DisplayData as AnyUiDisplayDataHtml)._context;
+            var sessionNumber = dc._bi.sessionNumber;
+            var found = findSession(sessionNumber);
             if (found != null)
             {
-                lock (htmlDotnetLock)
+                lock (dc.htmlDotnetLock)
                 {
                     while (found.htmlDotnetEventIn) ;
                     found.htmlEventInputs.Clear();
@@ -176,12 +193,14 @@ namespace AnyUi
             }
         }
 
-        public static void specialActionContextMenuHtml(int sessionNummber, AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
+        public static void specialActionContextMenuHtml(AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
         {
-            var found = findSession(sessionNummber);
+            var dc = (el.DisplayData as AnyUiDisplayDataHtml)._context;
+            var sessionNumber = dc._bi.sessionNumber;
+            var found = findSession(sessionNumber);
             if (found != null)
             {
-                lock (htmlDotnetLock)
+                lock (dc.htmlDotnetLock)
                 {
                     while (found.htmlDotnetEventIn) ;
                     found.htmlEventInputs.Clear();
@@ -209,8 +228,11 @@ namespace AnyUi
             {
                 foreach (var s in sessions)
                 {
-                    found = s;
-                    break;
+                    if (_bi.sessionNumber == s.sessionNumber)
+                    {
+                        found = s;
+                        break;
+                    }
                 }
             }
 
@@ -260,8 +282,11 @@ namespace AnyUi
             {
                 foreach (var s in sessions)
                 {
-                    found = s;
-                    break;
+                    if (_bi.sessionNumber == s.sessionNumber)
+                    {
+                        found = s;
+                        break;
+                    }
                 }
             }
 
