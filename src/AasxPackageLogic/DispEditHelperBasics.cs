@@ -2142,52 +2142,32 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
-        /// Base class for all modifications, which shall be expressed to elements of tha AAS
+        /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
-        public class MarkModiBase
+        public void AddDiaryEntry(AdminShell.IDiaryData element, AdminShell.DiaryEntryBase de)
         {
-            public AdminShell.IAasElement Element;
-        }
+            // trivial
+            if (element == null || de == null || element.DiaryData == null)
+                return;
 
-        /// <summary>
-        /// Structural change of that AAS element
-        /// </summary>
-        public class MarkModiStructChange : MarkModiBase {
-            public AasPayloadStructuralChangeItem.ChangeReason Reason;
-            public int CreateAtIndex = -1;
+            // add 
+            de.Timestamp = DateTime.UtcNow;
+            element.DiaryData.Add(de);
 
-            public MarkModiStructChange() { }
-            
-            public MarkModiStructChange(
-                AdminShell.IAasElement element,
-                AasPayloadStructuralChangeItem.ChangeReason reason,
-                int createAtIndex = -1)
-            {
-                Element = element;
-                Reason = reason;
-                CreateAtIndex = createAtIndex;
+            // time stamping
+            if (de is AdminShell.DiaryEntryStructChange desc)
+            { 
+                if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
+                    element.DiaryData.TimeStampCreate = DateTime.UtcNow;
+
+                if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Modify)
+                    element.DiaryData.TimeStampUpdate = DateTime.UtcNow;
             }
-        }
 
-        /// <summary>
-        /// Update value of that AAS element
-        /// </summary>
-        public class MarkModiUpdateValue : MarkModiBase
-        {
-
-            public MarkModiUpdateValue() { }
-
-            public MarkModiUpdateValue(AdminShell.IAasElement element)
+            if (de is AdminShell.DiaryEntryUpdateValue)
             {
-                Element = element;
+                element.DiaryData.TimeStampUpdate = DateTime.UtcNow;
             }
-        }
-
-        /// <summary>
-        /// Takes that modifications and correctly translate this to transaction of the AAS and its elements
-        /// </summary>
-        public void MarkModification(MarkModiBase mod)
-        {
         }
     }
 }

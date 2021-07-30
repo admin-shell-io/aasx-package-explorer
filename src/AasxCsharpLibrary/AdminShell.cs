@@ -1852,21 +1852,19 @@ namespace AdminShellNS
         /// <summary>
         /// Structural change of that AAS element
         /// </summary>
-        public class MarkModiStructChange : DiaryEntryBase
+        public class DiaryEntryStructChange : DiaryEntryBase
         {
             public enum ChangeReason { Create, Modify, Delete }
 
             public ChangeReason Reason;
             public int CreateAtIndex = -1;
 
-            public MarkModiStructChange() { }
+            public DiaryEntryStructChange() { }
 
-            public MarkModiStructChange(
-                DateTime timestamp,
-                ChangeReason reason,
+            public DiaryEntryStructChange(
+                ChangeReason reason = ChangeReason.Modify,
                 int createAtIndex = -1)
             {
-                Timestamp = timestamp;
                 Reason = reason;
                 CreateAtIndex = createAtIndex;
             }
@@ -1875,23 +1873,22 @@ namespace AdminShellNS
         /// <summary>
         /// Update value of that AAS element
         /// </summary>
-        public class MarkModiUpdateValue : DiaryEntryBase
+        public class DiaryEntryUpdateValue : DiaryEntryBase
         {
-
-            public MarkModiUpdateValue() { }
-
-            public MarkModiUpdateValue(DateTime timestamp) { Timestamp = timestamp; }
+            public DiaryEntryUpdateValue() { }
         }
 
         public class DiaryDataDef
         {
-            [XmlIgnore]
-            [JsonIgnore]
-            public DateTime TimeStampCreate { get; set; }
+            public enum TimeStampKind { Create, Update }
 
             [XmlIgnore]
             [JsonIgnore]
-            public DateTime TimeStampUpdate { get; set; }
+            private DateTime[] _timeStamp = new DateTime[2];
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public DateTime[] TimeStamp { get; }
 
             /// <summary>
             /// List of entries, timewise one after each other (entries are timestamped).
@@ -1899,6 +1896,40 @@ namespace AdminShellNS
             /// create additional overhead of creating empty lists. An empty list shall be avoided.
             /// </summary>
             public List<DiaryEntryBase> Entries = null;
+
+            public static void AddAndSetTimestamps(Referable element, DiaryEntryBase de)
+            {
+                // trivial
+                if (element == null || de == null || element.DiaryData == null)
+                    return;
+
+                // set 1st timestamp
+                de.Timestamp = DateTime.UtcNow;
+
+                // add entry
+                if (element.DiaryData.Entries == null)
+                    element.DiaryData.Entries = new List<DiaryEntryBase>();
+                element.DiaryData.Entries.Add(de);
+
+                // figure out which timestamp
+                var tsk = TimeStampKind.Update;
+                if (de is AdminShell.DiaryEntryStructChange desc)
+                {
+                    if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
+                        tsk = TimeStampKind.Create;
+                }
+
+                // set this timestamp (and for the parents, as well)
+                Referable el = element;
+                while (el?.DiaryData != null)
+                {
+                    // itself
+                    el.DiaryData.TimeStamp[(int)tsk] = DateTime.UtcNow;
+
+                    // go up
+                    el = el.parent;
+                }
+            }
         }
 
         public interface IDiaryData
