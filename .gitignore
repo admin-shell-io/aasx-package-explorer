@@ -21,3 +21,5 @@ sample-aasx/
 /src/BlazorUI/fileEdit.json
 /src/BlazorUI/Festo_163142_CPE18-M1H-5L-14_solenoid_valve.aasx
 /src/BlazorUI/12_Pepperl+Fuchs.aasx
+/src/BlazorUI/08_SchneiderElectric.aasx
+/src/BlazorUI/09_SchneiderElectric.aasx

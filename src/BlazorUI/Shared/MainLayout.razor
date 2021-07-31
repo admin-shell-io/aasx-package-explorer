@@ -7,7 +7,7 @@
 @inject DownloadModel dm
 
 @{
-    // resharper disable all
+// resharper disable all
 }
 
 @*@<div class="sidebar">
@@ -121,9 +121,9 @@
                     <td nowrap>
                         @{
 
-                            // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-                            // w = "50%";
-                            // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
+// string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+// w = "50%";
+// string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
                             <select style="width:100%;max-width:100%;height:30px" value="@bi.aasxFileSelected"
                                     @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
                                 @foreach (var item in bi.aasxFiles)
@@ -172,7 +172,10 @@
                     <td nowrap>
                         @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
                         *@
-                        <InputFile OnChange="HandleFileSelected" />
+                        @{
+                            bool isDisabled = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                            <InputFile OnChange="HandleFileSelected" disabled="@isDisabled" />
+                        }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             // resharper disable once UnusedField.Compiler
@@ -203,10 +206,10 @@
                     <td nowrap>
                         <button @onclick="onSave">Save</button>
                         @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
-                        @*<button href="/download">Download</button>*@
-                        @*<a class="form-control btn btn-primary" href="/download" style="color:black;background-color:transparent;">Download</a>*@
-                        @*<a class="button" href="/download">Download</a>*@
-                        <button @onclick="DownloadBinary">Download</button>
+                        @{
+                            bool isDisabled2 = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                            <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
+                        }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             private async void onSave()
