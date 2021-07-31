@@ -206,6 +206,7 @@
                         @*<button href="/download">Download</button>*@
                         @*<a class="form-control btn btn-primary" href="/download" style="color:black;background-color:transparent;">Download</a>*@
                         @*<a class="button" href="/download">Download</a>*@
+                        <button @onclick="DownloadBinary">Download</button>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
                             private async void onSave()
@@ -231,6 +232,27 @@
                                 {
                                 }
                                 this.StateHasChanged();
+                            }
+                            async Task DownloadBinary()
+                            {
+                                // Generate a file
+                                if (bi.env != null)
+                                {
+                                    if (bi.aasxFiles?.Length > 0)
+                                    {
+                                        if (bi.aasxFileSelected != "")
+                                        {
+                                            bi.env.SaveAs(bi.aasxFileSelected);
+                                            bi.env.Close();
+                                            byte[] file = System.IO.File.ReadAllBytes(bi.aasxFileSelected);
+                                            string fileName = System.IO.Path.GetFileName(bi.aasxFileSelected);
+                                            // Send the data to JS to actually download the file
+                                            await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "application/octet-stream", file);
+                                            await InvokeAsync(() => Program.loadAasx(bi, bi.aasxFileSelected));
+                                            this.StateHasChanged();
+                                        }
+                                    }
+                                }
                             }
                         }
                     </td>
