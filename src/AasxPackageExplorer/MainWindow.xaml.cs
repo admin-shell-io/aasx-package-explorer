@@ -1394,11 +1394,51 @@ namespace AasxPackageExplorer
                 if (observable?.DiaryData == null)
                     continue;
 
+                var tsi = (int)AdminShell.DiaryDataDef.TimeStampKind.Update;
+
                 // for the overall change check, we rely on the timestamping
-                if (observable.DiaryData.TimeStamp[(int) AdminShell.DiaryDataDef.TimeStampKind.Update]
+                if (observable.DiaryData.TimeStamp[tsi]
                     >= lastTime)
                 {
                     ;
+
+                    Func<object, AdminShell.ListOfSubmodelElement, AdminShell.Referable, bool> lambda =
+                        (o, parents, rf) =>
+                        {
+                            // further interest?
+                            if (rf == null || rf.DiaryData == null || rf.DiaryData.TimeStamp[tsi] < lastTime)
+                                return false;
+
+                            // yes, inspect further and also go deeper
+                            if (rf.DiaryData.Entries != null)
+                            {
+                                var todel = new List<AdminShell.DiaryEntryBase>();
+                                foreach (var de in rf.DiaryData.Entries)
+                                    if (de is AdminShell.DiaryEntryUpdateValue deuv)
+                                    {
+                                        todel.Add(de);
+                                    }
+                                foreach (var de in todel)
+                                    rf.DiaryData.Entries.Remove(de);
+                            }
+                            // deeper
+                            return true;
+                        };
+
+                    if (observable is AdminShell.Submodel obsm)
+                    {
+                        obsm.RecurseOnSubmodelElements(null, lambda);
+                    }
+                    else
+                    if (observable is AdminShell.SubmodelElementCollection obsmc)
+                    {
+                        obsmc.value?.RecurseOnSubmodelElements(null, null, lambda);
+                    }
+                    else
+                    if (observable is AdminShell.SubmodelElement obsme)
+                    {
+                        lambda(null, null, obsme);
+                    }                    
                 }
             }
         }
