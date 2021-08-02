@@ -329,6 +329,13 @@ namespace AasxPackageExplorer
                 //
                 var entity = entities.First();
 
+                // maintain parent. If in doubt, set null
+                ListOfVisualElement.SetParentsBasedOnChildHierarchy(entity);
+
+                //
+                // Dispatch
+                //
+
                 if (entity is VisualElementEnvironmentItem veei)
                 {
                     _helper.DisplayOrEditAasEntityAasEnv(
@@ -346,14 +353,17 @@ namespace AasxPackageExplorer
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
+                    // data
                     AdminShell.AdministrationShell aas = null;
                     if (vesmref.Parent is VisualElementAdminShell xpaas)
                         aas = xpaas.theAas;
+
+                    // edit
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
                         hintMode: hintMode);
                 }
-                else if (entity is VisualElementSubmodel vesm)
+                else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
                 {
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,

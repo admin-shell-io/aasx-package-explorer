@@ -2144,30 +2144,14 @@ namespace AasxPackageLogic
         /// <summary>
         /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
-        public void AddDiaryEntry(AdminShell.IDiaryData element, AdminShell.DiaryEntryBase de)
+        public void AddDiaryEntry(AdminShell.Referable element, AdminShell.DiaryEntryBase de)
         {
             // trivial
             if (element == null || de == null || element.DiaryData == null)
                 return;
 
             // add 
-            de.Timestamp = DateTime.UtcNow;
-            element.DiaryData.Add(de);
-
-            // time stamping
-            if (de is AdminShell.DiaryEntryStructChange desc)
-            { 
-                if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
-                    element.DiaryData.TimeStampCreate = DateTime.UtcNow;
-
-                if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Modify)
-                    element.DiaryData.TimeStampUpdate = DateTime.UtcNow;
-            }
-
-            if (de is AdminShell.DiaryEntryUpdateValue)
-            {
-                element.DiaryData.TimeStampUpdate = DateTime.UtcNow;
-            }
+            AdminShell.DiaryDataDef.AddAndSetTimestamps(element, de);
         }
     }
 }

@@ -253,7 +253,8 @@ namespace AasxPackageExplorer
             bool onlyAuxiliary = false,
             bool doNotNavigateAfterLoaded = false,
             PackageContainerBase takeOverContainer = null,
-            string storeFnToLRU = null)
+            string storeFnToLRU = null,
+            bool indexItems = false)
         {
             // access
             if (packItem == null)
@@ -309,7 +310,10 @@ namespace AasxPackageExplorer
             {
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
                 if (!doNotNavigateAfterLoaded)
-                    UiCheckIfActivateLoadedNavTo(); 
+                    UiCheckIfActivateLoadedNavTo();
+
+                if (indexItems)
+                    IndexSignificantElements(packItem?.Container?.Env?.AasEnv);
             }
             catch (Exception ex)
             {
@@ -334,6 +338,29 @@ namespace AasxPackageExplorer
 
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
+        }
+
+        public void IndexSignificantElements(AdminShell.AdministrationShellEnv env)
+        {
+            // trivial
+            if (env == null)
+                return;
+
+            // find all Submodels in use, but no one twice
+            var visited = new Dictionary<AdminShell.Submodel, bool>();
+            foreach (var sm in env.FindAllSubmodelGroupedByAAS())
+                if (!visited.ContainsKey(sm))
+                    visited.Add(sm, true);
+
+            // now, call them in order to find elements
+            foreach (var sm in visited.Keys)
+                sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
+                {
+                    if (sme is AdminShell.BasicEvent be)
+                    {
+                        ;
+                    }
+                });
         }
 
         public PackageContainerListBase UiLoadFileRepository(string fn)
@@ -849,7 +876,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error($"Failed to auto-load AASX from {location}");
                     else
                         UiLoadPackageWithNew(_packageCentral.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false);
+                            takeOverContainer: container, onlyAuxiliary: false, indexItems: true);
 
                     Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
                 }

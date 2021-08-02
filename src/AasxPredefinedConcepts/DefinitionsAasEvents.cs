@@ -29,6 +29,7 @@ namespace AasxPredefinedConcepts
         public static AasEvents Static = new AasEvents();
 
         public AdminShell.ConceptDescription
+            CD_StructureChangeOutwards,
             CD_UpdateValueOutwards;
 
         public AasEvents()
@@ -37,10 +38,15 @@ namespace AasxPredefinedConcepts
             this.DomainInfo = "AAS Events";
 
             // definitons
+            CD_StructureChangeOutwards = CreateSparseConceptDescription("en", "IRI",
+                "StructureChangeOutwards",
+                "https://admin-shell.io/tmp/AAS/Events/StructureChangeOutwards",
+                @"Events emitted by the AAS if AAS elements are created, modified or deleted.");
+
             CD_UpdateValueOutwards = CreateSparseConceptDescription("en", "IRI",
                 "UpdateValueOutwards",
                 "https://admin-shell.io/tmp/AAS/Events/UpdateValueOutwards",
-                @"TBD.");
+                @"Events emitted by the AAS if the value of an AAS element is changed.");
 
             // reflect
             AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

@@ -247,7 +247,7 @@ namespace AasxPackageLogic
                                     cpbi.entity.identification.idType, cpbi.entity.identification.id));
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
-                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetSemanticKey());
+                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetReference()?.First);
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)

@@ -1859,8 +1859,6 @@ namespace AdminShellNS
             public ChangeReason Reason;
             public int CreateAtIndex = -1;
 
-            public DiaryEntryStructChange() { }
-
             public DiaryEntryStructChange(
                 ChangeReason reason = ChangeReason.Modify,
                 int createAtIndex = -1)
@@ -1888,7 +1886,7 @@ namespace AdminShellNS
 
             [XmlIgnore]
             [JsonIgnore]
-            public DateTime[] TimeStamp { get; }
+            public DateTime[] TimeStamp { get { return _timeStamp; } }
 
             /// <summary>
             /// List of entries, timewise one after each other (entries are timestamped).
@@ -5770,7 +5768,10 @@ namespace AdminShellNS
             where ELEMT : SubmodelElement
         {
             // Resharper enable UnusedTypeParameter
-            // no new members, as due to inheritance
+
+            // member: Parent
+            // will be held correctly by the containing class
+            public Referable Parent = null;
 
             // constructors
 
@@ -6052,6 +6053,7 @@ namespace AdminShellNS
             {
                 if (sme == null)
                     return;
+                sme.parent = this.Parent;
                 this.Add(SubmodelElementWrapper.CreateFor(sme));
             }
 
@@ -6062,6 +6064,7 @@ namespace AdminShellNS
             {
                 if (sme == null || index < 0 || index >= this.Count)
                     return;
+                sme.parent = this.Parent;
                 this.Insert(index, SubmodelElementWrapper.CreateFor(sme));
             }
 
@@ -6380,12 +6383,19 @@ namespace AdminShellNS
             public HasDataSpecification hasDataSpecification = null;
 
             // from this very class
+            [XmlIgnore]
             [JsonIgnore]
-            public SubmodelElementWrapperCollection submodelElements = null;
+            private SubmodelElementWrapperCollection _submodelElements = null;
+
+            [JsonIgnore]
+            public SubmodelElementWrapperCollection submodelElements 
+            {
+                get { return _submodelElements; }
+                set { _submodelElements = value; _submodelElements.Parent = this; }
+            }
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "submodelElements")]
-
             public SubmodelElement[] JsonSubmodelElements
             {
                 get
@@ -7523,9 +7533,17 @@ namespace AdminShellNS
             }
 
             // values == SMEs
+            [XmlIgnore]
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            public SubmodelElementWrapperCollection value = new SubmodelElementWrapperCollection();
+            private SubmodelElementWrapperCollection _value = null;
+
+            [JsonIgnore]
+            public SubmodelElementWrapperCollection value
+            {
+                get { return _value; }
+                set { _value = value; _value.Parent = this; }
+            }
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "value")]
@@ -8005,10 +8023,17 @@ namespace AdminShellNS
             }
 
             // from this very class
-
+            [XmlIgnore]
             [JsonIgnore]
             [SkipForHash] // do NOT count children!
-            public SubmodelElementWrapperCollection statements = new SubmodelElementWrapperCollection();
+            private SubmodelElementWrapperCollection _statements = null;
+
+            [JsonIgnore]
+            public SubmodelElementWrapperCollection statements
+            {
+                get { return _statements; }
+                set { _statements = value; _statements.Parent = this; }
+            }
 
             [XmlIgnore]
             [JsonProperty(PropertyName = "statements")]

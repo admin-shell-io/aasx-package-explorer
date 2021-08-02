@@ -170,6 +170,8 @@ namespace AasxPackageExplorer
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
+                    // may be was saved to index
+                    IndexSignificantElements(_packageCentral?.MainItem?.Container?.Env?.AasEnv);
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }

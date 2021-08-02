@@ -2008,9 +2008,118 @@ namespace AasxPackageLogic
         }
 
         //
-        // Implementation of event queue
+        // Feedback of VE information back to hiearchy of AAS elements
         //
 
+        public static void SetParentsBasedOnChildHierarchy(VisualElementGeneric entity)
+        {
+            if (entity is VisualElementEnvironmentItem veei)
+            {
+            }
+            else if (entity is VisualElementAdminShell veaas && veaas.theAas == null)
+            {
+                // maintain parent. If in doubt, set null
+                veaas.theAas.parent = null;
+            }
+            else if (entity is VisualElementAsset veas && veas.theAsset != null)
+            {
+                // maintain parent. If in doubt, set null
+                veas.theAsset.parent = null;
+            }
+            else if (entity is VisualElementSubmodelRef vesmref)
+            {
+                // no parent maintained
+            }
+            else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
+            {
+                // maintain parent. If in doubt, set null
+                vesm.theSubmodel.parent = null;
+            }
+            else if (entity is VisualElementSubmodelElement vesme)
+            {
+                var parVe = entity.Parent;
+                var currRf = vesme.GetDereferencedMainDataObject() as AdminShell.Referable;
+                while (parVe != null && currRf != null)
+                {
+                    var parMdo = parVe?.GetDereferencedMainDataObject();
+                    if (parMdo is AdminShell.Referable parMdoRf)
+                    {
+                        // set parent
+                        currRf.parent = parMdoRf;
+
+                        // go next
+                        currRf = parMdoRf;
+                        parVe = parVe.Parent;
+                    }
+                    else
+                    {
+                        // simply stop
+                        break;
+                    }
+                }
+            }
+            else if (entity is VisualElementOperationVariable vepv)
+            {
+                // try access element itself
+                if (vepv.GetMainDataObject() is AdminShell.SubmodelElement sme)
+                {
+                    // be careful
+                    sme.parent = null;
+
+                    // try get parent data
+                    if (entity.Parent is VisualElementSubmodelElement parVe
+                        && parVe.GetMainDataObject() is AdminShell.Operation parVeOp)
+                    {
+                        // set parent
+                        sme.parent = parVeOp;
+
+                        // recurse?
+                        SetParentsBasedOnChildHierarchy(entity.Parent);
+                    }
+                }
+            }
+            else if (entity is VisualElementConceptDescription vecd && vecd.theCD != null)
+            {
+                // maintain parent. If in doubt, set null
+                vecd.theCD.parent = null;
+            }
+            else if (entity is VisualElementView vevw && vevw.theView != null)
+            {
+                // be careful
+                vevw.theView.parent = null;
+
+                // try get parent data
+                if (entity.Parent is VisualElementAdminShell parVe
+                    && parVe.GetMainDataObject() is AdminShell.AdministrationShell parVeAas)
+                {
+                    // set parent
+                    vevw.theView.parent = parVeAas;
+
+                    // recurse?
+                    SetParentsBasedOnChildHierarchy(entity.Parent);
+                }
+            }
+            else if (entity is VisualElementReference verf)
+            {
+                // not applicable
+            }
+            else
+            if (entity is VisualElementSupplementalFile vesf)
+            {
+                // not applicable
+            }
+            else if (entity is VisualElementPluginExtension vepe)
+            {
+                // not applicable
+            }
+            else
+            {
+            }
+        }
+
+        //
+        // Implementation of event queue
+        //
 
 #if _relaize_in_DisplayVisualAasxElements
         private List<PackCntChangeEventData> _eventQueue = new List<PackCntChangeEventData>();
