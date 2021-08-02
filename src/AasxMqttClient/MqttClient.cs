@@ -272,7 +272,7 @@ namespace AasxMqttClient
             {
                 // assumption is, the sme is now "leaf" of a SME-hierarchy
                 if (sme is AdminShell.IEnumerateChildren)
-                    return;
+                    return true;
 
                 // value of the leaf
                 var valStr = sme.ValueAsText();
@@ -297,6 +297,9 @@ namespace AasxMqttClient
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
                 LogStatus(incSingleValue: 1);
+
+                // recurse
+                return true;
             });
         }
 
@@ -330,7 +333,7 @@ namespace AasxMqttClient
                 {
                     // assumption is, the sme is now "leaf" of a SME-hierarchy
                     if (sme is AdminShell.IEnumerateChildren)
-                        return;
+                        return true;
 
                     // value of the leaf
                     var valStr = sme.ValueAsText();
@@ -353,6 +356,9 @@ namespace AasxMqttClient
                             .WithExactlyOnceQoS()
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build());
+
+                    // recurse
+                    return true;
                 });
             }
 

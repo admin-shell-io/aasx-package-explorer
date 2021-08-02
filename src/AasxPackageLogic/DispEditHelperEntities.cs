@@ -1451,9 +1451,12 @@ namespace AasxPackageLogic
 
                             submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                             {
+                                // set
                                 sme.kind = (buttonNdx == 0)
                                     ? AdminShell.ModelingKind.CreateAsTemplate()
                                     : AdminShell.ModelingKind.CreateAsInstance();
+                                // recurse
+                                return true;
                             });
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
@@ -1473,8 +1476,11 @@ namespace AasxPackageLogic
 
                             submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                             {
+                                // clear
                                 if (sme.qualifiers != null)
                                     sme.qualifiers.Clear();
+                                // recurse
+                                return true;
                             });
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);

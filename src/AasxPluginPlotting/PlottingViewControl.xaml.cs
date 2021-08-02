@@ -219,12 +219,12 @@ namespace AasxPluginPlotting
                     // qualifier
                     var q = sme.HasQualifierOfType("Plotting.Args");
                     if (q == null)
-                        return;
+                        return true;
 
                     // select for SME type
                     /* TODO (MIHO, 2021-01-04): consider at least to include MLP, as well */
                     if (!(sme is AdminShell.Property))
-                        return;
+                        return true;
 
                     // build path
                     var path = sme.idShort;
@@ -234,6 +234,9 @@ namespace AasxPluginPlotting
 
                     // add
                     temp.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description, lang));
+
+                    // recurse
+                    return true;
                 });
 
                 // sort them for continous grouping

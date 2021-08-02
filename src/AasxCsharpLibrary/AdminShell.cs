@@ -4267,7 +4267,7 @@ namespace AdminShellNS
                             var allsme = new ListOfSubmodelElement();
                             sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
                             {
-                                allsme.Add(sme);
+                                allsme.Add(sme); return true;
                             });
                             foreach (var sme in allsme)
                                 yield return sme;
@@ -5960,9 +5960,22 @@ namespace AdminShellNS
 
             // recursion
 
+            /// <summary>
+            /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+            /// The <c>state</c> object will be passed to the lambda function in order to provide
+            /// stateful approaches. Also a list of <c>parents</c> will be provided to
+            /// the lambda. This list of parents can be initialized or simply set to <c>null</c>
+            /// in order to be created automatically.
+            /// </summary>
+            /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+            /// <param name="parents">List of already existing parents to be provided to lambda. 
+            /// Could be <c>null.</c></param>
+            /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+            /// The lambda shall return <c>TRUE</c> in order to deep into recursion.
+            /// </param>
             public void RecurseOnSubmodelElements(
                 object state, ListOfSubmodelElement parents,
-                Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
+                Func<object, ListOfSubmodelElement, SubmodelElement, bool> lambda)
             {
                 // trivial
                 if (lambda == null)
@@ -5978,27 +5991,31 @@ namespace AdminShellNS
                         continue;
 
                     // call lambda for this element
-                    lambda(state, parents, current);
+                    // AND decide, if to recurse!
+                    var goDeeper = lambda(state, parents, current);
 
-                    // add to parents
-                    parents.Add(current);
+                    if (goDeeper)
+                    {
+                        // add to parents
+                        parents.Add(current);
 
-                    // dive into?
-                    if (current is SubmodelElementCollection smc)
-                        smc.value?.RecurseOnSubmodelElements(state, parents, lambda);
+                        // dive into?
+                        if (current is SubmodelElementCollection smc)
+                            smc.value?.RecurseOnSubmodelElements(state, parents, lambda);
 
-                    if (current is Entity ent)
-                        ent.statements?.RecurseOnSubmodelElements(state, parents, lambda);
+                        if (current is Entity ent)
+                            ent.statements?.RecurseOnSubmodelElements(state, parents, lambda);
 
-                    if (current is Operation op)
-                        for (int i = 0; i < 2; i++)
-                            Operation.GetWrappers(op[i])?.RecurseOnSubmodelElements(state, parents, lambda);
+                        if (current is Operation op)
+                            for (int i = 0; i < 2; i++)
+                                Operation.GetWrappers(op[i])?.RecurseOnSubmodelElements(state, parents, lambda);
 
-                    if (current is AnnotatedRelationshipElement arel)
-                        arel.annotations?.RecurseOnSubmodelElements(state, parents, lambda);
+                        if (current is AnnotatedRelationshipElement arel)
+                            arel.annotations?.RecurseOnSubmodelElements(state, parents, lambda);
 
-                    // remove from parents
-                    parents.RemoveAt(parents.Count - 1);
+                        // remove from parents
+                        parents.RemoveAt(parents.Count - 1);
+                    }
                 }
             }
 
@@ -6631,8 +6648,18 @@ namespace AdminShellNS
 
             // Recursing
 
+            /// <summary>
+            /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+            /// The <c>state</c> object will be passed to the lambda function in order to provide
+            /// stateful approaches. 
+            /// </summary>
+            /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+            /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+            /// The lambda shall return <c>TRUE</c> in order to deep into recursion.
+            /// </param>
+
             public void RecurseOnSubmodelElements(
-                object state, Action<object, ListOfSubmodelElement, SubmodelElement> lambda)
+                object state, Func<object, ListOfSubmodelElement, SubmodelElement, bool> lambda)
             {
                 this.submodelElements?.RecurseOnSubmodelElements(state, null, lambda);
             }
@@ -6713,6 +6740,8 @@ namespace AdminShellNS
                         if (rl.second != null)
                             temp.Add(rl.second);
                     }
+                    // recurse
+                    return true;
                 });
 
                 // now, give back

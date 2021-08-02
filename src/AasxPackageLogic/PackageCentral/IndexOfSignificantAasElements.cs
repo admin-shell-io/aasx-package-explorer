@@ -96,6 +96,8 @@ namespace AasxPackageLogic.PackageCentral
                             AdminShellV20.Key.MatchMode.Relaxed))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
+                    // recurse
+                    return true;
                 });
         }
 

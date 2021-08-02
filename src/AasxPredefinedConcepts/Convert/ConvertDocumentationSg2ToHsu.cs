@@ -89,6 +89,8 @@ namespace AasxPredefinedConcepts.Convert
                             if (package.AasEnv.ConceptDescriptions.Contains(cd))
                                 package.AasEnv.ConceptDescriptions.Remove(cd);
                     }
+                    // recurse
+                    return true;
                 });
             }
 
