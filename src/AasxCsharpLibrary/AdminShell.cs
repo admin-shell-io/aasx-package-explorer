@@ -5168,6 +5168,11 @@ namespace AdminShellNS
                     res.Add(sme.ToKey());
                 return res;
             }
+
+            public Reference GetReference()
+            {
+                return Reference.CreateNew(ToKeyList());
+            }
         }
 
         public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId

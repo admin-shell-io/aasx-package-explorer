@@ -212,6 +212,12 @@ namespace AasxPackageLogic.PackageCentral
         public Format IsFormat = Format.Unknown;
 
         /// <summary>
+        /// To be used by the main application to hold important data about the package.
+        /// </summary>
+        [JsonIgnore]
+        public IndexOfSignificantAasElements SignificantElements = null;
+
+        /// <summary>
         /// Limks to the PackageCentral. Only on init.
         /// </summary>
         [JsonIgnore]

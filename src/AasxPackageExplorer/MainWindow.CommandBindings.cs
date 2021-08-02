@@ -171,7 +171,10 @@ namespace AasxPackageExplorer
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
                     // may be was saved to index
-                    IndexSignificantElements(_packageCentral?.MainItem?.Container?.Env?.AasEnv);
+                    if (_packageCentral?.MainItem?.Container?.Env?.AasEnv != null)
+                        _packageCentral.MainItem.Container.SignificantElements
+                            = new IndexOfSignificantAasElements(_packageCentral.MainItem.Container.Env.AasEnv);
+
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }

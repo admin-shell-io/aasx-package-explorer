@@ -312,8 +312,9 @@ namespace AasxPackageExplorer
                 if (!doNotNavigateAfterLoaded)
                     UiCheckIfActivateLoadedNavTo();
 
-                if (indexItems)
-                    IndexSignificantElements(packItem?.Container?.Env?.AasEnv);
+                if (indexItems && packItem?.Container?.Env?.AasEnv != null)
+                    packItem.Container.SignificantElements 
+                        = new IndexOfSignificantAasElements(packItem.Container.Env.AasEnv);
             }
             catch (Exception ex)
             {
@@ -338,30 +339,7 @@ namespace AasxPackageExplorer
 
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
-        }
-
-        public void IndexSignificantElements(AdminShell.AdministrationShellEnv env)
-        {
-            // trivial
-            if (env == null)
-                return;
-
-            // find all Submodels in use, but no one twice
-            var visited = new Dictionary<AdminShell.Submodel, bool>();
-            foreach (var sm in env.FindAllSubmodelGroupedByAAS())
-                if (!visited.ContainsKey(sm))
-                    visited.Add(sm, true);
-
-            // now, call them in order to find elements
-            foreach (var sm in visited.Keys)
-                sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
-                {
-                    if (sme is AdminShell.BasicEvent be)
-                    {
-                        ;
-                    }
-                });
-        }
+        }        
 
         public PackageContainerListBase UiLoadFileRepository(string fn)
         {
@@ -1392,6 +1370,39 @@ namespace AasxPackageExplorer
             }
         }
 
+        private void MainTimer_CheckDiaryDateToEmitEvents(
+            DateTime lastTime,
+            AdminShell.AdministrationShellEnv env,
+            IndexOfSignificantAasElements significatElems)
+        {
+            // trivial
+            if (env == null || significatElems == null)
+                return;
+
+            // update events?
+            foreach (var rec in significatElems.Retrieve(env, SignificantAasElement.EventUpdateValueOutwards))
+            {
+                // valid?
+                if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                    continue;
+                var refEv = rec.LiveObject as AdminShell.BasicEvent;
+                if (refEv == null)
+                    continue;
+
+                // now, find the observable (with timestamping!)
+                var observable = env.FindReferableByReference(refEv.observed);
+                if (observable?.DiaryData == null)
+                    continue;
+
+                // for the overall change check, we rely on the timestamping
+                if (observable.DiaryData.TimeStamp[(int) AdminShell.DiaryDataDef.TimeStampKind.Update]
+                    >= lastTime)
+                {
+                    ;
+                }
+            }
+        }
+
         protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
@@ -1608,11 +1619,21 @@ namespace AasxPackageExplorer
             }
         }
 
+        private DateTime _mainTimer_LastCheckForDiaryEvents;
+
         private async Task MainTimer_Tick(object sender, EventArgs e)
         {
             MainTimer_HandleLogMessages();
             await MainTimer_HandleEntityPanel();
             await MainTimer_HandleApplicationEvents();
+
+            if (_packageCentral?.MainItem?.Container?.SignificantElements != null)
+                MainTimer_CheckDiaryDateToEmitEvents(
+                    _mainTimer_LastCheckForDiaryEvents,
+                    _packageCentral.MainItem.Container.Env?.AasEnv,
+                    _packageCentral.MainItem.Container.SignificantElements);
+            _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
+
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
             DisplayElements.UpdateFromQueuedEvents();
