@@ -22,7 +22,7 @@
             <table border="0" cellspacing="2">
                 <tr>
                     <td nowrap>
-                        <span style="font-weight:bold">Enter URL or *:</span>
+                        <span style="font-weight:bold">URL or *:</span>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                     </td>
                     <td nowrap>
@@ -34,8 +34,9 @@
                                 "*",
                                 "https://admin-shell-io.com/51411",
                                 "https://admin-shell-io.com/51711" };
-                            <select width="10" maxwidth="10" value="*" style="height:30px"
+                            <select width="10" maxwidth="10" style="height:30px"
                                     @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">
+                                <option value="">--select--</option>
                                 @foreach (var item in textList)
                                 {
                                     <option value="@item">@item</option>
@@ -44,7 +45,7 @@
                         }
                         @code {
                             string text = "";
-                            
+
                             private async void MyTextInput(string value)
                             {
                                 text = value;
@@ -67,6 +68,8 @@
                                             var r = task.Result;
                                             if (bi.repository.FileMap.Count > 0)
                                             {
+                                                if (bi.env != null)
+                                                    bi.env.Dispose();
                                                 bi.aasxFiles = new string[bi.repository.FileMap.Count];
                                                 for (int i = 0; i < bi.repository.FileMap.Count; i++)
                                                 {
@@ -128,15 +131,15 @@
                 </tr>
                 <tr>
                     <td nowrap>
-                        <span style="font-weight:bold">Select:</span>
+                        <span style="font-weight:bold">Select AASX:</span>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                     </td>
                     <td nowrap>
                         @{
 
-// string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
-// w = "50%";
-// string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
+                            // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                            // w = "50%";
+                            // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
                             <select style="width:100%;max-width:100%;height:30px" value="@bi.aasxFileSelected"
                                     @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
                                 @foreach (var item in bi.aasxFiles)
