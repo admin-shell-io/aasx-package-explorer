@@ -27,14 +27,27 @@
                     </td>
                     <td nowrap>
                         @{
-                            string text = "";
-                            int ww = 80;
+                            int ww = 70;
                             <input size="@ww" value="@text"
                                    @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
+                            string[] textList = {
+                                "*",
+                                "https://admin-shell-io.com/51411",
+                                "https://admin-shell-io.com/51711" };
+                            <select width="10" maxwidth="10" value="*" style="height:30px"
+                                    @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">
+                                @foreach (var item in textList)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
                         }
                         @code {
+                            string text = "";
+                            
                             private async void MyTextInput(string value)
                             {
+                                text = value;
                                 try
                                 {
                                     value = value.ToLower();
