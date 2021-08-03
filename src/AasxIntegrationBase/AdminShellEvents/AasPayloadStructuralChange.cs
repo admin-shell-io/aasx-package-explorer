@@ -29,7 +29,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem : IAasPayloadItem
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
     {
         /// <summary>
         /// Enum telling the reason for a change. According to CRUD principle.

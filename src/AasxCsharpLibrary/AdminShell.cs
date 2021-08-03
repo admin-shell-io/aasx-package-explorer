@@ -1841,40 +1841,47 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// Base class for diary entries, which are recorded with respect to a AAS element
-        /// Diary entries contain a minimal set of information to later produce AAS events or such.
+        /// Marks an object, preferaby a payload item, which might be featured by the diary collection
         /// </summary>
-        public class DiaryEntryBase
+        public interface IAasDiaryEntry
         {
-            public DateTime Timestamp;
         }
 
-        /// <summary>
-        /// Structural change of that AAS element
-        /// </summary>
-        public class DiaryEntryStructChange : DiaryEntryBase
-        {
-            public enum ChangeReason { Create, Modify, Delete }
+        ///// <summary>
+        ///// Base class for diary entries, which are recorded with respect to a AAS element
+        ///// Diary entries contain a minimal set of information to later produce AAS events or such.
+        ///// </summary>
+        //public class DiaryEntryBase
+        //{
+        //    public DateTime Timestamp;
+        //}
 
-            public ChangeReason Reason;
-            public int CreateAtIndex = -1;
+        ///// <summary>
+        ///// Structural change of that AAS element
+        ///// </summary>
+        //public class DiaryEntryStructChange : DiaryEntryBase
+        //{
+        //    public enum ChangeReason { Create, Modify, Delete }
 
-            public DiaryEntryStructChange(
-                ChangeReason reason = ChangeReason.Modify,
-                int createAtIndex = -1)
-            {
-                Reason = reason;
-                CreateAtIndex = createAtIndex;
-            }
-        }
+        //    public ChangeReason Reason;
+        //    public int CreateAtIndex = -1;
 
-        /// <summary>
-        /// Update value of that AAS element
-        /// </summary>
-        public class DiaryEntryUpdateValue : DiaryEntryBase
-        {
-            public DiaryEntryUpdateValue() { }
-        }
+        //    public DiaryEntryStructChange(
+        //        ChangeReason reason = ChangeReason.Modify,
+        //        int createAtIndex = -1)
+        //    {
+        //        Reason = reason;
+        //        CreateAtIndex = createAtIndex;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Update value of that AAS element
+        ///// </summary>
+        //public class DiaryEntryUpdateValue : DiaryEntryBase
+        //{
+        //    public DiaryEntryUpdateValue() { }
+        //}
 
         public class DiaryDataDef
         {
@@ -1893,25 +1900,26 @@ namespace AdminShellNS
             /// Note: Default is <c>Entries = null</c>, as handling of many many AAS elements does not
             /// create additional overhead of creating empty lists. An empty list shall be avoided.
             /// </summary>
-            public List<DiaryEntryBase> Entries = null;
+            public List<IAasDiaryEntry> Entries = null;
 
-            public static void AddAndSetTimestamps(Referable element, DiaryEntryBase de)
+            public static void AddAndSetTimestamps(Referable element, IAasDiaryEntry de, bool isCreate = false)
             {
                 // trivial
                 if (element == null || de == null || element.DiaryData == null)
                     return;
 
                 // set 1st timestamp
-                de.Timestamp = DateTime.UtcNow;
+                // de.Timestamp = DateTime.UtcNow;
 
                 // add entry
                 if (element.DiaryData.Entries == null)
-                    element.DiaryData.Entries = new List<DiaryEntryBase>();
+                    element.DiaryData.Entries = new List<IAasDiaryEntry>();
                 element.DiaryData.Entries.Add(de);
 
                 // figure out which timestamp
                 var tsk = TimeStampKind.Update;
-                if (de is AdminShell.DiaryEntryStructChange desc)
+                // if (de is AdminShell.DiaryEntryStructChange desc)
+                if (isCreate)
                 {
                     // if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
                     tsk = TimeStampKind.Create;

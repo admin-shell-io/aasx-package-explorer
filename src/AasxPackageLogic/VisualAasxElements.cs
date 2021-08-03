@@ -2019,7 +2019,7 @@ namespace AasxPackageLogic
             else if (entity is VisualElementAdminShell veaas && veaas.theAas == null)
             {
                 // maintain parent. If in doubt, set null
-                veaas.theAas.parent = null;
+                veaas.theAas.parent = veaas.theEnv;
             }
             else if (entity is VisualElementAsset veas && veas.theAsset != null)
             {

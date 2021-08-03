@@ -1426,31 +1426,27 @@ namespace AasxPackageExplorer
                                 // yes, inspect further and also go deeper
                                 if (rf.DiaryData.Entries != null)
                                 {
-                                    var todel = new List<AdminShell.DiaryEntryBase>();
+                                    var todel = new List<AdminShell.IAasDiaryEntry>();
                                     foreach (var de in rf.DiaryData.Entries)
                                     {
-                                        if (i == 0 && de is AdminShell.DiaryEntryStructChange desc)
+                                        if (i == 0 && de is AasPayloadStructuralChangeItem sci)
                                         {
-                                            // prepare p2 to be relative path to observable
-                                            var p2 = (rf as AdminShell.IGetReference)?.GetReference()?.Keys;
-                                            if (true == p2?.StartsWith(refEv.observed?.Keys, 
-                                                    matchMode: AdminShellV20.Key.MatchMode.Relaxed))
-                                                p2.RemoveRange(0, refEv.observed.Count);
+                                            // TODO: prepare path to be relative
 
-                                            // build event
-                                            plStruct.Changes.Add(new AasPayloadStructuralChangeItem(
-                                                timeStamp: rf.DiaryData.TimeStamp[tsi],
-                                                AasPayloadStructuralChangeItem.ChangeReason.Create,
-                                                path: p2,
-                                                // Assumption: models will be serialized correctly
-                                                data: JsonConvert.SerializeObject(rf)));
+                                            // queue event
+                                            plStruct.Changes.Add(sci);
 
                                             // delete
                                             todel.Add(de);
                                         }
 
-                                        if (i == 1 && de is AdminShell.DiaryEntryUpdateValue deuv)
+                                        if (i == 1 && de is AasPayloadUpdateValueItem uvi)
                                         {
+                                            // TODO: prepare path to be relative
+
+                                            // queue event
+                                            plUpdate.Values.Add(uvi);
+
                                             // delete
                                             todel.Add(de);
                                         }

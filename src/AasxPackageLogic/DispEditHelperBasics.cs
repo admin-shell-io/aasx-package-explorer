@@ -18,6 +18,7 @@ using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Newtonsoft.Json;
 
 namespace AasxPackageLogic
 {
@@ -2142,16 +2143,79 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
+        /// Base class for diary entries, which are recorded with respect to a AAS element
+        /// Diary entries contain a minimal set of information to later produce AAS events or such.
+        /// </summary>
+        public class DiaryEntryBase
+        {
+            public DateTime Timestamp;
+        }
+
+        /// <summary>
+        /// Structural change of that AAS element
+        /// </summary>
+        public class DiaryEntryStructChange : DiaryEntryBase
+        {
+            public AasPayloadStructuralChangeItem.ChangeReason Reason;
+            public int CreateAtIndex = -1;
+
+            public DiaryEntryStructChange(
+                AasPayloadStructuralChangeItem.ChangeReason reason 
+                    = AasPayloadStructuralChangeItem.ChangeReason.Modify,
+                int createAtIndex = -1)
+            {
+                Reason = reason;
+                CreateAtIndex = createAtIndex;
+            }
+        }
+
+        /// <summary>
+        /// Update value of that AAS element
+        /// </summary>
+        public class DiaryEntryUpdateValue : DiaryEntryBase
+        {
+            public DiaryEntryUpdateValue() { }
+        }
+
+        /// <summary>
         /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
-        public void AddDiaryEntry(AdminShell.Referable element, AdminShell.DiaryEntryBase de)
+        public void AddDiaryEntry(AdminShell.Referable rf, DiaryEntryBase de)
         {
             // trivial
-            if (element == null || de == null || element.DiaryData == null)
+            if (rf == null || de == null || rf.DiaryData == null)
                 return;
 
-            // add 
-            AdminShell.DiaryDataDef.AddAndSetTimestamps(element, de);
+            // structure?
+            if (de is DiaryEntryStructChange desc)
+            {
+                // create
+                var evi = new AasPayloadStructuralChangeItem(
+                    DateTime.UtcNow, desc.Reason,
+                    path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
+                    // Assumption: models will be serialized correctly
+                    data: JsonConvert.SerializeObject(rf));
+
+                // add 
+                AdminShell.DiaryDataDef.AddAndSetTimestamps(rf, evi, 
+                    isCreate: desc.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create);
+            }
+
+            // update value?
+            if (de is DiaryEntryUpdateValue deuv && rf is AdminShell.SubmodelElement sme)
+            {
+                // create
+                var evi = new AasPayloadUpdateValueItem(
+                    path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
+                    value: sme.ValueAsText());
+
+                if (sme is AdminShell.Property p)
+                    evi.ValueId = p.valueId;
+
+                // add 
+                AdminShell.DiaryDataDef.AddAndSetTimestamps(rf, evi, isCreate: false);
+            }
+
         }
     }
 }
