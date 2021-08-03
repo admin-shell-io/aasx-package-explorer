@@ -54,7 +54,7 @@ namespace AasxPackageLogic.PackageCentral
         public void Add(
             SignificantAasElement kind,
             AdminShell.Submodel sm,
-            AdminShell.ListOfSubmodelElement parents,
+            AdminShell.ListOfReferable parents,
             AdminShell.SubmodelElement sme)
         {
             var r = new SignificantAasElemRecord()

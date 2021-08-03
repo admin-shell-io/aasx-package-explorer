@@ -268,7 +268,7 @@ namespace AasxMqttClient
                 return;
 
             // give this to (recursive) function
-            sm.submodelElements?.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+            sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
             {
                 // assumption is, the sme is now "leaf" of a SME-hierarchy
                 if (sme is AdminShell.IEnumerateChildren)
@@ -329,10 +329,11 @@ namespace AasxMqttClient
             if (dataRef is AdminShell.SubmodelElement dataSme)
             {
                 var smwc = new AdminShell.SubmodelElementWrapperCollection(dataSme);
-                smwc.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+                smwc.RecurseOnReferables(null, null, (o, parents, rf) =>
                 {
                     // assumption is, the sme is now "leaf" of a SME-hierarchy
-                    if (sme is AdminShell.IEnumerateChildren)
+                    var sme = rf as AdminShell.SubmodelElement;
+                    if (sme == null || sme is AdminShell.IEnumerateChildren)
                         return true;
 
                     // value of the leaf

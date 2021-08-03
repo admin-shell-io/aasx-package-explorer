@@ -29,7 +29,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem
     {
         /// <summary>
         /// Enum telling the reason for a change. According to CRUD principle.
@@ -46,7 +46,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Timestamp of generated (sending) event in UTC time.
         /// </summary>
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Path of the element which was structurally changed. Contains one or more Keys, relative to the 
@@ -71,11 +71,15 @@ namespace AasxIntegrationBase.AdminShellEvents
         //
 
         public AasPayloadStructuralChangeItem(
+            DateTime timeStamp,
             ChangeReason reason,
-            AdminShell.KeyList path = null)
+            AdminShell.KeyList path = null,
+            string data = null)
         {
+            Timestamp = timeStamp;
             Reason = reason;
             Path = path;
+            Data = data;
         }
 
         //

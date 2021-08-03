@@ -33,4 +33,11 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 #endif
     }
+
+    /// <summary>
+    /// Marks a single payload items, even if from different event types
+    /// </summary>
+    public interface IAasPayloadItem
+    {
+    }
 }

@@ -79,7 +79,7 @@ namespace AasxPredefinedConcepts.Convert
             // delete (old) CDs
             if (deleteOldCDs)
             {
-                smcOldSg2.RecurseOnSubmodelElements(null, null, (state, parents, current) =>
+                sm.RecurseOnSubmodelElements(null, (state, parents, current) =>
                 {
                     var sme = current;
                     if (sme != null && sme.semanticId != null)

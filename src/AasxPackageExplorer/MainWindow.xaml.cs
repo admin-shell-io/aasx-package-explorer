@@ -29,6 +29,7 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
@@ -1373,72 +1374,94 @@ namespace AasxPackageExplorer
         private void MainTimer_CheckDiaryDateToEmitEvents(
             DateTime lastTime,
             AdminShell.AdministrationShellEnv env,
-            IndexOfSignificantAasElements significatElems)
+            IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significatElems == null)
+            if (env == null || significantElems == null)
                 return;
 
-            // update events?
-            foreach (var rec in significatElems.Retrieve(env, SignificantAasElement.EventUpdateValueOutwards))
+            // prepare event payloads
+            var plStruct = new AasPayloadStructuralChange();
+            var plUpdate = new AasPayloadUpdateValue();
+
+            // do this twice
+            for (int i = 0; i < 2; i++)
             {
-                // valid?
-                if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
-                    continue;
-                var refEv = rec.LiveObject as AdminShell.BasicEvent;
-                if (refEv == null)
-                    continue;
+                // divider
+                var see = (new[] { 
+                    SignificantAasElement.EventStructureChangeOutwards,
+                    SignificantAasElement.EventUpdateValueOutwards})[i];
 
-                // now, find the observable (with timestamping!)
-                var observable = env.FindReferableByReference(refEv.observed);
-                if (observable?.DiaryData == null)
-                    continue;
+                var tsi = (new int[] {
+                    (int)AdminShell.DiaryDataDef.TimeStampKind.Create,
+                    (int)AdminShell.DiaryDataDef.TimeStampKind.Update })[i];
 
-                var tsi = (int)AdminShell.DiaryDataDef.TimeStampKind.Update;
-
-                // for the overall change check, we rely on the timestamping
-                if (observable.DiaryData.TimeStamp[tsi]
-                    >= lastTime)
+                // update events?
+                foreach (var rec in significantElems.Retrieve(env, see))
                 {
-                    ;
+                    // valid?
+                    if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                        continue;
+                    var refEv = rec.LiveObject as AdminShell.BasicEvent;
+                    if (refEv == null)
+                        continue;
 
-                    Func<object, AdminShell.ListOfSubmodelElement, AdminShell.Referable, bool> lambda =
-                        (o, parents, rf) =>
-                        {
-                            // further interest?
-                            if (rf == null || rf.DiaryData == null || rf.DiaryData.TimeStamp[tsi] < lastTime)
-                                return false;
-
-                            // yes, inspect further and also go deeper
-                            if (rf.DiaryData.Entries != null)
+                    // now, find the observable (with timestamping!)
+                    var observable = env.FindReferableByReference(refEv.observed);
+                    if (observable?.DiaryData == null)
+                        continue;
+                   
+                    // for the overall change check, we rely on the timestamping
+                    if (observable.DiaryData.TimeStamp[tsi]
+                        >= lastTime)
+                    {
+                        observable.RecurseOnReferables(null,
+                            includeThis: true,
+                            lambda: (o, parents, rf) =>
                             {
-                                var todel = new List<AdminShell.DiaryEntryBase>();
-                                foreach (var de in rf.DiaryData.Entries)
-                                    if (de is AdminShell.DiaryEntryUpdateValue deuv)
-                                    {
-                                        todel.Add(de);
-                                    }
-                                foreach (var de in todel)
-                                    rf.DiaryData.Entries.Remove(de);
-                            }
-                            // deeper
-                            return true;
-                        };
+                                // further interest?
+                                if (rf == null || rf.DiaryData == null || rf.DiaryData.TimeStamp[tsi] < lastTime)
+                                    return false;
 
-                    if (observable is AdminShell.Submodel obsm)
-                    {
-                        obsm.RecurseOnSubmodelElements(null, lambda);
+                                // yes, inspect further and also go deeper
+                                if (rf.DiaryData.Entries != null)
+                                {
+                                    var todel = new List<AdminShell.DiaryEntryBase>();
+                                    foreach (var de in rf.DiaryData.Entries)
+                                    {
+                                        if (i == 0 && de is AdminShell.DiaryEntryStructChange desc)
+                                        {
+                                            // prepare p2 to be relative path to observable
+                                            var p2 = (rf as AdminShell.IGetReference)?.GetReference()?.Keys;
+                                            if (true == p2?.StartsWith(refEv.observed?.Keys, 
+                                                    matchMode: AdminShellV20.Key.MatchMode.Relaxed))
+                                                p2.RemoveRange(0, refEv.observed.Count);
+
+                                            // build event
+                                            plStruct.Changes.Add(new AasPayloadStructuralChangeItem(
+                                                timeStamp: rf.DiaryData.TimeStamp[tsi],
+                                                AasPayloadStructuralChangeItem.ChangeReason.Create,
+                                                path: p2,
+                                                // Assumption: models will be serialized correctly
+                                                data: JsonConvert.SerializeObject(rf)));
+
+                                            // delete
+                                            todel.Add(de);
+                                        }
+
+                                        if (i == 1 && de is AdminShell.DiaryEntryUpdateValue deuv)
+                                        {
+                                            // delete
+                                            todel.Add(de);
+                                        }
+                                    }
+                                    foreach (var de in todel)
+                                        rf.DiaryData.Entries.Remove(de);
+                                }
+                                // deeper
+                                return true;
+                            });
                     }
-                    else
-                    if (observable is AdminShell.SubmodelElementCollection obsmc)
-                    {
-                        obsmc.value?.RecurseOnSubmodelElements(null, null, lambda);
-                    }
-                    else
-                    if (observable is AdminShell.SubmodelElement obsme)
-                    {
-                        lambda(null, null, obsme);
-                    }                    
                 }
             }
         }

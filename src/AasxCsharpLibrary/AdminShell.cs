@@ -1913,8 +1913,8 @@ namespace AdminShellNS
                 var tsk = TimeStampKind.Update;
                 if (de is AdminShell.DiaryEntryStructChange desc)
                 {
-                    if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
-                        tsk = TimeStampKind.Create;
+                    // if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
+                    tsk = TimeStampKind.Create;
                 }
 
                 // set this timestamp (and for the parents, as well)
@@ -1933,6 +1933,24 @@ namespace AdminShellNS
         public interface IDiaryData
         {
             DiaryDataDef DiaryData { get; }
+        }
+
+        public class ListOfReferable : List<Referable>
+        {
+            // conversion to other list
+
+            public KeyList ToKeyList()
+            {
+                var res = new KeyList();
+                foreach (var rf in this)
+                    res.Add(rf.ToKey());
+                return res;
+            }
+
+            public Reference GetReference()
+            {
+                return Reference.CreateNew(ToKeyList());
+            }
         }
 
         public class Referable : IValidateEntity, IAasElement, IDiaryData
@@ -2133,6 +2151,11 @@ namespace AdminShellNS
                 return "" + this.idShort;
             }
 
+            public virtual Key ToKey()
+            {
+                return new Key(GetElementName(), true, Key.IdShort, idShort);
+            }
+
             // hash functionality
 
             public class ObjectFieldInfo
@@ -2323,6 +2346,16 @@ namespace AdminShellNS
                             this.description = null;
                         }));
             }
+
+            // recursion (by derived elements)
+
+            public virtual void RecurseOnReferables(
+                object state, Func<object, ListOfReferable, Referable, bool> lambda,
+                bool includeThis = false)
+            {
+                if (includeThis)
+                    lambda(state, null, this);
+            }
         }
 
         public class Identifiable : Referable
@@ -2387,6 +2420,11 @@ namespace AdminShellNS
             public override string ToString()
             {
                 return ("" + identification?.ToString() + " " + administration?.ToString()).Trim();
+            }
+
+            public override Key ToKey()
+            {
+                return new Key(GetElementName(), true, "" + identification?.idType, "" + identification?.id);
             }
 
             // sorting
@@ -5174,7 +5212,7 @@ namespace AdminShellNS
                 return Reference.CreateNew(ToKeyList());
             }
         }
-
+        
         public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
         {
             // constants
@@ -5416,11 +5454,6 @@ namespace AdminShellNS
             {
                 var ci = ToCaptionInfo();
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
-            }
-
-            public Key ToKey()
-            {
-                return new Key(GetElementName(), true, Key.IdShort, idShort);
             }
 
             public virtual string ValueAsText(string defaultLang = null)
@@ -5973,15 +6006,15 @@ namespace AdminShellNS
             /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
             /// The lambda shall return <c>TRUE</c> in order to deep into recursion.
             /// </param>
-            public void RecurseOnSubmodelElements(
-                object state, ListOfSubmodelElement parents,
-                Func<object, ListOfSubmodelElement, SubmodelElement, bool> lambda)
+            public void RecurseOnReferables(
+                object state, ListOfReferable parents,
+                Func<object, ListOfReferable, Referable, bool> lambda)
             {
                 // trivial
                 if (lambda == null)
                     return;
                 if (parents == null)
-                    parents = new ListOfSubmodelElement();
+                    parents = new ListOfReferable();
 
                 // over all elements
                 foreach (var smw in this)
@@ -6001,17 +6034,17 @@ namespace AdminShellNS
 
                         // dive into?
                         if (current is SubmodelElementCollection smc)
-                            smc.value?.RecurseOnSubmodelElements(state, parents, lambda);
+                            smc.value?.RecurseOnReferables(state, parents, lambda);
 
                         if (current is Entity ent)
-                            ent.statements?.RecurseOnSubmodelElements(state, parents, lambda);
+                            ent.statements?.RecurseOnReferables(state, parents, lambda);
 
                         if (current is Operation op)
                             for (int i = 0; i < 2; i++)
-                                Operation.GetWrappers(op[i])?.RecurseOnSubmodelElements(state, parents, lambda);
+                                Operation.GetWrappers(op[i])?.RecurseOnReferables(state, parents, lambda);
 
                         if (current is AnnotatedRelationshipElement arel)
-                            arel.annotations?.RecurseOnSubmodelElements(state, parents, lambda);
+                            arel.annotations?.RecurseOnReferables(state, parents, lambda);
 
                         // remove from parents
                         parents.RemoveAt(parents.Count - 1);
@@ -6657,11 +6690,39 @@ namespace AdminShellNS
             /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
             /// The lambda shall return <c>TRUE</c> in order to deep into recursion.
             /// </param>
-
             public void RecurseOnSubmodelElements(
-                object state, Func<object, ListOfSubmodelElement, SubmodelElement, bool> lambda)
+                object state, Func<object, ListOfReferable, SubmodelElement, bool> lambda)
             {
-                this.submodelElements?.RecurseOnSubmodelElements(state, null, lambda);
+                this.submodelElements?.RecurseOnReferables(state, null, (o, par, rf) =>
+                {
+                    if (rf is SubmodelElement sme)
+                        return lambda(o, par, sme);
+                    else
+                        return true;
+                });
+            }
+
+            /// <summary>
+            /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+            /// The <c>state</c> object will be passed to the lambda function in order to provide
+            /// stateful approaches. Include this element, as well. 
+            /// </summary>
+            /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+            /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+            /// The lambda shall return <c>TRUE</c> in order to deep into recursion.</param>
+            /// <param name="includeThis">Include this element as well. <c>parents</c> will then 
+            /// include this element as well!</param>
+            public override void RecurseOnReferables(
+                object state, Func<object, ListOfReferable, Referable, bool> lambda,
+                bool includeThis = false)
+            {
+                var parents = new ListOfReferable();
+                if (includeThis)
+                {
+                    lambda(state, null, this);
+                    parents.Add(this);
+                }
+                this.submodelElements?.RecurseOnReferables(state, parents, lambda);
             }
 
             // Parents stuff
@@ -7738,6 +7799,51 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
             }
 
+            // Recursing
+
+            /// <summary>
+            /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+            /// The <c>state</c> object will be passed to the lambda function in order to provide
+            /// stateful approaches. 
+            /// </summary>
+            /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+            /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+            /// The lambda shall return <c>TRUE</c> in order to deep into recursion.
+            /// </param>
+            public void RecurseOnSubmodelElements(
+                object state, Func<object, ListOfReferable, SubmodelElement, bool> lambda)
+            {
+                this.value?.RecurseOnReferables(state, null, (o, par, rf) =>
+                {
+                    if (rf is SubmodelElement sme)
+                        return lambda(o, par, sme);
+                    else
+                        return true;
+                });
+            }
+
+            /// <summary>
+            /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+            /// The <c>state</c> object will be passed to the lambda function in order to provide
+            /// stateful approaches. Include this element, as well. 
+            /// </summary>
+            /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+            /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+            /// The lambda shall return <c>TRUE</c> in order to deep into recursion.</param>
+            /// <param name="includeThis">Include this element as well. <c>parents</c> will then 
+            /// include this element as well!</param>
+            public override void RecurseOnReferables(
+                object state, Func<object, ListOfReferable, Referable, bool> lambda,
+                bool includeThis = false)
+            {
+                var parents = new ListOfReferable();
+                if (includeThis)
+                {
+                    lambda(state, null, this);
+                    parents.Add(this);
+                }
+                this.value?.RecurseOnReferables(state, parents, lambda);
+            }
         }
 
         public class OperationVariable : IAasElement

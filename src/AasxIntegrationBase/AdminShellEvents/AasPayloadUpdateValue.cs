@@ -31,7 +31,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// single payloads.
     /// </summary>
     [DisplayName("AasPayloadUpdateValueItem")]
-    public class AasPayloadUpdateValueItem
+    public class AasPayloadUpdateValueItem : IAasPayloadItem
     {
         /// <summary>
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
