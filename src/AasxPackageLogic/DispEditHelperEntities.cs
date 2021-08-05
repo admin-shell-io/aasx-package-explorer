@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -2004,9 +2005,15 @@ namespace AasxPackageLogic
                                 // ok?
                                 if (refactorSme != null && parMgr != null)
                                 {
-                                    // open heart surgery: change in parent container
+                                    // open heart surgery: change in parent container accepted
                                     parMgr.Remove(sme);
                                     parMgr.Add(refactorSme);
+
+                                    // notify event
+                                    this.AddDiaryEntry(sme, 
+                                        new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    this.AddDiaryEntry(refactorSme, 
+                                        new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     // redraw
                                     return new AnyUiLambdaActionRedrawAllElements(nextFocus: refactorSme);
@@ -2242,6 +2249,9 @@ namespace AasxPackageLogic
                                     smesmc.Add(sme2);
                                 if (sme is AdminShell.Entity smeent)
                                     smeent.Add(sme2);
+
+                                // notify event
+                                this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
@@ -2656,7 +2666,9 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", p, ref p.valueType, null, repo,
-                    v => { p.valueType = v as string; return new AnyUiLambdaActionNone(); },
+                    v => { p.valueType = v as string;
+                        this.AddDiaryEntry(p, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone(); },
                     comboBoxIsEditable: editMode,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2679,7 +2691,9 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new AnyUiLambdaActionNone(); },
+                    v => { p.value = v as string;
+                        this.AddDiaryEntry(p, new DiaryEntryUpdateValue()); 
+                        return new AnyUiLambdaActionNone(); },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>

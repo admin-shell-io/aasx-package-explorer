@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase.AdminShellEvents;
+using AasxIntegrationBase.MiniMarkup;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary.PackageCentral;
@@ -57,7 +58,22 @@ namespace AasxWpfControlLibrary.AdminShellEvents
         {
             DataGridMessages.DataContext = _eventStore;
 
-            TextBlockDetails.SetXaml("<Paragraph><Run>Hallo, world!</Run></Paragraph>");
+            RichTextBoxEvent.SetXaml("<Paragraph><Run>No event selected</Run></Paragraph>");
+
+            TabControlDetail.SelectedItem = TabItemMsgEnvelope;
+            RichTextBoxEvent.MiniMarkupLinkClick += (markup, link) =>
+            {
+                if (markup is MiniMarkupLink mml
+                    && mml.LinkObject is IAasPayloadItem pl)
+                {
+                    // jump to details
+                    TabControlDetail.SelectedItem = TabItemDetail;
+
+                    // set text
+                    RichTextBoxDetails.Document.Blocks.Clear();
+                    RichTextBoxDetails.Document.Blocks.Add(new Paragraph(new Run("" + pl.GetDetailsText())));
+                }
+            };            
         }
 
         //
@@ -99,7 +115,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
             if (DataGridMessages.SelectedItem is AasEventMsgEnvelope msg)
             {
                 var info = msg.ToMarkup();
-                TextBlockDetails.SetMarkup(info);
+                RichTextBoxEvent.SetMarkup(info);
             }
         }
 
@@ -107,6 +123,14 @@ namespace AasxWpfControlLibrary.AdminShellEvents
         {
             // double click on top row will activate, other row: disable
             _autoTop = DataGridMessages.SelectedIndex == 0;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonDetailsBack)
+            {
+                TabControlDetail.SelectedItem = TabItemMsgEnvelope;
+            }
         }
     }
 }

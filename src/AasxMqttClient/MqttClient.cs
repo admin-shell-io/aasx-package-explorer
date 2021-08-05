@@ -314,8 +314,7 @@ namespace AasxMqttClient
                 return;
 
             // only specific reasons
-            if (!(ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create
-                  || ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Modify))
+            if (!(ci.Reason == StructuralChangeReason.Create || ci.Reason == StructuralChangeReason.Modify))
                 return;
 
             // need a payload

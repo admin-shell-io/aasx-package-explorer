@@ -1779,6 +1779,14 @@ namespace AasxPackageLogic
         {
             if (nextFocus == null)
                 nextFocus = entity;
+
+            // pick out referable
+            AdminShell.Referable entityRf = null;
+            if (entity is AdminShell.SubmodelElementWrapper smw)
+                entityRf = smw.submodelElement;
+            if (entity is AdminShell.Referable rf)
+                entityRf = rf;
+
             AddAction(
                 stack, label,
                 new[] { "Move up", "Move down", "Move top", "Move end", "Delete" },
@@ -1805,6 +1813,9 @@ namespace AasxPackageLogic
                         if (buttonNdx == 3) newndx = MoveElementToBottomOfList<T>(list, entity);
                         if (newndx >= 0)
                         {
+                            this.AddDiaryEntry(entityRf,
+                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx));
+
                             if (sendUpdateEvent != null)
                             {
                                 sendUpdateEvent.Reason = PackCntChangeEventReason.MoveToIndex;
@@ -1827,6 +1838,10 @@ namespace AasxPackageLogic
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
+
+                            this.AddDiaryEntry(entityRf, 
+                                new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                            
                             if (sendUpdateEvent != null)
                             {
                                 sendUpdateEvent.Reason = PackCntChangeEventReason.Delete;
@@ -2156,12 +2171,11 @@ namespace AasxPackageLogic
         /// </summary>
         public class DiaryEntryStructChange : DiaryEntryBase
         {
-            public AasPayloadStructuralChangeItem.ChangeReason Reason;
+            public StructuralChangeReason Reason;
             public int CreateAtIndex = -1;
 
             public DiaryEntryStructChange(
-                AasPayloadStructuralChangeItem.ChangeReason reason 
-                    = AasPayloadStructuralChangeItem.ChangeReason.Modify,
+                StructuralChangeReason reason = StructuralChangeReason.Modify,
                 int createAtIndex = -1)
             {
                 Reason = reason;
@@ -2193,12 +2207,18 @@ namespace AasxPackageLogic
                 var evi = new AasPayloadStructuralChangeItem(
                     DateTime.UtcNow, desc.Reason,
                     path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
+                    createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
                     data: JsonConvert.SerializeObject(rf));
 
+                // attach where?
+                var attachRf = rf;
+                if (true && rf.parent is AdminShell.Referable parRf)
+                    attachRf = parRf;
+
                 // add 
-                AdminShell.DiaryDataDef.AddAndSetTimestamps(rf, evi, 
-                    isCreate: desc.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create);
+                AdminShell.DiaryDataDef.AddAndSetTimestamps(attachRf, evi, 
+                    isCreate: desc.Reason == StructuralChangeReason.Create);
             }
 
             // update value?

@@ -26,22 +26,22 @@ using Newtonsoft.Json;
 namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
+    /// Enum telling the reason for a change. According to CRUD principle.
+    /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
+    /// </summary>
+    public enum StructuralChangeReason { Create, Modify, Delete }
+
+    /// <summary>
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
     public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
-    {
-        /// <summary>
-        /// Enum telling the reason for a change. According to CRUD principle.
-        /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
-        /// </summary>
-        public enum ChangeReason { Create, Modify, Delete }
-
+    {       
         /// <summary>
         /// Reason for the change. According to CRUD principle.
         /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
         /// </summary>
-        public ChangeReason Reason;
+        public StructuralChangeReason Reason;
 
         /// <summary>
         /// Timestamp of generated (sending) event in UTC time.
@@ -72,13 +72,15 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasPayloadStructuralChangeItem(
             DateTime timeStamp,
-            ChangeReason reason,
+            StructuralChangeReason reason,
             AdminShell.KeyList path = null,
+            int createAtIndex = -1,
             string data = null)
         {
             Timestamp = timeStamp;
             Reason = reason;
             Path = path;
+            CreateAtIndex = createAtIndex;
             Data = data;
         }
 
@@ -106,10 +108,17 @@ namespace AasxIntegrationBase.AdminShellEvents
 
             var right = "";
             right += " -> " + Reason.ToString();
+            if (CreateAtIndex >= 0)
+                right += $" (CreateAtIndex = {CreateAtIndex})";
+            right += "  ";
+
+            var mmData = new MiniMarkupRun("");
+            if (Data != null && Data.Length > 0)
+                mmData = new MiniMarkupLink("[>>]", "http://127.0.0.1/" +Path?.ToString(), this);
 
             return new MiniMarkupLine(
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
-                new MiniMarkupRun(right));
+                new MiniMarkupRun(right), mmData);
         }
 #endif
 
@@ -121,6 +130,11 @@ namespace AasxIntegrationBase.AdminShellEvents
 
             // try deserialize
             return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
+        }
+
+        public string GetDetailsText()
+        {
+            return "" + Data;
         }
     }
 

@@ -71,6 +71,35 @@
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
                           ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
 
-        <wpfc:MiniMarkupRichTextBox x:Name="TextBlockDetails" Grid.Row="3" VerticalScrollBarVisibility="Auto"/>
+        <TabControl x:Name="TabControlDetail" Grid.Row="3" TabStripPlacement="Right" >
+
+            <TabItem x:Name="TabItemMsgEnvelope" Header="Message" Visibility="Collapsed">
+                <wpfc:MiniMarkupRichTextBox x:Name="RichTextBoxEvent"  VerticalScrollBarVisibility="Auto"/>
+            </TabItem>
+
+            <TabItem x:Name="TabItemDetail" Header="Details" Visibility="Collapsed">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <RichTextBox x:Name="RichTextBoxDetails" Grid.Row="0" Grid.Column="0">
+                        <FlowDocument>
+                            <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Nothing to display, yet</Paragraph>
+                        </FlowDocument>
+                    </RichTextBox>
+
+                    <Button x:Name="ButtonDetailsBack" Grid.Row="0" Grid.Column="0"
+                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4,6,8,4"
+                            Content="&#x25C0; Back" Click="Button_Click"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+        
+        
     </Grid>
 </UserControl>

@@ -1380,10 +1380,6 @@ namespace AasxPackageExplorer
             if (env == null || significantElems == null)
                 return;
 
-            // prepare event payloads
-            var plStruct = new AasPayloadStructuralChange();
-            var plUpdate = new AasPayloadUpdateValue();
-
             // do this twice
             for (int i = 0; i < 2; i++)
             {
@@ -1391,10 +1387,6 @@ namespace AasxPackageExplorer
                 var see = (new[] { 
                     SignificantAasElement.EventStructureChangeOutwards,
                     SignificantAasElement.EventUpdateValueOutwards})[i];
-
-                var tsi = (new int[] {
-                    (int)AdminShell.DiaryDataDef.TimeStampKind.Create,
-                    (int)AdminShell.DiaryDataDef.TimeStampKind.Update })[i];
 
                 // update events?
                 foreach (var rec in significantElems.Retrieve(env, see))
@@ -1410,17 +1402,37 @@ namespace AasxPackageExplorer
                     var observable = env.FindReferableByReference(refEv.observed);
                     if (observable?.DiaryData == null)
                         continue;
-                   
+
+                    // get the flags
+                    var newCreate = observable.DiaryData
+                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] >= lastTime;
+
+                    var newUpdate = observable.DiaryData
+                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update] >= lastTime;
+
+                    // first check
+                    if (!newCreate && !newUpdate)
+                        continue;
+
+                    // prepare event payloads
+                    var plStruct = new AasPayloadStructuralChange();
+                    var plUpdate = new AasPayloadUpdateValue();
+
                     // for the overall change check, we rely on the timestamping
-                    if (observable.DiaryData.TimeStamp[tsi]
-                        >= lastTime)
+                    if (((i == 0) && (newCreate || newUpdate))
+                        || ((i == 1) && newUpdate))
                     {
                         observable.RecurseOnReferables(null,
                             includeThis: true,
                             lambda: (o, parents, rf) =>
                             {
                                 // further interest?
-                                if (rf == null || rf.DiaryData == null || rf.DiaryData.TimeStamp[tsi] < lastTime)
+                                if (rf == null || rf.DiaryData == null || 
+                                ( (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] 
+                                   < lastTime)
+                                  &&
+                                  (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
+                                   < lastTime)))
                                     return false;
 
                                 // yes, inspect further and also go deeper
@@ -1454,10 +1466,32 @@ namespace AasxPackageExplorer
                                     foreach (var de in todel)
                                         rf.DiaryData.Entries.Remove(de);
                                 }
+                                
                                 // deeper
                                 return true;
                             });
                     }
+
+                    // send event?
+                    if (plStruct.Changes.Count < 1 && plUpdate.Values.Count < 1)
+                        continue;
+
+                    // send event
+                    var ev = new AasEventMsgEnvelope(
+                        DateTime.UtcNow,
+                        source: refEv.GetReference(),
+                        sourceSemanticId: refEv.semanticId,
+                        observableReference: refEv.observed,
+                        observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
+
+                    if (plStruct.Changes.Count >= 1)
+                        ev.Payloads.Add(plStruct);
+
+                    if (plUpdate.Values.Count >= 1)
+                        ev.Payloads.Add(plUpdate);
+
+                    // emit it to PackageCentral
+                    _packageCentral?.PushEvent(ev);
                 }
             }
         }

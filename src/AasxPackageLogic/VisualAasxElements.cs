@@ -2011,6 +2011,11 @@ namespace AasxPackageLogic
         // Feedback of VE information back to hiearchy of AAS elements
         //
 
+        /// <summary>
+        /// This functions uses the VE hierarchy to safeguard a correct <c>parent</c> setting for
+        /// an edited AAS element. Is it called by the editor.
+        /// </summary>
+        /// <param name="entity"></param>
         public static void SetParentsBasedOnChildHierarchy(VisualElementGeneric entity)
         {
             if (entity is VisualElementEnvironmentItem veei)
@@ -2024,7 +2029,7 @@ namespace AasxPackageLogic
             else if (entity is VisualElementAsset veas && veas.theAsset != null)
             {
                 // maintain parent. If in doubt, set null
-                veas.theAsset.parent = null;
+                veas.theAsset.parent = veas.theEnv;
             }
             else if (entity is VisualElementSubmodelRef vesmref)
             {
@@ -2033,7 +2038,7 @@ namespace AasxPackageLogic
             else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
             {
                 // maintain parent. If in doubt, set null
-                vesm.theSubmodel.parent = null;
+                vesm.theSubmodel.parent = vesm.theEnv;
             }
             else if (entity is VisualElementSubmodelElement vesme)
             {
@@ -2081,7 +2086,7 @@ namespace AasxPackageLogic
             else if (entity is VisualElementConceptDescription vecd && vecd.theCD != null)
             {
                 // maintain parent. If in doubt, set null
-                vecd.theCD.parent = null;
+                vecd.theCD.parent = vecd.theEnv;
             }
             else if (entity is VisualElementView vevw && vevw.theView != null)
             {

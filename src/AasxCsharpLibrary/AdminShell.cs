@@ -990,6 +990,8 @@ namespace AdminShellNS
                 return res;
             }
 
+            // self description
+
             public virtual AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Reference", "Rfc");
@@ -1926,14 +1928,14 @@ namespace AdminShellNS
                 }
 
                 // set this timestamp (and for the parents, as well)
-                Referable el = element;
+                IDiaryData el = element;
                 while (el?.DiaryData != null)
                 {
                     // itself
                     el.DiaryData.TimeStamp[(int)tsk] = DateTime.UtcNow;
 
                     // go up
-                    el = el.parent;
+                    el = (el as Referable).parent as IDiaryData;
                 }
             }
         }
@@ -1963,7 +1965,6 @@ namespace AdminShellNS
 
         public class Referable : IValidateEntity, IAasElement, IDiaryData
         {
-
             // diary
 
             [XmlIgnore]
@@ -2020,7 +2021,7 @@ namespace AdminShellNS
             [JsonIgnore]
             [SkipForHash] // important to skip, as recursion elsewise will go in cycles!
             [SkipForReflection] // important to skip, as recursion elsewise will go in cycles!
-            public Referable parent = null;
+            public IAasElement parent = null;
 
             public static string CONSTANT = "CONSTANT";
             public static string Category_PARAMETER = "PARAMETER";
@@ -2125,8 +2126,8 @@ namespace AdminShellNS
                     var k = Key.CreateNew(this.GetElementName(), true, "IdShort", this.idShort);
                     refs.Insert(0, k);
                     // recurse upwards!
-                    if (parent != null)
-                        (this.parent).CollectReferencesByParent(refs);
+                    if (this.parent is Referable prf)
+                        prf.CollectReferencesByParent(refs);
                 }
             }
 
@@ -2134,9 +2135,9 @@ namespace AdminShellNS
             {
                 // recurse first
                 var head = "";
-                if (!(this is Identifiable) && this.parent != null)
+                if (!(this is Identifiable) && this.parent is Referable prf)
                     // can go up
-                    head = this.parent.CollectIdShortByParent() + "/";
+                    head = prf.CollectIdShortByParent() + "/";
                 // add own
                 var myid = "<no id-Short!>";
                 if (this.idShort != null && this.idShort.Trim() != "")
@@ -2708,7 +2709,6 @@ namespace AdminShellNS
             {
                 return this.GetSelfDescription()?.ElementName;
             }
-
         }
 
         public class Asset : Identifiable, IGetReference
@@ -4027,8 +4027,24 @@ namespace AdminShellNS
         }
 
         [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/2/0")]
-        public class AdministrationShellEnv : IFindAllReferences
+        public class AdministrationShellEnv : IFindAllReferences, IAasElement, IDiaryData
         {
+
+            // diary (as e.g. deleted AASes need to be listed somewhere)
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [SkipForHash]
+            [SkipForReflection]
+            private DiaryDataDef _diaryData = new DiaryDataDef();
+
+            [XmlIgnore]
+            [JsonIgnore]
+            [SkipForReflection]
+            public DiaryDataDef DiaryData { get { return _diaryData; } }
+
+            // members
+
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
             [JsonIgnore]
             public string schemaLocation =
@@ -4120,6 +4136,18 @@ namespace AdminShellNS
                 if (ConceptDescriptions != null)
                     res += $" {ConceptDescriptions.Count} CDs";
                 return res;
+            }
+
+            // self decscription
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("AdministrationShellEnv", "Env");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
             }
 
             // finders
@@ -5396,24 +5424,29 @@ namespace AdminShellNS
                 var current = this.parent;
                 while (current != null)
                 {
-                    if (current is Identifiable)
+                    if (current is Identifiable cid)
                     {
                         // add big information set
                         r.Keys.Insert(0, Key.CreateNew(
                             current.GetElementName(),
                             true,
-                            (current as Identifiable).identification.idType,
-                            (current as Identifiable).identification.id));
+                            cid.identification.idType,
+                            cid.identification.id));
                     }
                     else
+                    if (current is Referable crf)
                     {
                         // reference via idShort
                         r.Keys.Insert(0, Key.CreateNew(
                             current.GetElementName(),
                             true,
-                            "IdShort", current.idShort));
+                            "IdShort", crf.idShort));
                     }
-                    current = current.parent;
+
+                    if (current is Referable crf2)
+                        current = crf2.parent;
+                    else
+                        current = null;
                 }
                 return r;
             }

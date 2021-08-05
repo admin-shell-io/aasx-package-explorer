@@ -593,7 +593,7 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // create
-            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
+            if (change.Reason == StructuralChangeReason.Create)
             {
                 // need parent (target will not exist)
                 if (parent == null)
@@ -678,7 +678,7 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // delete
-            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Delete)
+            if (change.Reason == StructuralChangeReason.Delete)
             {
                 // need target
                 if (target == null)
@@ -745,6 +745,13 @@ namespace AasxPackageLogic.PackageCentral
                         info: "PackageConnector::PullEvents() Create " +
                         "Exception deleting data within Observable/path! " + change.Path.ToString(1)));
                 }
+            }
+
+            // modify
+            // TODO: Modify missing!!
+            if (change.Reason == StructuralChangeReason.Modify)
+            {
+                throw new NotImplementedException("ExecuteEventAction() for Modify!!");
             }
         }
 

@@ -39,5 +39,6 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// </summary>
     public interface IAasPayloadItem
     {
+        string GetDetailsText();
     }
 }

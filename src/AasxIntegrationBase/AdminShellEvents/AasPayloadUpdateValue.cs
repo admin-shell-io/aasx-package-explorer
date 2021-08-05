@@ -98,6 +98,11 @@ namespace AasxIntegrationBase.AdminShellEvents
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
                 new MiniMarkupRun(right));
         }
+
+        public string GetDetailsText()
+        {
+            return "";
+        }
 #endif
     }
 
