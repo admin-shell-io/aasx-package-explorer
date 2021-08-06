@@ -61,6 +61,7 @@
                     <RoutedUICommand x:Key="SubmodelPut" Text="SubmodelPut" />
                     <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
                     <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
+                    <RoutedUICommand x:Key="TDImport" Text="TDImport" />
                     <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
                     <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
                     <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
@@ -222,6 +223,7 @@
         <CommandBinding Command="{StaticResource SubmodelGet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BMEcatImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CSVImport}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource TDImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportAML}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpcUaImportNodeSet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasImport}" Executed="CommandBinding_Executed"/>
@@ -347,6 +349,8 @@
                             <MenuItem Header="Import Submodel from Dictionary .." Command="{StaticResource ImportSubmodel}"/>
                             <MenuItem Header="Import Submodel Elements from Dictionary .." Command="{StaticResource ImportSubmodelElements}"/>
                             <MenuItem Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
+                            <MenuItem Header="Import Thing Description JSON into SubModel .." Command="{StaticResource TDImport}"/>
+                            
                             <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>

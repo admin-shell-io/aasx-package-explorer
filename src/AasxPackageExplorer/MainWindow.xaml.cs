@@ -1540,8 +1540,8 @@ namespace AasxPackageExplorer
                     fosc.GetAgent()?.PushEvent(ev);
 
                 // inform agents?
-                foreach (var fa in UserControlAgentsView.Children)
-                    fa.GetAgent()?.PushEvent(ev);
+               /* foreach (var fa in UserControlAgentsView.Children)
+                    fa.GetAgent()?.PushEvent(ev); */
 
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
@@ -2174,7 +2174,7 @@ namespace AasxPackageExplorer
 
             // agent behaviour
             var preventClosingAction = false;
-            if (uc is IFlyoutAgent ucag)
+          /*  if (uc is IFlyoutAgent ucag)
             {
                 // register for minimize
                 ucag.ControlMinimize += () =>
@@ -2213,7 +2213,7 @@ namespace AasxPackageExplorer
                         }
                     }
                 };
-            }
+            } */
 
             // start (focus)
             ucfoc.ControlStart();

@@ -537,6 +537,9 @@ namespace AasxPackageExplorer
             if (cmd == "csvimport")
                 CommandBinding_CSVImport();
 
+            if (cmd == "tdimport")
+                CommandBinding_TDImport();
+
             if (cmd == "opcuaimportnodeset")
                 CommandBinding_OpcUaImportNodeSet();
 
@@ -629,6 +632,44 @@ namespace AasxPackageExplorer
             }
         }
 
+        public void CommandBinding_TDImport()
+        {
+            VisualElementSubmodelRef ve = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            {
+               // MessageBoxFlyoutShow(
+                 //   "No valid SubModel selected.", "JSON import");// MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+                try
+                {
+                    // do it
+                    RememberForInitialDirectory(dlg.FileName);
+                    TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    //AasxPackageExplorer.Log.Singleton.Error(ex, "When importing CSV, an error occurred");
+                }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
         public bool PanelConcurrentCheckIsVisible()
         {
             return MenuItemWorkspaceEventsShowLog.IsChecked;
