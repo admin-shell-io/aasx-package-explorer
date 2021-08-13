@@ -30,7 +30,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Note: This envelope is able to carry one or multiple even payloads.
     /// </summary>
     [DisplayName("AasEventMsgEnvelope")]
-    public class AasEventMsgEnvelope
+    public class AasEventMsgEnvelope : IAasPayloadItem
     {
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
@@ -74,7 +74,44 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Carries one or more events payloads.
         /// </summary>
-        public List<AasPayloadBase> Payloads = new List<AasPayloadBase>();
+        [JsonIgnore]
+        public ListOfAasPayloadBase PayloadItems = new ListOfAasPayloadBase();
+
+        /// <summary>
+        /// Put raw content in
+        /// </summary>
+        [JsonIgnore]
+        public string PayloadsRaw = null;
+
+        /// <summary>
+        /// This getter/ setter dynamically switches between <c>PayloadItems</c> and <c>PayloadsRaw</c>.
+        /// </summary>
+        public object Payloads
+        {
+            get { return (PayloadItems != null) ? (object) PayloadItems : PayloadsRaw; }
+            set {
+                if (value is ListOfAasPayloadBase pi)
+                {
+                    PayloadItems = pi;
+                    PayloadsRaw = null;
+                }
+                else
+                {
+                    PayloadsRaw = (string)value;
+                    PayloadItems = null;
+                }
+            }
+        }
+
+        public bool IsWellInformed
+        {
+            get
+            {
+                return Source != null && Source.Count > 0
+                    && SourceSemanticId != null && SourceSemanticId.Count > 0
+                    && ObservableReference != null && ObservableReference.Count > 0;
+            }
+        }
 
         //
         // Display
@@ -110,11 +147,11 @@ namespace AasxIntegrationBase.AdminShellEvents
             get
             {
                 var res = "";
-                if (Payloads != null)
+                if (PayloadItems != null)
                 {
-                    res += $"({Payloads.Count})";
-                    if (Payloads.Count > 0)
-                        res += " " + Payloads[0].GetType();
+                    res += $"({PayloadItems.Count})";
+                    if (PayloadItems.Count > 0)
+                        res += " " + PayloadItems[0].GetType();
                 }
                 return res;
             }
@@ -135,7 +172,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             string topic = null,
             string subject = null,
             AasPayloadBase payload = null,
-            List<AasPayloadBase> payloads = null)
+            ListOfAasPayloadBase payloads = null)
         {
             Timestamp = timestamp;
             Source = source;
@@ -145,9 +182,27 @@ namespace AasxIntegrationBase.AdminShellEvents
             Topic = topic;
             Subject = subject;
             if (payload != null)
-                Payloads.Add(payload);
+                PayloadItems.Add(payload);
             if (payloads != null)
-                Payloads.AddRange(payloads);
+                PayloadItems.AddRange(payloads);
+        }
+
+        public AasEventMsgEnvelope(AasEventMsgEnvelope other)
+        {
+            if (other == null)
+                return;
+
+            Timestamp = other.Timestamp;
+            Source = other.Source;
+            SourceSemanticId = other.SourceSemanticId;
+            ObservableReference = other.ObservableReference;
+            ObservableSemanticId = other.ObservableSemanticId;
+            Topic = other.Topic;
+            Subject = other.Subject;
+            if (other.PayloadItems != null)
+                Payloads = new ListOfAasPayloadBase(other.PayloadItems);
+            else if (other.PayloadsRaw != null)
+                Payloads = other;
         }
 
         //
@@ -165,8 +220,8 @@ namespace AasxIntegrationBase.AdminShellEvents
                 $"Topic=\"{"" + Topic}\", " +
                 $"Subject=\"{"" + Subject}\", ";
 
-            if (Payloads != null)
-                foreach (var pl in Payloads)
+            if (PayloadItems != null)
+                foreach (var pl in PayloadItems)
                     res += pl.ToString();
 
             return res;
@@ -202,14 +257,30 @@ namespace AasxIntegrationBase.AdminShellEvents
                     );
 
             var sum = new List<MiniMarkupBase>();
-            if (Payloads != null)
-                foreach (var pl in Payloads)
+            
+            if (PayloadItems != null)
+                foreach (var pl in PayloadItems)
                     sum.Add(pl.ToMarkup());
+
+            if (PayloadsRaw != null)
+                sum.Add(
+                    new MiniMarkupLine(
+                        new MiniMarkupRun("Payload:", isMonospaced: true, padsize: w1),
+                        new MiniMarkupRun("Raw event data present "), 
+                        new MiniMarkupLink("[>>]", "http://127.0.0.1/", this)));
+
             res.Children.AddRange(sum);
 
             return res;
         }
 #endif
+
+        public string GetDetailsText()
+        {
+            if (PayloadItems != null)
+                return "" + PayloadItems.ToString();
+            return "" + PayloadsRaw;
+        }
 
         //
         // Payloads
@@ -220,9 +291,9 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// </summary>
         public IEnumerable<T> GetPayloads<T>() where T : AasPayloadBase
         {
-            if (Payloads == null)
+            if (PayloadItems == null)
                 yield break;
-            foreach (var pl in Payloads)
+            foreach (var pl in PayloadItems)
                 if (pl is T)
                     yield return pl as T;
         }

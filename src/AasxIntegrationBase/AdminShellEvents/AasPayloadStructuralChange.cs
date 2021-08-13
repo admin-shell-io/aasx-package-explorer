@@ -169,6 +169,12 @@ namespace AasxIntegrationBase.AdminShellEvents
                 Changes.Add(change);
         }
 
+        public AasPayloadStructuralChange(AasPayloadStructuralChange other)
+        {
+            if (other.Changes != null)
+                Changes.AddRange(other.Changes);
+        }
+
         //
         // Serialisation
         //

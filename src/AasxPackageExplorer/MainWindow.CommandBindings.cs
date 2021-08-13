@@ -164,16 +164,21 @@ namespace AasxPackageExplorer
                 {
                     // save
                     await _packageCentral.MainItem.SaveAsAsync(runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                    
                     // backup
                     if (Options.Curr.BackupDir != null)
                         _packageCentral.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
+                    
                     // may be was saved to index
                     if (_packageCentral?.MainItem?.Container?.Env?.AasEnv != null)
                         _packageCentral.MainItem.Container.SignificantElements
                             = new IndexOfSignificantAasElements(_packageCentral.MainItem.Container.Env.AasEnv);
+
+                    // may be was saved to flush events
+                    CheckIfToFlushEvents();
 
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();

@@ -595,6 +595,20 @@ namespace AdminShellNS
                 return kl;
             }
 
+            // matches
+
+            public bool Matches(KeyList other, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            {
+                if (other == null || other.Count != this.Count)
+                    return false;
+
+                var same = true;
+                for (int i = 0; i < this.Count; i++)
+                    same = same && this[i].Matches(other[i], matchMode);
+
+                return same;
+            }
+
             // other
 
             public void NumberIndices()
@@ -1546,6 +1560,10 @@ namespace AdminShellNS
 
         public class AssetKind
         {
+            // constants
+            public static string Type = "Type";
+            public static string Instance = "Instance";
+
             [MetaModelName("AssetKind.kind")]
             [TextSearchable]
             [XmlText]
@@ -1585,20 +1603,20 @@ namespace AdminShellNS
 
             public static AssetKind CreateAsType()
             {
-                var res = new AssetKind() { kind = "Type" };
+                var res = new AssetKind() { kind = AssetKind.Type };
                 return res;
             }
 
             public static AssetKind CreateAsInstance()
             {
-                var res = new AssetKind() { kind = "Instance" };
+                var res = new AssetKind() { kind = AssetKind.Instance };
                 return res;
             }
         }
 
         public class ModelingKind
         {
-            // constnts
+            // constants
             public static string Template = "Template";
             public static string Instance = "Instance";
 
@@ -1935,7 +1953,7 @@ namespace AdminShellNS
                     el.DiaryData.TimeStamp[(int)tsk] = DateTime.UtcNow;
 
                     // go up
-                    el = (el as Referable).parent as IDiaryData;
+                    el = (el as Referable)?.parent as IDiaryData;
                 }
             }
         }
@@ -5574,6 +5592,9 @@ namespace AdminShellNS
 
             public SubmodelElementWrapper(SubmodelElement src, bool shallowCopy = false)
             {
+                /* TODO (MIHO, 2021-08-12): consider using:
+                   Activator.CreateInstance(pl.GetType(), new object[] { pl }); */
+
                 if (src is SubmodelElementCollection)
                     this.submodelElement = new SubmodelElementCollection(
                         src as SubmodelElementCollection, shallowCopy: shallowCopy);

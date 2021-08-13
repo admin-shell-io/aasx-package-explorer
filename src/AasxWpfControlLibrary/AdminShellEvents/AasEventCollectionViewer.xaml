@@ -29,7 +29,7 @@
             <Label DockPanel.Dock="Left" FontWeight="Bold" Foreground="DarkBlue" Margin="2,-2,4,-2" VerticalAlignment="Center">
                 AAS event messages (in-bound, out-bound from editor, connections and servers ..)</Label>
             <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
-                <Button Content=" &#8942; " FontWeight="Bold"/>
+                <Button x:Name="ButtonOptions" Content=" &#8942; " FontWeight="Bold" Click="Button_Click"/>
                 <Label />
             </WrapPanel>
             <Label/>
@@ -71,13 +71,16 @@
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
                           ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
 
-        <TabControl x:Name="TabControlDetail" Grid.Row="3" TabStripPlacement="Right" >
+        <TabControl x:Name="TabControlDetail" Grid.Row="3" TabStripPlacement="Right" 
+                    BorderThickness="0" Padding="0">
 
             <TabItem x:Name="TabItemMsgEnvelope" Header="Message" Visibility="Collapsed">
-                <wpfc:MiniMarkupRichTextBox x:Name="RichTextBoxEvent"  VerticalScrollBarVisibility="Auto"/>
+                <wpfc:MiniMarkupRichTextBox x:Name="RichTextBoxEvent"  VerticalScrollBarVisibility="Auto"
+                                            BorderThickness="0" Padding="0"/>
             </TabItem>
 
-            <TabItem x:Name="TabItemDetail" Header="Details" Visibility="Collapsed">
+            <TabItem x:Name="TabItemDetail" Header="Details" Visibility="Collapsed" 
+                     BorderThickness="0" Padding="0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -86,7 +89,8 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <RichTextBox x:Name="RichTextBoxDetails" Grid.Row="0" Grid.Column="0">
+                    <RichTextBox x:Name="RichTextBoxDetails" Grid.Row="0" Grid.Column="0" 
+                                 BorderThickness="0" Padding="0">
                         <FlowDocument>
                             <Paragraph FontStyle="Italic" TextAlignment="Left" FontSize="14" Foreground="Gray">Nothing to display, yet</Paragraph>
                         </FlowDocument>

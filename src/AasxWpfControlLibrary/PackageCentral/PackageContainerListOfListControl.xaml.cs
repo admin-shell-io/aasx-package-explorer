@@ -156,9 +156,9 @@ namespace AasxWpfControlLibrary.PackageCentral
                     outputDlg.DefaultExt = "*.json";
                     outputDlg.Filter = "AASX repository files (*.json)|*.json|All files (*.*)|*.*";
 
-                    if (Options.Curr.UseFlyovers) _flyout.StartFlyover(new EmptyFlyout());
+                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.StartFlyover(new EmptyFlyout());
                     var res = outputDlg.ShowDialog();
-                    if (Options.Curr.UseFlyovers) _flyout.CloseFlyover();
+                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.CloseFlyover();
 
                     if (res != true)
                         return;

@@ -266,6 +266,12 @@ namespace AasxPackageLogic
         public bool VerboseConnect = false;
 
         /// <summary>
+        /// When activated, the UI will compress events, which are emited by the editor.
+        /// Events are emited, when "take over" or load/ save is activiated.
+        /// </summary>
+        public bool CompressEvents = false;
+
+        /// <summary>
         /// Default value for the StayConnected options of PackageContainer.
         /// That is, a loaded container will automatically try receive events, e.g. for value update.
         /// </summary>

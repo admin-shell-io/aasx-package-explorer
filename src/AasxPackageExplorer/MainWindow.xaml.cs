@@ -56,6 +56,8 @@ namespace AasxPackageExplorer
 
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
 
+        private AasEventCompressor _eventCompressor = new AasEventCompressor();
+
         #endregion
         #region Init Component
         //====================
@@ -684,6 +686,9 @@ namespace AasxPackageExplorer
             RepoListControl.ManageVisuElems = DisplayElements;
             this.UiAssertFileRepository(visible: false);
 
+            // event viewer
+            UserContrlEventCollection.FlyoutProvider = this;
+
             // LRU repository?
             var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
             try
@@ -817,6 +822,7 @@ namespace AasxPackageExplorer
             MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
+            MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
 
             // the UI application might receive events from items in the package central
             _packageCentral.ChangeEventHandler = (data) =>
@@ -1374,7 +1380,8 @@ namespace AasxPackageExplorer
         private void MainTimer_CheckDiaryDateToEmitEvents(
             DateTime lastTime,
             AdminShell.AdministrationShellEnv env,
-            IndexOfSignificantAasElements significantElems)
+            IndexOfSignificantAasElements significantElems,
+            bool directEmit)
         {
             // trivial
             if (env == null || significantElems == null)
@@ -1485,13 +1492,16 @@ namespace AasxPackageExplorer
                         observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
 
                     if (plStruct.Changes.Count >= 1)
-                        ev.Payloads.Add(plStruct);
+                        ev.PayloadItems.Add(plStruct);
 
                     if (plUpdate.Values.Count >= 1)
-                        ev.Payloads.Add(plUpdate);
+                        ev.PayloadItems.Add(plUpdate);
 
-                    // emit it to PackageCentral
-                    _packageCentral?.PushEvent(ev);
+                    // emit it to PackageCentral or to buffer?
+                    if (directEmit)
+                        _packageCentral?.PushEvent(ev);
+                    else
+                        _eventCompressor?.Push(ev);
                 }
             }
         }
@@ -1724,7 +1734,8 @@ namespace AasxPackageExplorer
                 MainTimer_CheckDiaryDateToEmitEvents(
                     _mainTimer_LastCheckForDiaryEvents,
                     _packageCentral.MainItem.Container.Env?.AasEnv,
-                    _packageCentral.MainItem.Container.SignificantElements);
+                    _packageCentral.MainItem.Container.SignificantElements,
+                    directEmit: !MenuItemOptionsCompressEvents.IsChecked);
             _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
             MainTimer_PeriodicalTaskForSelectedEntity();
@@ -1968,6 +1979,9 @@ namespace AasxPackageExplorer
                 ButtonHistory.Push(DisplayElements.SelectedItem);
             }
 
+            // may be flush events
+            CheckIfToFlushEvents();
+
             // redraw view
             RedrawElementView();
         }
@@ -2115,8 +2129,22 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.CallUndo();
         }
 
+        private void CheckIfToFlushEvents()
+        {
+            if (MenuItemOptionsCompressEvents.IsChecked)
+            {
+                var evs = _eventCompressor?.Flush();
+                foreach (var ev in evs)
+                    _packageCentral?.PushEvent(ev);
+            }
+        }
+
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
+            // some more "OK, good to go" 
+            CheckIfToFlushEvents();
+
+            // refresh display
             var x = DisplayElements.SelectedItem;
             if (x == null)
             {
@@ -2126,6 +2154,8 @@ namespace AasxPackageExplorer
             }
             x?.RefreshFromMainData();
             DisplayElements.Refresh();
+
+            // re-enable
             ContentTakeOver.IsEnabled = false;
         }
 

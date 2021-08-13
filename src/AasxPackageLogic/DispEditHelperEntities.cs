@@ -3456,6 +3456,59 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
                         });
                 }
+
+                // group
+                this.AddGroup(stack, "Invocation of Events", this.levelColors.SubSection);
+
+                this.AddAction(
+                    stack, "Emit Event:", new[] { "Emit directly", "Emit with JSON payload" }, repo,
+                    addWoEdit: new[] { true, true },
+                    action: (buttonNdx) =>
+                    {
+                        ListOfAasPayloadBase Payloads = null;
+                        string PayloadsRaw = null;
+
+                        if (buttonNdx == 1)
+                        {
+                            var uc = new AnyUiDialogueDataTextEditor(
+                                                caption: $"Edit raw Payload for '{"" + bev.idShort}'",
+                                                mimeType: "application/json",
+                                                text: "[]");
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                PayloadsRaw = uc.Text;
+                            }
+                        }
+
+                        if (buttonNdx == 0 || buttonNdx == 1)
+                        {
+                            // find the observable)
+                            var observable = env.FindReferableByReference(bev.observed);
+
+                            // send event
+                            var ev = new AasEventMsgEnvelope(
+                                DateTime.UtcNow,
+                                source: bev.GetReference(),
+                                sourceSemanticId: bev.semanticId,
+                                observableReference: bev.observed,
+                                observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
+
+                            // specific payload?
+                            ev.PayloadItems = Payloads;
+                            if (PayloadsRaw != null)
+                            {
+                                ev.PayloadItems = null;
+                                ev.PayloadsRaw = PayloadsRaw;
+                            }
+
+                            // emit it to PackageCentral
+                            packages?.PushEvent(ev);
+
+                            return new AnyUiLambdaActionNone();
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
             }
             else
                 this.AddGroup(stack, "Submodel Element is unknown!", this.levelColors.MainSection);

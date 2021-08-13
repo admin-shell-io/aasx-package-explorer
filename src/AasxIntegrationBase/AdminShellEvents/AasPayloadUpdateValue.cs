@@ -143,6 +143,12 @@ namespace AasxIntegrationBase.AdminShellEvents
                 Values.Add(value);
         }
 
+        public AasPayloadUpdateValue(AasPayloadUpdateValue other)
+        {
+            if (other.Values != null)
+                Values.AddRange(other.Values);
+        }
+
         //
         // Serialisation
         //

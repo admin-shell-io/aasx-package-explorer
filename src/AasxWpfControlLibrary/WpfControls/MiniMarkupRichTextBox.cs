@@ -130,13 +130,6 @@ namespace AasxWpfControlLibrary.WpfControls
             {
                 var s = new Section();
 
-                //var p = new Section();
-                //p.Inlines.Add(new Hyperlink());
-                //s.Blocks.Add(p);
-
-                //var uic = new BlockUIContainer();
-                //s.Blocks.Add(uic);
-
                 if (seq.Children != null)
                     foreach (var ch in seq.Children)
                     {

@@ -24,6 +24,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Base class for any AAS event payload. 
     /// Payloads are wrapped in AAS event envelopes or transactions.
     /// </summary>
+    [DisplayName("AasPayloadBase")]
     public class AasPayloadBase
     {
 #if UseMarkup
@@ -32,6 +33,28 @@ namespace AasxIntegrationBase.AdminShellEvents
             return null;
         }
 #endif
+    }
+
+    /// <summary>
+    /// Denotes a list of <c>AasPayloadBase</c> or derived payloads
+    /// </summary>
+    [DisplayName("ListOfAasPayloadBase")]
+    public class ListOfAasPayloadBase : List<AasPayloadBase>
+    {
+
+        public ListOfAasPayloadBase() : base() { }
+
+        public ListOfAasPayloadBase(ListOfAasPayloadBase other) : base()
+        {
+            if (other != null)
+                foreach (var pl in other)
+                {
+                    var opl = Activator.CreateInstance(pl.GetType(), new object[] { pl });
+                    if (opl is AasPayloadBase npl)
+                        this.Add(npl);
+                }
+        }
+
     }
 
     /// <summary>

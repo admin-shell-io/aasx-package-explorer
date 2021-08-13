@@ -466,8 +466,8 @@ namespace AasxMqttClient
                 if (_diaData.LogDebug)
                     _logger?.Info("Publish single values ..");
 
-                if (ev.Payloads != null)
-                    foreach (var epl in ev.Payloads)
+                if (ev.PayloadItems != null)
+                    foreach (var epl in ev.PayloadItems)
                     {
                         if (epl is AasPayloadStructuralChange apsc && apsc.Changes != null)
                             foreach (var ci in apsc.Changes)

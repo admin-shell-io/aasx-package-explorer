@@ -872,7 +872,7 @@ namespace AasxPackageLogic.PackageCentral
                 foreach (var env in envelopes)
                 {
                     // trivial
-                    if (env?.Payloads == null)
+                    if (env?.PayloadItems == null)
                         continue;
 
                     // header parsing
@@ -880,7 +880,7 @@ namespace AasxPackageLogic.PackageCentral
                         lastTS = env.Timestamp;
 
                     // payloads
-                    foreach (var pl in env.Payloads)
+                    foreach (var pl in env.PayloadItems)
                     {
                         // Structural
                         if (pl is AasPayloadStructuralChange chgStruct)

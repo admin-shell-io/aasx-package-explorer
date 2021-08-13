@@ -897,10 +897,13 @@ namespace AasxPackageLogic
 
         public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
                 Func<int, AnyUiLambdaActionBase> action = null,
-                string[] actionTags = null)
+                string[] actionTags = null,
+                bool[] addWoEdit = null)
         {
             // access 
-            if (repo == null || action == null || actionStr == null)
+            if (action == null || actionStr == null)
+                return;
+            if (repo == null && addWoEdit == null)
                 return;
             var numButton = actionStr.Length;
 
@@ -935,6 +938,13 @@ namespace AasxPackageLogic
             var wp = AddSmallWrapPanelTo(g, 0, 1, margin: new AnyUiThickness(5, 0, 5, 0));
             for (int i = 0; i < numButton; i++)
             {
+                // render?
+                if (!((repo != null) 
+                      || (addWoEdit != null && addWoEdit.Length > i && addWoEdit[i]) 
+                     ))
+                    continue;
+
+                // render?
                 int currentI = i;
                 var b = new AnyUiButton();
                 b.Content = "" + actionStr[i];

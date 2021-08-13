@@ -83,6 +83,7 @@
                     <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
                     <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
                     <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
+                    <RoutedUICommand x:Key="CompressEvents" Text="CompressEvents" />
                     <RoutedUICommand x:Key="Test" Text="Test" />
                     <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
                     <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
@@ -243,6 +244,7 @@
         <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource CompressEvents}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BufferClear}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
@@ -403,6 +405,7 @@
                         <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
                         <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                        <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>

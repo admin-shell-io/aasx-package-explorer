@@ -422,7 +422,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Kind:", levelColors.SubSection);
+            this.AddGroup(stack, "Kind (of Asset):", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -441,12 +441,11 @@ namespace AasxPackageLogic
                     {
                         setOutput?.Invoke(new AdminShell.AssetKind());
                         return new AnyUiLambdaActionRedrawEntity();
-                    }
-                    ))
+                    }))
                 this.AddKeyValueRef(
                     stack, "kind", kind, ref kind.kind, null, repo,
                     v => { kind.kind = v as string; return new AnyUiLambdaActionNone(); },
-                    new[] { "Template", "Instance" });
+                    new[] { AdminShell.AssetKind.Type, AdminShell.AssetKind.Instance });
         }
 
         public void DisplayOrEditEntityModelingKind(AnyUiStackPanel stack,
@@ -459,7 +458,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Kind:", levelColors.SubSection);
+            this.AddGroup(stack, "Kind (of model):", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -483,7 +482,7 @@ namespace AasxPackageLogic
                 this.AddKeyValueRef(
                     stack, "kind", kind, ref kind.kind, null, repo,
                     v => { kind.kind = v as string; return new AnyUiLambdaActionNone(); },
-                    new[] { "Template", "Instance" });
+                    new[] { AdminShell.ModelingKind.Template, AdminShell.ModelingKind.Instance });
         }
 
         //
