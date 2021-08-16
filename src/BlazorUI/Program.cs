@@ -2,6 +2,9 @@
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -15,9 +18,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using BlazorUI.Data;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +52,20 @@ namespace BlazorUI
     public class Program
     {
         public static event EventHandler NewDataAvailable;
+
+        public class NewDataAvailableArgs : EventArgs
+        {
+            // resharper disable once MemberHidesStaticFromOuterClass
+            public int signalNewDataMode;
+            public int signalSessionNumber;
+
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0)
+            {
+                signalNewDataMode = mode;
+                signalSessionNumber = sessionNumber;
+            }
+        }
+
         public class AnyUiPanelEntry
         {
             public AnyUiPanel panel;
@@ -81,23 +98,7 @@ namespace BlazorUI
             }
         }
 
-        public static AdminShellPackageEnv env = null;
-        public static string[] aasxFiles = null;
-        public static string aasxFileSelected = "";
-        public static bool editMode = false;
-        public static bool hintMode = true;
-        public static PackageCentral packages = null;
-        public static DispEditHelperEntities helper = null;
-        public static ModifyRepo repo = null;
-
-        public static AnyUiStackPanel stack = new AnyUiStackPanel();
-        public static AnyUiStackPanel stack2 = new AnyUiStackPanel();
-        public static AnyUiStackPanel stack17 = new AnyUiStackPanel();
-
-        public static string LogLine = "The text of the clicked object will be shown here..";
-
-        public static string thumbNail = null;
-
+        // resharper disable once UnusedType.Global
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
             public Action<object> MyLambda;
@@ -110,15 +111,16 @@ namespace BlazorUI
             }
         }
 
-        public static void loadAasx(string value)
+        public static void loadAasx(blazorSessionService bi, string value)
         {
-            aasxFileSelected = value;
-            if (env != null)
-                env.Dispose();
-            env = new AdminShellPackageEnv(Program.aasxFileSelected);
-            editMode = false;
-            thumbNail = null;
-            signalNewData(3); // build new tree, all nodes closed
+            bi.aasxFileSelected = value;
+            bi.container = null;
+            if (bi.env != null)
+                bi.env.Dispose();
+            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected);
+            bi.editMode = false;
+            bi.thumbNail = null;
+            signalNewData(3, bi.sessionNumber); // build new tree, all nodes closed
         }
 
         // 0 == same tree, only values changed
@@ -126,10 +128,10 @@ namespace BlazorUI
         // 2 == build new tree, keep open nodes
         // 3 == build new tree, all nodes closed
         public static int signalNewDataMode = 2;
-        public static void signalNewData(int mode)
+        public static void signalNewData(int mode, int sessionNumber = 0)
         {
             signalNewDataMode = mode;
-            NewDataAvailable?.Invoke(null, EventArgs.Empty);
+            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber));
         }
         public static int getSignalNewDataMode()
         {
@@ -138,15 +140,20 @@ namespace BlazorUI
             return (mode);
         }
 
-        public static void loadAasxFiles(bool load = true)
+        public static void loadAasxFiles(blazorSessionService bi, bool load = true)
         {
-            aasxFiles = Directory.GetFiles(".", "*.aasx");
-            Array.Sort(aasxFiles);
+            bi.aasxFiles = Directory.GetFiles(".", "*.aasx");
+            Array.Sort(bi.aasxFiles);
             if (load)
-                loadAasx(aasxFiles[0]);
+            {
+                // ReSharper disable once UseMethodAny.0
+                // ReSharper disable once UseCollectionCountProperty
+                if (bi.aasxFiles.Count() > 0)
+                    loadAasx(bi, bi.aasxFiles[0]);
+            }
         }
 
-        public static async Task getAasxAsync(string input)
+        public static async Task getAasxAsync(blazorSessionService bi, string input)
         {
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -177,108 +184,12 @@ namespace BlazorUI
             {
                 await contentStream.CopyToAsync(file);
             }
-            loadAasxFiles(false);
-            loadAasx(contentFn);
+            loadAasxFiles(bi, false);
+            loadAasx(bi, contentFn);
         }
 
         public static void Main(string[] args)
         {
-            //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
-
-            loadAasxFiles();
-#if __test__PackageLogic
-#else
-
-            packages = new PackageCentral();
-            // TODO (MIHO, 2021-06-07): how to initialize?
-            packages.MainItem.TakeOver(env);
-
-            helper = new DispEditHelperEntities();
-            helper.levelColors = DispLevelColors.GetLevelColorsFromOptions(Options.Curr);
-            // some functionality still uses repo != null to detect editMode!!
-            repo = new ModifyRepo();
-            helper.editMode = editMode;
-            helper.hintMode = hintMode;
-            helper.repo = repo;
-            helper.context = null;
-            helper.packages = packages;
-
-            stack17 = new AnyUiStackPanel();
-            stack17.Orientation = AnyUiOrientation.Vertical;
-
-            helper.DisplayOrEditAasEntityAas(
-                    packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
-
-            AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
-#endif
-
-            //
-            // Test for Blazor
-            //
-
-#if _not_enabled
-             stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
-             var d = new JavaScriptSerializer();
-             stack2 = d.Deserialize<AnyUiStackPanel>(File.ReadAllText(@"c:\development\file.json"));
-             var parent = (Dictionary<string, object>)results["Parent"];
-#endif
-
-#if _not_enabled
-            {
-                string s = File.ReadAllText(@"c:\development\file.json");
-                var jsonSerializerSettings = new JsonSerializerSettings()
-                {
-                    TypeNameHandling = TypeNameHandling.All
-                };
-                stack2 = JsonConvert.DeserializeObject<AnyUiStackPanel>(s, jsonSerializerSettings);
-            }
-#endif
-
-            if (true)
-            {
-                stack.Orientation = AnyUiOrientation.Vertical;
-
-                var lab1 = new AnyUiLabel();
-                lab1.Content = "Hallo1";
-                lab1.Foreground = AnyUiBrushes.DarkBlue;
-                stack.Children.Add(lab1);
-
-                var stck2 = new AnyUiStackPanel();
-                stck2.Orientation = AnyUiOrientation.Horizontal;
-                stack.Children.Add(stck2);
-
-                var lab2 = new AnyUiLabel();
-                lab2.Content = "Hallo2";
-                lab2.Foreground = AnyUiBrushes.DarkBlue;
-                stck2.Children.Add(lab2);
-
-                var stck3 = new AnyUiStackPanel();
-                stck3.Orientation = AnyUiOrientation.Horizontal;
-                stck2.Children.Add(stck3);
-
-                var lab3 = new AnyUiLabel();
-                lab3.Content = "Hallo3";
-                lab3.Foreground = AnyUiBrushes.DarkBlue;
-                stck3.Children.Add(lab3);
-
-                if (editMode)
-                {
-                    var tb = new AnyUiTextBox();
-                    tb.Foreground = AnyUiBrushes.Black;
-                    tb.Text = "Initial";
-                    stck2.Children.Add(tb);
-
-                    var btn = new AnyUiButton();
-                    btn.Content = "Click me!";
-                    btn.DisplayData = new BlazorDisplayData(lambda: (o) =>
-                    {
-                        if (o == btn)
-                            Program.LogLine = "Hallo, Match zwischen Button und callback!";
-                    });
-                    stck3.Children.Add(btn);
-                }
-            }
-
             CreateHostBuilder(args).Build().Run();
         }
 

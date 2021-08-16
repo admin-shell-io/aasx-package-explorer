@@ -2,6 +2,9 @@
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -31,18 +34,15 @@ namespace BlazorUI.Data
         {
             Program.NewDataAvailable += (s, a) =>
             {
-                NewDataAvailable?.Invoke(this, EventArgs.Empty);
+                NewDataAvailable?.Invoke(s, a);
             };
         }
         public event EventHandler NewDataAvailable;
 
-        public static List<Item> items = null;
-        public static List<Item> viewItems = null;
-
-        public List<Item> GetTree(Item selectedNode, IList<Item> ExpandedNodes)
+        public List<Item> GetTree(blazorSessionService bi, Item selectedNode, IList<Item> ExpandedNodes)
         {
-            Item.updateVisibleTree(viewItems, selectedNode, ExpandedNodes);
-            return viewItems;
+            Item.updateVisibleTree(bi.items, selectedNode, ExpandedNodes);
+            return bi.items;
         }
 
         public void syncSubTree(Item item)
@@ -56,22 +56,22 @@ namespace BlazorUI.Data
                 }
             }
         }
-        public void buildTree()
+        public void buildTree(blazorSessionService bi)
         {
 
-            items = new List<Item>();
+            bi.items = new List<Item>();
             for (int i = 0; i < 1; i++)
             {
                 Item root = new Item();
                 root.envIndex = i;
-                if (Program.env != null)
+                if (bi.env != null)
                 {
-                    root.Text = Program.env.AasEnv.AdministrationShells[0].idShort;
-                    root.Tag = Program.env.AasEnv.AdministrationShells[0];
+                    root.Text = bi.env.AasEnv.AdministrationShells[0].idShort;
+                    root.Tag = bi.env.AasEnv.AdministrationShells[0];
                     if (true)
                     {
                         List<Item> childs = new List<Item>();
-                        foreach (var sm in Program.env.AasEnv.Submodels)
+                        foreach (var sm in bi.env.AasEnv.Submodels)
                         {
                             if (sm?.idShort != null)
                             {
@@ -115,11 +115,10 @@ namespace BlazorUI.Data
                         root.Childs = childs;
                         foreach (var c in childs)
                             c.parent = root;
-                        items.Add(root);
+                        bi.items.Add(root);
                     }
                 }
             }
-            viewItems = items;
         }
 
         void createSMECItems(Item smeRootItem, SubmodelElementCollection smec, int i)
@@ -213,9 +212,9 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        public List<Submodel> GetSubmodels()
+        public List<Submodel> GetSubmodels(blazorSessionService bi)
         {
-            return Program.env.AasEnv.Submodels;
+            return bi.env.AasEnv.Submodels;
         }
     }
 }

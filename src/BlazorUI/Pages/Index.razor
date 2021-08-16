@@ -7,6 +7,7 @@
 @*using System*@
 @*using System.Net;*@
 @inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
 
 @{
 // resharper disable all
@@ -17,68 +18,138 @@
     <div class="col-4">
         <div class="row-12">
             <div class="row">
-                @if (AnyUiDisplayContextHtml.htmlEventIn)
+                @{
+                    session = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
+                    sessionHtmlEventIn = session.htmlEventIn;
+                }
+                @if (session != null && sessionHtmlEventIn)
                 {
-                    <Modal @bind-Open="AnyUiDisplayContextHtml.htmlEventIn" Close="OnClose">
+                    <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
                         <form method="dialog">
-                            @switch (AnyUiDisplayContextHtml.htmlEventType)
+                            @if (session.htmlEventInputs.Count != 0)
                             {
-                                case "MessageBoxFlyoutShow":
-                                    string message = (string)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                    string caption = (string)AnyUiDisplayContextHtml.htmlEventInputs[1];
-                                    AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)AnyUiDisplayContextHtml.htmlEventInputs[2];
-                                    AnyUiDisplayContextHtml.htmlEventInputs.Clear();
-                                    <p><span style="font-weight:bold">@caption</span></p>
-                                    <br />
-                                    <p>@message</p>
-                                    <br />
-                                    @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
-                                    {
-                                        <button value="OK">OK</button>
-                                    }
-                                    @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
-                                    {
-                                        <button value="Yes">Yes</button>
-                                        <button value="No">No</button>
-                                    }
-                                    @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
-                                    {
-                                        <button value="Cancel">Cancel</button>
-                                    }
-                                    break;
-                                case "contextMenu":
-                                    // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                    AnyUiSpecialActionContextMenu cntlcm =
-                                        (AnyUiSpecialActionContextMenu)AnyUiDisplayContextHtml.htmlEventInputs[1];
-                                    var nmi = cntlcm.MenuItemHeaders.Length / 2;
-                                    int i = 0;
-                                    string icon = "" + cntlcm.MenuItemHeaders[0];
-                                    string header = "" + cntlcm.MenuItemHeaders[1];
-                                    // string v = i + ": " + icon + " " + header;
-                                    <select class="form-control selectpicker" size="@nmi"
-                                            @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
-                                        @for (i = 0; i < nmi; i++)
+                                switch (session.htmlEventType)
+                                {
+                                    case "MessageBoxFlyoutShow":
+                                        string message = (string)session.htmlEventInputs[0];
+                                        string caption = (string)session.htmlEventInputs[1];
+                                        AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)session.htmlEventInputs[2];
+                                        session.htmlEventInputs.Clear();
+                                        <p><span style="font-weight:bold">@caption</span></p>
+                                        <br />
+                                        <p>@message</p>
+                                        <br />
+                                        @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
                                         {
-                                            // menu item itself
-                                            icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
-                                            header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
-                                            <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                            <button value="OK">OK</button>
                                         }
-                                    </select>
-                                    break;
+                                        @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                        {
+                                            <button value="Yes">Yes</button>
+                                            <button value="No">No</button>
+                                        }
+                                        @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                        {
+                                            <button value="Cancel">Cancel</button>
+                                        }
+                                        break;
+                                    case "StartFlyoverModal":
+                                        AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)session.htmlEventInputs[0];
+                                        if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                                        {
+                                            string flyCaption = ddte.Caption + " - read only";
+                                            flyText = ddte.Text;
+                                            session.htmlEventInputs.Clear();
+                                            <p><span style="font-weight:bold">@flyCaption</span></p>
+                                            // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
+                                            <textarea cols="100" rows="20"
+                                                      style="resize:both;">@flyText</textarea>
+                                            <br />
+                                            <button value="OK">OK</button>
+                                            <button value="Cancel">Cancel</button>
+                                        }
+                                        if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                                        {
+                                            int sizeDdsfl = ddsfl.ListOfItems.Count;
+                                            int iDdsfl = 0;
+                                            <select class="form-control selectpicker" size="@sizeDdsfl"
+                                                    @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
+                                                @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                                {
+                                                    // menu item itself
+                                                    string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
+                                                    <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                                }
+                                            </select>
+                                        }
+                                        break;
+                                    case "contextMenu":
+                                        // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                                        AnyUiSpecialActionContextMenu cntlcm =
+                                            (AnyUiSpecialActionContextMenu)session.htmlEventInputs[1];
+                                        var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                                        int i = 0;
+                                        string icon = "" + cntlcm.MenuItemHeaders[0];
+                                        string header = "" + cntlcm.MenuItemHeaders[1];
+                                        session.htmlEventInputs.Clear();
+                                        // string v = i + ": " + icon + " " + header;
+                                        <select class="form-control selectpicker" size="@nmi"
+                                                @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                            @for (i = 0; i < nmi; i++)
+                                            {
+                                                // menu item itself
+                                                icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                                header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                                <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                            }
+                                        </select>
+                                        break;
+                                }
                             }
                         </form>
                     </Modal>
                 }
 
-                @code{
+                @code {
+                    private AnyUiHtmlEventSession session { get; set; }
+                    private bool sessionHtmlEventIn { get; set; }
+
+                    void MyContextMenuSelect(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        session.htmlEventOutputs.Add(i);
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
+                        session.htmlEventOut = true;
+                    }
+
+                    void MyDialogDataSelectFromList(string value)
+                    {
+                        string[] s = value.Split(':');
+                        int i = Convert.ToInt32(s[0]);
+                        session.htmlEventOutputs.Add(i);
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
+                        session.htmlEventOut = true;
+                    }
+
+                    private void MyTextInput(string value)
+                    {
+                        flyText = value;
+                    }
+
+                    public string flyText { get; set; }
+
                     void OnClose(string value)
                     {
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Clear();
-                        switch (AnyUiDisplayContextHtml.htmlEventType)
+                        session.htmlEventIn = false;
+                        session.htmlEventInputs.Clear();
+                        session.htmlEventOutputs.Clear();
+                        switch (session.htmlEventType)
                         {
                             case "MessageBoxFlyoutShow":
-                                AnyUiDisplayContextHtml.htmlEventIn = false;
+
                                 AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
                                 switch (value)
                                 {
@@ -95,21 +166,24 @@
                                         r = AnyUiMessageBoxResult.No;
                                         break;
                                 }
-                                AnyUiDisplayContextHtml.htmlEventOutputs.Add(r);
+                                session.htmlEventOutputs.Add(r);
+                                break;
+                            case "StartFlyoverModal":
+                                session.htmlEventOutputs.Add(flyText);
+                                switch (value)
+                                {
+                                    case "OK":
+                                        session.htmlEventOutputs.Add(true);
+                                        break;
+                                    case "Cancel":
+                                        session.htmlEventOutputs.Add(false);
+                                        break;
+                                }
                                 break;
                             case "contextMenu":
                                 break;
                         }
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
-                    }
-
-                    void MyContextMenuSelect(string value)
-                    {
-                        string[] s = value.Split(':');
-                        int i = Convert.ToInt32(s[0]);
-                        AnyUiDisplayContextHtml.htmlEventOutputs.Add(i);
-                        AnyUiDisplayContextHtml.htmlEventIn = false;
-                        AnyUiDisplayContextHtml.htmlEventOut = true;
+                        session.htmlEventOut = true;
                     }
                 }
             </div>
@@ -118,6 +192,13 @@
                     @updateVisibleTree(Items, selectedNode)
                     @* @if (Program.isLoading)
                         {<span style="color:white;background-color:blue;">Loading...</span>} *@
+                    @if (bi.env == null)
+                    {
+                        <span style="color:white;background-color:blue;">
+                            Enter * to read AASX from file system<br />
+                            Enter URL of AASX Server REST API (without /server/listaas)<br />
+                        </span>
+                    }
                     <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
                           @bind-SelectedNode="SelectedNode"
                           @bind-ExpandedNodes="ExpandedNodes"
@@ -135,15 +216,15 @@
             </div>
             <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;word-wrap:break-word;position:sticky;padding:10px">
                 @{
-                    if (selectedNode == null || selectedNode.Tag != null)
+                    if (bi.env != null && (selectedNode == null || selectedNode.Tag != null))
                     {
                         {
-                            if (Program.thumbNail == null)
+                            if (bi.thumbNail == null && bi.env != null)
                             {
                                 System.IO.Stream s = null;
                                 try
                                 {
-                                    s = Program.env.GetLocalThumbnailStream();
+                                    s = bi.env.GetLocalThumbnailStream();
                                 }
                                 catch
                                 {
@@ -154,15 +235,15 @@
                                     using (var m = new System.IO.MemoryStream())
                                     {
                                         s.CopyTo(m);
-                                        Program.thumbNail = System.Convert.ToBase64String(m.ToArray());
+                                        bi.thumbNail = System.Convert.ToBase64String(m.ToArray());
                                     }
                                 }
                             }
-                            if (Program.thumbNail != null)
+                            if (bi.thumbNail != null)
                             {
                                 <br />
-                                <img src=data:image;base64,@Program.thumbNail
-                                    style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
+                                <img src=data:image;base64,@bi.thumbNail
+                                     style="max-width:60%;display:block;margin-left:auto;margin-right:auto" alt="Details Image" />
                             }
                         }
                     }
@@ -176,51 +257,52 @@
                 if (selectedNode != null && selectedNode.Tag != null)
                 {
                     bool view = false;
-                    Program.helper.editMode = Program.editMode;
-                    if (Program.editMode)
+                    bi.helper.editMode = bi.editMode;
+                    if (bi.editMode)
                     {
-                        Program.helper.repo = Program.repo;
+                        bi.helper.repo = bi.repo;
                     }
                     else
                     {
-                        Program.helper.repo = null;
+                        bi.helper.repo = null;
                     }
-                    var displayContext = new AnyUiDisplayContextHtml();
-                    Program.helper.context = displayContext;
+                    var displayContext = new AnyUiDisplayContextHtml(bi);
+                    var displayData = new AnyUiDisplayDataHtml(displayContext);
+                    bi.helper.context = displayContext;
                     if (selectedNode.Tag is AdministrationShell)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntityAas(
-                                    Program.packages, Program.env.AasEnv, selectedNode.Tag as AdministrationShell, Program.editMode, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntityAas(
+                                    bi.packages, bi.env.AasEnv, selectedNode.Tag as AdministrationShell, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     if (selectedNode.Tag is Submodel)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntitySubmodelOrRef(
-                                    Program.packages, Program.env.AasEnv, Program.env.AasEnv.AdministrationShells[0],
-                                    null, selectedNode.Tag as Submodel, Program.editMode, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntitySubmodelOrRef(
+                                    bi.packages, bi.env.AasEnv, bi.env.AasEnv.AdministrationShells[0],
+                                    null, selectedNode.Tag as Submodel, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     if (selectedNode.Tag is SubmodelElement sme)
                     {
-                        Program.stack17 = new AnyUiStackPanel();
-                        Program.stack17.Orientation = AnyUiOrientation.Vertical;
-                        Program.helper.DisplayOrEditAasEntitySubmodelElement(
-                                    Program.packages, Program.env.AasEnv, selectedNode.ParentContainer,
+                        bi.stack17 = new AnyUiStackPanel();
+                        bi.stack17.Orientation = AnyUiOrientation.Vertical;
+                        bi.helper.DisplayOrEditAasEntitySubmodelElement(
+                                    bi.packages, bi.env.AasEnv, selectedNode.ParentContainer,
                                     selectedNode.Wrapper,
-                                    sme, Program.editMode, Program.helper.repo, Program.stack17, hintMode: Program.hintMode);
-                        if (Program.stack17.Children.Count != 0)
+                                    sme, bi.editMode, bi.helper.repo, bi.stack17, hintMode: bi.hintMode);
+                        if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
 
                     if (view)
                     {
-                        AnyUiPanel topPanel = Program.stack17;
+                        AnyUiPanel topPanel = bi.stack17;
                         Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
 
                         foreach (AnyUiUIElement topCh in topPanel.Children)
@@ -294,24 +376,28 @@
 
                                                     if (ch is AnyUiLabel chlb)
                                                     {
+                                                        chlb.DisplayData = displayData;
                                                         <td><span style="@style">@chlb.Content</span></td>
                                                     }
 
                                                     if (ch is AnyUiTextBlock tb)
                                                     {
+                                                        tb.DisplayData = displayData;
                                                         <td><span>@tb.Text</span></td>
                                                     }
 
                                                     if (ch is AnyUiSelectableTextBlock stb)
                                                     {
+                                                        stb.DisplayData = displayData;
                                                         <td><span>@stb.Text</span></td>
                                                     }
 
                                                     if (ch is AnyUiTextBox chtb)
                                                     {
+                                                        chtb.DisplayData = displayData;
                                                         if (ch is AnyUiHintBubble hb)
                                                         {
-                                                            if (Program.editMode)
+                                                            if (bi.editMode)
                                                             {
                                                                 <td><span style="@style">@hb.Text</span></td>
                                                             }
@@ -324,14 +410,14 @@
                                                             <td>
                                                                 <span style="@style">
                                                                     <input size="@w" value="@chtb.Text"
-                                                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                                                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
                                                                 </span>
                                                             </td>
                                                             @code {
                                                                 private void MyTextInput(AnyUiTextBox chtb, string value)
                                                                 {
                                                                     chtb.setValueLambda?.Invoke(value);
-                                                                    Program.signalNewData(0); // same tree, only values changed
+                                                                    Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
                                                                 }
                                                             }
                                                         }
@@ -339,6 +425,7 @@
 
                                                     if (ch is AnyUiButton chbt)
                                                     {
+                                                        chbt.DisplayData = displayData;
                                                         if (chbt.Content == "Delete")
                                                         {
                                                             // resharper disable once NotAccessedVariable.Compiler
@@ -361,9 +448,10 @@
 
                                                     if (ch is AnyUiCheckBox cb)
                                                     {
+                                                        cb.DisplayData = displayData;
                                                         <td>
                                                             <input type="checkbox" value="@cb.IsChecked"
-                                                                    @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+                                                                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
                                                             @cb.Content
                                                         </td>
                                                         @code {
@@ -376,6 +464,7 @@
 
                                                     if (ch is AnyUiComboBox comb)
                                                     {
+                                                        comb.DisplayData = displayData;
                                                         if (prevCh is AnyUiButton)
                                                         {
                                                             newTab = true;
@@ -397,7 +486,7 @@
                                                             private void MyComboSelect(AnyUiComboBox comb, string value)
                                                             {
                                                                 comb.setValueLambda?.Invoke(value);
-                                                                Program.signalNewData(0); // same tree, only values changed
+                                                                Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
                                                             }
                                                         }
                                                     }
@@ -422,7 +511,6 @@
         </div>
     </div>
 </div>
-
 
 @code {
 
@@ -458,20 +546,25 @@
         }
     }
 
-    protected override void OnInitialized()
+    // protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
         // OnInitialized() allways called twice
         //// if (hack++ == 0)
         ////    return;
 
-        SubmodelService.buildTree();
-        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
-        // StateHasChanged();
+        if (firstRender)
+        {
+            SubmodelService.buildTree(bi);
+            Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
+            // StateHasChanged();
 
-        //ExpandedNodes.Add(Items.Skip(1).First());
-        //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
+            //ExpandedNodes.Add(Items.Skip(1).First());
+            //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
 
-        SubmodelService.NewDataAvailable += NewData;
+            SubmodelService.NewDataAvailable += NewData;
+            
+        }
     }
 
     public void Dispose()
@@ -479,24 +572,31 @@
         SubmodelService.NewDataAvailable -= NewData;
     }
 
-    static int newDataMode = 0;
+    int newDataMode = 0;
 
     void NewData(object source, EventArgs args)
     {
         // update = true;
-        if (newDataMode == 0)
-            newDataMode = Program.getSignalNewDataMode();
-        Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+        if (args is Program.NewDataAvailableArgs ndm)
+        {
+            if (ndm.signalSessionNumber == bi.sessionNumber)
+            {
+                if (newDataMode == 0)
+                    // newDataMode = Program.getSignalNewDataMode();
+                    newDataMode = ndm.signalNewDataMode;
+                Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
 
-        InvokeAsync(() => this.StateHasChanged());
-        // this.StateHasChanged();
+                InvokeAsync(() => this.StateHasChanged());
+                // this.StateHasChanged();
+            }
+        }
     }
 
     bool update = true;
 
     string updateVisibleTree(List<Item> viewItems, Item selectedNode)
     {
-        if (update && !AnyUiDisplayContextHtml.htmlEventIn && !AnyUiDisplayContextHtml.htmlEventOut)
+        if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
         {
             switch (newDataMode)
             {
@@ -518,8 +618,8 @@
                             expandedNodesPath[j] = getPath(ExpandedNodes[j]);
                         }
                     }
-                    SubmodelService.buildTree();
-                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    SubmodelService.buildTree(bi);
+                    Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;
                     if (isSelected)
@@ -538,8 +638,8 @@
                     break;
                 // 3 == build new tree, all nodes closed
                 case 3:
-                    SubmodelService.buildTree();
-                    Items = SubmodelService.GetTree(selectedNode, ExpandedNodes);
+                    SubmodelService.buildTree(bi);
+                    Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
                     ExpandedNodes.Clear();
                     selectedNode = null;
                     newDataMode = 0;
@@ -924,4 +1024,3 @@
         return (ret);
     }
 }
-
