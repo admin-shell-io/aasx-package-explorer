@@ -111,8 +111,11 @@ namespace AasxPackageLogic
             });
             this.AddKeyValueRef(
                 stack, "idShort", referable, ref referable.idShort, null, repo,
-                v => { this.AddDiaryEntry(referable, new DiaryEntryStructChange()); 
-                    referable.idShort = v as string; return new AnyUiLambdaActionNone(); },
+                v => {
+                    var dr = new DiaryReference(referable);
+                    referable.idShort = v as string;
+                    this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
+                    return new AnyUiLambdaActionNone(); },
                 auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
                 auxButtonLambda: injectToIdShort?.auxLambda

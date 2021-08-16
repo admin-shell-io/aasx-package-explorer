@@ -715,6 +715,18 @@ namespace AdminShellNS
                 return res;
             }
 
+            public KeyList ReplaceLastKey(KeyList newKeys)
+            {
+                var res = new KeyList(this);
+                if (res.Count < 1 || newKeys == null || newKeys.Count < 1)
+                    return res;
+
+                res.Remove(res.Last());
+                res = res + newKeys;
+
+                return res;
+            }
+
             // other
 
             /// <summary>
@@ -1981,7 +1993,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Referable : IValidateEntity, IAasElement, IDiaryData
+        public class Referable : IValidateEntity, IAasElement, IDiaryData, IGetReference
         {
             // diary
 
@@ -2120,6 +2132,13 @@ namespace AdminShellNS
             public string GetFriendlyName()
             {
                 return AdminShellUtil.FilterFriendlyName(this.idShort);
+            }
+
+            public virtual Reference GetReference()
+            {
+                return new Reference(
+                    new AdminShell.Key(
+                        this.GetElementName(), false, Key.IdShort, "" + this.idShort));
             }
 
             public void CollectReferencesByParent(List<Key> refs)
@@ -2385,7 +2404,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Identifiable : Referable
+        public class Identifiable : Referable, IGetReference
         {
 
             // members
@@ -2454,6 +2473,17 @@ namespace AdminShellNS
                 return new Key(GetElementName(), true, "" + identification?.idType, "" + identification?.id);
             }
 
+            // self description
+
+            public override Reference GetReference()
+            {
+                var r = new Reference();
+                r.Keys.Add(
+                    Key.CreateNew(
+                        this.GetElementName(), true, this.identification.idType, this.identification.id));
+                return r;
+            }
+
             // sorting
 
             public class ComparerIdentification : IComparer<Identifiable>
@@ -2496,7 +2526,7 @@ namespace AdminShellNS
             SemanticId GetSemanticId();
         }
 
-        public class AdministrationShell : Identifiable, IFindAllReferences, IGetReference
+        public class AdministrationShell : Identifiable, IFindAllReferences
         {
             // for JSON only
             [XmlIgnore]
@@ -2632,15 +2662,6 @@ namespace AdminShellNS
                 hasDataSpecification.Add(new EmbeddedDataSpecification(r));
             }
 
-            public Reference GetReference()
-            {
-                var r = new Reference();
-                r.Keys.Add(
-                    Key.CreateNew(
-                        this.GetElementName(), true, this.identification.idType, this.identification.id));
-                return r;
-            }
-
             public override AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("AssetAdministrationShell", "AAS");
@@ -2729,7 +2750,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Asset : Identifiable, IGetReference
+        public class Asset : Identifiable
         {
             // for JSON only
             [XmlIgnore]
@@ -2814,11 +2835,6 @@ namespace AdminShellNS
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
-            }
-
-            public Reference GetReference()
-            {
-                return GetAssetReference();
             }
 
             public override AasElementSelfDescription GetSelfDescription()
@@ -3594,7 +3610,7 @@ namespace AdminShellNS
             }
         }
 
-        public class ConceptDescription : Identifiable, System.IDisposable, IGetReference
+        public class ConceptDescription : Identifiable, System.IDisposable
         {
             // for JSON only
             [XmlIgnore]
@@ -3718,11 +3734,6 @@ namespace AdminShellNS
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return r;
-            }
-
-            public Reference GetReference()
-            {
-                return GetCdReference();
             }
 
             public void SetIEC61360Spec(
@@ -5433,7 +5444,7 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("SubmodelElement", "SME");
             }
 
-            public Reference GetReference()
+            public override Reference GetReference()
             {
                 Reference r = new Reference();
                 // this is the tail of our referencing chain ..
@@ -6449,7 +6460,7 @@ namespace AdminShellNS
         }
 
         public class Submodel : Identifiable, IManageSubmodelElements,
-                                    System.IDisposable, IGetReference, IEnumerateChildren, IFindAllReferences,
+                                    System.IDisposable, IEnumerateChildren, IFindAllReferences,
                                     IGetSemanticId
         {
             // for JSON only
@@ -6676,11 +6687,6 @@ namespace AdminShellNS
                     Key.CreateNew(
                         this.GetElementName(), true, this.identification.idType, this.identification.id));
                 return l;
-            }
-
-            public Reference GetReference()
-            {
-                return GetSubmodelRef();
             }
 
             /// <summary>

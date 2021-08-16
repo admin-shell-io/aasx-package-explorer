@@ -56,7 +56,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AdminShell.KeyList Path { get; set; }
 
         /// <summary>
-        /// JSON-Serializatin of the Submodel, SMC, SME which was denoted by Observabale and Path.
+        /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
         /// </summary>
         public string Data { get; set; }
 

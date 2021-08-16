@@ -2168,6 +2168,22 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
+        /// This class tries to acquire element reference information, which is used by 
+        /// <c>AddDiaryEntry</c>
+        /// </summary>
+        public class DiaryReference
+        {
+            public AdminShell.KeyList OriginalPath;
+
+            public DiaryReference() { }
+
+            public DiaryReference(AdminShell.IGetReference rf)
+            {
+                OriginalPath = rf?.GetReference()?.Keys;
+            }
+        }
+
+        /// <summary>
         /// Base class for diary entries, which are recorded with respect to a AAS element
         /// Diary entries contain a minimal set of information to later produce AAS events or such.
         /// </summary>
@@ -2204,7 +2220,8 @@ namespace AasxPackageLogic
         /// <summary>
         /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
-        public void AddDiaryEntry(AdminShell.Referable rf, DiaryEntryBase de)
+        public void AddDiaryEntry(AdminShell.Referable rf, DiaryEntryBase de,
+            DiaryReference diaryReference = null)
         {
             // trivial
             if (rf == null || de == null || rf.DiaryData == null)
@@ -2220,6 +2237,9 @@ namespace AasxPackageLogic
                     createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
                     data: JsonConvert.SerializeObject(rf));
+
+                if (diaryReference?.OriginalPath != null)
+                    evi.Path = diaryReference.OriginalPath;
 
                 // attach where?
                 var attachRf = rf;
