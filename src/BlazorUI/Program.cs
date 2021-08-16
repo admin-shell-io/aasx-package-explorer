@@ -2,6 +2,9 @@
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -52,6 +55,7 @@ namespace BlazorUI
 
         public class NewDataAvailableArgs : EventArgs
         {
+            // resharper disable once MemberHidesStaticFromOuterClass
             public int signalNewDataMode;
             public int signalSessionNumber;
 
@@ -94,6 +98,7 @@ namespace BlazorUI
             }
         }
 
+        // resharper disable once UnusedType.Global
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
             public Action<object> MyLambda;
@@ -141,6 +146,8 @@ namespace BlazorUI
             Array.Sort(bi.aasxFiles);
             if (load)
             {
+                // ReSharper disable once UseMethodAny.0
+                // ReSharper disable once UseCollectionCountProperty
                 if (bi.aasxFiles.Count() > 0)
                     loadAasx(bi, bi.aasxFiles[0]);
             }

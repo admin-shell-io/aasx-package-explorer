@@ -2,7 +2,7 @@ Copyright (c) 2018-2020 Festo AG & Co. KG
 <https://www.festo.com/net/de_de/Forms/web/contact_international>,
 author: Michael Hoffmeister
 
-Copyright (c) 2019-2020 PHOENIX CONTACT GmbH & Co. KG
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG
 <opensource@phoenixcontact.com>,
 author: Andreas Orzelski
 

@@ -2,6 +2,9 @@
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -64,10 +67,9 @@ namespace BlazorUI.Data
             helper.context = null;
             helper.packages = packages;
 
-            stack17 = new AnyUiStackPanel();
-            stack17.Orientation = AnyUiOrientation.Vertical;
+            stack17 = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
 
-            if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
+            if (env?.AasEnv?.AdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(packages, env.AasEnv,
                     env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
 

@@ -2,6 +2,9 @@
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
 
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG <opensource@phoenixcontact.com>,
+author: Andreas Orzelski
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -122,92 +125,97 @@ namespace AnyUi
 
             while (true)
             {
-                // lock (htmlDotnetLock)
+                // ReSharper disable InconsistentlySynchronizedField
+                int i = 0;
+                while (i < sessions.Count)
                 {
-                    int i = 0;
-                    while (i < sessions.Count)
+                    var s = sessions[i];
+                    if (s.htmlDotnetEventIn)
                     {
-                        var s = sessions[i];
-                        if (s.htmlDotnetEventIn)
+                        switch (s.htmlDotnetEventType)
                         {
-                            switch (s.htmlDotnetEventType)
-                            {
-                                case "setValueLambda":
-                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                    object o = s.htmlDotnetEventInputs[1];
-                                    s.htmlDotnetEventIn = false;
-                                    s.htmlDotnetEventInputs.Clear();
-                                    AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                    break;
-                                case "contextMenu":
-                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                    AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
-                                        s.htmlDotnetEventInputs[1];
-                                    s.htmlEventType = "contextMenu";
-                                    s.htmlEventInputs.Add(el);
-                                    s.htmlEventInputs.Add(cntlcm);
-                                    s.htmlDotnetEventIn = false;
-                                    s.htmlDotnetEventInputs.Clear();
-                                    s.htmlEventIn = true;
-                                    Program.signalNewData(1, s.sessionNumber); // same tree, but structure may change
+                            case "setValueLambda":
+                                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                object o = s.htmlDotnetEventInputs[1];
+                                s.htmlDotnetEventIn = false;
+                                s.htmlDotnetEventInputs.Clear();
+                                AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                break;
+                            case "contextMenu":
+                                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
+                                    s.htmlDotnetEventInputs[1];
+                                s.htmlEventType = "contextMenu";
+                                s.htmlEventInputs.Add(el);
+                                s.htmlEventInputs.Add(cntlcm);
+                                s.htmlDotnetEventIn = false;
+                                s.htmlDotnetEventInputs.Clear();
+                                s.htmlEventIn = true;
+                                Program.signalNewData(1, s.sessionNumber); // same tree, but structure may change
 
-                                    while (!s.htmlEventOut) ;
-                                    int bufferedI = 0;
-                                    if (s.htmlEventOutputs.Count == 1)
-                                    {
-                                        bufferedI = (int)s.htmlEventOutputs[0];
-                                        var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
-                                    }
-                                    s.htmlEventOutputs.Clear();
-                                    s.htmlEventType = "";
-                                    s.htmlEventOut = false;
-                                    //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                    break;
-                            }
-                            while (s.htmlDotnetEventOut) ;
-                            Program.signalNewData(2, s.sessionNumber); // build new tree
+                                while (!s.htmlEventOut) ;
+                                int bufferedI = 0;
+                                if (s.htmlEventOutputs.Count == 1)
+                                {
+                                    bufferedI = (int)s.htmlEventOutputs[0];
+                                    var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                }
+                                s.htmlEventOutputs.Clear();
+                                s.htmlEventType = "";
+                                s.htmlEventOut = false;
+                                //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                break;
                         }
-                        i++;
+                        while (s.htmlDotnetEventOut) ;
+                        Program.signalNewData(2, s.sessionNumber); // build new tree
                     }
+                    i++;
                 }
+                // ReSharper enable InconsistentlySynchronizedField
                 Thread.Sleep(100);
             }
         }
 
         public static void setValueLambdaHtml(AnyUiUIElement el, object o)
         {
-            var dc = (el.DisplayData as AnyUiDisplayDataHtml)._context;
-            var sessionNumber = dc._bi.sessionNumber;
-            var found = findSession(sessionNumber);
-            if (found != null)
+            var dc = (el.DisplayData as AnyUiDisplayDataHtml)?._context;
+            if (dc != null)
             {
-                lock (dc.htmlDotnetLock)
+                var sessionNumber = dc._bi.sessionNumber;
+                var found = findSession(sessionNumber);
+                if (found != null)
                 {
-                    while (found.htmlDotnetEventIn) ;
-                    found.htmlEventInputs.Clear();
-                    found.htmlDotnetEventType = "setValueLambda";
-                    found.htmlDotnetEventInputs.Add(el);
-                    found.htmlDotnetEventInputs.Add(o);
-                    found.htmlDotnetEventIn = true;
+                    lock (dc.htmlDotnetLock)
+                    {
+                        while (found.htmlDotnetEventIn) ;
+                        found.htmlEventInputs.Clear();
+                        found.htmlDotnetEventType = "setValueLambda";
+                        found.htmlDotnetEventInputs.Add(el);
+                        found.htmlDotnetEventInputs.Add(o);
+                        found.htmlDotnetEventIn = true;
+                    }
                 }
             }
         }
 
         public static void specialActionContextMenuHtml(AnyUiUIElement el, AnyUiSpecialActionContextMenu cntlcm)
         {
-            var dc = (el.DisplayData as AnyUiDisplayDataHtml)._context;
-            var sessionNumber = dc._bi.sessionNumber;
-            var found = findSession(sessionNumber);
-            if (found != null)
+            var dc = (el.DisplayData as AnyUiDisplayDataHtml)?._context;
+            if (dc != null)
             {
-                lock (dc.htmlDotnetLock)
+                var sessionNumber = dc._bi.sessionNumber;
+                var found = findSession(sessionNumber);
+                if (found != null)
                 {
-                    while (found.htmlDotnetEventIn) ;
-                    found.htmlEventInputs.Clear();
-                    found.htmlDotnetEventType = "contextMenu";
-                    found.htmlDotnetEventInputs.Add(el);
-                    found.htmlDotnetEventInputs.Add(cntlcm);
-                    found.htmlDotnetEventIn = true;
+                    lock (dc.htmlDotnetLock)
+                    {
+                        while (found.htmlDotnetEventIn) ;
+                        found.htmlEventInputs.Clear();
+                        found.htmlDotnetEventType = "contextMenu";
+                        found.htmlDotnetEventInputs.Add(el);
+                        found.htmlDotnetEventInputs.Add(cntlcm);
+                        found.htmlDotnetEventIn = true;
+                    }
                 }
             }
         }
