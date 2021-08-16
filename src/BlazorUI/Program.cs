@@ -126,7 +126,6 @@ namespace BlazorUI
         public static void signalNewData(int mode, int sessionNumber = 0)
         {
             signalNewDataMode = mode;
-            // NewDataAvailable?.Invoke(null, EventArgs.Empty);
             NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber));
         }
         public static int getSignalNewDataMode()
@@ -184,17 +183,6 @@ namespace BlazorUI
 
         public static void Main(string[] args)
         {
-            //// env = new AdminShellPackageEnv("Example_AAS_ServoDCMotor_21.aasx");
-
-            // loadAasxFiles();
-#if __test__PackageLogic
-#else
-            // AnyUi.AnyUiDisplayContextHtml.htmlDotnetThread.Start();
-#endif
-
-            //
-            // Test for Blazor
-            //
             CreateHostBuilder(args).Build().Run();
         }
 

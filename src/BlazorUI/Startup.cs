@@ -39,7 +39,6 @@ namespace BlazorUI
             services.AddServerSideBlazor();
             services.AddSingleton<AASService>();
             services.AddScoped<blazorSessionService>();
-            services.AddScoped<DownloadModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

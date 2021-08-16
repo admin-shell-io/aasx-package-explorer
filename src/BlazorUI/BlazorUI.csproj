@@ -29,11 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Pages\download.cshtml.cs" />
-    <None Include="Pages\Download.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>

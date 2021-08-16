@@ -31,14 +31,10 @@ namespace BlazorUI.Data
         {
             Program.NewDataAvailable += (s, a) =>
             {
-                // NewDataAvailable?.Invoke(this, EventArgs.Empty);
                 NewDataAvailable?.Invoke(s, a);
             };
         }
         public event EventHandler NewDataAvailable;
-
-        // public static List<Item> items = null;
-        // public static List<Item> viewItems = null;
 
         public List<Item> GetTree(blazorSessionService bi, Item selectedNode, IList<Item> ExpandedNodes)
         {

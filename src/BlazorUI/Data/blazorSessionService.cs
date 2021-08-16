@@ -7,17 +7,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace BlazorUI.Data
 {
-    public class blazorSessionService:IDisposable
+    public class blazorSessionService : IDisposable
     {
         public AdminShellPackageEnv env = null;
         public string[] aasxFiles = new string[1];
@@ -68,19 +68,18 @@ namespace BlazorUI.Data
             stack17.Orientation = AnyUiOrientation.Vertical;
 
             if (env != null && env.AasEnv != null && env.AasEnv.AdministrationShells != null)
-                helper.DisplayOrEditAasEntityAas(
-                        packages, env.AasEnv, env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+                helper.DisplayOrEditAasEntityAas(packages, env.AasEnv,
+                    env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
 
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
         }
-    public void Dispose()
+        public void Dispose()
         {
             AnyUiDisplayContextHtml.deleteSession(sessionNumber);
             sessionTotal--;
             if (env != null)
                 env.Close();
-            // throw new NotImplementedException();
         }
     }
 }

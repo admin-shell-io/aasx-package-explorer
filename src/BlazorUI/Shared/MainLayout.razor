@@ -4,7 +4,6 @@
 @using AasxPackageLogic.PackageCentral;
 @inject IJSRuntime JSRuntime
 @inject BlazorUI.Data.blazorSessionService bi
-@inject DownloadModel dm
 
 @{
 // resharper disable all
@@ -194,9 +193,6 @@
                         }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                         @code {
-                            // resharper disable once UnusedField.Compiler
-                            IFileListEntry file;
-
                             async Task HandleFileSelected(IFileListEntry[] files)
                             {
                                 try
