@@ -50,7 +50,8 @@ function Main
         "AasxPluginTechnicalData",
         "AasxPluginUaNetClient",
         "AasxPluginUaNetServer",
-        "AasxPluginWebBrowser"
+        "AasxPluginWebBrowser",
+        "BlazorUI"
         )
 
         foreach ($project in $projects)
