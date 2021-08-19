@@ -98,8 +98,9 @@
                         }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                     </td>
-                    <td nowrap></td>
-                    <td>
+                    <td nowrap>
+                    </td>
+                    <td nowrap>
                         <button @onclick="toggleEditMode">
                             @{
                                 if (bi.editMode)
@@ -120,6 +121,8 @@
                                 Program.signalNewData(0, bi.sessionNumber);
                             }
                         }
+                        <span>&nbsp&nbsp&nbsp&nbsp</span>
+                        <a href="About">LICENSE</a>
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
                     </td>
                     <td nowrap>

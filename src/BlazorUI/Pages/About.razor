@@ -1,0 +1,30 @@
+﻿@page "/About"
+
+
+@{
+    // resharper disable all
+}
+
+<h1>LICENSE.TXT for AASX Browser</h1>
+
+<!--
+<p>
+    Copyright...
+</p>
+
+<p>
+    <a target="_blank" href="http://www.phoenixcontact.com">Test</a>
+</p>
+
+<frame src="LICENSE.TXT"></frame>
+
+-->
+<p>
+    @{
+        string[] lines = System.IO.File.ReadAllLines("LICENSE.TXT");
+        foreach (string line in lines)
+        {
+            @line<br />
+        }
+    }
+</p>
