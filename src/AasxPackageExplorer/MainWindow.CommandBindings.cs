@@ -97,7 +97,7 @@ namespace AasxPackageExplorer
             if (cmd == "new")
             {
                 if (AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
-                    "Create new Adminshell environment? This operation can not be reverted!", "AASX",
+                    "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                 {
                     try

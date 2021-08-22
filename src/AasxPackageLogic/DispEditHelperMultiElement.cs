@@ -195,7 +195,7 @@ namespace AasxPackageLogic
 
                         if (this.context.ActualShiftState
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                "Delete selected entities? This operation can not be reverted!", "AASX",
+                                "Delete selected entities? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             DeleteElementsInList<T>(list, entities);
@@ -343,7 +343,7 @@ namespace AasxPackageLogic
                         if (this.context.ActualShiftState
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entities? This operation can not be reverted and may directly " +
-                                "affect the loaded package!", "AASX",
+                                "affect the loaded package!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             // single deletes

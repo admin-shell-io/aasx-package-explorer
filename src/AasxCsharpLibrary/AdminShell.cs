@@ -1993,7 +1993,14 @@ namespace AdminShellNS
             }
         }
 
-        public class Referable : IValidateEntity, IAasElement, IDiaryData, IGetReference
+        public interface IRecurseOnReferables
+        {
+            void RecurseOnReferables(
+                object state, Func<object, ListOfReferable, Referable, bool> lambda,
+                bool includeThis = false);
+        }
+
+        public class Referable : IValidateEntity, IAasElement, IDiaryData, IGetReference, IRecurseOnReferables
         {
             // diary
 
@@ -2134,7 +2141,7 @@ namespace AdminShellNS
                 return AdminShellUtil.FilterFriendlyName(this.idShort);
             }
 
-            public virtual Reference GetReference()
+            public virtual Reference GetReference(bool includeParents = true)
             {
                 return new Reference(
                     new AdminShell.Key(
@@ -2393,7 +2400,7 @@ namespace AdminShellNS
                         }));
             }
 
-            // recursion (by derived elements)
+            // hierarchy & recursion (by derived elements)
 
             public virtual void RecurseOnReferables(
                 object state, Func<object, ListOfReferable, Referable, bool> lambda,
@@ -2401,6 +2408,18 @@ namespace AdminShellNS
             {
                 if (includeThis)
                     lambda(state, null, this);
+            }
+
+            public Identifiable FindParentFirstIdentifiable()
+            {
+                Referable curr = this;
+                while (curr != null)
+                {
+                    if (curr is Identifiable curri)
+                        return curri;
+                    curr = curr.parent as Referable;
+                }
+                return null;
             }
         }
 
@@ -2475,7 +2494,7 @@ namespace AdminShellNS
 
             // self description
 
-            public override Reference GetReference()
+            public override Reference GetReference(bool includeParents = true)
             {
                 var r = new Reference();
                 r.Keys.Add(
@@ -2518,7 +2537,7 @@ namespace AdminShellNS
 
         public interface IFindAllReferences
         {
-            IEnumerable<Reference> FindAllReferences();
+            IEnumerable<LocatedReference> FindAllReferences();
         }
 
         public interface IGetSemanticId
@@ -2715,23 +2734,23 @@ namespace AdminShellNS
                 this.submodelRefs.Add(newref);
             }
 
-            public IEnumerable<Reference> FindAllReferences()
+            public IEnumerable<LocatedReference> FindAllReferences()
             {
                 // Asset
                 if (this.assetRef != null)
-                    yield return this.assetRef;
+                    yield return new LocatedReference(this, this.assetRef);
 
                 // Submodel references
                 if (this.submodelRefs != null)
                     foreach (var r in this.submodelRefs)
-                        yield return r;
+                        yield return new LocatedReference(this, r);
 
                 // Views
                 if (this.views?.views != null)
                     foreach (var vw in this.views.views)
                         if (vw?.containedElements?.reference != null)
                             foreach (var r in vw.containedElements.reference)
-                                yield return r;
+                                yield return new LocatedReference(this, r);
             }
         }
 
@@ -4055,8 +4074,25 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// Use by <c>FindAllReference</c> to provide a enumeration of referenced with location
+        /// info, where they are contained
+        /// </summary>
+        public class LocatedReference
+        {
+            public Identifiable Identifiable;
+            public Reference Reference;
+
+            public LocatedReference() { }
+            public LocatedReference(Identifiable identifiable, Reference reference)
+            {
+                Identifiable = identifiable;
+                Reference = reference;
+            }
+        }
+
         [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/2/0")]
-        public class AdministrationShellEnv : IFindAllReferences, IAasElement, IDiaryData
+        public class AdministrationShellEnv : IFindAllReferences, IAasElement, IDiaryData, IRecurseOnReferables
         {
 
             // diary (as e.g. deleted AASes need to be listed somewhere)
@@ -4340,7 +4376,7 @@ namespace AdminShellNS
                         yield return r;
             }
 
-            public IEnumerable<Referable> FindAllReferable()
+            public IEnumerable<Referable> FindAllReferable(bool onlyIdentifiables = false)
             {
                 if (this.AdministrationShells != null)
                     foreach (var aas in this.AdministrationShells)
@@ -4349,10 +4385,13 @@ namespace AdminShellNS
                             // AAS itself
                             yield return aas;
 
-                            // Views
-                            if (aas.views?.views != null)
-                                foreach (var view in aas.views.views)
-                                    yield return view;
+                            if (!onlyIdentifiables)
+                            {
+                                // Views
+                                if (aas.views?.views != null)
+                                    foreach (var view in aas.views.views)
+                                        yield return view;
+                            }
                         }
 
                 if (this.Assets != null)
@@ -4366,14 +4405,17 @@ namespace AdminShellNS
                         {
                             yield return sm;
 
-                            // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
-                            var allsme = new ListOfSubmodelElement();
-                            sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
+                            if (!onlyIdentifiables)
                             {
-                                allsme.Add(sme); return true;
-                            });
-                            foreach (var sme in allsme)
-                                yield return sme;
+                                // TODO (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection
+                                var allsme = new ListOfSubmodelElement();
+                                sm.RecurseOnSubmodelElements(null, (state, parents, sme) =>
+                                {
+                                    allsme.Add(sme); return true;
+                                });
+                                foreach (var sme in allsme)
+                                    yield return sme;
+                            }
                         }
 
                 if (this.ConceptDescriptions != null)
@@ -4614,7 +4656,7 @@ namespace AdminShellNS
                 return (FindConceptDescription(l));
             }
 
-            public IEnumerable<Reference> FindAllReferences()
+            public IEnumerable<LocatedReference> FindAllReferences()
             {
                 if (this.AdministrationShells != null)
                     foreach (var aas in this.AdministrationShells)
@@ -4626,7 +4668,7 @@ namespace AdminShellNS
                     foreach (var asset in this.Assets)
                         if (asset != null)
                             foreach (var r in asset.FindAllReferences())
-                                yield return r;
+                                yield return new LocatedReference(asset, r);
 
                 if (this.Submodels != null)
                     foreach (var sm in this.Submodels)
@@ -4638,7 +4680,7 @@ namespace AdminShellNS
                     foreach (var cd in this.ConceptDescriptions)
                         if (cd != null)
                             foreach (var r in cd.FindAllReferences())
-                                yield return r;
+                                yield return new LocatedReference(cd, r);
             }
 
             // creators
@@ -4739,23 +4781,26 @@ namespace AdminShellNS
             /// Tries renaming an Identifiable, specifically: the identification of an Identifiable and
             /// all references to it.
             /// Currently supported: ConceptDescriptions
-            /// Returns, if a successful renaming was performed
+            /// Returns a list of Referables, which were changed or <c>null</c> in case of error
             /// </summary>
-            public bool RenameIdentifiable<T>(Identification oldId, Identification newId) where T : Identifiable
+            public List<Referable> RenameIdentifiable<T>(Identification oldId, Identification newId) where T : Identifiable
             {
                 // access
                 if (oldId == null || newId == null || oldId.IsEqual(newId))
-                    return false;
+                    return null;
+
+                var res = new List<Referable>();
 
                 if (typeof(T) == typeof(ConceptDescription))
                 {
                     // check, if exist or not exist
                     var cdOld = FindConceptDescription(oldId);
                     if (cdOld == null || FindConceptDescription(newId) != null)
-                        return false;
+                        return null;
 
                     // rename old cd
                     cdOld.identification = newId;
+                    res.Add(cdOld);
 
                     // search all SMEs referring to this CD
                     foreach (var sme in this.FindAllSubmodelElements<SubmodelElement>(match: (s) =>
@@ -4765,10 +4810,11 @@ namespace AdminShellNS
                     {
                         sme.semanticId[0].idType = newId.idType;
                         sme.semanticId[0].value = newId.id;
+                        res.Add(sme);
                     }
 
                     // seems fine
-                    return true;
+                    return res;
                 }
 
                 if (typeof(T) == typeof(Submodel))
@@ -4776,10 +4822,12 @@ namespace AdminShellNS
                     // check, if exist or not exist
                     var smOld = FindSubmodel(oldId);
                     if (smOld == null || FindSubmodel(newId) != null)
-                        return false;
+                        return null;
 
                     // recurse all possible Referenes in the aas env
-                    foreach (var r in this.FindAllReferences())
+                    foreach (var lr in this.FindAllReferences())
+                    {
+                        var r = lr?.Reference;
                         if (r != null)
                             for (int i = 0; i < r.Count; i++)
                                 if (r[i].Matches(Key.Submodel, false, oldId.idType, oldId.id, Key.MatchMode.Relaxed))
@@ -4787,13 +4835,16 @@ namespace AdminShellNS
                                     // directly replace
                                     r[i].idType = newId.idType;
                                     r[i].value = newId.id;
+                                    if (res.Contains(lr.Identifiable))
+                                        res.Add(lr.Identifiable);
                                 }
+                    }
 
                     // rename old Submodel
                     smOld.identification = newId;
 
                     // seems fine
-                    return true;
+                    return res;
                 }
 
                 if (typeof(T) == typeof(Asset))
@@ -4801,10 +4852,12 @@ namespace AdminShellNS
                     // check, if exist or not exist
                     var assetOld = FindAsset(oldId);
                     if (assetOld == null || FindAsset(newId) != null)
-                        return false;
+                        return null;
 
                     // recurse all possible Referenes in the aas env
-                    foreach (var r in this.FindAllReferences())
+                    foreach (var lr in this.FindAllReferences())
+                    {
+                        var r = lr?.Reference;
                         if (r != null)
                             for (int i = 0; i < r.Count; i++)
                                 if (r[i].Matches(Key.Asset, false, oldId.idType, oldId.id, Key.MatchMode.Relaxed))
@@ -4812,17 +4865,20 @@ namespace AdminShellNS
                                     // directly replace
                                     r[i].idType = newId.idType;
                                     r[i].value = newId.id;
+                                    if (res.Contains(lr.Identifiable))
+                                        res.Add(lr.Identifiable);
                                 }
+                    }
 
                     // rename old Submodel
                     assetOld.identification = newId;
 
                     // seems fine
-                    return true;
+                    return res;
                 }
 
                 // no result is false, as well
-                return false;
+                return null;
             }
 
             // serializations
@@ -5071,6 +5127,15 @@ namespace AdminShellNS
                 // return number of applied fixes
                 return res;
             }
+
+            public void RecurseOnReferables(
+                object state, Func<object, ListOfReferable, Referable, bool> lambda, bool includeThis = false)
+            {
+                // includeThis does not make sense, as no Referable
+                // just use the others
+                foreach (var idf in this.FindAllReferable(onlyIdentifiables: true))
+                    idf?.RecurseOnReferables(state, lambda, includeThis);
+            }
         }
 
         //
@@ -5079,7 +5144,7 @@ namespace AdminShellNS
 
         public interface IGetReference
         {
-            Reference GetReference();
+            Reference GetReference(bool includeParents = true);
         }
 
         public class Qualifier : IAasElement
@@ -5444,14 +5509,14 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("SubmodelElement", "SME");
             }
 
-            public override Reference GetReference()
+            public override Reference GetReference(bool includeParents = true)
             {
                 Reference r = new Reference();
                 // this is the tail of our referencing chain ..
                 r.Keys.Add(Key.CreateNew(GetElementName(), true, "IdShort", this.idShort));
                 // try to climb up ..
                 var current = this.parent;
-                while (current != null)
+                while (includeParents && current != null)
                 {
                     if (current is Identifiable cid)
                     {
@@ -6640,6 +6705,8 @@ namespace AdminShellNS
                     return null;
                 if (this.submodelElements == null)
                     this.submodelElements = new SubmodelElementWrapperCollection();
+                if (smw.submodelElement != null)
+                    smw.submodelElement.parent = this;
                 this.submodelElements.Add(smw);
                 return smw;
             }
@@ -6851,7 +6918,7 @@ namespace AdminShellNS
 
             // find
 
-            public IEnumerable<Reference> FindAllReferences()
+            public IEnumerable<LocatedReference> FindAllReferences()
             {
                 // not nice: use temp list
                 var temp = new List<Reference>();
@@ -6875,7 +6942,7 @@ namespace AdminShellNS
 
                 // now, give back
                 foreach (var r in temp)
-                    yield return r;
+                    yield return new LocatedReference(this, r);
             }
         }
 
@@ -7622,6 +7689,8 @@ namespace AdminShellNS
                     return null;
                 if (this.annotations == null)
                     this.annotations = new DataElementWrapperCollection();
+                if (smw.submodelElement != null)
+                    smw.submodelElement.parent = this;
                 this.annotations.Add(smw);
                 return smw;
             }
@@ -7758,6 +7827,8 @@ namespace AdminShellNS
                     return null;
                 if (this.value == null)
                     this.value = new SubmodelElementWrapperCollection();
+                if (smw.submodelElement != null)
+                    smw.submodelElement.parent = this;
                 this.value.Add(smw);
                 return smw;
             }
@@ -7774,6 +7845,7 @@ namespace AdminShellNS
 
                 this.ordered = smc.ordered;
                 this.allowDuplicates = smc.allowDuplicates;
+                this.value = new SubmodelElementWrapperCollection();
                 if (!shallowCopy)
                     foreach (var smw in smc.value)
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
@@ -8151,6 +8223,9 @@ namespace AdminShellNS
                 var ov = new OperationVariable();
                 ov.value = smw;
 
+                if (smw.submodelElement != null)
+                    smw.submodelElement.parent = this;
+
                 if (pl.Direction == OperationVariable.Direction.In)
                 {
                     if (inputVariable == null)
@@ -8297,6 +8372,8 @@ namespace AdminShellNS
                     return null;
                 if (this.statements == null)
                     this.statements = new SubmodelElementWrapperCollection();
+                if (smw.submodelElement != null)
+                    smw.submodelElement.parent = this;
                 this.statements.Add(smw);
                 return smw;
             }

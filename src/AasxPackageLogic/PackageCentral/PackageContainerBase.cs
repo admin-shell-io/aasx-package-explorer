@@ -359,6 +359,52 @@ namespace AasxPackageLogic.PackageCentral
         // Event management
         //
 
+        /* TODO (MIHO, 2021-08-17): check if to refactor/ move to another location 
+         * and to extend to Submodels .. */
+        public static bool UpdateSmeFromEventPayloadItem(
+            AdminShell.SubmodelElement smeToModify,
+            AasPayloadUpdateValueItem vl)
+        {
+            // access
+            if (smeToModify == null || vl == null)
+                return false;
+
+            var changedSomething = false;
+
+            // adopt
+            // TODO (MIHO, 2021-08-17): add more type specific conversions?
+            if (smeToModify is AdminShell.Property prop)
+            {
+                if (vl.Value is string vls)
+                    prop.value = vls;
+                if (vl.ValueId != null)
+                    prop.valueId = vl.ValueId;
+                changedSomething = true;
+            }
+
+            if (smeToModify is AdminShell.MultiLanguageProperty mlp)
+            {
+                if (vl.Value is AdminShell.LangStringSet lss)
+                    mlp.value = lss;
+                if (vl.ValueId != null)
+                    mlp.valueId = vl.ValueId;
+                changedSomething = true;
+            }
+
+            if (smeToModify is AdminShell.Range rng)
+            {
+                if (vl.Value is string[] sarr && sarr.Length >= 2)
+                {
+                    rng.min = sarr[0];
+                    rng.max = sarr[1];
+                }
+                changedSomething = true;
+            }
+
+            // ok
+            return changedSomething;
+        }
+
         private bool CheckPushedEventInternal(AasEventMsgEnvelope ev)
         {
             // access
@@ -409,14 +455,7 @@ namespace AasxPackageLogic.PackageCentral
                             }
 
                             // something to modify?
-                            if (smeToModify is AdminShell.Property prop)
-                            {
-                                if (vl.Value != null)
-                                    prop.value = vl.Value;
-                                if (vl.ValueId != null)
-                                    prop.valueId = vl.ValueId;
-                                changedSomething = true;
-                            }
+                            changedSomething = UpdateSmeFromEventPayloadItem(smeToModify, vl);
                         }
 
                     // if something was changed, the event messages is to be consumed

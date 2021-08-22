@@ -1406,7 +1406,17 @@ namespace AasxPackageExplorer
                         continue;
 
                     // now, find the observable (with timestamping!)
-                    var observable = env.FindReferableByReference(refEv.observed);
+                    var observable = (AdminShell.IDiaryData) env.FindReferableByReference(refEv.observed);
+
+                    // some special cases
+                    if (true == refEv.observed?.Matches(
+                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV", 
+                            AdminShell.Key.MatchMode.Relaxed))
+                    {
+                        observable = env;
+                    }
+
+                    // diary data available
                     if (observable?.DiaryData == null)
                         continue;
 
@@ -1429,54 +1439,55 @@ namespace AasxPackageExplorer
                     if (((i == 0) && (newCreate || newUpdate))
                         || ((i == 1) && newUpdate))
                     {
-                        observable.RecurseOnReferables(null,
-                            includeThis: true,
-                            lambda: (o, parents, rf) =>
-                            {
-                                // further interest?
-                                if (rf == null || rf.DiaryData == null || 
-                                ( (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] 
-                                   < lastTime)
-                                  &&
-                                  (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
-                                   < lastTime)))
-                                    return false;
-
-                                // yes, inspect further and also go deeper
-                                if (rf.DiaryData.Entries != null)
+                        if (observable is AdminShell.IRecurseOnReferables recurse)
+                            recurse.RecurseOnReferables(null,
+                                includeThis: true,
+                                lambda: (o, parents, rf) =>
                                 {
-                                    var todel = new List<AdminShell.IAasDiaryEntry>();
-                                    foreach (var de in rf.DiaryData.Entries)
+                                    // further interest?
+                                    if (rf == null || rf.DiaryData == null || 
+                                    ( (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] 
+                                       < lastTime)
+                                      &&
+                                      (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
+                                       < lastTime)))
+                                        return false;
+
+                                    // yes, inspect further and also go deeper
+                                    if (rf.DiaryData.Entries != null)
                                     {
-                                        if (i == 0 && de is AasPayloadStructuralChangeItem sci)
+                                        var todel = new List<AdminShell.IAasDiaryEntry>();
+                                        foreach (var de in rf.DiaryData.Entries)
                                         {
-                                            // TODO: prepare path to be relative
+                                            if (i == 0 && de is AasPayloadStructuralChangeItem sci)
+                                            {
+                                                // TODO: prepare path to be relative
 
-                                            // queue event
-                                            plStruct.Changes.Add(sci);
+                                                // queue event
+                                                plStruct.Changes.Add(sci);
 
-                                            // delete
-                                            todel.Add(de);
+                                                // delete
+                                                todel.Add(de);
+                                            }
+
+                                            if (i == 1 && de is AasPayloadUpdateValueItem uvi)
+                                            {
+                                                // TODO: prepare path to be relative
+
+                                                // queue event
+                                                plUpdate.Values.Add(uvi);
+
+                                                // delete
+                                                todel.Add(de);
+                                            }
                                         }
-
-                                        if (i == 1 && de is AasPayloadUpdateValueItem uvi)
-                                        {
-                                            // TODO: prepare path to be relative
-
-                                            // queue event
-                                            plUpdate.Values.Add(uvi);
-
-                                            // delete
-                                            todel.Add(de);
-                                        }
+                                        foreach (var de in todel)
+                                            rf.DiaryData.Entries.Remove(de);
                                     }
-                                    foreach (var de in todel)
-                                        rf.DiaryData.Entries.Remove(de);
-                                }
                                 
-                                // deeper
-                                return true;
-                            });
+                                    // deeper
+                                    return true;
+                                });
                     }
 
                     // send event?

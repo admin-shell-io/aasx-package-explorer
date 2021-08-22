@@ -42,7 +42,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Serialized updated value of the updated element.
         /// </summary>
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// ValueId of the update element.

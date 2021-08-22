@@ -62,7 +62,7 @@ namespace AasxPackageLogic.PackageCentral
                 Kind = kind,
                 Reference = sm?.GetReference()
                     + parents?.GetReference()
-                    + sme?.GetReference()
+                    + sme?.GetReference(includeParents: false)
             };
             _records.Add(kind, r);
         }
@@ -88,12 +88,12 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         if (true == sme.semanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            AdminShell.Key.MatchMode.Relaxed))
                         Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
                         if (true == sme.semanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            AdminShell.Key.MatchMode.Relaxed))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
                     // recurse

@@ -973,7 +973,8 @@ namespace AasxPackageLogic
         }
 
         public void AddKeyListLangStr(
-            AnyUiStackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null)
+            AnyUiStackPanel view, string key, List<AdminShell.LangStr> langStr, ModifyRepo repo = null,
+            AdminShell.Referable relatedReferable = null)
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -1034,6 +1035,7 @@ namespace AasxPackageLogic
                     {
                         var ls = new AdminShell.LangStr();
                         langStr?.Add(ls);
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     });
             }
@@ -1073,6 +1075,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].lang = o as string;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
@@ -1091,6 +1094,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr[currentI].str = o as string;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionNone();
                             });
                         // check here, if to hightlight
@@ -1109,6 +1113,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 langStr.RemoveAt(currentI);
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
@@ -1241,7 +1246,9 @@ namespace AasxPackageLogic
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Func<AdminShell.KeyList, AnyUiLambdaActionBase> noEditJumpLambda = null)
+            Func<AdminShell.KeyList, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            AdminShell.Referable relatedReferable = null,
+            Action<AdminShell.Referable> emitCustomEvent = null)
         {
             // sometimes needless to show
             if (repo == null && (keys == null || keys.Count < 1))
@@ -1254,6 +1261,10 @@ namespace AasxPackageLogic
                 rowOfs = 1;
             if (jumpLambda != null)
                 rowOfs = 1;
+
+            // default
+            if (emitCustomEvent == null)
+                emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
 
             // Grid
             var g = new AnyUiGrid();
@@ -1345,6 +1356,8 @@ namespace AasxPackageLogic
                                 keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,
                                     id.identification.idType, id.identification.id));
 
+                            emitCustomEvent?.Invoke(relatedReferable);
+
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
@@ -1370,6 +1383,9 @@ namespace AasxPackageLogic
                                         AdminShell.Key.GlobalReference, false,
                                         AdminShell.Identification.IRDI, resIRDI));
                             }
+
+                            emitCustomEvent?.Invoke(relatedReferable);
+
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
@@ -1387,9 +1403,10 @@ namespace AasxPackageLogic
                         {
                             var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
                             if (k2 != null)
-                            {
                                 keys.AddRange(k2);
-                            }
+
+                            emitCustomEvent?.Invoke(relatedReferable);
+
                             if (takeOverLambdaAction != null)
                                 return takeOverLambdaAction;
                             else
@@ -1406,6 +1423,9 @@ namespace AasxPackageLogic
                     {
                         var k = new AdminShell.Key();
                         keys.Add(k);
+
+                        emitCustomEvent?.Invoke(relatedReferable);
+
                         if (takeOverLambdaAction != null)
                             return takeOverLambdaAction;
                         else
@@ -1450,6 +1470,7 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             keys.AddRange(closureKey);
+                            emitCustomEvent?.Invoke(relatedReferable);
                             return new AnyUiLambdaActionRedrawEntity();
                         });
                 }
@@ -1501,7 +1522,6 @@ namespace AasxPackageLogic
                                     });
                         }
                     }
-
                     else
                     {
                         // save in current context
@@ -1522,6 +1542,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 keys[currentI].type = o as string;
+                                emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             },
                             takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
@@ -1544,6 +1565,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 keys[currentI].local = (bool)o;
+                                emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             },
                             takeOverLambda: takeOverLambdaAction);
@@ -1562,6 +1584,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 keys[currentI].idType = o as string;
+                                emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
@@ -1582,6 +1605,7 @@ namespace AasxPackageLogic
                             (o) =>
                             {
                                 keys[currentI].value = o as string;
+                                emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             }, takeOverLambda: takeOverLambdaAction);
 
@@ -1622,6 +1646,8 @@ namespace AasxPackageLogic
                                                 action = true;
                                                 break;
                                         }
+
+                                    emitCustomEvent?.Invoke(relatedReferable);
 
                                     if (action)
                                         if (takeOverLambdaAction != null)
@@ -1719,24 +1745,26 @@ namespace AasxPackageLogic
             return alternativeReturn;
         }
 
-        public void AddElementInListBefore<T>(List<T> list, T entity, T existing)
+        public int AddElementInListBefore<T>(List<T> list, T entity, T existing)
         {
             if (list == null || list.Count < 1 || entity == null)
-                return;
+                return -1;
             int ndx = list.IndexOf(existing);
             if (ndx < 0 || ndx > list.Count - 1)
-                return;
+                return -1;
             list.Insert(ndx, entity);
+            return ndx;
         }
 
-        public void AddElementInListAfter<T>(List<T> list, T entity, T existing)
+        public int AddElementInListAfter<T>(List<T> list, T entity, T existing)
         {
             if (list == null || list.Count < 1 || entity == null)
-                return;
+                return -1;
             int ndx = list.IndexOf(existing);
             if (ndx < 0 || ndx > list.Count)
-                return;
+                return -1;
             list.Insert(ndx + 1, entity);
+            return ndx + 1;
         }
 
         //
@@ -1844,7 +1872,7 @@ namespace AasxPackageLogic
 
                         if (this.context.ActualShiftState
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                "Delete selected entity? This operation can not be reverted!", "AASX",
+                                "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
@@ -1865,7 +1893,10 @@ namespace AasxPackageLogic
                 });
         }
 
-        public void QualifierHelper(AnyUiStackPanel stack, ModifyRepo repo, List<AdminShell.Qualifier> qualifiers)
+        public void QualifierHelper(
+            AnyUiStackPanel stack, ModifyRepo repo, 
+            List<AdminShell.Qualifier> qualifiers,
+            AdminShell.Referable relatedReferable = null)
         {
             if (editMode)
             {
@@ -1895,6 +1926,8 @@ namespace AasxPackageLogic
                             }
                         }
 
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+
                         if (buttonNdx == 2 && qualifiers.Count > 0)
                             qualifiers.RemoveAt(qualifiers.Count - 1);
 
@@ -1914,6 +1947,7 @@ namespace AasxPackageLogic
                     auxButtonLambda: (o) =>
                     {
                         qualifiers.Remove(qual);
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     });
 
@@ -1932,6 +1966,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             qual.semanticId = new AdminShell.SemanticId();
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -1939,27 +1974,38 @@ namespace AasxPackageLogic
                         substack, "semanticId", qual.semanticId.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: AdminShell.Key.AllElements,
-                        addEclassIrdi: true);
+                        addEclassIrdi: true,
+                        relatedReferable: relatedReferable);
                 }
 
                 AddKeyValueRef(
                     substack, "type", qual, ref qual.type, null, repo,
-                    v => { qual.type = v as string; return new AnyUiLambdaActionNone(); });
+                    v => { 
+                        qual.type = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange()); 
+                        return new AnyUiLambdaActionNone(); 
+                    });
 
                 AddKeyValueRef(
                     substack, "value", qual, ref qual.value, null, repo,
-                    v => { qual.value = v as string; return new AnyUiLambdaActionNone(); });
+                    v => { 
+                        qual.value = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone(); 
+                    });
 
                 if (SafeguardAccess(
                         substack, repo, qual.valueId, "valueId:", "Create data element!",
                         v =>
                         {
                             qual.valueId = new AdminShell.Reference();
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements);
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        relatedReferable: relatedReferable);
                 }
 
             }
@@ -2063,7 +2109,11 @@ namespace AasxPackageLogic
                             AdminShell.Key.CreateNew(
                                 AdminShell.Key.ConceptDescription, true, newcd.identification.idType,
                                 newcd.identification.id)))
+                    {
                         env.ConceptDescriptions.Add(newcd);
+
+                        this.AddDiaryEntry(newcd, new DiaryEntryStructChange(StructuralChangeReason.Create));
+                    }
                 }
             };
             worker.RunWorkerCompleted += (sender, e) =>
@@ -2168,6 +2218,85 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
+        /// Care for a pseudo-unqiue identification of the Referable.
+        /// Unique identification will be established by adding something such as "---74937434739"
+        /// Note: not in <c>AdminShell.cs</c>, as considered part of business logic.
+        /// Note: if <c>idShort</c> has content, will add unique content.
+        /// </summary>
+        /// <param name="rf">given Referable</param>
+        public void MakeNewReferableUnique(AdminShell.Referable rf)
+        {
+            // access
+            if (rf == null)
+                return;
+
+            // random add
+            var r = new Random();
+            var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
+
+            // completely blank?
+            if (rf.idShort.Trim() == "")
+            {
+                // empty!
+                rf.idShort = rf.GetElementName() + addStr;
+                return;
+            }
+
+            // already existing?
+            var p = rf.idShort.LastIndexOf("---");
+            if (p >= 0)
+            {
+                rf.idShort = rf.idShort.Substring(0, p) + addStr;
+                return;
+            }
+
+            // simply add
+            rf.idShort += addStr;
+        }
+
+        /// <summary>
+        /// Care for a pseudo-unqiue identification of the Identifiable.
+        /// Unique identification will be established by adding something such as "---74937434739"
+        /// Note: not in <c>AdminShell.cs</c>, as considered part of business logic.
+        /// Note: if <c>identification == null</c>, will create one.
+        /// Note: if <c>identification</c> has content, will add unique content.
+        /// </summary>
+        /// <param name="idf">given Identifiable</param>
+        public void MakeNewIdentifiableUnique(AdminShell.Identifiable idf)
+        {
+            // access
+            if (idf == null)
+                return;
+
+            if (idf.identification == null)
+                idf.identification = new AdminShell.Identification();
+
+            // random add
+            var r = new Random();
+            var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
+
+            // completely blank?
+            if (idf.identification.id.Trim() == "")
+            {
+                // empty!
+                idf.identification.idType = AdminShell.Key.Custom;
+                idf.identification.id = idf.GetElementName() + addStr;
+                return;
+            }
+
+            // already existing?
+            var p = idf.identification.id.LastIndexOf("---");
+            if (p >= 0)
+            {
+                idf.identification.id = idf.identification.id.Substring(0, p) + addStr;
+                return;
+            }
+
+            // simply add
+            idf.identification.id += addStr;
+        }
+
+        /// <summary>
         /// This class tries to acquire element reference information, which is used by 
         /// <c>AddDiaryEntry</c>
         /// </summary>
@@ -2221,7 +2350,8 @@ namespace AasxPackageLogic
         /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
         public void AddDiaryEntry(AdminShell.Referable rf, DiaryEntryBase de,
-            DiaryReference diaryReference = null)
+            DiaryReference diaryReference = null,
+            bool allChildrenAffected = false)
         {
             // trivial
             if (rf == null || de == null || rf.DiaryData == null)
@@ -2259,8 +2389,19 @@ namespace AasxPackageLogic
                     path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
                     value: sme.ValueAsText());
 
+                // TODO (MIHO, 2021-08-17): check if more SME types to serialize
+
                 if (sme is AdminShell.Property p)
                     evi.ValueId = p.valueId;
+
+                if (sme is AdminShell.MultiLanguageProperty mlp)
+                {
+                    evi.Value = mlp.value;
+                    evi.ValueId = mlp.valueId;
+                }
+
+                if (sme is AdminShell.Range rng)
+                    evi.Value = new[] { rng.min, rng.max };
 
                 // add 
                 AdminShell.DiaryDataDef.AddAndSetTimestamps(rf, evi, isCreate: false);

@@ -1614,7 +1614,26 @@ namespace AasxPackageLogic
             OptionExpandMode = expandMode;
             OptionLazyLoadingFirst = lazyLoadingFirst;
 
-            // many operations -> make it bulletproof
+            // quickly connect the Identifiables to the environment
+            {
+                foreach (var aas in env.AdministrationShells)
+                    if (aas != null)
+                        aas.parent = env;
+
+                foreach (var asset in env.Assets)
+                    if (asset != null)
+                        asset.parent = env;
+
+                foreach (var sm in env.Submodels)
+                    if (sm != null)
+                        sm.parent = env;
+
+                foreach (var cd in env.ConceptDescriptions)
+                    if (cd != null)
+                        cd.parent = env;
+            }
+
+            // many operations
             try
             {
                 if (editMode)

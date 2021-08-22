@@ -29,7 +29,6 @@ namespace AasxPackageExplorer
 {
     public partial class DispEditAasxEntity : UserControl
     {
-
         private PackageCentral _packages = null;
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
@@ -76,7 +75,9 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _theEntities, _helper.editMode, _helper.hintMode);
+                                _packages, _theEntities, _helper.editMode, _helper.hintMode,
+                                flyoutProvider: _displayContext?.FlyoutProvider,
+                                appEventProvider: _helper?.appEventsProvider);
                     }
 
                     // all other elements refer to superior functionality

@@ -793,7 +793,7 @@ namespace AasxPackageLogic.PackageCentral
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of AAS not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
@@ -802,7 +802,7 @@ namespace AasxPackageLogic.PackageCentral
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of Submodel not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
@@ -811,16 +811,15 @@ namespace AasxPackageLogic.PackageCentral
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of SubmodelElementCollection not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
             if (target is AdminShell.SubmodelElement sme)
             {
-                // goal
-                sme.ValueFromText(value.Value);
-                if (sme is AdminShell.Property prop && value.ValueId != null)
-                    prop.valueId = value.ValueId;
+                // use differentiated functionality
+                PackageContainerBase.UpdateSmeFromEventPayloadItem(sme, value);
+                
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.ValueUpdateSingle,
                         thisRef: sme));
                 return;

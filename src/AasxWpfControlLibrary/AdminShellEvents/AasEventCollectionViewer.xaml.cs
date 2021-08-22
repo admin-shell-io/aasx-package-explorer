@@ -145,6 +145,12 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                 return;
             cmd = cmd.ToLower().Trim();
 
+            if (cmd == "clearlist")
+            {
+                _eventStore.Clear();
+                Log.Singleton.Info("Event log cleared.");
+            }
+
             if (cmd == "copyjson" || cmd == "savejson")
             {
                 // in both cases, prepare list of events as string
@@ -217,6 +223,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
             {
                 var cm = DynamicContextMenu.CreateNew();
 
+                cm.Add(new DynamicContextItem("ClearList", "\u2205", "Clear list"));
                 cm.Add(new DynamicContextItem("CopyJson", "\u29c9", "Copy JSON"));
                 cm.Add(new DynamicContextItem("SaveJson", "\U0001f4be", "Save JSON .."));
 
