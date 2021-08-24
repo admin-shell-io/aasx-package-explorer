@@ -154,13 +154,29 @@ namespace AasxPackageLogic.PackageCentral
             var clhttp = ContainerList as PackageContainerListHttpRestBase;
             var oidc = clhttp?.OpenIdClient;
             if (oidc == null)
+            {
                 runtimeOptions?.Log?.Info("  no ContainerList available. No OpecIdClient possible!");
-            else
+                if (clhttp != null && OpenIDClient.email != "")
+                {
+                    clhttp.OpenIdClient = new OpenIdClientInstance();
+                    clhttp.OpenIdClient.email = OpenIDClient.email;
+                    oidc = clhttp.OpenIdClient;
+                }
+            }
+            if (oidc != null)
             {
                 if (oidc.token != "")
                 {
                     runtimeOptions?.Log?.Info($"  using existing bearer token.");
                     client.SetBearerToken(oidc.token);
+                }
+                else
+                {
+                    if (oidc.email != "")
+                    {
+                        runtimeOptions?.Log?.Info($"  using existing email token.");
+                        client.DefaultRequestHeaders.Add("Email", OpenIDClient.email);
+                    }
                 }
             }
 

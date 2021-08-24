@@ -65,6 +65,8 @@ namespace AasxOpenIdClient
         public static string outputDir = ".";
 
         public static bool auth = false;
+        public static string ssiURL = "";
+        public static string email = "";
         public static string token = "";
         public static async Task Run(string tag, string value, UiLambdaSet uiLambda = null)
         {

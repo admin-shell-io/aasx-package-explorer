@@ -71,6 +71,7 @@ namespace AasxOpenIdClient
         public string outputDir = ".";
 
         public string token = "";
+        public string email = "";
         public async Task Run(string tag, string value, UiLambdaSet uiLambda = null)
         {
             ServicePointManager.ServerCertificateValidationCallback =

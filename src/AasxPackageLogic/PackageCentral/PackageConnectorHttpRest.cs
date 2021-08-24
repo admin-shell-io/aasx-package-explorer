@@ -23,6 +23,7 @@ using AasxOpenIdClient;
 using AdminShellNS;
 using IdentityModel.Client;
 using Newtonsoft.Json;
+using SSIExtension;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -88,6 +89,11 @@ namespace AasxPackageLogic.PackageCentral
             _client.BaseAddress = _baseAddress;
 
             OpenIDClient.auth = endpoint.ToString().Contains("?auth");
+            if (endpoint.ToString().Contains("?ssi"))
+            {
+                string[] s = endpoint.ToString().Split('=');
+                OpenIDClient.ssiURL = s[1];
+            }
         }
 
         //
@@ -161,6 +167,9 @@ namespace AasxPackageLogic.PackageCentral
                     "valid index data!");
 
             // do the actual query
+            if (OpenIDClient.email != "")
+                _client.DefaultRequestHeaders.Add("Email", OpenIDClient.email);
+
             var response = await _client.GetAsync(StartQuery("aas", index, "core"));
             response.EnsureSuccessStatusCode();
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -260,6 +269,9 @@ namespace AasxPackageLogic.PackageCentral
                     "not enough data to build query path!");
 
             // do the actual query
+            if (OpenIDClient.email != "")
+                _client.DefaultRequestHeaders.Add("Email", OpenIDClient.email);
+
             var response = await _client.GetAsync(qst);
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
@@ -373,6 +385,30 @@ namespace AasxPackageLogic.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
+                if (OpenIDClient.ssiURL != "")
+                {
+                    Console.WriteLine("Hello SSIExtension!");
+
+                    // Prover prover = new Prover("http://192.168.178.33:5001");//AASX Package Explorer
+                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5001");//AASX Package Explorer
+                    string invitation = prover.CreateInvitation();
+
+                    Thread.Sleep(2000);//invitation goes into the IDToken Request for the OpenID Server
+
+                    // Verifier verifier = new Verifier("http://192.168.178.33:5000");//OpenId Server
+                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + "5000");//OpenId Server
+
+                    Dictionary<string, string> attributes = verifier.GetVerifiedAttributes(invitation);
+                    foreach (var item in attributes)
+                    {
+                        Console.WriteLine(item.Key + ":" + item.Value);// OpenId Server responds with verified attributes
+                        if (item.Key == "email")
+                            OpenIDClient.email = item.Value;
+                    }
+
+                    Console.WriteLine("Bye SSIExtension!");
+                }
+
                 if (OpenIDClient.auth)
                 {
                     var responseAuth = _client.GetAsync("/authserver").Result;
@@ -392,6 +428,11 @@ namespace AasxPackageLogic.PackageCentral
                 if (OpenIDClient.token != "")
                 {
                     _client.SetBearerToken(OpenIDClient.token);
+                }
+                else
+                {
+                    if (OpenIDClient.email != "")
+                        _client.DefaultRequestHeaders.Add("Email", OpenIDClient.email);
                 }
 
                 // query
@@ -836,6 +877,9 @@ namespace AasxPackageLogic.PackageCentral
             DateTime lastTS = DateTime.MinValue;
 
             // do the query
+            if (OpenIDClient.email != "")
+                _client.DefaultRequestHeaders.Add("Email", OpenIDClient.email);
+
             var response = await _client.GetAsync(_endPointSegments + qst);
             if (!response.IsSuccessStatusCode)
                 throw new PackageConnectorException($"PackageConnector::PullEvents() " +
