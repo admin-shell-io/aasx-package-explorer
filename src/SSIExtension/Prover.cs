@@ -45,7 +45,7 @@ namespace SSIExtension
             this.APIEndpoint = APIEndpoint;
         }
 
-        public string CreateInvitation()
+        public string CreateInvitation(out string info)
         {
             if (!test.withAgents)
                 return "aorzelski@phoenixcontact.com";
@@ -76,6 +76,8 @@ namespace SSIExtension
         }
 
         private Timer retryVCPresentationTimer;
+
+        private string pres_ex_id = "";
 
         private void CheckPresentVCCallback(object stopwatchstate)
         {
