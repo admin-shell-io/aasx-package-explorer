@@ -21,7 +21,7 @@ namespace SSIExtension
         public string CreateInvitation()
         {
             // oz
-            return "aorzelski@phoenixcontact.com";
+            //return "aorzelski@phoenixcontact.com";
             // oz end
 
             HttpResponseMessage result = new HttpClient().PostAsync(APIEndpoint + $"/connections/create-invitation?auto_accept=true", new StringContent("{}")).Result;
@@ -52,7 +52,9 @@ namespace SSIExtension
 
                 Console.WriteLine("VC Proof Request reveived. Try sending the VC Presentation.");
                 string allCredentialsFromAPI = httpClient.GetAsync(APIEndpoint + "/credentials").Result.Content.ReadAsStringAsync().Result;
-                string cred_id = JsonDocument.Parse(allCredentialsFromAPI).RootElement.GetProperty("results").EnumerateArray().Where(r => r.GetProperty("cred_def_id").ToString() == Utils.CRED_DEF_ID).First().GetProperty("referent").GetString();
+                JsonElement cred_json = JsonDocument.Parse(allCredentialsFromAPI).RootElement.GetProperty("results").EnumerateArray().Where(r => r.GetProperty("cred_def_id").ToString() == Utils.CRED_DEF_ID).First();
+                string cred_json_asstring = cred_json.ToString();
+                string cred_id = cred_json.GetProperty("referent").GetString();
                 Console.WriteLine($"Using VC with ID '{cred_id}' for VC Presentation");
                 string proofPresentation = Utils.CreateProofPresentation(cred_id);
                 JsonDocument.Parse(proofPresentation);
