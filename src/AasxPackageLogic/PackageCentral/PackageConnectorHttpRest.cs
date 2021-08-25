@@ -390,13 +390,13 @@ namespace AasxPackageLogic.PackageCentral
                     Console.WriteLine("Hello SSIExtension!");
 
                     // Prover prover = new Prover("http://192.168.178.33:5001");//AASX Package Explorer
-                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5001");//AASX Package Explorer
+                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5003");//AASX Package Explorer
                     string invitation = prover.CreateInvitation();
 
                     Thread.Sleep(2000);//invitation goes into the IDToken Request for the OpenID Server
 
                     // Verifier verifier = new Verifier("http://192.168.178.33:5000");//OpenId Server
-                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + "5000");//OpenId Server
+                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + ":5000");//OpenId Server
 
                     Dictionary<string, string> attributes = verifier.GetVerifiedAttributes(invitation);
                     foreach (var item in attributes)

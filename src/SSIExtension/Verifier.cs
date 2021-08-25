@@ -22,12 +22,12 @@ namespace SSIExtension
         {
             var result = new Dictionary<string, string>();
 
-            // oz
+            /* oz
             var _key = "email";
             var _value = invitation;
             result.Add(_key, _value);
             return result;
-            // end oz
+            // end oz */
 
             //receive invitation
             var clientInvitee = new HttpClient();
