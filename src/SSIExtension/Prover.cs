@@ -10,22 +10,22 @@ namespace SSIExtension
 {
     public class test
     {
-        public static bool withAgents = false;
+        public static bool withAgents = true;
     }
     public class Prover
     {
         public string APIEndpoint { get; }
         string verifier_connection_id;
 
+        public event EventHandler<string> CredentialPresented;
+
         public Prover(string APIEndpoint)
         {
             this.APIEndpoint = APIEndpoint;
         }
 
-        public string CreateInvitation(out string info)
+        public string CreateInvitation()
         {
-            info = "";
-
             if (!test.withAgents)
                 return "aorzelski@phoenixcontact.com";
 
@@ -40,13 +40,10 @@ namespace SSIExtension
             stopwatch.Start();
             retryVCPresentationTimer = new Timer(CheckPresentVCCallback, stopwatch, 1000, 1000);
 
-            info = pres_ex_id;
             return invitationForVerifier;
         }
 
         private Timer retryVCPresentationTimer;
-
-        private string pres_ex_id = "";
 
         private void CheckPresentVCCallback(object stopwatchstate)
         {
@@ -56,7 +53,7 @@ namespace SSIExtension
                 Console.WriteLine("Try checking for VC Proof Request.");
                 var httpClient = new HttpClient();
                 string records = httpClient.GetAsync(APIEndpoint + $"/present-proof-2.0/records?connection_id={verifier_connection_id}&role=prover&state=request-received").Result.Content.ReadAsStringAsync().Result;
-                pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
+                string pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
 
                 Console.WriteLine("VC Proof Request reveived. Try sending the VC Presentation.");
 
@@ -72,6 +69,7 @@ namespace SSIExtension
                     PostAsync(APIEndpoint + $"/present-proof-2.0/records/{pres_ex_id}/send-presentation", new StringContent(proofPresentation, Encoding.UTF8, "application/json")).Result;
                 if (proofPresHttpResponse.IsSuccessStatusCode)
                 {
+                    CredentialPresented?.Invoke(this, cred_json_asstring);
                     Console.WriteLine("VC Presentation send!");
                     retryVCPresentationTimer.Dispose();
                     return;
@@ -84,7 +82,7 @@ namespace SSIExtension
 
             Stopwatch stopwatch = (Stopwatch)stopwatchstate;
 
-            if (stopwatch.ElapsedMilliseconds > 30000)
+            if (stopwatch.ElapsedMilliseconds > 120000)
             {
                 Console.WriteLine("No more waiting, time exceeded without a successful termination.");
                 retryVCPresentationTimer.Dispose();
