@@ -385,19 +385,28 @@ namespace AasxPackageLogic.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
-                if (OpenIDClient.ssiURL != "")
+                if (false && OpenIDClient.ssiURL != "")
                 {
                     Console.WriteLine("Hello SSIExtension!");
 
                     // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
-                    Prover prover = new Prover(OpenIDClient.ssiURL); //AASX Package Explorer
+                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5003"); //AASX Package Explorer
+<<<<<<< HEAD
+
                     EventHandler<string> CredentialPresented = (sender, eventArgs) =>
                     {
-                        System.Windows.Forms.MessageBox.Show(eventArgs, "VC Presented", System.Windows.Forms.MessageBoxButtons.OK);
+                         System.Windows.Forms.MessageBox.Show(eventArgs, "VC Presented", System.Windows.Forms.MessageBoxButtons.OK);
                     };
                     prover.CredentialPresented += CredentialPresented;
 
                     string invitation = prover.CreateInvitation();
+                    System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
+                         System.Windows.Forms.MessageBoxButtons.OK);
+
+
+=======
+                    string info = "";
+                    string invitation = prover.CreateInvitation(out info);
 
                     System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
                          System.Windows.Forms.MessageBoxButtons.OK);
@@ -414,6 +423,25 @@ namespace AasxPackageLogic.PackageCentral
                             OpenIDClient.auth = false;
                         }
                     }
+
+                    System.Windows.Forms.MessageBox.Show(info, "SSI Info",
+                         System.Windows.Forms.MessageBoxButtons.OK);
+
+                    Thread.Sleep(2000); //invitation goes into the IDToken Request for the OpenID Server
+
+>>>>>>> c499023102f0dd54b8bbbedaa693cda6ca7126af
+                    // Verifier verifier = new Verifier("http://192.168.178.33:5000"); //OpenId Server
+                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + ":5000"); //OpenId Server
+
+                    Dictionary<string, string> attributes = verifier.GetVerifiedAttributes(invitation);
+                    foreach (var item in attributes)
+                    {
+                        Console.WriteLine(item.Key + ":" + item.Value); // OpenId Server responds with verified attributes
+                        if (item.Key == "email")
+                            OpenIDClient.email = item.Value;
+                    }
+
+                    Console.WriteLine("Bye SSIExtension!");
                 }
 
                 if (OpenIDClient.auth)

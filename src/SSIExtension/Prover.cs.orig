@@ -10,7 +10,11 @@ namespace SSIExtension
 {
     public class test
     {
+<<<<<<< HEAD
         public static bool withAgents = true;
+=======
+        public static bool withAgents = false;
+>>>>>>> c499023102f0dd54b8bbbedaa693cda6ca7126af
     }
     public class Prover
     {
@@ -24,8 +28,13 @@ namespace SSIExtension
             this.APIEndpoint = APIEndpoint;
         }
 
-        public string CreateInvitation()
+        public string CreateInvitation(out string info)
         {
+<<<<<<< HEAD
+=======
+            info = "";
+
+>>>>>>> c499023102f0dd54b8bbbedaa693cda6ca7126af
             if (!test.withAgents)
                 return "aorzelski@phoenixcontact.com";
 
@@ -40,10 +49,13 @@ namespace SSIExtension
             stopwatch.Start();
             retryVCPresentationTimer = new Timer(CheckPresentVCCallback, stopwatch, 1000, 1000);
 
+            info = pres_ex_id;
             return invitationForVerifier;
         }
 
         private Timer retryVCPresentationTimer;
+
+        private string pres_ex_id = "";
 
         private void CheckPresentVCCallback(object stopwatchstate)
         {
@@ -53,7 +65,11 @@ namespace SSIExtension
                 Console.WriteLine("Try checking for VC Proof Request.");
                 var httpClient = new HttpClient();
                 string records = httpClient.GetAsync(APIEndpoint + $"/present-proof-2.0/records?connection_id={verifier_connection_id}&role=prover&state=request-received").Result.Content.ReadAsStringAsync().Result;
+<<<<<<< HEAD
                 string pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
+=======
+                pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
+>>>>>>> c499023102f0dd54b8bbbedaa693cda6ca7126af
 
                 Console.WriteLine("VC Proof Request reveived. Try sending the VC Presentation.");
 

@@ -512,17 +512,24 @@ namespace AasxOpenIdClient
             if (ssiURL != "")
             {
                 // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
-                Prover prover = new Prover(ssiURL + ":5003"); //AASX Package Explorer
-                string info = "";
-                string invitation = prover.CreateInvitation(out info);
+                Prover prover = new Prover(ssiURL); //AASX Package Explorer
+                EventHandler<string> CredentialPresented = (sender, eventArgs) =>
+                {
+                    string text =
+                        "VC = " + eventArgs + "\n";
+                    UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "VC Presented",
+                        AnyUiMessageBoxButton.OK);
+                };
+                prover.CredentialPresented += CredentialPresented;
+
+                string invitation = prover.CreateInvitation();
 
                 token.Header.Add("ssiInvitation", invitation);
 
                 if (ssiURL != "")
                 {
                     string text =
-                        "ssiURL = " + ssiURL + "\n" +
-                        "SSI Info = " + info + "\n";
+                        "ssiURL = " + ssiURL + "\n";
                     UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "SSI Info",
                         AnyUiMessageBoxButton.OK);
                 }
@@ -531,6 +538,11 @@ namespace AasxOpenIdClient
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
+
+        private void Prover_CredentialPresented(object sender, string e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
