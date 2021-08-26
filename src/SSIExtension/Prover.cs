@@ -8,6 +8,10 @@ using System.Threading;
 
 namespace SSIExtension
 {
+    public class test
+    {
+        public static bool withAgents = false;
+    }
     public class Prover
     {
         public string APIEndpoint { get; }
@@ -18,11 +22,12 @@ namespace SSIExtension
             this.APIEndpoint = APIEndpoint;
         }
 
-        public string CreateInvitation()
+        public string CreateInvitation(out string info)
         {
-            // oz
-            //return "aorzelski@phoenixcontact.com";
-            // oz end
+            info = "";
+
+            if (!test.withAgents)
+                return "aorzelski@phoenixcontact.com";
 
             HttpResponseMessage result = new HttpClient().PostAsync(APIEndpoint + $"/connections/create-invitation?auto_accept=true", new StringContent("{}")).Result;
             var resultJson = result.Content.ReadAsStringAsync().Result;
@@ -35,10 +40,13 @@ namespace SSIExtension
             stopwatch.Start();
             retryVCPresentationTimer = new Timer(CheckPresentVCCallback, stopwatch, 1000, 1000);
 
+            info = pres_ex_id;
             return invitationForVerifier;
         }
 
         private Timer retryVCPresentationTimer;
+
+        private string pres_ex_id = "";
 
         private void CheckPresentVCCallback(object stopwatchstate)
         {
@@ -48,9 +56,10 @@ namespace SSIExtension
                 Console.WriteLine("Try checking for VC Proof Request.");
                 var httpClient = new HttpClient();
                 string records = httpClient.GetAsync(APIEndpoint + $"/present-proof-2.0/records?connection_id={verifier_connection_id}&role=prover&state=request-received").Result.Content.ReadAsStringAsync().Result;
-                var pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
+                pres_ex_id = JsonDocument.Parse(records).RootElement.GetProperty("results").EnumerateArray().First().GetProperty("pres_ex_id").GetString();
 
                 Console.WriteLine("VC Proof Request reveived. Try sending the VC Presentation.");
+
                 string allCredentialsFromAPI = httpClient.GetAsync(APIEndpoint + "/credentials").Result.Content.ReadAsStringAsync().Result;
                 JsonElement cred_json = JsonDocument.Parse(allCredentialsFromAPI).RootElement.GetProperty("results").EnumerateArray().Where(r => r.GetProperty("cred_def_id").ToString() == Utils.CRED_DEF_ID).First();
                 string cred_json_asstring = cred_json.ToString();
