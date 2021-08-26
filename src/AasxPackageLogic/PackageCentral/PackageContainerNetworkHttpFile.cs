@@ -160,6 +160,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     clhttp.OpenIdClient = new OpenIdClientInstance();
                     clhttp.OpenIdClient.email = OpenIDClient.email;
+                    clhttp.OpenIdClient.ssiURL = OpenIDClient.ssiURL;
                     oidc = clhttp.OpenIdClient;
                 }
             }
@@ -209,6 +210,8 @@ namespace AasxPackageLogic.PackageCentral
                         runtimeOptions?.Log?.Info("Creating new OpenIdClient..");
                         oidc = new OpenIdClientInstance();
                         clhttp.OpenIdClient = oidc;
+                        clhttp.OpenIdClient.email = OpenIDClient.email;
+                        clhttp.OpenIdClient.ssiURL = OpenIDClient.ssiURL;
                     }
 
                     oidc.authServer = splitResult[0];

@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SSIExtension;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -71,6 +72,7 @@ namespace AasxOpenIdClient
         public string outputDir = ".";
 
         public string token = "";
+        public string ssiURL = "";
         public string email = "";
         public async Task Run(string tag, string value, UiLambdaSet uiLambda = null)
         {
@@ -305,7 +307,8 @@ namespace AasxOpenIdClient
             Console.ResetColor();
             Console.WriteLine(clientToken + "\n");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
+            if (ssiURL == "")
+                UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
 
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -379,7 +382,10 @@ namespace AasxOpenIdClient
 
             if (credential == null)
             {
-                var res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
+                AnyUiMessageBoxResult res = AnyUiMessageBoxResult.No;
+
+                if (ssiURL == "")
+                    res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
                         "Select certificate chain from certificate store? \n" +
                         "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                         "Select certificate chain", AnyUiMessageBoxButton.YesNo);
@@ -476,8 +482,9 @@ namespace AasxOpenIdClient
                 Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate",
-                AnyUiMessageBoxButton.OK);
+            if (ssiURL == "")
+                UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate",
+                    AnyUiMessageBoxButton.OK);
 
             credential = new X509SigningCredentials(certificate);
             // oz end
@@ -502,6 +509,24 @@ namespace AasxOpenIdClient
             ;
 
             token.Header.Add("x5c", x5c);
+            if (ssiURL != "")
+            {
+                // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
+                Prover prover = new Prover(ssiURL + ":5003"); //AASX Package Explorer
+                string info = "";
+                string invitation = prover.CreateInvitation(out info);
+
+                token.Header.Add("ssiInvitation", invitation);
+
+                if (ssiURL != "")
+                {
+                    string text =
+                        "ssiURL = " + ssiURL + "\n" +
+                        "SSI Info = " + info + "\n";
+                    UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "SSI Info",
+                        AnyUiMessageBoxButton.OK);
+                }
+            }
             // oz
 
             var tokenHandler = new JwtSecurityTokenHandler();
