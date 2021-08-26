@@ -385,7 +385,7 @@ namespace AasxPackageLogic.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
-                if (OpenIDClient.ssiURL != "")
+                if (false && OpenIDClient.ssiURL != "")
                 {
                     Console.WriteLine("Hello SSIExtension!");
 
@@ -396,6 +396,20 @@ namespace AasxPackageLogic.PackageCentral
 
                     System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
                          System.Windows.Forms.MessageBoxButtons.OK);
+
+                    var responseAuth = _client.GetAsync("/authserver").Result;
+                    if (responseAuth.IsSuccessStatusCode)
+                    {
+                        var content = responseAuth.Content.ReadAsStringAsync().Result;
+                        if (content != null && content != "")
+                        {
+                            OpenIDClient.authServer = content;
+                            var response2 = await OpenIDClient.RequestTokenAsync(null);
+                            OpenIDClient.token = response2.AccessToken;
+                            OpenIDClient.auth = false;
+                        }
+                    }
+
                     System.Windows.Forms.MessageBox.Show(info, "SSI Info",
                          System.Windows.Forms.MessageBoxButtons.OK);
 

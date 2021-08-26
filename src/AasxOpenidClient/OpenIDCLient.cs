@@ -21,6 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SSIExtension;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -507,6 +508,15 @@ namespace AasxOpenIdClient
             ;
 
             token.Header.Add("x5c", x5c);
+            if (ssiURL != "")
+            {
+                // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
+                Prover prover = new Prover(ssiURL + ":5003"); //AASX Package Explorer
+                string info = "";
+                string invitation = prover.CreateInvitation(out info);
+
+                token.Header.Add("ssiInvitation", invitation);
+            }
             // oz
 
             var tokenHandler = new JwtSecurityTokenHandler();
