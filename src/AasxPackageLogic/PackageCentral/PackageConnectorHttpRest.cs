@@ -389,19 +389,25 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     Console.WriteLine("Hello SSIExtension!");
 
-                    // Prover prover = new Prover("http://192.168.178.33:5001");//AASX Package Explorer
-                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5003");//AASX Package Explorer
-                    string invitation = prover.CreateInvitation();
+                    // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
+                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5003"); //AASX Package Explorer
+                    string info = "";
+                    string invitation = prover.CreateInvitation(out info);
 
-                    Thread.Sleep(2000);//invitation goes into the IDToken Request for the OpenID Server
+                    System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
+                         System.Windows.Forms.MessageBoxButtons.OK);
+                    System.Windows.Forms.MessageBox.Show(info, "SSI Info",
+                         System.Windows.Forms.MessageBoxButtons.OK);
 
-                    // Verifier verifier = new Verifier("http://192.168.178.33:5000");//OpenId Server
-                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + ":5000");//OpenId Server
+                    Thread.Sleep(2000); //invitation goes into the IDToken Request for the OpenID Server
+
+                    // Verifier verifier = new Verifier("http://192.168.178.33:5000"); //OpenId Server
+                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + ":5000"); //OpenId Server
 
                     Dictionary<string, string> attributes = verifier.GetVerifiedAttributes(invitation);
                     foreach (var item in attributes)
                     {
-                        Console.WriteLine(item.Key + ":" + item.Value);// OpenId Server responds with verified attributes
+                        Console.WriteLine(item.Key + ":" + item.Value); // OpenId Server responds with verified attributes
                         if (item.Key == "email")
                             OpenIDClient.email = item.Value;
                     }
