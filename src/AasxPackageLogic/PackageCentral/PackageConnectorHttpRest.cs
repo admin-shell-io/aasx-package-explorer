@@ -385,36 +385,6 @@ namespace AasxPackageLogic.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
-                if (OpenIDClient.ssiURL != "")
-                {
-                    //Console.WriteLine("Hello SSIExtension!");
-
-                    // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
-                    //Prover prover = new Prover(OpenIDClient.ssiURL); //AASX Package Explorer
-                    //EventHandler<string> CredentialPresented = (sender, eventArgs) =>
-                    //{
-                    //    System.Windows.Forms.MessageBox.Show(eventArgs, "VC Presented", System.Windows.Forms.MessageBoxButtons.OK);
-                    //};
-                    //prover.CredentialPresented += CredentialPresented;
-
-                    //string invitation = prover.CreateInvitation();
-
-                    //System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
-                    //     System.Windows.Forms.MessageBoxButtons.OK);
-
-                    var responseAuth = _client.GetAsync("/authserver").Result;
-                    if (responseAuth.IsSuccessStatusCode)
-                    {
-                        var content = responseAuth.Content.ReadAsStringAsync().Result;
-                        if (content != null && content != "")
-                        {
-                            OpenIDClient.authServer = content;
-                            var response2 = await OpenIDClient.RequestTokenAsync(null);
-                            OpenIDClient.token = response2.AccessToken;
-                            OpenIDClient.auth = false;
-                        }
-                    }
-                }
 
                 if (OpenIDClient.auth)
                 {
