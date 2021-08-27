@@ -15,6 +15,9 @@ namespace SSIExtension
     public class Prover
     {
         public string APIEndpoint { get; }
+        public string cred_id { get; private set; }
+        public string cred_json_asstring { get; private set; }
+
         string verifier_connection_id;
 
         public event EventHandler<string> CredentialPresented;
@@ -40,6 +43,12 @@ namespace SSIExtension
             stopwatch.Start();
             retryVCPresentationTimer = new Timer(CheckPresentVCCallback, stopwatch, 1000, 1000);
 
+            var httpClient = new HttpClient();
+            string allCredentialsFromAPI = httpClient.GetAsync(APIEndpoint + "/credentials").Result.Content.ReadAsStringAsync().Result;
+            JsonElement cred_json = JsonDocument.Parse(allCredentialsFromAPI).RootElement.GetProperty("results").EnumerateArray().Where(r => r.GetProperty("cred_def_id").ToString() == Utils.CRED_DEF_ID).First();
+            cred_json_asstring = cred_json.ToString();
+            cred_id = cred_json.GetProperty("referent").GetString();
+
             return invitationForVerifier;
         }
 
@@ -57,10 +66,7 @@ namespace SSIExtension
 
                 Console.WriteLine("VC Proof Request reveived. Try sending the VC Presentation.");
 
-                string allCredentialsFromAPI = httpClient.GetAsync(APIEndpoint + "/credentials").Result.Content.ReadAsStringAsync().Result;
-                JsonElement cred_json = JsonDocument.Parse(allCredentialsFromAPI).RootElement.GetProperty("results").EnumerateArray().Where(r => r.GetProperty("cred_def_id").ToString() == Utils.CRED_DEF_ID).First();
-                string cred_json_asstring = cred_json.ToString();
-                string cred_id = cred_json.GetProperty("referent").GetString();
+
                 Console.WriteLine($"Using VC with ID '{cred_id}' for VC Presentation");
                 string proofPresentation = Utils.CreateProofPresentation(cred_id);
                 JsonDocument.Parse(proofPresentation);

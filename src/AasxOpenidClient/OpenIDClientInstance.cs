@@ -513,28 +513,17 @@ namespace AasxOpenIdClient
             {
                 // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
                 Prover prover = new Prover(ssiURL); //AASX Package Explorer
-                EventHandler<string> CredentialPresented = (sender, eventArgs) =>
-                {
-                    string text =
-                        "VC = " + eventArgs + "\n";
-                    UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "VC Presented",
-                        AnyUiMessageBoxButton.OK);
-                };
-                prover.CredentialPresented += CredentialPresented;
 
                 string invitation = prover.CreateInvitation();
 
                 token.Header.Add("ssiInvitation", invitation);
 
-                if (ssiURL != "")
-                {
-                    string text =
-                        "ssiURL = " + ssiURL + "\n";
-                    UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "SSI Info",
+                UiLambdaSet.MesssageBoxShow(uiLambda, "ssiURL = " + ssiURL, "", "SSI Info",
                         AnyUiMessageBoxButton.OK);
-                }
+                UiLambdaSet.MesssageBoxShow(uiLambda, "credentialInfo = " + prover.cred_json_asstring, "", "VC for Presentation",
+                        AnyUiMessageBoxButton.OK);
+
             }
-            // oz
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
