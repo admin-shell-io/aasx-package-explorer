@@ -512,25 +512,26 @@ namespace AasxOpenIdClient
             if (ssiURL != "")
             {
                 // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
-                Prover prover = new Prover(ssiURL + ":5003"); //AASX Package Explorer
-                string info = "";
-                string invitation = prover.CreateInvitation(out info);
+                Prover prover = new Prover(ssiURL); //AASX Package Explorer
+
+                string invitation = prover.CreateInvitation();
 
                 token.Header.Add("ssiInvitation", invitation);
 
-                if (ssiURL != "")
-                {
-                    string text =
-                        "ssiURL = " + ssiURL + "\n" +
-                        "SSI Info = " + info + "\n";
-                    UiLambdaSet.MesssageBoxShow(uiLambda, text, "", "SSI Info",
+                UiLambdaSet.MesssageBoxShow(uiLambda, "ssiURL = " + ssiURL, "", "SSI Info",
                         AnyUiMessageBoxButton.OK);
-                }
+                UiLambdaSet.MesssageBoxShow(uiLambda, "credentialInfo = " + prover.cred_json_asstring, "", "VC for Presentation",
+                        AnyUiMessageBoxButton.OK);
+
             }
-            // oz
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
+
+        private void Prover_CredentialPresented(object sender, string e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -385,49 +385,6 @@ namespace AasxPackageLogic.PackageCentral
             var aasItems = new List<ListAasItem>();
             try
             {
-                if (false && OpenIDClient.ssiURL != "")
-                {
-                    Console.WriteLine("Hello SSIExtension!");
-
-                    // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
-                    Prover prover = new Prover(OpenIDClient.ssiURL + ":5003"); //AASX Package Explorer
-                    string info = "";
-                    string invitation = prover.CreateInvitation(out info);
-
-                    System.Windows.Forms.MessageBox.Show(invitation, "SSI Invitation",
-                         System.Windows.Forms.MessageBoxButtons.OK);
-
-                    var responseAuth = _client.GetAsync("/authserver").Result;
-                    if (responseAuth.IsSuccessStatusCode)
-                    {
-                        var content = responseAuth.Content.ReadAsStringAsync().Result;
-                        if (content != null && content != "")
-                        {
-                            OpenIDClient.authServer = content;
-                            var response2 = await OpenIDClient.RequestTokenAsync(null);
-                            OpenIDClient.token = response2.AccessToken;
-                            OpenIDClient.auth = false;
-                        }
-                    }
-
-                    System.Windows.Forms.MessageBox.Show(info, "SSI Info",
-                         System.Windows.Forms.MessageBoxButtons.OK);
-
-                    Thread.Sleep(2000); //invitation goes into the IDToken Request for the OpenID Server
-
-                    // Verifier verifier = new Verifier("http://192.168.178.33:5000"); //OpenId Server
-                    Verifier verifier = new Verifier(OpenIDClient.ssiURL + ":5000"); //OpenId Server
-
-                    Dictionary<string, string> attributes = verifier.GetVerifiedAttributes(invitation);
-                    foreach (var item in attributes)
-                    {
-                        Console.WriteLine(item.Key + ":" + item.Value); // OpenId Server responds with verified attributes
-                        if (item.Key == "email")
-                            OpenIDClient.email = item.Value;
-                    }
-
-                    Console.WriteLine("Bye SSIExtension!");
-                }
 
                 if (OpenIDClient.auth)
                 {
