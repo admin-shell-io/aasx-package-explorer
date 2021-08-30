@@ -28,7 +28,7 @@ namespace SSIExtension
 {
     public class test
     {
-        public static bool withAgents = false;
+        public static bool withAgents = true;
     }
     public class Prover
     {
@@ -45,7 +45,7 @@ namespace SSIExtension
             this.APIEndpoint = APIEndpoint;
         }
 
-        public string CreateInvitation(out string info)
+        public string CreateInvitation()
         {
             if (!test.withAgents)
                 return "aorzelski@phoenixcontact.com";
@@ -76,8 +76,6 @@ namespace SSIExtension
         }
 
         private Timer retryVCPresentationTimer;
-
-        private string pres_ex_id = "";
 
         private void CheckPresentVCCallback(object stopwatchstate)
         {
