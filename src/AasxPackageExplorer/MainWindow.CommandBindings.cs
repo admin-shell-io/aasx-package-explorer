@@ -539,6 +539,9 @@ namespace AasxPackageExplorer
 
             if (cmd == "tdimport")
                 CommandBinding_TDImport();
+            
+            if (cmd == "submodeltdexport")
+                CommandBinding_SubmodelTDExport();
 
             if (cmd == "opcuaimportnodeset")
                 CommandBinding_OpcUaImportNodeSet();
@@ -2402,6 +2405,49 @@ namespace AasxPackageExplorer
 
             // try activate plugin
             pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel);
+        }
+
+        public void CommandBinding_SubmodelTDExport()
+        {
+            VisualElementSubmodelRef ve1 = null;
+
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Submodel Write",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+            var obj = ve1.theSubmodel;
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.FileName = "Submodel_" + obj.idShort + ".json";
+            dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+            {
+                JObject exportData =  TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
+                if (exportData["status"].ToString() == "success")
+                {
+                    RememberForInitialDirectory(dlg.FileName);
+                    using (var s = new StreamWriter(dlg.FileName))
+                    {
+                        string json = exportData["data"].ToString();
+                        // Write the function to get the TD JSON 
+                        s.WriteLine(json);
+                    }
+                }
+
+            }
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_NewSubmodelFromPlugin()

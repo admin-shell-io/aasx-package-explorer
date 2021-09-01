@@ -62,6 +62,7 @@
                     <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
                     <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
                     <RoutedUICommand x:Key="TDImport" Text="TDImport" />
+                    <RoutedUICommand x:Key="SubmodelTDExport" Text="SubmodelTDExport" />
                     <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
                     <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
                     <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
@@ -224,6 +225,7 @@
         <CommandBinding Command="{StaticResource BMEcatImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CSVImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource TDImport}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource SubmodelTDExport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportAML}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpcUaImportNodeSet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasImport}" Executed="CommandBinding_Executed"/>
@@ -366,6 +368,7 @@
                             <MenuItem Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
+                            <MenuItem Header="Export Submodel as Thing Description JSON" Command="{StaticResource SubmodelTDExport}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
 							<MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
                         </MenuItem>
