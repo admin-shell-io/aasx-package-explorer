@@ -28,7 +28,7 @@ namespace SSIExtension
 {
     public class test
     {
-        public static bool withAgents = true;
+        public static bool withAgents = false;
     }
     public class Prover
     {
