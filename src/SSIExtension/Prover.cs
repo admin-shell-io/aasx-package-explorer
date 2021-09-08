@@ -84,7 +84,7 @@ namespace SSIExtension
                 //holder finds out about presentation request and starts presenting
                 Console.WriteLine("Try checking for VC Proof Request.");
                 var httpClient = new HttpClient();
-                string records = httpClient.GetAsync(APIEndpoint + 
+                string records = httpClient.GetAsync(APIEndpoint +
                     $"/present-proof-2.0/records?connection_id=" +
                     $"{verifier_connection_id}&role=prover&state=request-received")
                     .Result.Content.ReadAsStringAsync().Result;
