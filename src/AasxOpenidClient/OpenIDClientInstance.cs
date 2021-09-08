@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -73,6 +75,7 @@ namespace AasxOpenIdClient
 
         public string token = "";
         public string ssiURL = "";
+        public string keycloak = "";
         public string email = "";
         public async Task Run(string tag, string value, UiLambdaSet uiLambda = null)
         {
@@ -282,6 +285,79 @@ namespace AasxOpenIdClient
             var handler = new HttpClientHandler();
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
             var client = new HttpClient(handler);
+
+            if (keycloak != "")
+            {
+                TokenResponse tr = null;
+                bool error = false;
+
+                string BASE_URL = keycloak;
+                string client_id = "devicegrant"; // create a client in your keycloak instance
+                string DEVICE_GRANT_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/auth/device";
+                string TOKEN_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/token";
+                string USERINFO_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/userinfo";
+                string verification_uri_complete = "";
+                string device_code = "";
+
+                HttpContent httpContent = new StringContent("client_id=" + client_id);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                var r = await client.PostAsync(DEVICE_GRANT_ENDPOINT, httpContent);
+                error = !r.IsSuccessStatusCode;
+
+                if (!error)
+                {
+                    var result = r.Content.ReadAsStringAsync().Result;
+
+                    try
+                    {
+                        var parsed = JObject.Parse(result);
+
+                        verification_uri_complete = parsed.SelectToken("verification_uri_complete").Value<string>();
+                        device_code = parsed.SelectToken("device_code").Value<string>();
+
+                        Process.Start(verification_uri_complete);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        error = true;
+                    }
+                }
+                if (!error)
+                {
+                    string parameter = "grant_type=urn:ietf:params:oauth:grant-type:device_code&" +
+                        "client_id=" + client_id + "&" +
+                        "device_code=" + device_code;
+                    string text = "Please login at " + verification_uri_complete + "\n" + parameter;
+
+                    UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", text, "Keycloak Authentication", AnyUiMessageBoxButton.OK);
+
+                    httpContent = new StringContent(parameter, Encoding.UTF8);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                    r = await client.PostAsync(TOKEN_ENDPOINT, httpContent);
+                    if (r.IsSuccessStatusCode)
+                    {
+                        var result = r.Content.ReadAsStringAsync().Result;
+
+                        try
+                        {
+                            var parsed = JObject.Parse(result);
+
+                            token = parsed.SelectToken("access_token").Value<string>();
+                            UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", token, "Access Token", AnyUiMessageBoxButton.OK);
+                        }
+                        catch (Exception ex)
+                        {
+                            error = true;
+                        }
+                    }
+                }
+                if (error)
+                    keycloak = "";
+                return tr;
+            }
 
             var disco = await client.GetDiscoveryDocumentAsync(authServer);
             if (disco.IsError) throw new Exception(disco.Error);

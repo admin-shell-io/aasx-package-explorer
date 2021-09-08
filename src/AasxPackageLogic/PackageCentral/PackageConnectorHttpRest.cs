@@ -94,6 +94,11 @@ namespace AasxPackageLogic.PackageCentral
                 string[] s = endpoint.ToString().Split('=');
                 OpenIDClient.ssiURL = s[1];
             }
+            if (endpoint.ToString().Contains("?keycloak"))
+            {
+                string[] s = endpoint.ToString().Split('=');
+                OpenIDClient.keycloak = s[1];
+            }
         }
 
         //

@@ -17,6 +17,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using AasxIntegrationBase;
 using AasxOpenIdClient;
 using AdminShellNS;
@@ -161,6 +162,7 @@ namespace AasxPackageLogic.PackageCentral
                     clhttp.OpenIdClient = new OpenIdClientInstance();
                     clhttp.OpenIdClient.email = OpenIDClient.email;
                     clhttp.OpenIdClient.ssiURL = OpenIDClient.ssiURL;
+                    clhttp.OpenIdClient.keycloak = OpenIDClient.keycloak;
                     oidc = clhttp.OpenIdClient;
                 }
             }
@@ -196,6 +198,13 @@ namespace AasxPackageLogic.PackageCentral
                     // ReSharper disable once RedundantExplicitArrayCreation
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
+                    splitResult[0] = splitResult[0].TrimEnd('/');
+                    var queryString = HttpUtility.ParseQueryString(splitResult[1]);
+                    string authType = queryString["authType"];
+                    if (authType == "keycloak")
+                    {
+                        OpenIDClient.keycloak = splitResult[0];
+                    }
 
                     if (splitResult.Length < 1)
                     {
@@ -203,7 +212,8 @@ namespace AasxPackageLogic.PackageCentral
                         break;
                     }
 
-                    runtimeOptions?.Log?.Info("Redirect to:" + splitResult[0]);
+                    runtimeOptions?.Log?.Info("Redirect to: " + splitResult[0]);
+                    runtimeOptions?.Log?.Info("AuthType: " + authType);
 
                     if (oidc == null)
                     {
@@ -212,6 +222,7 @@ namespace AasxPackageLogic.PackageCentral
                         clhttp.OpenIdClient = oidc;
                         clhttp.OpenIdClient.email = OpenIDClient.email;
                         clhttp.OpenIdClient.ssiURL = OpenIDClient.ssiURL;
+                        clhttp.OpenIdClient.keycloak = OpenIDClient.keycloak;
                     }
 
                     oidc.authServer = splitResult[0];
@@ -220,8 +231,10 @@ namespace AasxPackageLogic.PackageCentral
 
                     var response2 = await oidc.RequestTokenAsync(null,
                         GenerateUiLambdaSet(runtimeOptions));
-                    oidc.token = response2.AccessToken;
-                    client.SetBearerToken(oidc.token);
+                    if (oidc.keycloak == "" && response2 != null)
+                        oidc.token = response2.AccessToken;
+                    if (oidc.token != "" && oidc.token != null)
+                        client.SetBearerToken(oidc.token);
 
                     repeat = true;
                     continue;
