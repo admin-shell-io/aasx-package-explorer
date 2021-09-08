@@ -148,7 +148,7 @@ function PackageRelease($outputDir)
 
     MakePackage -identifier "aasx-package-explorer-small" -plugins $smallPlugins
 
-    MakePackageBlazor -identifier "BlazorUI"
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorui"
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.
