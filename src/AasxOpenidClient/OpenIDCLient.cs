@@ -511,7 +511,7 @@ namespace AasxOpenIdClient
             token.Header.Add("x5c", x5c);
             if (ssiURL != "")
             {
-                // Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
+                //// Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
                 Prover prover = new Prover(ssiURL); //AASX Package Explorer
 
                 string invitation = prover.CreateInvitation();
