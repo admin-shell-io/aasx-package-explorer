@@ -331,7 +331,8 @@ namespace AasxOpenIdClient
                         "device_code=" + device_code;
                     string text = "Please login at " + verification_uri_complete + "\n" + parameter;
 
-                    UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", text, "Keycloak Authentication", AnyUiMessageBoxButton.OK);
+                    UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", text,
+                        "Keycloak Authentication", AnyUiMessageBoxButton.OK);
 
                     httpContent = new StringContent(parameter, Encoding.UTF8);
                     httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
@@ -346,7 +347,8 @@ namespace AasxOpenIdClient
                             var parsed = JObject.Parse(result);
 
                             token = parsed.SelectToken("access_token").Value<string>();
-                            UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", token, "Access Token", AnyUiMessageBoxButton.OK);
+                            UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", token,
+                                "Access Token", AnyUiMessageBoxButton.OK);
                         }
                         catch (Exception ex)
                         {
@@ -595,10 +597,10 @@ namespace AasxOpenIdClient
                 token.Header.Add("ssiInvitation", invitation);
 
                 UiLambdaSet.MesssageBoxShow(uiLambda, "ssiURL = " + ssiURL, "", "SSI Info",
-                        AnyUiMessageBoxButton.OK);
-                UiLambdaSet.MesssageBoxShow(uiLambda, "credentialInfo = " + prover.cred_json_asstring, "", "VC for Presentation",
-                        AnyUiMessageBoxButton.OK);
-
+                    AnyUiMessageBoxButton.OK);
+                UiLambdaSet.MesssageBoxShow(uiLambda,
+                    "credentialInfo = " + prover.cred_json_asstring, "", "VC for Presentation",
+                    AnyUiMessageBoxButton.OK);
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();

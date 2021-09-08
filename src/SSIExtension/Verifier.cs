@@ -1,4 +1,20 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+Copyright (c) 2021 Phoenix Contact GmbH & Co. KG <opensource@phoenixcontact.com>
+Author: Andreas Orzelski
+
+Copyright (c) 2021 Fraunhofer IOSB-INA Lemgo, 
+    eine rechtlich nicht selbständige Einrichtung der Fraunhofer-Gesellschaft
+    zur Förderung der angewandten Forschung e.V.
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -32,12 +48,17 @@ namespace SSIExtension
 
             //receive invitation
             var clientInvitee = new HttpClient();
-            string resultInvitee = clientInvitee.PostAsync(APIEndpoint + $"/connections/receive-invitation?auto_accept=true&alias=Prover", new StringContent(invitation)).Result.Content.ReadAsStringAsync().Result;
-            var prover_connection_id = JsonDocument.Parse(resultInvitee).RootElement.GetProperty("connection_id").GetString();
+            string resultInvitee = clientInvitee.PostAsync(APIEndpoint +
+                $"/connections/receive-invitation?auto_accept=true&alias=Prover",
+                new StringContent(invitation)).Result.Content.ReadAsStringAsync().Result;
+            var prover_connection_id = JsonDocument.Parse(resultInvitee).
+                RootElement.GetProperty("connection_id").GetString();
 
             //trust ping for completion
             var clientTrustPing = new HttpClient();
-            string resultTrustPing = clientTrustPing.PostAsync(APIEndpoint + $"/connections/{prover_connection_id}/send-ping", new StringContent("{}")).Result.Content.ReadAsStringAsync().Result;
+            string resultTrustPing = clientTrustPing.PostAsync(APIEndpoint +
+                $"/connections/{prover_connection_id}/send-ping",
+                new StringContent("{}")).Result.Content.ReadAsStringAsync().Result;
             Console.WriteLine($"Invitation accepted, Provers Connection ID is '{resultInvitee}'");
             //wait a little bit so that the connection is ready
             Thread.Sleep(1000);
@@ -48,9 +69,11 @@ namespace SSIExtension
 
             var clientRequester = new HttpClient();
             HttpResponseMessage httpresult = clientRequester.
-                PostAsync(APIEndpoint + $"/present-proof-2.0/send-request", new StringContent(proofReq, Encoding.UTF8, "application/json")).Result;
+                PostAsync(APIEndpoint + $"/present-proof-2.0/send-request",
+                new StringContent(proofReq, Encoding.UTF8, "application/json")).Result;
             var resultJson = httpresult.Content.ReadAsStringAsync().Result;
-            var requester_pres_ex_id = JsonDocument.Parse(resultJson).RootElement.GetProperty("pres_ex_id").ToString();
+            var requester_pres_ex_id = JsonDocument.Parse(resultJson).
+                RootElement.GetProperty("pres_ex_id").ToString();
             Console.WriteLine($"Proof requested [{requester_pres_ex_id}]");
 
             //give prove time to respond
@@ -58,7 +81,8 @@ namespace SSIExtension
 
             //verifier verifies presentation
             HttpResponseMessage verifyPresentationResult = clientRequester.
-                PostAsync(APIEndpoint + $"/present-proof-2.0/records/{requester_pres_ex_id}/verify-presentation", null).Result;
+                PostAsync(APIEndpoint +
+                $"/present-proof-2.0/records/{requester_pres_ex_id}/verify-presentation", null).Result;
             if (verifyPresentationResult.IsSuccessStatusCode)
             {
                 var jsonDoc = JsonDocument.Parse(verifyPresentationResult.Content.ReadAsStringAsync().Result);
