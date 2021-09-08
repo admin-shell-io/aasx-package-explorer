@@ -68,7 +68,7 @@ namespace AasxPluginSmdExporter
 
                 AdminShellNS.AdminShell.Entity entity = JsonConvert.
                     DeserializeObject<AdminShellNS.AdminShell.Entity>(subEle.ToString());
-                this.SubmodelElementsAsEntity.Add(entity.idShort, entity);
+                this.SubmodelElementsAsEntity.Add(entity?.idShort, entity);
             }
         }
 

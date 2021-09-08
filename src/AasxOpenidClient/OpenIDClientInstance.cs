@@ -318,7 +318,7 @@ namespace AasxOpenIdClient
 
                         Process.Start(verification_uri_complete);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
 
                         error = true;
@@ -350,7 +350,7 @@ namespace AasxOpenIdClient
                             UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", token,
                                 "Access Token", AnyUiMessageBoxButton.OK);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             error = true;
                         }

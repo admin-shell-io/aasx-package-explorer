@@ -22,6 +22,8 @@ using System.Text.Json;
 using System.Threading;
 using static System.Text.Json.JsonElement;
 
+// ReSharper disable All .. as this is test code
+
 namespace SSIExtension
 {
 
@@ -82,7 +84,7 @@ namespace SSIExtension
             //verifier verifies presentation
             HttpResponseMessage verifyPresentationResult = clientRequester.
                 PostAsync(APIEndpoint +
-                $"/present-proof-2.0/records/{requester_pres_ex_id}/verify-presentation", null).Result;
+                    $"/present-proof-2.0/records/{requester_pres_ex_id}/verify-presentation", null).Result;
             if (verifyPresentationResult.IsSuccessStatusCode)
             {
                 var jsonDoc = JsonDocument.Parse(verifyPresentationResult.Content.ReadAsStringAsync().Result);

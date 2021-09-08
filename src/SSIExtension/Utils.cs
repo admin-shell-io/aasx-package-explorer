@@ -20,6 +20,8 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 
+// ReSharper disable All .. as this is test code
+
 namespace SSIExtension
 {
 
