@@ -2435,14 +2435,13 @@ namespace AasxPackageExplorer
             if (res == true)
             {
                 JObject exportData =  TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
+                System.IO.File.WriteAllText(@"C:\Users\pakala\Documents\IOT_AAS\samples\DR\tf.json", exportData["data"].ToString());
                 if (exportData["status"].ToString() == "success")
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     using (var s = new StreamWriter(dlg.FileName))
                     {
-                        string json = exportData["data"].ToString();
-                        // Write the function to get the TD JSON 
-                        s.WriteLine(json);
+                        s.WriteLine(exportData["data"]);
                     }
                 }
 

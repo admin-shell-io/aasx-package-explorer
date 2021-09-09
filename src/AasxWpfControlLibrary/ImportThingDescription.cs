@@ -34,22 +34,16 @@ namespace AasxPackageExplorer
         }
         
         // TD DataSchema Sub classes
-        public static Tuple<AdminShell.SubmodelElementCollection, AdminShell.QualifierCollection> BuildArraySchema( AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
+        public static AdminShell.SubmodelElementCollection BuildArraySchema( AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
         {
             AdminShell.QualifierCollection abDSQualifier = new AdminShell.QualifierCollection();
             if (jObject.ContainsKey("minItems"))
             {
-                AdminShell.Qualifier _minItems = new AdminShell.Qualifier();
-                _minItems.type = "minItems";
-                _minItems.value = jObject["minItems"].ToString();
-                abDSQualifier.Add(_minItems);
+                dsCollection.qualifiers.Add(createAASQualifier("minItems", jObject["minItems"].ToString()));
             }
             if (jObject.ContainsKey("maxItems"))
             {
-                AdminShell.Qualifier _maxItems = new AdminShell.Qualifier();
-                _maxItems.type = "maxItems";
-                _maxItems.value = jObject["maxItems"].ToString();
-                abDSQualifier.Add(_maxItems);
+                dsCollection.qualifiers.Add(createAASQualifier("maxItems", jObject["minItems"].ToString()));
             }
             if (jObject.ContainsKey("items"))
             {
@@ -61,334 +55,141 @@ namespace AasxPackageExplorer
                     {
                         string jProperty = x.ToString();
                         JObject _jObject = JObject.Parse(jProperty);
-                        AdminShell.SubmodelElementCollection item = BuildAbstractDataSchema(_jObject, "item" + (i).ToString(), "Used to define the characteristics of an array.");
+                        AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item" + (i).ToString());
                         i = i + 1;
-                        items.Add(item);
+                        _item.semanticId = createSemanticID("item");
+                        items.Add(_item);
                     }
                 }
                 else
                 {
                     string jItem = (jObject["items"]).ToString();
                     JObject _jObject = JObject.Parse(jItem);
-                    AdminShell.SubmodelElementCollection item = BuildAbstractDataSchema(_jObject, "item1", "Used to define the characteristics of an array.");
-                    items.Add(item);
+                    AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1");
+                    _item.semanticId = createSemanticID("item");
+                    items.Add(_item);
                 }
                 items.idShort = "items";
+                items.semanticId = createSemanticID("item");
                 dsCollection.Add(items);
             }
 
-            return Tuple.Create(dsCollection, abDSQualifier);
+            return dsCollection;
         }
-        public static AdminShell.QualifierCollection BuildNumberSchema(AdminShell.QualifierCollection adsQualifierCollection, JObject jObject)
+        public static AdminShell.SubmodelElementCollection BuildNumberSchema(AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
         {
             if (jObject.ContainsKey("minimum"))
             {
-                AdminShell.Qualifier _minimum = new AdminShell.Qualifier();
-                _minimum.type = "minimum";
-                _minimum.value = jObject["minimum"].ToString();
-                adsQualifierCollection.Add(_minimum);
+                dsCollection.qualifiers.Add(createAASQualifier("minimum", jObject["minimum"].ToString()));
             }
             if (jObject.ContainsKey("exclusiveMinimum"))
             {
-                AdminShell.Qualifier _exclusiveMinimum = new AdminShell.Qualifier();
-                _exclusiveMinimum.type = "maxItems";
-                _exclusiveMinimum.value = jObject["exclusiveMinimum"].ToString();
-                adsQualifierCollection.Add(_exclusiveMinimum);
+                dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", jObject["exclusiveMinimum"].ToString()));
             }
             if (jObject.ContainsKey("maximum"))
             {
-                AdminShell.Qualifier _maximum = new AdminShell.Qualifier();
-                _maximum.type = "maximum";
-                _maximum.value = jObject["maximum"].ToString();
-                adsQualifierCollection.Add(_maximum);
+                dsCollection.qualifiers.Add(createAASQualifier("maximum", jObject["maximum"].ToString()));
             }
             if (jObject.ContainsKey("exclusiveMaximum"))
             {
-                AdminShell.Qualifier _exclusiveMaximum = new AdminShell.Qualifier();
-                _exclusiveMaximum.type = "exclusiveMaximum";
-                _exclusiveMaximum.value = jObject["exclusiveMaximum"].ToString();
-                adsQualifierCollection.Add(_exclusiveMaximum);
+                dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum", jObject["exclusiveMaximum"].ToString()));
             }
             if (jObject.ContainsKey("multipleOf"))
             {
-                AdminShell.Qualifier _multipleOf = new AdminShell.Qualifier();
-                _multipleOf.type = "multipleOf";
-                _multipleOf.value = jObject["multipleOf"].ToString();
-                adsQualifierCollection.Add(_multipleOf);
+                dsCollection.qualifiers.Add(createAASQualifier("multipleOf", jObject["multipleOf"].ToString()));
             }
-            return adsQualifierCollection;
+            return dsCollection;
         }
-        public static AdminShell.QualifierCollection BuildIntegerSchema(AdminShell.QualifierCollection adsQualifierCollection, JObject jObject)
+        public static AdminShell.SubmodelElementCollection BuildIntegerSchema(AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
         {
             if (jObject.ContainsKey("minimum"))
             {
-                AdminShell.Qualifier _minimum = new AdminShell.Qualifier();
-                _minimum.type = "minimum";
-                _minimum.value = jObject["minimum"].ToString();
-                adsQualifierCollection.Add(_minimum);
+                dsCollection.qualifiers.Add(createAASQualifier("minimum", jObject["minimum"].ToString()));
             }
             if (jObject.ContainsKey("exclusiveMinimum"))
             {
-                AdminShell.Qualifier _exclusiveMinimum = new AdminShell.Qualifier();
-                _exclusiveMinimum.type = "maxItems";
-                _exclusiveMinimum.value = jObject["exclusiveMinimum"].ToString();
-                adsQualifierCollection.Add(_exclusiveMinimum);
+                dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", jObject["exclusiveMinimum"].ToString()));
             }
             if (jObject.ContainsKey("maximum"))
             {
-                AdminShell.Qualifier _maximum = new AdminShell.Qualifier();
-                _maximum.type = "maximum";
-                _maximum.value = jObject["maximum"].ToString();
-                adsQualifierCollection.Add(_maximum);
+                dsCollection.qualifiers.Add(createAASQualifier("maximum", jObject["maximum"].ToString()));
             }
             if (jObject.ContainsKey("exclusiveMaximum"))
             {
-                AdminShell.Qualifier _exclusiveMaximum = new AdminShell.Qualifier();
-                _exclusiveMaximum.type = "exclusiveMaximum";
-                _exclusiveMaximum.value = jObject["exclusiveMaximum"].ToString();
-                adsQualifierCollection.Add(_exclusiveMaximum);
+                dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum", jObject["exclusiveMaximum"].ToString()));
             }
             if (jObject.ContainsKey("multipleOf"))
             {
-                AdminShell.Qualifier _multipleOf = new AdminShell.Qualifier();
-                _multipleOf.type = "multipleOf";
-                _multipleOf.value = jObject["multipleOf"].ToString();
-                adsQualifierCollection.Add(_multipleOf);
+                dsCollection.qualifiers.Add(createAASQualifier("multipleOf", jObject["multipleOf"].ToString()));
             }
-            return adsQualifierCollection;
+            return dsCollection;
         }
-        public static AdminShell.QualifierCollection BuildStringSchema(AdminShell.QualifierCollection adsQualifierCollection, JObject jObject)
+        public static AdminShell.SubmodelElementCollection BuildStringSchema(AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
         {
             if (jObject.ContainsKey("minLength"))
             {
-                AdminShell.Qualifier _minLength = new AdminShell.Qualifier();
-                _minLength.type = "minLength";
-                _minLength.value = jObject["minLength"].ToString();
-                adsQualifierCollection.Add(_minLength);
+                dsCollection.qualifiers.Add(createAASQualifier("minLength", jObject["minLength"].ToString()));
             }
             if (jObject.ContainsKey("maxLength"))
             {
-                AdminShell.Qualifier _maxLength = new AdminShell.Qualifier();
-                _maxLength.type = "maxLength";
-                _maxLength.value = jObject["maxLength"].ToString();
-                adsQualifierCollection.Add(_maxLength);
+                dsCollection.qualifiers.Add(createAASQualifier("maxLength", jObject["maxLength"].ToString()));
             }
             if (jObject.ContainsKey("pattern"))
             {
-                AdminShell.Qualifier _pattern = new AdminShell.Qualifier();
-                _pattern.type = "pattern";
-                _pattern.value = jObject["pattern"].ToString();
-                adsQualifierCollection.Add(_pattern);
+                dsCollection.qualifiers.Add(createAASQualifier("pattern", jObject["pattern"].ToString()));
             }
             if (jObject.ContainsKey("contentEncoding"))
             {
-                AdminShell.Qualifier _contentEncoding = new AdminShell.Qualifier();
-                _contentEncoding.type = "contentEncoding";
-                _contentEncoding.value = jObject["contentEncoding"].ToString();
-                adsQualifierCollection.Add(_contentEncoding);
+                dsCollection.qualifiers.Add(createAASQualifier("contentEncoding", jObject["contentEncoding"].ToString()));
             }
             if (jObject.ContainsKey("contentMediaType"))
             {
-                AdminShell.Qualifier _contentMediaType = new AdminShell.Qualifier();
-                _contentMediaType.type = "contentMediaType";
-                _contentMediaType.value = jObject["contentMediaType"].ToString();
-                adsQualifierCollection.Add(_contentMediaType);
+                dsCollection.qualifiers.Add(createAASQualifier("contentMediaType", jObject["contentMediaType"].ToString()));
             }
-            return adsQualifierCollection;
+            return dsCollection;
         }
         public static AdminShell.SubmodelElementCollection BuildObjectSchema(AdminShell.SubmodelElementCollection dsCollection, JObject jObject)
         {
-            if (jObject.ContainsKey("properties"))
-            {
-                dsCollection.Add(BuildTDProperties(jObject));
-            }
             if (jObject.ContainsKey("required"))
             {
                 AdminShell.SubmodelElementCollection requireds = new AdminShell.SubmodelElementCollection();
                 requireds.idShort = "required";
                 requireds.AddDescription("en", "Defines which members of the object type are mandatory.");
+                requireds.qualifiers = new AdminShell.QualifierCollection();
                 int i = 1;
                 foreach (var x in jObject["required"])
                 {
-                    string jrequired = x.ToString();
-                    AdminShell.Property _required = buildaasProperty("required"+(i).ToString(), jrequired,"optionasl / mandatory");
+                    AdminShell.Qualifier _required = createAASQualifier("required", x.ToString());
+                    _required.type = "required" + i.ToString();
+                    requireds.qualifiers.Add(_required);
                     i = i + 1;
-                    requireds.Add(_required);
                 }
                 dsCollection.Add(requireds);
+            }
+            if (jObject.ContainsKey("properties"))
+            {
+                AdminShell.SubmodelElementCollection _properties = new AdminShell.SubmodelElementCollection();
+                _properties.idShort = "properties";
+                _properties.category = "PARAMETER";
+                _properties.ordered = false;
+                _properties.allowDuplicates = false;
+                _properties.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                _properties.semanticId = createSemanticID("properties");
+                _properties.qualifiers = new AdminShell.QualifierCollection();
+                JObject _propertiesVariableJobject = (JObject)jObject["properties"];
+                foreach (var x in _propertiesVariableJobject)
+                {
+                    JObject _propertyJobject = JObject.FromObject(x.Value);
+                    AdminShell.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(_propertyJobject, x.Key.ToString());
+                    _propertyC.semanticId = createSemanticID("property");
+                    _properties.Add(_propertyC);
+                }
+                dsCollection.Add(_properties);
             }
             return dsCollection;
         }
 
-        // TD DataSchema
-        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject jObject, string idShort, string description)
-        {
-            AdminShell.SubmodelElementCollection abstractDS = new AdminShell.SubmodelElementCollection();
-            abstractDS.idShort = idShort;
-            abstractDS.category = "PARAMETER";
-            abstractDS.ordered = false;
-            abstractDS.allowDuplicates = false;
-            abstractDS.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            abstractDS.AddDescription("en", description);
-            AdminShell.QualifierCollection abDSQualifier = new AdminShell.QualifierCollection();
-            if (jObject.ContainsKey("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
-                                              // requires an example
-            {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "@type";
-                _type.value = jObject["@type"].ToString();
-                abDSQualifier.Add(_type);
-            }
-            if (jObject.ContainsKey("title"))
-            {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "title";
-                _type.value = jObject["title"].ToString();
-                abDSQualifier.Add(_type);
-            }
-            if (jObject.ContainsKey("titles"))
-            {
-                JObject _titlesJObject = (JObject)jObject["titles"];
-                List<AdminShellV20.LangStr> titleList2 = new List<AdminShellV20.LangStr>();
-                foreach (var x in _titlesJObject)
-                {
-                    AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Key).ToString(), (x.Value).ToString());
-                    titleList2.Add(title);
-                }
-                AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty("titles", titleList2, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
-                abstractDS.Add(mlp);
-            }
-            if (jObject.ContainsKey("description"))
-            {
-                abstractDS.AddDescription("en", jObject["description"].ToString());
-            }
-            if (jObject.ContainsKey("descriptions"))
-            {
-                JObject _descriptionsJObject = (JObject)jObject["descriptions"];
-                foreach (var x in _descriptionsJObject)
-                {
-                    abstractDS.AddDescription((x.Key).ToString(), (x.Value).ToString());
-                }
-            }
-            if (jObject.ContainsKey("const"))
-            {
 
-            }
-            if (jObject.ContainsKey("default"))
-            {
-
-            }
-            if (jObject.ContainsKey("unit"))
-            {
-                AdminShell.Qualifier _unit = new AdminShell.Qualifier();
-                _unit.type = "unit";
-                _unit.value = jObject["unit"].ToString();
-                abDSQualifier.Add(_unit);
-            }
-            if (jObject.ContainsKey("oneOf"))
-            {
-                AdminShell.SubmodelElementCollection oneOf = new AdminShell.SubmodelElementCollection();
-                oneOf.idShort = "oneOf";
-                oneOf.category = "PARAMETER";
-                oneOf.ordered = false;
-                oneOf.allowDuplicates = false;
-                oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                oneOf.AddDescription("en", "Used to ensure that the data is valid against one of the specified schemas in the array.");
-                int i = 0;
-                foreach (JObject ds in jObject["oneOf"])
-                {
-                    i = i + 1;
-                    oneOf.Add(BuildAbstractDataSchema(ds,"oneOf" + i.ToString(), "Data Schemas"));
-                }
-                abstractDS.Add(oneOf);
-            }
-            if (jObject.ContainsKey("enum"))
-            {
-                AdminShell.SubmodelElementCollection enums = new AdminShell.SubmodelElementCollection();
-                enums.idShort = "enum";
-                enums.category = "PARAMETER";
-                enums.ordered = false;
-                enums.allowDuplicates = false;
-                enums.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                enums.AddDescription("en", "Restricted set of values provided as an array.");
-                int i = 0;
-                foreach (string ds in jObject["enum"])
-                {
-                    i = i + 1;
-                    enums.Add(buildaasProperty("enum" + i.ToString(), ds.ToString(),""));
-                }
-                abstractDS.Add(enums);
-            }
-            if (jObject.ContainsKey("readOnly"))
-            {
-                AdminShell.Qualifier _readOnly = new AdminShell.Qualifier();
-                _readOnly.type = "readOnly";
-                _readOnly.value = jObject["readOnly"].ToString();
-                abDSQualifier.Add(_readOnly);
-            }
-            if (jObject.ContainsKey("writeOnly"))
-            {
-                AdminShell.Qualifier _writeOnly = new AdminShell.Qualifier();
-                _writeOnly.type = "writeOnly";
-                _writeOnly.value = jObject["writeOnly"].ToString();
-                abDSQualifier.Add(_writeOnly);
-            }
-            if (jObject.ContainsKey("format"))
-            {
-                AdminShell.Qualifier _format = new AdminShell.Qualifier();
-                _format.type = "format";
-                _format.value = jObject["format"].ToString();
-                abDSQualifier.Add(_format);
-            }
-            if (jObject.ContainsKey("type"))
-            {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "type";
-                string dsType = jObject["type"].ToString();
-                _type.value = dsType;
-                abDSQualifier.Add(_type);
-                if (dsType == "array")
-                {
-                    AdminShell.QualifierCollection arraySchemaQualifier = new AdminShell.QualifierCollection();
-                    (abstractDS, arraySchemaQualifier) = BuildArraySchema(abstractDS, jObject);
-                    foreach (AdminShell.Qualifier asQ in arraySchemaQualifier)
-                    {
-                        abDSQualifier.Add(asQ);
-                    }
-                }
-                if (dsType == "number")
-                {
-                    abDSQualifier = BuildNumberSchema(abDSQualifier, jObject);
-                }
-                if (dsType == "integer")
-                {
-                    abDSQualifier = BuildIntegerSchema(abDSQualifier, jObject);
-                }
-                if (dsType == "string")
-                {
-                    abDSQualifier = BuildStringSchema(abDSQualifier, jObject);
-                }
-                if (dsType == "object")
-                {
-                    (abstractDS) = BuildObjectSchema(abstractDS, jObject);
-                }
-            }
-            abstractDS.qualifiers = abDSQualifier;
-            return abstractDS;
-        }
-        
-        // AAS Submodel Property
-        public static AdminShell.Property buildaasProperty(string idShort, string value, string description)
-        {
-            AdminShell.Property submodeProperty = new AdminShell.Property();
-            submodeProperty.idShort = idShort;
-            submodeProperty.value = value;
-            submodeProperty.category = "PARAMETER";
-            submodeProperty.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            submodeProperty.AddDescription("en", description);
-            return submodeProperty;
-        }
-        
         // AAS SubmodelMultiLanguage Property
         public static AdminShell.MultiLanguageProperty BuildMultiLanguageProperty(string idShort, List<AdminShellV20.LangStr> texts, string description)
         {
@@ -405,7 +206,6 @@ namespace AasxPackageExplorer
         }
         
         // TD Forms
-
         public static AdminShell.SubmodelElementCollection BuildAdditionalResponse(JObject jobject,string idshort)
         {
             AdminShell.SubmodelElementCollection arCollection = new AdminShell.SubmodelElementCollection();
@@ -415,6 +215,7 @@ namespace AasxPackageExplorer
             arCollection.allowDuplicates = false;
             arCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             arCollection.AddDescription("en", "Communication metadata describing the expected response message for additional responses.");
+            arCollection.qualifiers = new AdminShell.QualifierCollection();
             if (jobject.ContainsKey("success"))
             {
                 arCollection.AddQualifier("success", jobject["success"].ToString());
@@ -438,65 +239,56 @@ namespace AasxPackageExplorer
             tdForm.allowDuplicates = false;
             tdForm.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdForm.AddDescription("en", "Hypermedia controls that describe how an operation can be performed. Form is a  serializations of Protocol Bindings");
-            AdminShell.QualifierCollection formQualifier = new AdminShell.QualifierCollection();
+            tdForm.semanticId = createSemanticID("form");
+            tdForm.qualifiers = new AdminShell.QualifierCollection();
             List<string> formElements = new List<string> { "href", "contentType", "contentCoding", "security", "scopes", "op", "response", "additionalResponses" };
             if (jObject.ContainsKey("href"))
             {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "href";
-                _type.value = jObject["href"].ToString();
-                formQualifier.Add(_type);
+                tdForm.qualifiers.Add(createAASQualifier("href", jObject["href"].ToString()));
             }
             if (jObject.ContainsKey("contentType"))
             {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "contentType";
-                _type.value = jObject["contentType"].ToString();
-                formQualifier.Add(_type);
+                tdForm.qualifiers.Add(createAASQualifier("contentType", jObject["contentType"].ToString()));
             }
 
             if (jObject.ContainsKey("contentCoding"))
             {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "contentType";
-                _type.value = jObject["contentType"].ToString();
-                formQualifier.Add(_type);
+                tdForm.qualifiers.Add(createAASQualifier("contentCoding", jObject["contentCoding"].ToString()));
             }
             if (jObject.ContainsKey("security"))
             {
-                AdminShell.SubmodelElementCollection _security = new AdminShell.SubmodelElementCollection();
-                _security.idShort = "security";
-                _security.category = "PARAMETER";
-                _security.ordered = false;
-                _security.allowDuplicates = false;
-                _security.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                _security.AddDescription("en", "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.");
                 if ((jObject["security"].Type).ToString() == "String")
                 {
-                    AdminShell.Qualifier _securityName = new AdminShell.Qualifier();
-                    _securityName.type = "security";
-                    _securityName.value = jObject["security"].ToString();
-                    formQualifier.Add(_securityName);
+                    tdForm.qualifiers.Add(createAASQualifier("security", jObject["security"].ToString()));
                 }
                 if ((jObject["security"].Type).ToString() == "Array")
                 {
+                    AdminShell.SubmodelElementCollection _security = new AdminShell.SubmodelElementCollection();
+                    _security.idShort = "security";
+                    _security.category = "PARAMETER";
+                    _security.ordered = false;
+                    _security.allowDuplicates = false;
+                    _security.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                    _security.AddDescription("en", "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.");
+                    _security.semanticId = createSemanticID("security");
+                    _security.qualifiers = new AdminShell.QualifierCollection();
                     int index = 0;
                     foreach (var x in jObject["security"])
                     {
-                        _security.Add(buildaasProperty("security" + index.ToString(), (x).ToString(), "security definition name"));
+                        AdminShell.Qualifier _securityQualifier = createAASQualifier("security", (x).ToString());
+                        _securityQualifier.type = "security" + index.ToString();
+                        _security.qualifiers.Add(_securityQualifier);
+                        
                         index = index + 1;
                     }
+                    tdForm.Add(_security);
                 }
-                tdForm.Add(_security);
             }
             if (jObject.ContainsKey("scopes"))
             {
                 if ((jObject["scopes"].Type).ToString() == "String")
                 {
-                    AdminShell.Qualifier _securityName = new AdminShell.Qualifier();
-                    _securityName.type = "scopes";
-                    _securityName.value = jObject["scopes"].ToString();
-                    formQualifier.Add(_securityName);
+                    tdForm.qualifiers.Add(createAASQualifier("scopes", jObject["scopes"].ToString()));
                 }
                 if ((jObject["scopes"].Type).ToString() == "Array")
                 {
@@ -507,17 +299,20 @@ namespace AasxPackageExplorer
                     _scopes.allowDuplicates = false;
                     _scopes.kind = AdminShellV20.ModelingKind.CreateAsInstance();
                     _scopes.AddDescription("en", "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.");
-
+                    _scopes.semanticId = createSemanticID("scopes");
+                    _scopes.qualifiers = new AdminShell.QualifierCollection();
                     int index = 0;
                     foreach (var x in jObject["scopes"])
                     {
-                        _scopes.Add(buildaasProperty("scopes" + index.ToString(), (x).ToString(), "Authorization scope identifier"));
+                        AdminShell.Qualifier _scopeQualifier = createAASQualifier("scope", (x).ToString());
+                        _scopeQualifier.type = "scope" + index.ToString();
+                        _scopes.qualifiers.Add(_scopeQualifier);
                         index = index + 1;
                     }
                     tdForm.Add(_scopes);
                 }
             }
-            if (jObject.ContainsKey("response"))
+            if (jObject.ContainsKey("response")) // Need to check 
             {
                 AdminShell.SubmodelElementCollection _response = new AdminShell.SubmodelElementCollection();
                 _response.idShort = "response";
@@ -529,7 +324,7 @@ namespace AasxPackageExplorer
                 JObject contentTypeJObject = JObject.FromObject(jObject["response"]);
                 _response.Add(BuildTDProperty(contentTypeJObject, "contentType"));
             }
-            if (jObject.ContainsKey("additionalResponses"))
+            if (jObject.ContainsKey("additionalResponses")) // Need to check 
             {
                 AdminShell.SubmodelElementCollection _response = new AdminShell.SubmodelElementCollection();
                 _response.idShort = "additionalResponses";
@@ -558,10 +353,7 @@ namespace AasxPackageExplorer
             {
                 if ((jObject["op"].Type).ToString() == "String")
                 {
-                    AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                    _type.type = "op";
-                    _type.value = jObject["op"].ToString();
-                    formQualifier.Add(_type);
+                    tdForm.qualifiers.Add(createAASQualifier("op", jObject["op"].ToString()));
                 }
                 if ((jObject["op"].Type).ToString() == "Array")
                 {
@@ -572,11 +364,14 @@ namespace AasxPackageExplorer
                     _op.allowDuplicates = false;
                     _op.kind = AdminShellV20.ModelingKind.CreateAsInstance();
                     _op.AddDescription("en", "	Indicates the semantic intention of performing the operation(s) described by the form. For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The op attribute indicates which form is for which and allows the client to select the correct form for the operation required. op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation.");
-
+                    _op.semanticId = createSemanticID("op");
+                    _op.qualifiers = new AdminShell.QualifierCollection();
                     int index = 0;
                     foreach (var x in jObject["op"])
                     {
-                        _op.Add(buildaasProperty("op" + index.ToString(), (x).ToString(), "Semantic intention of performing the operation"));
+                        AdminShell.Qualifier _opQualifier = createAASQualifier("op", (x).ToString());
+                        _opQualifier.type = "op" + index.ToString();
+                        _op.qualifiers.Add(_opQualifier);
                         index = index + 1;
                     }
                     tdForm.Add(_op);
@@ -584,10 +379,7 @@ namespace AasxPackageExplorer
             }
             if (jObject.ContainsKey("subprotocol"))
             {
-                AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                _type.type = "subprotocol";
-                _type.value = jObject["subprotocol"].ToString();
-                formQualifier.Add(_type);
+                tdForm.qualifiers.Add(createAASQualifier("subprotocol", jObject["subprotocol"].ToString()));
             }
 
             foreach (var x in jObject)
@@ -595,17 +387,152 @@ namespace AasxPackageExplorer
                 string key = x.Key.ToString();
                 if (!formElements.Contains(key))
                 {
-                    tdForm.Add(buildaasProperty(key, (x.Value).ToString(), ""));
+                    tdForm.qualifiers.Add(createAASQualifier(key, (x).ToString()));
                 }
             }
-            tdForm.qualifiers = formQualifier;
             return tdForm;
         }
-        
-        // TD Interaction Avoidance
-        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort, string description)
+
+        // TD DataSchema
+        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject jObject, string idShort)
         {
-            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema( jObject, idShort, description);
+            AdminShell.SubmodelElementCollection abstractDS = new AdminShell.SubmodelElementCollection();
+            abstractDS.idShort = idShort;
+            abstractDS.category = "PARAMETER";
+            abstractDS.ordered = false;
+            abstractDS.allowDuplicates = false;
+            abstractDS.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            abstractDS.qualifiers = new AdminShell.QualifierCollection();
+            if (jObject.ContainsKey("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
+                                              // requires an example
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("@type", jObject["@type"].ToString()));
+            }
+            if (jObject.ContainsKey("title"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("title", jObject["title"].ToString()));
+            }
+            if (jObject.ContainsKey("titles"))
+            {
+                JObject _titlesJObject = (JObject)jObject["titles"];
+                List<AdminShellV20.LangStr> titleList2 = new List<AdminShellV20.LangStr>();
+                foreach (var x in _titlesJObject)
+                {
+                    AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Key).ToString(), (x.Value).ToString());
+                    titleList2.Add(title);
+                }
+                AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty("titles", titleList2, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
+                abstractDS.Add(mlp);
+            }
+            if (jObject.ContainsKey("description"))
+            {
+                abstractDS.AddDescription("en", jObject["description"].ToString());
+            }
+            if (jObject.ContainsKey("descriptions"))
+            {
+                JObject _descriptionsJObject = (JObject)jObject["descriptions"];
+                foreach (var x in _descriptionsJObject)
+                {
+                    abstractDS.AddDescription((x.Key).ToString(), (x.Value).ToString());
+                }
+            }
+            if (jObject.ContainsKey("const"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("const", jObject["const"].ToString()));
+            }
+            if (jObject.ContainsKey("default"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("default", jObject["default"].ToString()));
+            }
+            if (jObject.ContainsKey("unit"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("unit", jObject["unit"].ToString()));
+            }
+            if (jObject.ContainsKey("oneOf"))
+            {
+                AdminShell.SubmodelElementCollection oneOf = new AdminShell.SubmodelElementCollection();
+                oneOf.idShort = "oneOf";
+                oneOf.category = "PARAMETER";
+                oneOf.ordered = false;
+                oneOf.allowDuplicates = false;
+                oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                oneOf.AddDescription("en", "Used to ensure that the data is valid against one of the specified schemas in the array.");
+                oneOf.qualifiers = new AdminShell.QualifierCollection();
+                int i = 0;
+                foreach (JObject ds in jObject["oneOf"])
+                {
+                    i = i + 1;
+                    AdminShell.SubmodelElementCollection _oneOf = BuildAbstractDataSchema(ds, "oneOf" + i.ToString());
+                    _oneOf.semanticId = createSemanticID("oneOf");
+                    oneOf.Add(_oneOf);
+                }
+                abstractDS.Add(oneOf);
+            }
+            if (jObject.ContainsKey("enum"))
+            {
+                AdminShell.SubmodelElementCollection enums = new AdminShell.SubmodelElementCollection();
+                enums.idShort = "enum";
+                enums.category = "PARAMETER";
+                enums.ordered = false;
+                enums.allowDuplicates = false;
+                enums.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                enums.AddDescription("en", "Restricted set of values provided as an array.");
+                enums.semanticId = createSemanticID("enum");
+                enums.qualifiers = new AdminShell.QualifierCollection();
+                int i = 0;
+                foreach (string ds in jObject["enum"])
+                {
+                    i = i + 1;
+                    AdminShell.Qualifier _enum = createAASQualifier("enum", ds.ToString());
+                    _enum.type = "enum" + i.ToString();
+                    enums.qualifiers.Add(_enum);
+                }
+                abstractDS.Add(enums);
+            }
+            if (jObject.ContainsKey("readOnly"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("readOnly", jObject["readOnly"].ToString()));
+            }
+            if (jObject.ContainsKey("writeOnly"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("writeOnly", jObject["writeOnly"].ToString()));
+            }
+            if (jObject.ContainsKey("format"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("format", jObject["format"].ToString()));
+            }
+            if (jObject.ContainsKey("type"))
+            {
+                abstractDS.qualifiers.Add(createAASQualifier("type", jObject["type"].ToString()));
+                string dsType = jObject["type"].ToString();
+                if (dsType == "array")
+                {
+                    abstractDS = BuildArraySchema(abstractDS, jObject);
+                }
+                if (dsType == "number")
+                {
+                    abstractDS = BuildNumberSchema(abstractDS, jObject);
+                }
+                if (dsType == "integer")
+                {
+                    abstractDS = BuildIntegerSchema(abstractDS, jObject);
+                }
+                if (dsType == "string")
+                {
+                    abstractDS = BuildStringSchema(abstractDS, jObject);
+                }
+                if (dsType == "object")
+                {
+                    (abstractDS) = BuildObjectSchema(abstractDS, jObject);
+                }
+            }
+            return abstractDS;
+        }
+
+        // TD Interaction Avoidance
+        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort)
+        {
+            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema( jObject, idShort);
             if (jObject.ContainsKey("uriVariables"))
             {
                       AdminShell.SubmodelElementCollection _uriVariables = new AdminShell.SubmodelElementCollection();
@@ -614,12 +541,15 @@ namespace AasxPackageExplorer
                       _uriVariables.ordered = false;
                       _uriVariables.allowDuplicates = false;
                       _uriVariables.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                      _uriVariables.AddDescription("en", "Used to ensure that the data is valid against one of the specified schemas in the array.");
+                      _uriVariables.semanticId = createSemanticID("uriVariables");
+                      _uriVariables.qualifiers = new AdminShell.QualifierCollection();
                       JObject _uriVariablesJObject = (JObject)jObject["uriVariables"];
                       foreach (var x in _uriVariablesJObject)
                       {
                           JObject _uriVariable = JObject.FromObject(x.Value);
-                          _uriVariables.value.Add(BuildAbstractDataSchema(_uriVariable, x.Key.ToString(), "	Define URI query template variables as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema."));
+                          AdminShell.SubmodelElementCollection _uriVariableC = BuildAbstractDataSchema(_uriVariable, x.Key.ToString());
+                          _uriVariableC.semanticId = createSemanticID("uriVariable");
+                          _uriVariables.Add(_uriVariableC);
                       }
                 _interactionAffordance.Add(_uriVariables);
             }
@@ -632,11 +562,13 @@ namespace AasxPackageExplorer
                 forms.allowDuplicates = false;
                 forms.kind = AdminShellV20.ModelingKind.CreateAsInstance();
                 forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings");
+                forms.semanticId = createSemanticID("forms");
+                forms.qualifiers = new AdminShell.QualifierCollection();
                 int i = 0;
                 foreach (JObject ds in jObject["forms"])
                 {
                     i = i + 1;
-                    forms.Add(BuildTDForm(ds,"Form"+i.ToString()));
+                    forms.Add(BuildTDForm(ds, "form" + i.ToString()));
                 }
                 _interactionAffordance.Add(forms);
             }
@@ -646,10 +578,11 @@ namespace AasxPackageExplorer
         // TD Properties
         public static AdminShell.SubmodelElementCollection BuildTDProperty(JObject _propertyJObject, string propertyName)
         {
-            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName, "An Interaction Affordance that exposes state of the Thing");
+            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName);
+            _tdProperty.semanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
             {
-                _tdProperty.Add(buildaasProperty("observable", (_propertyJObject["observable"]).ToString(), "A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the observeproperty and unobserveproperty operations for this Property."));
+                _tdProperty.qualifiers.Add(createAASQualifier("observable", (_propertyJObject["observable"]).ToString()));
             }
             return _tdProperty;
         }
@@ -662,8 +595,10 @@ namespace AasxPackageExplorer
             tdProperties.allowDuplicates = false;
             tdProperties.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdProperties.AddDescription("en", "Properties definion of the thing Description");
+            tdProperties.semanticId = createSemanticID("properties");
             string _jProperty = (jObject["properties"]).ToString();
             JObject temp = JObject.Parse(_jProperty);
+            tdProperties.qualifiers = new AdminShell.QualifierCollection();
             foreach (var x1 in temp)
             {
                 string jProperty = (x1.Value).ToString();
@@ -676,21 +611,28 @@ namespace AasxPackageExplorer
         // TD Events
         public static AdminShell.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName, "An Interaction Affordance that exposes state of the Thing");
+            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName);
+            _tdEvent.semanticId = createSemanticID("event");
             if (_eventJObject.ContainsKey("subscription"))
             {
                 JObject _subscriptiontDS = JObject.Parse((_eventJObject["subscription"]).ToString());
-                _tdEvent.Add(BuildAbstractDataSchema(_subscriptiontDS, "subscription", "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."));
+                AdminShell.SubmodelElementCollection _subscription = BuildAbstractDataSchema(_subscriptiontDS, "subscription");
+                _subscription.semanticId = createSemanticID("subscription");
+                _tdEvent.Add(_subscription);
             }
             if (_eventJObject.ContainsKey("data"))
             {
                 JObject _dataDS = JObject.Parse((_eventJObject["data"]).ToString());
-                _tdEvent.Add(BuildAbstractDataSchema(_dataDS, "data", "Defines the data schema of the Event instance messages pushed by the Thing."));
+                AdminShell.SubmodelElementCollection _data = (BuildAbstractDataSchema(_dataDS, "data"));
+                _data.semanticId = createSemanticID("subscription");
+                _tdEvent.Add(_data);
             }
             if (_eventJObject.ContainsKey("cancellation"))
             {
                 JObject cancellationDS = JObject.Parse((_eventJObject["cancellation"]).ToString());
-                _tdEvent.Add(BuildAbstractDataSchema(cancellationDS, "cancellation", "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook."));
+                AdminShell.SubmodelElementCollection _cancellation = (BuildAbstractDataSchema(cancellationDS, "cancellation"));
+                _cancellation.semanticId = createSemanticID("cancellation");
+                _tdEvent.Add(_cancellation);
             }
             return _tdEvent;
         }
@@ -703,8 +645,10 @@ namespace AasxPackageExplorer
             tdEvents.allowDuplicates = false;
             tdEvents.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdEvents.AddDescription("en", "All Event-based Interaction Affordances of the Thing.");
+            tdEvents.semanticId = createSemanticID("events");
             string _jProperty = (jObject["events"]).ToString();
             JObject temp = JObject.Parse(_jProperty);
+            tdEvents.qualifiers = new AdminShell.QualifierCollection();
             foreach (var x1 in temp)
             {
                 string jProperty = (x1.Value).ToString();
@@ -724,6 +668,8 @@ namespace AasxPackageExplorer
             tdActions.allowDuplicates = false;
             tdActions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdActions.AddDescription("en", "All Action-based Interaction Affordances of the Thing.");
+            tdActions.semanticId = createSemanticID("actions");
+            tdActions.qualifiers = new AdminShell.QualifierCollection();
             JObject temp = JObject.FromObject(jObject["actions"]);
             foreach (var x1 in temp)
             {
@@ -735,48 +681,64 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName, "An Interaction Affordance that exposes state of the Thing");
+            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName);
+            _tdAction.semanticId = createSemanticID("action");
             if (_actionJObject.ContainsKey("input"))
             {
                 JObject _inputDS = JObject.Parse((_actionJObject["input"]).ToString());
-                _tdAction.Add(BuildAbstractDataSchema(_inputDS, "input", "Used to define the input data schema of the Action."));
+                AdminShell.SubmodelElementCollection _input = BuildAbstractDataSchema(_inputDS, "input");
+                _input.semanticId = createSemanticID("input");
+                _tdAction.Add(_input);
             }
             if (_actionJObject.ContainsKey("output"))
             {
                 JObject _outputDS = JObject.Parse((_actionJObject["output"]).ToString());
-                _tdAction.Add(BuildAbstractDataSchema(_outputDS, "output", "Used to define the output data schema of the Action."));
+                AdminShell.SubmodelElementCollection _output = (BuildAbstractDataSchema(_outputDS, "output"));
+                _output.semanticId = createSemanticID("output");
+                _tdAction.Add(_output);
             }
             if (_actionJObject.ContainsKey("safe"))
             {
-                _tdAction.AddQualifier("safe", _actionJObject["safe"].ToString());
+                _tdAction.qualifiers.Add(createAASQualifier("safe", _actionJObject["safe"].ToString()));
             }
             if (_actionJObject.ContainsKey("idempotent"))
             {
-                _tdAction.AddQualifier("idempotent", _actionJObject["idempotent"].ToString());
+                _tdAction.qualifiers.Add(createAASQualifier("idempotent", _actionJObject["idempotent"].ToString()));
             }
             return _tdAction;
         }
-
+       
         // TD Links
-        public static AdminShell.Property BuildTDLink(JObject linkJObject,string index)
+        public static AdminShell.SubmodelElementCollection BuildTDLink(JObject linkJObject,string idShort)
         {
-            AdminShell.Property _tdLink = buildaasProperty("link" + index, linkJObject["href"].ToString(), "A link can be viewed as a statement of the form link context has a relation type resource at link target, where the optional target attributes may further describe the resource");
-            AdminShell.QualifierCollection tdQualifier = new AdminShell.QualifierCollection();
+            AdminShell.SubmodelElementCollection _tdLink = new AdminShell.SubmodelElementCollection();
+            _tdLink.idShort = idShort;
+            _tdLink.category = "PARAMETER";
+            _tdLink.ordered = false;
+            _tdLink.allowDuplicates = false;
+            _tdLink.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _tdLink.AddDescription("en", "A link can be viewed as a statement of the form link context has a relation type resource at link target, where the optional target attributes may further describe the resource");
+            _tdLink.semanticId = createSemanticID("link");
+            _tdLink.qualifiers = new AdminShell.QualifierCollection();
+            if (linkJObject.ContainsKey("href"))
+            {
+                _tdLink.qualifiers.Add(createAASQualifier("href", linkJObject["href"].ToString()));
+            }
             if (linkJObject.ContainsKey("type"))
             {
-                _tdLink.AddQualifier("type", linkJObject["type"].ToString());
+                _tdLink.qualifiers.Add(createAASQualifier("type", linkJObject["type"].ToString()));
             }
             if (linkJObject.ContainsKey("rel"))
             {
-                _tdLink.AddQualifier("rel", linkJObject["rel"].ToString());
+                _tdLink.qualifiers.Add(createAASQualifier("rel", linkJObject["rel"].ToString()));
             }
             if (linkJObject.ContainsKey("anchor"))
             {
-                _tdLink.AddQualifier("anchor", linkJObject["anchor"].ToString());
+                _tdLink.qualifiers.Add(createAASQualifier("anchor", linkJObject["anchor"].ToString()));
             }
             if (linkJObject.ContainsKey("sizes"))
             {
-                _tdLink.AddQualifier("sizes", linkJObject["sizes"].ToString());
+                _tdLink.qualifiers.Add(createAASQualifier("sizes", linkJObject["sizes"].ToString()));
             }
             return _tdLink;
         }
@@ -789,10 +751,12 @@ namespace AasxPackageExplorer
             tdLinks.allowDuplicates = false;
             tdLinks.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdLinks.AddDescription("en", "	Provides Web links to arbitrary resources that relate to the specified Thing Description.");
+            tdLinks.semanticId = createSemanticID("links");
+            tdLinks.qualifiers = new AdminShell.QualifierCollection();
             int index = 1;
-            foreach (JObject ds in jObject["link"])
+            foreach (JObject ds in jObject["links"])
             {
-                tdLinks.Add(BuildTDLink(ds,index.ToString()));
+                tdLinks.Add(BuildTDLink(ds,"link"+index.ToString()));
                 index = index + 1;
             }
             return tdLinks;
@@ -807,10 +771,11 @@ namespace AasxPackageExplorer
             _securityDefinition.ordered = false;
             _securityDefinition.allowDuplicates = false;
             _securityDefinition.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _securityDefinition.qualifiers = new AdminShell.QualifierCollection();
             if (jObject.ContainsKey("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
                                               // requires an example
             {
-                _securityDefinition.AddQualifier("@type", jObject["@type"].ToString());
+                _securityDefinition.qualifiers.Add(createAASQualifier("@type", jObject["@type"].ToString()));
             }
             if (jObject.ContainsKey("description"))
             {
@@ -826,158 +791,184 @@ namespace AasxPackageExplorer
             }
             if (jObject.ContainsKey("proxy")) 
             {
-                _securityDefinition.AddQualifier("proxy", jObject["proxy"].ToString());
+                _securityDefinition.qualifiers.Add(createAASQualifier("proxy", jObject["proxy"].ToString()));
             }
             if (jObject.ContainsKey("scheme"))
             {
                 string scheme = jObject["scheme"].ToString();
-                _securityDefinition.AddQualifier("scheme", scheme);
+                _securityDefinition.qualifiers.Add(createAASQualifier("scheme", scheme));
                 if (scheme == "combo")
                 {
                     if (jObject.ContainsKey("oneOf"))
                     {
-                        AdminShell.SubmodelElementCollection _oneOf = new AdminShell.SubmodelElementCollection();
-                        _oneOf.idShort = "oneOf";
-                        _oneOf.category = "PARAMETER";
-                        _oneOf.ordered = false;
-                        _oneOf.allowDuplicates = false;
-                        _oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        _oneOf.AddDescription("en", "	Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access. Only one may be chosen for use.");
                         if ((jObject["oneOf"].Type).ToString() == "String")
                         {
-                            _oneOf.Add(buildaasProperty("oneOf", (jObject["oneOf"]).ToString(), "Named security scheme"));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", (jObject["oneOf"]).ToString()));
                         }
                         if ((jObject["oneOf"].Type).ToString() == "Array")
                         {
+                            AdminShell.SubmodelElementCollection _oneOf = new AdminShell.SubmodelElementCollection();
+                            _oneOf.idShort = "oneOf";
+                            _oneOf.category = "PARAMETER";
+                            _oneOf.ordered = false;
+                            _oneOf.allowDuplicates = false;
+                            _oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _oneOf.AddDescription("en", "	Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access. Only one may be chosen for use.");
+                            _oneOf.semanticId = createSemanticID("oneOf");
                             int index = 1;
+                            _oneOf.qualifiers = new AdminShell.QualifierCollection();
                             foreach (var x in jObject["oneOf"])
                             {
-                                _oneOf.Add(buildaasProperty("oneOf" + (index).ToString(), (x).ToString(), "Named security scheme"));
+                                _oneOf.qualifiers.Add(createAASQualifier("oneOf" + (index).ToString(), (x).ToString()));
                                 index = index + 1;
                             }
+                            _securityDefinition.Add(_oneOf);
                         }
                     }
                     if (jObject.ContainsKey("allOf"))
                     {
-                        AdminShell.SubmodelElementCollection _allOf = new AdminShell.SubmodelElementCollection();
-                        _allOf.idShort = "oneOf";
-                        _allOf.category = "PARAMETER";
-                        _allOf.ordered = false;
-                        _allOf.allowDuplicates = false;
-                        _allOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        _allOf.AddDescription("en", "	Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.");
                         if ((jObject["allOf"].Type).ToString() == "String")
                         {
-                            _allOf.Add(buildaasProperty("allOf", (jObject["allOf"]).ToString(), "Named security scheme"));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", (jObject["allOf"]).ToString()));
                         }
-                        if ((jObject["oneOf"].Type).ToString() == "Array")
+                        if ((jObject["allOf"].Type).ToString() == "Array")
                         {
+                            AdminShell.SubmodelElementCollection _allOf = new AdminShell.SubmodelElementCollection();
+                            _allOf.idShort = "oneOf";
+                            _allOf.category = "PARAMETER";
+                            _allOf.ordered = false;
+                            _allOf.allowDuplicates = false;
+                            _allOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _allOf.AddDescription("en", "Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.");
+                            _allOf.semanticId = createSemanticID("allOf");
                             int index = 1;
+                            _allOf.qualifiers = new AdminShell.QualifierCollection();
                             foreach (var x in jObject["allOf"])
                             {
-                                _allOf.Add(buildaasProperty("allOf" + (index).ToString(), (x).ToString(), "Named security scheme"));
+                                _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(), (x).ToString()));
                                 index = index + 1;
                             }
                         }
                     }
+                    _securityDefinition.semanticId = createSemanticID("combo");
                 }
                 if (scheme =="basic" || scheme == "apikey")
                 {
                     if (jObject.ContainsKey("name"))
                     {
-                        _securityDefinition.AddQualifier("name", jObject["name"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("name", jObject["name"].ToString()));
                     }
                     if (jObject.ContainsKey("in"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["in"].ToString());
-                    }   
+                        _securityDefinition.qualifiers.Add(createAASQualifier("in", jObject["in"].ToString()));
+                    }
+                    if (scheme == "basic")
+                    {
+                        _securityDefinition.semanticId = createSemanticID("basic");
+                    }
+                    if (scheme == "apikey")
+                    {
+                        _securityDefinition.semanticId = createSemanticID("apikey");
+                    }
+                    
                 }
                 if (scheme == "digest")
                 {
                     if (jObject.ContainsKey("name"))
                     {
-                        _securityDefinition.AddQualifier("name", jObject["name"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("name", jObject["name"].ToString()));
                     }
                     if (jObject.ContainsKey("in"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["in"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("in", jObject["in"].ToString()));
                     }
                     if (jObject.ContainsKey("qop"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["qop"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("qop", jObject["qop"].ToString()));
                     }
+                    _securityDefinition.semanticId = createSemanticID("digest");
                 }
                 if (scheme == "bearer")
                 {
                     if (jObject.ContainsKey("name"))
                     {
-                        _securityDefinition.AddQualifier("name", jObject["name"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("name", jObject["name"].ToString()));
                     }
                     if (jObject.ContainsKey("in"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["in"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("in", jObject["in"].ToString()));
                     }
                     if (jObject.ContainsKey("authorization"))
                     {
-                        _securityDefinition.AddQualifier("authorization", jObject["authorization"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization", jObject["authorization"].ToString()));
                     }
                     if (jObject.ContainsKey("alg"))
                     {
-                        _securityDefinition.AddQualifier("alg", jObject["alg"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("alg", jObject["alg"].ToString()));
                     }
                     if (jObject.ContainsKey("format"))
                     {
-                        _securityDefinition.AddQualifier("format", jObject["format"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("format", jObject["format"].ToString()));
                     }
+                    _securityDefinition.semanticId = createSemanticID("bearer");
                 }
-                if (scheme == "psk")
+                if (scheme == "nosec")
+                {
+                    _securityDefinition.semanticId = createSemanticID("nosec");
+                }
+                    if (scheme == "psk")
                 {
                     if (jObject.ContainsKey("identity"))
                     {
-                        _securityDefinition.AddQualifier("identity", jObject["identity"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("identity", jObject["identity"].ToString()));
                     }
+                    _securityDefinition.semanticId = createSemanticID("psk");
                 }
                 if (scheme == "oauth2")
                 {
                     if (jObject.ContainsKey("authorization"))
                     {
-                        _securityDefinition.AddQualifier("authorization", jObject["authorization"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization", jObject["authorization"].ToString()));
                     }
                     if (jObject.ContainsKey("token"))
                     {
-                        _securityDefinition.AddQualifier("token", jObject["token"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("token", jObject["token"].ToString()));
                     }
                     if (jObject.ContainsKey("refresh"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["refresh"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("refresh", jObject["refresh"].ToString()));
                     }
                     if (jObject.ContainsKey("flow"))
                     {
-                        _securityDefinition.AddQualifier("in", jObject["flow"].ToString());
+                        _securityDefinition.qualifiers.Add(createAASQualifier("flow", jObject["flow"].ToString()));
                     }
                     if (jObject.ContainsKey("scopes"))
                     {
-                        AdminShell.SubmodelElementCollection _oneOf = new AdminShell.SubmodelElementCollection();
-                        _oneOf.idShort = "scopes";
-                        _oneOf.category = "PARAMETER";
-                        _oneOf.ordered = false;
-                        _oneOf.allowDuplicates = false;
-                        _oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        _oneOf.AddDescription("en", "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.");
                         if ((jObject["scopes"].Type).ToString() == "String")
                         {
-                            _oneOf.Add(buildaasProperty("scopes", (jObject["scopes"]).ToString(), "Named security scheme"));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("scopes", (jObject["scopes"]).ToString()));
                         }
                         if ((jObject["scopes"].Type).ToString() == "Array")
                         {
+                            AdminShell.SubmodelElementCollection _scopes = new AdminShell.SubmodelElementCollection();
+                            _scopes.idShort = "scopes";
+                            _scopes.category = "PARAMETER";
+                            _scopes.ordered = false;
+                            _scopes.allowDuplicates = false;
+                            _scopes.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _scopes.AddDescription("en", "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.");
+                            _scopes.semanticId = createSemanticID("scopes");
+                            _scopes.qualifiers = new AdminShell.QualifierCollection();
                             int index = 1;
                             foreach (var x in jObject["scopes"])
                             {
-                                _oneOf.Add(buildaasProperty("scopes" + (index).ToString(), (x).ToString(), "OAuth Scope Indetifiers"));
+                                _scopes.qualifiers.Add(createAASQualifier("scopes" + (index).ToString(), (x).ToString()));
                                 index = index + 1;
                             }
+                            _securityDefinition.Add(_scopes);
                         }
                     }
+                    _securityDefinition.semanticId = createSemanticID("oauth2");
                 }
             }
             return _securityDefinition;
@@ -991,6 +982,8 @@ namespace AasxPackageExplorer
             _securityDefinitions.allowDuplicates = false;
             _securityDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             _securityDefinitions.AddDescription("en", "Set of named security configurations (definitions only). Not actually applied unless names are used in a security name-value pair.");
+            _securityDefinitions.semanticId = createSemanticID("securityDefinitions");
+            _securityDefinitions.qualifiers = new AdminShell.QualifierCollection();
             string _jProperty = (jObject["securityDefinitions"]).ToString();
             JObject temp = JObject.Parse(_jProperty);
             foreach (var x1 in temp)
@@ -1002,6 +995,32 @@ namespace AasxPackageExplorer
             return _securityDefinitions;
         }
 
+        // AAS Semantic ID
+        public static AdminShell.SemanticId createSemanticID(string tdType)
+        {
+            AdminShell.Key tdSemanticKey = new AdminShell.Key();
+            tdSemanticKey.type = "GlobalReference";
+            tdSemanticKey.local = true;
+            tdSemanticKey.idType = "IRI";
+            tdSemanticKey.value = TDSemanticId.getSemanticID(tdType);
+            AdminShell.SemanticId tdSemanticId = new AdminShell.SemanticId(tdSemanticKey);
+
+            return tdSemanticId;
+        }
+        
+        // AAS Qualifier
+        public static AdminShell.Qualifier createAASQualifier(string qualifierType, string qualifierValue)
+        {
+            AdminShell.Qualifier aasQualifier = new AdminShell.Qualifier();
+            aasQualifier.type = qualifierType;
+            aasQualifier.value = qualifierValue;
+            if (TDSemanticId.getSemanticID(qualifierType) != "empty")
+             {
+                aasQualifier.semanticId = createSemanticID(qualifierType);
+            }
+            return aasQualifier;
+        }
+        
         public static JObject ImportTDJsontoSubModel(
             string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
@@ -1018,18 +1037,14 @@ namespace AasxPackageExplorer
                 }
                 else
                 {
-                    
-                    AdminShell.QualifierCollection tdQualifier = new AdminShell.QualifierCollection();
+                    sm.qualifiers = new AdminShell.QualifierCollection();
                     if (tdJObject.ContainsKey("@context"))
                     {
                         // Need to check with @context
                     }
                     if (tdJObject.ContainsKey("@type"))
                     {
-                        AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                        _type.type = "@type";
-                        _type.value = tdJObject["@type"].ToString();
-                        tdQualifier.Add(_type);
+                        sm.qualifiers.Add(createAASQualifier("@type", tdJObject["@type"].ToString()));
                     }
                     if (tdJObject.ContainsKey("id"))
                     {
@@ -1040,10 +1055,7 @@ namespace AasxPackageExplorer
                     }
                     if (tdJObject.ContainsKey("title"))
                     {
-                        AdminShell.Qualifier _type = new AdminShell.Qualifier();
-                        _type.type = "title";
-                        _type.value = tdJObject["title"].ToString();
-                        tdQualifier.Add(_type);
+                        sm.qualifiers.Add(createAASQualifier("title", tdJObject["title"].ToString()));
                     }
                     if (tdJObject.ContainsKey("titles"))
                     {
@@ -1084,31 +1096,19 @@ namespace AasxPackageExplorer
                     }
                     if (tdJObject.ContainsKey("created"))
                     {
-                        AdminShell.Qualifier _created = new AdminShell.Qualifier();
-                        _created.type = "created";
-                        _created.value = tdJObject["created"].ToString();
-                        tdQualifier.Add(_created);
+                        sm.qualifiers.Add(createAASQualifier("created", tdJObject["created"].ToString()));
                     }
                     if (tdJObject.ContainsKey("modified"))
                     {
-                        AdminShell.Qualifier _modified = new AdminShell.Qualifier();
-                        _modified.type = "modified";
-                        _modified.value = tdJObject["modified"].ToString();
-                        tdQualifier.Add(_modified);
+                        sm.qualifiers.Add(createAASQualifier("modified", tdJObject["modified"].ToString()));
                     }
                     if (tdJObject.ContainsKey("support"))
                     {
-                        AdminShell.Qualifier _support = new AdminShell.Qualifier();
-                        _support.type = "support";
-                        _support.value = tdJObject["support"].ToString();
-                        tdQualifier.Add(_support);
+                        sm.qualifiers.Add(createAASQualifier("support", tdJObject["support"].ToString()));
                     }
                     if (tdJObject.ContainsKey("base"))
                     {
-                        AdminShell.Qualifier _base = new AdminShell.Qualifier();
-                        _base.type = "base";
-                        _base.value = tdJObject["base"].ToString();
-                        tdQualifier.Add(_base);
+                        sm.qualifiers.Add(createAASQualifier("base", tdJObject["base"].ToString()));
                     }
                     if (tdJObject.ContainsKey("properties"))
                     {
@@ -1138,6 +1138,7 @@ namespace AasxPackageExplorer
                         forms.ordered = false;
                         forms.allowDuplicates = false;
                         forms.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                        forms.qualifiers = new AdminShell.QualifierCollection();
                         forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings");
                         int i = 0;
                         foreach (JObject ds in tdJObject["forms"])
@@ -1148,27 +1149,31 @@ namespace AasxPackageExplorer
                     }
                     if (tdJObject.ContainsKey("security"))
                     {
-                        AdminShell.SubmodelElementCollection _security = new AdminShell.SubmodelElementCollection();
-                        _security.idShort = "security";
-                        _security.category = "PARAMETER";
-                        _security.ordered = false;
-                        _security.allowDuplicates = false;
-                        _security.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        _security.AddDescription("en", "security definition names");
                         if ((tdJObject["security"].Type).ToString() == "String")
                         {
-                            _security.Add(buildaasProperty("security", (tdJObject["security"]).ToString(), "security definition name"));
+                            sm.qualifiers.Add(createAASQualifier("security", tdJObject["security"].ToString()));
                         }
                         if ((tdJObject["security"].Type).ToString() == "Array")
                         {
+                            AdminShell.SubmodelElementCollection _security = new AdminShell.SubmodelElementCollection();
+                            _security.idShort = "security";
+                            _security.category = "PARAMETER";
+                            _security.ordered = false;
+                            _security.allowDuplicates = false;
+                            _security.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _security.AddDescription("en", "security definition names");
+                            _security.semanticId = createSemanticID("security");
+                            _security.qualifiers = new AdminShell.QualifierCollection();
                             int index = 1;
                             foreach (var x in tdJObject["security"])
                             {
-                                _security.Add(buildaasProperty("security"+(index).ToString(), (x).ToString(), "security definition name"));
+                                AdminShell.Qualifier securityQual = createAASQualifier("security", (x).ToString());
+                                securityQual.type = "security" + index.ToString();
+                                _security.qualifiers.Add(securityQual);
                                 index = index + 1;
                             }
+                            sm.Add(_security);
                         }
-                        sm.Add(_security);
                     }
                     if (tdJObject.ContainsKey("securityDefinitions"))
                     {
@@ -1177,27 +1182,31 @@ namespace AasxPackageExplorer
                     }
                     if (tdJObject.ContainsKey("profile"))
                     {
-                        AdminShell.SubmodelElementCollection _profile = new AdminShell.SubmodelElementCollection();
-                        _profile.idShort = "profile";
-                        _profile.category = "PARAMETER";
-                        _profile.ordered = false;
-                        _profile.allowDuplicates = false;
-                        _profile.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        _profile.AddDescription("en", "Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.");
                         if ((tdJObject["profile"].Type).ToString() == "String")
                         {
-                            _profile.Add(buildaasProperty("security", (tdJObject["security"]).ToString(), "WoT Profile mechanism."));
+                            AdminShell.Qualifier _profileQualifier = createAASQualifier("profile", tdJObject["profile"].ToString());
+                            sm.qualifiers.Add(_profileQualifier);
                         }
                         if ((tdJObject["profile"].Type).ToString() == "Array")
                         {
+                            AdminShell.SubmodelElementCollection _profile = new AdminShell.SubmodelElementCollection();
+                            _profile.idShort = "profile";
+                            _profile.category = "PARAMETER";
+                            _profile.ordered = false;
+                            _profile.allowDuplicates = false;
+                            _profile.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _profile.AddDescription("en", "Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.");
+                            _profile.qualifiers = new AdminShell.QualifierCollection();
                             int index = 1;
                             foreach (var x in tdJObject["profile"])
                             {
-                                _profile.Add(buildaasProperty("profile" + (index).ToString(), (x).ToString(), "WoT Profile mechanism."));
+                                AdminShell.Qualifier _profileQual = createAASQualifier("profile",(x).ToString());
+                                _profileQual.type = "profile" + index.ToString();
+                                _profile.qualifiers.Add(_profileQual);
                                 index = index + 1;
                             }
+                            sm.Add(_profile);
                         }
-                        sm.Add(_profile);
                     }
                     if (tdJObject.ContainsKey("schemaDefinitions"))
                     {
@@ -1208,15 +1217,17 @@ namespace AasxPackageExplorer
                         _schemaDefinitions.allowDuplicates = false;
                         _schemaDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
                         _schemaDefinitions.AddDescription("en", "Set of named data schemas. To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
-                        foreach (var key in tdJObject["uriVariables"])
+                        _schemaDefinitions.qualifiers = new AdminShell.QualifierCollection();
+                        _schemaDefinitions.semanticId = createSemanticID("schemaDefinitions");
+                        foreach (var key in tdJObject["schemaDefinitions"])
                         {
-                            JObject _uriVariable = new JObject(tdJObject["uriVariables"][key]);
-                            _schemaDefinitions.value.Add(BuildAbstractDataSchema(_uriVariable, key.ToString(), "Named schema definition."));
+                            JObject _schemaDefinition = new JObject(tdJObject["schemaDefinitions"][key]);
+                            _schemaDefinitions.value.Add(BuildAbstractDataSchema(_schemaDefinition, key.ToString()));
                         }
                         sm.Add(_schemaDefinitions);
                     }
-                    sm.qualifiers = tdQualifier;
                     sm.idShort = "AssetTD";
+                    sm.semanticId = createSemanticID("Thing");
                     exportData["status"] = "Success";
                     return tdJObject;
                 }
