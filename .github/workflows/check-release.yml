@@ -58,5 +58,5 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
-          name: BlazorUI.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
-          path: artefacts/release/LATEST.alpha/BlazorUI.zip
+          name: aasx-package-explorer-blazorui.LATEST.alpha.${{ steps.setTimestamp.outputs.timestamp }}
+          path: artefacts/release/LATEST.alpha/aasx-package-explorer-blazorui.zip
