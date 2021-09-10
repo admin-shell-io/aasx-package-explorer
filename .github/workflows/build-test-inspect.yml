@@ -53,9 +53,9 @@ jobs:
         working-directory: src
         run: powershell .\DownloadSamples.ps1
 
-      - name: Test
-        working-directory: src
-        run: powershell .\Test.ps1
+#      - name: Test
+#        working-directory: src
+#        run: powershell .\Test.ps1
 
       - name: Send to Coveralls
         working-directory: src
