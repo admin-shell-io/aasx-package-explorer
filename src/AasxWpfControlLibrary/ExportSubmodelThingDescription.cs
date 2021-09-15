@@ -585,6 +585,24 @@ namespace AasxPackageExplorer
                     }
                     TDJson["titles"] = _titlesJObject;
                 }
+                if (tdElement.idShort == "@context")
+                {
+                    List<object> contextList = new List<object>();
+                    JObject _conSemantic = new JObject();
+                    foreach(AdminShell.Qualifier _con in tdElement.qualifiers)
+                    {
+                        if (_con.type == "@context")
+                        {
+                            contextList.Add((_con.value));
+                        }
+                        else
+                        {
+                            _conSemantic[_con.type] = _con.value;
+                        }
+                    }
+                    contextList.Add(_conSemantic);
+                    TDJson["@context"] = JToken.FromObject(contextList);
+                }
                 if (tdElement.idShort == "properties")
                 {
                     TDJson["properties"] = createTDProperties(tdElement);
