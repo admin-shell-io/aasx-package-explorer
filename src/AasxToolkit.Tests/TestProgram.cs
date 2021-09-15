@@ -61,7 +61,7 @@ namespace AasxToolkit.Tests
                         if (consoleCap.Error() != "")
                         {
                             throw new AssertionException(
-                                $"Expected no stderr, but got:{System.Environment.NewLine}" +
+                                $"Expected no stderr, but got:{System.Environment.NewLine} " +
                                 consoleCap.Error());
                         }
 
@@ -81,20 +81,26 @@ namespace AasxToolkit.Tests
             {
                 using (var tmpDir = new TemporaryDirectory())
                 {
+                    string targetPth = Path.Combine(tmpDir.Path, "exported.template");
+
                     using (var consoleCap = new ConsoleCapture())
                     {
                         int code = AasxToolkit.Program.MainWithExitCode(
                             new[]
                             {
                                 "load", pth,
-                                "export-template", Path.Combine(tmpDir.Path, "exported.template")
+                                "export-template", targetPth
                             });
 
                         if (consoleCap.Error() != "")
                         {
                             throw new AssertionException(
                                 $"Expected no stderr, but got:{System.Environment.NewLine}" +
-                                consoleCap.Error());
+                                consoleCap.Error() +
+                                System.Environment.NewLine +
+                                System.Environment.NewLine +
+                                "The original command was:" + System.Environment.NewLine +
+                                $"AasxToolkit load {pth} export-template {targetPth}");
                         }
 
                         Assert.AreEqual(0, code);
@@ -115,19 +121,25 @@ namespace AasxToolkit.Tests
                 {
                     using (var consoleCap = new ConsoleCapture())
                     {
+                        string targetPth = Path.Combine(tmpDir.Path, "saved.xml");
+
                         int code = AasxToolkit.Program.MainWithExitCode(
                             new[]
                             {
                                 "load", pth,
                                 "check",
-                                "save", Path.Combine(tmpDir.Path, "saved.xml")
+                                "save", targetPth
                             });
 
                         if (consoleCap.Error() != "")
                         {
                             throw new AssertionException(
                                 $"Expected no stderr, but got:{System.Environment.NewLine}" +
-                                consoleCap.Error());
+                                consoleCap.Error() +
+                                System.Environment.NewLine +
+                                System.Environment.NewLine +
+                                $"The executed command was: " +
+                                $"AasxToolkit load {pth} check save {targetPth}");
                         }
 
                         Assert.AreEqual(0, code);
