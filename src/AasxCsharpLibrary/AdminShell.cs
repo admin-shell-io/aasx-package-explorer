@@ -6968,8 +6968,8 @@ namespace AdminShellNS
         public class DataElement : SubmodelElement
         {
             public static string ValueType_STRING = "string";
-            public static string ValueType_DATE = "string";
-            public static string ValueType_BOOLEAN = "date";
+            public static string ValueType_DATE = "date";
+            public static string ValueType_BOOLEAN = "boolean";
 
             public static string[] ValueTypeItems = new string[] {
                     "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",

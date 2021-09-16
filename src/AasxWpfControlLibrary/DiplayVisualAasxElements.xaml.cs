@@ -465,6 +465,11 @@ namespace AasxPackageExplorer
             }
             else
             {
+                // consider lazy loading
+                if (mem is VisualElementEnvironmentItem memei
+                    && memei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
+                    return false;
+
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();

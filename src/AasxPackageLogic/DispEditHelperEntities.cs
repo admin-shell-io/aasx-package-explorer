@@ -1320,7 +1320,8 @@ namespace AasxPackageLogic
                 };
 
                 this.EntityListUpDownDeleteHelper<AdminShell.SubmodelRef>(
-                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:", sendUpdateEvent: evTemplate);
+                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:", sendUpdateEvent: evTemplate,
+                    explicitParent: aas);
             }
 
             // entities other

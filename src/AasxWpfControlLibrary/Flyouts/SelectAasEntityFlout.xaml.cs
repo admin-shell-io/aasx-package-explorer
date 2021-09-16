@@ -120,10 +120,15 @@ namespace AasxPackageExplorer
             if (siMdo is AdminShell.Referable dataRef)
             {
                 // check if a valuable item was selected
-                var elemname = dataRef.GetElementName();
-                var fullFilter = ApplyFullFilterString(DiaData.Filter);
-                if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
-                    return false;
+                // new special case: "GlobalReference" allows to select all (2021-09-11)
+                var skip = DiaData.Filter.Trim().ToLower() == AdminShell.Key.GlobalReference.Trim().ToLower();
+                if (!skip)
+                {
+                    var elemname = dataRef.GetElementName();
+                    var fullFilter = ApplyFullFilterString(DiaData.Filter);
+                    if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
+                        return false;
+                }
 
                 // ok, prepare list of keys
                 DiaData.ResultKeys = si.BuildKeyListToTop();

@@ -1813,7 +1813,8 @@ namespace AasxPackageLogic
         public void EntityListUpDownDeleteHelper<T>(
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity,
             object alternativeFocus, string label = "Entities:",
-            object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false)
+            object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false,
+            AdminShell.Referable explicitParent = null)
         {
             if (nextFocus == null)
                 nextFocus = entity;
@@ -1852,7 +1853,8 @@ namespace AasxPackageLogic
                         if (newndx >= 0)
                         {
                             this.AddDiaryEntry(entityRf,
-                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx));
+                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx), 
+                                explicitParent: explicitParent);
 
                             if (sendUpdateEvent != null)
                             {
@@ -1878,7 +1880,8 @@ namespace AasxPackageLogic
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
 
                             this.AddDiaryEntry(entityRf, 
-                                new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                new DiaryEntryStructChange(StructuralChangeReason.Delete),
+                                explicitParent: explicitParent);
                             
                             if (sendUpdateEvent != null)
                             {
@@ -2351,10 +2354,11 @@ namespace AasxPackageLogic
         /// </summary>
         public void AddDiaryEntry(AdminShell.Referable rf, DiaryEntryBase de,
             DiaryReference diaryReference = null,
-            bool allChildrenAffected = false)
+            bool allChildrenAffected = false,
+            AdminShell.Referable explicitParent = null)
         {
             // trivial
-            if (rf == null || de == null || rf.DiaryData == null)
+            if (de == null)
                 return;
 
             // structure?
@@ -2373,8 +2377,10 @@ namespace AasxPackageLogic
 
                 // attach where?
                 var attachRf = rf;
-                if (true && rf.parent is AdminShell.Referable parRf)
+                if (rf != null && rf.parent is AdminShell.Referable parRf)
                     attachRf = parRf;
+                if (explicitParent != null)
+                    attachRf = explicitParent;
 
                 // add 
                 AdminShell.DiaryDataDef.AddAndSetTimestamps(attachRf, evi, 
@@ -2382,7 +2388,7 @@ namespace AasxPackageLogic
             }
 
             // update value?
-            if (de is DiaryEntryUpdateValue deuv && rf is AdminShell.SubmodelElement sme)
+            if (rf != null && de is DiaryEntryUpdateValue deuv && rf is AdminShell.SubmodelElement sme)
             {
                 // create
                 var evi = new AasPayloadUpdateValueItem(
