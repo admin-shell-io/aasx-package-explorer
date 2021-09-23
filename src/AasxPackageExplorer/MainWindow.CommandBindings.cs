@@ -5,6 +5,9 @@ Author: Michael Hoffmeister
 Copyright (c) 2019 Phoenix Contact GmbH & Co. KG <>
 Author: Andreas Orzelski
 
+Copyright (c) 2021 Mitsubishi Electric Europe B.V. <>
+Author: Matthias Mueller
+
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
@@ -309,7 +312,7 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && _packageCentral?.Main != null)
+            if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
@@ -321,7 +324,7 @@ namespace AasxPackageExplorer
                 {
                     if (cmd == "sign")
                     {
-                        PackageHelper.SignAll(dlg.FileName);
+                        CommandBinding_Sign(dlg);
                     }
                     if (cmd == "validatecertificate")
                     {
@@ -628,6 +631,8 @@ namespace AasxPackageExplorer
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
         }
+
+       
 
         public bool PanelConcurrentCheckIsVisible()
         {
@@ -1275,6 +1280,32 @@ namespace AasxPackageExplorer
             }
         }
 
+        private void CommandBinding_Sign(Microsoft.Win32.OpenFileDialog dlg)
+        {
+            //Select Certificate
+            var dlgCertificate = new Microsoft.Win32.OpenFileDialog();
+            try
+            {
+                dlgCertificate.InitialDirectory = System.IO.Path.GetDirectoryName("\\");
+            }
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
+            dlgCertificate.Filter = ".pfx files (*.pfx)|*.pfx";
+
+            if (dlgCertificate.ShowDialog() == true)
+            {
+                var uc = new TextBoxFlyout("Password for certificate:", AnyUiMessageBoxImage.Question);
+                uc.Text = "";
+                this.StartFlyoverModal(uc);
+                if (uc.Result)
+                {
+
+                    PackageHelper.SignAll(dlg.FileName, dlgCertificate.FileName, uc.Text);
+                }
+            }
+        }
         public void CommandBinding_BMEcatImport()
         {
             VisualElementSubmodelRef ve = null;

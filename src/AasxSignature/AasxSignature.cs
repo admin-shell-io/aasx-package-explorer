@@ -2,6 +2,9 @@
 Copyright(c) 2020 Schneider Electric Automation GmbH <marco.mendes@se.com>
 Author: Marco Mendes
 
+Copyright (c) 2021 Mitsubishi Electric Europe B.V. <>
+Author: Matthias Mueller
+
 This file has been shortened to include only the features needed by AASX Package Explorer.
 The original file is available at: obsolete/2020-07-20/AasxLibrary/AasxLibrary.cs
 
@@ -37,8 +40,10 @@ namespace AasxSignature
         /// therefore easy to detect during verification.        
         /// </summary>
         /// <param name="packagePath"></param>
+        /// <param name="certificatePath"></param>
+        /// <param name="password"></param>
         /// <param name="storeName"></param>
-        public static void SignAll(string packagePath, string storeName = "My")
+        public static void SignAll(string packagePath, string certificatePath, string password = "", string storeName = "My")
         {
             using (Package package = Package.Open(packagePath, FileMode.Open))
             {
@@ -101,20 +106,10 @@ namespace AasxSignature
                 // Sign() will prompt the user to select a Certificate to sign with.
                 try
                 {
-                    var dlg = new OpenFileDialog();
-                    try
-                    {
-                        dlg.InitialDirectory = System.IO.Path.GetDirectoryName("\\");
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-                    dlg.Filter = ".pfx files (*.pfx)|*.pfx";
-                    dlg.ShowDialog();
-                    X509Certificate2 x509 = new X509Certificate2(dlg.FileName, "i40");
+                    X509Certificate2 x509 = new X509Certificate2(certificatePath, password);
                     X509Certificate2Collection scollection = new X509Certificate2Collection(x509);
-                    dsm.Sign(toSign, scollection[0], relationshipSelectors);
+                    var signature = dsm.Sign(toSign, scollection[0], relationshipSelectors);
+                    MessageBox.Show("Signing completed: \n" + "Issuer: " + signature.Signer.Issuer + "\nSubject: " + signature.Signer.Subject);
                 }
 
                 // If there are no certificates or the SmartCard manager is
