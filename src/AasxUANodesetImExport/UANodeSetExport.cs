@@ -76,23 +76,19 @@ namespace AasxUANodesetImExport
 
         // MIHO (2021-10-05): added this function in course of bug fixing
         // see: https://github.com/admin-shell-io/aasx-package-explorer/issues/414
-        public static UANodeSet getInformationModel(Stream fileStream)           
+        public static UANodeSet getInformationModel(Stream fileStream)
         {
             UANodeSet InformationModel = new UANodeSet();
             XmlSerializer serializer = new XmlSerializer(typeof(UANodeSet));
-            
+
             try
             {
                 InformationModel = (UANodeSet)serializer.Deserialize(fileStream);
             }
             catch (Exception ex)
             {
-                MessageBoxResult result = MessageBox.Show(
-                    "Error in accessing or XML formatting\n\n" 
-                    + ex.ToString(),
-                    "Error",
-                    MessageBoxButton.OK);
-                throw ex;
+                throw new Exception("Error in accessing or XML formatting\n\n"
+                    + ex.ToString());
             }
             return InformationModel;
         }
