@@ -74,6 +74,29 @@ namespace AasxUANodesetImExport
             return InformationModel;
         }
 
+        // MIHO (2021-10-05): added this function in course of bug fixing
+        // see: https://github.com/admin-shell-io/aasx-package-explorer/issues/414
+        public static UANodeSet getInformationModel(Stream fileStream)           
+        {
+            UANodeSet InformationModel = new UANodeSet();
+            XmlSerializer serializer = new XmlSerializer(typeof(UANodeSet));
+            
+            try
+            {
+                InformationModel = (UANodeSet)serializer.Deserialize(fileStream);
+            }
+            catch (Exception ex)
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    "Error in accessing or XML formatting\n\n" 
+                    + ex.ToString(),
+                    "Error",
+                    MessageBoxButton.OK);
+                throw ex;
+            }
+            return InformationModel;
+        }
+
         //Annotations
         //Almost every Method is build the same way:
         //1. Create UANode object and set its parameters

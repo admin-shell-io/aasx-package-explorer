@@ -36,6 +36,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 namespace AasxPackageExplorer
 {
@@ -2570,20 +2571,38 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ExportOPCUANodeSet()
         {
-            string filename = "i4AASCS.xml";
+            // string filename = "i4AASCS.xml";
             string workingDirectory = "" + Environment.CurrentDirectory;
 
+            // try to access I4AAS export information
+            UANodeSet InformationModel = null;
+            try
+            {
+                var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                    "AasxPackageExplorer.Resources.i4AASCS.xml");
+
+                InformationModel = UANodeSetExport.getInformationModel(xstream);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "when accessing i4AASCS.xml mapping types.");
+                return;
+            }
+            Log.Singleton.Info("Mapping types loaded.");
+
             // ReSharper disable PossibleNullReferenceException
+            /*
             if (File.Exists(
                 Path.Combine(
                     System.IO.Path.GetDirectoryName(
                         Directory.GetParent(workingDirectory).Parent.FullName),
                     filename)))
+            */
             // ReSharper enable PossibleNullReferenceException
             {
                 var dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-                dlg.Title = "Select AML file to be exported";
+                dlg.Title = "Select Nodeset file to be exported";
                 dlg.FileName = "new.xml";
                 dlg.DefaultExt = "*.xml";
                 dlg.Filter = "XML File (.xml)|*.xml|Text documents (.txt)|*.txt";
@@ -2595,14 +2614,10 @@ namespace AasxPackageExplorer
 
                 RememberForInitialDirectory(dlg.FileName);
 
-                UANodeSet InformationModel = null;
+                // UANodeSet InformationModel = null;
 
                 // ReSharper disable PossibleNullReferenceException
-                InformationModel = UANodeSetExport.getInformationModel(
-                    Path.Combine(
-                        System.IO.Path.GetDirectoryName(
-                            Directory.GetParent(workingDirectory).Parent.FullName),
-                        filename));
+                
                 // ReSharper enable PossibleNullReferenceException
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
@@ -2622,11 +2637,13 @@ namespace AasxPackageExplorer
                 }
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
+            /*
             else
             {
                 System.Windows.MessageBox.Show(
                     "Mapping Types could not be found.", "Error", MessageBoxButton.OK);
             }
+            */
         }
 
         public void CommandBinding_ExportSMD()
