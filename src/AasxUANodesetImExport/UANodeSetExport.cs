@@ -1158,12 +1158,13 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShellV20.Key key in _ref.Keys)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
-            }
+            if (_ref != null)
+                foreach (AdminShellV20.Key key in _ref.Keys)
+                {
+                    refs.Add(
+                        CreateReference(
+                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                }
 
             obj.References = refs.ToArray();
             root.Add((UANode)obj);
