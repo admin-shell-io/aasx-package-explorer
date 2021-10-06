@@ -121,8 +121,9 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
-    },
-    /* Festo specific from here on */
+    }
+/* Festo specific from here on */
+/*
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [] /*,
@@ -140,7 +141,7 @@
             ]
           }
         ]
-      }*/
+      }
     },
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
@@ -159,8 +160,9 @@
             ]
           }
         ]
-      } */
+      } 
     }
+    */
   ],
   "SecureConnectPresets": [
     {

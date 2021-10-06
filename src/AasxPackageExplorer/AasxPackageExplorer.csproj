@@ -101,6 +101,8 @@
     <None Include="content-for-demo\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Remove="i4AASCS.xml" />
+    <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
