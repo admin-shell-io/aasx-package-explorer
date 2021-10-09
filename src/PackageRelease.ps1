@@ -109,6 +109,37 @@ function PackageRelease($outputDir)
             -DestinationPath $archPath
     }
 
+    function MakePackageBlazor($identifier)
+    {
+        $destinationDir = Join-Path $outputDir $identifier
+
+        Write-Host ("Making the package $($identifier|ConvertTo-Json) to: " +
+            $destinationDir)
+
+        Write-Host "* Packaging to: $destinationDir"
+        New-Item -ItemType Directory -Force -Path $destinationDir|Out-Null
+
+        ##
+        # BlazorUI
+        ##
+
+        Write-Host "* Copying BlazorUI to: $destinationDir"
+        Copy-Item `
+            -Path (Join-Path $buildDir "BlazorUI") `
+            -Recurse `
+            -Destination $destinationDir
+
+        ##
+        # Compress
+        ##
+
+        $archPath = Join-Path $outputDir "$identifier.zip"
+        Write-Host "* Compressing: $archPath"
+        Compress-Archive `
+            -Path (Join-Path $destinationDir "BlazorUI") `
+            -DestinationPath $archPath
+    }
+
     ##
     # Make packages
     ##
@@ -116,6 +147,8 @@ function PackageRelease($outputDir)
     MakePackage -identifier "aasx-package-explorer" -plugins $allPlugins
 
     MakePackage -identifier "aasx-package-explorer-small" -plugins $smallPlugins
+
+    MakePackageBlazor -identifier "aasx-package-explorer-blazorui"
 
     # Do not copy the source code in the releases.
     # The source code will be distributed automatically through Github releases.

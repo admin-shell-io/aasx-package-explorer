@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\Index.cshtml.cs" />
+    <Content Remove="Pages\Component.razor" />
+    <Content Remove="Pages\FetchData.cshtml" />
+    <Content Remove="Pages\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="LICENSE.txt" />
   </ItemGroup>
 
@@ -30,6 +37,15 @@
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="start-browser.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="start-server.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
