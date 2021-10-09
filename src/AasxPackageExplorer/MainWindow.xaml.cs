@@ -316,7 +316,7 @@ namespace AasxPackageExplorer
                     UiCheckIfActivateLoadedNavTo();
 
                 if (indexItems && packItem?.Container?.Env?.AasEnv != null)
-                    packItem.Container.SignificantElements 
+                    packItem.Container.SignificantElements
                         = new IndexOfSignificantAasElements(packItem.Container.Env.AasEnv);
             }
             catch (Exception ex)
@@ -342,7 +342,7 @@ namespace AasxPackageExplorer
 
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
-        }        
+        }
 
         public PackageContainerListBase UiLoadFileRepository(string fn)
         {
@@ -1391,7 +1391,7 @@ namespace AasxPackageExplorer
             for (int i = 0; i < 2; i++)
             {
                 // divider
-                var see = (new[] { 
+                var see = (new[] {
                     SignificantAasElement.EventStructureChangeOutwards,
                     SignificantAasElement.EventUpdateValueOutwards})[i];
 
@@ -1406,11 +1406,11 @@ namespace AasxPackageExplorer
                         continue;
 
                     // now, find the observable (with timestamping!)
-                    var observable = (AdminShell.IDiaryData) env.FindReferableByReference(refEv.observed);
+                    var observable = (AdminShell.IDiaryData)env.FindReferableByReference(refEv.observed);
 
                     // some special cases
                     if (true == refEv.observed?.Matches(
-                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV", 
+                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV",
                             AdminShell.Key.MatchMode.Relaxed))
                     {
                         observable = env;
@@ -1436,17 +1436,19 @@ namespace AasxPackageExplorer
                     var plUpdate = new AasPayloadUpdateValue();
 
                     // for the overall change check, we rely on the timestamping
-                    if (((i == 0) && (newCreate || newUpdate))
-                        || ((i == 1) && newUpdate))
+                    if ((i == 0) || ((i == 1) && newUpdate))
                     {
+                        // closure logic
+                        var storedI = i;
+
                         if (observable is AdminShell.IRecurseOnReferables recurse)
                             recurse.RecurseOnReferables(null,
                                 includeThis: true,
                                 lambda: (o, parents, rf) =>
                                 {
                                     // further interest?
-                                    if (rf == null || rf.DiaryData == null || 
-                                    ( (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] 
+                                    if (rf == null || rf.DiaryData == null ||
+                                    ((rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create]
                                        < lastTime)
                                       &&
                                       (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
@@ -1459,9 +1461,9 @@ namespace AasxPackageExplorer
                                         var todel = new List<AdminShell.IAasDiaryEntry>();
                                         foreach (var de in rf.DiaryData.Entries)
                                         {
-                                            if (i == 0 && de is AasPayloadStructuralChangeItem sci)
+                                            if (storedI == 0 && de is AasPayloadStructuralChangeItem sci)
                                             {
-                                                // TODO: prepare path to be relative
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
 
                                                 // queue event
                                                 plStruct.Changes.Add(sci);
@@ -1470,9 +1472,9 @@ namespace AasxPackageExplorer
                                                 todel.Add(de);
                                             }
 
-                                            if (i == 1 && de is AasPayloadUpdateValueItem uvi)
+                                            if (storedI == 1 && de is AasPayloadUpdateValueItem uvi)
                                             {
-                                                // TODO: prepare path to be relative
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
 
                                                 // queue event
                                                 plUpdate.Values.Add(uvi);
@@ -1484,7 +1486,7 @@ namespace AasxPackageExplorer
                                         foreach (var de in todel)
                                             rf.DiaryData.Entries.Remove(de);
                                     }
-                                
+
                                     // deeper
                                     return true;
                                 });
@@ -2145,8 +2147,9 @@ namespace AasxPackageExplorer
             if (MenuItemOptionsCompressEvents.IsChecked)
             {
                 var evs = _eventCompressor?.Flush();
-                foreach (var ev in evs)
-                    _packageCentral?.PushEvent(ev);
+                if (evs != null)
+                    foreach (var ev in evs)
+                        _packageCentral?.PushEvent(ev);
             }
         }
 

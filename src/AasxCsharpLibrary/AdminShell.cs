@@ -1879,42 +1879,6 @@ namespace AdminShellNS
         {
         }
 
-        ///// <summary>
-        ///// Base class for diary entries, which are recorded with respect to a AAS element
-        ///// Diary entries contain a minimal set of information to later produce AAS events or such.
-        ///// </summary>
-        //public class DiaryEntryBase
-        //{
-        //    public DateTime Timestamp;
-        //}
-
-        ///// <summary>
-        ///// Structural change of that AAS element
-        ///// </summary>
-        //public class DiaryEntryStructChange : DiaryEntryBase
-        //{
-        //    public enum ChangeReason { Create, Modify, Delete }
-
-        //    public ChangeReason Reason;
-        //    public int CreateAtIndex = -1;
-
-        //    public DiaryEntryStructChange(
-        //        ChangeReason reason = ChangeReason.Modify,
-        //        int createAtIndex = -1)
-        //    {
-        //        Reason = reason;
-        //        CreateAtIndex = createAtIndex;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Update value of that AAS element
-        ///// </summary>
-        //public class DiaryEntryUpdateValue : DiaryEntryBase
-        //{
-        //    public DiaryEntryUpdateValue() { }
-        //}
-
         public class DiaryDataDef
         {
             public enum TimeStampKind { Create, Update }
@@ -1940,9 +1904,6 @@ namespace AdminShellNS
                 if (element == null || de == null || element.DiaryData == null)
                     return;
 
-                // set 1st timestamp
-                // de.Timestamp = DateTime.UtcNow;
-
                 // add entry
                 if (element.DiaryData.Entries == null)
                     element.DiaryData.Entries = new List<IAasDiaryEntry>();
@@ -1950,10 +1911,8 @@ namespace AdminShellNS
 
                 // figure out which timestamp
                 var tsk = TimeStampKind.Update;
-                // if (de is AdminShell.DiaryEntryStructChange desc)
                 if (isCreate)
                 {
-                    // if (desc.Reason == AdminShellV20.DiaryEntryStructChange.ChangeReason.Create)
                     tsk = TimeStampKind.Create;
                 }
 
@@ -4783,7 +4742,8 @@ namespace AdminShellNS
             /// Currently supported: ConceptDescriptions
             /// Returns a list of Referables, which were changed or <c>null</c> in case of error
             /// </summary>
-            public List<Referable> RenameIdentifiable<T>(Identification oldId, Identification newId) where T : Identifiable
+            public List<Referable> RenameIdentifiable<T>(Identification oldId, Identification newId)
+                where T : Identifiable
             {
                 // access
                 if (oldId == null || newId == null || oldId.IsEqual(newId))
@@ -5342,7 +5302,7 @@ namespace AdminShellNS
                 return Reference.CreateNew(ToKeyList());
             }
         }
-        
+
         public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
         {
             // constants
@@ -5669,7 +5629,7 @@ namespace AdminShellNS
             public SubmodelElementWrapper(SubmodelElement src, bool shallowCopy = false)
             {
                 /* TODO (MIHO, 2021-08-12): consider using:
-                   Activator.CreateInstance(pl.GetType(), new object[] { pl }); */
+                   Activator.CreateInstance(pl.GetType(), new object[] { pl }) */
 
                 if (src is SubmodelElementCollection)
                     this.submodelElement = new SubmodelElementCollection(
@@ -6581,7 +6541,7 @@ namespace AdminShellNS
             private SubmodelElementWrapperCollection _submodelElements = null;
 
             [JsonIgnore]
-            public SubmodelElementWrapperCollection submodelElements 
+            public SubmodelElementWrapperCollection submodelElements
             {
                 get { return _submodelElements; }
                 set { _submodelElements = value; _submodelElements.Parent = this; }

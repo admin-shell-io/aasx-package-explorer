@@ -108,7 +108,7 @@ namespace AasxPackageLogic
                     "The idShort shall only feature letters, digits, underscore ('_'); " +
                     "starting mandatory with a letter."),
                 new HintCheck(
-                    () => {                        
+                    () => {
                         return true == referable.idShort?.Contains("---");
                     },
                     "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
@@ -117,11 +117,13 @@ namespace AasxPackageLogic
             });
             this.AddKeyValueRef(
                 stack, "idShort", referable, ref referable.idShort, null, repo,
-                v => {
+                v =>
+                {
                     var dr = new DiaryReference(referable);
                     referable.idShort = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
-                    return new AnyUiLambdaActionNone(); },
+                    return new AnyUiLambdaActionNone();
+                },
                 auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
                 auxButtonLambda: injectToIdShort?.auxLambda
@@ -136,10 +138,12 @@ namespace AasxPackageLogic
             this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
             this.AddKeyValueRef(
                 stack, "category", referable, ref referable.category, null, repo,
-                v => { 
+                v =>
+                {
                     referable.category = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone(); },
+                    return new AnyUiLambdaActionNone();
+                },
                 comboBoxItems: AdminShell.Referable.ReferableCategoryNames, comboBoxIsEditable: true);
 
             this.AddHintBubble(
@@ -175,7 +179,7 @@ namespace AasxPackageLogic
                         },
                         "Please add some descriptions in your main languages here to help consumers " +
                             "of your Administration shell to understand your intentions."));
-                this.AddKeyListLangStr(stack, "description", referable.description.langString, 
+                this.AddKeyListLangStr(stack, "description", referable.description.langString,
                     repo, relatedReferable: referable);
             }
         }
@@ -237,11 +241,13 @@ namespace AasxPackageLogic
 
                 this.AddKeyValueRef(
                     stack, "id", identifiable, ref identifiable.identification.id, null, repo,
-                    v => {
+                    v =>
+                    {
                         var dr = new DiaryReference(identifiable);
                         identifiable.identification.id = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: DispEditInjectAction.GetTitles(new[] { "Generate" }, injectToId),
                     auxButtonLambda: (i) =>
                     {
@@ -475,10 +481,12 @@ namespace AasxPackageLogic
                     }))
                 this.AddKeyValueRef(
                     stack, "kind", kind, ref kind.kind, null, repo,
-                    v => { 
+                    v =>
+                    {
                         kind.kind = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     new[] { AdminShell.AssetKind.Type, AdminShell.AssetKind.Instance });
         }
 
@@ -516,10 +524,12 @@ namespace AasxPackageLogic
                     ))
                 this.AddKeyValueRef(
                     stack, "kind", kind, ref kind.kind, null, repo,
-                    v => { 
+                    v =>
+                    {
                         kind.kind = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     new[] { AdminShell.ModelingKind.Template, AdminShell.ModelingKind.Instance });
         }
 
@@ -652,7 +662,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName, 
+                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName,
                     repo, relatedReferable: relatedReferable);
 
             this.AddHintBubble(
@@ -696,10 +706,11 @@ namespace AasxPackageLogic
             });
             this.AddKeyValueRef(
                 stack, "unit", dsiec, ref dsiec.unit, null, repo,
-                v => { 
+                v =>
+                {
                     dsiec.unit = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone(); 
+                    return new AnyUiLambdaActionNone();
                 });
 
             this.AddHintBubble(
@@ -733,10 +744,11 @@ namespace AasxPackageLogic
 
             this.AddKeyValueRef(
                 stack, "valueFormat", dsiec, ref dsiec.valueFormat, null, repo,
-                v => { 
+                v =>
+                {
                     dsiec.valueFormat = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone(); 
+                    return new AnyUiLambdaActionNone();
                 });
 
             this.AddHintBubble(
@@ -770,10 +782,11 @@ namespace AasxPackageLogic
                 });
             this.AddKeyValueRef(
                 stack, "symbol", dsiec, ref dsiec.symbol, null, repo,
-                v => { 
+                v =>
+                {
                     dsiec.symbol = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone(); 
+                    return new AnyUiLambdaActionNone();
                 });
 
             this.AddHintBubble(
@@ -786,10 +799,11 @@ namespace AasxPackageLogic
                 });
             this.AddKeyValueRef(
                 stack, "dataType", dsiec, ref dsiec.dataType, null, repo,
-                v => { 
+                v =>
+                {
                     dsiec.dataType = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone(); 
+                    return new AnyUiLambdaActionNone();
                 },
                 comboBoxIsEditable: true,
                 comboBoxItems: AdminShell.DataSpecificationIEC61360.DataTypeNames);
@@ -816,7 +830,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "definition", dsiec.definition, 
+                this.AddKeyListLangStr(stack, "definition", dsiec.definition,
                     repo, relatedReferable: relatedReferable);
         }
 

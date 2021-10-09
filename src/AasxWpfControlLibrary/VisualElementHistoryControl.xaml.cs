@@ -89,7 +89,8 @@ namespace AasxPackageExplorer
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
-                return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
+                // success implies AdminShell.IGetReference as well
+                return derefdo is AdminShell.Referable;
             }, includeThis: true).FirstOrDefault();
 
             // check, if ve can identify a Referable, to which a symbolic link can be done ..

@@ -748,7 +748,7 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // modify
-            // TODO: Modify missing!!
+            // TODO (MIHO, 2021-10-09): Modify missing!!
             if (change.Reason == StructuralChangeReason.Modify)
             {
                 throw new NotImplementedException("ExecuteEventAction() for Modify!!");
@@ -819,7 +819,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 // use differentiated functionality
                 PackageContainerBase.UpdateSmeFromEventPayloadItem(sme, value);
-                
+
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.ValueUpdateSingle,
                         thisRef: sme));
                 return;

@@ -49,7 +49,8 @@ namespace AasxIntegrationBase.AdminShellEvents
             if (other != null)
                 foreach (var pl in other)
                 {
-                    var opl = Activator.CreateInstance(pl.GetType(), new object[] { pl });
+                    // ReSharper disable once RedundantExplicitParamsArrayCreation
+                    var opl = Activator.CreateInstance(pl.GetType(), new object [] { pl });
                     if (opl is AasPayloadBase npl)
                         this.Add(npl);
                 }

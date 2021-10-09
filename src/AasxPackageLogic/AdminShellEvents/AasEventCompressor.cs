@@ -1,7 +1,16 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AdminShellNS;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -18,7 +27,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             if (ev != null && _events != null)
                 _events.Add(ev);
         }
-       
+
         protected class TraceStateBase
         {
         }
@@ -54,13 +63,14 @@ namespace AasxIntegrationBase.AdminShellEvents
                 if (currKey != null && stateIn == null)
                 {
                     // start new state
-                    var res = new TraceStateStructuralChangeOneModify() { 
+                    var res = new TraceStateStructuralChangeOneModify()
+                    {
                         CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey))
                     };
                     return res;
                 }
                 else
-                if (currKey != null 
+                if (currKey != null
                     && stateIn is TraceStateStructuralChangeOneModify stateCurr
                     && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, AdminShell.Key.MatchMode.Relaxed))
                 {
@@ -92,7 +102,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             }
             // and return
             return joint;
-        }       
+        }
 
         public List<AasEventMsgEnvelope> Flush()
         {
@@ -134,10 +144,11 @@ namespace AasxIntegrationBase.AdminShellEvents
                     // try extend
                     segEnd++;
                     currState = newState;
-                    
+
                     continue;
                 }
 
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (currState != null && newState == null)
                 {
                     // ending here

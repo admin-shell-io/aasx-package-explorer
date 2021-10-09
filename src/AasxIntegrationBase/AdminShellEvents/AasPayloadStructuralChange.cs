@@ -36,7 +36,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
     public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
-    {       
+    {
         /// <summary>
         /// Reason for the change. According to CRUD principle.
         /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
@@ -114,7 +114,7 @@ namespace AasxIntegrationBase.AdminShellEvents
 
             var mmData = new MiniMarkupRun("");
             if (Data != null && Data.Length > 0)
-                mmData = new MiniMarkupLink("[>>]", "http://127.0.0.1/" +Path?.ToString(), this);
+                mmData = new MiniMarkupLink("[>>]", "http://127.0.0.1/" + Path?.ToString(), this);
 
             return new MiniMarkupLine(
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),

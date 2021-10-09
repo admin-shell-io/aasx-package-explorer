@@ -559,7 +559,7 @@ namespace AasxPackageLogic
                 //
                 {
                     var bos = entities.GetListOfBusinessObjects<AdminShell.Referable>();
-                    if (bos.Count > 0 && 
+                    if (bos.Count > 0 &&
                         !(first is VisualElementSupplementalFile))
                     {
                         this.AddAction(stack, "Actions:", new[] { "Change attribute .." }, repo, (buttonNdx) =>
@@ -591,7 +591,7 @@ namespace AasxPackageLogic
                     // Delete
                     EntityListSupplementaryFileHelper(stack, repo, entities,
                         alternativeFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
-                                VisualElementEnvironmentItem.ItemType.SupplFiles));                    
+                                VisualElementEnvironmentItem.ItemType.SupplFiles));
                 }
             }
 

@@ -117,7 +117,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
                     }
-                    
+
                     if (i == 1 && env != null)
                     {
                         var uc = new AnyUiDialogueDataTextBox(
@@ -341,7 +341,7 @@ namespace AasxPackageLogic
                                                         AdminShell.Identification.IRI,
                                                         Options.Curr.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAsset));
-                                                
+
                                                 env.Assets.Add(destAsset);
                                                 this.AddDiaryEntry(destAsset, new DiaryEntryStructChange(
                                                     StructuralChangeReason.Create));
@@ -358,7 +358,7 @@ namespace AasxPackageLogic
                                                     AdminShell.Identification.IRI,
                                                     Options.Curr.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
-                                            
+
                                             env.AdministrationShells.Add(destAAS);
                                             this.AddDiaryEntry(destAAS, new DiaryEntryStructChange(
                                                 StructuralChangeReason.Create));
@@ -515,7 +515,7 @@ namespace AasxPackageLogic
                                         && aasold.Contains(itaas))
                                     {
                                         aasold.Remove(itaas);
-                                        this.AddDiaryEntry(itaas, 
+                                        this.AddDiaryEntry(itaas,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
@@ -532,7 +532,7 @@ namespace AasxPackageLogic
                                     // delete
                                     if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
                                         && assetold.Contains(itasset))
-                                    { 
+                                    {
                                         assetold.Remove(itasset);
                                         this.AddDiaryEntry(itasset,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
@@ -551,7 +551,7 @@ namespace AasxPackageLogic
                                     // delete
                                     if (del && cpiid.parentContainer is List<AdminShell.ConceptDescription> cdold
                                         && cdold.Contains(itcd))
-                                    { 
+                                    {
                                         cdold.Remove(itcd);
                                         this.AddDiaryEntry(itcd,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
@@ -582,7 +582,7 @@ namespace AasxPackageLogic
                                     // delete
                                     if (del && cpism.parentContainer is List<AdminShell.Submodel> smold
                                         && smold.Contains(itsm))
-                                    { 
+                                    {
                                         smold.Remove(itsm);
                                         this.AddDiaryEntry(itsm,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
@@ -634,7 +634,7 @@ namespace AasxPackageLogic
                                             env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
                                         this.MakeNewIdentifiableUnique(clone);
                                         env.ConceptDescriptions.Add(clone);
-                                        this.AddDiaryEntry(clone, 
+                                        this.AddDiaryEntry(clone,
                                             new DiaryEntryStructChange(StructuralChangeReason.Create));
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: clone);
                                     }
@@ -970,7 +970,7 @@ namespace AasxPackageLogic
                             if (smtest == null)
                             {
                                 env.Submodels.Add(item.sm);
-                                this.AddDiaryEntry(item.sm, 
+                                this.AddDiaryEntry(item.sm,
                                     new DiaryEntryStructChange(StructuralChangeReason.Create));
                             }
                         }
@@ -1143,7 +1143,7 @@ namespace AasxPackageLogic
 
                                         // formally add this to active environment 
                                         env.Submodels.Add(dstSub);
-                                        this.AddDiaryEntry(dstSub, 
+                                        this.AddDiaryEntry(dstSub,
                                             new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                         // .. and AAS
@@ -1374,7 +1374,8 @@ namespace AasxPackageLogic
                                 if (smtest == null)
                                 {
                                     env.Submodels.Add(item.sm);
-                                    this.AddDiaryEntry(item.sm, new DiaryEntryStructChange(StructuralChangeReason.Create));
+                                    this.AddDiaryEntry(item.sm,
+                                        new DiaryEntryStructChange(StructuralChangeReason.Create));
                                 }
                             }
                         }
@@ -1483,7 +1484,7 @@ namespace AasxPackageLogic
 
                                     // emit events
                                     // TODO (MIHO, 2021-08-17): create events for CDs are not emitted!
-                                    this.AddDiaryEntry(clone?.submodelElement, 
+                                    this.AddDiaryEntry(clone?.submodelElement,
                                         new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     return new AnyUiLambdaActionRedrawAllElements(
@@ -1981,7 +1982,7 @@ namespace AasxPackageLogic
                                         ov.value = smw;
 
                                         // emit event (for parent container, e.g. Operation)
-                                        this.AddDiaryEntry(parentContainer, 
+                                        this.AddDiaryEntry(parentContainer,
                                             new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                         // redraw
@@ -2062,7 +2063,7 @@ namespace AasxPackageLogic
                     this.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", this.levelColors.SubSection);
                     var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
-                    
+
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
@@ -2159,9 +2160,9 @@ namespace AasxPackageLogic
                                     parMgr.Add(refactorSme);
 
                                     // notify event
-                                    this.AddDiaryEntry(sme, 
+                                    this.AddDiaryEntry(sme,
                                         new DiaryEntryStructChange(StructuralChangeReason.Delete));
-                                    this.AddDiaryEntry(refactorSme, 
+                                    this.AddDiaryEntry(refactorSme,
                                         new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     // redraw
@@ -2556,9 +2557,9 @@ namespace AasxPackageLogic
                                     if (!this.theCopyPaste.Duplicate)
                                     {
                                         this.DispDeleteCopyPasteItem(item);
-                                        
+
                                         // emit event
-                                        this.AddDiaryEntry(item.sme, 
+                                        this.AddDiaryEntry(item.sme,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
@@ -2848,9 +2849,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", p, ref p.valueType, null, repo,
-                    v => { p.valueType = v as string;
+                    v =>
+                    {
+                        p.valueType = v as string;
                         this.AddDiaryEntry(p, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: editMode,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2873,9 +2877,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string;
-                        this.AddDiaryEntry(p, new DiaryEntryUpdateValue()); 
-                        return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        p.value = v as string;
+                        this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -2989,10 +2996,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", rng, ref rng.valueType, null, repo,
-                    v => { 
+                    v =>
+                    {
                         rng.valueType = v as string;
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -3017,10 +3026,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "min", rng, ref rng.min, null, repo,
-                    v => { 
+                    v =>
+                    {
                         rng.min = v as string;
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); });
+                        return new AnyUiLambdaActionNone();
+                    });
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3035,10 +3046,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "max", rng, ref rng.max, null, repo,
-                    v => { 
+                    v =>
+                    {
                         rng.max = v as string;
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); });
+                        return new AnyUiLambdaActionNone();
+                    });
             }
             else if (sme is AdminShell.File fl)
             {
@@ -3057,10 +3070,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", fl, ref fl.mimeType, null, repo,
-                    v => { 
+                    v =>
+                    {
                         fl.mimeType = v as string;
                         this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
@@ -3080,10 +3095,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "value", fl, ref fl.value, null, repo,
-                    v => { 
+                    v =>
+                    {
                         fl.value = v as string;
                         this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "Choose supplementary file", },
                     auxButtonToolTips: new[] { "Select existing supplementary files" },
                     auxButtonLambda: (bi) =>
@@ -3401,19 +3418,23 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", blb, ref blb.mimeType, null, repo,
-                    v => { 
+                    v =>
+                    {
                         blb.mimeType = v as string;
                         this.AddDiaryEntry(blb, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 this.AddKeyValueRef(
                     stack, "value", blb, ref blb.value, null, repo,
-                    v => { 
+                    v =>
+                    {
                         blb.value = v as string;
                         this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -3611,10 +3632,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "entityType", ent, ref ent.entityType, null, repo,
-                    v => { 
+                    v =>
+                    {
                         ent.entityType = v as string;
                         this.AddDiaryEntry(ent, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); },
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxItems: AdminShell.Entity.EntityTypeNames,
                     comboBoxIsEditable: true);
 
@@ -3705,7 +3728,6 @@ namespace AasxPackageLogic
                     addWoEdit: new[] { true, true },
                     action: (buttonNdx) =>
                     {
-                        ListOfAasPayloadBase Payloads = null;
                         string PayloadsRaw = null;
 
                         if (buttonNdx == 1)
@@ -3734,7 +3756,6 @@ namespace AasxPackageLogic
                                 observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
 
                             // specific payload?
-                            ev.PayloadItems = Payloads;
                             if (PayloadsRaw != null)
                             {
                                 ev.PayloadItems = null;

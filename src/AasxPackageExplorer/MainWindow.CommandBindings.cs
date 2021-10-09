@@ -164,14 +164,14 @@ namespace AasxPackageExplorer
                 {
                     // save
                     await _packageCentral.MainItem.SaveAsAsync(runtimeOptions: _packageCentral.CentralRuntimeOptions);
-                    
+
                     // backup
                     if (Options.Curr.BackupDir != null)
                         _packageCentral.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
-                    
+
                     // may be was saved to index
                     if (_packageCentral?.MainItem?.Container?.Env?.AasEnv != null)
                         _packageCentral.MainItem.Container.SignificantElements
@@ -194,7 +194,7 @@ namespace AasxPackageExplorer
             if (cmd == "saveas")
             {
                 // open?
-                if (!_packageCentral.MainAvailable)
+                if (!_packageCentral.MainAvailable || _packageCentral.MainItem.Container == null)
                 {
                     MessageBoxFlyoutShow(
                         "No open AASX file to be saved.",

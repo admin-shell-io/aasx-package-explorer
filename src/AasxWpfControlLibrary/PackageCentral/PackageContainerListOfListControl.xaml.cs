@@ -100,7 +100,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         public void CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
         {
             // access
-            if (cmd == null)
+            if (cmd == null || _flyout == null)
                 return;
             cmd = cmd.ToLower().Trim();
 

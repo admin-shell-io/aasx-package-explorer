@@ -939,8 +939,9 @@ namespace AasxPackageLogic
             for (int i = 0; i < numButton; i++)
             {
                 // render?
-                if (!((repo != null) 
-                      || (addWoEdit != null && addWoEdit.Length > i && addWoEdit[i]) 
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if (!((repo != null)
+                      || (addWoEdit != null && addWoEdit.Length > i && addWoEdit[i])
                      ))
                     continue;
 
@@ -1853,7 +1854,7 @@ namespace AasxPackageLogic
                         if (newndx >= 0)
                         {
                             this.AddDiaryEntry(entityRf,
-                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx), 
+                                new DiaryEntryStructChange(StructuralChangeReason.Modify, createAtIndex: newndx),
                                 explicitParent: explicitParent);
 
                             if (sendUpdateEvent != null)
@@ -1879,10 +1880,10 @@ namespace AasxPackageLogic
                         {
                             var ret = DeleteElementInList<T>(list, entity, alternativeFocus);
 
-                            this.AddDiaryEntry(entityRf, 
+                            this.AddDiaryEntry(entityRf,
                                 new DiaryEntryStructChange(StructuralChangeReason.Delete),
                                 explicitParent: explicitParent);
-                            
+
                             if (sendUpdateEvent != null)
                             {
                                 sendUpdateEvent.Reason = PackCntChangeEventReason.Delete;
@@ -1897,7 +1898,7 @@ namespace AasxPackageLogic
         }
 
         public void QualifierHelper(
-            AnyUiStackPanel stack, ModifyRepo repo, 
+            AnyUiStackPanel stack, ModifyRepo repo,
             List<AdminShell.Qualifier> qualifiers,
             AdminShell.Referable relatedReferable = null)
         {
@@ -1983,18 +1984,20 @@ namespace AasxPackageLogic
 
                 AddKeyValueRef(
                     substack, "type", qual, ref qual.type, null, repo,
-                    v => { 
+                    v =>
+                    {
                         qual.type = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange()); 
-                        return new AnyUiLambdaActionNone(); 
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
                     });
 
                 AddKeyValueRef(
                     substack, "value", qual, ref qual.value, null, repo,
-                    v => { 
+                    v =>
+                    {
                         qual.value = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone(); 
+                        return new AnyUiLambdaActionNone();
                     });
 
                 if (SafeguardAccess(
@@ -2246,7 +2249,7 @@ namespace AasxPackageLogic
             }
 
             // already existing?
-            var p = rf.idShort.LastIndexOf("---");
+            var p = rf.idShort.LastIndexOf("---", StringComparison.Ordinal);
             if (p >= 0)
             {
                 rf.idShort = rf.idShort.Substring(0, p) + addStr;
@@ -2288,7 +2291,7 @@ namespace AasxPackageLogic
             }
 
             // already existing?
-            var p = idf.identification.id.LastIndexOf("---");
+            var p = idf.identification.id.LastIndexOf("---", StringComparison.Ordinal);
             if (p >= 0)
             {
                 idf.identification.id = idf.identification.id.Substring(0, p) + addStr;
@@ -2346,7 +2349,6 @@ namespace AasxPackageLogic
         /// </summary>
         public class DiaryEntryUpdateValue : DiaryEntryBase
         {
-            public DiaryEntryUpdateValue() { }
         }
 
         /// <summary>
@@ -2383,12 +2385,12 @@ namespace AasxPackageLogic
                     attachRf = explicitParent;
 
                 // add 
-                AdminShell.DiaryDataDef.AddAndSetTimestamps(attachRf, evi, 
+                AdminShell.DiaryDataDef.AddAndSetTimestamps(attachRf, evi,
                     isCreate: desc.Reason == StructuralChangeReason.Create);
             }
 
             // update value?
-            if (rf != null && de is DiaryEntryUpdateValue deuv && rf is AdminShell.SubmodelElement sme)
+            if (rf != null && de is DiaryEntryUpdateValue && rf is AdminShell.SubmodelElement sme)
             {
                 // create
                 var evi = new AasPayloadUpdateValueItem(

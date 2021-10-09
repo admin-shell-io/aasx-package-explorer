@@ -1,9 +1,18 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdminShellNS;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -84,12 +93,12 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var sm in visited.Keys)
                 sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                 {
-                    if (sme is AdminShell.BasicEvent be)
+                    if (sme is AdminShell.BasicEvent)
                     {
                         if (true == sme.semanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
                             AdminShell.Key.MatchMode.Relaxed))
-                        Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
+                            Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
                         if (true == sme.semanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
@@ -102,7 +111,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         public IEnumerable<SignificantAasElemRecord> Retrieve(
-            AdminShell.AdministrationShellEnv env, 
+            AdminShell.AdministrationShellEnv env,
             SignificantAasElement kind)
         {
             if (env == null || true != _records.ContainsKey(kind))

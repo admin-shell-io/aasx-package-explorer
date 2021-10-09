@@ -477,7 +477,7 @@ namespace AasxPackageLogic
             return res;
         }
 
-        public List<T> GetListOfMapResults<T, S>(Func<S,T> lambda) where S : class
+        public List<T> GetListOfMapResults<T, S>(Func<S, T> lambda) where S : class
         {
             var res = new List<T>();
             foreach (var x in this)
@@ -2040,7 +2040,7 @@ namespace AasxPackageLogic
             if (entity is VisualElementEnvironmentItem veei)
             {
             }
-            else if (entity is VisualElementAdminShell veaas && veaas.theAas == null)
+            else if (entity is VisualElementAdminShell veaas && veaas.theAas != null)
             {
                 // maintain parent. If in doubt, set null
                 veaas.theAas.parent = veaas.theEnv;

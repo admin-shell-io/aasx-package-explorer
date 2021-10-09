@@ -551,7 +551,7 @@ namespace AasxPackageLogic
                                 smw2.submodelElement.parent = parentContainer;
 
                                 if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    createAtIndex =  this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                         pcsm.submodelElements, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
@@ -633,7 +633,7 @@ namespace AasxPackageLogic
                             }
 
                             // emit event
-                            this.AddDiaryEntry(smw2.submodelElement, 
+                            this.AddDiaryEntry(smw2.submodelElement,
                                 new DiaryEntryStructChange(StructuralChangeReason.Create,
                                     createAtIndex: createAtIndex));
 
@@ -642,7 +642,7 @@ namespace AasxPackageLogic
                             {
                                 DispDeleteCopyPasteItem(item);
 
-                                this.AddDiaryEntry(item.sme, 
+                                this.AddDiaryEntry(item.sme,
                                     new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
@@ -780,7 +780,7 @@ namespace AasxPackageLogic
                             nextBusObj = entity2;
 
                             // emit event
-                            this.AddDiaryEntry(entity2 as AdminShell.Referable, 
+                            this.AddDiaryEntry(entity2 as AdminShell.Referable,
                                 new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                             // different cases
@@ -868,7 +868,7 @@ namespace AasxPackageLogic
                             {
                                 DispDeleteCopyPasteItem(item);
 
-                                this.AddDiaryEntry(item.sme, 
+                                this.AddDiaryEntry(item.sme,
                                     new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
@@ -983,7 +983,8 @@ namespace AasxPackageLogic
 
                             // Identifiable: just state as newly created
                             this.AddDiaryEntry((T)entity2, new DiaryEntryStructChange(
-                                AasxIntegrationBase.AdminShellEvents.StructuralChangeReason.Create, createAtIndex: ndx));
+                                AasxIntegrationBase.AdminShellEvents.StructuralChangeReason.Create,
+                                createAtIndex: ndx));
 
                             // may delete original
                             if (!cpb.Duplicate)

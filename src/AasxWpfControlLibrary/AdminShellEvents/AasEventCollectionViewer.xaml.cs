@@ -85,7 +85,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                     RichTextBoxDetails.Document.Blocks.Clear();
                     RichTextBoxDetails.Document.Blocks.Add(new Paragraph(new Run("" + pl.GetDetailsText())));
                 }
-            };            
+            };
         }
 
         //
@@ -138,7 +138,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
             _autoTop = DataGridMessages.SelectedIndex == 0;
         }
 
-        public void CommandBinding_ContextMenu (string cmd)
+        public void CommandBinding_ContextMenu(string cmd)
         {
             // access
             if (cmd == null)
@@ -157,10 +157,9 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                 var lev = new List<AasEventMsgEnvelope>();
 
                 // try to read selected items
-                if (DataGridMessages.SelectedItems != null)
-                    foreach (var o in DataGridMessages.SelectedItems)
-                        if (o is AasEventMsgEnvelope ev)
-                            lev.Add(ev);
+                foreach (var o in DataGridMessages.SelectedItems)
+                    if (o is AasEventMsgEnvelope ev)
+                        lev.Add(ev);
 
                 // fallback?
                 if (lev.Count < 1)
@@ -186,7 +185,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                     // prepare dialogue
                     var outputDlg = new Microsoft.Win32.SaveFileDialog();
                     outputDlg.Title = "Select JSON file to be saved";
-                    outputDlg.FileName = "new-events.json";                   
+                    outputDlg.FileName = "new-events.json";
 
                     outputDlg.DefaultExt = "*.json";
                     outputDlg.Filter = "JSON AAS event files (*.json)|*.json|All files (*.*)|*.*";

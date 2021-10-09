@@ -88,8 +88,9 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// </summary>
         public object Payloads
         {
-            get { return (PayloadItems != null) ? (object) PayloadItems : PayloadsRaw; }
-            set {
+            get { return (PayloadItems != null) ? (object)PayloadItems : PayloadsRaw; }
+            set
+            {
                 if (value is ListOfAasPayloadBase pi)
                 {
                     PayloadItems = pi;
@@ -257,7 +258,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                     );
 
             var sum = new List<MiniMarkupBase>();
-            
+
             if (PayloadItems != null)
                 foreach (var pl in PayloadItems)
                     sum.Add(pl.ToMarkup());
@@ -266,7 +267,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 sum.Add(
                     new MiniMarkupLine(
                         new MiniMarkupRun("Payload:", isMonospaced: true, padsize: w1),
-                        new MiniMarkupRun("Raw event data present "), 
+                        new MiniMarkupRun("Raw event data present "),
                         new MiniMarkupLink("[>>]", "http://127.0.0.1/", this)));
 
             res.Children.AddRange(sum);
