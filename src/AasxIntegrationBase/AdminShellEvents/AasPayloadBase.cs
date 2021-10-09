@@ -50,7 +50,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 foreach (var pl in other)
                 {
                     // ReSharper disable once RedundantExplicitParamsArrayCreation
-                    var opl = Activator.CreateInstance(pl.GetType(), new object [] { pl });
+                    var opl = Activator.CreateInstance(pl.GetType(), new object[] { pl });
                     if (opl is AasPayloadBase npl)
                         this.Add(npl);
                 }
