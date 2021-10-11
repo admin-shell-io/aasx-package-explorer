@@ -61,11 +61,22 @@ function Main
 
             Write-Host "Building $project to: $projectOutputPath"
 
-            & dotnet.exe publish `
+            if ($project -ne "BlazorUI")
+            {
+                & dotnet.exe publish `
                 --output $projectOutputPath `
                 --runtime win-x64 `
                 --configuration $configuration `
                 $csprojectPath
+            }
+            else
+            {
+                & dotnet.exe publish `
+                --output $projectOutputPath `
+                --configuration $configuration `
+                $csprojectPath
+            }
+
 
             $buildExitCode = $LASTEXITCODE
             Write-Host "dotnet publish exit code: $buildExitCode"
