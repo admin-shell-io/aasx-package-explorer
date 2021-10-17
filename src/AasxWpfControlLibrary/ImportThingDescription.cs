@@ -1069,10 +1069,11 @@ namespace AasxPackageExplorer
             {
                 string text = File.ReadAllText(inputFn);
                 JObject tdJObject = JObject.Parse(text);
-                if (false) //ValidateTDJson(tdJObject)
+                if (false) 
                 {
-                    //AasxPackageExplorer.Log.Singleton.Error("The TD is not a valid JSON file: ");
+                    //ValidateTDJson(tdJObject)
                     exportData["status"] = "error";
+                    exportData["error"] = "The JSON LD document is not valid"; 
                     return exportData;
                 }
                 else
@@ -1313,13 +1314,13 @@ namespace AasxPackageExplorer
                     }
 
                     exportData["status"] = "Success";
-                    return tdJObject;
+                    return exportData;
                 }
             }
             catch (Exception ex)
             {
-                //AasxPackageExplorer.Log.Singleton.Error(ex, "When importing TD Json, an error occurred");
                 exportData["status"] = "error";
+                exportData["error"] = (ex).ToString();
                 return exportData;
             }   
 

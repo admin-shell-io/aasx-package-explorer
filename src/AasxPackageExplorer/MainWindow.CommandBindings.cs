@@ -643,8 +643,9 @@ namespace AasxPackageExplorer
 
             if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
             {
-               // MessageBoxFlyoutShow(
-                 //   "No valid SubModel selected.", "JSON import");// MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBoxFlyoutShow(
+                    "No valid SubModel is selected.", "Unable to import TD JSON LD Document",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
 
@@ -653,7 +654,7 @@ namespace AasxPackageExplorer
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
             if (res == true)
@@ -661,14 +662,21 @@ namespace AasxPackageExplorer
                 {
                     // do it
                     RememberForInitialDirectory(dlg.FileName);
-                    TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
-                    // redisplay
-                    RedrawAllAasxElements();
-                    RedrawElementView();
+                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    if (importObject["status"].ToString() == "error")
+                    {
+                        Log.Singleton.Error(importObject["error"].ToString());
+                    }
+                    else
+                    {
+                        // redisplay
+                        RedrawAllAasxElements();
+                        RedrawElementView();
+                    }
                 }
                 catch (Exception ex)
                 {
-                    //AasxPackageExplorer.Log.Singleton.Error(ex, "When importing CSV, an error occurred");
+                    Log.Singleton.Error(ex, "When importing the jsonld document");
                 }
 
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
@@ -2417,7 +2425,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Submodel Write",
+                    "No valid SubModel is selected.", "Unable to create TD JSON LD document",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
@@ -2428,14 +2436,13 @@ namespace AasxPackageExplorer
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.FileName = "Submodel_" + obj.idShort + ".json";
-            dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            dlg.FileName = "Submodel_" + obj.idShort + ".jsonld";
+            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
             if (res == true)
             {
                 JObject exportData =  TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
-                System.IO.File.WriteAllText(@"C:\Users\pakala\Documents\IOT_AAS\samples\DR\tf.json", exportData["data"].ToString());
                 if (exportData["status"].ToString() == "success")
                 {
                     RememberForInitialDirectory(dlg.FileName);
@@ -2443,6 +2450,10 @@ namespace AasxPackageExplorer
                     {
                         s.WriteLine(exportData["data"]);
                     }
+                }
+                else
+                {
+                    Log.Singleton.Info(exportData["error"].ToString());
                 }
 
             }

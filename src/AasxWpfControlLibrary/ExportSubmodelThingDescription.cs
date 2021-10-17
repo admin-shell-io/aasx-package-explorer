@@ -523,125 +523,139 @@ namespace AasxPackageExplorer
         public static JObject ExportSMtoJson(AdminShell.Submodel sm)
         {
             JObject exportData = new JObject();
-            JObject TDJson = new JObject();
-            if (sm.qualifiers != null)
-            {
-                foreach (AdminShell.Qualifier smQualifier in sm.qualifiers)
+            try {
+                JObject TDJson = new JObject();
+                if (sm.qualifiers != null)
                 {
-                    TDJson[smQualifier.type] = smQualifier.value;
-                }
-            }
-           
-            // description
-            AdminShell.ListOfLangStr tdDescription = sm.description.langString;
-            if (tdDescription.Count != 1)
-            {
-                TDJson["description"] = tdDescription[0].str;
-                int index = 1;
-                JObject descriptions = new JObject();
-                for(index = 1; index < tdDescription.Count; index++)
-                {
-                    AdminShell.LangStr desc = tdDescription[index];
-                    descriptions[desc.lang] = desc.str;
-                }
-                TDJson["descriptions"] = descriptions;
-            }else
-            {
-                TDJson["description"] = tdDescription[0].str;
-            }
-            //version
-            if (sm.administration != null)
-            {
-                JObject versionInfo = new JObject();
-                AdminShell.Administration adm = sm.administration;
-                if (adm.version != "")
-                {
-                    versionInfo["instance"] = adm.version;
-                }
-                if (adm.revision != "")
-                {
-                    versionInfo["model"] = adm.version;
-                }
-                if (versionInfo.Count != 0)
-                {
-                    TDJson["version"] = versionInfo;
-                }
-            }
-
-            // id
-            TDJson["id"] = sm.identification.id;
-
-            foreach (AdminShell.SubmodelElementWrapper tdElementWrapper in sm.submodelElements)
-            {
-                AdminShell.SubmodelElement tdElement = tdElementWrapper.submodelElement;
-                if (tdElement.idShort == "titles")
-                {
-                    JObject _titlesJObject = new JObject();
-                    AdminShell.MultiLanguageProperty mlp = new AdminShell.MultiLanguageProperty(tdElement);
-                    AdminShell.LangStringSet _titles = new AdminShell.LangStringSet(mlp.value);
-                    foreach (AdminShell.LangStr _title in _titles.langString)
+                    foreach (AdminShell.Qualifier smQualifier in sm.qualifiers)
                     {
-                        _titlesJObject[_title.lang] = _title.str;
+                        TDJson[smQualifier.type] = smQualifier.value;
                     }
-                    TDJson["titles"] = _titlesJObject;
                 }
-                if (tdElement.idShort == "@context")
+
+                // description
+                if (sm.description != null)
                 {
-                    List<object> contextList = new List<object>();
-                    JObject _conSemantic = new JObject();
-                    foreach(AdminShell.Qualifier _con in tdElement.qualifiers)
+                    AdminShell.ListOfLangStr tdDescription = sm.description.langString;
+                    if (tdDescription.Count != 1)
                     {
-                        if (_con.type == "@context")
+                        TDJson["description"] = tdDescription[0].str;
+                        int index = 1;
+                        JObject descriptions = new JObject();
+                        for (index = 1; index < tdDescription.Count; index++)
                         {
-                            contextList.Add((_con.value));
+                            AdminShell.LangStr desc = tdDescription[index];
+                            descriptions[desc.lang] = desc.str;
                         }
-                        else
+                        TDJson["descriptions"] = descriptions;
+                    }
+                    else
+                    {
+                        TDJson["description"] = tdDescription[0].str;
+                    }
+
+                }
+                //version
+                if (sm.administration != null)
+                {
+                    JObject versionInfo = new JObject();
+                    AdminShell.Administration adm = sm.administration;
+                    if (adm.version != "")
+                    {
+                        versionInfo["instance"] = adm.version;
+                    }
+                    if (adm.revision != "")
+                    {
+                        versionInfo["model"] = adm.version;
+                    }
+                    if (versionInfo.Count != 0)
+                    {
+                        TDJson["version"] = versionInfo;
+                    }
+                }
+                // id
+                TDJson["id"] = sm.identification.id;
+                if (sm.submodelElements != null)
+                {
+                    foreach (AdminShell.SubmodelElementWrapper tdElementWrapper in sm.submodelElements)
+                    {
+                        AdminShell.SubmodelElement tdElement = tdElementWrapper.submodelElement;
+                        if (tdElement.idShort == "titles")
                         {
-                            _conSemantic[_con.type] = _con.value;
+                            JObject _titlesJObject = new JObject();
+                            AdminShell.MultiLanguageProperty mlp = new AdminShell.MultiLanguageProperty(tdElement);
+                            AdminShell.LangStringSet _titles = new AdminShell.LangStringSet(mlp.value);
+                            foreach (AdminShell.LangStr _title in _titles.langString)
+                            {
+                                _titlesJObject[_title.lang] = _title.str;
+                            }
+                            TDJson["titles"] = _titlesJObject;
+                        }
+                        if (tdElement.idShort == "@context")
+                        {
+                            List<object> contextList = new List<object>();
+                            JObject _conSemantic = new JObject();
+                            foreach (AdminShell.Qualifier _con in tdElement.qualifiers)
+                            {
+                                if (_con.type == "@context")
+                                {
+                                    contextList.Add((_con.value));
+                                }
+                                else
+                                {
+                                    _conSemantic[_con.type] = _con.value;
+                                }
+                            }
+                            contextList.Add(_conSemantic);
+                            TDJson["@context"] = JToken.FromObject(contextList);
+                        }
+                        if (tdElement.idShort == "properties")
+                        {
+                            TDJson["properties"] = createTDProperties(tdElement);
+                        }
+                        else if (tdElement.idShort == "actions")
+                        {
+                            TDJson["actions"] = createTDActions(tdElement);
+                        }
+                        else if (tdElement.idShort == "events")
+                        {
+                            TDJson["events"] = createTDEvents(tdElement);
+                        }
+                        else if (tdElement.idShort == "links")
+                        {
+                            TDJson["links"] = createTDLinks(tdElement);
+                        }
+                        else if (tdElement.idShort == "forms")
+                        {
+                            TDJson["forms"] = createForms(tdElement)["forms"];
+                        }
+                        else if (tdElement.idShort == "security")
+                        {
+                            TDJson["security"] = createTDSecurity(tdElement)["security"];
+                        }
+                        else if (tdElement.idShort == "securityDefinitions")
+                        {
+                            TDJson["securityDefinitions"] = createTDSecurityDefinitions(tdElement);
+                        }
+                        else if (tdElement.idShort == "profile")
+                        {
+                            TDJson["profile"] = createTDProfile(tdElement);
+                        }
+                        else if (tdElement.idShort == "schemaDefinitions")
+                        {
+                            TDJson["schemaDefinitions"] = createTDSchemaDefinitions(tdElement);
                         }
                     }
-                    contextList.Add(_conSemantic);
-                    TDJson["@context"] = JToken.FromObject(contextList);
                 }
-                if (tdElement.idShort == "properties")
-                {
-                    TDJson["properties"] = createTDProperties(tdElement);
-                }
-                else if (tdElement.idShort == "actions")
-                {
-                    TDJson["actions"] = createTDActions(tdElement);
-                }
-                else if (tdElement.idShort == "events")
-                {
-                    TDJson["events"] = createTDEvents(tdElement);
-                }
-                else if (tdElement.idShort == "links")
-                {
-                    TDJson["links"] = createTDLinks(tdElement);
-                }
-                else if (tdElement.idShort == "forms")
-                {
-                    TDJson["forms"] = createForms(tdElement)["forms"];
-                }
-                else if (tdElement.idShort == "security")
-                {
-                    TDJson["security"] = createTDSecurity(tdElement)["security"];
-                }
-                else if (tdElement.idShort == "securityDefinitions")
-                {
-                    TDJson["securityDefinitions"] = createTDSecurityDefinitions(tdElement);
-                }
-                else if (tdElement.idShort == "profile")
-                {
-                    TDJson["profile"] = createTDProfile(tdElement);
-                }
-                else if (tdElement.idShort == "schemaDefinitions")
-                {
-                    TDJson["schemaDefinitions"] = createTDSchemaDefinitions(tdElement);
-                }
+                exportData["status"] = "success";
+                exportData["data"] = TDJson;
+
             }
-            exportData["status"] = "success";
-            exportData["data"] = TDJson;
+            catch (Exception ex)
+            {
+                exportData["status"] = "error";
+                exportData["data"] = ex.ToString();
+            }
             return exportData;
 
         }

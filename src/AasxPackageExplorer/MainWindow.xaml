@@ -351,7 +351,7 @@
                             <MenuItem Header="Import Submodel from Dictionary .." Command="{StaticResource ImportSubmodel}"/>
                             <MenuItem Header="Import Submodel Elements from Dictionary .." Command="{StaticResource ImportSubmodelElements}"/>
                             <MenuItem Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
-                            <MenuItem Header="Import Thing Description JSON into SubModel .." Command="{StaticResource TDImport}"/>
+                            <MenuItem Header="Import Thing Description JSON LD document into SubModel .." Command="{StaticResource TDImport}"/>
                             
                             <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
@@ -368,7 +368,7 @@
                             <MenuItem Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
-                            <MenuItem Header="Export Submodel as Thing Description JSON" Command="{StaticResource SubmodelTDExport}"/>
+                            <MenuItem Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
 							<MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
                         </MenuItem>
